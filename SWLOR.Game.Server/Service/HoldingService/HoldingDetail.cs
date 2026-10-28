@@ -21,9 +21,6 @@ namespace SWLOR.Game.Server.Service.HoldingService
 
         public int PurchasePrice { get; set; }
 
-        /// <summary>Credits a day by level (index 0 is level 1).</summary>
-        public int[] UpkeepByLevel { get; set; } = Array.Empty<int>();
-
         /// <summary>Levels 2 and 3: credits and goods delivered to the holding's dock.</summary>
         public List<HoldingUpgradeDetail> Upgrades { get; set; } = new();
 

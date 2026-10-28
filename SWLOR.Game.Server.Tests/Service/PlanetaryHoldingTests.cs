@@ -85,7 +85,7 @@ public class PlanetaryHoldingTests
             detail.Output.Should().Be(output, type.ToString());
             detail.BatchUnits.Should().BePositive();
             detail.PurchasePrice.Should().BePositive();
-            detail.UpkeepByLevel.Should().HaveCount(HoldingTuning.MaximumLevel).And.BeInAscendingOrder();
+            HoldingRules.GetDailyUpkeep(detail, 3, 0).Should().BeGreaterThan(HoldingRules.GetDailyUpkeep(detail, 1, 0));
             detail.Upgrades.Select(x => x.Level).Should().Equal(2, 3);
             detail.Name.Should().MatchRegex("^[A-Za-z' ]+$");
         }
@@ -207,12 +207,18 @@ public class PlanetaryHoldingTests
         var detail = Detail(HoldingType.SaltWorks);
 
         Advance(holding, 2).Foreclosed.Should().BeFalse();
-        holding.UpkeepOwed.Should().Be(2 * HoldingRules.GetDailyUpkeep(detail, 1));
+        holding.UpkeepOwed.Should().Be(2 * HoldingRules.GetDailyUpkeep(holding, detail));
+        HoldingRules.GetDailyUpkeep(detail, 1, 0).Should().Be(
+            (int)Math.Round(detail.BatchUnits * 50 * HoldingTuning.UpkeepShare, MidpointRounding.AwayFromZero), "a share of the day's output");
 
         var result = Advance(holding, 30);
         result.Foreclosed.Should().BeTrue();
-        holding.UpkeepOwed.Should().Be(HoldingRules.GetForeclosureLimit(detail, 1));
-        HoldingRules.GetForeclosureLimit(detail, 1).Should().Be(HoldingTuning.ForeclosureDays * HoldingRules.GetDailyUpkeep(detail, 1));
+        holding.UpkeepOwed.Should().Be(HoldingRules.GetForeclosureLimit(holding, detail));
+        HoldingRules.GetForeclosureLimit(holding, detail).Should().Be(HoldingTuning.ForeclosureDays * HoldingRules.GetDailyUpkeep(holding, detail));
+
+        holding.DroidItemId = "droid";
+        holding.DroidIndustry = 100;
+        HoldingRules.GetDailyUpkeep(holding, detail).Should().BeGreaterThan(HoldingRules.GetDailyUpkeep(detail, 1, 0), "staff wages grow with the output");
     }
 
     [Test]
@@ -287,15 +293,15 @@ public class PlanetaryHoldingTests
         HoldingRules.ApplyUpgrade(holding, detail);
         holding.Level.Should().Be(2);
         holding.Supplies.Should().BeEmpty("the level's goods are used up");
-        HoldingRules.GetDailyUnits(holding, detail).Should().Be((int)Math.Round(detail.BatchUnits * 1.2, MidpointRounding.AwayFromZero));
-        HoldingRules.GetDailyUpkeep(detail, 2).Should().BeGreaterThan(HoldingRules.GetDailyUpkeep(detail, 1));
+        HoldingRules.GetDailyUnits(holding, detail).Should().Be((int)Math.Round(detail.BatchUnits * 1.25, MidpointRounding.AwayFromZero));
+        HoldingRules.GetDailyUpkeep(detail, 2, 0).Should().BeGreaterThan(HoldingRules.GetDailyUpkeep(detail, 1, 0));
 
         foreach (var (commodity, units) in detail.Upgrades.Single(x => x.Level == 3).Goods)
             HoldingRules.Deliver(holding, detail, commodity, units, Start, new HoldingAdvanceResult());
         HoldingRules.ApplyUpgrade(holding, detail);
         holding.Level.Should().Be(3);
         HoldingRules.GetUpgradeRefusal(holding, detail, 1_000_000).Should().Be(HoldingRefusal.MaximumLevel);
-        HoldingRules.GetDailyUnits(holding, detail).Should().Be((int)Math.Round(detail.BatchUnits * 1.4, MidpointRounding.AwayFromZero));
+        HoldingRules.GetDailyUnits(holding, detail).Should().Be((int)Math.Round(detail.BatchUnits * 1.45, MidpointRounding.AwayFromZero));
     }
 
     [Test]
@@ -326,24 +332,26 @@ public class PlanetaryHoldingTests
         holding.HasProcessingPlant.Should().BeTrue();
         HoldingRules.GetPlantRefusal(holding, detail, 1_000_000).Should().Be(HoldingRefusal.PlantBuilt);
 
-        // The plant now takes its input, up to some days of recipes.
-        var cap = HoldingRules.GetDeliverableUnits(holding, detail, CommodityType.PurifiedWater);
-        cap.Should().Be(HoldingTuning.InputStockDays * detail.BatchUnits);
+        // The plant takes half of each day's output, and its input up to some days of recipes.
+        var plantUnits = HoldingRules.GetPlantUnits(detail.BatchUnits);
+        plantUnits.Should().Be(detail.BatchUnits / 2);
+        HoldingRules.GetDeliverableUnits(holding, detail, CommodityType.PurifiedWater).Should().Be(HoldingTuning.InputStockDays * plantUnits);
 
-        // Grain 1 + Water 1 make 1 Ration Pack: 30 water refines 30 of the day's grain; the rest stays grain.
-        HoldingRules.Deliver(holding, detail, CommodityType.PurifiedWater, 30, Start, new HoldingAdvanceResult());
+        // Grain 1 + Water 1 make 1 Ration Pack, up to the plant's half of the output; the rest stays grain.
+        HoldingRules.Deliver(holding, detail, CommodityType.PurifiedWater, plantUnits + 5, Start, new HoldingAdvanceResult());
         Advance(holding, 1);
-        Units(holding, CommodityType.RationPacks).Should().Be(30);
-        Units(holding, CommodityType.Grain).Should().Be(detail.BatchUnits - 30);
-        HoldingRules.GetSupply(holding, CommodityType.PurifiedWater).Should().Be(0);
+        Units(holding, CommodityType.RationPacks).Should().Be(plantUnits);
+        Units(holding, CommodityType.Grain).Should().Be(detail.BatchUnits - plantUnits);
+        HoldingRules.GetSupply(holding, CommodityType.PurifiedWater).Should().Be(5);
 
-        // Without input, or with refining switched off, the output stays raw.
+        // Short of input the plant refines what it has; without input, or with refining off, the output stays raw.
         Advance(holding, 2);
-        Units(holding, CommodityType.Grain).Should().Be(2 * detail.BatchUnits - 30);
+        Units(holding, CommodityType.RationPacks).Should().Be(plantUnits + 5);
+        Units(holding, CommodityType.Grain).Should().Be(2 * detail.BatchUnits - plantUnits - 5);
         HoldingRules.Deliver(holding, detail, CommodityType.PurifiedWater, 10, Start, new HoldingAdvanceResult());
         holding.RefineOutput = false;
         Advance(holding, 3);
-        Units(holding, CommodityType.RationPacks).Should().Be(30);
+        Units(holding, CommodityType.RationPacks).Should().Be(plantUnits + 5);
         HoldingRules.GetSupply(holding, CommodityType.PurifiedWater).Should().Be(10);
     }
 
@@ -531,12 +539,20 @@ public class PlanetaryHoldingTests
             var rate = HoldingTuning.ReferenceRateByTier[TradeLookup.GetExchange(detail.Exchange).OrbitTier];
             var price = TradeLookup.GetCommodity(detail.Output).BasePrice;
             double Minutes(int level, int droidPercent) =>
-                (HoldingRules.GetDailyUnits(detail, level, droidPercent) * price - HoldingRules.GetDailyUpkeep(detail, level)) * 60.0 / rate;
+                (HoldingRules.GetDailyUnits(detail, level, droidPercent) * price - HoldingRules.GetDailyUpkeep(detail, level, droidPercent)) * 60.0 / rate;
 
-            Minutes(1, 0).Should().BeInRange(20, 35, $"{detail.Name} at level 1 nets about half an hour of active play a day");
-            Minutes(3, 0).Should().BeInRange(30, 45, detail.Name);
-            Minutes(3, HoldingTuning.BestDroidPercent).Should().BeInRange(45, HoldingTuning.MaximumBestDroidMinutes,
-                $"{detail.Name} with the best droid stays near the Asteroid Drill's hour");
+            Minutes(1, 0).Should().BeInRange(8, 12, $"{detail.Name} at level 1 nets about 10 minutes of active play a day");
+            Minutes(3, 0).Should().BeInRange(13, 18, detail.Name);
+            Minutes(3, HoldingTuning.BestDroidPercent).Should().BeInRange(22, HoldingTuning.MaximumBestDroidMinutes,
+                $"{detail.Name} with the best droid nets about 25 minutes");
+
+            // With a Processing Plant, buying its input at base price: about 30 minutes, so three holdings pay about 90.
+            var units = HoldingRules.GetDailyUnits(detail, 3, HoldingTuning.BestDroidPercent);
+            var (refined, used, input) = HoldingRules.Refine(detail.Chain, HoldingRules.GetPlantUnits(units), int.MaxValue);
+            var value = (units - used) * price + refined * TradeLookup.GetCommodity(detail.Chain.Refined).BasePrice -
+                        input * TradeLookup.GetCommodity(detail.Chain.Input).BasePrice -
+                        HoldingRules.GetDailyUpkeep(detail, 3, HoldingTuning.BestDroidPercent);
+            (value * 60.0 / rate).Should().BeInRange(25, HoldingTuning.MaximumPlantMinutes, $"{detail.Name} at its best");
             detail.PurchasePrice.Should().Be((int)(Math.Round(detail.BatchUnits * price * 10 / 100.0, MidpointRounding.AwayFromZero) * 100));
         }
     }

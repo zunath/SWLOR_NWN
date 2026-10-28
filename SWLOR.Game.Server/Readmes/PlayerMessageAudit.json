@@ -5002,7 +5002,7 @@
     "Line": 133,
     "Member": "Buy",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"You bought a {detail.Name} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes \" +\n                $\"{HoldingRules.GetDailyUnits(holding, detail)} {TradeLookup.GetCommodity(detail.Output)?.Name} a day for your ship \" +\n                $\"to collect here, and owes {HoldingRules.GetDailyUpkeep(detail, 1)} credits of upkeep a day.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"You bought a {detail.Name} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes \" +\n                $\"{HoldingRules.GetDailyUnits(holding, detail)} {TradeLookup.GetCommodity(detail.Output)?.Name} a day for your ship \" +\n                $\"to collect here, and owes {HoldingRules.GetDailyUpkeep(holding, detail)} credits of upkeep a day.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",

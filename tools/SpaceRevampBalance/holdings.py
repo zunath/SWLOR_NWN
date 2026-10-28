@@ -31,12 +31,15 @@ REPO = Path(__file__).resolve().parents[2]
 # ---------------------------------------------------------------------------------------------------------------
 # Credits an hour of space combat by orbit tier (trade.py --sim, W7a; plan section 13).
 REFERENCE_RATE = {1: 4100, 2: 6300, 3: 8500, 4: 7600, 5: 9200, 6: 22200}
-# A level 1 holding's daily batch is worth this many minutes of the rate at its dock's tier, at base price. Upkeep
-# takes UPKEEP_SHARE of it, so a level 1 holding nets about 25 minutes a day; level 3 with the best droid about 60, like
-# the Asteroid Drill's hour.
-GROSS_MINUTES = 30
-UPKEEP_SHARE = 0.15             # of the level's batch value (without the droid), charged every day
-LEVEL_OUTPUT = {1: 1.0, 2: 1.2, 3: 1.4}
+# Holdings are passive income and a character may own three, so all three at their best (level 3, the best droid, a
+# Processing Plant) pay about 90 minutes of the tier's combat rate a day together: about 30 minutes each. A level 1
+# holding's daily batch is worth GROSS_MINUTES of the rate at its dock's tier, at base price; upkeep takes UPKEEP_SHARE
+# of the day's output value (the droid's share included: staff cost wages), so a level 1 holding nets about 10 minutes,
+# level 3 about 15, level 3 with the best droid about 25 and with a Processing Plant about 30.
+GROSS_MINUTES = 12
+UPKEEP_SHARE = 0.15             # of the day's output value at base price, droid included, charged every day
+LEVEL_OUTPUT = {1: 1.0, 2: 1.25, 3: 1.45}
+PLANT_SHARE = 0.5               # the Processing Plant refines up to this share of each day's output
 MAX_LEVEL = 3
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -45,9 +48,9 @@ MAX_LEVEL = 3
 MAX_HOLDINGS = 3                # per character (plan section 26)
 PURCHASE_DAYS = 10
 SELL_BACK_SHARE = 0.5           # abandoning refunds this share of the price, less the upkeep owed
-UPGRADE_CREDIT_DAYS = {2: 2, 3: 3}
-UPGRADE_GOODS_DAYS = {2: 1, 3: 2}   # split evenly between the level's goods
-PLANT_CREDIT_DAYS = 3
+UPGRADE_CREDIT_DAYS = {2: 1.5, 3: 2}   # each pays back in two to three weeks (holdings.py --sim, Payback)
+UPGRADE_GOODS_DAYS = {2: 1, 3: 1.5}   # split evenly between the level's goods
+PLANT_CREDIT_DAYS = 2
 PLANT_GOODS_DAYS = 1
 STORAGE_DAYS = 7                # the dock warehouse holds this many days of output; a full warehouse stops output
 FORECLOSE_DAYS = 14             # this many days of upkeep owed loses the holding
@@ -194,8 +197,8 @@ def purchase_price(h):
     return round_to(PURCHASE_DAYS * day_value(h), 100)
 
 
-def upkeep(h, level):
-    return round_half_up(UPKEEP_SHARE * day_value(h) * LEVEL_OUTPUT[level])
+def upkeep(h, level, percent=0):
+    return round_half_up(UPKEEP_SHARE * daily_units(h, level, percent) * base(h[4]))
 
 
 def goods_units(h, goods, days):
@@ -243,7 +246,7 @@ def daily_value(h, level, percent=0, processing=False):
     units = daily_units(h, level, percent)
     if not processing:
         return units * base(h[4])
-    refined, used, inputs = refine(h, units)
+    refined, used, inputs = refine(h, int(units * PLANT_SHARE))
     return (units - used) * base(h[4]) + refined * base(h[8][3]) - inputs * base(h[8][1])
 
 
@@ -252,14 +255,34 @@ def premium(h):
     return c * base(out) / (a * base(h[4]) + b * base(inp))
 
 
+def net(h, level, percent=0, processing=False):
+    return daily_value(h, level, percent, processing) - upkeep(h, level, percent)
+
+
+def cost_value(cost):
+    return cost["credits"] + sum(n * base(g) for g, n in cost["goods"].items())
+
+
+MAX_PAYBACK_DAYS = 28   # every upgrade pays back within a few weeks
+
+
+def payback(h):
+    """Days each upgrade takes to pay back its credits and goods (at base price) from the extra daily net, without a
+    droid; the Processing Plant at level 3."""
+    return {"L2": cost_value(upgrade(h, 2)) / (net(h, 2) - net(h, 1)),
+            "L3": cost_value(upgrade(h, 3)) / (net(h, 3) - net(h, 2)),
+            "Plant": cost_value(plant(h)) / (net(h, 3, 0, True) - net(h, 3))}
+
+
 def minutes(h, level, percent=0, processing=False):
     """Daily net value (output less upkeep) in minutes of the dock tier's earning rate."""
-    return (daily_value(h, level, percent, processing) - upkeep(h, level)) / rate(h) * 60
+    return (daily_value(h, level, percent, processing) - upkeep(h, level, percent)) / rate(h) * 60
 
 
 BEST_DROID_PERCENT = droid_percent(droids.MAXIMUM_INDUSTRY, 2)
 MID_DROID_PERCENT = droid_percent(50)
-MAX_BEST_MINUTES = 75   # level 3 with the best droid (no plant): about the Asteroid Drill's hour
+MAX_BEST_MINUTES = 27   # level 3 with the best droid (no plant): about 25 minutes
+MAX_PLANT_MINUTES = 35  # and with a Processing Plant: about 30 minutes
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -285,6 +308,11 @@ def problems():
             out.append(f"{h[1]}: customs inspections on a legal good")
         if minutes(h, MAX_LEVEL, BEST_DROID_PERCENT) > MAX_BEST_MINUTES:
             out.append(f"{h[1]}: level 3 with the best droid nets {minutes(h, MAX_LEVEL, BEST_DROID_PERCENT):.0f} minutes a day")
+        if minutes(h, MAX_LEVEL, BEST_DROID_PERCENT, True) > MAX_PLANT_MINUTES:
+            out.append(f"{h[1]}: with a Processing Plant it nets {minutes(h, MAX_LEVEL, BEST_DROID_PERCENT, True):.0f} minutes a day")
+        for name, days in payback(h).items():
+            if days > MAX_PAYBACK_DAYS:
+                out.append(f"{h[1]}: {name} pays back in {days:.0f} days")
     for good, sources in trade.HOLDING_GOOD_SOURCES.items():
         for ex in sources:
             if not any(h[3] == ex and h[8][3] == good for h in HOLDINGS):
@@ -340,7 +368,7 @@ def income_rows():
             value=day_value(h), upkeep=upkeep(h, 1), price=purchase_price(h),
             l1=minutes(h, 1), l2=minutes(h, 2), l3=minutes(h, 3), l3_mid=minutes(h, 3, MID_DROID_PERCENT),
             l3_best=minutes(h, 3, BEST_DROID_PERCENT), l3_plant=minutes(h, 3, BEST_DROID_PERCENT, True),
-            events=simulate_events(h)))
+            events=simulate_events(h), payback=payback(h)))
     return rows
 
 
@@ -359,11 +387,16 @@ def report():
           f"input at base price. Events: the share of event-free output kept by an owner who visits every "
           f"{OWNER_VISIT_DAYS} days.")
     print(f"{'Holding':20} {'Dock':16} T {'Good':20} {'Units':>5} {'Value':>6} {'Upkp':>5} {'Price':>7}  "
-          f"{'L1':>4} {'L2':>4} {'L3':>4} {'L3+50':>5} {'L3+best':>7} {'+plant':>6} {'events':>6}")
+          f"{'L1':>4} {'L2':>4} {'L3':>4} {'L3+50':>5} {'L3+best':>7} {'+plant':>6} {'events':>6}  payback L2/L3/plant (days)")
     for r in income_rows():
         print(f"{r['name']:20} {r['dock']:16} {r['tier']} {r['good']:20} {r['units']:>5} {r['value']:>6} {r['upkeep']:>5} "
               f"{r['price']:>7}  {r['l1']:>4.0f} {r['l2']:>4.0f} {r['l3']:>4.0f} {r['l3_mid']:>5.0f} {r['l3_best']:>7.0f} "
-              f"{r['l3_plant']:>6.0f} {r['events']:>6.0%}")
+              f"{r['l3_plant']:>6.0f} {r['events']:>6.0%}  " + "/".join(f"{d:.0f}" for d in r["payback"].values()))
+    rows = income_rows()
+    print()
+    print(f"One character with three holdings, the average of every type: level 1 {3 * sum(r['l1'] for r in rows) / len(rows):.0f} "
+          f"minutes a day, level 3 {3 * sum(r['l3'] for r in rows) / len(rows):.0f}, level 3 with the best droid "
+          f"{3 * sum(r['l3_best'] for r in rows) / len(rows):.0f}, and with Processing Plants {3 * sum(r['l3_plant'] for r in rows) / len(rows):.0f}.")
     print("\nChains (refined value against both inputs at base price):")
     for h in HOLDINGS:
         a, inp, b, out, c = h[8]
@@ -432,7 +465,6 @@ def catalog_cs():
             "            {",
             f"                Type = HoldingType.{h[1]}, Name = {cs_string(h[2])}, Exchange = TradeExchangeType.{h[3]},",
             f"                Output = CommodityType.{h[4]}, BatchUnits = {batch_units(h)}, PurchasePrice = {purchase_price(h)},",
-            f"                UpkeepByLevel = new[] {{ {', '.join(str(upkeep(h, lv)) for lv in range(1, MAX_LEVEL + 1))} }},",
             "                Upgrades = new List<HoldingUpgradeDetail>",
             "                {",
             f"                    new HoldingUpgradeDetail {{ Level = 2, Credits = {up2['credits']}, Goods = {cs_goods(up2['goods'])} }},",
@@ -462,6 +494,8 @@ def tuning_cs():
         f"        public const int MaximumLevel = {MAX_LEVEL};",
         "        /// <summary>Output by level (index 1-3).</summary>",
         "        public static readonly double[] LevelOutput = { 0.0, " + ", ".join(cs_double(LEVEL_OUTPUT[lv]) for lv in range(1, MAX_LEVEL + 1)) + " };",
+        f"        public const double UpkeepShare = {cs_double(UPKEEP_SHARE)};",
+        f"        public const double PlantShare = {cs_double(PLANT_SHARE)};",
         f"        public const double SellBackShare = {cs_double(SELL_BACK_SHARE)};",
         f"        public const int StorageDays = {STORAGE_DAYS};",
         f"        public const int ForeclosureDays = {FORECLOSE_DAYS};",
@@ -483,6 +517,7 @@ def tuning_cs():
         f"        public const int GrossMinutes = {GROSS_MINUTES};",
         f"        public const int BestDroidPercent = {BEST_DROID_PERCENT};",
         f"        public const int MaximumBestDroidMinutes = {MAX_BEST_MINUTES};",
+        f"        public const int MaximumPlantMinutes = {MAX_PLANT_MINUTES};",
         "",
         f"        public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackNames = new Dictionary<HoldingSetbackType, string> {{ {names} }};",
         f"        public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackTexts = new Dictionary<HoldingSetbackType, string> {{ {texts} }};",
@@ -521,7 +556,8 @@ def holdings_tab(Sheet):
         ["Holdings per character", MAX_HOLDINGS, "", "", "", "", "", "bought from the Dock Master's Planetary Holdings menu"],
         ["Daily batch", f"{GROSS_MINUTES} min of the tier rate", "", "", "", "", "", "level 1, at base price"],
         ["Level output", ", ".join(f"L{lv} x{v}" for lv, v in LEVEL_OUTPUT.items()), "", "", "", "", "", "upkeep scales the same"],
-        ["Upkeep", f"{UPKEEP_SHARE:.0%} of the level's batch", "", "", "", "", "",
+        ["Processing Plant", f"{PLANT_SHARE:.0%} of the day's output", "", "", "", "", "", "refined with delivered input; the rest stays raw"],
+        ["Upkeep", f"{UPKEEP_SHARE:.0%} of the day's output", "", "", "", "", "",
          f"owed daily and paid on collection; {FORECLOSE_DAYS} days owed loses the holding"],
         ["Price", f"{PURCHASE_DAYS} days of output", "", "", "", "", "", f"abandoning refunds {SELL_BACK_SHARE:.0%} less the upkeep owed"],
         ["Upgrades", f"L2 {UPGRADE_CREDIT_DAYS[2]} + {UPGRADE_GOODS_DAYS[2]} days", f"L3 {UPGRADE_CREDIT_DAYS[3]} + {UPGRADE_GOODS_DAYS[3]} days",
@@ -537,6 +573,10 @@ def holdings_tab(Sheet):
     s.table(["Holding", "Tier rate", "L1", "L2", "L3", "L3 + best droid", "+ plant", "Events (output kept)"],
             [[r["name"], r["rate"], round(r["l1"]), round(r["l2"]), round(r["l3"]), round(r["l3_best"]), round(r["l3_plant"]),
               f"{r['events']:.0%}"] for r in income_rows()])
+    s.title("Upgrade payback (days of the extra daily net, no droid; goods at base price)")
+    s.table(["Holding", "Level 2", "Level 3", "Processing Plant", "", "", "", "Notes"],
+            [[r["name"], round(r["payback"]["L2"]), round(r["payback"]["L3"]), round(r["payback"]["Plant"]), "", "", "",
+              "a character owns at most three holdings: about 90 minutes a day at their best"] for r in income_rows()])
     return s
 
 

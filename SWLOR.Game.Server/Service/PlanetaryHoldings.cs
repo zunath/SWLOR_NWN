@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, ColorToken.Green(
                 $"You bought a {detail.Name} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes " +
                 $"{HoldingRules.GetDailyUnits(holding, detail)} {TradeLookup.GetCommodity(detail.Output)?.Name} a day for your ship " +
-                $"to collect here, and owes {HoldingRules.GetDailyUpkeep(detail, 1)} credits of upkeep a day."));
+                $"to collect here, and owes {HoldingRules.GetDailyUpkeep(holding, detail)} credits of upkeep a day."));
             Log.Write(LogGroup.Space, $"HOLDING BUY - {PlayerName.GetAuditName(player)} - {type} {holding.Id} at {dockId} for {detail.PurchasePrice}");
             return true;
         }

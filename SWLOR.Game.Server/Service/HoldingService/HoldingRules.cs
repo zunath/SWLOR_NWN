@@ -80,11 +80,16 @@ namespace SWLOR.Game.Server.Service.HoldingService
         public static int GetDailyUnits(PlanetaryHolding holding, HoldingDetail detail) =>
             GetDailyUnits(detail, holding.Level, GetDroidPercent(holding));
 
-        public static int GetDailyUpkeep(HoldingDetail detail, int level) => detail.UpkeepByLevel[ClampLevel(level) - 1];
+        /// <summary>Credits a day: a share of the day's output value at base price, the staff droid's share included.</summary>
+        public static int GetDailyUpkeep(HoldingDetail detail, int level, int droidPercent) =>
+            Round(HoldingTuning.UpkeepShare * GetDailyUnits(detail, level, droidPercent) * (TradeLookup.GetCommodity(detail.Output)?.BasePrice ?? 0));
+
+        public static int GetDailyUpkeep(PlanetaryHolding holding, HoldingDetail detail) =>
+            GetDailyUpkeep(detail, holding.Level, GetDroidPercent(holding));
 
         /// <summary>The upkeep owed that loses the holding.</summary>
-        public static int GetForeclosureLimit(HoldingDetail detail, int level) =>
-            HoldingTuning.ForeclosureDays * GetDailyUpkeep(detail, level);
+        public static int GetForeclosureLimit(PlanetaryHolding holding, HoldingDetail detail) =>
+            HoldingTuning.ForeclosureDays * GetDailyUpkeep(holding, detail);
 
         /// <summary>The warehouse's volume: some days of output. A full warehouse stops output.</summary>
         public static int GetStorageVolume(PlanetaryHolding holding, HoldingDetail detail) =>
@@ -97,8 +102,8 @@ namespace SWLOR.Game.Server.Service.HoldingService
             stock?.Sum(x => Math.Max(0, x.Value) * (TradeLookup.GetCommodity(x.Key)?.BasePrice ?? 0)) ?? 0;
 
         /// <summary>
-        /// The Processing Plant's recipes on a day's output: as many as the output and the delivered input allow. The
-        /// rest of the output stays raw.
+        /// The Processing Plant's recipes on the output it takes: as many as the output and the delivered input allow.
+        /// The rest of the output stays raw.
         /// </summary>
         public static (int Refined, int OwnUsed, int InputUsed) Refine(HoldingChainDetail chain, int ownUnits, int inputUnits)
         {
@@ -124,7 +129,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
                 var day = holding.LastProcessedAt.AddDays(1);
                 holding.LastProcessedAt = day;
                 result.Days++;
-                holding.UpkeepOwed += GetDailyUpkeep(detail, holding.Level);
+                holding.UpkeepOwed += GetDailyUpkeep(holding, detail);
 
                 if (holding.CustomsFine > 0 && day >= holding.CustomsDeadline)
                     Confiscate(holding, day, result);
@@ -141,7 +146,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
                 if (holding.Setback == HoldingSetbackType.Invalid)
                     Produce(holding, detail);
 
-                if (holding.UpkeepOwed >= GetForeclosureLimit(detail, holding.Level))
+                if (holding.UpkeepOwed >= GetForeclosureLimit(holding, detail))
                 {
                     result.Foreclosed = true;
                     break;
@@ -274,7 +279,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
 
             if (holding.HasProcessingPlant && holding.RefineOutput)
             {
-                var (refined, ownUsed, inputUsed) = Refine(detail.Chain, units, GetSupply(holding, detail.Chain.Input));
+                var (refined, ownUsed, inputUsed) = Refine(detail.Chain, GetPlantUnits(units), GetSupply(holding, detail.Chain.Input));
                 TakeSupply(holding, detail.Chain.Input, inputUsed);
                 AddStock(holding.Warehouse, detail.Chain.Refined, refined);
                 units -= ownUsed;
@@ -316,9 +321,12 @@ namespace SWLOR.Game.Server.Service.HoldingService
                 .ToList();
         }
 
+        /// <summary>The share of a day's output the Processing Plant takes; the rest stays raw.</summary>
+        public static int GetPlantUnits(int dailyUnits) => (int)(Math.Max(0, dailyUnits) * HoldingTuning.PlantShare);
+
         /// <summary>The Processing Plant's input stock the holding accepts: some days of recipes at its output.</summary>
         public static int GetInputStock(PlanetaryHolding holding, HoldingDetail detail) =>
-            HoldingTuning.InputStockDays * (GetDailyUnits(holding, detail) / Math.Max(1, detail.Chain.OwnUnits)) * detail.Chain.InputUnits;
+            HoldingTuning.InputStockDays * (GetPlantUnits(GetDailyUnits(holding, detail)) / Math.Max(1, detail.Chain.OwnUnits)) * detail.Chain.InputUnits;
 
         /// <summary>How many units of a good the holding still takes.</summary>
         public static int GetDeliverableUnits(PlanetaryHolding holding, HoldingDetail detail, CommodityType commodity) =>

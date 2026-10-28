@@ -334,12 +334,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SummaryText = $"Level {holding.Level} {detail.Name} at {planet}. {detail.Description}";
             OutputText = $"Makes {units} {Name(detail.Output)} a day" +
                          (droidPercent > 0 ? $" (+{droidPercent}% from its droid)" : string.Empty) +
-                         (holding.HasProcessingPlant && holding.RefineOutput ? $"; the plant refines: {chainText}." : ".");
+                         (holding.HasProcessingPlant && holding.RefineOutput ? $"; the plant refines half of it: {chainText}." : ".");
             var stock = DescribeGoods(holding.Warehouse);
             StockText = $"Warehouse: {(stock.Length > 0 ? stock : "empty")} ({HoldingRules.GetStoredVolume(holding.Warehouse)} / " +
                         $"{HoldingRules.GetStorageVolume(holding, detail)} volume).";
-            UpkeepText = $"Upkeep {HoldingRules.GetDailyUpkeep(detail, holding.Level)} credits a day; {holding.UpkeepOwed} owed " +
-                         $"(lost at {HoldingRules.GetForeclosureLimit(detail, holding.Level)}).";
+            UpkeepText = $"Upkeep {HoldingRules.GetDailyUpkeep(holding, detail)} credits a day; {holding.UpkeepOwed} owed " +
+                         $"(lost at {HoldingRules.GetForeclosureLimit(holding, detail)}).";
             DroidText = string.IsNullOrWhiteSpace(holding.DroidItemId)
                 ? "No staff droid. An industrial droid's Industry raises the output."
                 : $"Staff droid: {holding.DroidName}, Industry {holding.DroidIndustry}, +{droidPercent}% output.";
@@ -458,7 +458,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                              (detail.CustomsInspections ? " Customs inspect it." : string.Empty));
                 outputs.Add($"{HoldingRules.GetDailyUnits(detail, 1, 0)} {Name(detail.Output)}");
                 prices.Add(detail.PurchasePrice.ToString());
-                upkeeps.Add(HoldingRules.GetDailyUpkeep(detail, 1).ToString());
+                upkeeps.Add(HoldingRules.GetDailyUpkeep(detail, 1, 0).ToString());
                 canBuy.Add(HoldingRules.GetPurchaseRefusal(detail, _exchange, owned, gold) == HoldingRefusal.None);
             }
 
@@ -546,7 +546,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var type = _buyTypes[index];
             var detail = HoldingRules.GetDetail(type);
             ShowModal($"Buy a {detail.Name} at {PlanetaryHoldings.GetPlanetName(detail)} for {detail.PurchasePrice} credits? It owes " +
-                      $"{HoldingRules.GetDailyUpkeep(detail, 1)} credits of upkeep a day.", () =>
+                      $"{HoldingRules.GetDailyUpkeep(detail, 1, 0)} credits of upkeep a day.", () =>
             {
                 if (!PlanetaryHoldings.Buy(Player, type, _exchange, _dockId))
                     return;

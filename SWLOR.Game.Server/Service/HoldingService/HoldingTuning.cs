@@ -11,7 +11,9 @@ namespace SWLOR.Game.Server.Service.HoldingService
         public const int MaximumHoldings = 3;
         public const int MaximumLevel = 3;
         /// <summary>Output by level (index 1-3).</summary>
-        public static readonly double[] LevelOutput = { 0.0, 1.0, 1.2, 1.4 };
+        public static readonly double[] LevelOutput = { 0.0, 1.0, 1.25, 1.45 };
+        public const double UpkeepShare = 0.15;
+        public const double PlantShare = 0.5;
         public const double SellBackShare = 0.5;
         public const int StorageDays = 7;
         public const int ForeclosureDays = 14;
@@ -30,9 +32,10 @@ namespace SWLOR.Game.Server.Service.HoldingService
 
         /// <summary>Credits an hour of space combat by orbit tier (index 1-6): the income check's reference.</summary>
         public static readonly int[] ReferenceRateByTier = { 0, 4100, 6300, 8500, 7600, 9200, 22200 };
-        public const int GrossMinutes = 30;
+        public const int GrossMinutes = 12;
         public const int BestDroidPercent = 70;
-        public const int MaximumBestDroidMinutes = 75;
+        public const int MaximumBestDroidMinutes = 27;
+        public const int MaximumPlantMinutes = 35;
 
         public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackNames = new Dictionary<HoldingSetbackType, string> { { HoldingSetbackType.Breakdown, "Breakdown" }, { HoldingSetbackType.Blight, "Blight" }, { HoldingSetbackType.Sandstorm, "Sandstorm" }, { HoldingSetbackType.CaveIn, "Cave-in" }, { HoldingSetbackType.Storm, "Storm" }, { HoldingSetbackType.Sickness, "Herd sickness" } };
         public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackTexts = new Dictionary<HoldingSetbackType, string> { { HoldingSetbackType.Breakdown, "The machinery broke down." }, { HoldingSetbackType.Blight, "A blight struck the crop." }, { HoldingSetbackType.Sandstorm, "A sandstorm buried the works." }, { HoldingSetbackType.CaveIn, "A tunnel caved in." }, { HoldingSetbackType.Storm, "A storm wrecked the nets and pens." }, { HoldingSetbackType.Sickness, "Sickness spread through the herd." } };

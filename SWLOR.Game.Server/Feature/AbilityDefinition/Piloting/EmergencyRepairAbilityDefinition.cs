@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
             if (activatorStatus == null || targetStatus == null)
                 return;
 
-            var amount = GetRepairAmount(heal, targetStatus.MaxHull, GetAbilityScore(activator, AbilityType.Willpower));
+            var amount = GetRepairAmount(heal, targetStatus.MaxHull, GetAbilityScore(SpaceCrew.GetAbilityUser(activator), AbilityType.Willpower));
             ShipModuleActions.RepairHull(activator, activatorStatus, target, targetStatus, amount);
         }
     }

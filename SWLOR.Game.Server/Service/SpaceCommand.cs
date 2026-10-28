@@ -60,9 +60,11 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// The percent by which the captain's Leadership rank strengthens the Command style: its command range and
-        /// the orders' and auras' strength (plan section 10). The captain is the pilot; an NPC ship has none.
+        /// the orders' and auras' strength (plan section 10). The captain is the pilot, or the crew member issuing
+        /// their own order from a station (<see cref="SpaceCrew.GetAbilityUser"/>); an NPC ship has none.
         /// </summary>
-        public static int GetLeadershipBonusPercent(uint ship) => LeadershipBonusPercent(GetCaptainLeadershipRank(ship));
+        public static int GetLeadershipBonusPercent(uint ship) =>
+            LeadershipBonusPercent(GetCaptainLeadershipRank(SpaceCrew.GetAbilityUser(ship)));
 
         /// <summary>The percent the captain's Leadership rank adds to the effectiveness of the crew aboard.</summary>
         public static int GetLeadershipCrewBonusPercent(uint ship) => LeadershipCrewBonusPercent(GetCaptainLeadershipRank(ship));
@@ -106,7 +108,7 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetRangeBonus(uint ship)
         {
-            return Stat.GetStatAdjustment(ship, StatType.SpaceCommandRangeBonusMeters) +
+            return Stat.GetStatAdjustment(SpaceCrew.GetAbilityUser(ship), StatType.SpaceCommandRangeBonusMeters) +
                    SpaceRadii.CommandRange * GetLeadershipBonusPercent(ship) / 100f;
         }
 
@@ -147,8 +149,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static float ApplyDurationBonus(uint commander, float seconds)
         {
-            var baseBonus = Stat.GetStatAdjustment(commander, StatType.SpaceCommandDurationBonusBaseSeconds);
-            var maximumBonus = Stat.GetStatAdjustment(commander, StatType.SpaceCommandDurationBonusMaximumSeconds);
+            var user = SpaceCrew.GetAbilityUser(commander);
+            var baseBonus = Stat.GetStatAdjustment(user, StatType.SpaceCommandDurationBonusBaseSeconds);
+            var maximumBonus = Stat.GetStatAdjustment(user, StatType.SpaceCommandDurationBonusMaximumSeconds);
             if (maximumBonus <= 0)
                 return seconds;
 
@@ -182,7 +185,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (affected.Count > 0)
-                CombatPoint.AddSupportCombatPoint(commander, affected, SkillType.Piloting, capstone ? 3 : 2);
+                CombatPoint.AddSupportCombatPoint(SpaceCrew.GetAbilityUser(commander), affected, SkillType.Piloting, capstone ? 3 : 2);
 
             return affected;
         }
@@ -208,12 +211,14 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !Space.IsShipInSpace(activator))
                 return;
 
-            var baseDamage = Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetDamagePercent);
-            var baseAccuracy = Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetAccuracyPercent);
-            var baseDuration = Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetDurationSeconds);
-            var cooldown = Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetCooldownSeconds);
-            var nameStrRef = Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetNameStrRef);
-            var icon = (EffectIconType)Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetIcon);
+            // A crew member's own hostile ability marks with their own Mark Target perk and cooldown.
+            var user = SpaceCrew.GetAbilityUser(activator);
+            var baseDamage = Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetDamagePercent);
+            var baseAccuracy = Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetAccuracyPercent);
+            var baseDuration = Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetDurationSeconds);
+            var cooldown = Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetCooldownSeconds);
+            var nameStrRef = Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetNameStrRef);
+            var icon = (EffectIconType)Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetIcon);
             if ((baseDamage <= 0 && baseAccuracy <= 0) || baseDuration <= 0 || cooldown <= 0 ||
                 nameStrRef <= 0 || icon == EffectIconType.Invalid)
             {
@@ -221,19 +226,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             var now = DateTime.UtcNow;
-            if (_markTargetReadyAt.TryGetValue(activator, out var readyAt) && !IsMarkTargetReady(readyAt, now))
+            if (_markTargetReadyAt.TryGetValue(user, out var readyAt) && !IsMarkTargetReady(readyAt, now))
                 return;
 
-            _markTargetReadyAt[activator] = now.AddSeconds(cooldown);
+            _markTargetReadyAt[user] = now.AddSeconds(cooldown);
 
             var leadership = GetLeadershipBonusPercent(activator);
             var damagePercent = SpaceCombatMath.ScaleByPercent(
                 AbilityEffectScaling.ScaleValueBySourceSocial(
-                    activator, baseDamage, Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetMaximumDamagePercent)),
+                    activator, baseDamage, Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetMaximumDamagePercent)),
                 leadership);
             var accuracyPercent = SpaceCombatMath.ScaleByPercent(
                 AbilityEffectScaling.ScaleValueBySourceSocial(
-                    activator, baseAccuracy, Stat.GetStatAdjustment(activator, StatType.SpaceMarkTargetMaximumAccuracyPercent)),
+                    activator, baseAccuracy, Stat.GetStatAdjustment(user, StatType.SpaceMarkTargetMaximumAccuracyPercent)),
                 leadership);
             var duration = ApplyDurationBonus(activator, baseDuration);
 

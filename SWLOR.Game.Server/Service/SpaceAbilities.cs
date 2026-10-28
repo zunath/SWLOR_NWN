@@ -28,9 +28,16 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// The ship's selected target, or invalid when none is selected, it is dead, or it left the area.
         /// </summary>
-        public static uint GetSelectedTarget(uint ship)
+        public static uint GetSelectedTarget(uint ship) => GetSelectedTarget(ship, ship);
+
+        /// <summary>
+        /// The target <paramref name="selector"/> selected (the pilot, or a crew member at one of the ship's
+        /// stations, who picks their own), seen from the ship: invalid when none is selected, it is dead, it left the
+        /// ship's area or it is hidden from the ship.
+        /// </summary>
+        public static uint GetSelectedTarget(uint ship, uint selector)
         {
-            var target = GetLocalObject(ship, "SPACE_TARGET");
+            var target = GetLocalObject(selector, "SPACE_TARGET");
             return GetIsObjectValid(target) && !GetIsDead(target) && GetArea(target) == GetArea(ship) &&
                    !Space.IsShipHiddenFrom(ship, target)
                 ? target

@@ -424,6 +424,10 @@ namespace SWLOR.Game.Server.Feature
             if (skipNativeEvent)
                 EventsPlugin.SkipEvent();
 
+            // A crew member at a station uses their own Piloting abilities through the ship (plan section 10).
+            if (Space.IsAtCrewStation(activator))
+                return TryUseCrewStationAbility(activator, target, feat, targetLocation, ability);
+
             (target, targetLocation) = ResolveAbilityTarget(
                 activator,
                 target,
@@ -502,6 +506,96 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// A crew member at a station uses one of their own Piloting abilities through the ship (plan section 10).
+        /// The ship activates it: validation, range, the weapons it fires (the crew member's seat's), self statuses
+        /// and the orders' reach are the ship's. The crew member is its stat source and user (their perk level,
+        /// attributes, Social and Leadership), pays its STM and takes its recast and hostile ability delay. A space
+        /// ability has no activation delay, so it resolves at once. Viewport watchers and other abilities are refused.
+        /// </summary>
+        private static bool TryUseCrewStationAbility(
+            uint crewMember,
+            uint target,
+            FeatType feat,
+            Location targetLocation,
+            AbilityDetail ability)
+        {
+            var context = Space.GetCrewStationAbilityContext(crewMember, ability, out var error);
+            if (context == null)
+            {
+                SendMessageToPC(crewMember, error);
+                return false;
+            }
+
+            var ship = context.Ship;
+            (target, targetLocation) = ResolveCrewStationAbilityTarget(crewMember, ship, target, targetLocation, ability);
+            var effectivePerkLevel = ability.EffectiveLevelPerkType == PerkType.Invalid
+                ? 1
+                : Perk.GetPerkLevel(crewMember, ability.EffectiveLevelPerkType);
+
+            using var crewAbility = SpaceCrew.BeginStationFire(context);
+            if (!Ability.CanUseAbility(ship, target, feat, effectivePerkLevel, targetLocation))
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordAbilityDenied(ship, target, ability, feat, Ability.GetLastActivationDenialReason(), false);
+                return false;
+            }
+
+            if (HoldForHostileAbilityDelay(crewMember, target, feat, targetLocation, ability))
+                return true;
+
+            if (ability.DisplaysActivationMessage)
+            {
+                Messaging.SendMessageNearbyToPlayers(
+                    ship,
+                    receiver => GetIsObjectValid(target) && target != ship
+                        ? $"{PlayerName.GetDisplayName(receiver, crewMember)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}."
+                        : $"{PlayerName.GetDisplayName(receiver, crewMember)} readies {ability.Name}.");
+            }
+
+            // Turning a stance off ends the use without a recast, as it does for the pilot.
+            var executeImpact = ability.ActivationAction?.Invoke(ship, target, ability.AbilityLevel, targetLocation) ?? true;
+            if (!executeImpact)
+                return true;
+
+            ApplyRequirementEffects(ship, target, ability, feat);
+            HandleStealthBreaking(ship, ability);
+            ExecuteAbilityImpact(ship, target, feat, ability, targetLocation);
+            Combat.CompleteAbilityStaminaCostContext(crewMember, ability);
+
+            var recastDelay = Combat.ApplyAbilityRecastDelayModifiers(
+                crewMember,
+                ability,
+                ability.RecastDelay?.Invoke(crewMember) ?? 0f);
+            Recast.ApplyRecastDelay(crewMember, ability.RecastGroup, recastDelay);
+            return true;
+        }
+
+        /// <summary>
+        /// A crew member's ability target seen from their ship: their own selected target for a hostile ability
+        /// cast without one, and the ship for an ability they aim at themselves.
+        /// </summary>
+        private static (uint Target, Location TargetLocation) ResolveCrewStationAbilityTarget(
+            uint crewMember,
+            uint ship,
+            uint target,
+            Location targetLocation,
+            AbilityDetail ability)
+        {
+            if (target == crewMember)
+                return (ship, GetLocation(ship));
+
+            var usesSelectedTarget = ability.UsesActiveAttackTarget ||
+                                     ability.IsHostileAbility && ability.RequiresTarget && !GetIsObjectValid(target);
+            if (!usesSelectedTarget)
+                return (target, targetLocation);
+
+            var selected = SpaceAbilities.GetSelectedTarget(ship, crewMember);
+            return GetIsObjectValid(selected)
+                ? (selected, GetLocation(selected))
+                : (OBJECT_INVALID, targetLocation);
+        }
+
+        /// <summary>
         /// Holds a hostile ability used during the shared hostile ability delay and uses it when the
         /// delay ends, so a quick second press isn't refused. A later press replaces the held one, which
         /// is checked again when it is used. A hostile ability used outside the delay starts it.
@@ -548,9 +642,12 @@ namespace SWLOR.Game.Server.Feature
         private static void ApplyRequirementEffects(uint activator, uint target, AbilityDetail ability, FeatType feat)
         {
             using var recordedCost = CombatRecorder.BeginAbilityCost(activator, ability, feat);
+
+            // A crew member's own Piloting ability is paid by the crew member, not the ship (plan section 10).
+            var payer = SpaceCrew.GetAbilityUser(activator);
             foreach (var req in ability.Requirements)
             {
-                req.AfterActivationAction(activator, ability);
+                req.AfterActivationAction(payer, ability);
             }
             MeleeTechnique.BeginPaidActivation(activator, target, ability);
             if (_activeAbilityActivations.TryGetValue(activator, out var activation) && activation.Ability == ability)

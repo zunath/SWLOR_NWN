@@ -73,6 +73,11 @@ namespace SWLOR.Game.Server.Service.TradeService
         public static readonly int[] FreightOfferMinimumStandings = { 0, 0, 250, 1500 };
         public const int HostilePatrolCooldownSeconds = 300;
 
+        public const int HuttEnforcerTier = 4;
+        public static readonly string[] HuttEnforcerTags = { "t4huttenfgun", "t4huttenfint" };
+        public static readonly string[] HuttEnforcerOrbits = { "narshadorbit", "hutlar_orbit", "tatooineorbit" };
+        public const int HuttEnforcerSpawnWeight = 1920;
+
         public const int CityExchangeStarportLevel = 2;
         public const int TariffMaximumPercent = 10;
 

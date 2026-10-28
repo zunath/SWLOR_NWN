@@ -203,6 +203,35 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return names.Count == 0 ? baseName : $"{baseName} [{string.Join(", ", names)}]";
         }
 
+        /// <summary>
+        /// A fitted module's tooltip in Ship Management: its name with its traits, then one line per trait, for example
+        /// "Laser Cannon Mk III [Focused]" and "Focused: +6% Accuracy, -3% DMG".
+        /// </summary>
+        public static string ModuleTooltip(string name, IEnumerable<ShipComponentTraitType> traits)
+        {
+            var lines = DescribeLines(traits);
+            return lines.Count == 0
+                ? name
+                : DecoratedName(name, traits) + "\n" + string.Join("\n", lines);
+        }
+
+        /// <summary>Ship Management's hull trait line: "Hull traits: Reinforced, Hutt-rigged", or "Hull traits: none".</summary>
+        public static string HullTraitsText(IEnumerable<ShipComponentTraitType> traits)
+        {
+            var names = (traits ?? Enumerable.Empty<ShipComponentTraitType>())
+                .Select(Get).Where(x => x != null).Select(x => x.Name).ToList();
+            return names.Count == 0 ? "Hull traits: none" : $"Hull traits: {string.Join(", ", names)}";
+        }
+
+        /// <summary>Ship Management's hull trait tooltip: what each trait does on the hull, one per line.</summary>
+        public static string HullTraitsTooltip(IEnumerable<ShipComponentTraitType> traits)
+        {
+            var lines = DescribeHullLines(traits);
+            return lines.Count == 0
+                ? "A hull built from traited components inherits their traits at half value."
+                : string.Join("\n", lines);
+        }
+
         /// <summary>One examine line per trait, for example "Focused: +6% Accuracy, -3% DMG".</summary>
         public static List<string> DescribeLines(IEnumerable<ShipComponentTraitType> traits) =>
             (traits ?? Enumerable.Empty<ShipComponentTraitType>())

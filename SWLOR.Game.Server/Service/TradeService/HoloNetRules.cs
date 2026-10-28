@@ -24,14 +24,28 @@ namespace SWLOR.Game.Server.Service.TradeService
             return capturedAt == default ? 0 : Math.Max(0, (int)Math.Floor((now - capturedAt).TotalMinutes));
         }
 
-        /// <summary>The board from each exchange's pressure on each commodity (missing means unflooded).</summary>
-        public static HoloNetSnapshot Build(Func<TradeExchangeType, CommodityType, double> pressure, DateTime now)
+        /// <summary>
+        /// What the board's prices depend on besides flooding: the running incursion (its region's exchanges price at the
+        /// spike), or an empty string when none runs. A board built under another key is rebuilt at once.
+        /// </summary>
+        public static string GetPriceKey(SpaceService.ActiveIncursion incursion) =>
+            incursion == null ? string.Empty : $"{incursion.Center}|{incursion.StartedAt.Ticks}";
+
+        /// <summary>
+        /// The board from each exchange's pressure on each commodity (missing means unflooded) and its price multiplier
+        /// (the incursion spike; 1 when <paramref name="priceMultiplier"/> is null).
+        /// </summary>
+        public static HoloNetSnapshot Build(
+            Func<TradeExchangeType, CommodityType, double> pressure,
+            DateTime now,
+            Func<TradeExchangeType, double> priceMultiplier = null)
         {
             var rows = new List<HoloNetRow>();
             foreach (var commodity in TradeCatalog.Commodities.OrderBy(x => x.Name))
             {
                 var quotes = TradeCatalog.Exchanges
-                    .Select(exchange => (exchange.Type, Market: exchange.FindMarket(commodity.Type)))
+                    .Select(exchange => (exchange.Type, Market: TradePricing.WithPriceMultiplier(
+                        exchange.FindMarket(commodity.Type), priceMultiplier?.Invoke(exchange.Type) ?? 1.0)))
                     .Where(x => x.Market != null)
                     .Select(x => (x.Type,
                         Buy: TradePricing.GetQuotedBuyPrice(commodity.BasePrice, x.Market, pressure(x.Type, commodity.Type), TradeTuning.SocialBase),

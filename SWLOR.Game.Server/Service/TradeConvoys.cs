@@ -183,6 +183,15 @@ namespace SWLOR.Game.Server.Service
             var kind = (LawfulShipKind)GetLocalInt(target, LawfulKindVariable);
             TurnLawfulGroupHostile(group, attacker);
 
+            // The Hutt Cartel's enforcers answer to the Cartel's standing, not to a customs authority.
+            if (kind == LawfulShipKind.HuttEnforcer)
+            {
+                RecordStanding(attacker, HuttEnforcerRules.Faction, TradeStandingEvent.AttackedLawfulShip);
+                SendMessageToPC(attacker, ColorToken.Red("You fire on a Hutt Cartel enforcer. Every enforcer in the system turns on you."));
+                Log.Write(LogGroup.Space, $"LAWFUL ATTACK - {PlayerName.GetAuditName(attacker)} attacked a Hutt Cartel enforcer in {GetResRef(GetArea(target))}");
+                return;
+            }
+
             var convoy = kind == LawfulShipKind.Convoy;
             RecordStanding(attacker, authority, convoy ? TradeStandingEvent.RaidedConvoy : TradeStandingEvent.AttackedLawfulShip);
             SendMessageToPC(attacker, ColorToken.Red(convoy
@@ -197,11 +206,14 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             foreach (var member in members.Where(x => GetIsObjectValid(x) && !GetIsDead(x)))
-            {
-                SetIsTemporaryEnemy(player, member);
-                SetIsTemporaryEnemy(member, player);
-                Enmity.ModifyEnmity(player, member, 100);
-            }
+                TurnLawfulShipHostile(member, player);
+        }
+
+        private static void TurnLawfulShipHostile(uint ship, uint player)
+        {
+            SetIsTemporaryEnemy(player, ship);
+            SetIsTemporaryEnemy(ship, player);
+            Enmity.ModifyEnmity(player, ship, 100);
         }
 
         /// <summary>Removes a lawful group's ships after a delay (a convoy jumping out, a patrol leaving).</summary>

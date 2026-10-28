@@ -334,7 +334,8 @@ public class SpaceCrewStationTests
         var actions = ReadServerSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");
         actions.Should().Contain("SpaceCrew.GetStatSource(repairer)");
 
-        ReadServerSource("Service", "Ability.cs").Should().Contain("Space.IsAtCrewStation(activator)");
+        ReadServerSource("Feature", "UsePerkFeat.cs").Should().Contain(
+            "if (Space.IsAtCrewStation(activator))\n                return TryUseCrewStationAbility(activator, target, feat, targetLocation, ability);");
         ReadServerSource("Feature", "StatusEffectDefinition", "SocialScalingStatusEffectBase.cs")
             .Should().Contain("SpaceCommand.ApplyLeadershipScaling(");
         var breakFormation = ReadServerSource("Feature", "AbilityDefinition", "Piloting", "BreakFormationAbilityDefinition.cs");
@@ -343,6 +344,89 @@ public class SpaceCrewStationTests
         var crew = ReadServerSource("Service", "SpaceService", "SpaceCrew.cs");
         crew.Should().Contain("ShipCrewSeats.CapEffectiveness(GetCrewMultiplier(ship))");
         crew.Should().Contain("DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Industry, GetCrewMultiplier(ship)");
+    }
+
+    // Crew members' own Piloting abilities (W11b)
+
+    [Test]
+    public void StationAbilities_OnlyPilotingAbilities_AndNeverFromAViewport()
+    {
+        SpaceCrewAbilityRules.GetStationAbilityError(true, true, SkillType.Piloting).Should().BeEmpty();
+        SpaceCrewAbilityRules.GetStationAbilityError(false, true, SkillType.Piloting).Should().Be(SpaceCrewAbilityRules.ViewportError);
+        SpaceCrewAbilityRules.GetStationAbilityError(true, false, SkillType.Piloting)
+            .Should().Be(SpaceCrewAbilityRules.NotPilotingError, "a ground-only ability has no ship to act through");
+        SpaceCrewAbilityRules.GetStationAbilityError(true, true, SkillType.Leadership).Should().Be(SpaceCrewAbilityRules.NotPilotingError);
+        SpaceCrewAbilityRules.GetStationAbilityError(true, true, SkillType.Espionage).Should().Be(SpaceCrewAbilityRules.NotPilotingError);
+    }
+
+    [Test]
+    public void StationAbility_TheShipActs_WhileTheCrewMemberIsItsUserAndStatSource()
+    {
+        var status = Status(Frigate());
+        SpaceCrew.GetAbilityUser(Ship).Should().Be(Ship, "the pilot uses their own abilities");
+
+        // A crew member's module fire reads their stats but is not an ability: recasts and STM stay the ship's.
+        using (SpaceCrew.BeginStationFire(new SpaceCrewFireContext { Ship = Ship, CrewMember = Gunner, Seat = ShipCrewSeat.Gunner }))
+        {
+            SpaceCrew.GetStatSource(Ship).Should().Be(Gunner);
+            SpaceCrew.GetAbilityUser(Ship).Should().Be(Ship);
+        }
+
+        using (SpaceCrew.BeginStationFire(new SpaceCrewFireContext
+               {
+                   Ship = Ship, CrewMember = Gunner, Seat = ShipCrewSeat.Gunner, Skill = SkillType.Piloting, IsAbility = true,
+               }))
+        {
+            SpaceCrew.GetAbilityUser(Ship).Should().Be(Gunner, "the crew member pays the STM and takes the recast");
+            SpaceCrew.GetStatSource(Ship).Should().Be(Gunner, "their attributes and perks set the ability's strength");
+            SpaceCrew.GetCreditedPlayer(Ship).Should().Be(Gunner);
+            SpaceCrew.GetCreditedSkill(Ship, SkillType.Engineering).Should().Be(SkillType.Piloting, "a Piloting ability earns Piloting");
+            SpaceCrew.CanActingSeatFire(Ship, status, 3).Should().BeTrue("their abilities fire their own seat's weapons");
+            SpaceCrew.CanActingSeatFire(Ship, status, 1).Should().BeFalse("never the pilot's Helm weapons");
+            SpaceCrew.GetAbilityUser(OtherShip).Should().Be(OtherShip);
+            SpaceCrew.GetAbilityUser(Gunner).Should().Be(Gunner);
+        }
+
+        SpaceCrew.GetAbilityUser(Ship).Should().Be(Ship);
+        SpaceCrew.GetStatSource(Ship).Should().Be(Ship);
+    }
+
+    [Test]
+    public void StationAbility_IsWiredThroughTheShip()
+    {
+        var ability = ReadServerSource("Service", "Ability.cs");
+        ability.Should().NotContain("You cannot use abilities while at a crew station.", "the station refusal moved to the crew path");
+        ability.Should().Contain("var user = SpaceCrew.GetAbilityUser(activator);");
+        ability.Should().Contain("SendMessageToPC(user, reason);");
+        ability.Should().Contain("req.CheckRequirements(user, ability)");
+        ability.Should().Contain("Recast.IsOnRecastDelay(user, ability.RecastGroup)");
+
+        var feat = ReadServerSource("Feature", "UsePerkFeat.cs");
+        feat.Should().Contain("var context = Space.GetCrewStationAbilityContext(crewMember, ability, out var error);");
+        feat.Should().Contain("Perk.GetPerkLevel(crewMember, ability.EffectiveLevelPerkType)");
+        feat.Should().Contain("using var crewAbility = SpaceCrew.BeginStationFire(context);");
+        feat.Should().Contain("Ability.CanUseAbility(ship, target, feat, effectivePerkLevel, targetLocation)");
+        feat.Should().Contain("HoldForHostileAbilityDelay(crewMember, target, feat, targetLocation, ability)");
+        feat.Should().Contain("ExecuteAbilityImpact(ship, target, feat, ability, targetLocation);");
+        feat.Should().Contain("Recast.ApplyRecastDelay(crewMember, ability.RecastGroup, recastDelay);");
+        feat.Should().Contain("req.AfterActivationAction(payer, ability);");
+        feat.Should().Contain("SpaceAbilities.GetSelectedTarget(ship, crewMember)");
+
+        var stations = ReadServerSource("Service", "SpaceCrewStations.cs");
+        stations.Should().Contain("IsAbility = true,");
+
+        // Command orders: the crew member's Command Presence, Social and Leadership; Mark Target their own perk and cooldown.
+        var command = ReadServerSource("Service", "SpaceCommand.cs");
+        command.Should().Contain("LeadershipBonusPercent(GetCaptainLeadershipRank(SpaceCrew.GetAbilityUser(ship)))");
+        command.Should().Contain("Stat.GetStatAdjustment(SpaceCrew.GetAbilityUser(ship), StatType.SpaceCommandRangeBonusMeters)");
+        command.Should().Contain("var user = SpaceCrew.GetAbilityUser(commander);");
+        command.Should().Contain("_markTargetReadyAt[user] = now.AddSeconds(cooldown);");
+        command.Should().Contain("CombatPoint.AddSupportCombatPoint(SpaceCrew.GetAbilityUser(commander), affected");
+        ReadServerSource("Feature", "AbilityDefinition", "AbilityEffectScaling.cs").Should().Contain("source = SpaceCrew.GetAbilityUser(source);");
+        ReadServerSource("Feature", "AbilityDefinition", "Piloting", "EmergencyRepairAbilityDefinition.cs")
+            .Should().Contain("GetAbilityScore(SpaceCrew.GetAbilityUser(activator), AbilityType.Willpower)");
+        ReadServerSource("Feature", "AbilityDefinition", "Piloting", "DoubleShotAbilityDefinition.cs")
+            .Should().Contain("Combat.RestoreAbilityHitStamina(\n                        user,");
     }
 
     private static string ReadServerSource(params string[] path)

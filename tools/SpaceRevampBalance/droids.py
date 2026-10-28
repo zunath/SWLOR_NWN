@@ -4,6 +4,7 @@ AI instructions (protocols), droid bays and what Industry pays off.
 usage: python droids.py            (writes the generated C#, the part and disc blueprints and their palette entries)
        python droids.py --check    (exit 1 when a generated file is out of date)
        python droids.py --report   (prints the part bills against the combat parts and the payoff tables)
+       python droids.py --bible-discs [--check]   (adds the protocol discs to the Bible's Equipment - Droids disc table)
 
 Every industrial droid number lives here. bible_tabs.py calls droids_tab(Sheet) to write the Industrial Droids (Revamp)
 tab and bible_recipes.py adds recipe_rows() to the Engineering Recipes tab. Draft numbers (plan section 17, "Droids":
@@ -502,6 +503,86 @@ def droids_tab(Sheet):
     return s
 
 
+
+# ---------------------------------------------------------------------------------------------------------------
+# Design Bible: the protocol discs on Equipment - Droids (the instruction disc table in columns S-W).
+# ---------------------------------------------------------------------------------------------------------------
+DISC_SHEET = "Equipment - Droids"
+DISC_TEXT_STYLE, DISC_NUMBER_STYLE = 371, 346  # the disc table's own cell styles
+
+
+def disc_bible_rows():
+    """Name (S), disc resref (T), tier (U), skill (V), AI slots (W) for each protocol disc."""
+    return [(d["name"][len("Instruction Disc: "):], d["resref"], d["tier"], "Engineering", d["slots"]) for d in discs()]
+
+
+def _disc_cells(number, row):
+    name, resref, tier, skill, slots = row
+    text = lambda c, v: f'<c r="{c}{number}" s="{DISC_TEXT_STYLE}" t="inlineStr"><is><t>{v}</t></is></c>'
+    num = lambda c, v: f'<c r="{c}{number}" s="{DISC_NUMBER_STYLE}" t="n"><v>{v}</v></c>'
+    return text("S", name) + text("T", resref) + num("U", tier) + text("V", skill) + num("W", slots)
+
+
+def _column_index(ref):
+    letters = re.match(r"[A-Z]+", ref).group(0)
+    n = 0
+    for ch in letters:
+        n = n * 26 + ord(ch) - 64
+    return n
+
+
+def write_bible_discs(check=False):
+    """Adds the missing protocol discs under the disc table's last row; every other cell and zip entry is untouched."""
+    import os
+    import tempfile
+    import zipfile
+    import bible_recipes
+    workbook = bible_recipes.WORKBOOK
+    with zipfile.ZipFile(workbook) as zf:
+        path = bible_recipes.sheet_path(zf, DISC_SHEET)
+        xml = zf.read(path).decode("utf-8")
+        missing = [r for r in disc_bible_rows() if f"<t>{r[1]}</t>" not in xml]
+        if not missing:
+            print("protocol discs already on Equipment - Droids")
+            return
+        if check:
+            print("protocol discs missing from Equipment - Droids: " + ", ".join(r[1] for r in missing))
+            sys.exit(1)
+        rows = list(re.finditer(r'<row r="(\d+)"[^>]*?(?:/>|>(.*?)</row>)', xml, re.S))
+        last = max(int(m.group(1)) for m in rows if re.search(r'<c r="T\d+"[^>]*t="inlineStr"><is><t>id_', m.group(0)))
+        by_number = {int(m.group(1)): m for m in rows}
+        for offset, disc in enumerate(missing, start=1):
+            number = last + offset
+            cells = _disc_cells(number, disc)
+            match = by_number.get(number)
+            if match is None:
+                after = max(n for n in by_number if n < number)
+                anchor = by_number[after]
+                new_row = f'<row r="{number}">{cells}</row>'
+                xml = xml[:anchor.end()] + new_row + xml[anchor.end():]
+            else:
+                body = match.group(0)
+                assert not re.search(r'<c r="[S-W]%d"[^/]*>' % number, body), number
+                body = re.sub(r'<c r="[S-W]%d"[^>]*/>' % number, "", body)
+                if body.endswith("/>"):
+                    body = body[:-2] + ">" + cells + "</row>"
+                else:
+                    later = [c for c in re.finditer(r'<c r="([A-Z]+)\d+"', body) if _column_index(c.group(1)) > _column_index("W")]
+                    cut = later[0].start() if later else body.rindex("</row>")
+                    body = body[:cut] + cells + body[cut:]
+                xml = xml[:match.start()] + body + xml[match.end():]
+            rows = list(re.finditer(r'<row r="(\d+)"[^>]*?(?:/>|>(.*?)</row>)', xml, re.S))
+            by_number = {int(m.group(1)): m for m in rows}
+        fd, tmp = tempfile.mkstemp(suffix=".xlsx", dir=workbook.parent)
+        os.close(fd)
+        with zipfile.ZipFile(tmp, "w") as out:
+            for info in zf.infolist():
+                data = xml.encode("utf-8") if info.filename == path else zf.read(info.filename)
+                out.writestr(info, data, compress_type=info.compress_type)
+    os.replace(tmp, workbook)
+    print(f"protocol discs written to Equipment - Droids rows {last + 1}-{last + len(missing)}")
+
+
 def report():
     print("Part bills against the combat part (raw materials, intermediates expanded):")
     for t in TIERS:
@@ -518,6 +599,9 @@ def report():
 def main():
     if "--report" in sys.argv:
         report()
+        return
+    if "--bible-discs" in sys.argv:
+        write_bible_discs("--check" in sys.argv)
         return
     check = "--check" in sys.argv
     stale = []

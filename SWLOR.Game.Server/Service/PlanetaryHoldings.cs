@@ -112,6 +112,10 @@ namespace SWLOR.Game.Server.Service
 
         // Buying and abandoning
 
+        /// <summary>The holding name with "a" or "an" ("an Assembly Line").</summary>
+        public static string WithArticle(string name) =>
+            (!string.IsNullOrEmpty(name) && "AEIOU".IndexOf(char.ToUpperInvariant(name[0])) >= 0 ? "an " : "a ") + name;
+
         public static bool Buy(uint player, HoldingType type, TradeExchangeType exchange, string dockId)
         {
             var detail = HoldingRules.GetDetail(type);
@@ -125,13 +129,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            TakeGoldFromCreature(detail.PurchasePrice, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(detail.PurchasePrice, player, true));
             var holding = HoldingRules.Create(GetObjectUUID(player), detail, dockId, DateTime.UtcNow);
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"Bought for {detail.PurchasePrice} credits.");
             DB.Set(holding);
 
             SendMessageToPC(player, ColorToken.Green(
-                $"You bought a {detail.Name} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes " +
+                $"You bought {WithArticle(detail.Name)} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes " +
                 $"{HoldingRules.GetDailyUnits(holding, detail)} {TradeLookup.GetCommodity(detail.Output)?.Name} a day for your ship " +
                 $"to collect here, and owes {HoldingRules.GetDailyUpkeep(holding, detail)} credits of upkeep a day."));
             Log.Write(LogGroup.Space, $"HOLDING BUY - {PlayerName.GetAuditName(player)} - {type} {holding.Id} at {dockId} for {detail.PurchasePrice}");
@@ -171,7 +175,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var paid = holding.UpkeepOwed;
-            TakeGoldFromCreature(paid, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(paid, player, true));
             holding.UpkeepOwed = 0;
             DB.Set(holding);
             SendMessageToPC(player, ColorToken.Green($"You paid {paid} credits of upkeep for your {GetHoldingName(holding)}."));
@@ -194,7 +198,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var fine = holding.CustomsFine;
-            TakeGoldFromCreature(fine, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(fine, player, true));
             holding.CustomsFine = 0;
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"Paid the {fine} credit customs fine.");
             DB.Set(holding);
@@ -232,7 +236,7 @@ namespace SWLOR.Game.Server.Service
             var upkeep = holding.UpkeepOwed;
             if (upkeep > 0)
             {
-                TakeGoldFromCreature(upkeep, player, true);
+                AssignCommand(player, () => TakeGoldFromCreature(upkeep, player, true));
                 holding.UpkeepOwed = 0;
             }
 
@@ -313,7 +317,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var upgrade = HoldingRules.GetNextUpgrade(holding, detail);
-            TakeGoldFromCreature(upgrade.Credits, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(upgrade.Credits, player, true));
             HoldingRules.ApplyUpgrade(holding, detail);
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"Upgraded to level {holding.Level}.");
             DB.Set(holding);
@@ -337,7 +341,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            TakeGoldFromCreature(detail.Plant.Credits, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(detail.Plant.Credits, player, true));
             HoldingRules.ApplyPlant(holding, detail);
             HoldingRules.AddLog(holding, DateTime.UtcNow, "Built a Processing Plant.");
             DB.Set(holding);

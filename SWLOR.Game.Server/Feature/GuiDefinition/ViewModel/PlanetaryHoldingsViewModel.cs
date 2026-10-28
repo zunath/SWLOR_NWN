@@ -272,6 +272,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Refresh()
         {
             CreditsText = $"Credits: {GetGold(Player)}";
+            // Credits are taken on the player's action queue, after this handler; read them again once they are.
+            AssignCommand(Player, () => CreditsText = $"Credits: {GetGold(Player)}");
             HasShip = _shipIds.Count > 0;
             var ship = GetSelectedShipId() is { } shipId ? DB.Get<PlayerShip>(shipId) : null;
             CargoText = ship == null
@@ -545,7 +547,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var type = _buyTypes[index];
             var detail = HoldingRules.GetDetail(type);
-            ShowModal($"Buy a {detail.Name} at {PlanetaryHoldings.GetPlanetName(detail)} for {detail.PurchasePrice} credits? It owes " +
+            ShowModal($"Buy {PlanetaryHoldings.WithArticle(detail.Name)} at {PlanetaryHoldings.GetPlanetName(detail)} for {detail.PurchasePrice} credits? It owes " +
                       $"{HoldingRules.GetDailyUpkeep(detail, 1, 0)} credits of upkeep a day.", () =>
             {
                 if (!PlanetaryHoldings.Buy(Player, type, _exchange, _dockId))

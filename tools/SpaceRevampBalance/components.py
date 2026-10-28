@@ -219,6 +219,48 @@ def rare_resref(short):
     return f"sc_{short}"
 
 
+# Rare components in Advanced hull recipes (W11o, plan section 7 and Appendix D): every Advanced deed recipe adds one rare
+# component on top of its bill (the Standard bill's units are unchanged), by maker. A salvaged component carrying a rare
+# trait, of the hull's component tier or higher, stands in for it, so a tier 2 Advanced hull does not need a level 45
+# Thorilide Core; the stand-in's rare trait becomes a hull trait like any traited component's.
+RARE_BY_MAKER = {"Republic": "ThorilideCore", "Sith": "ThorilideCore", "Corellian": "ThorilideCore",
+                 "Chiss": "ThorilideCore", "Mandalorian": "AurodiumPlating", "Hutt": "AurodiumPlating",
+                 "Czerka": "AurodiumPlating", "Rift Raider": "PrototypeCore"}
+
+
+def advanced_rare_resref(maker):
+    return rare_resref(next(f[0] for f in RARE_FAMILIES if f[1] == RARE_BY_MAKER[maker]))
+
+
+# Capital parts (W11o, plan section 14: "Today's capital parts (capc_*) become the top band"): three of the legacy capital
+# construction parts stand above tier 5 for the families every hull takes. A Capital hull takes 2 Capital Class Structural
+# Components (for its 4 Hull Frames), a Capital Class Reactor and Capital Class Thrusters instead of the tier 5 items. Each
+# part is its tier 5 components plus one Refined Ardanium (the Korriban capital ore, 500 credits), and the hull drops five
+# Refined Gostian (100 credits) per part, so every Capital hull keeps its W11e material value (4,825-5,025 credits,
+# 1.22-1.27x its pre-component value). Recipe level 45, the Standard Capital hull's; the legacy level 52 recipes for these
+# three items are retired. They are not component items, but they keep the traits of the tier 5 components they consume
+# and pass them on to the Capital hull, so a manufacturer or rare trait still reaches it. key, resref, name, skill, family it bands, tier 5 components per part, parts per Capital hull,
+# description.
+CAPITAL_PART_MATERIAL = "ref_arda"
+CAPITAL_PART_LEVEL = 45
+CAPITAL_PART_ORE_SAVED = 5
+CAPITAL_PARTS = [
+    ("CapitalStructure", "capc_struc", "Capital Class Structural Components", "Smithery", "HullFrame", 2, 2,
+     "A capital hull's load-bearing frame: two tier 5 Hull Frames braced with Refined Ardanium. Two go into every "
+     "Capital hull."),
+    ("CapitalReactor", "capc_react", "Capital Class Reactor", "Engineering", "ShipReactor", 1, 1,
+     "A capital ship's main reactor: a tier 5 Ship Reactor shielded with Refined Ardanium. One goes into every Capital "
+     "hull."),
+    ("CapitalThrusters", "capc_thrust", "Capital Class Thrusters", "Smithery", "ThrusterAssembly", 1, 1,
+     "A capital ship's engine block: a tier 5 Thruster Assembly on a Refined Ardanium mount. One goes into every "
+     "Capital hull."),
+]
+
+
+def capital_part_inputs(fam, per_part):
+    return [(resref(family(fam)[0], 5), per_part), (CAPITAL_PART_MATERIAL, 1)]
+
+
 # Manufacturer components (W9c, plan section 14 and Appendix D): one per manufacturer, a tier 5 component of a family
 # carrying that maker's trait (kind Manufacturer). They are the family's tier 5 item (sc_<family>_5) with the trait
 # stamped, so every tier 5 recipe of the family takes them and the trait reaches the module or hull built from them, as a

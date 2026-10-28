@@ -258,12 +258,15 @@ def legacy_hull_bill(role, adv):
     return [(refined, qty), (elec, qty // 2)]
 
 
-def hull_bill(role, adv):
+def hull_bill(role, adv, maker=None):
     """
     A ship deed recipe with the component layer (W9a, plan section 14): Hull Frames by size, a Ship Reactor, a
     Thruster Assembly (two for Interceptors and Blockade Runners) and the role's components, all of the hull's tier.
     Each component stands in for two material units of the legacy bill; the rest stays refined ore and electronics
     (two to one), so the unit count is unchanged.
+
+    W11o: a Capital hull takes the capital parts (components.CAPITAL_PARTS) for its Hull Frames, Ship Reactor and
+    Thruster Assembly and five fewer refined ore per part; an Advanced hull adds its maker's rare component.
     """
     r = m.ROLES[role]
     gate = m.GATE[r["size"]] + (10 if adv else 0)
@@ -276,8 +279,17 @@ def hull_bill(role, adv):
     rest = units - 2 * sum(q for _, q in parts)
     assert rest >= 2, role
     ore = -(-2 * rest // 3)
+    wires = rest - ore
     bill = [(comp.resref(comp.family(f)[0], t), q) for f, q in parts]
-    return bill + [(res, q) for res, q in ((refined, ore), (elec, rest - ore)) if q > 0]
+    if r["size"] == "Capital":
+        banded = {fam: (res, n) for (_k, res, _n, _s, fam, _per, n, _d) in comp.CAPITAL_PARTS}
+        bill = [(res, n) for (_k, res, _n, _s, _f, _per, n, _d) in comp.CAPITAL_PARTS] + \
+               [(comp.resref(comp.family(f)[0], t), q) for f, q in parts if f not in banded]
+        ore -= comp.CAPITAL_PART_ORE_SAVED * sum(n for *_x, n, _d in comp.CAPITAL_PARTS)
+        assert ore >= 0, role
+    if adv and maker:  # the Bible's per-role table passes no maker and lists the rare component apart
+        bill.append((comp.advanced_rare_resref(maker), 1))
+    return bill + [(res, q) for res, q in ((refined, ore), (elec, wires)) if q > 0]
 
 
 def component_recipes(recipe_start):
@@ -298,6 +310,8 @@ def component_recipes(recipe_start):
 def material_cost(resref):
     if resref == rw.PROTOTYPE_TECH:  # generated here, so its listed value comes from rewards.py
         return rw.PROTOTYPE_TECH_COST
+    if any(x[1] == resref for x in comp.CAPITAL_PARTS):  # generated here too (W11o): the value of its new bill
+        return capital_part_value(resref)
     d = json.loads((ROOT / "Module" / "uti" / f"{resref}.uti.json").read_text(encoding="utf-8"))
     return d["Cost"]["value"]
 
@@ -316,12 +330,44 @@ def rare_items():
             for (short, enum, name, skill, model, inputs, desc) in comp.RARE_FAMILIES]
 
 
+# Capital parts (W11o, components.CAPITAL_PARTS): their recipes follow the highest RecipeType in use (the W11k E-War and
+# Afterburner ranks end at 7792), so no earlier value moves.
+CAPITAL_RECIPE_START = 7793
+
+
+def capital_part_value(resref):
+    part = next(x for x in comp.CAPITAL_PARTS if x[1] == resref)
+    return sum(material_cost(r) * q for r, q in comp.capital_part_inputs(part[4], part[5]))
+
+
+def capital_part_recipes():
+    return [dict(RecipeName=f"ShipComponent{key}", RecipeType=CAPITAL_RECIPE_START + i, Family=fam, Tier=6, Resref=res,
+                 Skill=skill, RecipeLevel=comp.CAPITAL_PART_LEVEL, Trait="None", Name=name, Capital=True,
+                 Components=comp.capital_part_inputs(fam, per))
+            for i, (key, res, name, skill, fam, per, _n, _d) in enumerate(comp.CAPITAL_PARTS)]
+
+
+def capital_part_blueprints():
+    """The three capital parts keep their legacy blueprints; their Cost becomes the new bill's material value."""
+    out = {}
+    for (_key, res, name, skill, _fam, _per, _n, desc) in comp.CAPITAL_PARTS:
+        path = ROOT / "Module" / "uti" / f"{res}.uti.json"
+        t = json.loads(path.read_text(encoding="utf-8"))
+        out[f"Module/uti/{res}.uti.json"] = uti(t, res, name, t["BaseItem"]["value"], None, capital_part_value(res),
+                                                 t["PropertiesList"]["value"], f"{desc} Crafted by {skill}.")
+    return out
+
+
 def expand_bill(bill):
-    """A recipe bill with each component replaced by its plain recipe's materials."""
+    """A recipe bill with each component (and capital part, W11o) replaced by its plain recipe's materials."""
     out = {}
     for res, q in bill:
         item = next((x for x in COMPONENT_INDEX if x[0] == res), None)
-        parts = comp.components_for_recipe(item[1], item[2]) if item else [(res, 1)]
+        capital = next((x for x in comp.CAPITAL_PARTS if x[1] == res), None)
+        if capital:
+            parts = expand_bill(comp.capital_part_inputs(capital[4], capital[5]))
+        else:
+            parts = comp.components_for_recipe(item[1], item[2]) if item else [(res, 1)]
         for r, n in parts:
             out[r] = out.get(r, 0) + n * q
     return sorted(out.items())
@@ -494,7 +540,7 @@ def ships(recipe_start):
             ExplosivePercent=h["explosive"], CriticalBonus=h["crit"], BuiltInBonus=r["bonus"], Signature=text,
             Store=name in STORE_SHIPS, RecipeType=recipe, RecipeName="ShipDeed" + "".join(c for c in name.title() if c.isalnum()),
             RecipeLevel=min(50, lvl),
-            Components=hull_bill(role, adv), Cost={"Small": 500, "Medium": 2500, "Large": 10000, "Capital": 30000}[r["size"]] * (2 if adv else 1),
+            Components=hull_bill(role, adv, maker), Cost={"Small": 500, "Medium": 2500, "Large": 10000, "Capital": 30000}[r["size"]] * (2 if adv else 1),
             RepairCostMultiplier=r["repair"], Theme=mk["theme"]))
         recipe += 1
     return out
@@ -682,7 +728,7 @@ def full_catalog():
     assert CARGO_RECIPE_START > max(others), "CARGO_RECIPE_START must follow every other generated recipe"
     cargo = [x["RecipeType"] for x in steps if x.get("Family") in CARGO_LATE_FAMILIES]
     assert EWAR_RECIPE_START > max(cargo), "EWAR_RECIPE_START must follow the Cargo Expander recipes"
-    return steps + named, hulls, recipes + rare
+    return steps + named, hulls, recipes + rare + capital_part_recipes()
 
 
 def catalog():
@@ -724,7 +770,12 @@ def component_catalog_cs(items, recipes):
         f'            new ShipComponentRecipe {{ RecipeType = RecipeType.{x["RecipeName"]}, '
         f'Family = ShipComponentFamily.{x["Family"]}, Tier = {x["Tier"]}, Resref = {json.dumps(x["Resref"])}, '
         f'Skill = SkillType.{x["Skill"]}, RecipeLevel = {x["RecipeLevel"]}, Trait = ShipComponentTraitType.{x["Trait"]}, '
-        f'Name = {json.dumps(x["Name"])}, Components = {cs_pairs(x["Components"])} }},' for x in recipes)
+        f'Name = {json.dumps(x["Name"])}, Components = {cs_pairs(x["Components"])} }},' for x in recipes if not x.get("Capital"))
+    capital_rows = "\n".join(
+        f'            new ShipComponentRecipe {{ RecipeType = RecipeType.{x["RecipeName"]}, '
+        f'Family = ShipComponentFamily.{x["Family"]}, Tier = {x["Tier"]}, Resref = {json.dumps(x["Resref"])}, '
+        f'Skill = SkillType.{x["Skill"]}, RecipeLevel = {x["RecipeLevel"]}, Trait = ShipComponentTraitType.None, '
+        f'Name = {json.dumps(x["Name"])}, Components = {cs_pairs(x["Components"])} }},' for x in recipes if x.get("Capital"))
     trait_rows = []
     tiers = {t[0]: t[6] for t in comp.blueprint_traits()}
     for (tid, enum, name, kind, fams, effects) in comp.TRAITS:
@@ -749,6 +800,12 @@ def component_catalog_cs(items, recipes):
             f"{item_rows}\n        }};\n\n"
             "        public static readonly IReadOnlyList<ShipComponentRecipe> Recipes = new List<ShipComponentRecipe>\n        {\n"
             f"{recipe_rows}\n        }};\n\n"
+            "        /// <summary>\n"
+            "        /// The capital parts (W11o): the top band above tier 5 that Capital hulls take for their Hull Frames, Ship\n"
+            "        /// Reactor and Thruster Assembly. Tier 6 marks the band; the parts keep their components' traits.\n"
+            "        /// </summary>\n"
+            "        public static readonly IReadOnlyList<ShipComponentRecipe> CapitalPartRecipes = new List<ShipComponentRecipe>\n        {\n"
+            f"{capital_rows}\n        }};\n\n"
             "        public static readonly IReadOnlyList<ShipComponentTrait> Traits = new List<ShipComponentTrait>\n        {\n"
             + "\n".join(trait_rows) + "\n        };\n\n"
             "        /// <summary>The families a wreck can yield as salvaged components (life support never comes from salvage).</summary>\n"
@@ -1182,6 +1239,7 @@ def writes():
     files.update(ace_blueprints(aces))
     files.update(blueprints(steps, hulls))
     files.update(component_blueprints(items))
+    files.update(capital_part_blueprints())
     files.update(reward_blueprints(steps, hulls))
     return files, steps, hulls
 

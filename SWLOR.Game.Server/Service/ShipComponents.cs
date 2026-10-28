@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(component))
                     continue;
 
-                if (ShipTraitRules.IsComponent(GetResRef(component)))
+                if (CarriesTraits(GetResRef(component)))
                     inherited.AddRange(GetTraits(component));
 
                 DestroyObject(component);
@@ -92,12 +92,20 @@ namespace SWLOR.Game.Server.Service
                 SetTraits(item, inherited);
         }
 
-        /// <summary>Whether the recipe's item takes on its components' traits: the revamp ship modules and ship deeds.</summary>
+        /// <summary>Whether items of the resref carry traits: the components and the capital parts made from them (W11o).</summary>
+        public static bool CarriesTraits(string resref) =>
+            ShipTraitRules.IsComponent(resref) || ShipRareComponentRules.IsCapitalPart(resref);
+
+        /// <summary>
+        /// Whether the recipe's item takes on its components' traits: the revamp ship modules and ship deeds, and the
+        /// capital parts, which pass their tier 5 components' traits on to the Capital hull built from them.
+        /// </summary>
         public static bool InheritsTraits(RecipeDetail recipe)
         {
             var inherits = recipe.Category == RecipeCategoryType.ShipModule ||
-                           recipe.Category == RecipeCategoryType.Starship && IsHullDeed(recipe.Resref);
-            return inherits && recipe.Components.Keys.Any(ShipTraitRules.IsComponent);
+                           recipe.Category == RecipeCategoryType.Starship && IsHullDeed(recipe.Resref) ||
+                           recipe.Category == RecipeCategoryType.CapitalConstruction && ShipRareComponentRules.IsCapitalPart(recipe.Resref);
+            return inherits && recipe.Components.Keys.Any(CarriesTraits);
         }
 
         /// <summary>
@@ -108,7 +116,31 @@ namespace SWLOR.Game.Server.Service
         {
             var inherits = InheritsTraits(recipe);
             return components
-                .OrderBy(item => ShipTraitRules.IsComponent(GetResRef(item)) && (GetTraits(item).Count > 0) == inherits ? 1 : 0)
+                .OrderBy(item => CarriesTraits(GetResRef(item)) && (GetTraits(item).Count > 0) == inherits ? 1 : 0)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Whether a held item may stand in for the rare component of an Advanced deed recipe (W11o, Appendix D): a
+        /// component of the hull's tier or higher carrying a rare trait.
+        /// </summary>
+        public static bool IsStandInCandidate(RecipeDetail recipe, uint item)
+        {
+            var tier = ShipRareComponentRules.StandInTier(recipe.Resref);
+            return tier > 0 &&
+                   ShipRareComponentRules.RareComponentOf(recipe.Components.Keys) != null &&
+                   ShipRareComponentRules.CanStandIn(GetResRef(item), GetTraits(item), tier);
+        }
+
+        /// <summary>The held items that will stand in for the recipe's missing rare components, one item each.</summary>
+        public static List<uint> ReserveStandIns(RecipeDetail recipe, IReadOnlyList<uint> components)
+        {
+            var tier = ShipRareComponentRules.StandInTier(recipe.Resref);
+            var held = components
+                .Select(x => (GetResRef(x), GetItemStackSize(x), (IReadOnlyCollection<ShipComponentTraitType>)GetTraits(x)))
+                .ToList();
+            return ShipRareComponentRules.ReserveStandIns(recipe.Components, held, tier)
+                .Select(index => components[index])
                 .ToList();
         }
 
@@ -121,7 +153,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var resref = GetResRef(item);
-            if (ShipTraitRules.IsComponent(resref))
+            if (CarriesTraits(resref))
                 SetDescription(item, BuildDescription(GetDescription(item, true), GetTraits(item)));
             else if (IsHullDeed(resref))
                 SetDescription(item, BuildHullDescription(GetDescription(item, true), GetTraits(item)));

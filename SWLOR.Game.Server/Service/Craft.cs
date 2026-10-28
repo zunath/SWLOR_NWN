@@ -426,6 +426,15 @@ namespace SWLOR.Game.Server.Service
                 recipeDetailColors.Add(GuiColor.White);
             }
 
+            // An Advanced deed's rare component may be a salvaged component with a rare trait instead (W11o).
+            var rare = ShipRareComponentRules.RareComponentOf(detail.Components.Keys);
+            var standInTier = ShipRareComponentRules.StandInTier(detail.Resref);
+            if (rare != null && standInTier > 0)
+            {
+                recipeDetails.Add(ShipRareComponentRules.StandInText(standInTier, Cache.GetItemNameByResref(rare)));
+                recipeDetailColors.Add(GuiColor.White);
+            }
+
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.Green);
 

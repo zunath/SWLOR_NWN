@@ -37,8 +37,13 @@ namespace SWLOR.Game.Server.Service.StationService
         // Anchor sites and the exterior
         public const string AnchorTagPrefix = "STATION_ANCHOR_";
         public const float ExteriorOffset = 30.0f;
-        public const string ExteriorResref = "_mdrn_pl_spcstn";
-        public static readonly float[] ExteriorScaleByLevel = { 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
+        /// <summary>
+        /// The exterior model: "Space Station - Civilian 3", one of the SWLOR space-station placeables the orbits use.
+        /// </summary>
+        public const string ExteriorResref = "_mdrn_pl_spcs003";
+        /// <summary>The tag every station exterior model is spawned with.</summary>
+        public const string ExteriorTag = "station_exterior";
+        public static readonly float[] ExteriorScaleByLevel = { 1.2f, 1.4f, 1.6f, 1.8f, 2.0f };
 
         /// <summary>Two anchor sites per orbit with an NPC dock and one or two per Wild Space system.</summary>
         public static readonly IReadOnlyList<StationAnchor> Anchors = new List<StationAnchor>

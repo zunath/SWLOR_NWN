@@ -376,8 +376,8 @@ public class ShipSalvageTests
 
     // Blueprints, loot and the refinery
 
-    [TestCase("spc_gascloud_t3", "spc_gascloud", 6120, 3)]
-    [TestCase("spc_gascloud_t4", "spc_gascloud", 6120, 4)]
+    [TestCase("spc_gascloud_t3", "spc_gascloud", 479, 3)]
+    [TestCase("spc_gascloud_t4", "spc_gascloud", 479, 4)]
     public void TheGasClouds_YieldTibannaAtTheirTier(string resref, string tag, int appearance, int tier)
     {
         var utp = ReadBlueprint("utp", resref);
@@ -391,6 +391,16 @@ public class ShipSalvageTests
 
         var table = new HarvestingLootTableDefinition().BuildLootTables()["GAS_TIBANNA"];
         table.Select(x => x.Resref).Should().Equal(ShipSalvageItems.TibannaGas);
+    }
+
+    [Test]
+    public void TheGasCloudFog_IsAVisibleEmitterNoClickCanPick()
+    {
+        var utp = ReadBlueprint("utp", ShipSalvageActions.GasCloudVisualResref);
+
+        utp.GetProperty("Appearance").GetProperty("value").GetInt32().Should().Be(4411, "\"VFX: Fog - Large, Heavy\" reads as a gas cloud");
+        utp.GetProperty("Useable").GetProperty("value").GetInt32().Should().Be(0, "clicks go to the invisible cloud under it");
+        utp.GetProperty("Static").GetProperty("value").GetInt32().Should().Be(0, "it is removed with its cloud");
     }
 
     [TestCase("spc_wreck", 20583)]

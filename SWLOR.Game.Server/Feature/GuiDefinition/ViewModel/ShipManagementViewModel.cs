@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
         public const string BoardingOutOfCombatVariable = "SHIP_BOARDING_OUT_OF_COMBAT";
+        public const string DetailsElement = "ship_management_details";
+        public const string DetailsPartial = "SHIP_MANAGEMENT_DETAILS";
 
         private const string _blank = "Blank";
         private const int ShipsPerPage = 25;
@@ -929,6 +931,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(ShipManagementPayload initialPayload)
         {
+            // The details panel goes in first, so the values set below reach controls that are on screen.
+            ChangePartialView(DetailsElement, DetailsPartial);
+
             _planetType = initialPayload.PlanetType;
 
             List<PlayerShip> dbPlayerShips;

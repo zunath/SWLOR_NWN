@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -104,9 +105,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "spc_gascloud_t3")
                 .WithFrequency(10)
+                .SpawnAction(ShipSalvageActions.ShowGasCloud)
 
                 .AddSpawn(ObjectType.Placeable, "spc_gascloud_t4")
-                .WithFrequency(10);
+                .WithFrequency(10)
+                .SpawnAction(ShipSalvageActions.ShowGasCloud);
         }
 
         // The three Small/Medium-only zones (plan section 12, W6c). Each area sets RESOURCE_SPAWN_COUNT to 75, 1.5x the
@@ -146,9 +149,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ResourceDespawnDelay(120) // 2 hours, as Hutlar Orbit
                 .AddSpawn(ObjectType.Placeable, "spc_gascloud_t3")
                 .WithFrequency(30)
+                .SpawnAction(ShipSalvageActions.ShowGasCloud)
 
                 .AddSpawn(ObjectType.Placeable, "spc_gascloud_t4")
                 .WithFrequency(30)
+                .SpawnAction(ShipSalvageActions.ShowGasCloud)
 
                 .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
                 .WithFrequency(10)

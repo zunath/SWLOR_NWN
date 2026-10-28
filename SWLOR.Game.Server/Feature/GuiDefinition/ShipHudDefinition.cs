@@ -11,9 +11,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
-        private const float ContentPanelWidth = 470f;
+        private const float ContentPanelWidth = 540f;
         private const float LabelHeight = 20f;
         private const float ButtonHeight = 32f;
+        private const float ModuleRowHeight = 48f;
 
         private static readonly GuiColor ShieldColor = new(3, 87, 152);
         private static readonly GuiColor HullColor = new(139, 0, 0);
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.ShipHud)
-                .SetInitialGeometry(10f, 100f, 520f, 500f)
+                .SetInitialGeometry(10f, 100f, 590f, 500f)
                 .SetTitle("Ship HUD")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -115,17 +116,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddList(template =>
                     {
+                        // The module and its target share one two-line cell, so neither is cut short.
                         template.AddCell(cell =>
                         {
-                            cell.AddLabel()
-                                .BindText(model => model.ModuleNames)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                        });
-                        template.AddCell(cell =>
-                        {
-                            cell.AddLabel()
-                                .BindText(model => model.ModuleTargets)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            cell.AddText()
+                                .BindText(model => model.ModuleTexts)
+                                .SetShowBorder(false)
+                                .SetScrollbars(NuiScrollbars.None);
                         });
                         template.AddCell(cell =>
                         {
@@ -137,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         template.AddCell(cell =>
                         {
                             cell.SetIsVariable(false);
+                            cell.SetWidth(80f);
                             cell.AddButton()
                                 .SetText("Retarget")
                                 .SetWidth(76f)
@@ -146,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindOnClicked(model => model.OnClickRetarget());
                         });
                     })
-                        .BindRowCount(model => model.ModuleNames)
-                        .SetRowHeight(32f);
+                        .BindRowCount(model => model.ModuleTexts)
+                        .SetRowHeight(ModuleRowHeight);
                 });
 
                 col.AddRow(row =>

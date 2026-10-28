@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private const string DerelictEntranceTag = "PROPERTY_ENTRANCE";
         private const string DerelictAirlockTag = "building_exit";
         private const string DerelictComputerTag = "ShipComputer";
+        private const string DerelictCrewConsoleTag = "CrewConsole";
         private const string QuestNpcGroupVariable = "QUEST_NPC_GROUP_ID";
         private const double DerelictProcessSeconds = 2;
         private const int DerelictPlacementTries = 12;
@@ -369,6 +370,13 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case DerelictComputerTag:
                         SetName(obj, "Dead Ship Computer");
+                        SetEventScript(obj, EventScript.Placeable_OnUsed, string.Empty);
+                        SetUseableFlag(obj, false);
+                        break;
+                    case DerelictCrewConsoleTag:
+                        // The Large interiors are derelict templates; their crew console is as dead as the computer.
+                        SetName(obj, "Dead Crew Console");
+                        DeleteLocalString(obj, "CONVERSATION");
                         SetEventScript(obj, EventScript.Placeable_OnUsed, string.Empty);
                         SetUseableFlag(obj, false);
                         break;

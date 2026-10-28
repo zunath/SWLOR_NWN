@@ -46,7 +46,7 @@ public static class PlayerStationEngineTests
             ctx.AssertEqual((int)anchor.HomePlanet, GetLocalInt(dockingPoint, "PLANET_TYPE_ID"), "the docking point serves the home port");
             ctx.Assert(GetDistanceBetween(dockingPoint, anchorWaypoint) < 1f, "the docking point is at the anchor");
 
-            var model = GetNearestObjectByTag(StationTuning.ExteriorResref, anchorWaypoint);
+            var model = GetNearestObjectByTag(StationTuning.ExteriorTag, anchorWaypoint);
             ctx.Assert(GetIsObjectValid(model), "the station model stands near the anchor");
             ctx.AssertEqual(station.CustomName, GetName(model), "the station model carries the station's name");
             ctx.Assert(Station.GetStationAtAnchor(anchor.Id)?.Id == station.Id, "the anchor site is taken");

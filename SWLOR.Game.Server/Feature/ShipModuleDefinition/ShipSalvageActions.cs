@@ -26,6 +26,33 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         private const string GasCloudUnitsVariable = "GAS_CLOUD_REMAINING_UNITS";
 
+        /// <summary>
+        /// The heavy fog (spc_gascloud_fx, "VFX: Fog - Large, Heavy") players see. The gas cloud itself (spc_gascloud_t3/t4) is an
+        /// invisible object a click can pick; a fog emitter alone cannot be clicked, and effects on placeables do not draw.
+        /// </summary>
+        public const string GasCloudVisualResref = "spc_gascloud_fx";
+
+        private const float GasCloudVisualCheckSeconds = 6f;
+
+        /// <summary>Gives a newly spawned gas cloud its fog, which goes away with the cloud.</summary>
+        public static void ShowGasCloud(uint cloud)
+        {
+            var visual = CreateObject(ObjectType.Placeable, GasCloudVisualResref, GetLocation(cloud));
+            if (GetIsObjectValid(visual))
+                KeepGasCloudVisual(cloud, visual);
+        }
+
+        private static void KeepGasCloudVisual(uint cloud, uint visual)
+        {
+            AssignCommand(visual, () => DelayCommand(GasCloudVisualCheckSeconds, () =>
+            {
+                if (GetIsObjectValid(cloud))
+                    KeepGasCloudVisual(cloud, visual);
+                else
+                    DestroyObject(visual);
+            }));
+        }
+
         // Gas harvesting
 
         /// <summary>An error message when the target is not a gas cloud this gas harvester can harvest.</summary>

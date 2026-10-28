@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PlanetaryHoldings)
-                .SetInitialGeometry(0, 0, 610f, 720f)
+                .SetInitialGeometry(0, 0, 610f, 640f)
                 .SetTitle("Planetary Holdings")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

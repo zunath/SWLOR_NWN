@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Service
             var (x, y) = StationRules.GetExteriorPosition(anchor);
             var z = GetPosition(anchorWaypoint).Z;
             var modelLocation = Location(area, Vector3(x, y, z), 0f);
-            var model = CreateObject(ObjectType.Placeable, StationTuning.ExteriorResref, modelLocation);
+            var model = CreateObject(ObjectType.Placeable, StationTuning.ExteriorResref, modelLocation, false, StationTuning.ExteriorTag);
             SetName(model, station.CustomName);
             SetPlotFlag(model, true);
             station.Upgrades.TryGetValue(PropertyUpgradeType.CityLevel, out var cityLevel);

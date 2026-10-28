@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SignatureType.GasSite:
                     var clouds = Enumerable.Repeat(SignatureSiteRules.GasCloud(signature.Tier), ScanningTuning.GasSiteClouds).ToList();
-                    SpawnSiteRing(signature, area, center, clouds, ObjectType.Placeable, CloudRingMeters);
+                    SpawnSiteRing(signature, area, center, clouds, ObjectType.Placeable, CloudRingMeters, ShipSalvageActions.ShowGasCloud);
                     break;
                 case SignatureType.Derelict:
                     var wreck = CreateWreck(Location(area, center, Random.Next(360)),
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         private static void SpawnSiteRing(ScanSignature signature, uint area, Vector3 center, IReadOnlyList<string> resrefs,
-            ObjectType type, float radius)
+            ObjectType type, float radius, System.Action<uint> onSpawned = null)
         {
             for (var index = 0; index < resrefs.Count; index++)
             {
@@ -91,6 +92,7 @@ namespace SWLOR.Game.Server.Service
 
                 SetLocalString(spawned, SiteSignatureVariable, signature.Id);
                 signature.Objectives.Add(spawned);
+                onSpawned?.Invoke(spawned);
             }
         }
 

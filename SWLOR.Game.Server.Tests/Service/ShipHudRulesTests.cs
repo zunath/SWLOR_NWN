@@ -446,8 +446,8 @@ public class ShipHudRulesTests
 
         var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(directory!.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
         rows[3350]["LABEL"].Should().Be("ShipAllWeapons");
-        rows[3350]["FEAT"].Should().Be("16970100");
-        rows[3350]["DESCRIPTION"].Should().Be("16970101");
+        rows[3350]["FEAT"].Should().Be("16970110");
+        rows[3350]["DESCRIPTION"].Should().Be("16970111");
         rows[3350]["TARGETSELF"].Should().Be("1");
         rows[3350]["SPELLID"].Should().Be("****");
 

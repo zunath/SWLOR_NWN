@@ -322,7 +322,7 @@ public class ScanningTests
         ((int)FeatType.ShipJumpToSignature).Should().Be(3358);
         var feats = File.ReadAllLines(RepositoryFile("SWLOR_Haks", "sw_2da", "feat.2da"));
         var row = feats.Single(x => x.StartsWith("3358 ", StringComparison.Ordinal));
-        row.Should().Contain("ShipJumpToSignature").And.Contain("16970116").And.Contain("16970117").And.Contain("ife_sigjump");
+        row.Should().Contain("ShipJumpToSignature").And.Contain("16970126").And.Contain("16970127").And.Contain("ife_sigjump");
     }
 
     // Sensor Sweep

@@ -34,8 +34,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 names.Add(row.Legality == CommodityLegality.Legal ? row.Name : $"{row.Name} ({row.Legality})");
                 tooltips.Add(TradeLookup.GetCommodity(row.Commodity)?.Description ?? string.Empty);
-                buyAt.Add(TradeLookup.GetExchange(row.BuyAt)?.Name ?? string.Empty);
-                buyPrices.Add(row.BuyPrice.ToString());
+                buyAt.Add(row.BuyAt == TradeExchangeType.Invalid ? "Holdings only" : TradeLookup.GetExchange(row.BuyAt)?.Name ?? string.Empty);
+                buyPrices.Add(row.BuyAt == TradeExchangeType.Invalid ? "-" : row.BuyPrice.ToString());
                 sellAt.Add(TradeLookup.GetExchange(row.SellAt)?.Name ?? string.Empty);
                 sellPrices.Add(row.SellPrice.ToString());
             }

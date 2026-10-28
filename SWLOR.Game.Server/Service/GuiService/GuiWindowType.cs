@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         TradeExchange = 79,
         HoloNetBoard = 80,
         CustomsScan = 81,
+        PlanetaryHoldings = 82,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

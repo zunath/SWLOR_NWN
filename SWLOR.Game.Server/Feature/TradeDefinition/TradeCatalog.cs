@@ -39,6 +39,12 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
             new CommodityDetail { Type = CommodityType.WitchHerbs, Name = "Witch Herbs", BasePrice = 42, Volume = 1, BannedBy = System.Array.Empty<TradeAuthority>(), Producers = new TradeExchangeType[] { TradeExchangeType.Dathomir }, Consumers = System.Array.Empty<TradeExchangeType>(), Description = "Dried herbs gathered by the witches of Dathomir." },
             new CommodityDetail { Type = CommodityType.BanthaMilk, Name = "Bantha Milk", BasePrice = 65, Volume = 2, BannedBy = System.Array.Empty<TradeAuthority>(), Producers = new TradeExchangeType[] { TradeExchangeType.Dantooine }, Consumers = System.Array.Empty<TradeExchangeType>(), Description = "Chilled churns of Dantooine bantha milk." },
             new CommodityDetail { Type = CommodityType.StationFuel, Name = "Station Fuel", BasePrice = 250, Volume = 2, BannedBy = System.Array.Empty<TradeAuthority>(), Producers = new TradeExchangeType[] { TradeExchangeType.CZ220 }, Consumers = System.Array.Empty<TradeExchangeType>(), Description = "Refined hyperfuel cells that power station Jump Beacons." },
+            new CommodityDetail { Type = CommodityType.RationPacks, Name = "Ration Packs", BasePrice = 150, Volume = 2, BannedBy = System.Array.Empty<TradeAuthority>(), Producers = System.Array.Empty<TradeExchangeType>(), Consumers = new TradeExchangeType[] { TradeExchangeType.Hutlar, TradeExchangeType.Korriban, TradeExchangeType.Dathomir }, HoldingSources = new TradeExchangeType[] { TradeExchangeType.MonCala, TradeExchangeType.Tatooine, TradeExchangeType.SmugglersMoon, TradeExchangeType.Dantooine }, Description = "Sealed crates of field rations packed by planetary holdings." },
+            new CommodityDetail { Type = CommodityType.FocusingLenses, Name = "Focusing Lenses", BasePrice = 200, Volume = 1, BannedBy = System.Array.Empty<TradeAuthority>(), Producers = System.Array.Empty<TradeExchangeType>(), Consumers = new TradeExchangeType[] { TradeExchangeType.MonCala, TradeExchangeType.Hutlar, TradeExchangeType.Korriban }, HoldingSources = new TradeExchangeType[] { TradeExchangeType.Viscara, TradeExchangeType.CZ220 }, Description = "Precision lenses ground from Viscaran crystals." },
+            new CommodityDetail { Type = CommodityType.PrefabShelters, Name = "Prefab Shelters", BasePrice = 270, Volume = 4, BannedBy = System.Array.Empty<TradeAuthority>(), Producers = System.Array.Empty<TradeExchangeType>(), Consumers = new TradeExchangeType[] { TradeExchangeType.Korriban, TradeExchangeType.Dathomir, TradeExchangeType.Dantooine }, HoldingSources = new TradeExchangeType[] { TradeExchangeType.Hutlar, TradeExchangeType.Tatooine }, Description = "Flat-packed shelters of timber and salvaged plate." },
+            new CommodityDetail { Type = CommodityType.Glitterstim, Name = "Glitterstim", BasePrice = 600, Volume = 1, BannedBy = new TradeAuthority[] { TradeAuthority.Republic, TradeAuthority.Czerka, TradeAuthority.Sith }, Producers = System.Array.Empty<TradeExchangeType>(), Consumers = new TradeExchangeType[] { TradeExchangeType.Hutlar, TradeExchangeType.Tatooine, TradeExchangeType.Dathomir }, HoldingSources = new TradeExchangeType[] { TradeExchangeType.SmugglersMoon }, Description = "Refined glitterstim spice, cut with abdamaryllia." },
+            new CommodityDetail { Type = CommodityType.SithHolocrons, Name = "Sith Holocrons", BasePrice = 1300, Volume = 2, BannedBy = new TradeAuthority[] { TradeAuthority.Republic }, Producers = System.Array.Empty<TradeExchangeType>(), Consumers = new TradeExchangeType[] { TradeExchangeType.Hutlar, TradeExchangeType.SmugglersMoon }, HoldingSources = new TradeExchangeType[] { TradeExchangeType.Korriban }, Description = "Restored holocrons from the Korriban digs." },
+            new CommodityDetail { Type = CommodityType.AgedBanthaCheese, Name = "Aged Bantha Cheese", BasePrice = 215, Volume = 2, BannedBy = System.Array.Empty<TradeAuthority>(), Producers = System.Array.Empty<TradeExchangeType>(), Consumers = new TradeExchangeType[] { TradeExchangeType.Viscara, TradeExchangeType.MonCala, TradeExchangeType.Tatooine }, HoldingSources = new TradeExchangeType[] { TradeExchangeType.Dantooine }, Description = "Wheels of salted, aged bantha milk cheese." },
         };
 
         public static readonly IReadOnlyList<TradeExchangeDetail> Exchanges = new List<TradeExchangeDetail>
@@ -65,6 +71,10 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 1.06, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Neutral, PriceFactor = 0.94, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Consumer, PriceFactor = 1.13, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.CZ220, Name = "CZ-220", Authority = TradeAuthority.Czerka, OrbitTier = 1, PlanetTypes = new[] { PlanetType.CZ220 }, OrbitResref = "viscaraorbit", IsBlackMarket = false, StandingFaction = FactionType.Czerka, Markets = new List<TradeMarketDetail>
             {
@@ -90,6 +100,11 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 1.06, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Producer, PriceFactor = 0.85, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Neutral, PriceFactor = 0.94, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.SithHolocrons, Role = CommodityRole.Neutral, PriceFactor = 1.122, Depth = 192 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.MonCala, Name = "Mon Cala", Authority = TradeAuthority.Republic, OrbitTier = 2, PlanetTypes = new[] { PlanetType.MonCala }, OrbitResref = "moncalaorbit", IsBlackMarket = false, StandingFaction = FactionType.RepublicMilitary, Markets = new List<TradeMarketDetail>
             {
@@ -113,6 +128,10 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 0.94, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 0.94, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Consumer, PriceFactor = 1.09, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Neutral, PriceFactor = 0.94, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Consumer, PriceFactor = 1.09, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.Hutlar, Name = "Hutlar", Authority = TradeAuthority.None, OrbitTier = 3, PlanetTypes = new[] { PlanetType.Hutlar }, OrbitResref = "hutlar_orbit", IsBlackMarket = true, StandingFaction = FactionType.HuttCartel, Markets = new List<TradeMarketDetail>
             {
@@ -140,6 +159,12 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Consumer, PriceFactor = 1.09, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Consumer, PriceFactor = 1.13, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.Glitterstim, Role = CommodityRole.Consumer, PriceFactor = 1.439, Depth = 417 },
+                new TradeMarketDetail { Commodity = CommodityType.SithHolocrons, Role = CommodityRole.Consumer, PriceFactor = 1.513, Depth = 192 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.Tatooine, Name = "Tatooine", Authority = TradeAuthority.None, OrbitTier = 4, PlanetTypes = new[] { PlanetType.Tatooine }, OrbitResref = "tatooineorbit", IsBlackMarket = true, StandingFaction = FactionType.HuttCartel, Markets = new List<TradeMarketDetail>
             {
@@ -167,6 +192,12 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 0.94, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.Glitterstim, Role = CommodityRole.Consumer, PriceFactor = 1.439, Depth = 417 },
+                new TradeMarketDetail { Commodity = CommodityType.SithHolocrons, Role = CommodityRole.Neutral, PriceFactor = 1.331, Depth = 192 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Consumer, PriceFactor = 1.17, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.SmugglersMoon, Name = "Smuggler's Moon", Authority = TradeAuthority.None, OrbitTier = 4, PlanetTypes = new[] { PlanetType.SmugglersMoon, PlanetType.SmugglersMoonStation }, OrbitResref = "narshadorbit", IsBlackMarket = true, StandingFaction = FactionType.Smuggler, Markets = new List<TradeMarketDetail>
             {
@@ -194,6 +225,12 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Neutral, PriceFactor = 0.94, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.Glitterstim, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 417 },
+                new TradeMarketDetail { Commodity = CommodityType.SithHolocrons, Role = CommodityRole.Consumer, PriceFactor = 1.561, Depth = 192 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.Korriban, Name = "Korriban", Authority = TradeAuthority.Sith, OrbitTier = 6, PlanetTypes = new[] { PlanetType.Korriban }, OrbitResref = "space_korriban", IsBlackMarket = false, StandingFaction = FactionType.SithMilitary, Markets = new List<TradeMarketDetail>
             {
@@ -220,6 +257,11 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 1.1, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 1.1, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 1.02, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Consumer, PriceFactor = 1.21, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Consumer, PriceFactor = 1.17, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Consumer, PriceFactor = 1.25, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.SithHolocrons, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 192 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Neutral, PriceFactor = 1.1, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.Dathomir, Name = "Dathomir", Authority = TradeAuthority.None, OrbitTier = 5, PlanetTypes = new[] { PlanetType.Dathomir }, OrbitResref = "space_dathomir", IsBlackMarket = false, StandingFaction = FactionType.Invalid, Markets = new List<TradeMarketDetail>
             {
@@ -247,6 +289,12 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Producer, PriceFactor = 0.85, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Neutral, PriceFactor = 1.06, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 1.06, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Consumer, PriceFactor = 1.09, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Neutral, PriceFactor = 1.06, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Consumer, PriceFactor = 1.09, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.Glitterstim, Role = CommodityRole.Consumer, PriceFactor = 1.356, Depth = 417 },
+                new TradeMarketDetail { Commodity = CommodityType.SithHolocrons, Role = CommodityRole.Neutral, PriceFactor = 1.21, Depth = 192 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Neutral, PriceFactor = 1.06, Depth = 1163 },
             } },
             new TradeExchangeDetail { Type = TradeExchangeType.Dantooine, Name = "Dantooine", Authority = TradeAuthority.Republic, OrbitTier = 5, PlanetTypes = new[] { PlanetType.Dantooine }, OrbitResref = "dantooineorbit", IsBlackMarket = false, StandingFaction = FactionType.RepublicMilitary, Markets = new List<TradeMarketDetail>
             {
@@ -270,6 +318,10 @@ namespace SWLOR.Game.Server.Feature.TradeDefinition
                 new TradeMarketDetail { Commodity = CommodityType.WitchHerbs, Role = CommodityRole.Neutral, PriceFactor = 1.06, Depth = 5952 },
                 new TradeMarketDetail { Commodity = CommodityType.BanthaMilk, Role = CommodityRole.Producer, PriceFactor = 0.85, Depth = 3846 },
                 new TradeMarketDetail { Commodity = CommodityType.StationFuel, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 1000 },
+                new TradeMarketDetail { Commodity = CommodityType.RationPacks, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1667 },
+                new TradeMarketDetail { Commodity = CommodityType.FocusingLenses, Role = CommodityRole.Neutral, PriceFactor = 0.98, Depth = 1250 },
+                new TradeMarketDetail { Commodity = CommodityType.PrefabShelters, Role = CommodityRole.Consumer, PriceFactor = 1.13, Depth = 926 },
+                new TradeMarketDetail { Commodity = CommodityType.AgedBanthaCheese, Role = CommodityRole.Neutral, PriceFactor = 0.9, Depth = 1163 },
             } },
         };
 

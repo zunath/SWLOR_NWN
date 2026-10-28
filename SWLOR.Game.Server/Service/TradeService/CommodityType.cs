@@ -31,5 +31,13 @@ namespace SWLOR.Game.Server.Service.TradeService
         WitchHerbs = 22,
         BanthaMilk = 23,
         StationFuel = 24,
+
+        // Holding goods (Planetary Holdings' Processing Plants).
+        RationPacks = 25,
+        FocusingLenses = 26,
+        PrefabShelters = 27,
+        Glitterstim = 28,
+        SithHolocrons = 29,
+        AgedBanthaCheese = 30,
     }
 }

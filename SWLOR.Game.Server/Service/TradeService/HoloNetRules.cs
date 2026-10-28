@@ -47,8 +47,8 @@ namespace SWLOR.Game.Server.Service.TradeService
                     Commodity = commodity.Type,
                     Name = commodity.Name,
                     Legality = commodity.Legality,
-                    BuyAt = cheapest.Type,
-                    BuyPrice = cheapest.Buy,
+                    BuyAt = commodity.IsHoldingGood ? TradeExchangeType.Invalid : cheapest.Type,
+                    BuyPrice = commodity.IsHoldingGood ? 0 : cheapest.Buy,
                     SellAt = best.Type,
                     SellPrice = best.Sell,
                 });

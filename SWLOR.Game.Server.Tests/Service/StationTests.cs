@@ -319,11 +319,20 @@ public class StationTests
     }
 
     [Test]
-    public void PlayerMedicalCentersHaveARegistrationTerminal()
+    public void OnlyStationMedicalCentersTakeRespawnRegistrations()
     {
+        // The shared interior holds the terminal; planet cities' instances remove it, so they behave as before stations.
         using var git = ReadModule("git", "medical_center");
         git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
             .Should().Contain(p => Value(p, "TemplateResRef").GetString() == "cloning_reg");
+
+        ReadServer("Feature", "PropertyLayoutDefinition", "MedicalCenterLayoutDefinition.cs")
+            .Should().Contain(".OnSpawn(RemoveRegistrationOutsideStations)")
+            .And.Contain("if (Station.IsStationInterior(Property.GetPropertyId(instance)))");
+        ReadServer("Feature", "DialogDefinition", "MedicalRegistrationDialog.cs")
+            .Should().Contain("if (!Station.IsStationInterior(property.Id))");
+        ReadServer("Service", "Death.cs")
+            .Should().Contain("Station.IsStationInterior(dbPlayer.RespawnPropertyId) &&");
     }
 
     // Docking

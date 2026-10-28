@@ -40,6 +40,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var property = string.IsNullOrWhiteSpace(propertyId) ? null : DB.Get<WorldProperty>(propertyId);
                 if (property?.PropertyType == PropertyType.MedicalCenter)
                 {
+                    // Only a player station's Medical Center takes registrations; planet cities' do not.
+                    if (!Station.IsStationInterior(property.Id))
+                    {
+                        SendMessageToPC(player, "This medical center does not take registrations.");
+                        return;
+                    }
+
                     dbPlayer.RespawnPropertyId = property.Id;
                     DB.Set(dbPlayer);
                     FloatingTextStringOnCreature("You will return to this location the next time you die.", player, false);

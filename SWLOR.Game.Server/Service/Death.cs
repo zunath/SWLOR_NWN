@@ -185,6 +185,7 @@ namespace SWLOR.Game.Server.Service
         public static Location GetRespawnLocation(Player dbPlayer)
         {
             if (!string.IsNullOrWhiteSpace(dbPlayer?.RespawnPropertyId) &&
+                Station.IsStationInterior(dbPlayer.RespawnPropertyId) &&
                 Property.TryGetLoadedInstance(dbPlayer.RespawnPropertyId, out var medicalCenter))
             {
                 var entrance = Property.GetEntrancePosition(medicalCenter.LayoutType);

@@ -960,14 +960,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/MedicalRegistrationDialog.cs",
-    "Line": 45,
+    "Line": 46,
+    "Member": "MainPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This medical center does not take registrations.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/MedicalRegistrationDialog.cs",
+    "Line": 52,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You will return to this location the next time you die.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/MedicalRegistrationDialog.cs",
-    "Line": 58,
+    "Line": 65,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You will return to this location the next time you die.\", player, false)"

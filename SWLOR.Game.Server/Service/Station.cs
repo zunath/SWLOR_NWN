@@ -79,6 +79,12 @@ namespace SWLOR.Game.Server.Service
                 : DB.Get<WorldProperty>(building.ParentPropertyId);
         }
 
+        /// <summary>Whether a building interior stands on a player station's deck.</summary>
+        public static bool IsStationInterior(string interiorPropertyId)
+        {
+            return IsStation(GetCityOfInterior(interiorPropertyId));
+        }
+
         /// <summary>
         /// The planet a city's starport serves: a planet city's planet, or a station's home port (its orbit's NPC dock, or the
         /// nearest open port in Wild Space).

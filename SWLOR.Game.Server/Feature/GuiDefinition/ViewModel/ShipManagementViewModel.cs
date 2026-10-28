@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -1999,6 +2000,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to {rowName} slot #{slot}. Would you like to uninstall it?", () =>
                 {
+                    // A Cargo Expander stays while the cargo bay would overflow without it.
+                    var hullCargo = Space.FindShipDetail(dbShip.Status.ItemTag)?.Hull?.Cargo ?? 0;
+                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetFittedModuleTags(dbShip.Status).ToList(),
+                            module.ItemTag, Trade.GetUsedVolume(dbShip)))
+                    {
+                        SendMessageToPC(Player, "Unload the cargo bay first: its cargo would not fit without this Cargo Expander.");
+                        return;
+                    }
+
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))

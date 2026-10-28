@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Service.TradeService
         public const int PatrolSeconds = 300;
         public const int CompartmentBasePercent = 15;
         public const int CompartmentRanksPerPercent = 3;
+        public const int CargoExpanderBasePercent = 20;
+        public const int CargoExpanderRanksPerPercent = 3;
 
         public const int AmbushThreshold = 25000;
         public const double AmbushBase = 0.01;

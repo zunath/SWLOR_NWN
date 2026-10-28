@@ -266,7 +266,7 @@ def modules():
         ["Capacitor Regulator", "Low", "Piloting (Engineer)", "Passive", "", "", "Module", "+ capacitor regen."],
         ["Thrusters", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ Evasion (best one counts) and +5% speed (stacks)."],
         ["Damage Amplifier", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ one damage type (EM, Thermal or Explosive)."],
-        ["Cargo Expander", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ cargo; -5% speed."],
+        ["Cargo Expander", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ cargo (a share of the hull's cargo) and -5% speed; both stack."],
         ["Smuggling Compartment", "Low", "Piloting (Helm)", "Passive", "", "", "None", "Lowers the customs scan chance."],
     ]
     s.table(["Family", "Row", "Skill (seat)", "Use", "Cycle s", "Capacitor", "Size scaling", "", "", "", "", "", "", "Notes"],

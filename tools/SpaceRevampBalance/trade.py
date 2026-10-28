@@ -255,6 +255,12 @@ PATROL_SECONDS = 300            # a patrol leaves after this long
 # Mk X 30%); only the best counts.
 COMPARTMENT_BASE = 15
 COMPARTMENT_RANKS_PER_PERCENT = 3
+# Cargo Expander (Low, Piloting; the gaps pass W11d): the Ship Modules (Revamp) tab's draft, +(20 + rank / 3)% of the
+# hull's cargo (Mk I 20%, Mk X 35%) and -5% speed. Both stack, like Thrusters' speed: each fitted expander adds its share
+# of the hull's own cargo, and the speed cost makes a stack a real choice.
+CARGO_EXPANDER_BASE = 20
+CARGO_EXPANDER_RANKS_PER_PERCENT = 3
+CARGO_EXPANDER_SPEED_PERCENT = -5
 
 # Pirate ambushes (plan section 13): a ship carrying more than the threshold (base value of its commodities plus its
 # sealed freight's declared value) may be ambushed when it enters an orbit or jumps. Chance and squad size grow with
@@ -611,6 +617,16 @@ def compartment_reduction(rank):
     return COMPARTMENT_BASE + rank // COMPARTMENT_RANKS_PER_PERCENT
 
 
+def expander_percent(rank):
+    """The cargo bonus (percent of the hull's cargo) of a Cargo Expander of this rank."""
+    return CARGO_EXPANDER_BASE + rank // CARGO_EXPANDER_RANKS_PER_PERCENT
+
+
+def expanded_hold(hold, ranks):
+    """The cargo bay of a hull with these Cargo Expanders fitted (mirrors ShipCargoRules.GetCapacity)."""
+    return hold + sum(hold * expander_percent(r) // 100 for r in ranks)
+
+
 def banned_value(basket, authority):
     return sum(units * commodity(c)[3] for c, units in basket.items() if authority in commodity(c)[5])
 
@@ -928,6 +944,17 @@ def report():
         print(f"  {row['Tier']:8s}: legal {row['LegalPerHour']} ({row['LegalPercent']}%; target 100-125% at neutral), "
               f"every good {row['ContrabandPerHour']} ({row['ContrabandPercent']}%; target 150-200% at neutral), "
               f"freight {row['FreightPerHour']} ({row['FreightPercent']}%)")
+    t3 = combat_credits_per_hour(3)[1]
+    print(f"\nCargo Expanders (W11d): legal goods, 4-hour averages without risk, against T3 combat ({t3:.0f}); "
+          "the -5% speed per expander is not modelled (leg times stay fixed), so these overstate the gain:")
+    for name, hold in HULLS:
+        if hold < 100:
+            continue
+        for ranks in ((), (45,), (45, 45), (45, 45, 45, 45)):
+            bay = expanded_hold(hold, ranks)
+            hours = simulate(bay, lawful=True)
+            avg = sum(hours) / len(hours)
+            print(f"  {name:24s} {len(ranks)} x Mk X, hold {bay:5d}: avg {avg:6.0f} ({100 * avg / t3:3.0f}% of T3)")
     print("\nCity tariff, one buy and one sale of 1,000 credits at 10%:",
           f"{tariff(1000, 10)} each, {tariff(1000, 10) * 2 / 2000:.0%} of the money changing hands")
 
@@ -1037,6 +1064,8 @@ def tuning_cs():
         f"        public const int PatrolSeconds = {PATROL_SECONDS};",
         f"        public const int CompartmentBasePercent = {COMPARTMENT_BASE};",
         f"        public const int CompartmentRanksPerPercent = {COMPARTMENT_RANKS_PER_PERCENT};",
+        f"        public const int CargoExpanderBasePercent = {CARGO_EXPANDER_BASE};",
+        f"        public const int CargoExpanderRanksPerPercent = {CARGO_EXPANDER_RANKS_PER_PERCENT};",
         "",
         f"        public const int AmbushThreshold = {AMBUSH_THRESHOLD};",
         f"        public const double AmbushBase = {cs_double(AMBUSH_BASE)};",
@@ -1159,6 +1188,8 @@ def trade_tab(Sheet):
          f"and the goods are confiscated; or run: the patrol turns hostile. {CUSTOMS_ANSWER_SECONDS} s to answer"],
         ["Smuggling Compartment", f"-({COMPARTMENT_BASE} + rank / {COMPARTMENT_RANKS_PER_PERCENT})% scan chance", "", "", "", "", "",
          "Low slot, Piloting (the Ship Modules tab's step); Mk I 15%, Mk X 30%; only the best counts"],
+        ["Cargo Expander", f"+({CARGO_EXPANDER_BASE} + rank / {CARGO_EXPANDER_RANKS_PER_PERCENT})% of the hull's cargo", "", "", "", "", "",
+         f"Low slot, Piloting (the Ship Modules tab's step); Mk I 20%, Mk X 35%; {CARGO_EXPANDER_SPEED_PERCENT}% speed each; both stack"],
         ["Pirate ambush chance", f"{AMBUSH_BASE} + {AMBUSH_PER_TEN_THOUSAND} per 10,000 over {AMBUSH_THRESHOLD}", "", "", "", "", "",
          f"per orbit entry, at most {AMBUSH_MAX}, x (0.8 + {AMBUSH_TIER_STEP} x orbit tier); cargo base value plus "
          f"{SEALED_VALUE_PER_VOLUME} per sealed volume"],

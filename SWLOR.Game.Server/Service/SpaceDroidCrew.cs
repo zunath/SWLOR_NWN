@@ -2,20 +2,24 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Droid crew (plan section 10, "Droid crew"). The captain posts one of their own player-built droids at an
-    /// empty crew station from the crew console or the ship's computer. The posting is saved on the ship's record;
-    /// the droid's controller stays with its owner, cursed, and the droid is never spawned, so it does not count
-    /// toward the one-droid follow limit. While someone flies the ship, its droids work their stations every
-    /// second through the NPC ship routines: weapons at the pilot's hostile target, repairers and shield modules
-    /// once a quarter of the pool is missing. They work at their tier's effectiveness (<see cref="DroidCrewRules"/>)
-    /// and switch on modules up to their tier's rank. A player taking a droid's station, the ship's destruction,
-    /// a recall, or the controller leaving its owner ends the posting.
+    /// Droid crew (plan section 10, "Droid crew") and droid bays (section 27). The captain posts one of their own
+    /// player-built droids at an empty crew station, or in the droid bay of a Mining Barge, Industrial or Logistics
+    /// hull, from the crew console or the ship's computer. The posting is saved on the ship's record; the droid's
+    /// controller stays with its owner, cursed, and the droid is never spawned, so it does not count toward the
+    /// one-droid follow limit. While someone flies the ship, its station droids work their stations every second
+    /// through the NPC ship routines: weapons at the pilot's hostile target, repairers and shield modules once a
+    /// quarter of the pool is missing, and a Probe Launcher when they run Survey Protocol. They work at their
+    /// Industry's effectiveness (<see cref="DroidCrewRules"/>) and switch on modules up to their tier's rank. A bay
+    /// droid adds its Industry to the ship's yields or repairs. A player taking a droid's station, the ship's
+    /// destruction, a recall, or the controller leaving its owner ends the posting.
     /// </summary>
     public static partial class Space
     {
@@ -44,13 +48,71 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
         }
 
+        /// <summary>Whether a ship's hull has a droid bay (plan section 27: Mining Barge, Industrial and Logistics).</summary>
+        public static bool HasDroidBay(ShipStatus status) =>
+            status != null && FindShipDetail(status.ItemTag)?.HasDroidBay == true;
+
+        /// <summary>Where a droid can work aboard a ship: its crew stations, then its droid bay.</summary>
+        public static List<ShipCrewSeat> GetDroidPosts(ShipStatus status)
+        {
+            if (status == null)
+                return new List<ShipCrewSeat>();
+
+            var posts = ShipCrewSeats.GetStationSeats(status.Size).ToList();
+            if (HasDroidBay(status))
+                posts.Add(ShipCrewSeat.DroidBay);
+            return posts;
+        }
+
+        /// <summary>The droid riding in a flying ship's droid bay, or null.</summary>
+        public static ShipDroidCrew GetBayDroid(uint ship) => SpaceCrew.GetSeatDroid(ship, ShipCrewSeat.DroidBay);
+
         /// <summary>
-        /// Whether a docked ship's computer opens the crew menu first: the hull has crew stations and the player
-        /// may crew it and carries a droid or has droids posted aboard. Everyone else takes the controls at once.
+        /// The percent a ship's bay droid adds to its mining, strip-mining, gas and salvage yield: its Industry (raised
+        /// by Efficiency Protocol) on a Mining Barge or Industrial hull, otherwise 0.
+        /// </summary>
+        public static int GetDroidBayYieldPercent(uint ship)
+        {
+            var droid = GetBayDroid(ship);
+            var role = droid == null ? ShipRole.Invalid : FindShipDetail(GetShipStatus(ship)?.ItemTag)?.Role ?? ShipRole.Invalid;
+            return droid == null || !DroidIndustryRules.BayAddsYield(role)
+                ? 0
+                : DroidIndustryRules.BayYieldPercent(droid.Industry,
+                    DroidIndustryRules.GetProtocolValue(droid.Protocols, PerkType.EfficiencyProtocol));
+        }
+
+        /// <summary>
+        /// The rare-find points a ship's bay droid adds to its mining and salvage through Prospecting Protocol, or 0.
+        /// </summary>
+        public static int GetDroidBayRareFindBonus(uint ship) =>
+            DroidIndustryRules.GetProtocolValue(GetBayDroid(ship)?.Protocols, PerkType.ProspectingProtocol);
+
+        /// <summary>
+        /// The percent droids add to a ship's repair right now: a Logistics hull's bay droid (its Industry and Damage
+        /// Control Protocol) on every repair, and a droid with Damage Control Protocol on the repairs it runs at the
+        /// Engineer station.
+        /// </summary>
+        public static int GetDroidRepairBonusPercent(uint ship)
+        {
+            var percent = SpaceCrew.GetDroidRepairBonusPercent(SpaceCrew.GetFireContext(ship)?.Droid);
+            var droid = GetBayDroid(ship);
+            if (droid != null && DroidIndustryRules.BayAddsRepairs(FindShipDetail(GetShipStatus(ship)?.ItemTag)?.Role ?? ShipRole.Invalid))
+            {
+                percent += DroidIndustryRules.BayRepairPercent(droid.Industry,
+                    DroidIndustryRules.GetProtocolValue(droid.Protocols, PerkType.DamageControlProtocol));
+            }
+
+            return percent;
+        }
+
+        /// <summary>
+        /// Whether a docked ship's computer opens the crew menu first: the hull has crew stations or a droid bay and
+        /// the player may crew it and carries a droid or has droids posted aboard. Everyone else takes the controls
+        /// at once.
         /// </summary>
         private static bool ShouldOfferDroidCrewMenu(uint player, PlayerShip dbShip, string propertyId)
         {
-            if (dbShip?.Status == null || ShipCrewSeats.GetStationSeats(dbShip.Status.Size).Count == 0)
+            if (dbShip?.Status == null || GetDroidPosts(dbShip.Status).Count == 0)
                 return false;
 
             if (!HasCrewStationPermission(player, propertyId))
@@ -64,7 +126,7 @@ namespace SWLOR.Game.Server.Service
         {
             var dbShip = GetInteriorShip(player, out var propertyId);
             return dbShip?.Status != null &&
-                   ShipCrewSeats.GetStationSeats(dbShip.Status.Size).Count > 0 &&
+                   GetDroidPosts(dbShip.Status).Count > 0 &&
                    GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player) &&
                    HasCrewStationPermission(player, propertyId);
         }
@@ -96,19 +158,19 @@ namespace SWLOR.Game.Server.Service
             var pilot = GetShipPilot(dbShip.Id);
             return DroidCrewRules.GetPostingError(
                 HasCrewStationPermission(player, propertyId),
-                seat != ShipCrewSeat.Pilot && seat != ShipCrewSeat.Invalid && ShipCrewSeats.HasSeat(dbShip.Status.Size, seat),
+                GetDroidPosts(dbShip.Status).Contains(seat),
                 GetIsObjectValid(pilot) && GetIsObjectValid(SpaceCrew.GetSeatOccupant(pilot, seat)),
                 GetPostedDroids(dbShip).Any(x => x.Seat == seat),
                 GetIsObjectValid(controller) && GetResRef(controller) == Droid.DroidControlItemResref &&
                 Droid.GetControllers(player).Contains(controller),
                 GetIsObjectValid(controller) && Droid.IsPosted(controller),
                 GetIsObjectValid(controller) && controller == Droid.GetActiveController(player),
-                ShipCrewSeats.GetSeatName(seat));
+                ShipCrewSeats.GetPostName(seat));
         }
 
         /// <summary>
-        /// Posts the droid at the seat of the ship whose interior the player stands in. While the ship flies, the
-        /// droid takes the station at once. Returns false and tells the player why when it cannot.
+        /// Posts the droid at the seat or droid bay of the ship whose interior the player stands in. While the ship
+        /// flies, the droid takes its post at once. Returns false and tells the player why when it cannot.
         /// </summary>
         public static bool PostDroid(uint player, ShipCrewSeat seat, uint controller)
         {
@@ -128,6 +190,8 @@ namespace SWLOR.Game.Server.Service
                 DroidItemId = Droid.GetDroidId(controller),
                 Name = Droid.GetDroidName(controller),
                 Tier = DroidCrewRules.ClampTier(details.Tier),
+                Industry = Math.Max(0, details.Industry),
+                Protocols = DroidIndustryRules.SelectProtocols(details.Perks),
                 PostedAt = DateTime.UtcNow,
             };
 
@@ -136,21 +200,43 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbShip);
             Droid.MarkPosted(controller, dbShip.Id);
 
-            var seatName = ShipCrewSeats.GetSeatName(seat);
+            var postName = ShipCrewSeats.GetPostName(seat);
             var pilot = GetShipPilot(dbShip.Id);
             if (GetIsObjectValid(pilot) && SpaceCrew.AssignDroidSeat(pilot, posting))
             {
                 RecalculateCrewedShip(pilot);
                 if (pilot != player)
-                    SendMessageToPC(pilot, $"{posting.Name} takes the {seatName} station.");
+                    SendMessageToPC(pilot, $"{posting.Name} takes {postName}.");
             }
 
-            var effectiveness = DroidCrewRules.BaseEffectiveness(seat, posting.Tier);
             SendMessageToPC(player,
-                $"{posting.Name} takes the {seatName} station aboard {GetShipName(dbShip)}. A tier {posting.Tier} droid works it at " +
-                $"{effectiveness:P0} and switches on modules up to rank {DroidCrewRules.MaximumModuleRank(posting.Tier)}. " +
+                $"{posting.Name} takes {postName} aboard {GetShipName(dbShip)}. {DescribeDroidWork(seat, posting, dbShip.Status)} " +
                 "It stays at its post until recalled.");
             return true;
+        }
+
+        /// <summary>What a droid does at a post, for the captain: its effectiveness at a station, or its bay bonus.</summary>
+        public static string DescribeDroidWork(ShipCrewSeat seat, ShipDroidCrew droid, ShipStatus status)
+        {
+            if (seat != ShipCrewSeat.DroidBay)
+            {
+                return $"With Industry {droid.Industry} it works the station at {DroidCrewRules.BaseEffectiveness(seat, droid.Industry):P0} " +
+                       $"and switches on modules up to rank {DroidCrewRules.MaximumModuleRank(droid.Tier)}.";
+            }
+
+            var role = FindShipDetail(status?.ItemTag)?.Role ?? ShipRole.Invalid;
+            if (DroidIndustryRules.BayAddsRepairs(role))
+            {
+                var repair = DroidIndustryRules.BayRepairPercent(droid.Industry,
+                    DroidIndustryRules.GetProtocolValue(droid.Protocols, PerkType.DamageControlProtocol));
+                return $"With Industry {droid.Industry} it adds {repair}% to the ship's repairs.";
+            }
+
+            var yield = DroidIndustryRules.BayYieldPercent(droid.Industry,
+                DroidIndustryRules.GetProtocolValue(droid.Protocols, PerkType.EfficiencyProtocol));
+            var rare = DroidIndustryRules.GetProtocolValue(droid.Protocols, PerkType.ProspectingProtocol);
+            return $"With Industry {droid.Industry} it adds {yield}% to the ship's mining, gas and salvage yield" +
+                   (rare > 0 ? $" and {rare} to their rare-find chance." : ".");
         }
 
         /// <summary>
@@ -163,7 +249,7 @@ namespace SWLOR.Game.Server.Service
             var posting = GetPostedDroids(dbShip).FirstOrDefault(x => x.Seat == seat);
             if (posting == null)
             {
-                SendMessageToPC(player, ColorToken.Red("No droid works that station."));
+                SendMessageToPC(player, ColorToken.Red($"No droid works {ShipCrewSeats.GetPostName(seat)}."));
                 return false;
             }
 
@@ -176,7 +262,7 @@ namespace SWLOR.Game.Server.Service
             var recaller = player;
             EndDroidPosting(dbShip.Id, posting.DroidItemId,
                 owner => owner == recaller ? "you recalled it" : $"{PlayerName.GetDisplayName(owner, recaller)} recalled it");
-            SendMessageToPC(player, $"{posting.Name} leaves the {ShipCrewSeats.GetSeatName(seat)} station.");
+            SendMessageToPC(player, $"{posting.Name} leaves {ShipCrewSeats.GetPostName(seat)}.");
             return true;
         }
 
@@ -212,7 +298,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsObjectValid(pilot) && SpaceCrew.GetSeatDroid(pilot, posting.Seat)?.DroidItemId == posting.DroidItemId)
             {
                 UnseatDroid(pilot, posting.Seat);
-                SendMessageToPC(pilot, $"{posting.Name} leaves the {ShipCrewSeats.GetSeatName(posting.Seat)} station.");
+                SendMessageToPC(pilot, $"{posting.Name} leaves {ShipCrewSeats.GetPostName(posting.Seat)}.");
             }
 
             ReturnDroidToOwner(posting, dbShip, reasonForOwner);
@@ -231,7 +317,7 @@ namespace SWLOR.Game.Server.Service
 
             var reason = reasonForOwner?.Invoke(owner);
             SendMessageToPC(owner,
-                $"{posting.Name} is no longer posted at the {ShipCrewSeats.GetSeatName(posting.Seat)} station aboard {GetShipName(dbShip)}" +
+                $"{posting.Name} is no longer posted at {ShipCrewSeats.GetPostName(posting.Seat)} aboard {GetShipName(dbShip)}" +
                 (string.IsNullOrWhiteSpace(reason) ? "." : $": {reason}."));
         }
 
@@ -255,9 +341,9 @@ namespace SWLOR.Game.Server.Service
         // Flight
 
         /// <summary>
-        /// The pilot is launching: the ship's droids take their seats. A posting whose seat the hull no longer has,
-        /// whose owner is gone, or whose controller its online owner no longer carries ends here; it is removed from
-        /// <paramref name="dbShip"/>, which the caller saves.
+        /// The pilot is launching: the ship's droids take their seats and droid bay. A posting whose post the hull no
+        /// longer has, whose owner is gone, or whose controller its online owner no longer carries ends here; it is
+        /// removed from <paramref name="dbShip"/>, which the caller saves.
         /// </summary>
         private static (List<ShipDroidCrew> Seated, List<ShipDroidCrew> Ended) SeatDroidCrew(uint pilot, PlayerShip dbShip)
         {
@@ -270,7 +356,7 @@ namespace SWLOR.Game.Server.Service
                 var dbOwner = DB.Get<Player>(posting.OwnerPlayerId);
                 var owner = DMPlayerDirectory.GetOnlinePlayer(posting.OwnerPlayerId);
                 var valid = dbOwner != null && !dbOwner.IsDeleted &&
-                            ShipCrewSeats.GetStationSeats(dbShip.Status.Size).Contains(posting.Seat) &&
+                            GetDroidPosts(dbShip.Status).Contains(posting.Seat) &&
                             (!GetIsObjectValid(owner) || GetIsObjectValid(Droid.FindController(owner, posting.DroidItemId)));
 
                 if (valid && SpaceCrew.AssignDroidSeat(pilot, posting))
@@ -298,7 +384,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var names = string.Join(", ", crew.Seated.Select(x => $"{x.Name} ({ShipCrewSeats.GetSeatName(x.Seat)})"));
-            SendMessageToPC(pilot, $"Your droid crew takes their stations: {names}.");
+            SendMessageToPC(pilot, $"Your droid crew takes their posts: {names}.");
         }
 
         /// <summary>The ship docked, lost its pilot or was destroyed: its droids stop working. Postings are kept.</summary>
@@ -378,7 +464,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// The droid behavior, through the routines NPC ships use (<see cref="UpdateRepairToggles"/> and
         /// <see cref="TurnOnWeaponToggles"/>): shield and hull support at <see cref="DroidCrewRules.RepairThreshold"/>,
-        /// and weapons at the pilot's hostile target, each engaged once per pick of target.
+        /// weapons at the pilot's hostile target, each engaged once per pick of target, and a Probe Launcher whenever
+        /// there is something to scan for a droid running Survey Protocol. A bay droid works no slots.
         /// </summary>
         private static void RunDroidStations(uint pilot)
         {
@@ -389,6 +476,7 @@ namespace SWLOR.Game.Server.Service
             var (target, targetStatus) = GetCurrentTarget(pilot);
             var hostile = GetIsObjectValid(target) && targetStatus != null && !GetIsDead(target) && GetIsEnemy(target, pilot);
             var distance = hostile ? GetDistanceBetween(pilot, target) : 0f;
+            bool? somethingToScan = null;
 
             foreach (var droid in SpaceCrew.GetDroidCrew(pilot))
             {
@@ -406,6 +494,18 @@ namespace SWLOR.Game.Server.Service
 
                 if (slots.Count == 0)
                     continue;
+
+                foreach (var (feat, module) in slots)
+                {
+                    var slot = GetFeatSlotNumber(feat);
+                    var detail = _shipModules[module.ItemTag];
+                    if (DroidCrewRules.GetTask(detail.Type, detail.Activation) != DroidCrewTask.Survey)
+                        continue;
+
+                    somethingToScan ??= HasSomethingToScan(pilot);
+                    if (DroidCrewRules.RunsProbeLauncher(posted.Protocols, IsShipToggleOn(status, slot), somethingToScan.Value))
+                        AssignCommand(pilot, () => ActivateShipModuleCore(pilot, feat, true, droid: posted));
+                }
 
                 UpdateRepairToggles(pilot, status, slots, true, DroidCrewRules.RepairThreshold,
                     DroidCrewRules.RunsWhenShieldLow, DroidCrewRules.RunsWhenHullLow,

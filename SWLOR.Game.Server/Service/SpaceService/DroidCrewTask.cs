@@ -14,5 +14,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>A hull repairer or repair field: run while hull is low.</summary>
         HullSupport = 3,
+
+        /// <summary>A Probe Launcher: run whenever there is something to scan, by a droid with Survey Protocol.</summary>
+        Survey = 4,
     }
 }

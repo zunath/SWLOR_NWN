@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             Tier3();
             Tier4();
             Tier5();
+            IndustrialProtocols();
 
             return _builder.Build();
         }
@@ -352,6 +353,22 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 new DroidInstructionRecipe(RecipeType.InstructionVeiledStrike4, "id_veiledstrike4"),
                 new DroidInstructionRecipe(RecipeType.InstructionVigorThrust4, "id_vigorthrust4"),
                 new DroidInstructionRecipe(RecipeType.InstructionWristRocket3, "id_wristrck3"));
+        }
+
+        /// <summary>The industrial droid protocols (plan section 27): rank I at the tier 1 bill, rank II at the tier 3 bill.</summary>
+        private void IndustrialProtocols()
+        {
+            CreateTier(10, "jade", "elec_ruined", "quadrenium",
+                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol1, "id_efficiency1"),
+                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol1, "id_dmgcontrol1"),
+                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol1, "id_survey1"),
+                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol1, "id_prospect1"));
+
+            CreateTier(30, "citrine", "elec_good", "ionite",
+                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol2, "id_efficiency2"),
+                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol2, "id_dmgcontrol2"),
+                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol2, "id_survey2"),
+                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol2, "id_prospect2"));
         }
 
         private void CreateTier(

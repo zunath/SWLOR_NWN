@@ -2,8 +2,9 @@
 
 usage: python bible_recipes.py [--check]
 Rows come from catalog.py: the module steps and ship deeds (Engineering Recipes) and the ship component recipes,
-each on its skill's tab (Engineering, Smithery, or Cooking Recipes for Agriculture), and from stations.py: the Station
-Core (Fabrication Recipes, laid out like the tab's Starport row). They sit under each tab's
+each on its skill's tab (Engineering, Smithery, or Cooking Recipes for Agriculture), from stations.py: the Station
+Core (Fabrication Recipes, laid out like the tab's Starport row), and from droids.py: the industrial droid parts and
+protocol discs (Engineering Recipes). They sit under each tab's
 existing headers, appended after its last row. Re-running removes the previously generated rows (matched by Recipe
 Enum) and writes them again; --check only reports whether the workbook is current. Every other zip entry is copied
 byte for byte, and the rest of each worksheet XML is left untouched.
@@ -18,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import catalog as c  # noqa: E402
+import droids  # noqa: E402
 import model as m  # noqa: E402
 import stations  # noqa: E402
 
@@ -68,6 +70,7 @@ def recipe_rows():
                      name=stations.CORE_ITEM_NAME, level=stations.CORE_RECIPE_LEVEL, resref=stations.CORE_ITEM_RESREF,
                      enhancement="N/A", slots=0, components=stations.CORE_COMPONENTS, perk="Structure Blueprints",
                      perk_level=2, storage=1))
+    rows += [dict(r, sheet=SHEET_NAME) for r in droids.recipe_rows()]
     for r in rows:
         assert len(r["components"]) <= len(COMPONENT_COLUMNS), r["enum"]
     return rows
@@ -86,8 +89,9 @@ def row_xml(number, r):
                  ("L", r["enhancement"]), ("M", r["slots"])]
         columns = FABRICATION_COMPONENT_COLUMNS
     else:
-        cells = [("A", r["skill"]), ("D", r["enum"]), ("E", r["category"]), ("G", r["name"]), ("H", r["level"]),
-                 ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["enhancement"]), ("L", r["slots"])]
+        cells = [("A", r["skill"])] + ([("C", r["group"])] if r.get("group") else []) + [("D", r["enum"]), ("E", r["category"])]
+        cells += ([("F", r["tier"])] if r.get("tier") else []) + [("G", r["name"]), ("H", r["level"]),
+                  ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["enhancement"]), ("L", r["slots"])]
         columns = COMPONENT_COLUMNS
     for column, (resref, quantity) in zip(columns, r["components"]):
         cells.append((column, resref))

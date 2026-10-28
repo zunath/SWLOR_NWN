@@ -219,6 +219,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether a ship's Probe Launcher has work where it is: scanning works here and a signature is still short of
+        /// 100% for this ship. A droid running Survey Protocol switches the launcher on only then.
+        /// </summary>
+        public static bool HasSomethingToScan(uint ship)
+        {
+            if (!string.IsNullOrEmpty(ProbeLauncherError(ship)))
+                return false;
+
+            var scannerId = GetObjectUUID(ship);
+            return GetSignatures(GetResRef(GetArea(ship)))
+                .Any(x => !x.Completed && x.Signal.GetValueOrDefault(scannerId) < x.SignalRequired);
+        }
+
+        /// <summary>
         /// The Espionage rank of whoever runs the launcher right now: the crew member at the Sensors seat, otherwise
         /// the pilot. A droid has no Espionage.
         /// </summary>

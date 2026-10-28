@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -11,17 +13,20 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int MinimumTier = 1;
         public const int MaximumTier = 5;
 
-        /// <summary>A tier-1 droid at any seat. Plan section 10, "Droid seat effectiveness (W0 balance)".</summary>
-        public const double TierOneEffectiveness = 0.25;
+        /// <summary>
+        /// A droid with no Industry (any combat droid) at any seat. Plan section 10, "Droid seat effectiveness (W0
+        /// balance)": a tier-1 combat droid works any seat at 25%; section 27: station effectiveness comes from Industry.
+        /// </summary>
+        public const double NoIndustryEffectiveness = DroidIndustryTuning.NoIndustryEffectiveness;
 
         /// <summary>The best droid at the Engineer or Sensors seat. Plan section 10, "Droid seat effectiveness (W0 balance)".</summary>
-        public const double BestSupportEffectiveness = 0.75;
+        public const double BestSupportEffectiveness = DroidIndustryTuning.BestSupportEffectiveness;
 
         /// <summary>
         /// The best droid at a Gunner seat. Plan section 10, "Droid seat effectiveness (W0 balance)": at 75% on
         /// Gunner seats one pilot with droids beat a Fighter by about 2x.
         /// </summary>
-        public const double BestGunnerEffectiveness = 0.50;
+        public const double BestGunnerEffectiveness = DroidIndustryTuning.BestGunnerEffectiveness;
 
         /// <summary>
         /// A droid switches a repairer, shield generator or hardener on once this share of shield or hull is missing,
@@ -63,12 +68,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>
         /// The droid's attribute score for every attribute while it fires: the balance model's pilot at the droid's
         /// level (<c>tools/SpaceRevampBalance/model.py</c> <c>attr()</c>, 16 + 0.2 x rank). Combat parts do not
-        /// make a better crew droid; the Industry rating (section 27) will set how well it works.
+        /// make a better crew droid; its Industry rating (section 27) sets how well it works.
         /// </summary>
         public static int Attribute(int tier) =>
             (int)Math.Round(16 + 0.2 * Level(tier), MidpointRounding.AwayFromZero);
 
-        /// <summary>The best droid's effectiveness at a seat, or 0 for the Pilot's seat (droids never fly).</summary>
+        /// <summary>
+        /// The best droid's effectiveness at a seat, or 0 for the Pilot's seat (droids never fly) and the droid bay
+        /// (a bay droid works no station slots; its Industry pays off through the bay, plan section 27).
+        /// </summary>
         public static double BestEffectiveness(ShipCrewSeat seat) => seat switch
         {
             ShipCrewSeat.Gunner or ShipCrewSeat.SecondGunner => BestGunnerEffectiveness,
@@ -77,26 +85,33 @@ namespace SWLOR.Game.Server.Service.SpaceService
         };
 
         /// <summary>
-        /// A droid's effectiveness at a seat before Crew Morale and Leadership: 25% at tier 1, rising in equal steps
-        /// to the seat's best at tier 5, plus the Industry bonus (0 until the Industry rating exists).
-        /// Base = 0.25 + (best - 0.25) x (tier - 1) / 4.
+        /// What a droid's Industry adds to its effectiveness at a seat: the share of the best droid's Industry times the
+        /// gap between no Industry and the seat's best. Plan section 10: the best industrial droid works a station at
+        /// about 75% of a player of matching rank (50% at a Gunner seat), and a combat droid far below.
         /// </summary>
-        public static double BaseEffectiveness(ShipCrewSeat seat, int tier, double industryBonus = 0.0)
+        public static double IndustryBonus(ShipCrewSeat seat, int industry)
         {
             var best = BestEffectiveness(seat);
-            if (best <= 0)
-                return 0.0;
+            return best <= 0 ? 0.0 : (best - NoIndustryEffectiveness) * DroidIndustryRules.Share(industry);
+        }
 
-            var step = (ClampTier(tier) - MinimumTier) / (double)(MaximumTier - MinimumTier);
-            return TierOneEffectiveness + (best - TierOneEffectiveness) * step + Math.Max(0.0, industryBonus);
+        /// <summary>
+        /// A droid's effectiveness at a seat before Crew Morale and Leadership: 25% with no Industry, rising with its
+        /// Industry to the seat's best at 100 (five tier-5 industrial parts). Base = 0.25 + (best - 0.25) x Industry / 100.
+        /// Its tier sets only the module ranks it can switch on.
+        /// </summary>
+        public static double BaseEffectiveness(ShipCrewSeat seat, int industry)
+        {
+            var best = BestEffectiveness(seat);
+            return best <= 0 ? 0.0 : NoIndustryEffectiveness + IndustryBonus(seat, industry);
         }
 
         /// <summary>
         /// A droid's effectiveness at a seat: its base times the crew multiplier (Crew Morale and Leadership,
         /// <see cref="SpaceCrew.EffectivenessMultiplier"/>), capped at <see cref="ShipCrewSeats.MaximumSeatEffectiveness"/>.
         /// </summary>
-        public static double SeatEffectiveness(ShipCrewSeat seat, int tier, double crewMultiplier, double industryBonus = 0.0) =>
-            ShipCrewSeats.CapEffectiveness(BaseEffectiveness(seat, tier, industryBonus) * Math.Max(0.0, crewMultiplier));
+        public static double SeatEffectiveness(ShipCrewSeat seat, int industry, double crewMultiplier) =>
+            ShipCrewSeats.CapEffectiveness(BaseEffectiveness(seat, industry) * Math.Max(0.0, crewMultiplier));
 
         /// <summary>What a droid does with a module of this type and activation.</summary>
         public static DroidCrewTask GetTask(ShipModuleType type, ShipModuleActivation activation)
@@ -112,9 +127,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 ShipModuleType.ShieldRepairer or ShipModuleType.BulwarkShieldGenerator or ShipModuleType.ShieldHardener
                     => DroidCrewTask.ShieldSupport,
                 ShipModuleType.HullRepairer or ShipModuleType.RepairFieldGenerator => DroidCrewTask.HullSupport,
+                ShipModuleType.ProbeLauncher => DroidCrewTask.Survey,
                 _ => DroidCrewTask.None,
             };
         }
+
+        /// <summary>
+        /// Whether a droid switches a Probe Launcher on: it runs Survey Protocol (plan section 27), the launcher is off
+        /// and there is something to scan where the ship is.
+        /// </summary>
+        public static bool RunsProbeLauncher(IReadOnlyDictionary<PerkType, int> protocols, bool launcherOn, bool somethingToScan) =>
+            !launcherOn && somethingToScan &&
+            DroidIndustryRules.GetProtocolValue(protocols, PerkType.SurveyProtocol) > 0;
 
         /// <summary>Whether a droid runs this module while shield is low.</summary>
         public static bool RunsWhenShieldLow(ShipModuleType type) =>
@@ -133,7 +157,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public static bool MayEngageAgain(uint target, uint engagedTarget) => target != engagedTarget;
 
-        /// <summary>Whether a droid counts toward its owner's follow limit: only a droid that follows them does.</summary>
+        /// <summary>
+        /// Whether a droid counts toward its owner's follow limit: only a droid that follows them does. A working droid
+        /// (a ship's station or droid bay, and later a holding or station building) is posted and never spawned.
+        /// </summary>
         public static bool CountsTowardFollowLimit(bool spawned, bool posted) => spawned && !posted;
 
         /// <summary>
@@ -143,14 +170,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static string GetActivationError(bool thisDroidPosted, int followers)
         {
             if (thisDroidPosted)
-                return "This droid is posted at a ship's station. Recall it at the ship's crew console first.";
+                return "This droid is posted aboard a ship. Recall it at the ship's crew console first.";
 
             return followers >= FollowLimit ? "Only one droid may be activated at a time." : string.Empty;
         }
 
         /// <summary>
-        /// Why a droid cannot be posted at a seat, or an empty string. The captain (the owner or anyone with the
-        /// crew permission) posts one of their own droids at an empty station. A seat holds a player or a droid.
+        /// Why a droid cannot be posted at a seat or the droid bay (<paramref name="postName"/>: "the Gunner station",
+        /// "the droid bay"), or an empty string. The captain (the owner or anyone with the crew permission) posts one of
+        /// their own droids at an empty station. A seat holds a player or a droid.
         /// </summary>
         public static string GetPostingError(
             bool isCaptain,
@@ -160,7 +188,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             bool ownsDroid,
             bool droidPosted,
             bool droidFollowing,
-            string seatName)
+            string postName)
         {
             if (!isCaptain)
                 return "You do not have permission to crew this starship.";
@@ -173,9 +201,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (droidFollowing)
                 return "Dismiss that droid before you post it.";
             if (seatHasPlayer)
-                return $"Someone works the {seatName} station.";
+                return $"Someone works {postName}.";
             if (seatHasDroid)
-                return $"A droid already works the {seatName} station. Recall it first.";
+                return $"A droid already works {postName}. Recall it first.";
 
             return string.Empty;
         }

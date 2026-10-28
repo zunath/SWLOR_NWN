@@ -210,6 +210,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Gives the ship a droid bay that holds one working droid (plan section 27).
+        /// </summary>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder DroidBay()
+        {
+            _activeShip.HasDroidBay = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates a player must have the perk at a specific level in order to use the ship.
         /// </summary>
         /// <param name="perkType">The type of perk to require</param>

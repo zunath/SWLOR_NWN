@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
@@ -83,10 +84,25 @@ public class ScanningTests
     }
 
     [Test]
-    public void Signal_SurveyProtocolHookAddsNothingYet()
+    public void Signal_SurveyProtocolAddsItsRanksPercent_ForADroidRunningIt()
     {
         SpaceCrew.GetDroidSurveyBonusPercent(null).Should().Be(0);
-        SpaceCrew.GetDroidSurveyBonusPercent(new ShipDroidCrew()).Should().Be(0);
+        SpaceCrew.GetDroidSurveyBonusPercent(new ShipDroidCrew()).Should().Be(0, "a droid without Survey Protocol");
+        SpaceCrew.GetDroidSurveyBonusPercent(new ShipDroidCrew
+        {
+            Seat = ShipCrewSeat.Sensors, Protocols = new() { [PerkType.SurveyProtocol] = 1 },
+        }).Should().Be(20);
+        var best = new ShipDroidCrew
+        {
+            Seat = ShipCrewSeat.Sensors, Tier = 5, Industry = 100, Protocols = new() { [PerkType.SurveyProtocol] = 2 },
+        };
+        SpaceCrew.GetDroidSurveyBonusPercent(best).Should().Be(40);
+
+        // The best droid with Survey Protocol II scans at about 72% of a rank-45 player at the same launcher.
+        var droid = ScanningRules.SignalPerCycle(100, 0, 0, 0, SpaceCrew.GetDroidSurveyBonusPercent(best),
+            DroidCrewRules.BaseEffectiveness(best.Seat, best.Industry));
+        var player = ScanningRules.SignalPerCycle(100, 45, 0, 0, 0, 1.0);
+        (droid / player).Should().BeApproximately(1.05 / 1.45, 1e-9);
     }
 
     [Test]

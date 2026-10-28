@@ -582,9 +582,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // A docked ship with crew stations offers its droid crew first to a captain who has droids to post or
-            // recall, and a ship carrying docked ships offers undocking to their pilots; the menu's first choice
-            // takes the controls.
+            // A docked ship with crew stations or a droid bay offers its droid crew first to a captain who has
+            // droids to post or recall, and a ship carrying docked ships offers undocking to their pilots; the
+            // menu's first choice takes the controls.
             if (dbShip != null &&
                 (ShouldOfferDroidCrewMenu(player, dbShip, propertyId) || GetUndockableShips(player, dbShip).Count > 0) &&
                 ConversationMenu.TryStart(player, computer, "CrewStationDialog"))

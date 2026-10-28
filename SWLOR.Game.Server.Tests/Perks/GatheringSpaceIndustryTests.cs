@@ -284,6 +284,8 @@ public class GatheringSpaceIndustryTests
             method.Should().Contain("GetAsteroidOre(activator, lootTable, rareFind)");
             method.Should().Contain("var rareFind = TraitRareFind();", "the Precision trait is read while the module fires");
             method.Should().Contain("PerkType.StarshipMining", "the legacy term is refunded and removed in W10");
+            method.Should().Contain("Space.GetDroidBayYieldPercent(activator)", "a droid in the droid bay adds to the ore delivered");
+            method.Should().Contain("rareFind += Space.GetDroidBayRareFindBonus(activator);", "and Prospecting Protocol to the rare chance");
             method.Should().NotContain("lootTable.GetRandomItem()");
         }
     }

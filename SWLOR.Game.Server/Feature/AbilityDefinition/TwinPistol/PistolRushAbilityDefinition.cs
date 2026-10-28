@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                     MaxRange = 6f,
                     MaxMovementMeters = 6f,
                     MinimumMovementMeters = 2f,
+                    PassesThroughCreatures = true,
                     MaximumTargets = 3,
                     LineWidthMeters = 4f,
                 }, targetingSpell: Spell.PistolRush1);
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                     MaxRange = 6f,
                     MaxMovementMeters = 6f,
                     MinimumMovementMeters = 2f,
+                    PassesThroughCreatures = true,
                     MaximumTargets = 3,
                     LineWidthMeters = 4f,
                 }, targetingSpell: Spell.PistolRush2);

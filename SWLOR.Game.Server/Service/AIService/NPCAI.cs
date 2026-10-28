@@ -481,7 +481,10 @@ namespace SWLOR.Game.Server.Service.AIService
                 return false;
             }
 
-            if (ability.RequiresTarget && !GetIsObjectValid(target))
+            // Every hostile ability's selector returns no target when there is no enemy to use it on;
+            // a self-centered area ability returns the creature itself only when it sees enough
+            // enemies nearby. Falling back to the creature here would fire it at nothing it can see.
+            if ((ability.RequiresTarget || ability.IsHostileAbility) && !GetIsObjectValid(target))
                 return false;
 
             if (!GetIsObjectValid(target))

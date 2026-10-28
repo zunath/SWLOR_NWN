@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
             if (distance < .01f && spec.Movement is TwinPistolMovementType.None or TwinPistolMovementType.Approach)
                 return string.Empty;
             return WeaponRepositioning.Validate(actor, GetLocation(actor), destination,
-                spec.MinimumMovementMeters, spec.MaxMovementMeters);
+                spec.MinimumMovementMeters, spec.MaxMovementMeters, spec.PassesThroughCreatures);
         }
 
         public static bool Begin(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                     UsePerkFeat.ResumeAttackAfterReposition(actor, activation.ResumeTarget);
                 }
                 finally { Combat.CompleteDeferredAbilityStaminaCostContext(actor, ability); }
-            }, TravelAnimation(actor, spec));
+            }, TravelAnimation(actor, spec), spec.PassesThroughCreatures);
         }
 
         /// <summary>
@@ -309,7 +309,8 @@ namespace SWLOR.Game.Server.Service
             var origin = GetPosition(actor);
             if (spec.Movement == TwinPistolMovementType.None) return GetLocation(actor);
             if (spec.Movement == TwinPistolMovementType.FreeDestination)
-                return GetAiRushDestination(actor, target, targetLocation, spec) ?? targetLocation;
+                return GetAiRushDestination(actor, target, targetLocation, spec) ??
+                       GetRushDestination(actor, targetLocation, spec);
             var enemy = GetPosition(target);
             var delta = new NumericsVector3(origin.X - enemy.X, origin.Y - enemy.Y, 0);
             var distance = delta.Length();
@@ -358,10 +359,62 @@ namespace SWLOR.Game.Server.Service
                 position.Z = GetGroundHeight(Location(GetArea(actor), position, GetFacing(actor)));
                 var destination = Location(GetArea(actor), position, GetFacing(actor));
                 if (string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), destination,
-                        spec.MinimumMovementMeters, spec.MaxMovementMeters)))
+                        spec.MinimumMovementMeters, spec.MaxMovementMeters, spec.PassesThroughCreatures)))
                     return destination;
             }
             return null;
+        }
+
+        /// <summary>
+        /// A dash toward the clicked point: a click past the dash's reach rushes the full distance toward it.
+        /// When the dash passes through creatures, an end point on a creature's body shifts along the same line
+        /// to the nearest clear spot. Everything else, such as a wall on the line, is left to movement validation.
+        /// </summary>
+        private static Location GetRushDestination(uint actor, Location targetLocation, TwinPistolAbilitySpec spec)
+        {
+            if (GetAreaFromLocation(targetLocation) != GetArea(actor)) return targetLocation;
+            var origin = GetPosition(actor);
+            var clicked = GetPositionFromLocation(targetLocation);
+            var flat = new System.Numerics.Vector2(clicked.X - origin.X, clicked.Y - origin.Y);
+            var distance = flat.Length();
+            if (!float.IsFinite(distance) || distance < .001f) return targetLocation;
+            var heading = flat / distance;
+            Location first = null;
+            foreach (var length in RushEndpointLengths(distance, spec.MinimumMovementMeters, spec.MaxMovementMeters))
+            {
+                var position = new NumericsVector3(origin.X + heading.X * length, origin.Y + heading.Y * length, origin.Z);
+                position.Z = GetGroundHeight(Location(GetArea(actor), position, GetFacing(actor)));
+                var destination = Location(GetArea(actor), position, GetFacing(actor));
+                first ??= destination;
+                if (!spec.PassesThroughCreatures || !WeaponRepositioning.IsEndpointOccupied(actor, position))
+                    return destination;
+            }
+            return first ?? targetLocation;
+        }
+
+        private const float RushEndpointStepMeters = .25f;
+        private const float RushEndpointSearchMeters = 2f;
+
+        /// <summary>
+        /// Dash lengths along the clicked heading, in preference order: the click shortened to the maximum reach,
+        /// then alternately a quarter meter farther and nearer, within the movement limits and two meters of it.
+        /// A click short of the minimum keeps its own length so movement validation refuses it as before.
+        /// </summary>
+        public static IEnumerable<float> RushEndpointLengths(float requestedMeters, float minimumMeters, float maximumMeters)
+        {
+            if (!float.IsFinite(requestedMeters) || requestedMeters <= 0 || maximumMeters < minimumMeters) yield break;
+            if (requestedMeters + .001f < minimumMeters)
+            {
+                yield return requestedMeters;
+                yield break;
+            }
+            var length = Math.Min(requestedMeters, maximumMeters);
+            yield return length;
+            for (var step = RushEndpointStepMeters; step <= RushEndpointSearchMeters + .001f; step += RushEndpointStepMeters)
+            {
+                if (length + step <= maximumMeters + .001f) yield return Math.Min(length + step, maximumMeters);
+                if (length - step >= minimumMeters - .001f) yield return Math.Max(length - step, minimumMeters);
+            }
         }
 
         /// <summary>

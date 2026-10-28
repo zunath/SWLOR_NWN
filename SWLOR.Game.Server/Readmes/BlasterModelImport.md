@@ -435,7 +435,18 @@ NWN:EE PBR uses MTR `texture0` for base color, `texture1` for OpenGL tangent nor
 `texture2` for scalar specularity, and `texture3` for linear roughness. The standard
 `inc_material` shader derives metallicness as `clamp(3 * specularity - 0.6, 0, 1)`.
 Keep scalar maps linear. Use distinct responses for exposed metals, coatings,
-composite grips and glass; avoid strong baked highlights. Prefer few meshes and
+composite grips and glass; avoid strong baked highlights.
+
+TRELLIS marks most hard surfaces as metal but gives them dark base colors
+(median linear luminance 0.085; real metal reflects 0.5-0.95) and satin
+roughness. NWN tints the reflection of a metal texel by its base color and picks
+the environment-map mip as `roughness * 30 - 1`, so that output renders near
+black and matte, which players read as cloth or plastic. `TrellisWeaponExport.py`
+therefore passes every material through `tools/TrellisNwnMaterial.py`: metal
+base color rises toward the physical range while keeping its hue (saturated
+finishes gain less), metal roughness tightens to 0.06-0.25, and non-metal texels
+get specularity 0.06 instead of a glossy 0.2. Its command line applies the same
+correction to already shipped maps and refuses maps it has converted before. Prefer few meshes and
 512-1024-square atlases sized to visible detail. The imported pistols span roughly
 1,200-6,100 triangles; these are reference costs, not a reason to flatten a design
 into coarse slabs. Compare shape construction, grip transitions, recessed detail
@@ -482,9 +493,9 @@ use `-A8R8G8B8`: the native `CResDDS::GetChannelCount` recognizes DXT1, DXT5,
 ATI1 and ATI2, but returns zero for the uncompressed RGBA FourCC. A generic DDS
 decoder accepting the image does not establish game compatibility.
 Verify both decoding and layered icon composition in the toolset,
-then verify native inventory selection as described below. Keep new/replacement
-inventory artwork DDS-only; do not add TGA companions or registration stubs as an
-automatic workaround.
+then verify native inventory selection as described below. Keep the artwork in
+the DDS; when no TGA of that name exists in any layer, add the 8x8 registration
+stub described below.
 
 For example, after extracting `nwn_crunch.exe` into `.tmp/blaster-tools/nwn-crunch/`:
 
@@ -503,7 +514,8 @@ Z may be reconstructed for comparison rather than read as a stored BC5 channel.
 Inspect texture details and the textured model; confirm game lighting in the client.
 
 Replace each runtime TGA, including inventory icons, with its DDS using the same basename. Do not keep
-both formats for the same map: texture lookup can prefer the TGA. MTR bindings are
+both formats for the same map: texture lookup can prefer the TGA. The one exception is the 8x8
+inventory-icon registration stub described under "Inventory lookup and unique artwork". MTR bindings are
 extensionless and do not change. Vesper-9 keeps four 1024-square maps; the imported
 blaster keeps two 1024-square maps and its 256-square specular map.
 
@@ -539,11 +551,23 @@ The Basic Pistol's native slot 201 and Part #111 demonstrate this fallback;
 simple shield slots 57-60 also fall back when their icons are DDS-only.
 The artwork can be unique and correctly packed while the displayed icon is wrong.
 
-Keep new/replacement artwork DDS-only. Native inventory discovery requires a
-compatible client; rebuilding HAKs or changing server C# cannot alter this client
-check. Do not work around it by adding TGA artwork, registration stubs, or changing
-persisted weapon appearances. Broader engine background is available in the
+Once that TGA check passes, the inventory draws the same-named DDS, not the TGA
+(verified on stock 8193.37-17 with a magenta stub TGA beside a DDS icon, and again
+with the shield and greatsword icons in the weapon/shield texture fix). So keep
+the artwork in the DDS and give each icon that has no TGA in any layer (HAKs or
+the base game) an 8x8 registration stub: `tools/FixWeaponInventoryIcons.py audit`
+lists them and `stubs` writes a bottom-left TGA thumbnail of the DDS art beside
+each one. Do not change persisted weapon appearances to dodge the check. The
+pistol and rifle icon audits (`test_pistol_inventory_icons.py`,
+`test_rifle_inventory_icons.py`) still reject a TGA beside a DDS; their icons
+have no stubs yet. Broader engine background is available in the
 [texture notes](https://nwn.wiki/spaces/NWN1/pages/38174958/Textures).
+
+The inventory shows only the top-left `InvSlotWidth x InvSlotHeight * 32` pixels
+of each icon layer (64x160 for greatswords and twinblades, inside a 64x256
+canvas). Render inside that area, in the stock frame of the family, so layers
+join where retained stock layers expect them; `FixWeaponInventoryIcons.py audit`
+also lists art outside the slot, and `reframe` scales it back uniformly.
 
 ### Optional Windows client compatibility patch
 

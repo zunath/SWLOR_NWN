@@ -54,7 +54,7 @@ public sealed partial class Simulation
             if (victim.IsDead) continue;
             // The profile's baseDamageAdjustment reads the target before this impact's own statuses.
             var controlled = cast.Ability.ExtraDamageIfTargetControlled != 0 && WeaponCombatState.HasCategory(victim, StatusEffectCategory.Control, _now);
-            var power = cast.Use.WeaponPower.Value + (int)(0.15f * caster.Spec.WeaponCombat.WeaponSkillRank) + TechniqueSequence.ScaleWeaponDamage(caster.Spec.WeaponCombat.WeaponDamage, weaponPercent) +
+            var power = cast.Use.WeaponPower.Value + (int)(0.15f * caster.Spec.WeaponCombat.WeaponSkillRank) + TechniqueSequence.ScaleWeaponDamage(caster.Spec.WeaponCombat.AbilityWeaponDamage, weaponPercent) +
                 TechniqueSequence.SplitPower(cast.Technique.ConditionalPower, count, index) + cast.Technique.FlatPower +
                 (controlled ? cast.Ability.ExtraDamageIfTargetControlled : 0) + nextAttackBonus;
             var accuracy = technique == null ? caster.Weapon.SetupAccuracy(victim, _now) : victim == target ? cast.Technique.Accuracy : 0;

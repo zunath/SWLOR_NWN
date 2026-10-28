@@ -48,21 +48,49 @@ def _finite_triple(values, description: str) -> tuple[float, float, float]:
     return tuple(float(value) for value in values)
 
 
+def _quaternion_product(a: tuple[float, float, float, float],
+                        b: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
+    """Hamilton product a * b of (x, y, z, w) quaternions: b's rotation, then a's."""
+    ax, ay, az, aw = a
+    bx, by, bz, bw = b
+    return (aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw,
+            aw * bw - ax * bx - ay * by - az * bz)
+
+
+def _rotate_vector(rotation: tuple[float, float, float, float],
+                   vector: tuple[float, float, float]) -> tuple[float, float, float]:
+    x, y, z, _ = _quaternion_product(_quaternion_product(rotation, (*vector, 0.0)),
+                                     (-rotation[0], -rotation[1], -rotation[2], rotation[3]))
+    return x, y, z
+
+
 def translate_model(data: bytes, delta: tuple[float, float, float], pitch: float = 0.0,
-                    pivot: tuple[float, float, float] = (0.0, 0.0, 0.0)) -> bytes:
+                    pivot: tuple[float, float, float] = (0.0, 0.0, 0.0), roll: float = 0.0,
+                    yaw: float = 0.0) -> bytes:
     """Return a translated copy of one rigid, static compiled weapon MDL.
 
     Only each direct root child's one-row position values and the model bounds
     change. Vertex, mesh, material and orientation data remain byte-identical.
-    A nonzero pitch first rotates each child about the weapon X axis through
-    `pivot` (degrees; positive raises a -Z barrel), which also rewrites the
-    child's static orientation and conservatively widens the bounds.
+    Nonzero angles (degrees) first rotate each child through `pivot`: pitch
+    about the weapon X axis (positive raises a -Z barrel), then roll about Y,
+    then yaw about Z (both right-handed). Rotation also rewrites the child's
+    static orientation and conservatively widens the bounds.
     """
     offset = _finite_triple(delta, "offset")
     pivot = _finite_triple(pivot, "pivot")
-    if not isinstance(pitch, (int, float)) or not math.isfinite(pitch):
-        raise ValueError("pitch must be finite")
-    angle = math.radians(float(pitch))
+    for name, value in (("pitch", pitch), ("roll", roll), ("yaw", yaw)):
+        if not isinstance(value, (int, float)) or not math.isfinite(value):
+            raise ValueError(f"{name} must be finite")
+    angles = tuple(math.radians(float(value)) for value in (pitch, roll, yaw))
+    rotation = (0.0, 0.0, 0.0, 1.0)
+    for axis, value in enumerate(angles):
+        if value:
+            step = [0.0, 0.0, 0.0, math.cos(value / 2)]
+            step[axis] = math.sin(value / 2)
+            rotation = _quaternion_product(tuple(step), rotation)
+    angle = min(math.pi, sum(abs(value) for value in angles))
     distance = math.sqrt(sum(value * value for value in offset))
     if not math.isfinite(distance):
         raise ValueError("offset length must be finite")
@@ -187,21 +215,20 @@ def translate_model(data: bytes, delta: tuple[float, float, float], pitch: float
                 raise ValueError(f"{description} alias another controller array")
 
     result = bytearray(data)
-    cosine, sine = math.cos(angle), math.sin(angle)
-    half_cosine, half_sine = math.cos(angle / 2), math.sin(angle / 2)
+    half_sine = math.sin(angle / 2)
     for value_offset, position, orientation_offset, orientation in edits:
         if angle:
-            y, z = position[1] - pivot[1], position[2] - pivot[2]
-            position = (position[0], pivot[1] + y * cosine - z * sine, pivot[2] + y * sine + z * cosine)
-            x, qy, qz, w = orientation
-            # Rotation about X composed before the child's own static orientation.
-            rotated = (half_cosine * x + half_sine * w, half_cosine * qy - half_sine * qz,
-                       half_cosine * qz + half_sine * qy, half_cosine * w - half_sine * x)
-            if not all(math.isfinite(value) for value in rotated):
-                raise ValueError("rotated orientation must remain finite")
+            relative = _rotate_vector(rotation, tuple(position[axis] - pivot[axis] for axis in range(3)))
+            position = tuple(pivot[axis] + relative[axis] for axis in range(3))
+            # The rotation applies in the parent frame, after the child's own static orientation.
+            rotated = _quaternion_product(rotation, orientation)
+            length = math.sqrt(sum(value * value for value in rotated))
+            if not math.isfinite(length) or length == 0:
+                raise ValueError("rotated orientation must be a finite, nonzero quaternion")
+            rotated = tuple(value / length for value in rotated)
             struct.pack_into("<4f", result, orientation_offset, *rotated)
         for axis, amount in enumerate(offset):
-            if amount == 0 and not (angle and axis):
+            if amount == 0 and not angle:
                 continue
             translated_position = position[axis] + amount
             if not math.isfinite(translated_position):
@@ -234,8 +261,12 @@ def main() -> None:
     parser.add_argument("--offset", nargs=3, type=float, default=(0.0, 0.0, 0.0), metavar=("X", "Y", "Z"))
     parser.add_argument("--pitch", type=float, default=0.0,
                         help="Degrees about the weapon X axis through --pivot; positive raises the muzzle")
+    parser.add_argument("--roll", type=float, default=0.0,
+                        help="Degrees about the weapon Y axis through --pivot, applied after --pitch")
+    parser.add_argument("--yaw", type=float, default=0.0,
+                        help="Degrees about the weapon Z axis through --pivot, applied after --roll")
     parser.add_argument("--pivot", nargs=3, type=float, default=(0.0, 0.0, 0.0), metavar=("X", "Y", "Z"),
-                        help="Pitch pivot in weapon attachment space, normally the grip contact")
+                        help="Rotation pivot in weapon attachment space, normally the grip contact")
     args = parser.parse_args()
     source = args.input.resolve()
     destination = args.output.resolve()
@@ -243,7 +274,8 @@ def main() -> None:
         parser.error("input and output must be different files")
     if destination.exists():
         parser.error(f"output already exists: {destination}")
-    translated = translate_model(source.read_bytes(), tuple(args.offset), args.pitch, tuple(args.pivot))
+    translated = translate_model(source.read_bytes(), tuple(args.offset), args.pitch, tuple(args.pivot),
+                                 args.roll, args.yaw)
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_bytes(translated)
 

@@ -10,6 +10,10 @@ public sealed class WeaponCombatSpec
     public int WeaponSkillRank { get; set; } = 50;
     public int WeaponRequiredSkillRank { get; set; } = 50;
     public int WeaponDelayUnits { get; set; } = 220;
+    /// <summary>Power Gloves: each paired cycle rolls WeaponDamage once per hand, with the paired delay of two such weapons.</summary>
+    public bool PairedHands { get; set; }
+    /// <summary>Explicit Dual Wield off-hand delay reduction (30 with Dual Wield III); paired hands only.</summary>
+    public int OffhandDelayReductionPercent { get; set; }
     public int ExternalHastePercent { get; set; }
     public int Attack { get; set; } = 128;
     public int Accuracy { get; set; } = 128;
@@ -24,10 +28,17 @@ public sealed class WeaponCombatSpec
     public string Stance { get; set; } = "None";
     public bool AllowTechniqueAbilities { get; set; } = true;
     public bool EnableCriticals { get; set; } = true;
+    /// <summary>Weapon DMG an ability adds: Unarmed abilities count both Power Gloves, matching WeaponDamage.GetAbilityDMG.</summary>
+    public int AbilityWeaponDamage => PairedHands ? WeaponDamage * 2 : WeaponDamage;
+    /// <summary>Raw attack delay before the engine floor, matching Combat.CalculateAttackDelay for this loadout.</summary>
+    public int AttackDelayMilliseconds(int hastePercent) =>
+        SWLOR.Game.Server.Service.Combat.CalculateAttackDelayMilliseconds(WeaponDelayUnits, PairedHands ? WeaponDelayUnits : 0,
+            hastePercent, OffhandDelayReductionPercent);
     public void Validate()
     {
         if (!float.IsFinite(PositionX) || !float.IsFinite(PositionY) || Math.Abs(PositionX) > 10000 || Math.Abs(PositionY) > 10000 ||
             WeaponDamage is < 0 or > 10000 || WeaponSkillRank is < 0 or > 100 || WeaponRequiredSkillRank is < 0 or > 100 || WeaponDelayUnits is < 1 or > 10000 ||
+            OffhandDelayReductionPercent is < 0 or > 50 || !PairedHands && OffhandDelayReductionPercent > 0 ||
             Attack is < 1 or > 10000 || Accuracy is < 0 or > 10000 || Defense is < 1 or > 10000 || Evasion is < 0 or > 10000 ||
             Might is < 0 or > 255 || Perception is < 0 or > 255 || Vitality is < 0 or > 255 || ExternalHastePercent is < -50 or > 50 ||
             MindResistance is < -100 or > 100 || MobilityResistance is < -100 or > 100 || TraumaResistance is < -100 or > 100 || Stance is not ("None" or "Flow" or "Bruiser" or "Berserker" or "Scrapper" or "Crusher"))

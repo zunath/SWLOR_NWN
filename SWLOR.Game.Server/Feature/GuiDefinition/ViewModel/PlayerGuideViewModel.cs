@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("HoloNet Broadcast Window",
                             "The HoloNet broadcast window sends a longer broadcast, costs 2500 credits, and is limited to 600 characters."),
                         new ArticleBlock("HoloCom Calls",
-                            "Open HoloCom from the Character Sheet to call another available online player. HoloCom cannot be used in space, and both participants are immobilized while a connected call is active. Use HoloCom or /endcall to end it; unanswered call attempts time out."),
+                            "Select a player in the Player List and press Call to call another available online player. Incoming calls are announced in chat; answer or decline them with the Player List buttons or /answer and /decline. HoloCom cannot be used in space, and both participants are immobilized while a connected call is active. Use End Call in the Player List or /endcall to end it; unanswered call attempts time out."),
                         new ArticleBlock("Settings",
                             "Settings controls achievement notifications, subdual mode, reset reminders, Mini-Vitals, chat and emote colors, language colors, character-description access, and identity/privacy options for descriptors and account names."),
                         new ArticleBlock("Notes",
@@ -763,7 +763,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Starting at Rank 0",
                             "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new ArticleBlock("Stealth and Back Attacks",
-                            "Stealth is activated out of combat and drains STM while maintained. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
+                            "Stealth is activated out of combat and drains STM while maintained, and no STM recovers while hidden. Other players within 5m spot you more easily and more often, and a lucky player can always spot you. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
                         new ArticleBlock("Slicing Lockboxes and Sealed Crates",
                             "Right-click a lockbox and choose Activate Item, or use a Sealed Field Crate to slice its electronic lock. Rotate or swap circuit tiles to connect the entry to the core before trace runs out. Every board is different and leaves little spare trace, so plan your route before you move. Each Slicing rank above a target's tier adds 1 trace, and Lockpicking gear plus Perception add up to 2 more. Tier 1 crates can be found in the Viscaran Wildlands, CZ-220 maintenance level, and Abandoned Nano Station. Slicing II-V unlock at Espionage ranks 22, 30, 42, and 48. Each tier awards XP until the next unlock; tier 5 trains to 50."),
                         new ArticleBlock("Slicing Supplies and Failure",
@@ -784,7 +784,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Why did my recipe or slicing tier stop giving XP?", "You reached the next tier's unlock rank. Purchase that tier's perk and use its recipes or targets to continue training."),
                         new QuestionAnswer("Where do I craft poisons and snares?", "At a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new QuestionAnswer("How many traps can I place?", "One by default; Trap Management increases your active-trap limit."),
-                        new QuestionAnswer("What breaks stealth?", "Hostile actions break stealth, and maintaining it continuously drains STM.")
+                        new QuestionAnswer("What breaks stealth?", "Hostile actions break stealth, and maintaining it continuously drains STM with no STM recovery until you leave stealth.")
                     },
                     new[] { "Skills", "Perks", "Abilities", "Combat Basics", "Crafting" }),
 
@@ -1178,13 +1178,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Guide Button",
                             "The Character Sheet also has a Guide button, so you can return here while reviewing your character."),
                         new ArticleBlock("Character Sheet Actions",
-                            "The Character Sheet action list opens Skills, Perks, Techniques, Appearance, Disguises, Quests, Open Trash, HoloCom, Recipes, Currencies, Key Items, Notes, this Guide, Achievements, and Settings."),
+                            "The Character Sheet action list opens Skills, Perks, Techniques, Appearance, Disguises, Quests, Open Trash, Recipes, Currencies, Key Items, Notes, this Guide, Achievements, and Settings."),
                         new ArticleBlock("Skills and Perks",
                             "Skills shows ranks, XP, XP debt, decay locks, rank limits, and RP XP distribution. Perks shows player perks and, when you have an active beast, beast perks."),
                         new ArticleBlock("Quests and Progress",
                             "Press J to open Quests, which shows active quest objectives. Key Items shows character-specific unlocks and progress records. Achievements shows long-term account-wide progress."),
                         new ArticleBlock("Social Windows",
-                            "Notes stores private notes. Settings controls notifications, subdual mode, reset reminders, Mini-Vitals, identity/privacy options, chat colors, and description access. HoloCom opens calling options when you are not in space."),
+                            "Notes stores private notes. Settings controls notifications, subdual mode, reset reminders, Mini-Vitals, identity/privacy options, chat colors, and description access."),
                         new ArticleBlock("Recovery and Utility",
                             "Open Trash provides a disposal container. Appearance and Disguises manage your visible presentation. If a window becomes unreachable, use /resetwindows. Use /help for the full command list and /bug to report a problem.")
                     },

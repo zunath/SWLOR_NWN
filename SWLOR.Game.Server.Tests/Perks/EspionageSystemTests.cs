@@ -333,6 +333,70 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void PlayerObservers_AlwaysKeepANaturalTwentyChanceWhileNpcObserversDoNot()
+    {
+        Stealth.IsDetectionRollSuccessful(20, 0, 1, 200, true).Should().BeTrue();
+        Stealth.IsDetectionRollSuccessful(20, 0, 1, 200, false).Should().BeFalse();
+        Stealth.IsDetectionRollSuccessful(10, 50, 10, 50, true).Should().BeFalse("ties go to the hidden creature");
+        Stealth.IsDetectionRollSuccessful(11, 50, 10, 50, false).Should().BeTrue();
+
+        // An untrained player against a fully committed sneak.
+        var untrainedPlayer = Stat.CalculateDetectionRating(10, 10, 0, 0, false);
+        var committedSneak = Stat.CalculateStealthRating(27, 5, 20);
+        CalculateDetectionChance(untrainedPlayer, committedSneak, playerObserver: true).Should().Be(0.05m);
+        CalculateDetectionChance(untrainedPlayer, committedSneak).Should().Be(0m);
+    }
+
+    [Test]
+    public void CloseRangePlayerObservers_GainDetectionAndReRollEverySixSeconds()
+    {
+        Stealth.GetCloseRangeDetectionBonus(true).Should().Be(10);
+        Stealth.GetCloseRangeDetectionBonus(false).Should().Be(0);
+        Stealth.GetDetectionCheckIntervalSeconds(true).Should().Be(6f);
+        Stealth.GetDetectionCheckIntervalSeconds(false).Should().Be(30f);
+
+        // The reported matchup: 64 Detection against 69 Stealth.
+        CalculateDetectionChance(64, 69, playerObserver: true).Should().Be(0.2775m);
+        CalculateDetectionChance(64 + Stealth.GetCloseRangeDetectionBonus(true), 69, playerObserver: true)
+            .Should().Be(0.7m);
+
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stealth.cs"));
+        source.Should().Contain("var closeRange = playerObserver && IsWithinCloseDetectionRange(observer, target);",
+            "NPC observers keep the flat check that infiltration is tuned around");
+        source.Should().Contain("verdict.RolledAt.AddSeconds(GetDetectionCheckIntervalSeconds(closeRange)) > now",
+            "closing to arm's length must shorten a verdict rolled from afar");
+    }
+
+    [TestCase(true, true, true, TestName = "Stealthed player gains no stamina")]
+    [TestCase(true, false, false, TestName = "Visible player regains stamina")]
+    [TestCase(false, true, false, TestName = "Stealthed NPC regains stamina")]
+    public void StaminaRestoration_IsBlockedOnlyForStealthedPlayers(bool isPlayer, bool inStealth, bool expectedBlocked)
+    {
+        Stat.IsStaminaRestorationBlocked(isPlayer, inStealth).Should().Be(expectedBlocked);
+    }
+
+    [Test]
+    public void StealthStaminaDrain_CannotBeOutpacedOrLost()
+    {
+        var root = FindRepositoryRoot();
+        var statSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var restoreStart = statSource.IndexOf("public static int RestoreStamina(", StringComparison.Ordinal);
+        var dbLookup = statSource.IndexOf("dbPlayer ??= DB.Get<Player>", restoreStart, StringComparison.Ordinal);
+        var gate = statSource.IndexOf(
+            "IsStaminaRestorationBlocked(isPlayer, isPlayer && GetActionMode(creature, ActionMode.Stealth))",
+            restoreStart,
+            StringComparison.Ordinal);
+        gate.Should().BeInRange(restoreStart, dbLookup,
+            "every stamina source routes through RestoreStamina and must be stopped before it applies");
+
+        var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stealth.cs"));
+        stealthSource.Should().Contain("[NWNEventHandler(ScriptName.OnPlayerHeartbeat)]");
+        stealthSource.Should().Contain("public static void EnsureStealthStatusWhileHidden()",
+            "the drain lives on the status, so a stealthed player missing it must have it rebuilt");
+    }
+
+    [Test]
     public void SlicingRanksGrantTraceOnlyAboveTheTargetTier()
     {
         for (var tier = 1; tier <= 5; tier++)
@@ -655,14 +719,14 @@ public class EspionageSystemTests
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
-    private static decimal CalculateDetectionChance(int detection, int stealth)
+    private static decimal CalculateDetectionChance(int detection, int stealth, bool playerObserver = false)
     {
         var detectedOutcomes = 0;
         for (var detectionRoll = 1; detectionRoll <= 20; detectionRoll++)
         {
             for (var stealthRoll = 1; stealthRoll <= 20; stealthRoll++)
             {
-                if (detectionRoll + detection > stealthRoll + stealth)
+                if (Stealth.IsDetectionRollSuccessful(detectionRoll, detection, stealthRoll, stealth, playerObserver))
                     detectedOutcomes++;
             }
         }

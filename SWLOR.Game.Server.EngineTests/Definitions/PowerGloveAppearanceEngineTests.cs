@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var root = (string)baseType.GetField("_rootPartial", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor)!;
                 var window = JObject.Parse(JsonDump(template.Window));
                 window["root"] = JToken.Parse(GuiLayoutComposer.Compose(template.PartialViewLayouts[root], layouts));
-                ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == "ae_part_select"), "the exported production root contains the actual picker list");
+                ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == "ae_tile_0"), "the exported production root contains the part browser's nested tile grid");
                 snapshots.Add(new JObject
                 {
                     ["name"] = name,

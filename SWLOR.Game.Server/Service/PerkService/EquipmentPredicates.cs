@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             return GetIsObjectValid(weapon) && WeaponDamage.IsSingleWeaponType(GetBaseItemType(weapon)) &&
-                   (!GetIsObjectValid(offHand) || PowerGloveEquipment.IsActivePair(creature));
+                   !GetIsObjectValid(offHand);
         }
 
         public static bool HasMainHandLightsaber(uint creature)
@@ -77,11 +77,16 @@ namespace SWLOR.Game.Server.Service.PerkService
                    GetIsObjectValid(offHand) && Item.IsAttackWeaponType(GetBaseItemType(offHand));
         }
 
-        /// <summary>Returns the second striking end of a double weapon, or a separate left-hand item.</summary>
+        /// <summary>
+        /// Returns the second striking end of a double weapon, the real glove of a Power Glove pair, or a separate
+        /// left-hand item.
+        /// </summary>
         public static uint GetOffhandAttackWeapon(uint creature)
         {
             var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
             if (GetIsObjectValid(mainHand) && Item.IsDoubleWeaponType(GetBaseItemType(mainHand))) return mainHand;
+            // The cosmetic left glove has no stats; the owned glove supplies both hands' rolls.
+            if (PowerGloveEquipment.IsActivePair(creature)) return mainHand;
             var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             // The native scheduler must never resolve the companion's inert carrier as a melee roll.
             return GetIsObjectValid(offHand) && GetBaseItemType(offHand) == BaseItem.CompanionPistol

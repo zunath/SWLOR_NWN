@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles"),
 
-                Topic("Unarmed", "Choose Unarmed for Power Glove combinations that chain setups into finishers, or for heavy strikes and counterattacks.",
+                Topic("Unarmed", "Choose Unarmed for Power Glove combinations that chain setups into finishers, or for heavy strikes and counterattacks. Both gloves strike each attack, and Unarmed abilities add the DMG of both gloves.",
                     new[]
                     {
                         Style("Unarmed - Martial Artist", "Martial Artist chains Jab into Palm Strike and finishers, with setups that also help your other weapon attacks."),

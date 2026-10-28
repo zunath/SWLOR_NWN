@@ -785,6 +785,193 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Pistol Rush rushes the full reach toward a far click and through a creature on the line", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
+        public static async Task PistolRushClampsFarClickAndPassesThroughCreatures(EngineTestContext ctx)
+        {
+            var (actor, target, _, _) = await CreatePair(ctx);
+            try
+            {
+                var (origin, unit, click) = await FindRushLane(ctx, actor);
+                var enemyPosition = origin + unit * 3f;
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                    enemyPosition.Z = GetGroundHeight(Location(ctx.Arena, enemyPosition, 0)));
+                ObjectPlugin.SetPosition(target, enemyPosition);
+                await ctx.WaitFrameAsync();
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    var reach = RushReach(ctx, origin, unit);
+                    var blocked = WeaponRepositioning.Validate(actor, GetLocation(actor), reach, 2f, 6f);
+                    ctx.Assert(blocked.Contains("another creature"),
+                        $"The creature stands on the dash line and blocks a normal move; validation: '{blocked}'");
+                    ctx.AssertEqual(string.Empty, WeaponRepositioning.Validate(actor, GetLocation(actor), reach, 2f, 6f, true),
+                        "A pass-through move ignores the creature on the line");
+                });
+
+                var ghosted = false;
+                await CastRush(ctx, actor, click, expectActivated: true);
+                await ctx.WaitUntilAsync(() =>
+                {
+                    ghosted |= HasPassThroughGhost(actor);
+                    return !WeaponRepositioning.IsMoving(actor) &&
+                           Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0;
+                }, 10f, "arrival past the creature followed by the paired impacts");
+                var moved = GetPosition(actor) - origin;
+                moved.Z = 0;
+                ctx.Assert(moved.Length() is >= 5.5f and <= 6.4f,
+                    $"A click 10m away rushes the full 6m toward it; moved {moved.Length():0.00}m");
+                ctx.Assert(NumericsVector3.Dot(moved, unit) > 4f, "The dash ended past the creature it went through");
+                ctx.Assert(ghosted, "The dash travelled as a cutscene ghost");
+                ctx.Assert(!HasPassThroughGhost(actor), "Arrival removes the temporary ghost effect");
+                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage > 0,
+                    "The creature passed through is struck by the dash");
+            }
+            finally
+            {
+                TwinPistolAbility.Cancel(actor);
+                Combat.SetAbilityHitResolutionOverride(null);
+                Stop(actor);
+                DestroyObject(actor);
+                DestroyObject(target);
+                await ctx.WaitFrameAsync();
+            }
+        }
+
+        [EngineTest("Pistol Rush passing through creatures still stops at a placeable wall", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
+        public static async Task PistolRushStillStopsAtWalls(EngineTestContext ctx)
+        {
+            var (actor, target, _, _) = await CreatePair(ctx);
+            var wall = OBJECT_INVALID;
+            try
+            {
+                var (origin, unit, click) = await FindRushLane(ctx, actor);
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    var middle = origin + unit * 3f;
+                    middle.Z = GetGroundHeight(Location(ctx.Arena, middle, 0));
+                    wall = CreateObject(SWLOR.NWN.API.NWScript.Enum.ObjectType.Placeable, RushWallBlueprint,
+                        Location(ctx.Arena, middle, (float)(Math.Atan2(unit.Y, unit.X) * 180 / Math.PI) + 90f));
+                    ctx.Track(wall);
+                    ctx.Assert(GetIsObjectValid(wall), "Create a collision placeable on the dash line");
+                });
+                await ctx.WaitFrameAsync();
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    var error = WeaponRepositioning.Validate(actor, GetLocation(actor), RushReach(ctx, origin, unit), 2f, 6f, true);
+                    ctx.Assert(error.Contains("blocked"), $"A placeable wall still blocks a pass-through move; validation: '{error}'");
+                });
+                await CastRush(ctx, actor, click, expectActivated: false);
+                await ctx.DelaySecondsAsync(1f);
+                var moved = GetPosition(actor) - origin;
+                moved.Z = 0;
+                ctx.Assert(moved.Length() < .25f, $"The refused dash did not move the caster; moved {moved.Length():0.00}m");
+                ctx.Assert(!HasPassThroughGhost(actor), "A refused dash never applies the ghost effect");
+            }
+            finally
+            {
+                TwinPistolAbility.Cancel(actor);
+                Combat.SetAbilityHitResolutionOverride(null);
+                Stop(actor);
+                DestroyObject(actor);
+                DestroyObject(target);
+                if (GetIsObjectValid(wall)) DestroyObject(wall);
+                await ctx.WaitFrameAsync();
+            }
+        }
+
+        [EngineTest("Pistol Rush clicked onto a creature ends clear of its body", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
+        public static async Task PistolRushOntoACreatureEndsClearOfIt(EngineTestContext ctx)
+        {
+            var (actor, target, _, _) = await CreatePair(ctx);
+            try
+            {
+                var (origin, unit, _) = await FindRushLane(ctx, actor);
+                var enemyPosition = origin + unit * 4f;
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                    enemyPosition.Z = GetGroundHeight(Location(ctx.Arena, enemyPosition, 0)));
+                ObjectPlugin.SetPosition(target, enemyPosition);
+                await ctx.WaitFrameAsync();
+                await CastRush(ctx, actor, Location(ctx.Arena, enemyPosition, 0), expectActivated: true);
+                await ctx.WaitUntilAsync(() => !WeaponRepositioning.IsMoving(actor) &&
+                        Ability.GetLastCompletedAbilityImpactSummary(actor) != null,
+                    10f, "arrival beside the clicked creature");
+                var bodies = CreaturePlugin.GetPersonalSpace(actor) + CreaturePlugin.GetCreaturePersonalSpace(target);
+                var gap = GetPosition(actor) - GetPosition(target);
+                gap.Z = 0;
+                ctx.Assert(gap.Length() >= bodies - WeaponRepositioning.ArrivalTolerance,
+                    $"The dash ends clear of the clicked creature; gap {gap.Length():0.00}m, bodies {bodies:0.00}m");
+                ctx.Assert(!HasPassThroughGhost(actor), "Arrival removes the temporary ghost effect");
+            }
+            finally
+            {
+                TwinPistolAbility.Cancel(actor);
+                Combat.SetAbilityHitResolutionOverride(null);
+                Stop(actor);
+                DestroyObject(actor);
+                DestroyObject(target);
+                await ctx.WaitFrameAsync();
+            }
+        }
+
+        private const string RushWallBlueprint = "_mdrn_pl_crate01";
+
+        /// <summary>
+        /// A direction with open ground for the full 6m dash, and a click 10m along it, well past the dash's reach.
+        /// </summary>
+        private static async Task<(NumericsVector3 Origin, NumericsVector3 Unit, SWLOR.NWN.API.Engine.Location Click)> FindRushLane(
+            EngineTestContext ctx, uint actor)
+        {
+            var origin = GetPosition(actor);
+            var unit = default(NumericsVector3);
+            var found = false;
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ClearAllActions();
+                for (var direction = 0; direction < 16 && !found; direction++)
+                {
+                    var angle = direction * MathF.PI / 8;
+                    unit = new NumericsVector3(MathF.Cos(angle), MathF.Sin(angle), 0);
+                    var far = origin + unit * 10f;
+                    if (far.X < 0 || far.Y < 0) continue;
+                    found = string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor),
+                        RushReach(ctx, origin, unit), 2f, 6f));
+                }
+                ctx.Assert(found, "The arena provides an open 6m dash lane");
+                ctx.SetNPCResources(actor, 100, 100);
+            });
+            return (origin, unit, Location(ctx.Arena, origin + unit * 10f, 0));
+        }
+
+        private static SWLOR.NWN.API.Engine.Location RushReach(EngineTestContext ctx, NumericsVector3 origin, NumericsVector3 unit)
+        {
+            var end = origin + unit * 6f;
+            end.Z = GetGroundHeight(Location(ctx.Arena, end, 0));
+            return Location(ctx.Arena, end, 0);
+        }
+
+        private static async Task CastRush(EngineTestContext ctx, uint actor, SWLOR.NWN.API.Engine.Location click, bool expectActivated)
+        {
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            Combat.SetAbilityHitResolutionOverride(true);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ctx.SetNPCPerkLevel(actor, PerkType.PistolRush, 1);
+                CreaturePlugin.AddFeat(actor, FeatType.PistolRush1);
+                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                var activated = UsePerkFeat.TryUseAbility(actor, OBJECT_INVALID, FeatType.PistolRush1, click);
+                ctx.AssertEqual(expectActivated, activated,
+                    $"Pistol Rush activation at {GetPositionFromLocation(click)} from {GetPosition(actor)}; " +
+                    $"denial: '{Ability.GetLastActivationDenialReason()}'");
+            });
+        }
+
+        private static bool HasPassThroughGhost(uint actor)
+        {
+            if (!GetIsObjectValid(actor)) return false;
+            for (var effect = GetFirstEffect(actor); GetIsEffectValid(effect); effect = GetNextEffect(actor))
+                if (GetEffectTag(effect) == WeaponRepositioning.PassThroughEffectTag) return true;
+            return false;
+        }
+
         [EngineTest("Blaster Slide turns aside when a creature blocks the straight retreat", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
         public static async Task BlockedRetreatTakesAnAngledLane(EngineTestContext ctx)
         {

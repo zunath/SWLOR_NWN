@@ -244,7 +244,6 @@ public class PistolAnimationRemapTests
     /// <summary>
     /// Verifies the remap synchronizes at every equipment and creature lifecycle boundary.
     /// </summary>
-    [TestCase(nameof(PistolAnimationRemap.OnClientEnter), ScriptName.OnModuleEnter)]
     [TestCase(nameof(PistolAnimationRemap.OnCreatureSpawn), ScriptName.OnCreatureSpawnAfter)]
     [TestCase(nameof(PistolAnimationRemap.OnPlayerRespawn), ScriptName.OnModuleRespawn)]
     [TestCase(nameof(PistolAnimationRemap.OnItemEquip), ScriptName.OnItemEquipValidateAfter)]
@@ -263,6 +262,28 @@ public class PistolAnimationRemapTests
     }
 
     /// <summary>
+    /// Verifies login synchronizes the remap after the saved mappings are cleared.
+    /// </summary>
+    [Test]
+    public void Login_SynchronizesAfterSavedMappingsAreCleared()
+    {
+        typeof(SavedAnimationMappings).GetMethod(nameof(SavedAnimationMappings.OnClientEnter))!
+            .GetCustomAttributes(typeof(NWNEventHandler), false)
+            .Cast<NWNEventHandler>()
+            .Select(attribute => attribute.Script)
+            .Should().Contain(ScriptName.OnModuleEnter);
+        typeof(PistolAnimationRemap).GetMethods()
+            .SelectMany(method => method.GetCustomAttributes(typeof(NWNEventHandler), false).Cast<NWNEventHandler>())
+            .Select(attribute => attribute.Script)
+            .Should().NotContain(ScriptName.OnModuleEnter, "a login handler of its own could run before the saved mappings are cleared");
+
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature", "SavedAnimationMappings.cs"));
+        source.IndexOf("PistolAnimationRemap.SynchronizeOnLogin(player);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(source.IndexOf("ReplaceObjectAnimation(player, source);", StringComparison.Ordinal));
+    }
+
+    /// <summary>
     /// Verifies persistent lifecycle boundaries discard stale throw state before forcing a remap.
     /// </summary>
     [Test]
@@ -276,7 +297,7 @@ public class PistolAnimationRemapTests
             "PistolAnimationRemap.cs"));
 
         source.Should().Contain(
-            "ResetTransientSuspensionAndSyncAnimationState(GetEnteringObject());");
+            "ResetTransientSuspensionAndSyncAnimationState(player);");
         source.Should().Contain(
             "ResetTransientSuspensionAndSyncAnimationState(OBJECT_SELF);");
         source.Should().Contain(

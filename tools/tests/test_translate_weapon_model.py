@@ -97,6 +97,49 @@ class TranslateWeaponModelTests(unittest.TestCase):
         self.assertAlmostEqual(y, math.sin(math.radians(10)), places=6)
         self.assertAlmostEqual(z, -math.cos(math.radians(10)), places=6)
 
+    def test_roll_and_yaw_rotate_position_and_orientation_about_the_pivot(self):
+        base = 12
+        source = bytearray(fixture())
+        struct.pack_into("<4f", source, base + 1024 + 20, 0, 0, 0, 1)
+        source = bytes(source)
+        # Roll +90 about Y maps +X to -Z and +Z to +X; (x, z) = (.1, .3) about pivot x=.1 -> (.4, .1).
+        rolled = translate_model(source, (0, 0, 0), 0.0, (0.1, 0.0, 0.1), roll=90.0)
+        for actual, expected in zip(struct.unpack_from("<3f", rolled, base + 1024 + 4), (.3, .2, .1)):
+            self.assertAlmostEqual(actual, expected, places=6)
+        for actual, expected in zip(struct.unpack_from("<4f", rolled, base + 1024 + 20),
+                                    (0, math.sqrt(.5), 0, math.sqrt(.5))):
+            self.assertAlmostEqual(actual, expected, places=6)
+        # Yaw +90 about Z maps +X to +Y; (x, y) = (.1, .2) about the origin -> (-.2, .1).
+        yawed = translate_model(source, (0, 0, 0), yaw=90.0)
+        for actual, expected in zip(struct.unpack_from("<3f", yawed, base + 1024 + 4), (-.2, .1, .3)):
+            self.assertAlmostEqual(actual, expected, places=6)
+        for actual, expected in zip(struct.unpack_from("<4f", yawed, base + 1024 + 20),
+                                    (0, 0, math.sqrt(.5), math.sqrt(.5))):
+            self.assertAlmostEqual(actual, expected, places=6)
+        self.assertEqual(rolled[base + 1100:base + 1116], source[base + 1100:base + 1116])
+        self.assertEqual(rolled[-16:], source[-16:])
+
+    def test_pitch_then_roll_composes_in_the_parent_frame(self):
+        base = 12
+        source = bytearray(fixture())
+        struct.pack_into("<3f", source, base + 1024 + 4, 0, 1, 0)
+        struct.pack_into("<4f", source, base + 1024 + 20, 0, 0, 0, 1)
+        # Pitch +90 sends +Y to +Z; roll +90 then sends +Z to +X.
+        rotated = translate_model(bytes(source), (0, 0, 0), 90.0, roll=90.0)
+        for actual, expected in zip(struct.unpack_from("<3f", rotated, base + 1024 + 4), (1, 0, 0)):
+            self.assertAlmostEqual(actual, expected, places=6)
+        quaternion = struct.unpack_from("<4f", rotated, base + 1024 + 20)
+        for actual, expected in zip(quaternion, (.5, .5, -.5, .5)):
+            self.assertAlmostEqual(actual, expected, places=6)
+
+    def test_rotation_writes_a_unit_orientation(self):
+        base = 12
+        source = bytearray(fixture())
+        struct.pack_into("<4f", source, base + 1024 + 20, 0, 0, 0, 2)
+        rotated = translate_model(bytes(source), (0, 0, 0), 30.0, roll=20.0, yaw=10.0)
+        quaternion = struct.unpack_from("<4f", rotated, base + 1024 + 20)
+        self.assertAlmostEqual(math.sqrt(sum(value * value for value in quaternion)), 1, places=6)
+
     def test_rejects_bad_offset(self):
         for delta in ((1, 2), (math.nan, 0, 0), (math.inf, 0, 0)):
             with self.subTest(delta=delta), self.assertRaises(ValueError):

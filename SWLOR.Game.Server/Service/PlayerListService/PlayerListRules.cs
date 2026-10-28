@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Service.PlayerListService
         // The marker the native player list showed through the name override.
         public const string AfkMarker = " [AFK]";
         public const string DMsCannotUsePartyControls = "DMs cannot use party controls.";
+        public const string NoIncomingCall = "You have no incoming call.";
+        public const string DMsCannotUseHoloCom = "DMs cannot use HoloCom.";
 
         /// <summary>
         /// DMs appear only to other DMs. Players never see a DM in the list, its count, or its actions.
@@ -75,6 +77,11 @@ namespace SWLOR.Game.Server.Service.PlayerListService
                 SendTell = EvaluateSendTell(relation),
                 ToggleHostile = EvaluateToggleHostile(relation),
                 ToggleHostileText = relation.HasTarget && relation.ViewerDislikesTarget ? "Clear Hostile" : "Mark Hostile",
+                Call = EvaluateCall(relation),
+                AnswerCall = EvaluateAnswerCall(relation),
+                DeclineCall = EvaluateDeclineCall(relation),
+                EndCall = EvaluateEndCall(relation),
+                EndCallText = relation.ViewerCallState == PlayerListCallState.Outgoing ? "Cancel Call" : "End Call",
                 Invite = EvaluateInvite(relation),
                 Remove = EvaluateRemove(relation),
                 MakeLeader = EvaluateMakeLeader(relation),
@@ -210,6 +217,62 @@ namespace SWLOR.Game.Server.Service.PlayerListService
                 return PlayerListActionState.Disabled("You cannot mark members of your party hostile.");
 
             return PlayerListActionState.Enabled();
+        }
+
+        private static PlayerListActionState EvaluateCall(PlayerListRelation relation)
+        {
+            if (!relation.HasTarget)
+                return PlayerListActionState.Disabled(SelectPlayerFirst);
+
+            if (relation.ViewerIsDM || relation.TargetIsDM)
+                return PlayerListActionState.Disabled(DMsCannotUseHoloCom);
+
+            if (relation.TargetIsSelf)
+                return PlayerListActionState.Disabled("You cannot call yourself.");
+
+            if (relation.ViewerIsInSpace)
+                return PlayerListActionState.Disabled("HoloCom cannot be used in space.");
+
+            if (relation.ViewerCallState != PlayerListCallState.None)
+                return PlayerListActionState.Disabled("You already have a call in progress.");
+
+            if (relation.TargetIsInSpace)
+                return PlayerListActionState.Disabled("That player cannot be reached from space.");
+
+            if (relation.TargetIsInCall)
+                return PlayerListActionState.Disabled("Line busy.");
+
+            return PlayerListActionState.Enabled();
+        }
+
+        private static PlayerListActionState EvaluateAnswerCall(PlayerListRelation relation)
+        {
+            if (relation.ViewerIsDM)
+                return PlayerListActionState.Disabled(DMsCannotUseHoloCom);
+
+            if (relation.ViewerCallState != PlayerListCallState.Incoming)
+                return PlayerListActionState.Disabled(NoIncomingCall);
+
+            return relation.ViewerIsInSpace
+                ? PlayerListActionState.Disabled("HoloCom cannot be used in space.")
+                : PlayerListActionState.Enabled();
+        }
+
+        private static PlayerListActionState EvaluateDeclineCall(PlayerListRelation relation)
+        {
+            if (relation.ViewerIsDM)
+                return PlayerListActionState.Disabled(DMsCannotUseHoloCom);
+
+            return relation.ViewerCallState == PlayerListCallState.Incoming
+                ? PlayerListActionState.Enabled()
+                : PlayerListActionState.Disabled(NoIncomingCall);
+        }
+
+        private static PlayerListActionState EvaluateEndCall(PlayerListRelation relation)
+        {
+            return relation.ViewerCallState is PlayerListCallState.Outgoing or PlayerListCallState.Connected
+                ? PlayerListActionState.Enabled()
+                : PlayerListActionState.Disabled("You have no call to end.");
         }
 
         private static PlayerListActionState EvaluateInvite(PlayerListRelation relation)

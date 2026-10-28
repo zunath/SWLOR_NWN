@@ -283,9 +283,9 @@ internal sealed partial class StoredObjectData
         changed |= ApplyRevision(item, ArkanianArmorStatRevisionCatalog.Changes,
             ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision,
             current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance), difference);
-        changed |= ApplyRevision(item, CarapaceBracerStatRevisionCatalog.Changes,
-            CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision,
-            ReviseCarapaceProtection, difference);
+        changed |= ApplyRevision(item, RetiredDefenseStatRevisionCatalog.Changes,
+            RetiredDefenseStatRevisionCatalog.RevisionVariable, RetiredDefenseStatRevisionCatalog.CurrentRevision,
+            ReviseRetiredDefense, difference);
         return changed;
     }
 
@@ -317,14 +317,10 @@ internal sealed partial class StoredObjectData
         yield return new LootStatChange(ItemPropertyType.Resistance, (int)ResistanceType.Ice, resistance, resistance + missingBase);
     }
 
-    /// <summary>Mirrors <c>LootStatRevisionMigration.ReviseCarapaceProtection</c>.</summary>
-    private static IEnumerable<LootStatChange> ReviseCarapaceProtection(Node item)
-    {
-        // The combat migration converted older copies' base Poison Defense into Resistance.
-        if (ReadTotal(item, ItemPropertyType.Defense, (int)CombatDamageType.Poison).Total == 0 &&
-            ReadTotal(item, ItemPropertyType.Resistance, (int)ResistanceType.Poison).Total >= 30)
-            yield return new LootStatChange(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 30, 0);
-    }
+    /// <summary>Mirrors <c>LootStatRevisionMigration.ReviseRetiredDefense</c>.</summary>
+    private static IEnumerable<LootStatChange> ReviseRetiredDefense(Node item) =>
+        RetiredDefenseStatRevisionCatalog.ConvertedResistanceChanges(ReadResRef(item),
+            subtype => ReadTotal(item, ItemPropertyType.Resistance, subtype).Total).ToArray();
 
     /// <summary>
     /// Shifts one property by the blueprint difference, as <c>LootStatRevisionMigration.ApplyChange</c> does, and

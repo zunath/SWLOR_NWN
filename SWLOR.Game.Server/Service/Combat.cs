@@ -5285,8 +5285,10 @@ namespace SWLOR.Game.Server.Service
             }
             // Projectile callers retain the entire converted hit, including its reactions and
             // attribution, until arrival. Native swings and ability impacts keep next-frame dispatch.
+            // Native swings resolve in a script context with no object, where a bare DelayCommand has no
+            // OBJECT_SELF to own it and is silently dropped; module ownership keeps the Force hit queued.
             if (convertedDamageScheduler != null) convertedDamageScheduler(ApplyConvertedDamage);
-            else DelayCommand(0.0f, ApplyConvertedDamage);
+            else AssignCommand(GetModule(), () => DelayCommand(0.0f, ApplyConvertedDamage));
             return forcePortion;
         }
 
@@ -11716,7 +11718,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             bool usesQueuedNaturalWeapon = false,
             bool requireMatchingSkill = false,
-            int? triggeringWeaponDamage = null)
+            int? triggeringWeaponDamage = null,
+            bool abilityImpact = false)
         {
             if (!IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
                 return 0;
@@ -11725,9 +11728,11 @@ namespace SWLOR.Game.Server.Service
                 return triggeringWeaponDamage.Value;
 
             var weapon = GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon, requireMatchingSkill);
-            return GetIsObjectValid(weapon)
-                ? WeaponDamage.GetEffectiveDMG(activator, weapon)
-                : 0;
+            if (!GetIsObjectValid(weapon))
+                return 0;
+            return abilityImpact
+                ? WeaponDamage.GetAbilityDMG(activator, weapon, skillType)
+                : WeaponDamage.GetEffectiveDMG(activator, weapon);
         }
 
         /// <summary>

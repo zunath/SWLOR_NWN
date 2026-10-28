@@ -93,7 +93,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 8
         },
         "Param1": {
           "type": "byte",
@@ -109,7 +109,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 6
+          "value": 2
         }
       },
       {
@@ -253,6 +253,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dan_h_cloak"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CARAPACE_BRACER_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

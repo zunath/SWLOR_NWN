@@ -183,31 +183,42 @@ public class TintMapReviewTests
         definition.Should().Contain("row.AddColorPicker()");
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
         definitionMethods["BuildColorPalette"].ToString().Should().Contain("model => model.ColorSheetResref");
-        definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildColorPalette(",
+        definitionMethods["BuildColours"].ToString().Should().Contain("row.AddGroup(BuildColorPalette)",
             "appearance and equipment presets must share the same individual-button palette construction");
+        definitionMethods["BuildAppearanceEditor"].ToString().Should().Contain("BuildColours(colours, BuildBodySwatches)");
+        definitionMethods["BuildEquipmentEditor"].ToString().Should().Contain("BuildColours(colours, BuildItemSwatches)");
         definition.Should().Contain("model => model.OnClickColorPalette(paletteIndex)");
         definition.Should().NotContain(".SetText(\"Custom Color\")");
         definition.Should().NotContain("CustomTintSelectionText");
         viewModel.Should().NotContain("CustomTintSelectionText");
-        definition.Should().Contain(".BindValue(model => model.CustomTintRed)");
-        definition.Should().Contain(".BindValue(model => model.CustomTintGreen)");
-        definition.Should().Contain(".BindValue(model => model.CustomTintBlue)");
+        definition.Should().Contain("model => model.CustomTintRed");
+        definition.Should().Contain("model => model.CustomTintGreen");
+        definition.Should().Contain("model => model.CustomTintBlue");
         definition.Should().NotContain("Use Preset Color");
         definition.Should().NotContain("OnResetTintColor");
         viewModel.Should().NotContain("OnResetTintColor");
         definition.Should().NotContain("IsCustomTintPickerVisible");
         definitionMethods["BuildEquipmentSelection"].ToString().Should().NotContain("BuildCustomTintEditor");
-        definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
-        definitionMethods["BuildArmorEditor"].ToString().Should().Contain("BuildCustomTintEditor(col)",
-            "the armor picker must live in the full-width controls column below the compact palette row");
+        definitionMethods["BuildWeaponEditor"].ToString().Should().NotContain("BuildColours",
+            "weapons have no colour channels");
+        var colours = definitionMethods["BuildColours"].ToString();
+        colours.Should().Contain("BuildCustomTintEditor(col)",
+            "the picker lives in the colour column below the fixed-size palette group");
+        colours.IndexOf("BuildColorPalette", StringComparison.Ordinal).Should()
+            .BeLessThan(colours.IndexOf("BuildCustomTintEditor(col)", StringComparison.Ordinal));
         definitionMethods["BuildColorPalette"].ToString().Should().NotContain("BuildCustomTintEditor",
-            "placing the picker below the palette partial clips it at the parent row boundary");
+            "placing the picker inside the palette group clips it at the group boundary");
         var customTintEditor = definitionMethods["BuildCustomTintEditor"].ToString();
         customTintEditor.Should().Contain("BindIsVisible(model => model.IsCustomTintAvailable)",
             "unavailable custom controls must collapse instead of reserving dead space");
-        customTintEditor.Should().Contain("SetHeight(128f)",
-            "the picker should leave room for the armor part grid in the same window");
-        customTintEditor.Should().NotContain("SetHeight(176f)");
+        customTintEditor.Should().Contain(".SetWidth(PickerWidth)");
+        customTintEditor.Should().Contain(".SetHeight(PickerHeight)");
+        definition.Should().Contain("private const float PickerWidth = 196f;");
+        definition.Should().Contain("private const float PickerHeight = 100f;",
+            "the picker should leave room for the palette in the colour column");
+        foreach (var channel in new[] { "R", "G", "B" })
+            customTintEditor.Should().Contain($"AddRgbField(fields, \"{channel}\", model => model.CustomTint");
+        definitionMethods["AddRgbField"].ToString().Should().Contain(".BindValue(binding)");
         definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");

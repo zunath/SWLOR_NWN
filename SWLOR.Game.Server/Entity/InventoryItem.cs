@@ -15,5 +15,11 @@ namespace SWLOR.Game.Server.Entity
         public int Quantity { get; set; }
         public string Data { get; set; }
         public string IconResref { get; set; }
+        /// <summary>
+        /// UTC ticks of the deposit, used to page items oldest first. Items deposited before this was recorded
+        /// read and index as 0, so they stay ahead of newer deposits.
+        /// </summary>
+        [Indexed]
+        public long DepositedTicks { get; set; }
     }
 }

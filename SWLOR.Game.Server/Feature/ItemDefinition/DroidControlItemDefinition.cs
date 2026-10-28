@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -90,7 +91,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return $"This item can be used in {timeToWait}.";
                         }
 
-                        // A droid posted at a ship's station stays there and does not count toward the follow limit.
+                        // A droid posted at a ship's station or a holding stays there and does not count toward the follow limit.
+                        if (HoldingRules.IsDroidPosting(Droid.GetPostedShipId(item)))
+                        {
+                            return "This droid works a Planetary Holding. Recall it in the Holdings window first.";
+                        }
+
                         var activationError = DroidCrewRules.GetActivationError(Droid.IsPosted(item), GetIsObjectValid(droid) ? 1 : 0);
                         if (!string.IsNullOrEmpty(activationError))
                         {
@@ -129,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                         if (Droid.IsPosted(item))
                         {
-                            return "Droid AI cannot be adjusted while the droid is posted at a ship's station.";
+                            return "Droid AI cannot be adjusted while the droid is posted at a ship's station or a holding.";
                         }
 
                         var perkLevel = Perk.GetPerkLevel(user, PerkType.DroidAssembly);

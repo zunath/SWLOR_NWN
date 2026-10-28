@@ -282,12 +282,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var pressure = Trade.GetPressure(state, type);
                 var units = CargoHoldRules.GetUnits(cargo, type);
                 names.Add(commodity.Name);
-                tooltips.Add($"{commodity.Description} Volume {commodity.Volume} per unit.");
+                tooltips.Add(commodity.IsHoldingGood
+                    ? $"{commodity.Description} Volume {commodity.Volume} per unit. Only Planetary Holdings make it; exchanges buy it but never sell it."
+                    : $"{commodity.Description} Volume {commodity.Volume} per unit.");
                 roles.Add(GetRoleText(market.Role, commodity.Legality, exchange.IsBlackMarket));
-                buyPrices.Add(TradeRules.GetQuotedBuyPrice(commodity, market, pressure, social, standingBonus, _dock.TariffPercent).ToString());
+                buyPrices.Add(commodity.IsHoldingGood
+                    ? "-"
+                    : TradeRules.GetQuotedBuyPrice(commodity, market, pressure, social, standingBonus, _dock.TariffPercent).ToString());
                 sellPrices.Add(TradeRules.GetQuotedSellPrice(commodity, market, pressure, social, standingBonus, _dock.TariffPercent).ToString());
                 aboard.Add(units.ToString());
-                canBuy.Add(hasShip && capacity > 0);
+                canBuy.Add(hasShip && capacity > 0 && !commodity.IsHoldingGood);
                 canSell.Add(hasShip && units > 0);
             }
 

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -81,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
 
                 AddTradeExchangeResponse(page, player, landingWaypointTag);
+                AddHoldingsResponse(page, player, landingWaypointTag);
             }
 
             page.AddResponse("View Shop", () =>
@@ -124,6 +126,38 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 Close();
                 var payload = new TradeExchangePayload(exchange, landingAreaResref);
                 Gui.TogglePlayerWindow(player, GuiWindowType.TradeExchange, payload, Owner);
+            });
+        }
+
+        /// <summary>
+        /// Planetary Holdings (plan section 26): every NPC planet starport with an exchange sells its planet's holdings
+        /// and runs the player's holdings. Player-city starports and ship-only locations have none.
+        /// </summary>
+        private void AddHoldingsResponse(ConversationMenuPage page, uint player, string landingWaypointTag)
+        {
+            var area = GetArea(Owner);
+            if (!string.IsNullOrWhiteSpace(Property.GetPropertyId(area)))
+                return;
+
+            var exchange = TradeLookup.GetExchangeForPlanet(Planet.GetPlanetType(area));
+            var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag)
+                ? GetLocalLocation(Owner, "STARPORT_LANDING_WAYPOINT")
+                : GetLocation(GetWaypointByTag(landingWaypointTag));
+            var landingArea = GetAreaFromLocation(landingLocation);
+            if (exchange == TradeExchangeType.Invalid ||
+                HoldingRules.GetHoldingsAt(exchange).Count == 0 ||
+                !GetIsObjectValid(landingArea) ||
+                GetLocalBool(landingArea, StarshipDockReturn.ShipOnlyLocationVariable))
+            {
+                return;
+            }
+
+            var landingAreaResref = GetResRef(landingArea);
+            page.AddResponse("Planetary Holdings", () =>
+            {
+                Close();
+                var payload = new HoldingsPayload(exchange, landingAreaResref);
+                Gui.TogglePlayerWindow(player, GuiWindowType.PlanetaryHoldings, payload, Owner);
             });
         }
 

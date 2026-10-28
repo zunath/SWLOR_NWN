@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -541,7 +542,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var controller in Droid.GetControllers(player))
             {
                 var shipId = Droid.GetPostedShipId(controller);
-                if (string.IsNullOrWhiteSpace(shipId))
+                if (string.IsNullOrWhiteSpace(shipId) || HoldingRules.IsDroidPosting(shipId))
                     continue;
 
                 var droidId = Droid.GetDroidId(controller);
@@ -564,7 +565,8 @@ namespace SWLOR.Game.Server.Service
         {
             var owner = GetModuleItemLostBy();
             var controller = GetModuleItemLost();
-            if (!GetIsPC(owner) || GetResRef(controller) != Droid.DroidControlItemResref || !Droid.IsPosted(controller))
+            if (!GetIsPC(owner) || GetResRef(controller) != Droid.DroidControlItemResref || !Droid.IsPosted(controller) ||
+                HoldingRules.IsDroidPosting(Droid.GetPostedShipId(controller)))
                 return;
 
             var shipId = Droid.GetPostedShipId(controller);

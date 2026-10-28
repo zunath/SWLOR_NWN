@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service.TradeService
 
             return exports.Count > 0
                 ? exports
-                : TradeCatalog.Commodities.Where(x => x.Legality == CommodityLegality.Legal).Select(x => x.Type).ToList();
+                : TradeCatalog.Commodities.Where(x => x.Legality == CommodityLegality.Legal && !x.IsHoldingGood).Select(x => x.Type).ToList();
         }
 
         /// <summary>

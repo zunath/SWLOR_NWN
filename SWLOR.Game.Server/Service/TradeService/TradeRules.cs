@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Service.TradeService
                 return TradeOrder.Refused(TradeRefusal.InvalidAmount);
             if (commodity == null || market == null)
                 return TradeOrder.Refused(TradeRefusal.NotTradedHere);
+            if (commodity.IsHoldingGood)
+                return TradeOrder.Refused(TradeRefusal.HoldingsOnly);
             if (capacity <= 0)
                 return TradeOrder.Refused(TradeRefusal.NoCargoBay);
 
@@ -107,6 +109,7 @@ namespace SWLOR.Game.Server.Service.TradeService
                 TradeRefusal.NoneAboard => "The ship carries none of that commodity.",
                 TradeRefusal.ShipNotDocked => "That ship is not docked here.",
                 TradeRefusal.NoExchangeHere => "This starport has no Trade Exchange.",
+                TradeRefusal.HoldingsOnly => "Exchanges do not sell that. Only Planetary Holdings make it.",
                 _ => string.Empty,
             };
         }

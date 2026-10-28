@@ -441,7 +441,8 @@ ZONES = [
      "SPACE_MIDRIM_NEBULA: T3 and T4 ships at the open-orbit weights, every W5b role; no Sith/Mandalorian capitals.",
      "Kills only."],
     ["Korriban Debris Field", "space_korrdebris", "T5", "Korriban Orbit (beside the Mid Rim 2 arrival)", 75, 56,
-     "SPACE_RESOURCES_KORRIBAN_DEBRIS: Gostian 25, Ardanium 3 (3x Korriban Orbit's Ardanium weight, 11% of nodes against 4%).",
+     "SPACE_RESOURCES_KORRIBAN_DEBRIS: Idailia, Barinium and Gostian 25 each, Ardanium 4 (W11e, mining.py; 5% of nodes "
+     "against Korriban Orbit's 4%).",
      "SPACE_KORRIBAN_DEBRIS: T5 ships at the open-orbit weights, minelayers x2 (3840), derelict turrets t5derturret1/2 "
      "2400 each (turret rows 2153/2154 on the t5platform preset), Sith/Mandalorian capitals as in the T5 orbits.",
      "SALVAGE_AURODIUM_PERCENT 15 (default 4): 3.75x the Aurodium per salvage cycle on T5-T6 wrecks."],
@@ -479,6 +480,7 @@ def income_rows():
     import agents
     import derelicts
     import events
+    import mining
     import scanning
     import slicing
     import trade
@@ -528,6 +530,16 @@ def income_rows():
 
     w = derelicts.WILD_SPACE_INDEX
     team = derelicts.SALVAGE_REFERENCE_INDUSTRY
+
+    def best_area(key):
+        """The best area of each tier for a mining row (a miner goes where the rocks pay most)."""
+        out = {}
+        for r in mining.rows():
+            label = "T5.5" if r["tier"] == mining.WILD_SPACE_TIER else f"T{r['tier']}"
+            if r[key] > 0:
+                out[label] = max(out.get(label, 0.0), r[key])
+        return out
+
     return [
         ("Combat (normal kills, 60 an hour, space lockboxes)", cells(combat), "baseline", "trade.py, slicing.py"),
         ("Wild Space combat (Rift Raiders, stolen cargo)", cells({"T5.5": combat["T5.5"]}), "100-140%", "wildspace.py"),
@@ -557,6 +569,10 @@ def income_rows():
         ("Incursion (2 active hours)", cells(tiers(incursion(2))), "100-140%", "events.py"),
         ("Rift Run (solo, typical pace)", cells({**{f"T{t}": rift(10 * t) for t in range(1, 6)}, "T5.5": rift(55)}),
          "100-140%", "events.py"),
+        ("Mining, three Mining Lasers, no perks (best area of the tier)", cells(best_area("credits")), "100-140%",
+         "mining.py"),
+        ("Strip mining, Industrial, no perks (best area of the tier)", cells(best_area("strip")), "100-140%", "mining.py"),
+        ("Mining with Prospector III and Rapid Extraction II", cells(best_area("perks")), "perks (flagged)", "mining.py"),
     ]
 
 

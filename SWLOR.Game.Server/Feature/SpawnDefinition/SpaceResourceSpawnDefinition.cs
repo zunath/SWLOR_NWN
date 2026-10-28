@@ -165,11 +165,18 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_RESOURCES_KORRIBAN_DEBRIS", "Space Resources - Korriban Debris Field")
                 .ResourceDespawnDelay(60) // 1 hour, as Korriban Orbit
+                // W11e (mining.py): a field of mixed rocks; Gostian alone at a zone's density paid 148% of tier 5 combat.
+                .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(25)
+
                 .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
                 .WithFrequency(25)
 
                 .AddSpawn(ObjectType.Placeable, "asteroid_arda")
-                .WithFrequency(3);
+                .WithFrequency(4);
         }
 
         private void DathomirOrbit()

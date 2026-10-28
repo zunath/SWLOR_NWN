@@ -247,10 +247,9 @@ AREA_RESOURCE_TABLES = {
     "space_wsionstorm": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsmagnetar": "SPACE_RESOURCES_KORRIBAN_DEBRIS",
     "space_wsredgiant": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsgraveyrd": "SPACE_RESOURCES_KORRIBAN_DEBRIS",
 }
-# Income check (assumed; measure in a client): an active miner at the system pulls MINER_ORE_PER_HOUR ore, about one
-# asteroid of 6 ore a minute with two matched lasers (finding it, flying in, 2-3 six-second cycles), and ore is valued
-# at what an NPC store pays (40% of the item's Cost). A drill must stay under an hour of that a day, droid included.
-MINER_ORE_PER_HOUR = 360
+# Income check: an active miner's credits an hour at the system come from mining.py (three matched Mining Lasers, no
+# perks; W11e replaced the assumed 360 ore an hour), ore valued at what an NPC store pays (40% of the item's Cost). A
+# drill must stay under an hour of that a day, droid included.
 STORE_BUY_RATE = 0.40
 DRILL_MAX_MINING_HOURS = 1.0
 
@@ -345,13 +344,19 @@ def drill_units_per_day(industry=0, efficiency=0):
     return DRILL_UNITS_PER_DAY * (1 + drill_droid_percent(industry, efficiency) / 100)
 
 
+def miner_rate(area):
+    """An active miner's credits an hour in the area (mining.py)."""
+    import mining
+    return mining.mining_rate(area)[1]
+
+
 def drill_income():
     """Per anchor area: tier, credits a day (no droid, best droid), a miner's credits an hour, and the mining hours."""
     rows = []
     for area in sorted(drill_tables(), key=lambda a: (system_tier(a), a)):
         unit = ore_value(area)
         day, best = drill_units_per_day() * unit, drill_units_per_day(MAX_INDUSTRY, BEST_EFFICIENCY_PERCENT) * unit
-        miner = MINER_ORE_PER_HOUR * unit
+        miner = miner_rate(area)
         rows.append(dict(area=area, tier=system_tier(area), unit=unit, day=day, best=best, miner=miner,
                          hours=day / miner, best_hours=best / miner))
     return rows
@@ -550,7 +555,7 @@ def stations_tab(Sheet):
         ["Beacon access", " / ".join(BEACON_ACCESS), "", "", "", "", "", "who may jump to and from it (Edit Taxes permission), citizens by default; allies are the citizens of the stations the mayor lists"],
         ["Wild Space", "never", "", "", "", "", "", "no beacon in Wild Space, and no jump into or out of it"],
     ])
-    s.title(f"Asteroid Drill income against an active miner ({MINER_ORE_PER_HOUR} ore an hour, ore at {STORE_BUY_RATE:.0%} of Cost)")
+    s.title(f"Asteroid Drill income against an active miner (mining.py: three matched Mining Lasers, ore at {STORE_BUY_RATE:.0%} of Cost)")
     s.table(["Anchor area", "Tier", "Credits / ore", "Drill / day", "Best droid / day", "Miner / hour", "Hours", "Notes"],
             [[r["area"], r["tier"], round(r["unit"], 1), round(r["day"]), round(r["best"]), round(r["miner"]),
               f"{r['hours']:.2f} / {r['best_hours']:.2f}", "mining hours a day without / with the best droid"]

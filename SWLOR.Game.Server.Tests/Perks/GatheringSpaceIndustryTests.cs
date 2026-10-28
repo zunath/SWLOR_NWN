@@ -233,9 +233,10 @@ public class GatheringSpaceIndustryTests
         table.GetRandomItemWithRareChance(10, 10).Resref.Should().BeOneOf(items);
     }
 
-    [TestCase(0, 0.10)]
-    [TestCase(10, 0.19)]
-    [TestCase(20, 0.28)]
+    // W11e (mining.py): an Ardanium rock's normal pick is 1 Zinsiam in 289, so Deep Core's points are nearly all of it.
+    [TestCase(0, 0.0035)]
+    [TestCase(10, 0.103)]
+    [TestCase(20, 0.203)]
     public void DeepCore_RaisesTheRareShareByTheBonusPointsOfTheRemainder(int bonus, double expectedShare)
     {
         var table = new HarvestingLootTableDefinition().BuildLootTables()["ASTEROID_ARDANIUM"];

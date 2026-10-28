@@ -3551,6 +3551,44 @@
                       "type": "resref",
                       "value": "sithcap1"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutt Cartel Enforcer Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4huttenfgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutt Cartel Enforcer Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4huttenfint"
+                    }
                   }
                 ]
               },

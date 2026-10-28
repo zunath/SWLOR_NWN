@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> SignatureTooltips { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<float> SignatureProgress { get => Get<GuiBindingList<float>>(); set => Set(value); }
         public GuiBindingList<bool> SignatureCanJump { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> SignatureCanBoard { get => Get<GuiBindingList<bool>>(); set => Set(value); }
         public string SweepText { get => Get<string>(); set => Set(value); }
         public bool SweepEnabled { get => Get<bool>(); set => Set(value); }
         public GuiBindingList<string> ContactLines { get => Get<GuiBindingList<string>>(); set => Set(value); }
@@ -106,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SignatureTooltips = new GuiBindingList<string>();
             SignatureProgress = new GuiBindingList<float>();
             SignatureCanJump = new GuiBindingList<bool>();
+            SignatureCanBoard = new GuiBindingList<bool>();
             SweepText = ScannerHudRules.SweepText(false, 0);
             SweepEnabled = false;
             ContactLines = new GuiBindingList<string>();
@@ -259,6 +261,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AssignList(_scannerRows.Select(x => x.Tooltip).ToList(), () => SignatureTooltips, v => SignatureTooltips = v);
             AssignList(_scannerRows.Select(x => x.Percent / 100f).ToList(), () => SignatureProgress, v => SignatureProgress = v);
             AssignList(_scannerRows.Select(x => x.CanJump).ToList(), () => SignatureCanJump, v => SignatureCanJump = v);
+            AssignList(_scannerRows.Select(x => x.CanBoard).ToList(), () => SignatureCanBoard, v => SignatureCanBoard = v);
 
             var secondsLeft = Space.GetSensorSweepSecondsLeft(Player);
             Assign(ScannerHudRules.SweepText(hasLauncher, secondsLeft), () => SweepText, v => SweepText = v);
@@ -274,6 +277,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             Space.BeginSignatureJump(Player, _scannerRows[index].SignatureId);
+            RefreshScanner();
+        };
+
+        /// <summary>The row's Board button: <c>/board</c> on that signature's derelict.</summary>
+        public Action OnClickBoard() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= _scannerRows.Count)
+                return;
+
+            if (Space.TargetDerelictSignature(Player, _scannerRows[index].SignatureId))
+                Space.BoardDerelict(Player);
+            RefreshScanner();
+        };
+
+        /// <summary>The row's Salvage button: <c>/salvage</c> on that signature's derelict.</summary>
+        public Action OnClickSalvage() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= _scannerRows.Count)
+                return;
+
+            if (Space.TargetDerelictSignature(Player, _scannerRows[index].SignatureId))
+                Space.SendSalvageTeam(Player);
             RefreshScanner();
         };
 

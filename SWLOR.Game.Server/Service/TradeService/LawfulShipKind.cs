@@ -6,5 +6,6 @@ namespace SWLOR.Game.Server.Service.TradeService
         Invalid = 0,
         CustomsPatrol = 1,
         Convoy = 2,
+        HuttEnforcer = 3,
     }
 }

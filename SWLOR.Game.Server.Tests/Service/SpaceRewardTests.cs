@@ -16,6 +16,8 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -515,5 +517,33 @@ public class SpaceRewardTests
         for (var dir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); dir != null; dir = dir.Parent)
             if (File.Exists(Path.Combine(dir.FullName, "SWLOR.Game.Server.sln"))) return dir.FullName;
         throw new DirectoryNotFoundException("Could not locate the repository.");
+    }
+
+    [Test]
+    public void PrototypeTech_IsAnEconomyItemWithEverySourceItWasGiven()
+    {
+        using var tech = ReadBlueprint(RevampRewardCatalog.PrototypeTechResref);
+        var root = tech.RootElement;
+        HasNoEconomy(root).Should().BeFalse();
+        Item.IsEconomyRestricted(
+                (BaseItem)root.GetProperty("BaseItem").GetProperty("value").GetInt32(),
+                root.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString(),
+                noEconomy: false,
+                hasInventoryIcon: true)
+            .Should().BeFalse("item search and pickers list it");
+
+        // W12b: space slicing picks it from locked caches and wreck data cores.
+        SpaceSlicingTuning.BonusWeights[SlicingSourceType.LockedCache].Should().ContainKey(SpaceSlicingRewardKind.PrototypeTech);
+        SpaceSlicingTuning.BonusWeights[SlicingSourceType.WreckDataCore].Should().ContainKey(SpaceSlicingRewardKind.PrototypeTech);
+
+        // W12c: the Wild Space tables and the elite and boss wrecks' rare finds there.
+        var tables = new SpaceLootTableDefinition().BuildLootTables();
+        foreach (var table in new[] { "SPACE_BASIC_WS_RARES", "SPACE_ELITE_WS", "SPACE_BOSS_WS" })
+            tables[table].Select(x => x.Resref).Should().Contain(RevampRewardCatalog.PrototypeTechResref, table);
+        WildSpaceTuning.RareFindExtras[WreckDifficulty.Elite].PrototypePercent.Should().BeGreaterThan(0);
+        WildSpaceTuning.RareFindExtras[WreckDifficulty.Boss].PrototypePercent.Should().BeGreaterThan(0);
+
+        // W9b/W9c: it is spent on research jobs and on the Prototype Core.
+        RevampComponentCatalog.Recipes.Should().Contain(x => x.Components.Any(c => c.Resref == RevampRewardCatalog.PrototypeTechResref));
     }
 }

@@ -27,5 +27,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>The skill the crew member earns combat points in: the seat's skill.</summary>
         public SkillType Skill { get; init; } = SkillType.Piloting;
+
+        /// <summary>
+        /// Whether the crew member is using one of their own Piloting abilities rather than firing a module: the ship
+        /// activates it, and the crew member pays its STM and recast and lends it their perks, Social and Leadership
+        /// (<see cref="SpaceCrew.GetAbilityUser"/>).
+        /// </summary>
+        public bool IsAbility { get; init; }
     }
 }

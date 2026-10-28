@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                     .Level(1)
                     .HasRecastDelay(RecastGroup.BulwarkHail, 6f),
                 (activator, target, _, _) =>
-                    Space.Goad(activator, target, Stat.ScaleEffect(HailEnmity, GetAbilityScore(activator, AbilityType.Vitality))));
+                    Space.Goad(activator, target, Stat.ScaleEffect(HailEnmity, GetAbilityScore(SpaceCrew.GetAbilityUser(activator), AbilityType.Vitality))));
 
             PilotingAbilityConfiguration.ConfigureAreaGoad(
                 _builder.Create(FeatType.BulwarkHail2, PerkType.BulwarkHail)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                         target,
                         SpaceRadii.NearTarget,
                         int.MaxValue,
-                        Stat.ScaleEffect(HailAreaEnmity, GetAbilityScore(activator, AbilityType.Vitality))));
+                        Stat.ScaleEffect(HailAreaEnmity, GetAbilityScore(SpaceCrew.GetAbilityUser(activator), AbilityType.Vitality))));
 
             return _builder.Build();
         }

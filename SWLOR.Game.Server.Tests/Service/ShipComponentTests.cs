@@ -399,4 +399,39 @@ public class ShipComponentTests
         var components = new ShipComponentRecipes().BuildRecipes();
         components.Values.Should().OnlyContain(x => !ShipComponents.InheritsTraits(x));
     }
+
+    // Ship Management (W11b): fitted module and hull traits, read-only
+
+    [Test]
+    public void ShipManagement_ModuleTooltips_NameTheirTraitsAndWhatTheyDo()
+    {
+        ShipTraitRules.ModuleTooltip("Laser Cannon Mk III", null).Should().Be("Laser Cannon Mk III");
+        ShipTraitRules.ModuleTooltip("Laser Cannon Mk III", new List<ShipComponentTraitType>()).Should().Be("Laser Cannon Mk III");
+
+        var traits = new List<ShipComponentTraitType> { ShipComponentTraitType.HuttCargoCoupling };
+        var tooltip = ShipTraitRules.ModuleTooltip("Laser Cannon Mk III", traits);
+        tooltip.Should().StartWith("Laser Cannon Mk III [Hutt Cargo Coupling]\n");
+        tooltip.Should().EndWith(ShipTraitRules.DescribeLines(traits).Single());
+    }
+
+    [Test]
+    public void ShipManagement_HullTraits_ShowTheirNamesAndHullEffects()
+    {
+        ShipTraitRules.HullTraitsText(null).Should().Be("Hull traits: none");
+        ShipTraitRules.HullTraitsText(new List<ShipComponentTraitType>()).Should().Be("Hull traits: none");
+        ShipTraitRules.HullTraitsTooltip(null).Should().NotBeNullOrWhiteSpace();
+
+        var traits = new List<ShipComponentTraitType> { ShipComponentTraitType.HuttCargoCoupling, ShipComponentTraitType.CorellianDriveKit };
+        ShipTraitRules.HullTraitsText(traits).Should().Be("Hull traits: Hutt Cargo Coupling, Corellian Drive Kit");
+        ShipTraitRules.HullTraitsTooltip(traits).Split('\n').Should().Equal(ShipTraitRules.DescribeHullLines(traits));
+
+        var root = FindRepositoryRoot().FullName;
+        var model = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs"));
+        System.Text.RegularExpressions.Regex.Matches(model, @"ShipTraitRules\.ModuleTooltip\(").Count
+            .Should().Be(25, "every High, Low and Configuration slot and the Mid slot loop");
+        model.Should().NotContain("Tooltip = detail.Name;");
+        model.Should().Contain("HullTraitsText = ShipTraitRules.HullTraitsText(ship.Status.HullTraits);");
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ShipManagementDefinition.cs"))
+            .Should().Contain(".BindText(model => model.HullTraitsText)");
+    }
 }

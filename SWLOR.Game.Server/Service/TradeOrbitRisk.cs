@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             DelayCommand(TradeTuning.ScanDelaySeconds, () => RollHostilePatrols(player, area, orbit));
+            DelayCommand(TradeTuning.ScanDelaySeconds, () => RollHuttEnforcers(player, area));
             DelayCommand(TradeTuning.ScanDelaySeconds, () => RollCustomsScan(player, area, orbit));
             DelayCommand(TradeTuning.AmbushDelaySeconds, () => RollPirateAmbush(player, area, orbit));
         }

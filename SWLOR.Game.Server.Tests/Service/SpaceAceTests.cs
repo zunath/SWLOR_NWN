@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -103,8 +104,9 @@ public class SpaceAceTests
     [TestCase("SPACE_DANTOOINE_ORBIT", "SPACE_DATHOMIR_ORBIT")]
     public void AreaTables_SpawnTheShipsOfTheTableTheyUsedToShare(string table, string parent)
     {
+        // The ace is the area's own, and so are the Hutt Cartel enforcers on the Smuggler's Moon lanes (W11b).
         static IEnumerable<(string, int, bool)> Ships(SpawnTable t) =>
-            t.Spawns.Where(x => !x.IsRare).Select(x => (x.Resref, x.Weight, x.IsRare)).OrderBy(x => x.Resref);
+            t.Spawns.Where(x => !x.IsRare && !HuttEnforcerRules.IsEnforcer(x.Resref)).Select(x => (x.Resref, x.Weight, x.IsRare)).OrderBy(x => x.Resref);
 
         Ships(SpawnTables[table]).Should().Equal(Ships(SpawnTables[parent]));
     }

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
 
             // Every enemy it debuffs pays the pilot Piloting XP, whether or not the pilot has hit it.
             foreach (var ship in affected)
-                CombatPoint.AddCombatPoint(activator, ship, SkillType.Piloting, 2);
+                CombatPoint.AddCombatPoint(SpaceCrew.GetAbilityUser(activator), ship, SkillType.Piloting, 2);
         }
     }
 }

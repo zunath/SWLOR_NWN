@@ -57,6 +57,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = $"What would you like to do?";
 
+            // A starship docked at a derelict: its hatch leads across to the derelict (plan section 28).
+            if (Space.TryGetDockedDerelictName(propertyId, out var derelictName))
+            {
+                page.AddResponse($"Cross to the {derelictName}", () => Space.CrossToDerelict(player, propertyId));
+                return;
+            }
+
             // The existence of a current position means this is a starship currently in space.
             // Players should only have the "Emergency Exit" option.
             if (property != null &&

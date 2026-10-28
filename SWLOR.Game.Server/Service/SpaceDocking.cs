@@ -115,6 +115,13 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Whether the ship is docked aboard another, and that ship's name.</summary>
         public static bool IsDockedAboardHost(PlayerShip ship, out string hostName)
         {
+            // A ship docked at a derelict (plan section 28) is away the same way: not at a dock, reached from its crew.
+            if (IsDockedAtDerelict(ship, out var derelictName))
+            {
+                hostName = derelictName;
+                return true;
+            }
+
             var host = GetDockHost(ship);
             hostName = host == null ? string.Empty : GetShipName(host);
             return host != null;
@@ -333,6 +340,9 @@ namespace SWLOR.Game.Server.Service
         public static bool UndockFromInterior(uint player)
         {
             var host = GetInteriorShip(player, out _);
+            if (host != null && IsDockedAtDerelict(host, out _))
+                return UndockFromDerelict(player, host);
+
             var ships = GetUndockableShips(player, host);
             if (ships.Count == 0)
             {

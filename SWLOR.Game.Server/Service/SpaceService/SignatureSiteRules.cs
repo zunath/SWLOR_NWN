@@ -45,10 +45,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// A new hidden signature of an area, which fades after <see cref="ScanningTuning.HiddenLifetimeSeconds"/>. Only a
-        /// cache site can be <paramref name="locked"/>. A Wild Space signature is tier 5 content at tier 5.5 signal.
+        /// cache site can be <paramref name="locked"/>, and only a derelict <paramref name="boardable"/> (and then
+        /// <paramref name="contested"/>). A Wild Space signature is tier 5 content at tier 5.5 signal.
         /// </summary>
         public static ScanSignature Create(string id, string areaResref, int tier, SignatureType type, float x, float y, float z, DateTime now,
-            bool locked = false, bool wildSpace = false)
+            bool locked = false, bool wildSpace = false, bool boardable = false, bool contested = false)
         {
             return new ScanSignature
             {
@@ -64,6 +65,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 SignalRequired = ScanningRules.SignalRequired(type, tier, wildSpace),
                 Locked = locked && type == SignatureType.CacheSite,
                 WildSpace = wildSpace,
+                Boardable = boardable && type == SignatureType.Derelict,
+                Contested = contested && boardable && type == SignatureType.Derelict,
             };
         }
 
@@ -133,6 +136,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             // A rift end lasts as long as its rift; the rift network ends it.
             if (signature.Type == SignatureType.Rift)
+                return false;
+
+            // A derelict being boarded or stripped stays open while the work lasts (plan section 28).
+            if (signature.HeldUntil is { } held && now < held)
                 return false;
 
             return signature.RevealedAt is { } revealed

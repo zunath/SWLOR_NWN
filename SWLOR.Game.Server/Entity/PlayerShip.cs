@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Entity
             DroidCrew = new List<ShipDroidCrew>();
             DockedToShipId = string.Empty;
             DockedCrewPlayerIds = new List<string>();
+            DockedDerelictId = string.Empty;
             Cargo = new Dictionary<CommodityType, CargoLot>();
             SealedFreight = new List<SealedFreightLot>();
         }
@@ -45,6 +46,12 @@ namespace SWLOR.Game.Server.Entity
         /// host is destroyed. Older records load with none.
         /// </summary>
         public List<string> DockedCrewPlayerIds { get; set; }
+
+        /// <summary>
+        /// The derelict this ship is docked at while its party is aboard (plan section 28, the derelict's signature id),
+        /// or empty. Derelicts live in memory, so a value left by a restart is cleared when read. Older records load empty.
+        /// </summary>
+        public string DockedDerelictId { get; set; }
 
         /// <summary>
         /// Commodity units in the ship's cargo bay (plan section 13), never items: they cannot enter an inventory, the

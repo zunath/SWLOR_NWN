@@ -140,8 +140,10 @@ namespace SWLOR.Game.Server.Service
                 return null;
 
             var locked = type == SignatureType.CacheSite && SpaceSlicingRules.RollsLockedCache(Random.Next(100));
+            var boardable = type == SignatureType.Derelict && DerelictRules.RollsBoardable(Random.Next(100));
+            var contested = boardable && DerelictRules.RollsContested(Random.Next(100));
             return SignatureSiteRules.Create(Guid.NewGuid().ToString(), detail.AreaResref, detail.Tier, type,
-                position.X, position.Y, position.Z, now, locked, detail.WildSpace);
+                position.X, position.Y, position.Z, now, locked, detail.WildSpace, boardable, contested);
         }
 
         /// <summary>The player IDs of a player's party (the player included), DMs left out.</summary>

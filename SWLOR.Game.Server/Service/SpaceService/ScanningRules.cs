@@ -176,6 +176,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     parts.Add($"Threat: {threat}");
                 if (ScanningTuning.LootClass.TryGetValue(signature.Type, out var loot))
                     parts.Add(signature.Locked ? $"Loot: {loot} (locked: needs a Data Analyzer)" : $"Loot: {loot}");
+                if (signature.Boardable)
+                    parts.Add(signature.Contested
+                        ? "Boardable and contested: enemy ships attack while it is worked (/board, or /salvage with droids)"
+                        : "Boardable: dock with /board, or send your droids with /salvage");
                 if (!string.IsNullOrEmpty(signature.RiftDetail))
                     parts.Add(signature.RiftDetail);
             }

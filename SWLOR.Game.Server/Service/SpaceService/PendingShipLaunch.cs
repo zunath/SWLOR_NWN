@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The host ship the launch undocks from, or empty. The ship stays docked until the pilot arrives.</summary>
         public string UndockFromShipId { get; init; } = string.Empty;
 
+        /// <summary>The derelict the launch undocks from, or empty. The ship stays docked until the pilot arrives.</summary>
+        public string UndockFromDerelictId { get; init; } = string.Empty;
+
         public DateTime ExpiresAt { get; init; }
         public bool HasDeparted { get; set; }
     }

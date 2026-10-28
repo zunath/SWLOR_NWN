@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             if (status == null || !_shipTypes.TryGetValue(status.ItemTag ?? string.Empty, out var detail) || detail.Hull == null)
                 return false;
 
-            var result = ShipStatCalculator.Calculate(detail.Hull, GetFittedRevampModules(status), willpower, stationEffectiveness);
+            var result = ShipStatCalculator.Calculate(detail.Hull, GetFittedRevampModules(status), willpower, stationEffectiveness, status.HullTraits);
             ShipStatCalculator.Apply(result, status, fill);
             return true;
         }

@@ -202,3 +202,188 @@ PROTOTYPE_TECH_COST = 1000
 PROTOTYPE_TECH_BONUS_TIER = 3
 PROTOTYPE_TECH_DESCRIPTION = ("Stolen experimental ship parts. A research terminal can spend one on a module blueprint "
                               "for a guaranteed top-tier bonus, and an Engineer builds it into a Prototype Core.")
+
+# ---------------------------------------------------------------------------------------------------------------
+# Aces (W9c, plan sections 11 and 14): one named rare-spawn pilot per orbit (the ten orbit areas) and one per W6c zone,
+# built like a ground named rare elite (skills/swlor-rare-spawn-generation): an Elite of its area's top faction level
+# (tier x 10, the level of the tier's Gunship and Defense Platform) in a role ship, converted by model.npc_ship like every
+# space NPC (npc_catalog.py), so it takes the Elite hull class (Medium) and the Elite HP and damage curves. Each flies a
+# Hull Design (an Appendix C launch skin) no other creature uses, and its unique loot table (SPACE_ACE_<KEY>, IsRare,
+# every entry rare) holds that design's Design Schematic, one named module's Module Schematic, its trophy, a component of
+# its tier with a rare trait, and its maker's manufacturer component. Its wreck carries a data core (the SPACE_ACE
+# creature local the space slicing update reads).
+# ---------------------------------------------------------------------------------------------------------------
+ACE_LEVEL_PER_TIER = 10
+ACE_DIFFICULTY = "Elite"
+# The ground rare share: a weight-1 rare beside about 120 weight of normal spawns is 0.8% of spawn rolls (Viscara's
+# Harrek Voss beside the Mandalorian Raiders' 120). An open orbit's table weighs 75,648, so an ace takes ACE_SPAWN_WEIGHT
+# (0.79%); a two-tier zone weighs about twice that and doubles the weight.
+ACE_SPAWN_WEIGHT = 600
+ACE_SPAWN_SHARE = (0.007, 0.009)
+# The ace's own table: one guaranteed roll and one more at ACE_SECOND_ROLL percent, beside the tier's elite table.
+ACE_SECOND_ROLL = 25
+ACE_ELITE_TABLE = "SPACE_ELITE_T{tier}, 66, 5"
+ACE_LOOT_WEIGHTS = dict(design=30, module=10, trophy=20, rare_component=25, maker_component=15)
+ACE_ITEM_TAGS = {"Fighter": "NPC_Fighter", "Sniper": "NPC_Fighter", "Interceptor": "NPC_Interceptor",
+                 "Electronic Warfare": "NPC_Interceptor", "Bomber": "NPC_Bomber", "Minelayer": "NPC_Bomber"}
+FACTION_NAMES = {1: "Septra Khanate", 2: "Krakenborne", 3: "Snowdrift Syndicate", 4: "Clan Zel Arun", 5: "Red Hand",
+                 6: "Imperial"}
+
+# Trophies: one structure item per ace (structure_04NN, the property structure system's resref pattern, model 202 like
+# every structure item), placing an existing placeable no other structure uses. Named for the piece, not the pilot.
+TROPHY_START = 437
+TROPHY_COST = 500
+
+# key, tag, pilot name, short name (achievement), area resref and text, spawn table, tier, role, Hull Design appearance,
+# manufacturer, named module family, rare component (family, trait), trophy (name, placeable, text), lore.
+ACES = [
+    dict(key="Viscara", tag="ace_viscara", name="Vesh Talloran", short="Talloran", area="viscaraorbit",
+         area_text="Viscara orbit", table="SPACE_VISCARA_ORBIT", tier=1, role="Interceptor", design=10144,
+         maker="Corellian", named="Thrusters", rare=("ThrusterAssembly", "CorellianModified"),
+         trophy=("Mounted Thruster Bell", "_mdrn_pl_shipp10",
+                 "A scorched thruster bell cut from a wrecked interceptor and set on a display stand."),
+         lore="The Septra Khanate's fastest pilot runs down stragglers over Viscara in a stolen Condor, its engines tuned "
+              "well past their safety limits."),
+    dict(key="SmugglersMoon", tag="ace_smuggler", name="Grizzik the Collector", short="Grizzik", area="narshadorbit",
+         area_text="Smuggler's Moon orbit", table="SPACE_NARSHADDAA_ORBIT", tier=1, role="Fighter", design=10190,
+         maker="Hutt", named="CapacitorBattery", rare=("ShipReactor", "HuttRigged"),
+         trophy=("Salvaged Engine Coil", "_mdrn_pl_shipp04",
+                 "A heavy engine coil pulled from a bounty hunter's fighter, still marked with Hutt cartel sigils."),
+         lore="A Rodian bounty hunter on the Hutt payroll who collects debts, cargo and starfighters from anyone who "
+              "lingers near Smuggler's Moon."),
+    dict(key="MonCala", tag="ace_moncala", name="Captain Ilsa Morrow", short="Morrow", area="moncalaorbit",
+         area_text="Mon Cala orbit", table="SPACE_MONCALA_ORBIT", tier=2, role="Bomber", design=2005,
+         maker="Republic", named="TorpedoLauncher", rare=("OrdnanceAssembly", "SithTuned"),
+         trophy=("Scorched Thruster Nozzle", "_mdrn_pl_shipp11",
+                 "A blackened thruster nozzle from a torpedo bomber, mounted as a wall piece."),
+         lore="A Krakenborne raider who flies a captured Republic bomber and sinks freighters off Mon Cala with its own "
+              "torpedoes."),
+    dict(key="ViscaraBelt", tag="ace_visbelt", name="Rook Varrus", short="Varrus", area="space_viscbelt",
+         area_text="the Viscara Asteroid Belt", table="SPACE_VISCARA_BELT", tier=2, role="Sniper", design=10200,
+         maker="Czerka", named="BeamCannon", rare=("ExtractionHead", "CzerkaPattern"),
+         trophy=("Wrecked Avionics Rack", "_mdrn_pl_debri05",
+                 "A rack of burned-out avionics salvaged from a sniper's cockpit, kept as a curiosity."),
+         lore="A Krakenborne marksman who hides among the Durelium rocks and picks off mining barges from extreme range."),
+    dict(key="Hutlar", tag="ace_hutlar", name="Kael Dunmor", short="Dunmor", area="hutlar_orbit",
+         area_text="Hutlar orbit", table="SPACE_HUTLAR_ORBIT", tier=3, role="Interceptor", design=10191,
+         maker="Chiss", named="TargetingComputer", rare=("SensorSuite", "ChissCalibrated"),
+         trophy=("Turbine Housing Trophy", "_mdrn_pl_shipp12",
+                 "A frost-scarred turbine housing from a Chiss-built interceptor, polished for display."),
+         lore="The Snowdrift Syndicate's best pilot, called Frostbite, hunts over Hutlar's ice in a Chiss Hyperion he "
+              "never explains how he got."),
+    dict(key="Tatooine", tag="ace_tatooine", name="Torvak Zel", short="Torvak", area="tatooineorbit",
+         area_text="Tatooine orbit", table="SPACE_TATOOINE_ORBIT", tier=4, role="Fighter", design=10156,
+         maker="Mandalorian", named="HullPlating", rare=("HullFrame", "MandalorianForged"),
+         trophy=("Captured Hyperdrive Core", "_mdrn_pl_engineh",
+                 "An opened hyperdrive core from a Mandalorian war droid, its casing dented by cannon fire."),
+         lore="A champion of Clan Zel Arun who flies a Basilisk war droid over Tatooine and challenges any pilot worth "
+              "the fight."),
+    dict(key="MidRimNebula", tag="ace_midrimneb", name="Siv Orrin", short="Orrin", area="space_midrimneb",
+         area_text="the Mid Rim Nebula", table="SPACE_MIDRIM_NEBULA", tier=4, role="Electronic Warfare", design=10088,
+         maker="Mandalorian", named="AdaptivePlating", rare=("SensorSuite", "ChissCalibrated"),
+         trophy=("Wrecked Sensor Array", "_mdrn_pl_debri06",
+                 "The twisted remains of a jamming array, salvaged from a ship that hid in a nebula's gas."),
+         lore="A Clan Zel Arun scout who blinds convoys inside the Tibanna clouds before the clan's gunships close in."),
+    dict(key="Dathomir", tag="ace_dathomir", name="Vexa Thorne", short="Thorne", area="space_dathomir",
+         area_text="Dathomir orbit", table="SPACE_DATHOMIR_ORBIT", tier=5, role="Fighter", design=2008,
+         maker="Sith", named="LaserCannon", rare=("EnergyEmitter", "SithTuned"),
+         trophy=("Wrecked Weapon Mount", "_mdrn_pl_debri07",
+                 "A laser cannon mount torn from a Sith fighter's wing, its emitter cracked and cold."),
+         lore="The Red Hand's deadliest fighter pilot, who flies a Sith fighter paid for in blood over Dathomir."),
+    dict(key="Dantooine", tag="ace_dantooine", name="Mako Drell", short="Drell", area="dantooineorbit",
+         area_text="Dantooine orbit", table="SPACE_DANTOOINE_ORBIT", tier=5, role="Sniper", design=2003,
+         maker="Republic", named="ShieldBooster", rare=("ShieldProjector", "RepublicGrade"),
+         trophy=("Burned-Out Power Generator", "_mdrn_pl_genert2",
+                 "A ship's power generator, burned out from the inside, kept as a reminder of a hard fight."),
+         lore="A Red Hand sniper who stalks the traffic over Dantooine in a modified Republic scout."),
+    dict(key="MidRim1", tag="ace_midrim1", name="Harl Quessen", short="Quessen", area="space_midrim1",
+         area_text="the Mid Rim nebula", table="SPACE_MIDRIM_1", tier=5, role="Interceptor", design=10087,
+         maker="Corellian", named="IonCannon", rare=("ThrusterAssembly", "CorellianModified"),
+         trophy=("Shattered Engine Turbine", "_mdrn_pl_engine1",
+                 "A shattered engine turbine from a stripped-down interceptor, mounted on a stand."),
+         lore="A Red Hand interceptor pilot who waits in the Mid Rim nebula for ships running the lane to Viscara."),
+    dict(key="KorribanDebris", tag="ace_korrdebris", name="Scrapper VX-9", short="Scrapper", area="space_korrdebris",
+         area_text="the Korriban Debris Field", table="SPACE_KORRIBAN_DEBRIS", tier=5, role="Minelayer", design=10216,
+         maker="Hutt", named="HullRepairer", rare=("ShipReactor", "HuttRigged"),
+         trophy=("Mounted Engine Control Block", "_mdrn_pl_engctr1",
+                 "An engine control block salvaged from a droid gunship, wired to blink on command."),
+         lore="A salvage droid that rebuilt itself into a gunship and now seeds the debris field with mines."),
+    dict(key="MidRim2", tag="ace_midrim2", name="Commander Raine Kardos", short="Kardos", area="space_midrim2",
+         area_text="the Outer Rim approach", table="SPACE_MIDRIM_2", tier=6, role="Fighter", design=10090,
+         maker="Sith", named="MissileLauncher", rare=("EnergyEmitter", "SithTuned"),
+         trophy=("Captured Flight Recorder", "_mdrn_pl_holocon",
+                 "An Imperial flight recorder that still projects the last seconds of its fighter's final sortie."),
+         lore="An Imperial squadron commander who guards the approach to Korriban and has never lost a duel."),
+    dict(key="Korriban", tag="ace_korriban", name="Lord Malakor Venn", short="Malakor", area="space_korriban",
+         area_text="Korriban orbit", table="SPACE_KORRIBAN_ORBIT", tier=6, role="Bomber", design=2007,
+         maker="Sith", named="ShieldHardener", rare=("OrdnanceAssembly", "SithTuned"),
+         trophy=("Holo Star Chart", "_mdrn_pl_holod04",
+                 "A holographic chart of the Sith worlds, taken from an Imperial bomber's navigation computer."),
+         lore="A Sith Lord who flies his own bomber over Korriban and hunts the ships that dare come close."),
+]
+
+
+def ace_level(ace):
+    return ace["tier"] * ACE_LEVEL_PER_TIER
+
+
+def ace_loot_table(ace):
+    return "SPACE_ACE_" + "".join(("_" + ch if ch.isupper() and i else ch) for i, ch in enumerate(ace["key"])).upper()
+
+
+def trophy_resref(index):
+    return f"structure_{TROPHY_START + index:04d}"
+
+
+def trophy_enum(name):
+    return "".join(ch for ch in name.title() if ch.isalnum())
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Space achievements (W9c, plan section 14), after the ground achievements (the last is 186). The notification window
+# fits about 24 characters of name.
+# ---------------------------------------------------------------------------------------------------------------
+ACHIEVEMENT_START = 187
+TIER_KILL_ACHIEVEMENTS = [
+    (1, "SpaceKillTier1", "Khanate Hunter"),
+    (2, "SpaceKillTier2", "Krakenborne Hunter"),
+    (3, "SpaceKillTier3", "Syndicate Hunter"),
+    (4, "SpaceKillTier4", "Clan Hunter"),
+    (5, "SpaceKillTier5", "Red Hand Hunter"),
+    (6, "SpaceKillTier6", "Imperial Hunter"),
+]
+# Credits earned from trade: commodity sale profit and freight contract fees.
+TRADE_ACHIEVEMENTS = [(10000, "SpaceTradeEarnings1", "Trader"), (100000, "SpaceTradeEarnings2", "Merchant"),
+                      (1000000, "SpaceTradeEarnings3", "Trade Baron")]
+# Signature type, enum, name, description. The rift waits for Wild Space (W12c).
+SITE_ACHIEVEMENTS = [
+    ("CombatSite", "SpaceSiteCombat", "Signal Hunter", "Jumped to a combat site found by scanning."),
+    ("DataSite", "SpaceSiteData", "Data Diver", "Jumped to a data site found by scanning."),
+    ("CacheSite", "SpaceSiteCache", "Cache Finder", "Jumped to a cache site found by scanning."),
+    ("GasSite", "SpaceSiteGas", "Cloud Chaser", "Jumped to a gas site found by scanning."),
+    ("Derelict", "SpaceSiteDerelict", "Derelict Delver", "Jumped to a derelict found by scanning."),
+    ("Rift", "SpaceSiteRift", "Rift Walker", "Jumped to a rift found by scanning."),
+]
+
+
+def ace_achievement(ace):
+    return f"SpaceAce{ace['key']}"
+
+
+def achievements():
+    """Every space achievement: (id, enum, name, description)."""
+    out = []
+    for tier, enum, name in TIER_KILL_ACHIEVEMENTS:
+        faction = FACTION_NAMES[tier]
+        article = "an" if faction[0] in "AEIOU" else "a"
+        out.append((enum, name, f"Destroyed {article} {faction} ship (tier {tier}) in space."))
+    out.append(("SpaceCapitalKill", "Capital Breaker", "Helped destroy a capital ship in space."))
+    for ace in ACES:
+        out.append((ace_achievement(ace), f"{ace['short']} Downed", f"Helped destroy the ace {ace['name']} in {ace['area_text']}."))
+    out.append(("SpaceNamedModule", "Named and Fitted", "Fitted a named rank-50 module to a ship."))
+    for _site, enum, name, text in SITE_ACHIEVEMENTS:
+        out.append((enum, name, text))
+    out.append(("SpaceWildSpace", "Beyond the Map", "Entered Wild Space."))
+    for credits, enum, name in TRADE_ACHIEVEMENTS:
+        out.append((enum, name, f"Earned {credits:,} credits of trade profit and freight fees."))
+    return [(ACHIEVEMENT_START + i, enum, name, text) for i, (enum, name, text) in enumerate(out)]

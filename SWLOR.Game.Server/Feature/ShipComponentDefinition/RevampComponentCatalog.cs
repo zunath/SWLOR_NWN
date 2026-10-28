@@ -276,6 +276,14 @@ namespace SWLOR.Game.Server.Feature.ShipComponentDefinition
             new ShipComponentTrait { Type = ShipComponentTraitType.RefinedYield1, Name = "Refined Yield I", Kind = ShipTraitKind.Blueprint, Tier = 1, Families = new[] { ShipComponentFamily.ExtractionHead }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Yield, 1) }, Description = "+1 Module Bonus" },
             new ShipComponentTrait { Type = ShipComponentTraitType.RefinedYield2, Name = "Refined Yield II", Kind = ShipTraitKind.Blueprint, Tier = 2, Families = new[] { ShipComponentFamily.ExtractionHead }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Yield, 1) }, Description = "+1 Module Bonus" },
             new ShipComponentTrait { Type = ShipComponentTraitType.RefinedYield3, Name = "Refined Yield III", Kind = ShipTraitKind.Blueprint, Tier = 3, Families = new[] { ShipComponentFamily.ExtractionHead }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Yield, 2) }, Description = "+2 Module Bonus" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.RepublicShieldMatrix, Name = "Republic Shield Matrix", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.ShieldProjector }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Shield, 5), new ShipTraitEffect(ShipTraitStat.Repair, 5), new ShipTraitEffect(ShipTraitStat.Resistance, 3) }, Description = "+5% shield, +5% repair amount, +3% resistances" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.SithTargetingCore, Name = "Sith Targeting Core", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.EnergyEmitter }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Damage, 6), new ShipTraitEffect(ShipTraitStat.Accuracy, 4) }, Description = "+6% DMG, +4% Accuracy" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.MandalorianPlating, Name = "Mandalorian Plating", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.HullFrame }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Hull, 5), new ShipTraitEffect(ShipTraitStat.Resistance, 4), new ShipTraitEffect(ShipTraitStat.Defense, 4) }, Description = "+5% hull, +4% resistances, +4% Defense" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.CzerkaIndustrialFrame, Name = "Czerka Industrial Frame", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.ExtractionHead }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Yield, 2), new ShipTraitEffect(ShipTraitStat.RareFind, 3), new ShipTraitEffect(ShipTraitStat.CapacitorCost, -15) }, Description = "+2 Module Bonus, +3 rare-find chance, -15% capacitor use" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.HuttCargoCoupling, Name = "Hutt Cargo Coupling", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.ShipReactor }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Capacitor, 6), new ShipTraitEffect(ShipTraitStat.CapacitorRegen, 6) }, Description = "+6% capacitor, +6% capacitor regen" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.CorellianDriveKit, Name = "Corellian Drive Kit", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.ThrusterAssembly }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Speed, 3), new ShipTraitEffect(ShipTraitStat.Evasion, 2) }, Description = "+3% speed, +2 Evasion" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.ChissSensorArray, Name = "Chiss Sensor Array", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.SensorSuite }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Accuracy, 6), new ShipTraitEffect(ShipTraitStat.CapacitorCost, -10) }, Description = "+6% Accuracy, -10% capacitor use" },
+            new ShipComponentTrait { Type = ShipComponentTraitType.RaiderRefitHull, Name = "Raider Refit Hull", Kind = ShipTraitKind.Manufacturer, Families = new[] { ShipComponentFamily.HullFrame }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Hull, 4), new ShipTraitEffect(ShipTraitStat.Speed, 2), new ShipTraitEffect(ShipTraitStat.Evasion, 2) }, Description = "+4% hull, +2% speed, +2 Evasion" },
         };
 
         /// <summary>The families a wreck can yield as salvaged components (life support never comes from salvage).</summary>
@@ -289,5 +297,30 @@ namespace SWLOR.Game.Server.Feature.ShipComponentDefinition
 
         /// <summary>The chance a salvaged component's trait is rare, before Trait Hunter.</summary>
         public static readonly IReadOnlyDictionary<WreckDifficulty, int> RareTraitPercent = new Dictionary<WreckDifficulty, int> { [WreckDifficulty.Normal] = 5, [WreckDifficulty.Elite] = 10, [WreckDifficulty.Boss] = 20 };
+
+        /// <summary>The manufacturer components: a tier 5 component of a family carrying its maker's trait.</summary>
+        public static readonly IReadOnlyList<ShipManufacturerComponent> ManufacturerComponents = new List<ShipManufacturerComponent>
+        {
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.Republic, Name = "Republic Shield Matrix", Family = ShipComponentFamily.ShieldProjector, Resref = "sc_shieldprj_5", Trait = ShipComponentTraitType.RepublicShieldMatrix },
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.Sith, Name = "Sith Targeting Core", Family = ShipComponentFamily.EnergyEmitter, Resref = "sc_emitter_5", Trait = ShipComponentTraitType.SithTargetingCore },
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.Mandalorian, Name = "Mandalorian Plating", Family = ShipComponentFamily.HullFrame, Resref = "sc_hframe_5", Trait = ShipComponentTraitType.MandalorianPlating },
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.Czerka, Name = "Czerka Industrial Frame", Family = ShipComponentFamily.ExtractionHead, Resref = "sc_extract_5", Trait = ShipComponentTraitType.CzerkaIndustrialFrame },
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.Hutt, Name = "Hutt Cargo Coupling", Family = ShipComponentFamily.ShipReactor, Resref = "sc_reactor_5", Trait = ShipComponentTraitType.HuttCargoCoupling },
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.Corellian, Name = "Corellian Drive Kit", Family = ShipComponentFamily.ThrusterAssembly, Resref = "sc_thruster_5", Trait = ShipComponentTraitType.CorellianDriveKit },
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.Chiss, Name = "Chiss Sensor Array", Family = ShipComponentFamily.SensorSuite, Resref = "sc_sensor_5", Trait = ShipComponentTraitType.ChissSensorArray },
+            new ShipManufacturerComponent { Manufacturer = ShipManufacturer.RiftRaider, Name = "Raider Refit Hull", Family = ShipComponentFamily.HullFrame, Resref = "sc_hframe_5", Trait = ShipComponentTraitType.RaiderRefitHull },
+        };
+
+        /// <summary>The chance per salvage cycle that a wreck of a maker's NPC ship yields that maker's component.</summary>
+        public static readonly IReadOnlyDictionary<WreckDifficulty, int> ManufacturerSalvagePercent = new Dictionary<WreckDifficulty, int> { [WreckDifficulty.Normal] = 1, [WreckDifficulty.Elite] = 3, [WreckDifficulty.Boss] = 5 };
+
+        /// <summary>The percent of each trait stat's summed value a hull applies to its ship.</summary>
+        public const int HullTraitSharePercent = 50;
+
+        /// <summary>The trait stats a hull applies; the others are module numbers.</summary>
+        public static readonly IReadOnlyList<ShipTraitStat> HullTraitStats = new[] { ShipTraitStat.Damage, ShipTraitStat.Accuracy, ShipTraitStat.Hull, ShipTraitStat.Shield, ShipTraitStat.Capacitor, ShipTraitStat.CapacitorRegen, ShipTraitStat.Defense, ShipTraitStat.Resistance, ShipTraitStat.Evasion, ShipTraitStat.Speed };
+
+        /// <summary>The blueprint trait stats a researched hull recipe rolls.</summary>
+        public static readonly IReadOnlyList<ShipTraitStat> HullBlueprintStats = new[] { ShipTraitStat.Hull, ShipTraitStat.Shield, ShipTraitStat.Capacitor, ShipTraitStat.CapacitorRegen, ShipTraitStat.Defense, ShipTraitStat.Resistance, ShipTraitStat.Evasion };
     }
 }

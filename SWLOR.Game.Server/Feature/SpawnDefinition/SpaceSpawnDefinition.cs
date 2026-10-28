@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -16,11 +17,87 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             KorribanOrbit();
             DathomirOrbit();
             DantooineOrbit();
+            SmugglersMoonOrbit();
+            MidRimNebulaOrbit();
+            OuterRimApproachOrbit();
             ViscaraAsteroidBelt();
             MidRimNebula();
             KorribanDebrisField();
 
             return _builder.Build();
+        }
+
+        /// <summary>
+        /// One ace of the area (plan section 11): a named rare spawn at a ground rare's share of the table (a weight-1
+        /// rare beside about 120 weight is 0.8% of spawn rolls; RevampAceCatalog.SpawnWeight beside an orbit's 75,648).
+        /// While it is alive, no other rare of the table spawns in that area.
+        /// </summary>
+        private void AddAce(string tag, int weight = RevampAceCatalog.SpawnWeight)
+        {
+            _builder.AddSpawn(ObjectType.Creature, tag)
+                .WithFrequency(weight)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        /// <summary>The Sith and Mandalorian capitals at the weights of every open orbit but Korriban's.</summary>
+        private static readonly (string Capital, int Weight)[] _rareCapitals =
+        {
+            ("sithcap1", 96), ("sithcap2", 48), ("sithcap3", 12), ("sithcap4", 12), ("sithcap5", 6),
+            ("sithcap6", 2), ("sithcap7", 1), ("mandocap1", 12), ("mandocap2", 2), ("mandocap3", 1)
+        };
+
+        /// <summary>The Sith and Mandalorian capitals at Korriban Orbit's weights, where the Sith fleet gathers.</summary>
+        private static readonly (string Capital, int Weight)[] _korribanCapitals =
+        {
+            ("sithcap1", 300), ("sithcap2", 700), ("sithcap3", 12), ("sithcap4", 200), ("sithcap5", 6),
+            ("sithcap6", 2), ("sithcap7", 1), ("mandocap1", 12), ("mandocap2", 2), ("mandocap3", 1)
+        };
+
+        /// <summary>The Sith and Mandalorian capitals, rarest last (the open-orbit weights unless others are given).</summary>
+        private void AddRareCapitals((string Capital, int Weight)[] capitals = null)
+        {
+            foreach (var (capital, weight) in capitals ?? _rareCapitals)
+            {
+                _builder.AddSpawn(ObjectType.Creature, capital)
+                    .WithFrequency(weight)
+                    .RandomlyWalks()
+                    .ReturnsHome();
+            }
+        }
+
+        /// <summary>
+        /// Smuggler's Moon orbit (narshadorbit): Viscara Orbit's tier 1 ships and capitals (the table it shared before
+        /// its ace), with its own ace.
+        /// </summary>
+        private void SmugglersMoonOrbit()
+        {
+            _builder.Create("SPACE_NARSHADDAA_ORBIT", "Space - Smuggler's Moon Orbit");
+            AddFactionTier(1);
+            AddRareCapitals();
+            AddAce("ace_smuggler");
+        }
+
+        /// <summary>The Mid Rim nebula (space_midrim1): Dathomir Orbit's tier 5 ships and capitals, with its own ace.</summary>
+        private void MidRimNebulaOrbit()
+        {
+            _builder.Create("SPACE_MIDRIM_1", "Space - A Nebula within the Mid Rim");
+            AddFactionTier(5);
+            AddRareCapitals();
+            AddAce("ace_midrim1");
+        }
+
+        /// <summary>
+        /// The approach to the Outer Rim (space_midrim2): Korriban Orbit's tier 6 ships and capitals (tier 6 has no
+        /// faction capital), with its own ace.
+        /// </summary>
+        private void OuterRimApproachOrbit()
+        {
+            _builder.Create("SPACE_MIDRIM_2", "Space - Approaching the Outer Rim");
+            AddFactionTier(6, capitalWeight: 0);
+            AddRareCapitals(_korribanCapitals);
+            AddAce("ace_midrim2");
         }
 
         private void ViscaraOrbit()
@@ -138,6 +215,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_viscara");
         }
 
         private void MonCalaOrbit()
@@ -255,6 +334,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_moncala");
         }
 
         private void HutlarOrbit()
@@ -372,6 +453,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_hutlar");
         }
 
         private void TatooineOrbit()
@@ -489,6 +572,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_tatooine");
         }
 
         private void KorribanOrbit()
@@ -601,6 +686,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_korriban");
         }
 
         private void DathomirOrbit()
@@ -718,6 +805,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_dathomir");
         }
 
         private void DantooineOrbit()
@@ -835,6 +924,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_dantooine");
         }
 
         // The three Small/Medium-only zones (plan section 12, W6c). Each area sets CREATURE_SPAWN_COUNT to 56, 1.25x the 45
@@ -844,7 +935,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         /// One faction tier's ships at the open-orbit weights (Viscara Orbit's table): Fighters and Interceptors, the
         /// W5b role ships at modest weights, haulers, platforms, bombers, the carrier and the tier capital.
         /// </summary>
-        private void AddFactionTier(int tier, int minelayerWeight = 1920)
+        private void AddFactionTier(int tier, int minelayerWeight = 1920, int capitalWeight = 960)
         {
             void Ship(string hull, int weight) => _builder
                 .AddSpawn(ObjectType.Creature, $"t{tier}{hull}")
@@ -863,7 +954,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Ship("minelayer", minelayerWeight);
             Ship("logistics", 1440);
             Ship("carrier", 480);
-            Ship("capital", 960);
+            if (capitalWeight > 0)
+                Ship("capital", capitalWeight);
 
             // A trade convoy flies its own route to a starlane (Trade.InitializeConvoy), so it neither wanders nor leashes.
             _builder.AddSpawn(ObjectType.Creature, $"t{tier}convoy")
@@ -876,6 +968,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("SPACE_VISCARA_BELT", "Space - Viscara Asteroid Belt");
             AddFactionTier(1);
             AddFactionTier(2);
+            AddAce("ace_visbelt", RevampAceCatalog.SpawnWeight * 2);
         }
 
         /// <summary>Mid Rim Nebula (space_midrimneb): Snowdrift Syndicate (T3) and Clan Zel Arun (T4) ships in equal shares.</summary>
@@ -884,6 +977,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("SPACE_MIDRIM_NEBULA", "Space - Mid Rim Nebula");
             AddFactionTier(3);
             AddFactionTier(4);
+            AddAce("ace_midrimneb", RevampAceCatalog.SpawnWeight * 2);
         }
 
         /// <summary>
@@ -905,17 +999,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                     .ReturnsHome();
             }
 
-            foreach (var (capital, weight) in new[]
-                     {
-                         ("sithcap1", 96), ("sithcap2", 48), ("sithcap3", 12), ("sithcap4", 12), ("sithcap5", 6),
-                         ("sithcap6", 2), ("sithcap7", 1), ("mandocap1", 12), ("mandocap2", 2), ("mandocap3", 1)
-                     })
-            {
-                _builder.AddSpawn(ObjectType.Creature, capital)
-                    .WithFrequency(weight)
-                    .RandomlyWalks()
-                    .ReturnsHome();
-            }
+            AddRareCapitals();
+            AddAce("ace_korrdebris");
         }
     }
 }

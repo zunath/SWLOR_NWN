@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.ShipDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
@@ -11,10 +12,16 @@ namespace SWLOR.Game.Server.Service
     /// <summary>
     /// Ship component traits on items (plan section 14). A trait is stored as an item local
     /// (<see cref="ShipTraitRules.TraitsVariable"/>) and named in brackets after the item's name. Crafted variants stamp
-    /// their trait on the component; a revamp module crafted from components inherits every trait they carried.
+    /// their trait on the component; a revamp module or ship deed crafted from components inherits every trait they
+    /// carried, and a registered ship keeps its deed's traits as hull traits.
     /// </summary>
     public static class ShipComponents
     {
+        private static readonly HashSet<string> _hullTags = RevampShipCatalog.Hulls.Select(x => x.Tag).ToHashSet();
+
+        /// <summary>Whether the resref is a revamp ship deed, whose traits become its ship's hull traits.</summary>
+        public static bool IsHullDeed(string resref) => resref != null && _hullTags.Contains(resref);
+
         /// <summary>The traits an item carries.</summary>
         public static List<ShipComponentTraitType> GetTraits(uint item)
         {
@@ -85,11 +92,12 @@ namespace SWLOR.Game.Server.Service
                 SetTraits(item, inherited);
         }
 
-        /// <summary>Whether the recipe's item takes on its components' traits: the revamp ship modules.</summary>
+        /// <summary>Whether the recipe's item takes on its components' traits: the revamp ship modules and ship deeds.</summary>
         public static bool InheritsTraits(RecipeDetail recipe)
         {
-            return recipe.Category == RecipeCategoryType.ShipModule &&
-                   recipe.Components.Keys.Any(ShipTraitRules.IsComponent);
+            var inherits = recipe.Category == RecipeCategoryType.ShipModule ||
+                           recipe.Category == RecipeCategoryType.Starship && IsHullDeed(recipe.Resref);
+            return inherits && recipe.Components.Keys.Any(ShipTraitRules.IsComponent);
         }
 
         /// <summary>
@@ -104,15 +112,30 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
         }
 
-        /// <summary>Adds a component's traits to its examine text.</summary>
+        /// <summary>Adds a component's traits, or a ship deed's hull traits, to its examine text.</summary>
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineComponent()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
-            if (GetObjectType(item) != ObjectType.Item || !ShipTraitRules.IsComponent(GetResRef(item)))
+            if (GetObjectType(item) != ObjectType.Item)
                 return;
 
-            SetDescription(item, BuildDescription(GetDescription(item, true), GetTraits(item)));
+            var resref = GetResRef(item);
+            if (ShipTraitRules.IsComponent(resref))
+                SetDescription(item, BuildDescription(GetDescription(item, true), GetTraits(item)));
+            else if (IsHullDeed(resref))
+                SetDescription(item, BuildHullDescription(GetDescription(item, true), GetTraits(item)));
+        }
+
+        /// <summary>A ship deed's description with one line per hull trait, giving what it does on the hull.</summary>
+        public static string BuildHullDescription(string description, IEnumerable<ShipComponentTraitType> traits)
+        {
+            var lines = ShipTraitRules.DescribeHullLines(traits);
+            if (lines.Count == 0)
+                return description;
+
+            var text = ColorToken.Green("Hull traits:") + "\n" + string.Join("\n", lines);
+            return string.IsNullOrWhiteSpace(description) ? text : $"{description}\n\n{text}";
         }
 
         /// <summary>An item's description with one line per trait after it.</summary>

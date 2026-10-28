@@ -40,14 +40,19 @@ public class SpaceRewardTests
     // Research blueprints
 
     [Test]
-    public void ModuleRecipes_AreResearchableAndHullAndComponentRecipesAreNot()
+    public void ModuleAndHullRecipes_AreResearchableAndComponentRecipesAreNot()
     {
         var laser = StarshipRecipes[Step("sm_laser_20").RecipeType];
         Craft.IsResearchableRecipe(laser).Should().BeTrue("ship module recipes research into blueprints (section 14)");
         ShipBlueprintRules.IsResearchable(laser).Should().BeTrue();
 
-        var deed = StarshipRecipes[RevampShipCatalog.Hulls.First().RecipeType];
-        Craft.IsResearchableRecipe(deed).Should().BeFalse("hull blueprints wait for hull traits (W9c)");
+        foreach (var hull in RevampShipCatalog.Hulls)
+        {
+            var deed = StarshipRecipes[hull.RecipeType];
+            Craft.IsResearchableRecipe(deed).Should().BeTrue($"{hull.Tag}: hull recipes research into blueprints with hull traits (W9c)");
+            ShipBlueprintRules.IsHullRecipe(deed).Should().BeTrue();
+            ShipBlueprintRules.IsModuleRecipe(deed).Should().BeFalse();
+        }
 
         var component = new ShipComponentRecipes().BuildRecipes().Values.First();
         Craft.IsResearchableRecipe(component).Should().BeFalse();
@@ -99,6 +104,33 @@ public class SpaceRewardTests
         ShipTraitRules.Parse(ShipTraitRules.Format(new[] { ShipComponentTraitType.RefinedAccuracy2 }))
             .Should().Equal(ShipComponentTraitType.RefinedAccuracy2);
         RevampComponentCatalog.Traits.Where(x => x.Kind == ShipTraitKind.Blueprint).Should().HaveCount(36);
+    }
+
+    [Test]
+    public void HullBlueprints_RollTheHullSideBlueprintTraits()
+    {
+        var deed = StarshipRecipes[RevampShipCatalog.Hulls.Single(x => x.Name == "Republic Gunship").RecipeType];
+        ShipBlueprintRules.ComponentFamily(deed).Should().Be(ShipComponentFamily.Invalid, "a deed rolls the hull pool, not a family's");
+
+        var stats = new[] { ShipTraitStat.Hull, ShipTraitStat.Shield, ShipTraitStat.Capacitor, ShipTraitStat.CapacitorRegen,
+            ShipTraitStat.Defense, ShipTraitStat.Resistance, ShipTraitStat.Evasion };
+        RevampComponentCatalog.HullBlueprintStats.Should().BeEquivalentTo(stats);
+        for (var tier = 1; tier <= 3; tier++)
+        {
+            var pool = ShipBlueprintRules.Pool(deed, tier);
+            pool.Select(x => x.Effects.Single().Stat).Should().BeEquivalentTo(stats, $"tier {tier}");
+            pool.Should().OnlyContain(x => x.Kind == ShipTraitKind.Blueprint && x.Tier == tier);
+            pool.Should().OnlyContain(x => ShipTraitRules.IsHullStat(x.Effects.Single().Stat), "every pick does something on a hull");
+            ShipBlueprintRules.Pick(deed, tier, Rolls(0)).Should().Be(pool[0].Type);
+        }
+
+        var laser = StarshipRecipes[Step("sm_laser_20").RecipeType];
+        ShipBlueprintRules.Pool(laser, 2).Should().BeEquivalentTo(ShipBlueprintRules.Pool(ShipComponentFamily.EnergyEmitter, 2));
+        var held = new[] { ShipBlueprintRules.Pool(deed, 3)[0].Type };
+        ShipBlueprintRules.PickGuaranteed(deed, 3, held, Rolls(0, 1)).Should().Be(ShipBlueprintRules.Pool(deed, 3)[1].Type);
+
+        ShipTraitRules.HullSum(new[] { ShipComponentTraitType.RefinedHull3 }, ShipTraitStat.Hull).Should().Be(2,
+            "Refined Hull III's +4% is +2% on a hull");
     }
 
     [Test]
@@ -247,7 +279,7 @@ public class SpaceRewardTests
 
         RevampComponentCatalog.SalvageFamilies.Should().NotContain(RevampComponentCatalog.RareFamilies, "never salvaged");
         using var tech = ReadBlueprint("proto_tech");
-        HasNoEconomy(tech.RootElement).Should().BeTrue("Prototype Tech has no source until Wild Space (W12c)");
+        HasNoEconomy(tech.RootElement).Should().BeFalse("space slicing drops Prototype Tech (W12b), so it is an economy item");
     }
 
     // Ship Schematics

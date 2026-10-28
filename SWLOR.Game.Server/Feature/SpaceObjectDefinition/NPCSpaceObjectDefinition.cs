@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
@@ -16,8 +17,22 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             Tier5();
             RoleShips();
             TradeRiskShips();
+            Aces();
 
             return _builder.Build();
+        }
+
+        /// <summary>
+        /// The aces (plan section 11): one named rare-spawn pilot per orbit and zone. Hull and weapons come from
+        /// RevampNpcShipCatalog; the legacy ship item is the tier's ship of the ace's role.
+        /// </summary>
+        private void Aces()
+        {
+            foreach (var ace in RevampAceCatalog.Aces)
+            {
+                _builder.Create(ace.Tag)
+                    .ItemTag(ace.ShipItemTag);
+            }
         }
 
         private void Tier1()

@@ -171,6 +171,7 @@ namespace SWLOR.Game.Server.Service
             });
             DelayCommand(0.5f, () => ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), player));
             SendMessageToPC(player, ColorToken.Cyan($"Jumped to the {ScanningRules.TypeName(signature.Type)}."));
+            GrantSiteAchievement(player, signature.Type);
         }
 
         // Sensor Sweep

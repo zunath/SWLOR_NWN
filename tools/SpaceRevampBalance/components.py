@@ -206,6 +206,47 @@ def rare_resref(short):
     return f"sc_{short}"
 
 
+# Manufacturer components (W9c, plan section 14 and Appendix D): one per manufacturer, a tier 5 component of a family
+# carrying that maker's trait (kind Manufacturer). They are the family's tier 5 item (sc_<family>_5) with the trait
+# stamped, so every tier 5 recipe of the family takes them and the trait reaches the module or hull built from them, as a
+# crafted variant's does. Never crafted: they come from aces, from the salvage of the maker's NPC ships (below) and later
+# from faction stores (W13) and Wild Space (W12c, the Rift Raider part). Each trait matches a rare trait's budget
+# (two or three bonuses, 10-13 points in all) with the maker's signature mix (Appendix C).
+# id, enum, trait and item name, manufacturer, family, effects.
+MANUFACTURERS = [
+    (101, "RepublicShieldMatrix", "Republic Shield Matrix", "Republic", "ShieldProjector",
+     [("Shield", 5), ("Repair", 5), ("Resistance", 3)]),
+    (102, "SithTargetingCore", "Sith Targeting Core", "Sith", "EnergyEmitter", [("Damage", 6), ("Accuracy", 4)]),
+    (103, "MandalorianPlating", "Mandalorian Plating", "Mandalorian", "HullFrame",
+     [("Hull", 5), ("Resistance", 4), ("Defense", 4)]),
+    (104, "CzerkaIndustrialFrame", "Czerka Industrial Frame", "Czerka", "ExtractionHead",
+     [("Yield", 2), ("RareFind", 3), ("CapacitorCost", -15)]),
+    (105, "HuttCargoCoupling", "Hutt Cargo Coupling", "Hutt", "ShipReactor", [("Capacitor", 6), ("CapacitorRegen", 6)]),
+    (106, "CorellianDriveKit", "Corellian Drive Kit", "Corellian", "ThrusterAssembly", [("Speed", 3), ("Evasion", 2)]),
+    (107, "ChissSensorArray", "Chiss Sensor Array", "Chiss", "SensorSuite", [("Accuracy", 6), ("CapacitorCost", -10)]),
+    (108, "RaiderRefitHull", "Raider Refit Hull", "Rift Raider", "HullFrame", [("Hull", 4), ("Speed", 2), ("Evasion", 2)]),
+]
+MANUFACTURER_TIER = 5
+TRAITS += [(tid, enum, name, "Manufacturer", [fam], eff) for (tid, enum, name, _maker, fam, eff) in MANUFACTURERS]
+# The chance per salvage cycle that a wreck of a maker's NPC ship also yields that maker's component (draft; Appendix D
+# "a low chance on basic ships, higher on elites and bosses"). With the cycles per wreck (Small 3, Medium 4, Large 6,
+# Capital 10, +2 elite, +4 boss) a Normal fighter's wreck gives one 3% of the time, an elite Medium 17%, a boss
+# capital 51%.
+MANUFACTURER_SALVAGE_PERCENT = {"Normal": 1, "Elite": 3, "Boss": 5}
+
+# Hull traits (W9c, plan section 14): a ship deed crafted from traited components inherits their traits, as a module does,
+# and so does a researched hull blueprint's bonus. A hull applies HULL_TRAIT_SHARE percent of each stat's summed value
+# (rounded half away from zero) to the ship's own totals: hull, shield and capacitor as percent points of the hull's
+# percent bonus, capacitor regen, Accuracy, Defense and resistances as a percent of the ship's total, DMG as percent
+# points of weapon damage, Evasion as points and speed as percent points. Capacitor use, repair amount, Module Bonus and
+# rare-find chance are module numbers and do nothing on a hull. A Small hull built from four rare-traited components gains
+# about 3% on a handful of stats, about a tenth of a rank step.
+HULL_TRAIT_SHARE = 50
+HULL_TRAIT_STATS = ["Damage", "Accuracy", "Hull", "Shield", "Capacitor", "CapacitorRegen", "Defense", "Resistance",
+                    "Evasion", "Speed"]
+# The blueprint traits a researched hull recipe rolls (W9c): the hull-side stats of BLUEPRINT_STATS.
+HULL_BLUEPRINT_STATS = ["Hull", "Shield", "Capacitor", "CapacitorRegen", "Defense", "Resistance", "Evasion"]
+
 SALVAGED_COMPONENT_PERCENT = {"Normal": 10, "Elite": 20, "Boss": 30}
 RARE_TRAIT_PERCENT = {"Normal": 5, "Elite": 10, "Boss": 20}
 TRAIT_HUNTER = [10, 20]

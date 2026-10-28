@@ -190,9 +190,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         }
 
         /// <summary>
-        /// The salvaged component a cycle yields, if any (plan sections 12 and 14): a generic component of the wreck's
-        /// tier carrying a random trait, rare more often from elite and boss wrecks and with Trait Hunter (Gathering).
-        /// Manufacturer components wait for W9b; data cores and space lockboxes need slicing (W12).
+        /// The salvaged components a cycle yields (plan sections 12 and 14): maybe a generic component of the wreck's tier
+        /// carrying a random trait, rare more often from elite and boss wrecks and with Trait Hunter (Gathering), and maybe
+        /// the manufacturer component of the maker the ship belonged to (Appendix D).
         /// </summary>
         private static List<(string Resref, ShipComponentTraitType Trait)> RollSalvagedComponents(uint activator, ShipWreck wreck)
         {
@@ -201,6 +201,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 wreck.Tier, wreck.Difficulty, Stat.GetStatAdjustment(activator, StatType.SpaceRareTraitChance), Random.Next);
             if (rolled != null)
                 components.Add(rolled.Value);
+
+            var maker = ShipManufacturerRules.RollSalvage(wreck.Manufacturer, wreck.Difficulty, Random.Next);
+            if (maker != null)
+                components.Add(maker.Value);
 
             return components;
         }

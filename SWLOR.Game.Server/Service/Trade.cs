@@ -178,6 +178,8 @@ namespace SWLOR.Game.Server.Service
             var xp = TradeRules.GetSaleXp(profit);
             if (xp > 0)
                 Skill.GiveSkillXP(player, SkillType.Piloting, xp);
+
+            Space.RecordTradeEarnings(player, profit);
         }
 
         private static void AddPressure(TradeExchangeState state, CommodityType commodity, int units, DateTime now)

@@ -78,13 +78,21 @@ def support_tags(hull, level):
     return [f"{prefix}_{step:02d}" for prefix in SUPPORT.get(hull, ())]
 
 
-def entries(root, tags):
-    levels = {t: creature_level(root, t) for t in tags}
+def entries(root, tags, aces=None):
+    """
+    Every preset. <aces> maps an ace's creature tag to its role and level (rewards.ACES): an ace is an Elite of that role,
+    sized by model.DIFFICULTY_SIZE like every Elite, with no support modules.
+    """
+    aces = aces or {}
+    levels = {t: aces[t][1] if t in aces else creature_level(root, t) for t in tags}
     extend_presets(max(levels.values()))
     out = []
     for tag in tags:
-        hull = hull_type(tag)
-        role, diff, size = HULLS[hull]
+        if tag in aces:
+            hull, (role, diff, size) = None, (aces[tag][0], "Elite", None)
+        else:
+            hull = hull_type(tag)
+            role, diff, size = HULLS[hull]
         level = levels[tag]
         scale = FACTION_CAPITAL_SCALE.get(tag, 1.0)
         dmg_scale = min(2.0, scale ** 0.3)
@@ -111,7 +119,7 @@ def entries(root, tags):
             bomber = m.npc_ship("Bomber", level, diff, size="Small", vs_size="Large", hp_scale=scale)
             mine = next(round(w["dmg"] * dmg_scale) for w in bomber["weapons"] if w["name"] == "NPC Torpedo")
         out.append(dict(
-            CreatureTag=tag, Level=level, Difficulty=diff, Role=role, Size=size,
+            CreatureTag=tag, Level=level, Difficulty=diff, Role=role, Size=n["size"],
             Hull=n["maxHull"], Shield=n["maxShield"], ShieldRegenPerSecond=n["shieldRegenPerSecond"],
             # The game adds the pilot's VIT to Defense and AGI x 3 to Evasion when a shot resolves; the model's Defense
             # already holds VIT, so it comes out here.

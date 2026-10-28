@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (ShipBlueprintRules.IsResearchable(recipe))
                 {
                     var trait = ShipBlueprintRules.PickGuaranteed(
-                        ShipBlueprintRules.ComponentFamily(recipe), tier, blueprintDetails.GuaranteedTraits, Random.Next);
+                        recipe, tier, blueprintDetails.GuaranteedTraits, Random.Next);
                     if (trait != ShipComponentTraitType.None)
                         blueprintDetails.GuaranteedTraits.Add(trait);
                     return;

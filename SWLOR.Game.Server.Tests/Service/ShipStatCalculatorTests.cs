@@ -422,4 +422,73 @@ public class ShipStatCalculatorTests
         result.Evasion.Should().Be(12);
         result.MaxHull.Should().Be(100);
     }
+
+    // Hull traits (plan section 14, W9c): a deed's inherited traits apply half their value to the ship's totals.
+
+    [Test]
+    public void HullTraits_ApplyHalfTheirValueToTheShipsTotals()
+    {
+        var hull = Hull(change: h => h.ResistAll = 20);
+        ShipFittedModule[] Fits() => new[]
+        {
+            Fit(ShipModulePowerType.Low, 1, s => s.ModuleDefense = 92),
+            Fit(ShipModulePowerType.Mid, 1, s => s.ModuleAccuracy = 92),
+        };
+        var plain = ShipStatCalculator.Calculate(hull, Fits(), 10);
+        var traited = ShipStatCalculator.Calculate(hull, Fits(), 10, null, new[]
+        {
+            ShipComponentTraitType.MandalorianForged, ShipComponentTraitType.SithTuned, ShipComponentTraitType.CorellianModified,
+            ShipComponentTraitType.HuttRigged, ShipComponentTraitType.RepublicGrade,
+        });
+
+        plain.MaxHull.Should().Be(100);
+        traited.MaxHull.Should().Be(103, "Mandalorian-forged +5% hull, half of it rounded away from zero");
+        traited.Resistances[ResistanceType.EM].Should().Be(21, "+3% of 20");
+        traited.Defense.Should().Be(103, "+3% of the hull's 8 and the plating's 92");
+        traited.Accuracy.Should().Be(103, "Sith-tuned +3% of the total Accuracy");
+        traited.DamageBonusPercent[CombatDamageType.Thermal].Should().Be(plain.DamageBonusPercent[CombatDamageType.Thermal] + 3);
+        traited.Evasion.Should().Be(plain.Evasion + 2, "Corellian-modified +3 Evasion, half rounded away from zero");
+        traited.Speed.Should().BeApproximately(plain.Speed * 1.01, 1e-9, "+1 percent point of speed");
+        traited.MaxCapacitor.Should().Be(82, "Hutt-rigged +3% of 80");
+        traited.CapacitorRegenPerSecond.Should().BeApproximately(plain.CapacitorRegenPerSecond * 1.03, 1e-9);
+        traited.MaxShield.Should().Be(82, "Republic-grade +3% of 80; its repair bonus is a module number");
+    }
+
+    [Test]
+    public void HullTraits_SumBeforeTheyHalveAndModuleNumbersDoNothing()
+    {
+        ShipTraitRules.HullSum(new[] { ShipComponentTraitType.CorellianModified }, ShipTraitStat.Evasion).Should().Be(2);
+        ShipTraitRules.HullSum(new[] { ShipComponentTraitType.CorellianModified, ShipComponentTraitType.CorellianModified },
+            ShipTraitStat.Evasion).Should().Be(3, "6 halved, not 2 + 2");
+        ShipTraitRules.HullSum(new[] { ShipComponentTraitType.Reinforced }, ShipTraitStat.Speed).Should().Be(-1);
+        ShipTraitRules.HullSum(new[] { ShipComponentTraitType.Insulated }, ShipTraitStat.CapacitorCost).Should().Be(0);
+        ShipTraitRules.HullSum(null, ShipTraitStat.Hull).Should().Be(0);
+
+        ShipTraitRules.DescribeHullEffects(ShipTraitRules.Get(ShipComponentTraitType.Reinforced))
+            .Should().Be("+3% max hull, +3% resistances, -1% speed");
+        ShipTraitRules.DescribeHullEffects(ShipTraitRules.Get(ShipComponentTraitType.Insulated)).Should().Be("no effect on a hull");
+
+        var bare = ShipStatCalculator.Calculate(Hull(), Array.Empty<ShipFittedModule>(), 10);
+        var none = ShipStatCalculator.Calculate(Hull(), Array.Empty<ShipFittedModule>(), 10, null, Array.Empty<ShipComponentTraitType>());
+        none.Should().BeEquivalentTo(bare, "a hull with no traits is unchanged");
+    }
+
+    [Test]
+    public void HullTraits_ComeFromTheDeedAtRegistrationAndReachTheStatCalculation()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (!File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent!;
+        var server = Path.Combine(root.FullName, "SWLOR.Game.Server");
+
+        File.ReadAllText(Path.Combine(server, "Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs"))
+            .Should().Contain("HullTraits = ShipComponents.GetTraitsOrNull(item),");
+        File.ReadAllText(Path.Combine(server, "Service", "SpaceRevamp.cs"))
+            .Should().Contain("willpower, stationEffectiveness, status.HullTraits)");
+
+        var status = Newtonsoft.Json.JsonConvert.DeserializeObject<ShipStatus>(
+            Newtonsoft.Json.JsonConvert.SerializeObject(new ShipStatus { HullTraits = new() { ShipComponentTraitType.Reinforced } }));
+        status!.HullTraits.Should().Equal(ShipComponentTraitType.Reinforced);
+        Newtonsoft.Json.JsonConvert.DeserializeObject<ShipStatus>("{}")!.HullTraits.Should().BeNull("older records load none");
+    }
 }

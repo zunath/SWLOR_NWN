@@ -82,5 +82,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         RefinedYield1 = 94,
         RefinedYield2 = 95,
         RefinedYield3 = 96,
+        RepublicShieldMatrix = 101,
+        SithTargetingCore = 102,
+        MandalorianPlating = 103,
+        CzerkaIndustrialFrame = 104,
+        HuttCargoCoupling = 105,
+        CorellianDriveKit = 106,
+        ChissSensorArray = 107,
+        RaiderRefitHull = 108,
     }
 }

@@ -87,6 +87,7 @@ namespace SWLOR.Game.Server.Service
                 ? ColorToken.Red($"Freight delivered late: {result.Fee} credits paid, and the deposit of {contract.Deposit} credits is forfeit.")
                 : ColorToken.Green($"Freight delivered on time: {result.Fee} credits paid and your deposit of {result.DepositReturned} credits returned."));
             RecordStanding(player, TradeLookup.GetExchange(exchange)?.StandingFaction ?? FactionType.Invalid, TradeStandingEvent.DeliveredFreight);
+            Space.RecordTradeEarnings(player, result.Fee);
             Log.Write(LogGroup.Space, $"FREIGHT DELIVER - {PlayerName.GetAuditName(player)} - {contract.Id} fee {result.Fee} deposit back {result.DepositReturned}{(result.IsLate ? " (late)" : string.Empty)}");
         }
 

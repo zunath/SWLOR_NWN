@@ -57,6 +57,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// RequiresSkill ranks on the ship's deed item when it was registered. Null when it had none.
         /// </summary>
         public Dictionary<SkillType, int> RequiredSkills { get; set; }
+
+        /// <summary>
+        /// The traits the ship's deed inherited from the components it was crafted from (plan section 14), copied when
+        /// the ship was registered. Null when it had none; older records load null.
+        /// </summary>
+        public List<ShipComponentTraitType> HullTraits { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }
         public int Capacitor { get; set; }

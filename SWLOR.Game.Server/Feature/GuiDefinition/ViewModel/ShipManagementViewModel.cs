@@ -1714,6 +1714,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         ItemTag = itemTag,
                         RequiredSkills = Item.GetRequiredSkills(item),
+                        HullTraits = ShipComponents.GetTraitsOrNull(item),
                         Shield = shipDetail.MaxShield + bonuses.Shield,
                         MaxShield = shipDetail.MaxShield + bonuses.Shield,
                         Hull = shipDetail.MaxHull + bonuses.Hull,
@@ -1993,6 +1994,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
 
                     DB.Set(dbShip);
+                    Space.GrantModuleFittedAchievement(Player, moduleDetails);
 
                     DestroyObject(item);
                     LoadShip();

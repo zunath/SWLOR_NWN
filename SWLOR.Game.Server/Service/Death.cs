@@ -175,7 +175,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns where a player respawns: their registered medical center, or the default respawn
+        /// Returns where a player respawns: the entrance of their registered player-city Medical Center while its
+        /// instance is loaded, otherwise their registered medical center, or the default respawn
         /// point (DTH_DEFAULT_RESPAWN_POINT) when no medical center is saved, its area no longer exists,
         /// or the saved point is not on walkable ground. Never returns the place the player died.
         /// </summary>
@@ -183,6 +184,14 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The location to respawn at.</returns>
         public static Location GetRespawnLocation(Player dbPlayer)
         {
+            if (!string.IsNullOrWhiteSpace(dbPlayer?.RespawnPropertyId) &&
+                Station.IsStationInterior(dbPlayer.RespawnPropertyId) &&
+                Property.TryGetLoadedInstance(dbPlayer.RespawnPropertyId, out var medicalCenter))
+            {
+                var entrance = Property.GetEntrancePosition(medicalCenter.LayoutType);
+                return Location(medicalCenter.Area, Vector3(entrance.X, entrance.Y, entrance.Z), entrance.W);
+            }
+
             if (HasRespawnArea(dbPlayer))
             {
                 var area = Area.GetAreaByResref(dbPlayer.RespawnAreaResref);

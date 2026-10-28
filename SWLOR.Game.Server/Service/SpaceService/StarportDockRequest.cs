@@ -8,6 +8,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The dock is a player-city starport; otherwise it is an NPC dock.</summary>
         public bool IsPlayerStarport { get; init; }
 
+        /// <summary>The player starport stands on a player station's deck (plan section 25); the station rule is the city's.</summary>
+        public bool IsStationStarport { get; init; }
+
         /// <summary>The NPC dock's area carries the <c>CAPITAL_DOCK</c> flag (one of the major ports).</summary>
         public bool CapitalDock { get; init; }
 

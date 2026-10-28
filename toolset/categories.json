@@ -552,7 +552,8 @@
             "city_hall",
             "medical_center",
             "player_rnd",
-            "starport"
+            "starport",
+            "station_deck"
           ]
         },
         {

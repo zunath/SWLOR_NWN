@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Entity
             CustomName = string.Empty;
             CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
+            StationAnchorId = string.Empty;
             ChildPropertyIds = new Dictionary<PropertyChildType, List<string>>();
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
@@ -126,5 +127,12 @@ namespace SWLOR.Game.Server.Entity
         /// Only applicable to City property types.
         /// </summary>
         public int Upkeep { get; set; }
+
+        /// <summary>
+        /// The anchor site a player station stands at (plan section 25). Empty for every other property, including
+        /// planet cities; older records load empty.
+        /// </summary>
+        [Indexed]
+        public string StationAnchorId { get; set; }
     }
 }

@@ -2,8 +2,9 @@
 
 usage: python bible_recipes.py [--check]
 Rows come from catalog.py: the module steps and ship deeds (Engineering Recipes) and the ship component recipes,
-each on its skill's tab (Engineering, Smithery, or Cooking Recipes for Agriculture); and from droids.py: the
-industrial droid parts and protocol discs (Engineering Recipes). They sit under each tab's
+each on its skill's tab (Engineering, Smithery, or Cooking Recipes for Agriculture), from stations.py: the Station
+Core (Fabrication Recipes, laid out like the tab's Starport row), and from droids.py: the industrial droid parts and
+protocol discs (Engineering Recipes). They sit under each tab's
 existing headers, appended after its last row. Re-running removes the previously generated rows (matched by Recipe
 Enum) and writes them again; --check only reports whether the workbook is current. Every other zip entry is copied
 byte for byte, and the rest of each worksheet XML is left untouched.
@@ -20,11 +21,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import catalog as c  # noqa: E402
 import droids  # noqa: E402
 import model as m  # noqa: E402
+import stations  # noqa: E402
 
 WORKBOOK = m.REPO / "design" / "bible" / "SWLOR Design Bible.xlsx"
 SHEET_NAME = "Engineering Recipes"
 SHEET_BY_SKILL = {"Engineering": "Engineering Recipes", "Smithery": "Smithery Recipes", "Agriculture": "Cooking Recipes"}
-RESEARCH_COLUMN = {"Engineering Recipes": "AC", "Smithery Recipes": "AC", "Cooking Recipes": "AD"}
+RESEARCH_COLUMN = {"Engineering Recipes": "AC", "Smithery Recipes": "AC", "Cooking Recipes": "AD", "Fabrication Recipes": "AD"}
+FABRICATION_SHEET = "Fabrication Recipes"
+# The Fabrication tab has a Base Item Storage Slots column (K), so its enhancement and component columns sit one later.
+FABRICATION_COMPONENT_COLUMNS = ["N", "P", "R", "T", "V", "X", "Z", "AB"]
 STYLE = 14  # centered body style the tabs' newest rows use
 COMPONENT_COLUMNS = ["M", "O", "Q", "S", "U", "W", "Y", "AA"]  # quantity sits in the next column
 
@@ -61,6 +66,10 @@ def recipe_rows():
         rows.append(dict(sheet=SHEET_NAME, skill="Engineering", enum=x["RecipeName"], category="StarshipAmmo", name=x["Name"],
                          level=x["RecipeLevel"], quantity=x["Quantity"], resref=x["Resref"], enhancement="N/A", slots=0,
                          components=x["Components"]))
+    rows.append(dict(sheet=FABRICATION_SHEET, skill="Fabrication", enum="StationCore", category="Structure",
+                     name=stations.CORE_ITEM_NAME, level=stations.CORE_RECIPE_LEVEL, resref=stations.CORE_ITEM_RESREF,
+                     enhancement="N/A", slots=0, components=stations.CORE_COMPONENTS, perk="Structure Blueprints",
+                     perk_level=2, storage=1))
     rows += [dict(r, sheet=SHEET_NAME) for r in droids.recipe_rows()]
     for r in rows:
         assert len(r["components"]) <= len(COMPONENT_COLUMNS), r["enum"]
@@ -74,10 +83,17 @@ def cell(ref, value):
 
 
 def row_xml(number, r):
-    cells = [("A", r["skill"])] + ([("C", r["group"])] if r.get("group") else []) + [("D", r["enum"]), ("E", r["category"])]
-    cells += ([("F", r["tier"])] if r.get("tier") else []) + [("G", r["name"]), ("H", r["level"]),
-             ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["enhancement"]), ("L", r["slots"])]
-    for column, (resref, quantity) in zip(COMPONENT_COLUMNS, r["components"]):
+    if r["sheet"] == FABRICATION_SHEET:
+        cells = [("A", r["skill"]), ("C", r["perk"]), ("D", r["enum"]), ("E", r["category"]), ("F", r["perk_level"]),
+                 ("G", r["name"]), ("H", r["level"]), ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["storage"]),
+                 ("L", r["enhancement"]), ("M", r["slots"])]
+        columns = FABRICATION_COMPONENT_COLUMNS
+    else:
+        cells = [("A", r["skill"])] + ([("C", r["group"])] if r.get("group") else []) + [("D", r["enum"]), ("E", r["category"])]
+        cells += ([("F", r["tier"])] if r.get("tier") else []) + [("G", r["name"]), ("H", r["level"]),
+                  ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["enhancement"]), ("L", r["slots"])]
+        columns = COMPONENT_COLUMNS
+    for column, (resref, quantity) in zip(columns, r["components"]):
         cells.append((column, resref))
         cells.append((col_after(column), quantity))
     cells.append((RESEARCH_COLUMN[r["sheet"]], 0))

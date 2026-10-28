@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Service
@@ -38,13 +39,16 @@ namespace SWLOR.Game.Server.Service
             if (city == null || city.PropertyType != PropertyType.City)
                 return null;
 
-            // The city's land is an NPC planet's area; a city in space has no planet exchange to trade through.
-            var planet = Planet.GetPlanetTypeByAreaResref(city.ParentPropertyId);
+            // A planet city trades through its planet's exchange; a station through its orbit's, or in Wild Space (which has
+            // no NPC exchange) the nearest open port's (StationRules.GetExchange).
+            var exchange = Station.IsStation(city)
+                ? StationRules.GetExchange(city.StationAnchorId)
+                : TradeLookup.GetExchangeForPlanet(Planet.GetPlanetTypeByAreaResref(city.ParentPropertyId));
             city.Taxes.TryGetValue(PropertyTaxType.Exchange, out var tariff);
             return new TradeDock
             {
                 DockId = starportPropertyId,
-                Exchange = TradeLookup.GetExchangeForPlanet(planet),
+                Exchange = exchange,
                 IsCity = true,
                 CityId = city.Id,
                 CityName = city.CustomName,

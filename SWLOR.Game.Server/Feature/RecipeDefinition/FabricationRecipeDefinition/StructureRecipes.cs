@@ -219,6 +219,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("r_pow_supp_unit", 3)
                 .Component("zinsiam", 8);
 
+            // Station Core: the City Hall's and the Starport's recipes together, since founding builds both (plan section 25).
+            // StationTests checks these against StationTuning (stations.py).
+            _builder.Create(RecipeType.StationCore, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5018")
+                .Level(50)
+                .Quantity(1)
+                .Component("const_parts", 3)
+                .Component("pow_supp_unit", 2)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 2);
+
         }
     }
 }

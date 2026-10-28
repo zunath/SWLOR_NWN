@@ -12,18 +12,17 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Handles scheduled passenger shuttle flights between planets.
+    /// Handles scheduled passenger shuttle flights between planets, and between player stations and their home ports.
     /// Players purchase a ticket at a starport flights terminal, wait for the scheduled
     /// departure, ride an instanced shuttle interior, and are delivered to the destination
-    /// planet's landing waypoint when the flight arrives.
+    /// planet's landing waypoint (or the station's Starport) when the flight arrives.
     /// </summary>
     public static class Shuttle
     {
         private class ActiveFlight
         {
             public string FlightId { get; set; } = string.Empty;
-            public PlanetType Origin { get; set; }
-            public PlanetType Destination { get; set; }
+            public ShuttleRoute Route { get; set; }
             public DateTime DepartureUtc { get; set; }
             public DateTime ArrivalUtc { get; set; }
             public uint Area { get; set; } = OBJECT_INVALID;
@@ -48,9 +47,9 @@ namespace SWLOR.Game.Server.Service
         private const int BoardingCallSeconds = 60;
 
         private static readonly Dictionary<string, ActiveFlight> _activeFlights = new();
-        private static readonly Dictionary<string, (PlanetType Origin, PlanetType Destination)> _ticketHolders = new();
+        private static readonly Dictionary<string, ShuttleRoute> _ticketHolders = new();
         private static readonly Dictionary<string, DateTime> _boardingNotBeforeUtc = new();
-        private static readonly Dictionary<(PlanetType Origin, PlanetType Destination), DateTime> _announcedBoardings = new();
+        private static readonly Dictionary<ShuttleRoute, DateTime> _announcedBoardings = new();
         private static DateTime _lastTickUtc;
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace SWLOR.Game.Server.Service
             var rides = SearchRidesByStatus(ShuttleRideStatus.Ticketed);
             foreach (var ride in rides)
             {
-                _ticketHolders[ride.PlayerId] = (ride.Origin, ride.Destination);
+                _ticketHolders[ride.PlayerId] = GetRideRoute(ride);
             }
 
             var inTransit = SearchRidesByStatus(ShuttleRideStatus.InTransit);
@@ -94,8 +93,7 @@ namespace SWLOR.Game.Server.Service
                     _activeFlights[ride.FlightId] = new ActiveFlight
                     {
                         FlightId = ride.FlightId,
-                        Origin = ride.Origin,
-                        Destination = ride.Destination,
+                        Route = GetRideRoute(ride),
                         DepartureUtc = ride.DepartureUtc,
                         ArrivalUtc = ride.ArrivalUtc,
                         LastBroadcastUtc = now
@@ -149,10 +147,10 @@ namespace SWLOR.Game.Server.Service
             var routes = _ticketHolders.Values.Distinct().ToList();
             foreach (var route in routes)
             {
-                var departures = ShuttleSchedule.GetDeparturesBetween(route.Origin, route.Destination, _lastTickUtc, now);
+                var departures = ShuttleSchedule.GetDeparturesBetween(route, _lastTickUtc, now);
                 foreach (var departure in departures)
                 {
-                    BoardPassengers(route.Origin, route.Destination, departure, now);
+                    BoardPassengers(route, departure, now);
                 }
             }
         }
@@ -160,15 +158,15 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Boards eligible ticket holders onto a departing flight and messages those who missed it.
         /// </summary>
-        private static void BoardPassengers(PlanetType origin, PlanetType destination, DateTime departureUtc, DateTime now)
+        private static void BoardPassengers(ShuttleRoute route, DateTime departureUtc, DateTime now)
         {
             var ticketHolders = _ticketHolders
-                .Where(x => x.Value.Origin == origin && x.Value.Destination == destination)
+                .Where(x => x.Value == route)
                 .Select(x => x.Key)
                 .ToList();
 
-            var flightId = ShuttleSchedule.BuildFlightId(origin, destination, departureUtc);
-            var transitSeconds = GalaxyMap.GetTransitSeconds(origin, destination);
+            var flightId = ShuttleSchedule.BuildFlightId(route, departureUtc);
+            var transitSeconds = ShuttleRouteRules.GetTransitSeconds(route);
             var boardedAnyone = false;
 
             foreach (var playerId in ticketHolders)
@@ -182,9 +180,9 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(player) ||
                     GetIsDead(player) ||
                     GetIsDMPossessed(player) ||
-                    !IsAtBoardingTerminal(player, origin))
+                    !IsAtBoardingTerminal(player, route.Origin))
                 {
-                    NotifyMissedBoarding(player, origin, destination, now);
+                    NotifyMissedBoarding(player, route, now);
                     continue;
                 }
 
@@ -196,7 +194,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                var flight = GetOrCreateFlight(flightId, origin, destination, now, now.AddSeconds(transitSeconds));
+                var flight = GetOrCreateFlight(flightId, route, now, now.AddSeconds(transitSeconds));
 
                 ride.Status = ShuttleRideStatus.InTransit;
                 ride.FlightId = flightId;
@@ -214,28 +212,28 @@ namespace SWLOR.Game.Server.Service
                     ActionJumpToLocation(entrance);
                 });
 
-                var destinationName = Planet.GetPlanetByType(destination).Name;
+                var destinationName = Station.GetStopName(route.Destination);
                 var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(transitSeconds), false);
                 SendMessageToPC(player, $"You board the shuttle to {destinationName}. Estimated flight time: {transit}.");
             }
 
             if (boardedAnyone)
             {
-                Log.Write(LogGroup.Server, $"Shuttle flight {flightId} departed {origin} for {destination}.");
+                Log.Write(LogGroup.Server, $"Shuttle flight {flightId} departed {Station.GetStopName(route.Origin)} for {Station.GetStopName(route.Destination)}.");
             }
         }
 
         /// <summary>
         /// Tells a ticket holder they missed the shuttle and when the next one departs.
         /// </summary>
-        private static void NotifyMissedBoarding(uint player, PlanetType origin, PlanetType destination, DateTime now)
+        private static void NotifyMissedBoarding(uint player, ShuttleRoute route, DateTime now)
         {
             if (!GetIsObjectValid(player))
                 return;
 
-            var next = ShuttleSchedule.GetNextDepartureUtc(origin, destination, now);
+            var next = ShuttleSchedule.GetNextDepartureUtc(route, now);
             var wait = Time.GetTimeLongIntervals(next - now, false);
-            var destinationName = Planet.GetPlanetByType(destination).Name;
+            var destinationName = Station.GetStopName(route.Destination);
             SendMessageToPC(player, ColorToken.Yellow($"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal. You can refund your ticket at any flights terminal before boarding."));
         }
 
@@ -247,7 +245,7 @@ namespace SWLOR.Game.Server.Service
             var routes = _ticketHolders.Values.Distinct().ToList();
             foreach (var route in routes)
             {
-                var next = ShuttleSchedule.GetNextDepartureUtc(route.Origin, route.Destination, now);
+                var next = ShuttleSchedule.GetNextDepartureUtc(route, now);
                 if ((next - now).TotalSeconds > BoardingCallSeconds)
                     continue;
 
@@ -256,7 +254,7 @@ namespace SWLOR.Game.Server.Service
 
                 _announcedBoardings[route] = next;
 
-                var destinationName = Planet.GetPlanetByType(route.Destination).Name;
+                var destinationName = Station.GetStopName(route.Destination);
                 var wait = Time.GetTimeLongIntervals(next - now, false);
                 foreach (var (playerId, ticketRoute) in _ticketHolders)
                 {
@@ -295,8 +293,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ProcessArrival(ActiveFlight flight)
         {
-            var landingLocation = GetLandingLocation(flight.Destination);
-            var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
+            var landingLocation = GetLandingLocation(flight.Route.Destination);
+            var destinationName = Station.GetStopName(flight.Route.Destination);
 
             // Resolve every ride record on this flight. Delivery is decided from the passenger's
             // actual current area (engine truth), not the area's cached player list, which is not
@@ -338,7 +336,7 @@ namespace SWLOR.Game.Server.Service
                 Scheduler.Schedule(() => DestroyFlightInstance(area, landingLocation), TimeSpan.FromSeconds(30));
             }
 
-            Log.Write(LogGroup.Server, $"Shuttle flight {flight.FlightId} arrived at {flight.Destination}.");
+            Log.Write(LogGroup.Server, $"Shuttle flight {flight.FlightId} arrived at {destinationName}.");
         }
 
         /// <summary>
@@ -398,6 +396,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Records an offline passenger's landing location. Retains the elapsed ride until
         /// login so the passenger receives their destination notice before it is cleared.
+        /// A station's deck is an instance, which a saved location cannot name, so a passenger
+        /// to a station is recorded at its home port's landing.
         /// </summary>
         private static void DeliverOfflinePassenger(ShuttleRide ride)
         {
@@ -435,7 +435,7 @@ namespace SWLOR.Game.Server.Service
 
                 flight.LastBroadcastUtc = now;
 
-                var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
+                var destinationName = Station.GetStopName(flight.Route.Destination);
                 var remaining = Time.GetTimeLongIntervals(flight.ArrivalUtc - now, false);
 
                 // The status console announces the ETA to nearby passengers at talk volume.
@@ -447,15 +447,14 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Returns the tracked flight for the given id, creating it and its instance if needed.
         /// </summary>
-        private static ActiveFlight GetOrCreateFlight(string flightId, PlanetType origin, PlanetType destination, DateTime departureUtc, DateTime arrivalUtc)
+        private static ActiveFlight GetOrCreateFlight(string flightId, ShuttleRoute route, DateTime departureUtc, DateTime arrivalUtc)
         {
             if (!_activeFlights.TryGetValue(flightId, out var flight))
             {
                 flight = new ActiveFlight
                 {
                     FlightId = flightId,
-                    Origin = origin,
-                    Destination = destination,
+                    Route = route,
                     DepartureUtc = departureUtc,
                     ArrivalUtc = arrivalUtc,
                     LastBroadcastUtc = departureUtc
@@ -510,7 +509,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsObjectValid(flight.Area))
                 return;
 
-            var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
+            var destinationName = Station.GetStopName(flight.Route.Destination);
             var interiorResref = SelectFlightInterior(GetShuttleTemplateObjects());
             if (interiorResref != ShuttleInteriorResref)
                 Log.Write(LogGroup.Server, "Passenger shuttle template is missing its boarding waypoint or pilot chair; using starship1_int. Repack and deploy the module to enable the shuttle interior.");
@@ -585,12 +584,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the landing waypoint location for a destination planet.
+        /// Returns where passengers to a stop land: a planet's landing waypoint, or a station's Starport.
+        /// A station whose Starport is gone or not loaded lands its passengers at its home port.
         /// </summary>
-        private static Location GetLandingLocation(PlanetType destination)
+        private static Location GetLandingLocation(ShuttleStop destination)
         {
-            var waypoint = GetWaypointByTag(Planet.GetPlanetByType(destination).LandingWaypointTag);
+            if (destination.IsStation && Station.TryGetArrivalLocation(destination.StationId, out var stationLocation))
+                return stationLocation;
+
+            var waypoint = GetWaypointByTag(Planet.GetPlanetByType(destination.Planet).LandingWaypointTag);
             return GetLocation(waypoint);
+        }
+
+        /// <summary>The route a ride record flies. A station that no longer exists keeps its home port and id.</summary>
+        public static ShuttleRoute GetRideRoute(ShuttleRide ride)
+        {
+            return new ShuttleRoute(
+                GetStop(ride.Origin, ride.OriginStationId),
+                GetStop(ride.Destination, ride.DestinationStationId));
+        }
+
+        private static ShuttleStop GetStop(PlanetType planet, string stationId)
+        {
+            if (string.IsNullOrWhiteSpace(stationId))
+                return ShuttleStop.ForPlanet(planet);
+
+            var stop = Station.GetShuttleStop(stationId);
+            return stop.IsStation ? stop : ShuttleStop.ForStation(stationId, planet, false);
         }
 
         /// <summary>
@@ -608,9 +628,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Determines whether the player is within boarding range of a flights terminal for the given origin planet.
+        /// Determines whether the player is within boarding range of a flights terminal for the given origin:
+        /// a planet's terminals, or the station's own.
         /// </summary>
-        private static bool IsAtBoardingTerminal(uint player, PlanetType origin)
+        private static bool IsAtBoardingTerminal(uint player, ShuttleStop origin)
         {
             var nth = 1;
             var terminal = GetNearestObjectByTag(TerminalTag, player, nth);
@@ -620,7 +641,8 @@ namespace SWLOR.Game.Server.Service
                 if (GetDistanceBetween(player, terminal) > BoardingRangeMeters)
                     return false;
 
-                if ((PlanetType)GetLocalInt(terminal, TerminalPlanetVariable) == origin)
+                if ((PlanetType)GetLocalInt(terminal, TerminalPlanetVariable) == origin.Planet &&
+                    GetLocalString(terminal, Station.StationCityVariable) == (origin.StationId ?? string.Empty))
                     return true;
 
                 nth++;
@@ -654,12 +676,19 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the ticket was purchased, false otherwise.</returns>
         public static bool TryPurchaseTicket(uint player, PlanetType origin, PlanetType destination, string cityPropertyId, float taxRate)
         {
+            return TryPurchaseTicket(player, new ShuttleRoute(ShuttleStop.ForPlanet(origin), ShuttleStop.ForPlanet(destination)), cityPropertyId, taxRate);
+        }
+
+        /// <summary>
+        /// Attempts to purchase a shuttle ticket for a route, which may start or end at a player station.
+        /// Charges the fare plus city transportation tax and deposits the tax into the city treasury.
+        /// </summary>
+        public static bool TryPurchaseTicket(uint player, ShuttleRoute route, string cityPropertyId, float taxRate)
+        {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return false;
 
-            if (origin == PlanetType.Invalid ||
-                destination == PlanetType.Invalid ||
-                origin == destination)
+            if (!ShuttleRouteRules.IsValid(route))
                 return false;
 
             var playerId = GetObjectUUID(player);
@@ -670,7 +699,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            var fare = GalaxyMap.GetFare(origin, destination);
+            var fare = ShuttleRouteRules.GetFare(route);
             var tax = (int)(taxRate * fare);
             var price = fare + tax;
 
@@ -685,13 +714,15 @@ namespace SWLOR.Game.Server.Service
             var ride = new ShuttleRide(playerId)
             {
                 Status = ShuttleRideStatus.Ticketed,
-                Origin = origin,
-                Destination = destination,
+                Origin = route.Origin.Planet,
+                Destination = route.Destination.Planet,
+                OriginStationId = route.Origin.StationId ?? string.Empty,
+                DestinationStationId = route.Destination.StationId ?? string.Empty,
                 FarePaid = fare,
                 TaxPaid = tax
             };
             DB.Set(ride);
-            _ticketHolders[playerId] = (origin, destination);
+            _ticketHolders[playerId] = route;
             _boardingNotBeforeUtc[playerId] = DateTime.UtcNow;
 
             if (tax > 0 && !string.IsNullOrWhiteSpace(cityPropertyId))
@@ -701,7 +732,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbCity.Treasury += tax;
                     DB.Set(dbCity);
-                    Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {destination}.");
+                    Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {Station.GetStopName(route.Destination)}.");
                 }
             }
 
@@ -773,15 +804,16 @@ namespace SWLOR.Game.Server.Service
                 return true;
             }
 
-            var flight = GetOrCreateFlight(ride.FlightId, ride.Origin, ride.Destination, ride.DepartureUtc, ride.ArrivalUtc);
+            var flight = GetOrCreateFlight(ride.FlightId, GetRideRoute(ride), ride.DepartureUtc, ride.ArrivalUtc);
             location = flight.EntranceLocation;
             return true;
         }
 
         private static Location CompleteRideOnLogin(uint player, ShuttleRide ride)
         {
-            var location = GetLandingLocation(ride.Destination);
-            SendMessageToPC(player, $"Your shuttle has arrived at {Planet.GetPlanetByType(ride.Destination).Name}.");
+            var route = GetRideRoute(ride);
+            var location = GetLandingLocation(route.Destination);
+            SendMessageToPC(player, $"Your shuttle has arrived at {Station.GetStopName(route.Destination)}.");
             DB.Delete<ShuttleRide>(ride.Id);
             Log.Write(LogGroup.Server, $"Shuttle delivered passenger {ride.PlayerId} to {ride.Destination} on login.");
             return location;
@@ -803,12 +835,13 @@ namespace SWLOR.Game.Server.Service
             if (ride == null || ride.Status != ShuttleRideStatus.Ticketed)
                 return;
 
-            _ticketHolders[playerId] = (ride.Origin, ride.Destination);
+            var route = GetRideRoute(ride);
+            _ticketHolders[playerId] = route;
             _boardingNotBeforeUtc[playerId] = now.AddSeconds(BoardingCallSeconds);
-            var next = GetNextDepartureUtc(ride.Origin, ride.Destination, playerId);
+            var next = GetNextDepartureUtc(route, playerId);
             var wait = Time.GetTimeLongIntervals(next - now, false);
-            var originName = Planet.GetPlanetByType(ride.Origin).Name;
-            var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
+            var originName = Station.GetStopName(route.Origin);
+            var destinationName = Station.GetStopName(route.Destination);
             SendMessageToPC(player, ColorToken.Yellow($"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding."));
         }
 
@@ -857,7 +890,7 @@ namespace SWLOR.Game.Server.Service
                 if (ride.ArrivalUtc > DateTime.UtcNow)
                 {
                     var remaining = Time.GetTimeLongIntervals(ride.ArrivalUtc - DateTime.UtcNow, false);
-                    SendMessageToPC(current, $"You resume your shuttle flight to {Planet.GetPlanetByType(ride.Destination).Name}. Estimated arrival: {remaining}.");
+                    SendMessageToPC(current, $"You resume your shuttle flight to {Station.GetStopName(GetRideRoute(ride).Destination)}. Estimated arrival: {remaining}.");
                 }
 
                 if (_activeFlights.TryGetValue(ride.FlightId, out var flight) &&
@@ -927,6 +960,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the next scheduled departure for a route that may start or end at a player station.
+        /// </summary>
+        /// <param name="route">The route.</param>
+        /// <param name="playerId">Optional passenger whose login boarding grace period applies.</param>
+        /// <returns>The UTC time of the next departure.</returns>
+        public static DateTime GetNextDepartureUtc(ShuttleRoute route, string playerId = null)
+        {
+            var notBefore = default(DateTime);
+            if (!string.IsNullOrWhiteSpace(playerId))
+                _boardingNotBeforeUtc.TryGetValue(playerId, out notBefore);
+
+            return ShuttleSchedule.GetNextDepartureUtc(route, DateTime.UtcNow, notBefore);
+        }
+
+        /// <summary>
         /// Retrieves the flight registered to a shuttle status console or shuttle area, if any.
         /// </summary>
         /// <param name="obj">The console placeable or area to check.</param>
@@ -942,7 +990,25 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(flightId) || !_activeFlights.TryGetValue(flightId, out var flight))
                 return false;
 
-            destination = flight.Destination;
+            destination = flight.Route.Destination.Planet;
+            arrivalUtc = flight.ArrivalUtc;
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves the destination name (a planet or a player station) of the flight registered to a shuttle
+        /// status console or shuttle area, if any.
+        /// </summary>
+        public static bool TryGetFlightDestinationName(uint obj, out string destinationName, out DateTime arrivalUtc)
+        {
+            destinationName = string.Empty;
+            arrivalUtc = default;
+
+            var flightId = GetLocalString(obj, ShuttleFlightIdVariable);
+            if (string.IsNullOrWhiteSpace(flightId) || !_activeFlights.TryGetValue(flightId, out var flight))
+                return false;
+
+            destinationName = Station.GetStopName(flight.Route.Destination);
             arrivalUtc = flight.ArrivalUtc;
             return true;
         }

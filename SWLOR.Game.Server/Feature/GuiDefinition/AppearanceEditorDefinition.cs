@@ -1026,10 +1026,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             column.AddRow(row =>
             {
                 row.AddSpacer();
-                row.AddLabel().SetText(label).SetWidth(80f).SetHeight(32f);
-                row.AddButton().SetId(id + "_decrease").SetText("-").SetWidth(36f).SetHeight(32f)
+                row.AddLabel().SetText(label).SetWidth(72f).SetHeight(32f);
+                row.AddButton().SetId(id + "_decrease").SetText("-").SetWidth(32f).SetHeight(32f)
                     .BindOnClicked(decrease);
-                row.AddButton().SetId(id + "_increase").SetText("+").SetWidth(36f).SetHeight(32f)
+                row.AddButton().SetId(id + "_increase").SetText("+").SetWidth(32f).SetHeight(32f)
                     .BindOnClicked(increase);
                 row.AddLabel().SetId(id + "_value").BindText(value).SetWidth(44f).SetHeight(32f);
                 row.AddSpacer();

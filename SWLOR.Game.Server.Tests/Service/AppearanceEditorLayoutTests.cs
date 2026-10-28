@@ -680,7 +680,7 @@ public class AppearanceEditorLayoutTests
         {
             var value = Walk(settings).Single(widget => widget.Id == id);
             NaturalWidth(PathTo(settings, value).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
-                .Should().BeLessThanOrEqualTo(224f, "head values must remain readable in the 300px client window");
+                .Should().BeLessThanOrEqualTo(208f, "head values must leave room for native margins and the scrollbar in a 300px client window");
         }
     }
 

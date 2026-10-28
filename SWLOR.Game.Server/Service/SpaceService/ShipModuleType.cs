@@ -26,5 +26,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         ShieldHardener = 21,
         Salvager = 22,
         GasHarvester = 23,
+        ProbeLauncher = 24,
     }
 }

@@ -23,8 +23,8 @@ public class RevampCatalogTests
     {
         var steps = RevampModuleCatalog.Steps;
 
-        steps.Should().HaveCount(324,
-            "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + 16 named rank-50 modules (W9b)");
+        steps.Should().HaveCount(334, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + " +
+            "the Probe Launcher ranks (W12a) + 16 named rank-50 modules (W9b)");
         steps.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
         steps.Select(x => x.Name).Should().OnlyHaveUniqueItems();
         foreach (var step in steps)
@@ -62,7 +62,7 @@ public class RevampCatalogTests
                 first.CycleSeconds.Should().BeGreaterThan(0, family.Key.ToString());
         }
 
-        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(42);
+        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(43);
         Enum.GetValues<ShipModuleFamily>().Where(x => x != ShipModuleFamily.Invalid)
             .Should().BeEquivalentTo(RevampModuleCatalog.Steps.Select(x => x.Family).Distinct(), "every family has steps");
     }
@@ -150,9 +150,11 @@ public class RevampCatalogTests
         var all = steps.Select(x => x.RecipeType).Concat(hulls.Select(x => x.RecipeType)).ToList();
         all.Should().OnlyHaveUniqueItems();
         all.Select(x => x.ToString()).Should().OnlyHaveUniqueItems();
-        all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x)).Should().OnlyContain(x => (int)x >= 7000 && (int)x < 7000 + 358);
-        steps.Where(x => x.Named).Select(x => (int)x.RecipeType).Should().OnlyContain(x => x >= 7488 && x < 7488 + 16,
-            "the named modules open the W9b RecipeType block, after the component recipes");
+        // The modules and hulls take 7000-7357; the Probe Launcher (W12a) follows the component recipes (7358-7487); the
+        // named modules (W9b) open the next block.
+        all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x))
+            .Should().OnlyContain(x => ((int)x >= 7000 && (int)x < 7000 + 358) || ((int)x >= 7488 && (int)x < 7498));
+        steps.Where(x => x.Named).Select(x => (int)x.RecipeType).Should().OnlyContain(x => x >= 7498 && x < 7498 + 16);
     }
 
     [Test]

@@ -36,7 +36,7 @@ public class RevampCatalogRecipeTests
             }
 
             Compare(problems, step.Tag, recipe, RecipeCategoryType.ShipModule, step.RecipeLevel,
-                RecipeEnhancementType.Module, step.Tag, step.Components);
+                RecipeEnhancementType.Module, step.Tag, step.Components, step.Named ? 2 : 1);
         }
 
         problems.Should().BeEmpty();
@@ -57,7 +57,7 @@ public class RevampCatalogRecipeTests
             }
 
             Compare(problems, hull.Tag, recipe, RecipeCategoryType.Starship, hull.RecipeLevel,
-                RecipeEnhancementType.Starship, hull.Tag, hull.Components);
+                RecipeEnhancementType.Starship, hull.Tag, hull.Components, 1);
         }
 
         problems.Should().BeEmpty();
@@ -100,14 +100,15 @@ public class RevampCatalogRecipeTests
         int level,
         RecipeEnhancementType enhancement,
         string resref,
-        (string Resref, int Quantity)[] components)
+        (string Resref, int Quantity)[] components,
+        int enhancementSlots)
     {
         if (recipe.Skill != SkillType.Engineering) problems.Add($"{tag}: skill {recipe.Skill}");
         if (recipe.Category != category) problems.Add($"{tag}: category {recipe.Category}");
         if (recipe.Level != level) problems.Add($"{tag}: level {recipe.Level} vs {level}");
         if (recipe.Resref != resref) problems.Add($"{tag}: resref {recipe.Resref}");
         if (recipe.Quantity != 1) problems.Add($"{tag}: quantity {recipe.Quantity}");
-        if (recipe.EnhancementType != enhancement || recipe.EnhancementSlots != 1)
+        if (recipe.EnhancementType != enhancement || recipe.EnhancementSlots != enhancementSlots)
             problems.Add($"{tag}: enhancement {recipe.EnhancementType} x{recipe.EnhancementSlots}");
 
         var expected = components.ToDictionary(component => component.Resref, component => component.Quantity);

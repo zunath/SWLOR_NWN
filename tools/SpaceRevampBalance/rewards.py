@@ -5,8 +5,9 @@ tab and bible_recipes.py the recipe rows. Draft numbers, tune in testing.
 """
 import components as comp
 
-# W9b's RecipeType block (named modules, rare components, ammo variants), after the component recipes (7358-7487).
-RECIPE_START = 7488
+# W9b's RecipeType block (named modules, rare components, ammo variants), after the component recipes (7358-7487)
+# and the Probe Launcher (W12a, 7488-7497).
+RECIPE_START = 7498
 
 # ---------------------------------------------------------------------------------------------------------------
 # Named rank-50 modules (plan sections 8 and 14): one per main family, the ground Chiro pattern (level-52 recipe

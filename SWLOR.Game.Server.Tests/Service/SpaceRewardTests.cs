@@ -237,7 +237,7 @@ public class SpaceRewardTests
             row.Trait.Should().Be(ShipComponentTraitType.None);
             row.Components.Select(x => x.Resref).Should().BeEquivalentTo(material, component);
             recipes[row.RecipeType].Category.Should().Be(RecipeCategoryType.ShipComponent);
-            ((int)row.RecipeType).Should().BeInRange(7504, 7506);
+            ((int)row.RecipeType).Should().BeInRange(7514, 7516);
         }
 
         RevampComponentCatalog.SalvageFamilies.Should().NotContain(RevampComponentCatalog.RareFamilies, "never salvaged");
@@ -441,7 +441,7 @@ public class SpaceRewardTests
             recipe.Quantity.Should().Be(row.Quantity);
             recipe.Components.Values.Sum().Should().BeGreaterThan(1);
             ShipAmmoRules.Variant(row.Resref).Crafted.Should().BeTrue();
-            ((int)row.RecipeType).Should().BeInRange(7507, 7521);
+            ((int)row.RecipeType).Should().BeInRange(7517, 7531);
         }
 
         RevampRewardCatalog.AmmoVariants.Where(x => !x.Crafted).Select(x => x.Resref)

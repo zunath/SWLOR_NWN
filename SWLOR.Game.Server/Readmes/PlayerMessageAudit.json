@@ -5811,28 +5811,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2417,
+    "Line": 2421,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2968,
+    "Line": 2975,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2974,
+    "Line": 2981,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 3178,
+    "Line": 3185,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"
@@ -6214,6 +6214,118 @@
     "Member": "SetPowerRouting",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, $\"{PlayerName.GetDisplayName(ship, player)}: {message}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceScanning.cs",
+    "Line": 204,
+    "Member": "RunProbeCycle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Cyan(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceScanning.cs",
+    "Line": 206,
+    "Member": "RunProbeCycle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(operatorCreature, ColorToken.Cyan(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
+    "Line": 179,
+    "Member": "OpenSiteCache",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can open a site cache.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
+    "Line": 192,
+    "Member": "OpenSiteCache",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is keyed to the ships that scanned this site. Scan it yourself to open it.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
+    "Line": 205,
+    "Member": "OpenSiteCache",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Green($\"You open the {GetName(cache)}: {credits} credits.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 49,
+    "Member": "HandleJumpToSignatureFeat",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Your party has located no signature to jump to here.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 119,
+    "Member": "BeginSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 126,
+    "Member": "BeginSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Spooling the jump drive: {ScanningTuning.JumpSpoolSeconds:0} seconds. Taking fire breaks it off.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 137,
+    "Member": "InterruptSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Red(SignatureJumpRules.Message(SignatureJumpRefusal.Damaged)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 157,
+    "Member": "CompleteSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 173,
+    "Member": "CompleteSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Jumped to the {ScanningRules.TypeName(signature.Type)}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 203,
+    "Member": "RunSensorSweep",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Only the pilot can run a Sensor Sweep.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 211,
+    "Member": "RunSensorSweep",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"A Sensor Sweep needs a Probe Launcher fitted.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 219,
+    "Member": "RunSensorSweep",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"The Sensor Sweep is recharging: {SensorSweepRules.SecondsLeft(last, now)} seconds.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 225,
+    "Member": "RunSensorSweep",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Not enough capacitor for a Sensor Sweep.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 262,
+    "Member": "RunSensorSweep",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Sensor Sweep: {ordered.Count} ship(s) within {range} m.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSustainedFire.cs",

@@ -108,6 +108,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 case ShipModuleFamily.EWarArray:
                     EWarArray(step);
                     break;
+                case ShipModuleFamily.ProbeLauncher:
+                    ProbeLauncher(step);
+                    break;
             }
         }
 
@@ -137,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ShipModuleFamily.BulwarkShieldGenerator => ShipModuleType.BulwarkShieldGenerator,
                 ShipModuleFamily.RepairField => ShipModuleType.RepairFieldGenerator,
                 ShipModuleFamily.EWarArray => ShipModuleType.CapitalEwar,
+                ShipModuleFamily.ProbeLauncher => ShipModuleType.ProbeLauncher,
                 _ => ShipModuleType.Passive,
             };
         }
@@ -324,6 +328,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Enmity.ModifyEnmityOnAll(activator, 100 + repair);
                     ShipModuleActions.AddSupportCombatPoint(activator, supported);
                 });
+        }
+
+        private void ProbeLauncher(ShipModuleStep step)
+        {
+            _builder
+                .CanTargetSelf()
+                .MaxDistance(SelfRange)
+                .ValidationAction((activator, _, _, _, _) => Space.ProbeLauncherError(activator))
+                .ActivatedAction((activator, status, _, _, _) => Space.RunProbeCycle(activator, status, Effective(step)));
         }
 
         private void EWarArray(ShipModuleStep step)

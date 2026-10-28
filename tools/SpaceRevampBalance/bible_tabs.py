@@ -254,7 +254,7 @@ def modules():
         ["Target Painter", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target takes more damage from every source."],
         ["Afterburner", "Mid", "Piloting (Helm)", "Toggle", 2.0, 3, "None", "+ speed while on."],
         ["Cloaking Device", "Mid", "Piloting (Helm)", "Toggle", 1.0, 2, "None", "Small hulls and Blockade Runners; speed -50%; no module or ability use while cloaked (W16)."],
-        ["Probe Launcher", "Mid", "Piloting (Sensors)", "Toggle", 10.0, 4, "None", "Scans hidden signatures (W12)."],
+        ["Probe Launcher", "Mid", "Piloting (Sensors)", "Toggle", 10.0, 4, "None", "Adds signal to every hidden signature in the system; its Sensor Sweep pulse lists ships in range (Scanning (Revamp))."],
         ["Data Analyzer", "Mid", "Espionage (Sensors)", "One press", 20.0, 5, "None", "No rank ladder; the Slicing perk gates targets."],
         ["Targeting Computer", "Mid", "Piloting (Helm)", "Passive", "", "", "None", "+ Accuracy; the best one counts."],
         ["Hull Plating", "Low", "Piloting (Helm)", "Passive", "", "", "Module", "+ max hull and + Defense; only the best Defense counts."],
@@ -691,8 +691,10 @@ def write(sheets):
 
 
 if __name__ == "__main__":
+    import scanning
     import trade
-    tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet), components_tab(), rewards_tab()]
+    tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet), components_tab(),
+            scanning.scanning_tab(Sheet), rewards_tab()]
     if "--check" in sys.argv:
         check(tabs)
         sys.exit(0)

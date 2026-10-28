@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
-        private const float ContentPanelWidth = 520f;
+        private const float ContentPanelWidth = 540f;
         private const float LabelHeight = 20f;
         private const float ButtonHeight = 32f;
         private const float ModuleRowHeight = 48f;
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.ShipHud)
-                .SetInitialGeometry(10f, 100f, 570f, 500f)
+                .SetInitialGeometry(10f, 100f, 590f, 500f)
                 .SetTitle("Ship HUD")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         template.AddCell(cell =>
                         {
                             cell.SetIsVariable(false);
+                            cell.SetWidth(80f);
                             cell.AddButton()
                                 .SetText("Retarget")
                                 .SetWidth(76f)

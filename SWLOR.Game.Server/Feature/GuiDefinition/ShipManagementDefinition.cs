@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float BarLabelWidth = 90f;
         private const float WideButtonWidth = 210f;
         private const float SaleButtonWidth = 130f;
+        private const float SlotLabelWidth = 52f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -282,12 +283,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     details.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("High-Powered Slots")
+                            .SetText("High")
+                            .SetTooltip("High-Powered Slots")
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetWidth(SlotLabelWidth)
                             .SetHeight(20f);
-                    });
-
-                    details.AddRow(row =>
-                    {
                         row.AddButtonImage()
                             .BindImageResref(model => model.HighPower1Resref)
                             .BindIsVisible(model => model.HighPower1Visible)
@@ -357,13 +357,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     details.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Mid-Powered Slots")
+                            .SetText("Mid")
                             .BindIsVisible(model => model.IsMidPowerVisible)
+                            .SetTooltip("Mid-Powered Slots")
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetWidth(SlotLabelWidth)
                             .SetHeight(20f);
-                    });
-
-                    details.AddRow(row =>
-                    {
                         row.AddButtonImage()
                             .BindImageResref(model => model.MidPower1Resref)
                             .BindIsVisible(model => model.MidPower1Visible)
@@ -433,12 +432,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     details.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Low-Powered Slots")
+                            .SetText("Low")
+                            .SetTooltip("Low-Powered Slots")
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetWidth(SlotLabelWidth)
                             .SetHeight(20f);
-                    });
-
-                    details.AddRow(row =>
-                    {
                         row.AddButtonImage()
                             .BindImageResref(model => model.LowPower1Resref)
                             .BindIsVisible(model => model.LowPower1Visible)
@@ -508,13 +506,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     details.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Configuration Slot")
+                            .SetText("Config")
                             .BindIsVisible(model => model.IsConfigurationVisible)
+                            .SetTooltip("Configuration Slot")
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetWidth(SlotLabelWidth)
                             .SetHeight(20f);
-                    });
-
-                    details.AddRow(row =>
-                    {
                         row.AddButtonImage()
                              .BindImageResref(model => model.Configuration1Resref)
                              .BindIsVisible(model => model.Configuration1Visible)

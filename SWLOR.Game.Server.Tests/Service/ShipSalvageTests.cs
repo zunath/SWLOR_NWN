@@ -393,6 +393,16 @@ public class ShipSalvageTests
         table.Select(x => x.Resref).Should().Equal(ShipSalvageItems.TibannaGas);
     }
 
+    [Test]
+    public void TheGasCloudFog_IsAVisibleEmitterNoClickCanPick()
+    {
+        var utp = ReadBlueprint("utp", ShipSalvageActions.GasCloudVisualResref);
+
+        utp.GetProperty("Appearance").GetProperty("value").GetInt32().Should().Be(4411, "\"VFX: Fog - Large, Heavy\" reads as a gas cloud");
+        utp.GetProperty("Useable").GetProperty("value").GetInt32().Should().Be(0, "clicks go to the invisible cloud under it");
+        utp.GetProperty("Static").GetProperty("value").GetInt32().Should().Be(0, "it is removed with its cloud");
+    }
+
     [TestCase("spc_wreck", 20583)]
     [TestCase("spc_wreck_cap", 20494)]
     public void TheWrecks_UseExistingDebrisAppearances(string resref, int appearance)

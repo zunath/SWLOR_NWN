@@ -227,10 +227,10 @@ public class StationTests
     [Test]
     public void TheExteriorGrowsWithTheCityLevel()
     {
-        StationRules.GetExteriorScale(1).Should().Be(1.5f);
-        StationRules.GetExteriorScale(5).Should().Be(2.5f);
-        StationRules.GetExteriorScale(0).Should().Be(1.5f);
-        StationRules.GetExteriorScale(9).Should().Be(2.5f);
+        StationRules.GetExteriorScale(1).Should().Be(1.2f);
+        StationRules.GetExteriorScale(5).Should().Be(2.0f);
+        StationRules.GetExteriorScale(0).Should().Be(1.2f);
+        StationRules.GetExteriorScale(9).Should().Be(2.0f);
         Enumerable.Range(1, 4).Should().OnlyContain(level => StationRules.GetExteriorScale(level) < StationRules.GetExteriorScale(level + 1));
 
         var anchor = StationRules.GetAnchor("Viscara1");

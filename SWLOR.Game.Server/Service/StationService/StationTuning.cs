@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service.StationService
         public const string ExteriorResref = "_mdrn_pl_spcs003";
         /// <summary>The tag every station exterior model is spawned with.</summary>
         public const string ExteriorTag = "station_exterior";
-        public static readonly float[] ExteriorScaleByLevel = { 1.5f, 1.75f, 2.0f, 2.25f, 2.5f };
+        public static readonly float[] ExteriorScaleByLevel = { 1.2f, 1.4f, 1.6f, 1.8f, 2.0f };
 
         /// <summary>Two anchor sites per orbit with an NPC dock and one or two per Wild Space system.</summary>
         public static readonly IReadOnlyList<StationAnchor> Anchors = new List<StationAnchor>

@@ -219,13 +219,25 @@ def rare_resref(short):
     return f"sc_{short}"
 
 
-# Rare components in Advanced hull recipes (W11o, plan section 7 and Appendix D): every Advanced deed recipe adds one rare
-# component on top of its bill (the Standard bill's units are unchanged), by maker. A salvaged component carrying a rare
-# trait, of the hull's component tier or higher, stands in for it, so a tier 2 Advanced hull does not need a level 45
-# Thorilide Core; the stand-in's rare trait becomes a hull trait like any traited component's.
+# Rare components in Advanced hull recipes (W11o, plan sections 7 and 14, Appendix D), held to the W11e hull cost band:
+# no hull may cost more than 1.27x its pre-revamp material value (8 / 12 / 18 / 30 refined ore plus half that in
+# electronics of the hull's tier; Advanced Small 420, Medium 948, Large 1,890, Capital 3,945).
+# - Small, Medium and Large Advanced hulls take "salvaged parts carrying a rare trait" (section 14's fourth rare
+#   component): one more component of the hull's tier, of a family its recipe already takes, carrying a rare trait (the
+#   rare-trait slot, on top of the Standard bill). The crafted rare components (650-2,063 credits) cannot fit these hulls'
+#   budgets (533-2,400 in all), so they are not used here. Worst case 1.16x (Chela Bomber with a tier 2 Ordnance Assembly).
+# - Capital Advanced hulls take their maker's crafted rare component in place of the part it is built on (a Thorilide
+#   Core for the Capital Class Reactor, an Aurodium Plating for one Capital Class Structural Components, a Prototype Core
+#   for the Sensor Suite) and the hull's electronics; a tier 5 component with a rare trait of any salvage family may stand
+#   in for it. Republic Centurion: 4,758 with the Thorilide Core (1.21x), at most 4,995 with a stand-in (1.27x).
+# The slot's or stand-in's rare trait becomes a hull trait like any traited component's.
 RARE_BY_MAKER = {"Republic": "ThorilideCore", "Sith": "ThorilideCore", "Corellian": "ThorilideCore",
                  "Chiss": "ThorilideCore", "Mandalorian": "AurodiumPlating", "Hutt": "AurodiumPlating",
                  "Czerka": "AurodiumPlating", "Rift Raider": "PrototypeCore"}
+RARE_COMPONENT_SIZES = {"Capital"}
+# The part of a Capital bill each rare component replaces (the item it is built on).
+RARE_REPLACES = {"ThorilideCore": "capc_react", "AurodiumPlating": "capc_struc", "PrototypeCore": "sc_sensor_5"}
+HULL_COST_BAND = 1.27
 
 
 def advanced_rare_resref(maker):

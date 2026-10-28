@@ -1110,14 +1110,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Takes the salvaged components that stand in for an Advanced deed's missing rare component (W11o) out of the
-        /// list, one item each, and counts them against the rare component.
+        /// Takes the rare-traited components that fill an Advanced deed's rare-trait slot or stand in for its missing rare
+        /// component (W11o) out of the list, one item each, and counts them against the slot or the rare component. An
+        /// unfilled slot stays among the remaining components, so the craft fails like any missing component.
         /// </summary>
         private void AggregateStandIns(RecipeDetail recipe, List<uint> components, Dictionary<string, int> remainingComponents, List<uint> result)
         {
-            var rare = ShipRareComponentRules.RareComponentOf(recipe.Components.Keys);
-            if (rare == null)
+            var rare = ShipRareComponentRules.HasRareSlot(recipe.Resref)
+                ? ShipRareComponentRules.RareSlotKey
+                : ShipRareComponentRules.RareComponentOf(recipe.Components.Keys);
+            if (rare == null || recipe.Category != RecipeCategoryType.Starship)
                 return;
+
+            if (rare == ShipRareComponentRules.RareSlotKey)
+                remainingComponents[rare] = 1;
 
             foreach (var standIn in ShipComponents.ReserveStandIns(recipe, components))
             {

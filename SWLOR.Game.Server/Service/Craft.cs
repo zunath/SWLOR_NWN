@@ -426,13 +426,16 @@ namespace SWLOR.Game.Server.Service
                 recipeDetailColors.Add(GuiColor.White);
             }
 
-            // An Advanced deed's rare component may be a salvaged component with a rare trait instead (W11o).
-            var rare = ShipRareComponentRules.RareComponentOf(detail.Components.Keys);
-            var standInTier = ShipRareComponentRules.StandInTier(detail.Resref);
-            if (rare != null && standInTier > 0)
+            // An Advanced deed's rare-trait slot, or the stand-in for its rare component (W11o).
+            if (detail.Category == RecipeCategoryType.Starship)
             {
-                recipeDetails.Add(ShipRareComponentRules.StandInText(standInTier, Cache.GetItemNameByResref(rare)));
-                recipeDetailColors.Add(GuiColor.White);
+                var rare = ShipRareComponentRules.RareComponentOf(detail.Components.Keys);
+                var standInText = ShipRareComponentRules.StandInText(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare));
+                if (standInText != null)
+                {
+                    recipeDetails.Add(standInText);
+                    recipeDetailColors.Add(GuiColor.White);
+                }
             }
 
             recipeDetails.Add(string.Empty);

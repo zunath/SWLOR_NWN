@@ -365,23 +365,43 @@ public class ShipComponentTests
         }
     }
 
-    // W11o: the top band of hull recipes (plan section 14 and Appendix D)
+    // W11o: the top band of hull recipes (plan section 14 and Appendix D), held to the W11e cost band
 
-    [TestCase(ShipManufacturer.Republic, "sc_thorcore")]
-    [TestCase(ShipManufacturer.Sith, "sc_thorcore")]
-    [TestCase(ShipManufacturer.Corellian, "sc_thorcore")]
-    [TestCase(ShipManufacturer.Mandalorian, "sc_aurplate")]
-    [TestCase(ShipManufacturer.Hutt, "sc_aurplate")]
-    [TestCase(ShipManufacturer.RiftRaider, "sc_protocore")]
-    public void AdvancedHulls_AddTheirMakersRareComponent(ShipManufacturer maker, string rare)
+    private const string Aurek = "sd_aurekstrikefi";
+    private const string Centurion = "sd_republiccentu";
+    private const string Striker = "sd_striker";
+
+    private static int Cost(string resref)
     {
-        var advanced = RevampShipCatalog.Hulls.Where(x => x.Advanced && x.Manufacturer == maker).ToList();
-        advanced.Should().NotBeEmpty();
+        using var doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "Module", "uti", $"{resref}.uti.json")));
+        return doc.RootElement.GetProperty("Cost").GetProperty("value").GetInt32();
+    }
+
+    private static int Value(IEnumerable<(string Resref, int Quantity)> bill) => bill.Sum(x => Cost(x.Resref) * x.Quantity);
+
+    private static ShipHullEntry Hull(string tag) => RevampShipCatalog.Hulls.Single(x => x.Tag == tag);
+
+    [Test]
+    public void SmallerAdvancedHulls_HaveARareTraitSlotAndNoCraftedRareComponent()
+    {
+        var advanced = RevampShipCatalog.Hulls.Where(x => x.Advanced && x.Size != ShipSize.Capital).ToList();
+        advanced.Should().HaveCount(12);
         foreach (var hull in advanced)
         {
-            hull.Components.Where(x => ShipRareComponentRules.IsRareComponent(x.Resref))
-                .Should().Equal(new[] { (rare, 1) }, hull.Tag);
+            hull.Components.Should().NotContain(x => ShipRareComponentRules.IsRareComponent(x.Resref), hull.Tag);
+            ShipRareComponentRules.HasRareSlot(hull.Tag).Should().BeTrue(hull.Tag);
         }
+
+        ShipRareComponentRules.HasRareSlot(Centurion).Should().BeFalse("a Capital Advanced hull takes its crafted rare component");
+        ShipRareComponentRules.HasRareSlot(Striker).Should().BeFalse();
+    }
+
+    [Test]
+    public void CapitalAdvancedHull_TakesItsThorilideCoreForItsReactorAndElectronics()
+    {
+        var standard = Hull("sd_czerkaarmored").Components;
+        var expected = standard.Where(x => x.Resref is not ("capc_react" or "elec_high")).Append(("sc_thorcore", 1));
+        Hull(Centurion).Components.Should().BeEquivalentTo(expected, "the Command Ship bill with the Thorilide Core for the reactor and electronics");
     }
 
     [Test]
@@ -393,17 +413,43 @@ public class ShipComponentTests
     }
 
     [Test]
+    public void AdvancedHulls_StayWithinTheHullCostBandWithTheRareComponentOrAnyStandIn()
+    {
+        // W11e: no hull costs more than 1.27x its pre-revamp material value (8 / 12 / 18 / 30 refined ore of the hull's
+        // tier plus half that in electronics). The rare-trait slot or stand-in is valued at the dearest qualifying item.
+        var legacy = new Dictionary<ShipSize, (string Ore, string Electronics, int Quantity)>
+        {
+            [ShipSize.Small] = ("ref_currian", "elec_flawed", 8), [ShipSize.Medium] = ("ref_idailia", "elec_good", 12),
+            [ShipSize.Large] = ("ref_barinium", "elec_imperfect", 18), [ShipSize.Capital] = ("ref_gostian", "elec_high", 30),
+        };
+        foreach (var hull in RevampShipCatalog.Hulls.Where(x => x.Advanced))
+        {
+            var (ore, electronics, quantity) = legacy[hull.Size];
+            var pre = Cost(ore) * quantity + Cost(electronics) * (quantity / 2);
+            var rare = hull.Components.Where(x => ShipRareComponentRules.IsRareComponent(x.Resref)).ToList();
+            var bill = hull.Components.Except(rare).SelectMany(x => ShipRareComponentRules.IsCapitalPart(x.Resref)
+                ? RevampComponentCatalog.CapitalPartRecipes.Single(p => p.Resref == x.Resref).Components.Select(c => (c.Resref, c.Quantity * x.Quantity))
+                : new[] { x });
+            var tier = ShipRareComponentRules.StandInTier(hull.Tag);
+            var dearest = ShipRareComponentRules.StandInFamilies(hull.Tag)
+                .Max(f => Cost(RevampComponentCatalog.Items.Single(i => i.Family == f && i.Tier == tier).Resref));
+            var worst = Value(bill) + Math.Max(dearest, rare.Count == 0 ? 0 : Value(rare));
+            worst.Should().BeLessThanOrEqualTo((int)(pre * 1.27), $"{hull.Tag}: pre-revamp {pre}");
+        }
+    }
+
+    [Test]
     public void CapitalHulls_TakeTheCapitalTopBand()
     {
         var capitals = RevampShipCatalog.Hulls.Where(x => x.Size == ShipSize.Capital).ToList();
         capitals.Should().HaveCount(11);
-        foreach (var hull in capitals)
+        foreach (var hull in capitals.Where(x => !x.Advanced))
         {
             hull.Components.Where(x => ShipRareComponentRules.IsCapitalPart(x.Resref))
                 .Should().Equal(new[] { ("capc_struc", 2), ("capc_react", 1), ("capc_thrust", 1) }, hull.Tag);
-            hull.Components.Should().NotContain(x => x.Resref == "ref_gostian", $"{hull.Tag}: the parts' Ardanium replaces the refined ore");
         }
 
+        capitals.Should().OnlyContain(x => !x.Components.Any(c => c.Resref == "ref_gostian"), "the parts' Ardanium replaces the refined ore");
         RevampShipCatalog.Hulls.Where(x => x.Size != ShipSize.Capital)
             .Should().OnlyContain(x => !x.Components.Any(c => ShipRareComponentRules.IsCapitalPart(c.Resref)));
     }
@@ -438,37 +484,27 @@ public class ShipComponentTests
     }
 
     [Test]
-    public void CapitalHulls_KeepTheirMaterialValue()
+    public void StandardCapitalHulls_KeepTheirMaterialValue()
     {
         // The W11e balance pass held every Capital hull at 4,825-5,025 credits of material (at most 1.27x its
         // pre-component 3,945); the capital parts' Ardanium (500) replaces five Refined Gostian (100) per part.
-        var root = FindRepositoryRoot();
-        int Cost(string resref)
-        {
-            using var doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
-            return doc.RootElement.GetProperty("Cost").GetProperty("value").GetInt32();
-        }
-
         foreach (var part in RevampComponentCatalog.CapitalPartRecipes)
-            Cost(part.Resref).Should().Be(part.Components.Sum(x => Cost(x.Resref) * x.Quantity), part.Resref);
+            Cost(part.Resref).Should().Be(Value(part.Components), part.Resref);
 
-        foreach (var hull in RevampShipCatalog.Hulls.Where(x => x.Size == ShipSize.Capital))
-        {
-            var value = hull.Components.Where(x => !ShipRareComponentRules.IsRareComponent(x.Resref)).Sum(x => Cost(x.Resref) * x.Quantity);
-            value.Should().BeInRange(4825, 5025, hull.Tag);
-        }
+        foreach (var hull in RevampShipCatalog.Hulls.Where(x => x.Size == ShipSize.Capital && !x.Advanced))
+            Value(hull.Components).Should().BeInRange(4825, 5025, hull.Tag);
     }
 
-    // The rare-trait stand-in (Appendix D): a salvaged component with a rare trait fills an Advanced recipe's rare component.
+    // The rare-trait slot and stand-in (Appendix D): a salvaged component with a rare trait.
 
     private static readonly ShipComponentTraitType[] RareTrait = { ShipComponentTraitType.SithTuned };
 
     [Test]
     public void StandInTier_IsTheAdvancedHullsComponentTier()
     {
-        ShipRareComponentRules.StandInTier("sd_aurekstrikefi").Should().Be(2);
-        ShipRareComponentRules.StandInTier("sd_republiccentu").Should().Be(5);
-        ShipRareComponentRules.StandInTier("sd_striker").Should().Be(0, "a Standard hull takes no rare component");
+        ShipRareComponentRules.StandInTier(Aurek).Should().Be(2);
+        ShipRareComponentRules.StandInTier(Centurion).Should().Be(5);
+        ShipRareComponentRules.StandInTier(Striker).Should().Be(0, "a Standard hull takes no rare part");
         ShipRareComponentRules.StandInTier("sc_hframe_2").Should().Be(0);
         foreach (var hull in RevampShipCatalog.Hulls.Where(x => x.Advanced))
             ShipRareComponentRules.StandInTier(hull.Tag).Should().Be(hull.Components
@@ -477,59 +513,77 @@ public class ShipComponentTests
     }
 
     [Test]
-    public void CanStandIn_NeedsARareTraitOnAGenericComponentOfTheTier()
+    public void StandInFamilies_AreTheRecipesOwnOnSmallerHullsAndAnyOnCapitals()
     {
-        ShipRareComponentRules.CanStandIn("sc_emitter_2", RareTrait, 2).Should().BeTrue();
-        ShipRareComponentRules.CanStandIn("sc_emitter_5", RareTrait, 2).Should().BeTrue("a higher tier serves");
-        ShipRareComponentRules.CanStandIn("sc_emitter_1", RareTrait, 2).Should().BeFalse("below the hull's tier");
-        ShipRareComponentRules.CanStandIn("sc_emitter_2", new[] { ShipComponentTraitType.Tuned }, 2).Should().BeFalse("a common trait");
-        ShipRareComponentRules.CanStandIn("sc_emitter_5", new[] { ShipComponentTraitType.SithTargetingCore }, 2)
-            .Should().BeFalse("a manufacturer trait is not a rare trait");
-        ShipRareComponentRules.CanStandIn("sc_emitter_2", Array.Empty<ShipComponentTraitType>(), 2).Should().BeFalse();
-        ShipRareComponentRules.CanStandIn("sc_thorcore", RareTrait, 2).Should().BeFalse("the rare component itself is not a stand-in");
-        ShipRareComponentRules.CanStandIn("ref_currian", RareTrait, 2).Should().BeFalse();
-        ShipRareComponentRules.CanStandIn("sc_emitter_2", RareTrait, 0).Should().BeFalse("not an Advanced recipe");
+        ShipRareComponentRules.StandInFamilies(Aurek).Should().BeEquivalentTo(new[]
+        {
+            ShipComponentFamily.HullFrame, ShipComponentFamily.ShipReactor, ShipComponentFamily.ThrusterAssembly, ShipComponentFamily.EnergyEmitter,
+        });
+        ShipRareComponentRules.StandInFamilies(Centurion).Should().BeEquivalentTo(RevampComponentCatalog.SalvageFamilies);
+        ShipRareComponentRules.StandInFamilies(Striker).Should().BeEmpty();
     }
 
-    private static IReadOnlyDictionary<string, int> AurekBill =>
-        RevampShipCatalog.Hulls.Single(x => x.Tag == "sd_aurekstrikefi").Components.ToDictionary(x => x.Resref, x => x.Quantity);
+    [Test]
+    public void CanStandIn_NeedsARareTraitOnAComponentOfTheHullsTierAndFamilies()
+    {
+        ShipRareComponentRules.CanStandIn(Aurek, "sc_emitter_2", RareTrait).Should().BeTrue();
+        ShipRareComponentRules.CanStandIn(Aurek, "sc_emitter_3", RareTrait).Should().BeFalse("only the hull's tier, which keeps the cost band");
+        ShipRareComponentRules.CanStandIn(Aurek, "sc_emitter_1", RareTrait).Should().BeFalse("below the hull's tier");
+        ShipRareComponentRules.CanStandIn(Aurek, "sc_extract_2", RareTrait).Should().BeFalse("a family the Fighter's recipe does not take");
+        ShipRareComponentRules.CanStandIn(Centurion, "sc_extract_5", RareTrait).Should().BeTrue("any family on a Capital hull");
+        ShipRareComponentRules.CanStandIn(Aurek, "sc_emitter_2", new[] { ShipComponentTraitType.Tuned }).Should().BeFalse("a common trait");
+        ShipRareComponentRules.CanStandIn(Aurek, "sc_emitter_2", new[] { ShipComponentTraitType.SithTargetingCore })
+            .Should().BeFalse("a manufacturer trait is not a rare trait");
+        ShipRareComponentRules.CanStandIn(Aurek, "sc_emitter_2", Array.Empty<ShipComponentTraitType>()).Should().BeFalse();
+        ShipRareComponentRules.CanStandIn(Centurion, "sc_thorcore", RareTrait).Should().BeFalse("the rare component itself is not a stand-in");
+        ShipRareComponentRules.CanStandIn(Aurek, "ref_currian", RareTrait).Should().BeFalse();
+        ShipRareComponentRules.CanStandIn(Striker, "sc_emitter_1", RareTrait).Should().BeFalse("not an Advanced recipe");
+    }
+
+    private static IReadOnlyDictionary<string, int> Bill(string tag) =>
+        Hull(tag).Components.ToDictionary(x => x.Resref, x => x.Quantity);
 
     private static (string, int, IReadOnlyCollection<ShipComponentTraitType>) Held(string resref, params ShipComponentTraitType[] traits) =>
         (resref, 1, traits);
 
     [Test]
-    public void ReserveStandIns_PrefersItemsTheRecipeDoesNotOtherwiseNeed()
+    public void ReserveStandIns_FillsTheSlotPreferringItemsTheRecipeDoesNotOtherwiseNeed()
     {
-        var held = new[] { Held("sc_emitter_2", ShipComponentTraitType.SithTuned), Held("sc_hframe_3", ShipComponentTraitType.MandalorianForged) };
-        ShipRareComponentRules.ReserveStandIns(AurekBill, held, 2).Should().Equal(1);
+        var held = new[] { Held("sc_emitter_2", ShipComponentTraitType.SithTuned), Held("sc_hframe_2", ShipComponentTraitType.MandalorianForged),
+                           Held("sc_emitter_2"), Held("sc_hframe_2") };
+        ShipRareComponentRules.ReserveStandIns(Aurek, Bill(Aurek), held).Should().HaveCount(1, "one slot");
+        ShipRareComponentRules.StandInsNeeded(Aurek, Bill(Aurek), Array.Empty<(string, int)>()).Should().Be(1);
     }
 
     [Test]
     public void ReserveStandIns_UsesANeededResrefOnlyFromTheSurplus()
     {
         var one = new[] { Held("sc_emitter_2", ShipComponentTraitType.SithTuned) };
-        ShipRareComponentRules.ReserveStandIns(AurekBill, one, 2).Should().BeEmpty("the recipe still needs its Energy Emitter");
+        ShipRareComponentRules.ReserveStandIns(Aurek, Bill(Aurek), one).Should().BeEmpty("the recipe still needs its Energy Emitter");
 
         var two = new[] { Held("sc_emitter_2"), Held("sc_emitter_2", ShipComponentTraitType.SithTuned) };
-        ShipRareComponentRules.ReserveStandIns(AurekBill, two, 2).Should().Equal(1);
+        ShipRareComponentRules.ReserveStandIns(Aurek, Bill(Aurek), two).Should().Equal(1);
     }
 
     [Test]
-    public void ReserveStandIns_TakesNothingWhenTheRealRareComponentIsHeld()
+    public void ReserveStandIns_OnACapitalTakesNothingWhenTheRealRareComponentIsHeld()
     {
-        var held = new[] { Held("sc_thorcore"), Held("sc_hframe_3", ShipComponentTraitType.MandalorianForged) };
-        ShipRareComponentRules.ReserveStandIns(AurekBill, held, 2).Should().BeEmpty();
+        var standIn = Held("sc_extract_5", ShipComponentTraitType.SithTuned);
+        ShipRareComponentRules.ReserveStandIns(Centurion, Bill(Centurion), new[] { Held("sc_thorcore"), standIn }).Should().BeEmpty();
+        ShipRareComponentRules.ReserveStandIns(Centurion, Bill(Centurion), new[] { standIn }).Should().Equal(0);
 
-        var standard = RevampShipCatalog.Hulls.Single(x => x.Tag == "sd_striker").Components.ToDictionary(x => x.Resref, x => x.Quantity);
-        ShipRareComponentRules.ReserveStandIns(standard, new[] { Held("sc_hframe_3", ShipComponentTraitType.MandalorianForged) }, 1)
-            .Should().BeEmpty("a Standard recipe has no rare component");
+        ShipRareComponentRules.ReserveStandIns(Striker, Bill(Striker), new[] { Held("sc_hframe_1", ShipComponentTraitType.MandalorianForged) })
+            .Should().BeEmpty("a Standard recipe has no rare part");
     }
 
     [Test]
-    public void StandInText_NamesTheTierAndTheRareComponent()
+    public void StandInText_NamesTheSlotOrTheRareComponent()
     {
-        ShipRareComponentRules.StandInText(2, "Thorilide Core")
-            .Should().Be("(or, for the Thorilide Core, any tier 2+ component with a rare trait)");
+        ShipRareComponentRules.StandInText(Aurek, null)
+            .Should().Be("1x Tier 2 component with a rare trait (Hull Frame, Ship Reactor, Thruster Assembly, Energy Emitter)");
+        ShipRareComponentRules.StandInText(Centurion, "Thorilide Core")
+            .Should().Be("(or, for the Thorilide Core, a tier 5 component with a rare trait)");
+        ShipRareComponentRules.StandInText(Striker, null).Should().BeNull();
     }
 
     // Cost totals: the material units per module rank and hull stay where they were before the component layer.
@@ -550,8 +604,10 @@ public class ShipComponentTests
         var before = new Dictionary<ShipSize, int> { [ShipSize.Small] = 12, [ShipSize.Medium] = 18, [ShipSize.Large] = 27, [ShipSize.Capital] = 45 };
         foreach (var hull in RevampShipCatalog.Hulls)
         {
-            // W11o: an Advanced hull's rare component comes on top of the bill, and a capital part counts as its tier 5
-            // components plus the five refined ore its Ardanium replaces.
+            // W11o: a capital part counts as its tier 5 components plus the five refined ore its Ardanium replaces. The
+            // Capital Advanced hull's rare component replaces its reactor and electronics (its own test).
+            if (hull.Advanced && hull.Size == ShipSize.Capital)
+                continue;
             var bill = hull.Components.Where(x => !ShipRareComponentRules.IsRareComponent(x.Resref))
                 .SelectMany(x => ShipRareComponentRules.IsCapitalPart(x.Resref)
                     ? RevampComponentCatalog.CapitalPartRecipes.Single(p => p.Resref == x.Resref).Components
@@ -568,7 +624,7 @@ public class ShipComponentTests
     [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "|| ShipComponents.IsStandInCandidate(recipe, item)")]
     [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "AggregateStandIns(recipe, components, remainingComponents, result);")]
     [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "foreach (var standIn in ShipComponents.ReserveStandIns(recipe, components))")]
-    [TestCase("Service/Craft.cs", "recipeDetails.Add(ShipRareComponentRules.StandInText(standInTier, Cache.GetItemNameByResref(rare)));")]
+    [TestCase("Service/Craft.cs", "var standInText = ShipRareComponentRules.StandInText(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare));")]
     [TestCase("Service/ShipComponents.cs", "if (CarriesTraits(GetResRef(component)))")]
     [TestCase("Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs", "Traits = ShipComponents.GetTraitsOrNull(item),")]
     [TestCase("Service/SpaceRevamp.cs", "Step = detail.Step, Traits = module.Traits")]

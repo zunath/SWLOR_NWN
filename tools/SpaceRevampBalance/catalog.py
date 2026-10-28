@@ -266,7 +266,9 @@ def hull_bill(role, adv, maker=None):
     (two to one), so the unit count is unchanged.
 
     W11o: a Capital hull takes the capital parts (components.CAPITAL_PARTS) for its Hull Frames, Ship Reactor and
-    Thruster Assembly and five fewer refined ore per part; an Advanced hull adds its maker's rare component.
+    Thruster Assembly and five fewer refined ore per part. A Capital Advanced hull takes its maker's rare component in
+    place of the part it is built on and its electronics (components.RARE_REPLACES); smaller Advanced hulls take the
+    rare-trait slot instead, which is not a recipe component (the crafting window fills it, ShipRareComponentRules).
     """
     r = m.ROLES[role]
     gate = m.GATE[r["size"]] + (10 if adv else 0)
@@ -287,8 +289,12 @@ def hull_bill(role, adv, maker=None):
                [(comp.resref(comp.family(f)[0], t), q) for f, q in parts if f not in banded]
         ore -= comp.CAPITAL_PART_ORE_SAVED * sum(n for *_x, n, _d in comp.CAPITAL_PARTS)
         assert ore >= 0, role
-    if adv and maker:  # the Bible's per-role table passes no maker and lists the rare component apart
-        bill.append((comp.advanced_rare_resref(maker), 1))
+    if adv and maker and r["size"] in comp.RARE_COMPONENT_SIZES:  # the Bible's per-role table passes no maker
+        rare = comp.advanced_rare_resref(maker)
+        replaced = comp.RARE_REPLACES[next(f[1] for f in comp.RARE_FAMILIES if comp.rare_resref(f[0]) == rare)]
+        bill = [(res, q - 1 if res == replaced else q) for res, q in bill]
+        bill = [x for x in bill if x[1] > 0] + [(rare, 1)]
+        wires = 0
     return bill + [(res, q) for res, q in ((refined, ore), (elec, wires)) if q > 0]
 
 
@@ -543,7 +549,38 @@ def ships(recipe_start):
             Components=hull_bill(role, adv, maker), Cost={"Small": 500, "Medium": 2500, "Large": 10000, "Capital": 30000}[r["size"]] * (2 if adv else 1),
             RepairCostMultiplier=r["repair"], Theme=mk["theme"]))
         recipe += 1
+    for row in advanced_cost_rows(out):
+        assert row["Worst"] <= comp.HULL_COST_BAND * row["Pre"], row
     return out
+
+
+def stand_in_families(hull):
+    """The salvage families whose rare-traited component fills an Advanced hull's rare slot or stands in for its rare
+    component: on a Capital hull any family; otherwise a family the recipe already takes."""
+    if hull["Size"] in comp.RARE_COMPONENT_SIZES:
+        return list(comp.SALVAGE_FAMILIES)
+    resrefs = {res for res, _q in hull["Components"]}
+    families = {f[1] for f in comp.FAMILIES for t in comp.TIERS if comp.resref(f[0], t) in resrefs}
+    return [f for f in comp.SALVAGE_FAMILIES if f in families]
+
+
+def advanced_cost_rows(hulls):
+    """Every Advanced hull's material value against its pre-revamp value (the W11e 1.27x band), with its rare component
+    or rare-trait slot filled by the cheapest and the dearest qualifying item."""
+    rows = []
+    for h in hulls:
+        if not h["Advanced"]:
+            continue
+        role = next(s[1] for s in m.SHIPS if s[0] == h["Name"])
+        pre = bill_value(legacy_hull_bill(role, True))
+        tier = min(5, h["PilotingRank"] // 10 + 1)
+        rare = next((r for r, _q in h["Components"] if any(r == comp.rare_resref(f[0]) for f in comp.RARE_FAMILIES)), None)
+        base = bill_value(expand_bill([x for x in h["Components"] if x[0] != rare]))
+        slot = [material_cost(comp.resref(comp.family(f)[0], tier)) for f in stand_in_families(h)]
+        rows.append(dict(Name=h["Name"], Size=h["Size"], Pre=pre, Base=base, Rare=rare,
+                         WithRare=base + material_cost(rare) if rare else None,
+                         Cheapest=base + min(slot), Worst=max(base + max(slot), base + material_cost(rare) if rare else 0)))
+    return rows
 
 
 # ---------------------------------------------------------------------------------------------------------------

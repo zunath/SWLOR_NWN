@@ -121,25 +121,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Whether a held item may stand in for the rare component of an Advanced deed recipe (W11o, Appendix D): a
-        /// component of the hull's tier or higher carrying a rare trait.
+        /// Whether a held item may fill an Advanced deed recipe's rare-trait slot or stand in for its rare component
+        /// (W11o, Appendix D): a component of the hull's tier carrying a rare trait.
         /// </summary>
         public static bool IsStandInCandidate(RecipeDetail recipe, uint item)
         {
-            var tier = ShipRareComponentRules.StandInTier(recipe.Resref);
-            return tier > 0 &&
-                   ShipRareComponentRules.RareComponentOf(recipe.Components.Keys) != null &&
-                   ShipRareComponentRules.CanStandIn(GetResRef(item), GetTraits(item), tier);
+            return recipe.Category == RecipeCategoryType.Starship &&
+                   ShipRareComponentRules.CanStandIn(recipe.Resref, GetResRef(item), GetTraits(item));
         }
 
-        /// <summary>The held items that will stand in for the recipe's missing rare components, one item each.</summary>
+        /// <summary>The held items that will fill the recipe's rare-trait slot or its missing rare components, one item each.</summary>
         public static List<uint> ReserveStandIns(RecipeDetail recipe, IReadOnlyList<uint> components)
         {
-            var tier = ShipRareComponentRules.StandInTier(recipe.Resref);
+            if (recipe.Category != RecipeCategoryType.Starship)
+                return new List<uint>();
+
             var held = components
                 .Select(x => (GetResRef(x), GetItemStackSize(x), (IReadOnlyCollection<ShipComponentTraitType>)GetTraits(x)))
                 .ToList();
-            return ShipRareComponentRules.ReserveStandIns(recipe.Components, held, tier)
+            return ShipRareComponentRules.ReserveStandIns(recipe.Resref, recipe.Components, held)
                 .Select(index => components[index])
                 .ToList();
         }

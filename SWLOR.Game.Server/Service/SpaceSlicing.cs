@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// A Data Analyzer press: whoever runs it (the pilot, or the Sensors crew member) starts slicing the target. A
         /// droid at the seat has no mini-game: its press opens the target by chance (<see cref="DroidCrewRules.SlicingSucceeds"/>)
-        /// and the rewards go to the pilot's ship as for a player's success.
+        /// and the rewards go to the pilot's ship as for a player's success. A miss is a failed slice: the target is lost exactly as when a player fails (<see cref="OnSlicingTargetDestroyed"/>).
         /// </summary>
         public static void StartDataAnalyzer(uint ship, uint target)
         {
@@ -187,6 +187,8 @@ namespace SWLOR.Game.Server.Service
                 var (droidSource, droidTier) = GetAnalyzerTarget(target);
                 if (DroidCrewRules.SlicingSucceeds(droidContext.Effectiveness, Random.Next(100)))
                     CompleteSlicing(ship, target, droidSource, droidTier);
+                else
+                    OnSlicingTargetDestroyed(target, droidSource);
                 return;
             }
 

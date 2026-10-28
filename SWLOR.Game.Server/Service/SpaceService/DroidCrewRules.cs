@@ -204,8 +204,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// Whether a droid's slicing press opens the target: its station effectiveness is the chance (roll 0-99), so a
-        /// better industrial droid slices a target in fewer presses. A miss costs only the press (capacitor and the
-        /// module's recast); the target is never destroyed, which a player's failed attempt can do.
+        /// better industrial droid slices a target in fewer presses. A miss is a failed slice and costs what a
+        /// player's does: the target is lost.
         /// </summary>
         public static bool SlicingSucceeds(double effectiveness, int roll) =>
             roll < Math.Clamp((int)Math.Round(effectiveness * 100.0), 0, 100);

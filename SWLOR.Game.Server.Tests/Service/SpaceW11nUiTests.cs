@@ -201,6 +201,7 @@ public class SpaceW11nUiTests
         var slicing = ReadServerSource("Service", "SpaceSlicing.cs");
         slicing.Should().Contain("GetDroidSlicingError(ship, target, source, tier, droid)");
         slicing.Should().Contain("DroidCrewRules.SlicingSucceeds(");
+        slicing.Should().Contain("OnSlicingTargetDestroyed(target, droidSource);", "a droid's miss is a failed slice, as for a player");
 
         ReadServerSource("Service", "SpaceDroidCrew.cs").Should().Contain("RunDroidDataAnalyzer(pilot, slots, posted, target)");
     }

@@ -1016,84 +1016,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 70,
+    "Line": 69,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Unable to continue. The planet could not be determined. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 146,
+    "Line": 145,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                        $\"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 46,
+    "Line": 47,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 56,
+    "Line": 57,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 64,
+    "Line": 65,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 80,
+    "Line": 82,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 116,
+    "Line": 122,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot dock while being targeted.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 140,
+    "Line": 146,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is no longer available for docking.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 158,
+    "Line": 164,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 171,
+    "Line": 177,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 184,
+    "Line": 190,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportFlightsDialog.cs",
-    "Line": 195,
+    "Line": 230,
     "Member": "ConfirmPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Ticket purchased! Your shuttle to {destinationName} departs in {confirmedCountdown}.\"))"
@@ -3165,14 +3165,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 59,
+    "Line": 63,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only citizens may use starport facilities.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 65,
+    "Line": 69,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You owe {dbPlayer.PropertyOwedTaxes} credits in taxes to this city. You cannot use its facilities until these are paid. Use the Citizenship Terminal in City Hall to pay these.\")"
@@ -4320,7 +4320,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",
-    "Line": 270,
+    "Line": 279,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
@@ -4429,6 +4429,111 @@
     "Member": "AdjustPlayerFactionPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgentEvents.cs",
+    "Line": 135,
+    "Member": "StartEscort",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\"Your convoy drops out of hyperspace nearby and turns for a starlane. Keep it alive until it jumps.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgentEvents.cs",
+    "Line": 145,
+    "Member": "StartEscort",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Pirate raiders close on your convoy!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgentEvents.cs",
+    "Line": 163,
+    "Member": "OnConvoyArrived",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\"Your convoy jumps out safely.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgentEvents.cs",
+    "Line": 198,
+    "Member": "PlaceLead",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan(mission.Type == AgentMissionType.DataHeist\n                ? \"Your agent's intel marks a guarded data site in this system. Scan it down with a Probe Launcher; only your party's probes can find it.\"\n                : \"Your agent marks a hidden signature in this system. Scan it down with a Probe Launcher; only your party's probes can find it.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgentEvents.cs",
+    "Line": 261,
+    "Member": "OnHeistTargetLost",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(holder, ColorToken.Red(\"The target data can is lost. Your agent's intel points to another can at the site.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgentEvents.cs",
+    "Line": 267,
+    "Member": "OnHeistTargetLost",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(holder, ColorToken.Red(\"The target data can is lost. Your agent will mark a new site the next time you enter the system.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgentEvents.cs",
+    "Line": 295,
+    "Member": "OnCourierDelivered",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\"The sealed load is signed for.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 103,
+    "Member": "Accept",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 132,
+    "Member": "Accept",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent.Name}: {FactionAgentRules.Describe(mission)}\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 144,
+    "Member": "LoadCourier",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(AgentRefusal.NotEnoughRoom)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 222,
+    "Member": "PayMission",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent?.Name ?? \"The agent\"} pays you {FactionAgentRules.DescribeReward(mission)}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 230,
+    "Member": "FailMission",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(reason))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 269,
+    "Member": "GrantIntel",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 288,
+    "Member": "Buy",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 298,
+    "Member": "Buy",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
@@ -5867,14 +5972,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceAccess.cs",
-    "Line": 80,
+    "Line": 81,
     "Member": "TryRefuseStarport",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(ShipAccessRules.DescribeStarportRefusal(refusal, GetAreaMaxShipSize(landingArea))))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceAccess.cs",
-    "Line": 94,
+    "Line": 95,
     "Member": "CanShipEnterArea",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(ShipAccessRules.DescribeAreaRefusal(GetName(area), areaMax)))"
@@ -6189,7 +6294,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 556,
+    "Line": 557,
     "Member": "ReturnEndedDroidPostings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{Droid.GetDroidName(controller)} is no longer posted aboard a ship and is back with you.\")"
@@ -6245,42 +6350,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanning.cs",
-    "Line": 211,
+    "Line": 214,
     "Member": "RunProbeCycle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Cyan(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanning.cs",
-    "Line": 213,
+    "Line": 216,
     "Member": "RunProbeCycle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(operatorCreature, ColorToken.Cyan(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 187,
+    "Line": 196,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can open a site cache.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 200,
+    "Line": 209,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is locked. Target it and slice it open with a Data Analyzer.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 206,
+    "Line": 215,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is keyed to the ships that scanned this site. Scan it yourself to open it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 219,
+    "Line": 229,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"You open the {GetName(cache)}: {credits} credits.\"))"
@@ -6693,7 +6798,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeConvoys.cs",
-    "Line": 141,
+    "Line": 188,
     "Member": "OnShipAttacked",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, ColorToken.Red(convoy\n                ? $\"You attack a {CustomsRules.GetAuthorityName(authority)} trade convoy. Its escorts turn on you.\"\n                : $\"You fire on a {CustomsRules.GetAuthorityName(authority)} customs patrol. It turns on you.\"))"
@@ -6805,21 +6910,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 86,
+    "Line": 93,
     "Member": "DeliverFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, result.IsLate\n                ? ColorToken.Red($\"Freight delivered late: {result.Fee} credits paid, and the deposit of {contract.Deposit} credits is forfeit.\")\n                : ColorToken.Green($\"Freight delivered on time: {result.Fee} credits paid and your deposit of {result.DepositReturned} credits returned.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 109,
+    "Line": 122,
     "Member": "AbandonFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Contract abandoned. The deposit of {contract.Deposit} credits is forfeit.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 134,
+    "Line": 149,
     "Member": "FailSealedFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, ColorToken.Red(\n                        $\"Your freight for {TradeLookup.GetExchange(contract.Destination)?.Name} was lost with your ship. The contract failed and the deposit of {contract.Deposit} credits is forfeit.\"))"
@@ -6945,35 +7050,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 210,
+    "Line": 211,
     "Member": "CompleteSlicing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, \"The data core is drained. The wreck can still be salvaged.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 293,
+    "Line": 294,
     "Member": "DeliverRewardsToShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"Slicing recovered: {DescribeRewards(rewards)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 318,
+    "Line": 319,
     "Member": "GiveRewardsToPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover {DescribeRewards(rewards)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 383,
+    "Line": 384,
     "Member": "OpenLockedCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"The lock gives way. You open the {GetName(cache)}: {credits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 407,
+    "Line": 408,
     "Member": "RollSpaceLockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"
@@ -7078,7 +7183,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Station.cs",
-    "Line": 263,
+    "Line": 269,
     "Member": "BeginFounding",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationRules.DescribeFoundingRefusal(refusal), player, false)"

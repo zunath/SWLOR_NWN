@@ -68,6 +68,36 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// A faction agent's lead (plan section 29): a hidden signature of the mission's tier, found only by the probes of
+        /// the mission holder's party. It is placed outside the area's signature count and never respawns.
+        /// </summary>
+        public static ScanSignature CreateAgentLead(string id, string areaResref, int tier, SignatureType type, float x, float y, float z,
+            DateTime now, string missionId, string playerId)
+        {
+            return new ScanSignature
+            {
+                Id = id,
+                AreaResref = areaResref,
+                Tier = Math.Clamp(tier, 1, 6),
+                Type = type,
+                X = x,
+                Y = y,
+                Z = z,
+                CreatedAt = now,
+                ExpiresAt = now.AddSeconds(ScanningTuning.HiddenLifetimeSeconds),
+                SignalRequired = ScanningRules.SignalRequired(type, tier, false),
+                AgentMissionId = missionId,
+                AgentPlayerId = playerId,
+            };
+        }
+
+        /// <summary>Whether a party may gather signal on a signature: an agent lead only answers its holder's party.</summary>
+        public static bool CanScan(ScanSignature signature, IReadOnlyCollection<string> partyIds)
+        {
+            return signature != null && (!signature.IsAgentLead || (partyIds?.Contains(signature.AgentPlayerId) ?? false));
+        }
+
+        /// <summary>
         /// One end of a rift: a hidden Rift signature that lasts until the rift collapses (the rift network removes it).
         /// A rift leads into or out of Wild Space, so its signal is tier 5.5's.
         /// </summary>

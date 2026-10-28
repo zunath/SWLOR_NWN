@@ -56,6 +56,8 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SignatureType.DataSite:
                     SpawnDataCans(signature, area, center);
+                    if (signature.IsAgentLead)
+                        FactionAgents.HoldHeistSite(signature, area, center);
                     break;
                 case SignatureType.Rift:
                     // A rift spawns nothing: the party that located it crosses it with Jump to Signature.
@@ -63,6 +65,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             Log.Write(LogGroup.Space, $"SIGNATURE REVEALED - {PlayerName.GetAuditName(revealer)} - {signature.Type} T{signature.Tier} in {signature.AreaResref}");
+        }
+
+        /// <summary>Spawns a ring of site objects (ships, clouds) around a site's center as objectives of its signature.</summary>
+        public static void SpawnSiteObjectives(ScanSignature signature, uint area, Vector3 center, IReadOnlyList<string> resrefs,
+            ObjectType type, float radius)
+        {
+            SpawnSiteRing(signature, area, center, resrefs, type, radius);
         }
 
         private static void SpawnSiteRing(ScanSignature signature, uint area, Vector3 center, IReadOnlyList<string> resrefs,
@@ -208,6 +217,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             signature.Completed = true;
+            FactionAgents.OnSiteCompleted(signature, user, cache);
             var credits = SignatureSiteRules.SiteCredits(signature.Type, signature.Tier);
             if (credits > 0)
                 GiveGoldToCreature(user, credits);

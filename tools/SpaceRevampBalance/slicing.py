@@ -109,7 +109,8 @@ BONUS_WEIGHTS = {
 }
 
 # A pick whose pool is empty at the target's tier (no Ship Schematic below tier 2, recipe unlocks below
-# RECIPE_UNLOCK_MINIMUM_TIER), and agent intel until faction agents exist (W15), give a component with a rare trait.
+# RECIPE_UNLOCK_MINIMUM_TIER) gives a component with a rare trait. Agent intel opens an intel lead at a faction agent (W15a,
+# agents.py): a mission at the agent rate whose extra is tokens, so the credit model keeps valuing it as a component.
 FALLBACK_KIND = "RareComponent"
 
 # Module Schematics unlock the named rank-50 modules (plan section 14: from T6 bosses and aces), so only tier 5 targets
@@ -179,7 +180,7 @@ SCHEMATICS_AT_STORE_PRICE = "--store-price" in sys.argv
 
 def kind_value(kind, tier, credits):
     if kind in ("Component", "RareComponent", "AgentIntel"):
-        return component_value(tier)  # agent intel falls back to a rare component until W15
+        return component_value(tier)  # agent intel: its lead pays the agent rate plus tokens, valued as a component here
     if kind in ("DesignSchematic", "RecipeUnlock", "ShipSchematic"):
         pool = schematic_pool(kind, tier)
         return pool_value(pool) if pool and SCHEMATICS_AT_STORE_PRICE else component_value(tier)
@@ -417,7 +418,8 @@ def slicing_tab(Sheet):
               ", ".join(f"{KIND_NAMES[k]} {w}" for k, w in BONUS_WEIGHTS[x].items())] for x in SOURCES])
     s.note("Design Schematics and Ship Schematics are the blueprint update's (W9b) for ships of the target's tier or lower; "
            f"recipe unlocks are the Module Schematics, from tier {RECIPE_UNLOCK_MINIMUM_TIER} targets only; Prototype Tech is "
-           "the research input. An empty pool, and agent intel until W15, give a component with a rare trait instead.")
+           "the research input. An empty pool gives a component with a rare trait instead; agent intel opens an intel lead at "
+           "a faction agent (Faction Agents (Revamp)).")
     s.table(["Ammo tier", "Choices", "", "", "", "", "", "Notes"],
             [[t, ", ".join(f"{r} x{q}" for r, q in AMMO[t]), "", "", "", "", "", ""] for t in TIERS])
     s.title("Model: expected credits per success and combat with lockboxes")

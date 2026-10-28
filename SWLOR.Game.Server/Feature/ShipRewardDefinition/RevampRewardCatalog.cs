@@ -189,6 +189,9 @@ namespace SWLOR.Game.Server.Feature.ShipRewardDefinition
         /// <summary>The credits a starport Refit to another Hull Design costs, by hull size.</summary>
         public static readonly IReadOnlyDictionary<ShipSize, int> RefitFee = new Dictionary<ShipSize, int> { [ShipSize.Small] = 1000, [ShipSize.Medium] = 1500, [ShipSize.Large] = 2500, [ShipSize.Capital] = 4000 };
 
+        /// <summary>The credits a direct ship transfer (a gift) costs its giver, by hull size.</summary>
+        public static readonly IReadOnlyDictionary<ShipSize, int> TransferFee = new Dictionary<ShipSize, int> { [ShipSize.Small] = 1000, [ShipSize.Medium] = 1500, [ShipSize.Large] = 2500, [ShipSize.Capital] = 4000 };
+
         /// <summary>The share of an elite or boss wreck's rare finds that is a schematic or a rare torpedo.</summary>
         public static readonly IReadOnlyDictionary<WreckDifficulty, ShipRareFindReward> RareFindRewards = new Dictionary<WreckDifficulty, ShipRareFindReward> { [WreckDifficulty.Elite] = new ShipRareFindReward { DesignPercent = 20, ShipPercent = 5, TorpedoPercent = 0 }, [WreckDifficulty.Boss] = new ShipRareFindReward { DesignPercent = 25, ShipPercent = 10, TorpedoPercent = 15 } };
 

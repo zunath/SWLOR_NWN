@@ -814,6 +814,7 @@ def reward_catalog_cs(steps, hulls, ammo):
         f'Name = {q(x["Name"])}, Tier = {x["Tier"]}, RecipeLevel = {x["RecipeLevel"]}, Quantity = {x["Quantity"]}, '
         f'Components = {cs_pairs(x["Components"])} }},' for x in ammo)
     fee = ", ".join(f"[ShipSize.{k}] = {v}" for k, v in rw.REFIT_FEE.items())
+    transfer_fee = ", ".join(f"[ShipSize.{k}] = {v}" for k, v in rw.TRANSFER_FEE.items())
     finds = ", ".join(
         f"[{DIFFICULTY[k]}] = new ShipRareFindReward {{ DesignPercent = {v['design']}, ShipPercent = {v['ship']}, "
         f"TorpedoPercent = {v['torpedo']} }}" for k, v in rw.RARE_FIND_REWARDS.items())
@@ -839,6 +840,8 @@ def reward_catalog_cs(steps, hulls, ammo):
             f"{ammo_recipe_rows}\n        }};\n\n"
             "        /// <summary>The credits a starport Refit to another Hull Design costs, by hull size.</summary>\n"
             f"        public static readonly IReadOnlyDictionary<ShipSize, int> RefitFee = new Dictionary<ShipSize, int> {{ {fee} }};\n\n"
+            "        /// <summary>The credits a direct ship transfer (a gift) costs its giver, by hull size.</summary>\n"
+            f"        public static readonly IReadOnlyDictionary<ShipSize, int> TransferFee = new Dictionary<ShipSize, int> {{ {transfer_fee} }};\n\n"
             "        /// <summary>The share of an elite or boss wreck's rare finds that is a schematic or a rare torpedo.</summary>\n"
             "        public static readonly IReadOnlyDictionary<WreckDifficulty, ShipRareFindReward> RareFindRewards = "
             f"new Dictionary<WreckDifficulty, ShipRareFindReward> {{ {finds} }};\n\n"

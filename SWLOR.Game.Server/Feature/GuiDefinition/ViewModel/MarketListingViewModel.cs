@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -245,14 +246,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClosePriceWindow();
             var itemId = _itemIds[index];
+            var isShip = !string.IsNullOrWhiteSpace(DB.Get<MarketItem>(itemId)?.ShipId);
+            var prompt = isShip
+                ? "Are you sure you want to remove this ship's listing? The ship stays where it is docked."
+                : "Are you sure you want to remove this item's listing? It will return to your inventory.";
 
-            ShowModal("Are you sure you want to remove this item's listing? It will return to your inventory.", () =>
+            ShowModal(prompt, () =>
             {
                 var dbListing = DB.Get<MarketItem>(itemId);
 
                 // The item was either bought or removed already.
                 // Remove it from the client's view, but don't take any action on the server.
-                if (dbListing != null)
+                // A ship listing (plan section 7) holds no item: removing it just unlocks the ship.
+                if (dbListing != null && !string.IsNullOrWhiteSpace(dbListing.ShipId))
+                {
+                    DB.Delete<MarketItem>(itemId);
+                }
+                else if (dbListing != null)
                 {
                     var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
                     if (!Item.TryAcquireItem(Player, deserialized))
@@ -312,6 +322,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (dbListing.Price == _itemPrices[index] &&
                     dbListing.IsListed == ItemListed[index])
                     continue;
+
+                // A ship listed again is checked again (plan section 7): it must still be able to change owner.
+                if (!string.IsNullOrWhiteSpace(dbListing.ShipId) && ItemListed[index] && !dbListing.IsListed)
+                {
+                    var refusal = ShipTransferRules.GetRefusal(ShipTransfer.BuildCheck(DB.Get<PlayerShip>(dbListing.ShipId), string.Empty), true);
+                    if (refusal != ShipTransferRefusal.None)
+                    {
+                        FloatingTextStringOnCreature($"{dbListing.Name}: {ShipTransferRules.GetRefusalMessage(refusal)}", Player, false);
+                        continue;
+                    }
+                }
 
                 // Do the update for this record.
                 dbListing.Price = _itemPrices[index];

@@ -654,6 +654,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A ship listed on the market is locked until it sells or the listing ends (plan section 7).
+            if (ShipTransfer.IsListedForSale(dbShip.Id))
+            {
+                SendMessageToPC(player, ColorToken.Red("This ship is listed for sale and cannot fly until the listing ends."));
+                return;
+            }
+
             if ((_shipClones.ContainsKey(dbShip.Id) && !GetIsObjectValid(_shipClones[dbShip.Id])) ||
                 _pendingShipLaunches.Values.Any(launch => launch.ShipId == dbShip.Id))
             {

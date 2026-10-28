@@ -11,5 +11,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string Tooltip { get; init; }
         public int Percent { get; init; }
         public bool CanJump { get; init; }
+
+        /// <summary>Whether the row is a boardable derelict the party can reach: its Board and Salvage buttons work.</summary>
+        public bool CanBoard { get; init; }
     }
 }

@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (IsFreightExchangeClosed(player, exchange))
+                return;
+
             FreightContractRules.PruneTaken(dbPlayer.FreightOffersTaken, now);
             var offer = FreightContractRules.GetOffers(exchange, now).FirstOrDefault(x => x.Id == offerId);
             var refusal = FreightContractRules.CanAccept(
@@ -58,6 +61,20 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Space, $"FREIGHT ACCEPT - {PlayerName.GetAuditName(player)} - {offer.Id} {offer.Volume} to {offer.Destination} fee {offer.Fee} deposit {offer.Deposit} - ship {ship.Id}");
         }
 
+        /// <summary>
+        /// Whether an incursion's blockade has closed the exchange (plan section 30), telling the player so. A closed
+        /// exchange neither offers nor takes freight, as it neither buys nor sells; a load waits for the blockade to fall.
+        /// </summary>
+        private static bool IsFreightExchangeClosed(uint player, TradeExchangeType exchange)
+        {
+            var closed = Space.GetIncursionExchangeRefusal(exchange);
+            if (string.IsNullOrEmpty(closed))
+                return false;
+
+            SendMessageToPC(player, ColorToken.Red(closed));
+            return true;
+        }
+
         /// <summary>Delivers a contract's sealed load from the player's ship docked at its destination.</summary>
         public static void DeliverFreight(uint player, string shipId, TradeExchangeType exchange, string dockId, string contractId)
         {
@@ -68,6 +85,9 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red(FreightContractRules.GetRefusalMessage(FreightRefusal.ShipNotDocked)));
                 return;
             }
+
+            if (IsFreightExchangeClosed(player, exchange))
+                return;
 
             var contract = dbPlayer.FreightContracts.FirstOrDefault(x => x.Id == contractId);
             var result = FreightContractRules.Deliver(contract, exchange, ship.SealedFreight, DateTime.UtcNow);

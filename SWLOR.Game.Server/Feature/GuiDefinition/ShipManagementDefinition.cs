@@ -158,6 +158,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .BindText(model => model.HullTraitsText)
+                            .BindTooltip(model => model.HullTraitsTooltip)
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetText("Shields:");
 
                         row.AddProgressBar()

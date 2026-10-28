@@ -12,16 +12,25 @@ namespace SWLOR.Game.Server.Service
     public static partial class Trade
     {
         private static HoloNetSnapshot _holoNet;
+        private static string _holoNetPriceKey = string.Empty;
 
-        /// <summary>The board, rebuilt first when its snapshot is stale.</summary>
+        /// <summary>
+        /// The board, rebuilt first when its snapshot is stale or an incursion started or ended since (the region's
+        /// exchanges price at the incursion spike, plan section 30).
+        /// </summary>
         public static HoloNetSnapshot GetHoloNetBoard()
         {
             var now = DateTime.UtcNow;
-            if (_holoNet != null && !HoloNetRules.IsStale(_holoNet.CapturedAt, now))
+            var priceKey = HoloNetRules.GetPriceKey(Space.GetActiveIncursion());
+            if (_holoNet != null && !HoloNetRules.IsStale(_holoNet.CapturedAt, now) && _holoNetPriceKey == priceKey)
                 return _holoNet;
 
             var states = TradeCatalog.Exchanges.ToDictionary(x => x.Type, x => GetExchangeState(x.Type, now));
-            _holoNet = HoloNetRules.Build((exchange, commodity) => GetPressure(states[exchange], commodity), now);
+            _holoNet = HoloNetRules.Build(
+                (exchange, commodity) => GetPressure(states[exchange], commodity),
+                now,
+                Space.GetIncursionPriceMultiplier);
+            _holoNetPriceKey = priceKey;
             return _holoNet;
         }
     }

@@ -227,13 +227,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         template.AddCell(cell =>
                         {
                             cell.SetIsVariable(false);
+                            cell.SetWidth(52f);
                             cell.AddButton()
                                 .SetText("Jump")
-                                .SetWidth(64f)
+                                .SetWidth(52f)
                                 .BindIsEnabled(model => model.SignatureCanJump)
                                 .SetTooltip("Micro-jumps to the site after a 5 second spool. Taking fire breaks it off.")
                                 .SetDisabledTooltip("Your party must scan this signature to 100% first.")
                                 .BindOnClicked(model => model.OnClickJump());
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(52f);
+                            cell.AddButton()
+                                .SetText("Board")
+                                .SetWidth(52f)
+                                .BindIsEnabled(model => model.SignatureCanBoard)
+                                .SetTooltip("Docks a Small or Medium ship with the derelict and boards it (/board). Within 30 m, defenses destroyed.")
+                                .SetDisabledTooltip("Only a boardable derelict your party has scanned to 100%.")
+                                .BindOnClicked(model => model.OnClickBoard());
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(60f);
+                            cell.AddButton()
+                                .SetText("Salvage")
+                                .SetWidth(60f)
+                                .BindIsEnabled(model => model.SignatureCanBoard)
+                                .SetTooltip("Sends your posted droids to strip the derelict (/salvage) while your ship holds within 60 m.")
+                                .SetDisabledTooltip("Only a boardable derelict your party has scanned to 100%.")
+                                .BindOnClicked(model => model.OnClickSalvage());
                         });
                     })
                         .BindRowCount(model => model.SignatureNames)

@@ -188,8 +188,8 @@ TRAITS += [t[:6] for t in blueprint_traits()]
 
 # Rare components (W9b, plan section 14 and Appendix D): one top-band item each, crafted from a rare material and a
 # tier 5 component. The named rank-50 modules take a Thorilide Core and an Aurodium Plating; Advanced hull recipes and
-# the rare-trait stand-in come with the manufacturer components (W9c). Prototype Tech has no source until Wild Space
-# (W12c). key, enum, name, skill, ESS9 model, recipe inputs, description.
+# the rare-trait stand-in come with the manufacturer components (W9c). Prototype Tech comes from space slicing
+# (W12b) and the Wild Space tables and rare finds (W12c). key, enum, name, skill, ESS9 model, recipe inputs, description.
 RARE_FAMILIES = [
     ("thorcore", "ThorilideCore", "Thorilide Core", "Engineering", 246, [("thor_crys", 2), ("sc_reactor_5", 1)],
      "A Ship Reactor rebuilt around a lattice of Thorilide crystal, for named modules and Advanced ships."),

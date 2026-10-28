@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.TelegraphService;
@@ -770,17 +771,15 @@ namespace SWLOR.Game.Server.Service
 
             _lastActivationDenial = string.Empty;
 
+            // A crew member using their own Piloting ability from a station (plan section 10) is the ability's user:
+            // the ship activates it, and the crew member hears why it fails and pays its STM and recast.
+            var user = SpaceCrew.GetAbilityUser(activator);
+
             bool Deny(string reason)
             {
                 _lastActivationDenial = reason;
-                SendMessageToPC(activator, reason);
+                SendMessageToPC(user, reason);
                 return false;
-            }
-
-            // A character at a crew station or viewport is hidden beside the ship and cannot act on its own.
-            if (Space.IsAtCrewStation(activator))
-            {
-                return Deny("You cannot use abilities while at a crew station.");
             }
 
             // Cannot use this ability in space.
@@ -816,7 +815,7 @@ namespace SWLOR.Game.Server.Service
                 return Deny("You do not meet the prerequisites to use this ability.");
             }
 
-            if (Perk.ShouldEnforceActiveAbilityFeatReplacement(activator, ability.EffectiveLevelPerkType) &&
+            if (Perk.ShouldEnforceActiveAbilityFeatReplacement(user, ability.EffectiveLevelPerkType) &&
                 !Perk.IsCurrentActiveAbilityFeat(abilityType, ability.EffectiveLevelPerkType, effectivePerkLevel))
             {
                 return Deny("A newer rank has replaced this ability.");
@@ -853,7 +852,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Must not be busy
-            if (Activity.IsBusy(activator))
+            if (Activity.IsBusy(user))
             {
                 return Deny("You are busy.");
             }
@@ -931,7 +930,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var req in ability.Requirements)
             {
-                var requirementError = req.CheckRequirements(activator, ability);
+                var requirementError = req.CheckRequirements(user, ability);
                 if (!string.IsNullOrWhiteSpace(requirementError))
                 {
                     return Deny(requirementError);
@@ -954,10 +953,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check if ability is on a recast timer still.
-            var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
+            var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(user, ability.RecastGroup);
             if (isOnRecast)
             {
-                PlayerFeedback.ShowCooldownFloatingText(activator, ability.Name, timeToWait);
+                PlayerFeedback.ShowCooldownFloatingText(user, ability.Name, timeToWait);
                 return Deny($"This ability can be used in {timeToWait}.");
             }
 

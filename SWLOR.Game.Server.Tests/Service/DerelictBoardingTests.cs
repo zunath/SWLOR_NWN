@@ -104,6 +104,43 @@ public class DerelictBoardingTests
         source.Should().Contain("boardable && DerelictRules.RollsContested(Random.Next(100))");
     }
 
+    [Test]
+    public void ScannerTab_OffersBoardAndSalvageOnAReachableBoardableDerelict()
+    {
+        var derelict = SignatureSiteRules.Create("sig-b", "hutlar_orbit", 3, SignatureType.Derelict, 10f, 10f, 0f, Now, boardable: true);
+        ScanningRules.AddSignal(derelict, "me", derelict.SignalRequired);
+        ScanningRules.CanBoard(derelict, new[] { "me" }).Should().BeFalse("its site is not open yet");
+        derelict.RevealedAt = Now;
+        ScanningRules.CanBoard(derelict, new[] { "partner", "me" }).Should().BeTrue();
+        ScanningRules.CanBoard(derelict, new[] { "outsider" }).Should().BeFalse("a party that did not scan it must scan it");
+
+        var plain = SignatureSiteRules.Create("sig-p", "hutlar_orbit", 3, SignatureType.Derelict, 10f, 10f, 0f, Now);
+        ScanningRules.AddSignal(plain, "me", plain.SignalRequired);
+        plain.RevealedAt = Now;
+        ScanningRules.CanBoard(plain, new[] { "me" }).Should().BeFalse("a derelict that cannot be boarded");
+
+        var combat = SignatureSiteRules.Create("sig-c", "hutlar_orbit", 3, SignatureType.CombatSite, 10f, 10f, 0f, Now);
+        ScanningRules.AddSignal(combat, "me", combat.SignalRequired);
+        combat.RevealedAt = Now;
+        ScanningRules.CanBoard(combat, new[] { "me" }).Should().BeFalse();
+
+        var rows = ScanningRules.BuildRows(new[] { derelict, plain, combat }, new[] { "me" }, false, 320f, 320f);
+        rows.Single(x => x.SignatureId == "sig-b").CanBoard.Should().BeTrue();
+        rows.Where(x => x.SignatureId != "sig-b").Should().OnlyContain(x => !x.CanBoard && x.CanJump);
+
+        derelict.DerelictLooted = true;
+        ScanningRules.CanBoard(derelict, new[] { "me" }).Should().BeFalse("a stripped derelict");
+
+        var hud = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Feature", "GuiDefinition", "ShipHudDefinition.cs"));
+        hud.Should().Contain(".SetText(\"Board\")").And.Contain(".SetText(\"Salvage\")").And.Contain("model => model.SignatureCanBoard");
+        var model = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ShipHudViewModel.cs"))
+            .Replace("\r\n", "\n");
+        model.Should().Contain("if (Space.TargetDerelictSignature(Player, _scannerRows[index].SignatureId))\n                Space.BoardDerelict(Player);");
+        model.Should().Contain("if (Space.TargetDerelictSignature(Player, _scannerRows[index].SignatureId))\n                Space.SendSalvageTeam(Player);");
+        File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceDerelicts.cs"))
+            .Should().Contain("SetCurrentTarget(player, objective);");
+    }
+
     // Docking and boarding gates
 
     [Test]

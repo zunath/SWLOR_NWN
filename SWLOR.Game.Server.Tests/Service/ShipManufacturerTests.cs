@@ -44,6 +44,8 @@ public class ShipManufacturerTests
     [TestCase("t6sithcusgun", ShipManufacturer.Sith)]
     [TestCase("t1repcusint", ShipManufacturer.Republic)]
     [TestCase("t5repcusgun", ShipManufacturer.Republic)]
+    [TestCase("t4huttenfgun", ShipManufacturer.Hutt)]
+    [TestCase("t4huttenfint", ShipManufacturer.Hutt)]
     [TestCase("t2czkcusgun", ShipManufacturer.Czerka)]
     [TestCase("ace_hutlar", ShipManufacturer.Chiss)]
     [TestCase("spacemine", ShipManufacturer.Invalid)]

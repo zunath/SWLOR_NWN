@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -151,6 +152,36 @@ namespace SWLOR.Game.Server.Service
                 Seat = seat,
                 Effectiveness = SpaceCrew.GetCrewEffectiveness(ship),
                 Skill = ShipCrewSeats.GetSeatSkill(seat),
+            };
+        }
+
+        /// <summary>
+        /// The context in which a crew member uses one of their own Piloting abilities from their station (plan
+        /// section 10): the ship activates it at the station's effectiveness and the crew member is its user. Null,
+        /// with the reason, for a viewport watcher or an ability that cannot be used at a station.
+        /// </summary>
+        public static SpaceCrewFireContext GetCrewStationAbilityContext(uint crewMember, AbilityDetail ability, out string error)
+        {
+            var seated = TryGetCrewStation(crewMember, out var ship, out var seat);
+            error = SpaceCrewAbilityRules.GetStationAbilityError(seated, ability?.CanBeUsedInSpace == true, ability?.SkillType ?? SkillType.Invalid);
+            if (!string.IsNullOrEmpty(error))
+                return null;
+
+            var station = BuildCrewFireContext(ship, crewMember, seat);
+            if (station == null || !IsShipInSpace(ship))
+            {
+                error = "Your ship is not in flight.";
+                return null;
+            }
+
+            return new SpaceCrewFireContext
+            {
+                Ship = ship,
+                CrewMember = crewMember,
+                Seat = seat,
+                Effectiveness = station.Effectiveness,
+                Skill = ability.SkillType,
+                IsAbility = true,
             };
         }
 

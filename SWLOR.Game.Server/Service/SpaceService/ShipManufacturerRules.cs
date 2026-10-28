@@ -26,8 +26,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// The maker an NPC ship's wreck yields components of (Appendix D, "Loot table changes"): Republic and Czerka
         /// customs patrols their own; the Sith customs, the Imperial fleet (tier 6) and the Sith capitals Sith; Clan Zel
         /// Arun (tier 4) and the Mandalorian capitals Mandalorian; pirate raiders and the other faction tiers (the
-        /// Khanate, Krakenborne, Snowdrift Syndicate and Red Hand pirates) Corellian; the Rift Raiders (Wild Space)
-        /// Rift Raider; an ace its own maker. Invalid for anything else, such as a derelict.
+        /// Khanate, Krakenborne, Snowdrift Syndicate and Red Hand pirates) Corellian; the Hutt Cartel enforcers Hutt; the
+        /// Rift Raiders (Wild Space) Rift Raider; an ace its own maker. Invalid for anything else, such as a derelict.
         /// </summary>
         public static ShipManufacturer WreckManufacturer(string creatureTag)
         {
@@ -44,6 +44,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 return ShipManufacturer.Sith;
             if (tag.StartsWith("mandocap"))
                 return ShipManufacturer.Mandalorian;
+            if (tag.Contains("huttenf"))
+                return ShipManufacturer.Hutt;
             if (tag.Length < 2 || tag[0] != 't' || !char.IsDigit(tag[1]))
                 return ShipManufacturer.Invalid;
             if (tag.Contains("pir"))

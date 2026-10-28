@@ -332,6 +332,16 @@ FREIGHT_OFFER_MIN_STANDING = [0, 0, 250, 1500]
 FREIGHT_OFFER_FEE_FACTOR = [1.0, 1.0, 1.0, 0.65]
 HOSTILE_PATROL_COOLDOWN_SECONDS = 300  # an attack-on-sight patrol comes at most once per authority in this time
 
+# Hutt Cartel enforcers (plan section 11, W11b): tier 4 Neutral ships that patrol the Smuggler's Moon lanes, Smuggler's
+# Moon and the two orbits its starlanes reach (Hutlar and Tatooine, both Hutt Cartel exchanges). Like a customs patrol,
+# they attack on sight a pilot whose standing with the Hutt Cartel is Hostile (the W7c tiers), and every enforcer in the
+# orbit turns on a pilot who fires on one, at the customs patrols' standing cost (AttackedLawfulShip). Each ship spawns at
+# the W5b role ships' weight (Electronic Warfare, Sniper: 1920 of an orbit's 75,648, about 2.5%).
+HUTT_ENFORCER_TIER = 4
+HUTT_ENFORCER_TAGS = [f"t{HUTT_ENFORCER_TIER}huttenfgun", f"t{HUTT_ENFORCER_TIER}huttenfint"]
+HUTT_ENFORCER_ORBITS = ["narshadorbit", "hutlar_orbit", "tatooineorbit"]
+HUTT_ENFORCER_SPAWN_WEIGHT = 1920
+
 # Player-city exchanges: a city starport trades through its planet's NPC exchange (same goods, prices and flooding),
 # from this starport upgrade level, and the city adds a tariff on every buy (added to the price) and sale (taken from it).
 CITY_EXCHANGE_STARPORT_LEVEL = 2
@@ -1103,6 +1113,11 @@ def tuning_cs():
         "        public static readonly int[] FreightOfferMinimumStandings = { " + ", ".join(str(v) for v in FREIGHT_OFFER_MIN_STANDING) + " };",
         f"        public const int HostilePatrolCooldownSeconds = {HOSTILE_PATROL_COOLDOWN_SECONDS};",
         "",
+        f"        public const int HuttEnforcerTier = {HUTT_ENFORCER_TIER};",
+        "        public static readonly string[] HuttEnforcerTags = { " + ", ".join(f'"{t}"' for t in HUTT_ENFORCER_TAGS) + " };",
+        "        public static readonly string[] HuttEnforcerOrbits = { " + ", ".join(f'"{o}"' for o in HUTT_ENFORCER_ORBITS) + " };",
+        f"        public const int HuttEnforcerSpawnWeight = {HUTT_ENFORCER_SPAWN_WEIGHT};",
+        "",
         f"        public const int CityExchangeStarportLevel = {CITY_EXCHANGE_STARPORT_LEVEL};",
         f"        public const int TariffMaximumPercent = {TARIFF_MAX_PERCENT};",
         "",
@@ -1219,6 +1234,9 @@ def trade_tab(Sheet):
          "share of the usual fee per volume; the 400 volume bulk load pays less per unit"],
         ["Hostile patrols", f"every {HOSTILE_PATROL_COOLDOWN_SECONDS} s at most", "", "", "", "", "",
          "a patrol of a hostile authority attacks on sight when the pilot enters its system"],
+        ["Hutt enforcers", f"tier {HUTT_ENFORCER_TIER}, weight {HUTT_ENFORCER_SPAWN_WEIGHT} each", "", "", "", "", "",
+         f"{', '.join(HUTT_ENFORCER_TAGS)} (Neutral) in {', '.join(HUTT_ENFORCER_ORBITS)}; attack pilots Hostile to the Hutt "
+         "Cartel on sight; firing on one turns the orbit's enforcers and costs Hutt Cartel standing (AttackedLawfulShip)"],
         ["City exchange", f"starport level {CITY_EXCHANGE_STARPORT_LEVEL}", "", "", "", "", "",
          "uses the planet's NPC exchange (goods, prices, flooding, freight)"],
         ["City tariff", f"0-{TARIFF_MAX_PERCENT}%", "", "", "", "", "",

@@ -4072,6 +4072,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipAmmoSeekerMissile3 = 7529,
         ShipAmmoSeekerMissile4 = 7530,
         ShipAmmoSeekerMissile5 = 7531,
+        ShipDataAnalyzer00 = 7532,
         // END space revamp catalog
     }
 }

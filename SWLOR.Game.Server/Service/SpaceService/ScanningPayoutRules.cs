@@ -9,11 +9,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public static class ScanningPayoutRules
     {
         /// <summary>A completed site's expected credits: its own loot, salvage or gas, and its cache's credits and items.</summary>
+        /// <remarks>A cache site is the mix of plain and locked caches (<see cref="ScanningTuning.LockedCachePercent"/>).</remarks>
         public static double SiteValue(SignatureType type, int tier)
         {
             tier = Math.Clamp(tier, 1, 6);
             var own = ScanningTuning.SiteOwnCredits.TryGetValue(type, out var values) ? values[tier] : 0.0;
-            return own + SignatureSiteRules.SiteCredits(type, tier) + ScanningTuning.CacheItemPulls * ScanningTuning.ElitePullCredits[tier];
+            var value = own + SignatureSiteRules.SiteCredits(type, tier);
+            if (type == SignatureType.CacheSite)
+                value = Mix(value, ScanningTuning.LockedCacheOwnCredits[tier] + SignatureSiteRules.LockedCacheCredits(tier));
+
+            return value + ScanningTuning.CacheItemPulls * ScanningTuning.ElitePullCredits[tier];
         }
 
         /// <summary>The minutes a site takes, its share of the overhead included.</summary>
@@ -21,8 +26,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             tier = Math.Clamp(tier, 1, 6);
             var minutes = ScanningTuning.SiteMinutes.TryGetValue(type, out var values) ? values[tier] : 0.0;
+            if (type == SignatureType.CacheSite)
+                minutes = Mix(minutes, ScanningTuning.LockedCacheMinutes[tier]);
+
             return minutes + ScanningTuning.OverheadMinutes[tier];
         }
+
+        /// <summary>A plain cache's number blended with a locked cache's at the locked share.</summary>
+        private static double Mix(double plain, double locked) =>
+            plain + (locked - plain) * ScanningTuning.LockedCachePercent / 100.0;
 
         /// <summary>Exploring credits per hour at a tier, over the spawnable type mix.</summary>
         public static double CreditsPerHour(int tier)

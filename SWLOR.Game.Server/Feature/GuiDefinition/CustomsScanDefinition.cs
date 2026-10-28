@@ -92,8 +92,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(ButtonHeight);
                                 line.AddButton()
                                     .SetText("Slice the Scan")
-                                    .SetTooltip("Comes with space slicing")
+                                    .SetTooltip("Spoof the scan with the slicing mini-game at the patrol's tier, sliced by you or your Sensors crew member. Success: a clean scan. Failure: caught, with the fine, the confiscation and the standing loss.")
                                     .BindIsEnabled(model => model.CanSlice)
+                                    .BindOnClicked(model => model.OnClickSlice())
                                     .SetHeight(ButtonHeight);
                             });
                         });

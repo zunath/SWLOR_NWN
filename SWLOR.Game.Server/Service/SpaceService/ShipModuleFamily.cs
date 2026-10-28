@@ -49,5 +49,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         GasHarvester = 41,
         SmugglingCompartment = 42,
         ProbeLauncher = 43,
+        DataAnalyzer = 44,
     }
 }

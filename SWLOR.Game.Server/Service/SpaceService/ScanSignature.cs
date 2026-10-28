@@ -42,6 +42,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Whether the site's cache has been spawned (or, for a cache site, is the site).</summary>
         public bool CacheSpawned { get; set; }
 
+        /// <summary>Whether a cache site's cache is locked and must be sliced open (space slicing).</summary>
+        public bool Locked { get; init; }
+
         /// <summary>Whether the site has been completed: its cache was taken.</summary>
         public bool Completed { get; set; }
 

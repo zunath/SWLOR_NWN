@@ -12,6 +12,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
         private const float ContentPanelWidth = 530f;
+        // The Placeables tab keeps master's two-column layout at its natural size (about 1000 x 470), which the
+        // default window shows in full. The 530 px panel shared with the Space tab cut off its right column and
+        // bottom row at any window size.
+        private const float PlaceablesPanelWidth = 1000f;
+        private const float PlaceablesPanelHeight = 470f;
         private const float SpaceLabelWidth = 90f;
         private const float SpaceFieldWidth = 300f;
 
@@ -20,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.DMTools)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 575f, 600f)
+                .SetInitialGeometry(0, 0, 1060f, 640f)
                 .SetTitle("DM Tools")
                 .BindOnClosed(model => model.OnCloseWindow())
                 .DefinePartialView(DMToolsViewModel.PlaceablesTabPartial, AddPlaceablesTab)
@@ -45,14 +50,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return _builder.Build();
         }
 
-        private static void AddPanel(GuiGroup<DMToolsViewModel> host, System.Action<GuiColumn<DMToolsViewModel>> content)
+        private static void AddPanel(
+            GuiGroup<DMToolsViewModel> host,
+            System.Action<GuiColumn<DMToolsViewModel>> content,
+            float width = ContentPanelWidth,
+            float height = 0f)
         {
-            host.AddColumn(col => col.AddRow(row => row.AddGroup(panel =>
+            host.AddColumn(col => col.AddRow(row =>
             {
-                panel.SetShowBorder(false);
-                panel.SetScrollbars(NuiScrollbars.None);
-                panel.AddColumn(content);
-            }).SetWidth(ContentPanelWidth)));
+                var panel = row.AddGroup(group =>
+                {
+                    group.SetShowBorder(false);
+                    group.SetScrollbars(NuiScrollbars.None);
+                    group.AddColumn(content);
+                }).SetWidth(width);
+
+                if (height > 0f)
+                    panel.SetHeight(height);
+            }));
         }
 
         private static void AddPlaceablesTab(GuiGroup<DMToolsViewModel> host)
@@ -330,7 +345,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     });
                 });
-            });
+            }, PlaceablesPanelWidth, PlaceablesPanelHeight);
         }
 
         /// <summary>

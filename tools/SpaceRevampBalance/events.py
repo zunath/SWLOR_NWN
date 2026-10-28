@@ -88,6 +88,68 @@ def command_tag(tier, invader):
     return capital if tier >= 6 else f"t{tier}capital"
 
 
+# Armada ships (the W11o follow-up to W15b's "no new creatures"): each invader flies its own creatures, copied from the
+# tier's role ship the W7b way (same scripts, skin, level, loot and legacy ship item) with the armada's name, a
+# description and its hull appearance, so a fight keeps its tier's band and the ships need no renaming at spawn. Tag
+# t<tier><prefix><hull code>; npc_catalog.hull_type reads the hull code, so the presets match the source ships'.
+# Appearances: the Sith Armada flies the Imperial (Sith Empire) hulls and its Inquisitor Assault Cruiser; the
+# Mandalorian Armada flies the Clan Zel Arun hulls and its Jahavey'ir Cruiser. The tier 6 command ship stays the invader's
+# own faction capital.
+ARMADA_PREFIX = {"Sith": "sitharm", "Mandalorian": "mandoarm"}
+ARMADA_HULL_CODES = {"fighter": "ftr", "interceptor": "int", "bomber": "bmb", "gunship": "gun", "platform": "plt",
+                     "capital": "cmd"}
+ARMADA_HULL_NAMES = {"fighter": "Fighter", "interceptor": "Interceptor", "bomber": "Bomber", "gunship": "Gunship",
+                     "platform": "Blockade Platform", "capital": "Command Ship"}
+ARMADA_APPEARANCE_SOURCE = {"Sith": "t6", "Mandalorian": "t4"}
+ARMADA_DESCRIPTIONS = {
+    "Sith": "A warship of the Sith Armada, the Empire's invasion fleet. Once a week it falls on a region of known space to "
+            "blockade its docks and choke its trade.",
+    "Mandalorian": "A warship of the Mandalorian Armada, the clans' invasion fleet. Once a week it falls on a region of "
+                   "known space to blockade its docks and choke its trade.",
+}
+
+
+def armada_hulls(tier):
+    """Every hull an invader's incursion needs at a tier: the waves, the blockade and the command group."""
+    hulls = wave_hulls(tier) + BLOCKADE_HULLS + COMMAND_ESCORTS + (["capital"] if tier < 6 else [])
+    return [h for h in ARMADA_HULL_CODES if h in hulls]
+
+
+def armada_tag(invader, tier, hull):
+    return f"t{tier}{ARMADA_PREFIX[invader]}{ARMADA_HULL_CODES[hull]}"
+
+
+def armada_ships():
+    """(tag, invader, tier, hull, source creature, name, appearance) for every armada creature."""
+    out = []
+    for invader, name, capital, _maker in INVADERS:
+        for tier in TIERS:
+            for hull in armada_hulls(tier):
+                appearance_source = capital if hull == "capital" else f"{ARMADA_APPEARANCE_SOURCE[invader]}{hull}"
+                out.append((armada_tag(invader, tier, hull), invader, tier, hull, f"t{tier}{hull}",
+                            f"{name} {ARMADA_HULL_NAMES[hull]}", utc_appearance(appearance_source)))
+    return out
+
+
+def armada_tags():
+    return [x[0] for x in armada_ships()]
+
+
+# Capital battle events (plan section 11 "Encounter types"; undefined there, so the most conservative version): every
+# few hours, while no incursion runs, an armada battle group drops into one of the open tier 5-6 orbits (where the rare
+# capitals already fly) for a limited time: the incursion command group of the orbit's tier (the armada command ship
+# and two gunships; at tier 6 the invader's faction capital). The ships drop their normal loot and nothing else, so the
+# event pays what fighting the same ships pays anywhere (no new reward band). Announced server-wide when it arrives,
+# when it is destroyed and when it withdraws. In memory only: a restart starts the clock again.
+CAPITAL_BATTLE_INTERVAL_HOURS = 4
+CAPITAL_BATTLE_FIRST_MINUTES = 60
+CAPITAL_BATTLE_MINUTES = 30
+CAPITAL_BATTLE_RING_METERS = 12
+CAPITAL_BATTLE_MIN_TIER = 5
+CAPITAL_BATTLE_AREAS = [a for a in trade.ORBIT_TIERS if trade.ORBIT_TIERS[a] >= CAPITAL_BATTLE_MIN_TIER
+                        and a in wildspace.KNOWN_ORBITS]
+
+
 # The region's exchanges (those whose dock launches into a region area) price every good at this multiple while the
 # incursion lasts: supplies run short. Buying and selling both move, so hauling goods in pays and hoarding there costs.
 PRICE_MULTIPLIER = 1.25
@@ -391,10 +453,35 @@ def utc_appearance(tag):
     return utc["Appearance_Type"]["value"]
 
 
+_NPC_ITEM_TAGS = {}
+
+
+def source_item_tag(tag):
+    """The legacy ship item a creature's NPCSpaceObjectDefinition entry carries."""
+    if not _NPC_ITEM_TAGS:
+        text = (REPO / "SWLOR.Game.Server/Feature/SpaceObjectDefinition/NPCSpaceObjectDefinition.cs").read_text(encoding="utf-8")
+        _NPC_ITEM_TAGS.update(re.findall(r'_builder\.Create\("([^"]+)"\)\s*\.ItemTag\("([^"]+)"\)', text))
+    return _NPC_ITEM_TAGS[tag]
+
+
+def armada_blueprints():
+    out = {}
+    for tag, invader, _tier, _hull, source, name, appearance in armada_ships():
+        d = json.loads((REPO / "Module" / "utc" / f"{source}.utc.json").read_text(encoding="utf-8"))
+        d["Tag"]["value"] = tag
+        d["TemplateResRef"]["value"] = tag
+        d["FirstName"]["value"] = {"0": name}
+        d["LastName"]["value"] = {"0": ""}
+        d["Description"]["value"] = {"0": ARMADA_DESCRIPTIONS[invader]}
+        d["Appearance_Type"]["value"] = appearance
+        out[f"Module/utc/{tag}.utc.json"] = json.dumps(d, indent=2, ensure_ascii=False) + "\n"
+    return out
+
+
 def incursion_cs():
     pools = fighter_pools()
     invaders = [f"            new IncursionInvaderDetail {{ Invader = IncursionInvader.{n}, Name = {q(name)}, CapitalTag = {q(cap)}, "
-                f"CapitalAppearance = {utc_appearance(cap)}, Maker = ShipManufacturer.{maker} }},"
+                f"TagPrefix = {q(ARMADA_PREFIX[n])}, Maker = ShipManufacturer.{maker} }},"
                 for n, name, cap, maker in INVADERS]
     regions = []
     for c in CENTERS:
@@ -445,6 +532,26 @@ def incursion_cs():
              f"        public static readonly string[][] WaveHulls = {{ Array.Empty<string>(), {waves} }};",
              f"        public static readonly IReadOnlyList<string> BlockadeHulls = {cs_strings(BLOCKADE_HULLS)};",
              f"        public static readonly IReadOnlyList<string> CommandEscorts = {cs_strings(COMMAND_ESCORTS)};",
+             "",
+             "        /// <summary>The hull code in an armada creature's tag (t, the tier, the invader's prefix, the code).</summary>",
+             "        public static readonly IReadOnlyDictionary<string, string> ArmadaHullCodes = new Dictionary<string, string> { "
+             + ", ".join(f"[{q(k)}] = {q(v)}" for k, v in ARMADA_HULL_CODES.items()) + " };",
+             "",
+             "        /// <summary>Every armada creature, as (creature tag, legacy ship item tag).</summary>",
+             "        public static readonly IReadOnlyList<(string Tag, string ItemTag)> ArmadaShips = new[]", "        {",
+             *[f"            ({q(tag)}, {q(source_item_tag(src))})," for tag, _i, _t, _h, src, _n, _a in armada_ships()],
+             "        };",
+             "",
+             f"        public const double CapitalBattleIntervalHours = {cs_double(CAPITAL_BATTLE_INTERVAL_HOURS)};",
+             f"        public const double CapitalBattleFirstMinutes = {cs_double(CAPITAL_BATTLE_FIRST_MINUTES)};",
+             f"        public const double CapitalBattleMinutes = {cs_double(CAPITAL_BATTLE_MINUTES)};",
+             f"        public const float CapitalBattleRingMeters = {cs_float(CAPITAL_BATTLE_RING_METERS)};",
+             "",
+             "        /// <summary>The open orbits a capital battle can drop into (tier 5-6), each fought at its own tier.</summary>",
+             "        public static readonly IReadOnlyList<IncursionArea> CapitalBattleAreas = new List<IncursionArea>", "        {",
+             *[f"            new IncursionArea {{ Resref = {q(a)}, Name = {q(trade.ORBIT_NAMES[a])}, Tier = {trade.ORBIT_TIERS[a]} }},"
+               for a in CAPITAL_BATTLE_AREAS],
+             "        };",
              "",
              "        public static readonly IReadOnlyList<IncursionInvaderDetail> Invaders = new List<IncursionInvaderDetail>", "        {",
              *invaders, "        };", "",
@@ -532,6 +639,7 @@ def writes():
         "SWLOR.Game.Server/Service/SpaceService/RiftRunTuning.cs": rift_cs(),
     }
     files.update(key_blueprints())
+    files.update(armada_blueprints())
     return files
 
 

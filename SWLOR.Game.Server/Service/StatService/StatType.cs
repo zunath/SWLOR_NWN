@@ -6659,6 +6659,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         SpaceCapacitorCostPercentAdjustment = 1284,
 
+        /// <summary>Percent damage adjustment for Throwing auto-attacks and single-target Throwing abilities (the Ordnance Stance).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingSingleTargetDamagePercentAdjustment = 1285,
+
 
     }
 

@@ -91,29 +91,38 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         // Spawns
 
+        /// <summary>
+        /// The invader's own creature for a hull at a tier: t&lt;tier&gt;&lt;prefix&gt;&lt;hull code&gt;, a copy of the tier's role
+        /// ship with the armada's name and appearance (IncursionTuning.ArmadaShips).
+        /// </summary>
+        public static string ArmadaTag(IncursionInvader invader, int tier, string hull)
+        {
+            var prefix = GetInvader(invader)?.TagPrefix;
+            return string.IsNullOrEmpty(prefix) || !IncursionTuning.ArmadaHullCodes.TryGetValue(hull, out var code)
+                ? string.Empty
+                : $"t{Math.Clamp(tier, 1, 6)}{prefix}{code}";
+        }
+
         /// <summary>The ships of one wave at a tier, as (creature tag, hull).</summary>
-        public static List<(string Tag, string Hull)> WaveShips(int tier) =>
-            IncursionTuning.WaveHulls[Math.Clamp(tier, 1, 6)].Select(h => ($"t{Math.Clamp(tier, 1, 6)}{h}", h)).ToList();
+        public static List<(string Tag, string Hull)> WaveShips(int tier, IncursionInvader invader) =>
+            IncursionTuning.WaveHulls[Math.Clamp(tier, 1, 6)].Select(h => (ArmadaTag(invader, tier, h), h)).ToList();
 
         /// <summary>A dock's blockade at a tier.</summary>
-        public static List<(string Tag, string Hull)> BlockadeShips(int tier) =>
-            IncursionTuning.BlockadeHulls.Select(h => ($"t{Math.Clamp(tier, 1, 6)}{h}", h)).ToList();
+        public static List<(string Tag, string Hull)> BlockadeShips(int tier, IncursionInvader invader) =>
+            IncursionTuning.BlockadeHulls.Select(h => (ArmadaTag(invader, tier, h), h)).ToList();
 
         /// <summary>The command group: the command ship first, then its escorts.</summary>
         public static List<(string Tag, string Hull)> CommandShips(int tier, IncursionInvader invader)
         {
             tier = Math.Clamp(tier, 1, 6);
             var ships = new List<(string Tag, string Hull)> { (CommandTag(tier, invader), "capital") };
-            ships.AddRange(IncursionTuning.CommandEscorts.Select(h => ($"t{tier}{h}", h)));
+            ships.AddRange(IncursionTuning.CommandEscorts.Select(h => (ArmadaTag(invader, tier, h), h)));
             return ships;
         }
 
-        /// <summary>The tier 6 command ship is the invader's capital; below it, the tier's capital flies that capital's hull.</summary>
+        /// <summary>The tier 6 command ship is the invader's faction capital; below it, the armada's command ship of the tier.</summary>
         public static string CommandTag(int tier, IncursionInvader invader) =>
-            tier >= 6 ? GetInvader(invader)?.CapitalTag ?? string.Empty : $"t{tier}capital";
-
-        /// <summary>Whether a command ship takes the invader capital's appearance (tiers 1-5).</summary>
-        public static bool UsesInvaderAppearance(int tier) => tier < 6;
+            tier >= 6 ? GetInvader(invader)?.CapitalTag ?? string.Empty : ArmadaTag(invader, tier, "capital");
 
         public static string ShipName(IncursionInvader invader, string hull)
         {

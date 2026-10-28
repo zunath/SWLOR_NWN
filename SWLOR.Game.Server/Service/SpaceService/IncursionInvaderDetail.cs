@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The faction capital that leads the armada at tier 6.</summary>
         public string CapitalTag { get; set; }
 
-        /// <summary>That capital's appearance, flown by the command ship of tiers 1-5.</summary>
-        public int CapitalAppearance { get; set; }
+        /// <summary>The armada creatures' tag prefix: t&lt;tier&gt;&lt;prefix&gt;&lt;hull code&gt; (IncursionTuning.ArmadaShips).</summary>
+        public string TagPrefix { get; set; }
 
         public ShipManufacturer Maker { get; set; }
     }

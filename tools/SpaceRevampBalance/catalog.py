@@ -1173,6 +1173,7 @@ def writes():
     npc_tags = re.findall(r'_builder\.Create\("([^"]+)"\)', npc_source)
     aces = ace_rows(hulls)
     npc_tags += [a["tag"] for a in aces]
+    npc_tags += events.armada_tags()
     files["SWLOR.Game.Server/Feature/SpaceObjectDefinition/RevampNpcShipCatalog.cs"] = npc_catalog.catalog_cs(
         HEADER, npc_catalog.entries(ROOT, npc_tags, {a["tag"]: (a["role"], a["Level"]) for a in aces}))
     files["SWLOR.Game.Server/Feature/ShipRewardDefinition/RevampAceCatalog.cs"] = ace_catalog_cs(aces)

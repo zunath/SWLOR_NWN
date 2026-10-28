@@ -47,10 +47,97 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static readonly IReadOnlyList<string> BlockadeHulls = new[] { "gunship", "gunship", "platform" };
         public static readonly IReadOnlyList<string> CommandEscorts = new[] { "gunship", "gunship" };
 
+        /// <summary>The hull code in an armada creature's tag (t, the tier, the invader's prefix, the code).</summary>
+        public static readonly IReadOnlyDictionary<string, string> ArmadaHullCodes = new Dictionary<string, string> { ["fighter"] = "ftr", ["interceptor"] = "int", ["bomber"] = "bmb", ["gunship"] = "gun", ["platform"] = "plt", ["capital"] = "cmd" };
+
+        /// <summary>Every armada creature, as (creature tag, legacy ship item tag).</summary>
+        public static readonly IReadOnlyList<(string Tag, string ItemTag)> ArmadaShips = new[]
+        {
+            ("t1sitharmftr", "NPC_Fighter1"),
+            ("t1sitharmint", "NPC_Interceptor1"),
+            ("t1sitharmgun", "NPC_Gunship1"),
+            ("t1sitharmplt", "NPC_Platform1"),
+            ("t1sitharmcmd", "NPC_Capital1"),
+            ("t2sitharmftr", "NPC_Fighter2"),
+            ("t2sitharmint", "NPC_Interceptor2"),
+            ("t2sitharmgun", "NPC_Gunship2"),
+            ("t2sitharmplt", "NPC_Platform2"),
+            ("t2sitharmcmd", "NPC_Capital2"),
+            ("t3sitharmftr", "NPC_Fighter3"),
+            ("t3sitharmint", "NPC_Interceptor3"),
+            ("t3sitharmbmb", "NPC_Bomber3"),
+            ("t3sitharmgun", "NPC_Gunship3"),
+            ("t3sitharmplt", "NPC_Platform3"),
+            ("t3sitharmcmd", "NPC_Capital3"),
+            ("t4sitharmftr", "NPC_Fighter4"),
+            ("t4sitharmint", "NPC_Interceptor4"),
+            ("t4sitharmbmb", "NPC_Bomber4"),
+            ("t4sitharmgun", "NPC_Gunship4"),
+            ("t4sitharmplt", "NPC_Platform4"),
+            ("t4sitharmcmd", "NPC_Capital4"),
+            ("t5sitharmftr", "NPC_Fighter5"),
+            ("t5sitharmint", "NPC_Interceptor5"),
+            ("t5sitharmbmb", "NPC_Bomber5"),
+            ("t5sitharmgun", "NPC_Gunship5"),
+            ("t5sitharmplt", "NPC_Platform5"),
+            ("t5sitharmcmd", "NPC_Capital5"),
+            ("t6sitharmftr", "NPC_Fighter6"),
+            ("t6sitharmint", "NPC_Interceptor6"),
+            ("t6sitharmbmb", "NPC_Bomber6"),
+            ("t6sitharmgun", "NPC_Gunship6"),
+            ("t6sitharmplt", "NPC_Platform6"),
+            ("t1mandoarmftr", "NPC_Fighter1"),
+            ("t1mandoarmint", "NPC_Interceptor1"),
+            ("t1mandoarmgun", "NPC_Gunship1"),
+            ("t1mandoarmplt", "NPC_Platform1"),
+            ("t1mandoarmcmd", "NPC_Capital1"),
+            ("t2mandoarmftr", "NPC_Fighter2"),
+            ("t2mandoarmint", "NPC_Interceptor2"),
+            ("t2mandoarmgun", "NPC_Gunship2"),
+            ("t2mandoarmplt", "NPC_Platform2"),
+            ("t2mandoarmcmd", "NPC_Capital2"),
+            ("t3mandoarmftr", "NPC_Fighter3"),
+            ("t3mandoarmint", "NPC_Interceptor3"),
+            ("t3mandoarmbmb", "NPC_Bomber3"),
+            ("t3mandoarmgun", "NPC_Gunship3"),
+            ("t3mandoarmplt", "NPC_Platform3"),
+            ("t3mandoarmcmd", "NPC_Capital3"),
+            ("t4mandoarmftr", "NPC_Fighter4"),
+            ("t4mandoarmint", "NPC_Interceptor4"),
+            ("t4mandoarmbmb", "NPC_Bomber4"),
+            ("t4mandoarmgun", "NPC_Gunship4"),
+            ("t4mandoarmplt", "NPC_Platform4"),
+            ("t4mandoarmcmd", "NPC_Capital4"),
+            ("t5mandoarmftr", "NPC_Fighter5"),
+            ("t5mandoarmint", "NPC_Interceptor5"),
+            ("t5mandoarmbmb", "NPC_Bomber5"),
+            ("t5mandoarmgun", "NPC_Gunship5"),
+            ("t5mandoarmplt", "NPC_Platform5"),
+            ("t5mandoarmcmd", "NPC_Capital5"),
+            ("t6mandoarmftr", "NPC_Fighter6"),
+            ("t6mandoarmint", "NPC_Interceptor6"),
+            ("t6mandoarmbmb", "NPC_Bomber6"),
+            ("t6mandoarmgun", "NPC_Gunship6"),
+            ("t6mandoarmplt", "NPC_Platform6"),
+        };
+
+        public const double CapitalBattleIntervalHours = 4.0;
+        public const double CapitalBattleFirstMinutes = 60.0;
+        public const double CapitalBattleMinutes = 30.0;
+        public const float CapitalBattleRingMeters = 12.0f;
+
+        /// <summary>The open orbits a capital battle can drop into (tier 5-6), each fought at its own tier.</summary>
+        public static readonly IReadOnlyList<IncursionArea> CapitalBattleAreas = new List<IncursionArea>
+        {
+            new IncursionArea { Resref = "space_dathomir", Name = "Dathomir Orbit", Tier = 5 },
+            new IncursionArea { Resref = "dantooineorbit", Name = "Dantooine Orbit", Tier = 5 },
+            new IncursionArea { Resref = "space_korriban", Name = "Korriban Orbit", Tier = 6 },
+        };
+
         public static readonly IReadOnlyList<IncursionInvaderDetail> Invaders = new List<IncursionInvaderDetail>
         {
-            new IncursionInvaderDetail { Invader = IncursionInvader.Sith, Name = "Sith Armada", CapitalTag = "sithcap3", CapitalAppearance = 10141, Maker = ShipManufacturer.Sith },
-            new IncursionInvaderDetail { Invader = IncursionInvader.Mandalorian, Name = "Mandalorian Armada", CapitalTag = "mandocap1", CapitalAppearance = 10154, Maker = ShipManufacturer.Mandalorian },
+            new IncursionInvaderDetail { Invader = IncursionInvader.Sith, Name = "Sith Armada", CapitalTag = "sithcap3", TagPrefix = "sitharm", Maker = ShipManufacturer.Sith },
+            new IncursionInvaderDetail { Invader = IncursionInvader.Mandalorian, Name = "Mandalorian Armada", CapitalTag = "mandocap1", TagPrefix = "mandoarm", Maker = ShipManufacturer.Mandalorian },
         };
 
         /// <summary>Every region: an orbit with a dock and its starlane neighbours.</summary>

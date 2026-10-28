@@ -37,10 +37,10 @@ namespace SWLOR.Game.Server.Service.SlicingService
         /// <summary>Each source's base credits by slicing tier (index 1-5); a success pays 75-125% of it.</summary>
         public static readonly IReadOnlyDictionary<SlicingSourceType, int[]> Credits = new Dictionary<SlicingSourceType, int[]>
         {
-            [SlicingSourceType.DataCan] = new[] { 0, 50, 75, 100, 25, 25 },
-            [SlicingSourceType.LockedCache] = new[] { 0, 50, 75, 100, 25, 25 },
-            [SlicingSourceType.WreckDataCore] = new[] { 0, 50, 75, 100, 25, 25 },
-            [SlicingSourceType.SpaceLockbox] = new[] { 0, 25, 50, 50, 25, 25 },
+            [SlicingSourceType.DataCan] = new[] { 0, 50, 75, 100, 75, 25 },
+            [SlicingSourceType.LockedCache] = new[] { 0, 50, 75, 100, 75, 25 },
+            [SlicingSourceType.WreckDataCore] = new[] { 0, 50, 75, 100, 75, 25 },
+            [SlicingSourceType.SpaceLockbox] = new[] { 0, 25, 50, 50, 50, 25 },
         };
         public const int CreditRollMinimumPercent = 75;
         public const int CreditRollMaximumPercent = 125;
@@ -49,9 +49,9 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public static readonly IReadOnlyDictionary<SlicingSourceType, IReadOnlyDictionary<SpaceSlicingRewardKind, int>> BonusWeights =
             new Dictionary<SlicingSourceType, IReadOnlyDictionary<SpaceSlicingRewardKind, int>>
             {
-                [SlicingSourceType.DataCan] = new Dictionary<SpaceSlicingRewardKind, int> { [SpaceSlicingRewardKind.DesignSchematic] = 10, [SpaceSlicingRewardKind.RecipeUnlock] = 5, [SpaceSlicingRewardKind.ShipSchematic] = 2, [SpaceSlicingRewardKind.AgentIntel] = 20, [SpaceSlicingRewardKind.Component] = 41, [SpaceSlicingRewardKind.RareComponent] = 22 },
-                [SlicingSourceType.LockedCache] = new Dictionary<SpaceSlicingRewardKind, int> { [SpaceSlicingRewardKind.RareComponent] = 35, [SpaceSlicingRewardKind.Component] = 30, [SpaceSlicingRewardKind.Ammo] = 20, [SpaceSlicingRewardKind.DesignSchematic] = 7, [SpaceSlicingRewardKind.RecipeUnlock] = 3, [SpaceSlicingRewardKind.PrototypeTech] = 5 },
-                [SlicingSourceType.WreckDataCore] = new Dictionary<SpaceSlicingRewardKind, int> { [SpaceSlicingRewardKind.DesignSchematic] = 15, [SpaceSlicingRewardKind.RecipeUnlock] = 8, [SpaceSlicingRewardKind.ShipSchematic] = 4, [SpaceSlicingRewardKind.PrototypeTech] = 5, [SpaceSlicingRewardKind.RareComponent] = 35, [SpaceSlicingRewardKind.Component] = 33 },
+                [SlicingSourceType.DataCan] = new Dictionary<SpaceSlicingRewardKind, int> { [SpaceSlicingRewardKind.DesignSchematic] = 10, [SpaceSlicingRewardKind.RecipeUnlock] = 4, [SpaceSlicingRewardKind.ShipSchematic] = 2, [SpaceSlicingRewardKind.AgentIntel] = 80, [SpaceSlicingRewardKind.Component] = 164, [SpaceSlicingRewardKind.RareComponent] = 140 },
+                [SlicingSourceType.LockedCache] = new Dictionary<SpaceSlicingRewardKind, int> { [SpaceSlicingRewardKind.RareComponent] = 186, [SpaceSlicingRewardKind.Component] = 120, [SpaceSlicingRewardKind.Ammo] = 80, [SpaceSlicingRewardKind.DesignSchematic] = 7, [SpaceSlicingRewardKind.RecipeUnlock] = 2, [SpaceSlicingRewardKind.PrototypeTech] = 5 },
+                [SlicingSourceType.WreckDataCore] = new Dictionary<SpaceSlicingRewardKind, int> { [SpaceSlicingRewardKind.DesignSchematic] = 15, [SpaceSlicingRewardKind.RecipeUnlock] = 6, [SpaceSlicingRewardKind.ShipSchematic] = 2, [SpaceSlicingRewardKind.PrototypeTech] = 5, [SpaceSlicingRewardKind.RareComponent] = 240, [SpaceSlicingRewardKind.Component] = 132 },
                 [SlicingSourceType.SpaceLockbox] = new Dictionary<SpaceSlicingRewardKind, int> { [SpaceSlicingRewardKind.Component] = 35, [SpaceSlicingRewardKind.RareComponent] = 20, [SpaceSlicingRewardKind.Ammo] = 30, [SpaceSlicingRewardKind.Credits] = 15 },
             };
 

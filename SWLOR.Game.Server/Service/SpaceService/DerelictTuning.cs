@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static readonly int[] SalvageCredits = { 0, 225, 400, 525, 425, 525, 1400, 625 };
 
         // Payout model (derelicts.py --sim): credits per hour by content tier against the tier's space combat rate.
-        public static readonly int[] CombatCreditsPerHour = { 0, 4055, 6270, 8500, 7557, 9380, 22212, 10955 };
+        public static readonly int[] CombatCreditsPerHour = { 0, 4055, 6270, 8500, 7557, 9347, 22212, 10955 };
         public static readonly int[] BoardingCreditsPerHour = { 0, 4669, 7289, 9795, 8747, 10728, 25531, 12558 };
-        public static readonly int[] ContestedGroupCreditsPerHour = { 0, 5344, 7989, 11687, 10690, 12278, 29044, 14281 };
+        public static readonly int[] ContestedGroupCreditsPerHour = { 0, 5344, 7989, 11687, 10690, 12269, 29044, 14272 };
         public static readonly int[] SalvageCreditsPerHour = { 0, 3011, 4817, 6435, 5662, 7098, 16847, 8171 };
         public const int SalvageReferenceIndustry = 80;
     }

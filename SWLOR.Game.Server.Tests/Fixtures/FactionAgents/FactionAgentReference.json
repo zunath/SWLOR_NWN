@@ -141,7 +141,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 925,
+      "Credits": 950,
       "Tokens": 2,
       "IntelTokens": 4
     },
@@ -277,7 +277,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "Derelict",
-      "Credits": 1100,
+      "Credits": 1075,
       "Tokens": 2
     },
     {
@@ -286,7 +286,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1425,
+      "Credits": 1450,
       "Tokens": 3,
       "IntelTokens": 6
     },
@@ -431,7 +431,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1900,
+      "Credits": 1950,
       "Tokens": 4,
       "IntelTokens": 8
     },
@@ -576,7 +576,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1700,
+      "Credits": 1725,
       "Tokens": 3,
       "IntelTokens": 6
     },
@@ -622,7 +622,7 @@
       "Hops": 0,
       "Role": "Interceptor",
       "Site": "",
-      "Credits": 1100,
+      "Credits": 1075,
       "Tokens": 2
     },
     {
@@ -631,7 +631,7 @@
       "Hops": 2,
       "Role": "Interceptor",
       "Site": "",
-      "Credits": 3125,
+      "Credits": 3100,
       "Tokens": 6
     },
     {
@@ -640,7 +640,7 @@
       "Hops": 0,
       "Role": "Gunship",
       "Site": "",
-      "Credits": 2075,
+      "Credits": 2050,
       "Tokens": 4
     },
     {
@@ -649,7 +649,7 @@
       "Hops": 2,
       "Role": "Gunship",
       "Site": "",
-      "Credits": 4100,
+      "Credits": 4075,
       "Tokens": 8
     },
     {
@@ -667,7 +667,7 @@
       "Hops": 3,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 2375,
+      "Credits": 2350,
       "Tokens": 5
     },
     {
@@ -694,7 +694,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "CombatSite",
-      "Credits": 1450,
+      "Credits": 1475,
       "Tokens": 3
     },
     {
@@ -712,7 +712,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "Derelict",
-      "Credits": 1600,
+      "Credits": 1575,
       "Tokens": 3
     },
     {
@@ -721,7 +721,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1750,
+      "Credits": 1800,
       "Tokens": 4,
       "IntelTokens": 8
     },
@@ -866,7 +866,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 5100,
+      "Credits": 5150,
       "Tokens": 10,
       "IntelTokens": 20
     }
@@ -874,32 +874,32 @@
   "Rates": {
     "1": {
       "Combat": 4055,
-      "Agents": 4371,
+      "Agents": 4373,
       "Percent": 107.8
     },
     "2": {
       "Combat": 6270,
-      "Agents": 6755,
+      "Agents": 6750,
       "Percent": 107.7
     },
     "3": {
       "Combat": 8500,
-      "Agents": 9193,
-      "Percent": 108.1
+      "Agents": 9195,
+      "Percent": 108.2
     },
     "4": {
       "Combat": 7557,
-      "Agents": 8171,
-      "Percent": 108.1
+      "Agents": 8181,
+      "Percent": 108.3
     },
     "5": {
-      "Combat": 9380,
-      "Agents": 10119,
-      "Percent": 107.9
+      "Combat": 9347,
+      "Agents": 10105,
+      "Percent": 108.1
     },
     "6": {
       "Combat": 22212,
-      "Agents": 23990,
+      "Agents": 23989,
       "Percent": 108.0
     }
   },

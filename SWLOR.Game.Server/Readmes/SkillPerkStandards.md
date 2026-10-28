@@ -2,7 +2,7 @@
 
 Read before designing, implementing, balancing, or rewriting a skill, perk line, trait, stance, or active ability. These rules apply across skill families; the weapon progression below applies only to the matching weapon family.
 
-Sections: Established patterns · Cross-skill gameplay · Mechanical contract · Shared implementation · Balance evidence · Player descriptions · Integration and verification
+Sections: Established patterns · Cross-skill gameplay · Mechanical contract · Shared implementation · Balance evidence · Player descriptions · Integration and verification · Space skills and styles
 
 ## Established patterns
 
@@ -90,3 +90,14 @@ Before implementation, make the following unambiguous in the design and its supp
 - Keep code, Bible, generated manifests, native data, recipes/items, and presentation resources in sync where affected. Follow [DesignBibleWorkbookRules.md](DesignBibleWorkbookRules.md); agents update only the repository workbook. Use [AbilityTargeting.md](AbilityTargeting.md), [IconStandards.md](IconStandards.md), and [VisualEffectSelection.md](VisualEffectSelection.md) for those surfaces rather than maintaining parallel per-skill rules.
 - Build and run focused regression filters under `AGENTS.md`, covering authored progression/parity, representative cross-skill interactions, formula/budget boundaries, and the affected lifecycle. Use [EngineTesting.md](EngineTesting.md) for native behavior and [InEngineVisualVerification.md](InEngineVisualVerification.md) for the required client evidence. Offline visuals, headless engine tests, and connected-client input prove different things; state unverified coverage plainly.
 - Follow [PullRequests.md](PullRequests.md) for parent/HAK integration and clean current-head reviews. Report module repacking, HAK/TLK rebuilding, server deployment, and observed client behavior separately. Documentation-only rule changes have no in-game surface and do not require client captures.
+
+## Space skills and styles
+
+- **Skill split:** Piloting is the only space skill; its rank gates hulls, modules and perks and adds no stats. Space mining, gas and salvage are Gathering. Engineering (Engineer seat, repair and capacitor strength), Espionage (Sensors seat, scan, jam and paint strength, Slicing) and Leadership (Command orders, crew morale) each make one space role better; none is required to fly. Ground weapon skills do nothing in space.
+- **Isolation:** no ground ability works in space and no space ability works on the ground. Space abilities use `.CanBeUsedInSpace()`, act from the ship, cost STM or ship capacitor (never FP) and grant `StatType` values the shared space code reads. Ground stats are stripped on entering space; keep that.
+- **Attributes:** energy weapons use PER damage and AGI accuracy; launchers use MGT damage and PER accuracy; crits use PER against VIT; AGI is evasion, VIT hull defense, WIL shields, capacitor and repair strength, SOC command and exchange prices.
+- **Styles:** Piloting has four styles of 60 SP (Ace, Ordnance, Bulwark, Command) on the ground template: 3 ranked abilities, 2 general traits, 3 cross-skill traits, 1 stance and 1 capstone each, opening at rank 2 and ending with a rank-50 capstone. The SP schedule by rank is 2:2, 5:2, 8:2, 10:2, 12:2, 15:4, 18:3, 20:4, 22:4, 25:4, 28:3, 30:4, 32:3, 35:2, 38:4, 40:5, 45:4, 50:6. The two-style rule applies to weapon skills only; the 4-6 active buttons per style, one stance at a time and the crowd-control rules still apply.
+- **Solo target:** at every tier a pilot at that tier's rank with one weapon style (60 SP) solos all normal content and most elites in any hull their rank allows. Bulwark, Command and the ground skills are never required. Check changes with `SWLOR.CombatSim` and `tools/SpaceRevampBalance/checks.py`.
+- **Space Industry** (Gathering): Prospector adds a percentage of each cycle's ore, Deep Core adds percentage points to the rare-metal chance, Rapid Extraction shortens cycles. Player text gives the real rank cost of mining and never claims it got cheaper.
+- **Seat skills:** Gunner seats check Piloting, the Engineer seat Engineering, the Sensors seat Espionage. A crew member switches on only modules whose rank requirement they meet in the seat's skill; the owner may fit any station slot.
+- **Descriptions:** keep the Bible's Piloting (Revamp) rows, C# descriptions and TLK in agreement, and write module and hull ranks as real rank requirements.

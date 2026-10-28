@@ -72,8 +72,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var initialRecast = torpedo.RecastTime;
             var startDistance = GetDistanceBetween(attacker, target);
 
-            await ctx.WaitUntilAsync(() => torpedo.RecastTime != initialRecast, 10f,
-                $"the torpedo to activate (start {startDistance:0.0}m, now {GetDistanceBetween(attacker, target):0.0}m)");
+            try
+            {
+                await ctx.WaitUntilAsync(() => torpedo.RecastTime != initialRecast, 10f,
+                    $"the torpedo to activate (start {startDistance:0.0}m, now {GetDistanceBetween(attacker, target):0.0}m)");
+            }
+            catch (EngineTestAssertionException ex)
+            {
+                var status = Space.GetShipStatus(attacker);
+                throw new EngineTestAssertionException($"{ex.Message} [role={Space.GetNpcRole(attacker)} enmity={Enmity.GetEnmityTable(attacker).Count} " +
+                    $"highModules={string.Join(",", status.HighPowerModules.Select(x => x.Key + ":" + x.Value.ItemTag + (Space.IsShipToggleOn(status, x.Key) ? "(on)" : "")))} " +
+                    $"capacitor={status.Capacitor}/{status.MaxCapacitor} dead={GetIsDead(attacker)} targetCapital={Space.GetShipStatus(target).CapitalShip}]");
+            }
         }
 
         [EngineTest("NPC capital turns its turbolasers on against its enmity target", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]

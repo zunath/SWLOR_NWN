@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            TakeGoldFromCreature(offer.Deposit, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(offer.Deposit, player, true));
             var contract = FreightContractRules.Accept(offer, ship.Id, now);
             ship.SealedFreight.Add(FreightContractRules.GetSealedLot(contract));
             dbPlayer.FreightContracts.Add(contract);

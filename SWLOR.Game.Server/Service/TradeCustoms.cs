@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
 
             var fine = outcome.Fine;
             if (fine > 0)
-                TakeGoldFromCreature(fine, player, true);
+                AssignCommand(player, () => TakeGoldFromCreature(fine, player, true));
 
             var ship = GetActiveShip(player);
             var taken = ship == null || !outcome.ConfiscatesGoods
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _customsScans.Remove(player);
-            TakeGoldFromCreature(scan.Fine, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(scan.Fine, player, true));
 
             var ship = GetActiveShip(player);
             var taken = ship == null ? new Dictionary<CommodityType, int>() : CustomsRules.Confiscate(ship.Cargo, scan.Authority);

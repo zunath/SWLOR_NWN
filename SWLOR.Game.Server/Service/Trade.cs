@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            TakeGoldFromCreature(order.Credits, player, true);
+            AssignCommand(player, () => TakeGoldFromCreature(order.Credits, player, true));
             CargoHoldRules.AddUnits(ship.Cargo, commodity, order.Units, order.Credits);
             AddPressure(state, commodity, -order.Units, now);
             DB.Set(ship);

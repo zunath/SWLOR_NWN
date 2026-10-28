@@ -527,10 +527,13 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // The crew member's own client still draws their character (it must stay visible to itself), so it
+            // stood on top of the ship; cutscene invisibility keeps it from being drawn.
             if (!hasPresence)
             {
                 ApplyEffectToObject(DurationType.Permanent,
-                    TagEffect(SupernaturalEffect(EffectCutsceneGhost()), CrewPresenceEffectTag), crewMember);
+                    TagEffect(SupernaturalEffect(EffectLinkEffects(EffectCutsceneGhost(),
+                        EffectVisualEffect(VisualEffect.Vfx_Dur_Cutscene_Invisibility))), CrewPresenceEffectTag), crewMember);
             }
 
             VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, crewMember, VisibilityType.Hidden);

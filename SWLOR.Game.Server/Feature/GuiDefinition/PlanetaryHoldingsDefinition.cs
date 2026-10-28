@@ -53,12 +53,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return _builder.Build();
         }
 
+        // The panel scrolls itself: a group advises no height, so the layout's scrolling host never sees the
+        // My Holdings tab overflow and would clip its lower rows without a scrollbar.
         private static void AddPanel(GuiGroup<PlanetaryHoldingsViewModel> host, System.Action<GuiColumn<PlanetaryHoldingsViewModel>> content)
         {
             host.AddColumn(col => col.AddRow(row => row.AddGroup(panel =>
             {
                 panel.SetShowBorder(false);
-                panel.SetScrollbars(NuiScrollbars.None);
+                panel.SetScrollbars(NuiScrollbars.Auto);
                 panel.AddColumn(content);
             }).SetWidth(ContentPanelWidth)));
         }

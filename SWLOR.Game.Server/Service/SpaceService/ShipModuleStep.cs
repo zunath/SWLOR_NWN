@@ -92,6 +92,22 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The range in meters within which another ship sees a ship cloaked with this device.</summary>
         public int RevealRange { get; set; }
 
+        // Electronic warfare and the Afterburner (W11k)
+        /// <summary>The percentage an Ion Web slows its target by, before the Interceptor's strength bonus.</summary>
+        public int WebPercent { get; set; }
+
+        /// <summary>The range in meters at which an Interdictor holds its target, before the Interceptor's range bonus.</summary>
+        public int InterdictRange { get; set; }
+
+        /// <summary>The Accuracy a Jammer takes from its target (a negative number).</summary>
+        public int TargetAccuracy { get; set; }
+
+        /// <summary>The percentage more damage a Target Painter's target takes from every source.</summary>
+        public int PaintPercent { get; set; }
+
+        /// <summary>The percentage an Afterburner adds to the ship's speed while it is on.</summary>
+        public int AfterburnerPercent { get; set; }
+
         /// <summary>A copy whose numbers can be changed (component traits) without touching the catalog row.</summary>
         public ShipModuleStep Clone() => (ShipModuleStep)MemberwiseClone();
     }

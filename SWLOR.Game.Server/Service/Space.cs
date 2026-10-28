@@ -677,6 +677,15 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A ship waiting in an open Rift Run while its pilot was logged out launches into the run's current chamber
+            // (W11k).
+            var rejoinLocation = GetRiftRunRejoinLocation(dbShip.Id);
+            if (rejoinLocation != null)
+            {
+                BeginShipLaunch(player, dbShip.Id, rejoinLocation, GetLocation(player));
+                return;
+            }
+
             var dbProperty = DB.Get<WorldProperty>(propertyId);
 
             // The existence of a current location means the ship is currently in space.
@@ -759,6 +768,7 @@ namespace SWLOR.Game.Server.Service
             SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", launch.PilotLocation);
             SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
             EnterSpaceMode(player, launch.ShipId, launch.PilotLocation);
+            RejoinRiftRun(player, launch.ShipId);
             return true;
         }
 
@@ -1644,9 +1654,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Player ships attack each other only where the ground rules allow it (plan section 9, PvP). Modules that
-            // work around the ship pick their own enemies and skip the ones the rules protect.
-            if (IsOffensiveShipModule(shipModuleDetails.Type) &&
+            // Player ships attack each other only where the ground rules allow it (plan section 9, PvP); the hostile
+            // E-War modules follow the same rule (W11k). Modules that work around the ship pick their own enemies and
+            // skip the ones the rules protect.
+            if (ShipToggleRules.TargetsEnemy(shipModuleDetails.Type) &&
                 !shipModuleDetails.CanTargetSelf &&
                 GetIsObjectValid(target) &&
                 target != activator)
@@ -2285,8 +2296,10 @@ namespace SWLOR.Game.Server.Service
             if (result.Damage < 1 && damage > 0)
                 result.Damage = 1;
 
+            // A Target Painter's paint adds to the target's damage taken (W11k).
             var takenPercent = Stat.GetStatAdjustment(target, StatType.DamageTakenPercentAdjustment) +
-                               Stat.GetStatAdjustment(target, StatType.SpaceDamageTakenPercentAdjustment);
+                               Stat.GetStatAdjustment(target, StatType.SpaceDamageTakenPercentAdjustment) +
+                               targetStatus.GetPaintPercent(DateTime.UtcNow);
             if (takenPercent != 0)
                 result.Damage = SpaceCombatMath.ApplyDamageTaken(result.Damage, takenPercent);
 
@@ -2875,7 +2888,7 @@ namespace SWLOR.Game.Server.Service
             ShipStatus.ShipStatusModule shipModule)
         {
             var shipModuleDetail = _shipModules[shipModule.ItemTag];
-            if (!IsOffensiveShipModule(shipModuleDetail.Type) || targetShipStatus == null)
+            if (!ShipToggleRules.TargetsEnemy(shipModuleDetail.Type) || targetShipStatus == null)
                 return false;
 
             return string.IsNullOrWhiteSpace(shipModuleDetail.ModuleValidationAction?.Invoke(creature, shipStatus, target, targetShipStatus, shipModule.ModuleBonus));

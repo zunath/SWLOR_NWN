@@ -65,6 +65,11 @@ ART = {
     # The gaps pass (W11d): the ESS9 bank is full and no hak change was wanted, so the Cargo Expander reuses the retired
     # Logistics Configuration's artwork (a cargo tug cartridge; the configuration modules were removed in W10).
     "cargo_expander": (522, 249, "iit_smlogconfig"),
+    # The E-War and Afterburner modules (W11k): the ESS9 bank is full, so each item reuses a retired configuration
+    # module's inventory art (removed in W10, as the Cargo Expander did) and only the action icon is new.
+    "ion_web": (522, 248, "iit_smionweb"), "interdictor": (522, 252, "iit_sminterdict"),
+    "jammer": (522, 254, "iit_smjammer"), "target_painter": (522, 251, "iit_smtgtpaint"),
+    "afterburner": (522, 250, "iit_smafterburn"),
 }
 
 W = m.WEAPONS
@@ -190,6 +195,28 @@ FAMILIES = [
     ("CargoExpander", "Cargo Expander", "Cargo Exp", "sm_cargo", "Low", "Piloting", "Passive", 0, 0, 0, "cargo_expander", False,
      p(CargoPercent=trade.expander_percent, SpeedPercent=trade.CARGO_EXPANDER_SPEED_PERCENT),
      lambda r, s: f"+{s['CargoPercent']}% cargo bay (of the hull's cargo) and {s['SpeedPercent']}% speed. Several expanders stack."),
+    # The E-War and Afterburner modules (W11k), from the Ship Modules (Revamp) tab's draft rows. The draft gives no range
+    # for the Jammer and Target Painter; they take the E-War Array's 30 m. The Interdictor's range grows with its rank, so it
+# is a stat (InterdictRange), as the Probe Launcher's Sweep range is.
+    ("IonWeb", "Ion Web", "Ion Web", "sm_web", "Mid", "Piloting", "Toggle", 3.0, 3, 20, "ion_web", False,
+     p(WebPercent=lambda r: 20 + r // 3),
+     lambda r, s: f"Webs your target while on: -{s['WebPercent']}% speed, renewed every 3 seconds. 20 m range. Interceptors "
+                  f"web 25% harder and 50% farther."),
+    ("Interdictor", "Interdictor", "Interdict", "sm_intd", "Mid", "Piloting", "Toggle", 4.0, 5, 0,
+     "interdictor", False, p(InterdictRange=lambda r: 15 + r // 5),
+     lambda r, s: f"Holds your target while on: it cannot jump a starlane or to a signature, dock, cross a rift or cloak, "
+                  f"and its Afterburner shuts down. {s['InterdictRange']} m range (50% farther on Interceptors)."),
+    ("Jammer", "Jammer", "Jammer", "sm_jam", "Mid", "Piloting", "Toggle", 4.0, 4, 30, "jammer", False,
+     p(TargetAccuracy=lambda r: -(4 + round(0.4 * r))),
+     lambda r, s: f"Jams your target while on: {s['TargetAccuracy']} Accuracy, renewed every 4 seconds. 30 m range."),
+    ("TargetPainter", "Target Painter", "Painter", "sm_paint", "Mid", "Piloting", "Toggle", 4.0, 4, 30, "target_painter", False,
+     p(PaintPercent=lambda r: 5 + r // 9),
+     lambda r, s: f"Paints your target while on: it takes +{s['PaintPercent']}% damage from every source, renewed every 4 "
+                  f"seconds. 30 m range."),
+    ("Afterburner", "Afterburner", "Afterburn", "sm_aburn", "Mid", "Piloting", "Toggle", 2.0, 3, 0, "afterburner", False,
+     p(AfterburnerPercent=lambda r: 25 + r // 3),
+     lambda r, s: f"+{s['AfterburnerPercent']}% speed while on; pays 3 capacitor every 2 seconds. An Interdictor's hold "
+                  f"shuts it down."),
 ]
 
 MATERIALS = {1: ("ref_tilarium", "elec_ruined"), 2: ("ref_currian", "elec_flawed"), 3: ("ref_idailia", "elec_good"),
@@ -340,6 +367,11 @@ CLOAK_LATE_FAMILIES = {"CloakingDevice"}
 CARGO_LATE_FAMILIES = {"CargoExpander"}
 CARGO_RECIPE_START = 7733
 
+# Families added by W11k (the E-War modules and the Afterburner). Their recipe IDs follow the Cargo Expander's (the
+# highest RecipeType in use, 7742), so no earlier value moves.
+EWAR_LATE_FAMILIES = {"IonWeb", "Interdictor", "Jammer", "TargetPainter", "Afterburner"}
+EWAR_RECIPE_START = 7743
+
 # Families with one item and no rank requirement: any hull fits it (the Data Analyzer, plan section 24).
 SINGLE_STEP_FAMILIES = {"DataAnalyzer"}
 
@@ -378,13 +410,14 @@ def named_steps(recipe_start):
     return out
 
 def module_steps(late_recipe_start=None, component_late_start=None, reward_late_start=None, cloak_late_start=None,
-                 cargo_late_start=None):
+                 cargo_late_start=None, ewar_late_start=None):
     steps, recipe = [], RECIPE_TYPE_START
     late_recipe = late_recipe_start
     post_recipe = component_late_start
     reward_recipe = reward_late_start
     cloak_recipe = cloak_late_start
     cargo_recipe = cargo_late_start
+    ewar_recipe = ewar_late_start
     for (key, name, short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) in FAMILIES:
         single = key in SINGLE_STEP_FAMILIES
         for r in ([0] if single else CAPITAL_STEPS if capital else m.STEPS):
@@ -396,17 +429,20 @@ def module_steps(late_recipe_start=None, component_late_start=None, reward_late_
             after_rewards = key in REWARD_LATE_FAMILIES
             after_cloak = key in CLOAK_LATE_FAMILIES
             after_droids = key in CARGO_LATE_FAMILIES
+            after_cargo = key in EWAR_LATE_FAMILIES
             steps.append(dict(
                 Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=name if single else f"{name} Mk {mk}",
                 ShortName=(short if single else f"{short} {mk}")[:14],
                 Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
                 Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s),
-                RecipeType=cargo_recipe if after_droids else cloak_recipe if after_cloak else reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
+                RecipeType=ewar_recipe if after_cargo else cargo_recipe if after_droids else cloak_recipe if after_cloak else reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
                 Components=module_bill(key, r, row, capital),
                 Cost=100 + 30 * r + (2000 if capital else 0), **s))
-            if after_droids:
+            if after_cargo:
+                ewar_recipe = None if ewar_recipe is None else ewar_recipe + 1
+            elif after_droids:
                 cargo_recipe = None if cargo_recipe is None else cargo_recipe + 1
             elif after_cloak:
                 cloak_recipe = None if cloak_recipe is None else cloak_recipe + 1
@@ -622,11 +658,13 @@ def full_catalog():
     Every module step, ship deed and component recipe with its RecipeType: the earlier families, then the hulls, then
     LATE_FAMILIES, then the component recipes (W9a), then COMPONENT_LATE_FAMILIES, so no earlier value moves; then
     rewards.py's block (W9b): the named rank-50 modules (appended to the steps) and the rare component recipes; then
-    REWARD_LATE_FAMILIES and CLOAK_LATE_FAMILIES; then CARGO_LATE_FAMILIES from CARGO_RECIPE_START.
+    REWARD_LATE_FAMILIES and CLOAK_LATE_FAMILIES; then CARGO_LATE_FAMILIES from CARGO_RECIPE_START; then
+    EWAR_LATE_FAMILIES (W11k) from EWAR_RECIPE_START.
     """
     all_steps = module_steps()
     early = [s for s in all_steps if s["Family"] not in
-             LATE_FAMILIES | COMPONENT_LATE_FAMILIES | REWARD_LATE_FAMILIES | CLOAK_LATE_FAMILIES | CARGO_LATE_FAMILIES]
+             LATE_FAMILIES | COMPONENT_LATE_FAMILIES | REWARD_LATE_FAMILIES | CLOAK_LATE_FAMILIES | CARGO_LATE_FAMILIES |
+             EWAR_LATE_FAMILIES]
     late = [s for s in all_steps if s["Family"] in LATE_FAMILIES]
     hulls = ships(RECIPE_TYPE_START + len(early))
     recipes = component_recipes(RECIPE_TYPE_START + len(early) + len(hulls) + len(late))
@@ -638,10 +676,12 @@ def full_catalog():
     reward_end = max(x["RecipeType"] for x in named + rare + ammo_recipes()) + 1
     cloak_start = reward_end + len([s for s in all_steps if s["Family"] in REWARD_LATE_FAMILIES])
     steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1, reward_end, cloak_start,
-                         CARGO_RECIPE_START)
+                         CARGO_RECIPE_START, EWAR_RECIPE_START)
     others = [x["RecipeType"] for x in steps + named + hulls + recipes + rare + ammo_recipes()
-              if x["RecipeType"] is not None and x.get("Family") not in CARGO_LATE_FAMILIES]
+              if x["RecipeType"] is not None and x.get("Family") not in CARGO_LATE_FAMILIES | EWAR_LATE_FAMILIES]
     assert CARGO_RECIPE_START > max(others), "CARGO_RECIPE_START must follow every other generated recipe"
+    cargo = [x["RecipeType"] for x in steps if x.get("Family") in CARGO_LATE_FAMILIES]
+    assert EWAR_RECIPE_START > max(cargo), "EWAR_RECIPE_START must follow the Cargo Expander recipes"
     return steps + named, hulls, recipes + rare
 
 

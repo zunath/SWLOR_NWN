@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            // An Interdictor's hold keeps a ship from jumping a starlane (W11k).
+            if (Space.IsPlayerInSpaceMode(user) && Space.RefuseWhileInterdicted(user))
+                return;
+
             var device = OBJECT_SELF;
             var destination = GetLocalString(device, "DESTINATION");
             var vfxId = GetLocalInt(device, "VISUAL_EFFECT");

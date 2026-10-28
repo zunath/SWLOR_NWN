@@ -445,5 +445,65 @@ out.append(f"Each wave of each chamber, solo and with the 2- and 3-ship extras. 
            f"time sits inside the {events.TIMER_SECONDS // 60}-minute timer with room for the waves' delays, shield regeneration "
            "between waves and the chamber pulls. Tier 5.5: a named-fit rank 45 Fighter against the level 52 Rift Raiders.\n")
 
+# P. Player E-War modules (W11k)
+out.append("## P. Player E-War modules (W11k): the Fighter's Targeting Computer swapped for a Jammer or a Target Painter\n")
+
+
+def ewar_target(n, accuracy=0, paint=0):
+    # The Jammer takes flat Accuracy from the target; the paint's damage taken is modeled as lower resistance (within a
+    # point or two of the game's multiplier at these resistances). Both modeled as always on: the upper bound.
+    n = json.loads(json.dumps(n))
+    n["accuracy"] += accuracy
+    n["resistances"] = {k: v - paint for k, v in n["resistances"].items()}
+    return n
+
+
+def ewar_job(r):
+    return (1 / r["mean"]) * (0.5 + r["left"]) * r["win"]
+
+
+rows, ewar_slowest, ewar_low, ewar_high, party_high = [], 0.0, 9.9, 0.0, 0.0
+no_tc = {k: v for k, v in m.FIT["Fighter"].items() if k != "Targeting Computer"}
+for L in TIERS:
+    r = min(45, L // 5 * 5)  # the tier's module rank (section K's step; "step" is rebound by section M)
+    jam, paint = -(4 + round(0.4 * r)), 5 + r // 9
+    standard = m.player_ship("Fighter", L, m.FIT["Fighter"])
+    swapped = m.player_ship("Fighter", L, no_tc)
+    cells = []
+    for role in m.NORMAL_ROLES:
+        npc = m.npc_ship(role, L)
+        base = fight([standard], [npc])
+        with_jam = fight([swapped], [ewar_target(npc, accuracy=jam)])
+        with_paint = fight([swapped], [ewar_target(npc, paint=paint)])
+        for res in (with_jam, with_paint):
+            ewar_slowest = max(ewar_slowest, res["mean"] / m.GROUND_TTK[L])
+            ratio = ewar_job(res) / ewar_job(base)
+            ewar_low, ewar_high = min(ewar_low, ratio), max(ewar_high, ratio)
+        cells.append(f"{role}: {base['mean']:.0f}s / jam {with_jam['mean']:.0f}s ({ewar_job(with_jam) / ewar_job(base):.0%}) / "
+                     f"paint {with_paint['mean']:.0f}s ({ewar_job(with_paint) / ewar_job(base):.0%})")
+    # A party: three matched Fighters against a Boss, one of them swapping its Targeting Computer. The jam and the paint
+    # help the whole party (the stronger one counts, so a second painter adds nothing).
+    boss = m.npc_ship("Fighter", L, "Boss")
+    party = fight([dict(standard, count=3)], [boss])
+    party_cells = []
+    for label, kw in (("jam", dict(accuracy=jam)), ("paint", dict(paint=paint))):
+        res = fight([dict(standard, count=2), swapped], [ewar_target(boss, **kw)])
+        party_high = max(party_high, ewar_job(res) / ewar_job(party))
+        party_cells.append(f"{label} {res['mean']:.0f}s ({ewar_job(res) / ewar_job(party):.0%})")
+    rows.append([f"T{TIERS.index(L) + 1} (R{L})", m.GROUND_TTK[L], f"{jam} / +{paint}%", "; ".join(cells),
+                 f"{party['mean']:.0f}s / " + " / ".join(party_cells)])
+table(["Tier", "Ground s", "Jam / paint at the tier's rank", "Targeting Computer fit / Jammer fit (job vs TC) / Target Painter fit (job vs TC)",
+       "3 Fighters vs a Boss: all TC / one Jammer / one Painter (job vs all TC)"], rows)
+out.append(f"A matched Fighter keeps its Targeting Computer, or swaps it for a Jammer (target Accuracy -4 - 0.4 x rank) or a Target "
+           f"Painter (target damage taken +5% + rank / 9), against every Normal role. Job score = kill speed x (0.5 + hull and "
+           f"shield left) x win rate, against the Targeting Computer fit. Bands: every fight stays within the ground time "
+           f"(slowest {ewar_slowest:.0%}: {'met' if ewar_slowest <= 1.0 else 'NOT MET'}); solo, no swap beats the Targeting "
+           f"Computer by more than 10% (the Advanced-ship band; range {ewar_low:.0%}-{ewar_high:.0%}: "
+           f"{'met' if ewar_high <= 1.1 else 'NOT MET'}), so a Mid slot's E-War module is a support pick, not an upgrade. In a "
+           f"party the one module helps every ship: up to {party_high:.0%} of the all-Targeting-Computer party's job (no band; "
+           "the stronger jam or paint counts, so a second one adds nothing). Budget: the jam matches the Targeting Computer's Accuracy step "
+           "(-22 against +20 at rank 45) and the paint the Damage Amplifier's (+10%, every type). The Ion Web, Interdictor and "
+           "Afterburner change speed and escape only; the simulator has no movement, so they are not fights.\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

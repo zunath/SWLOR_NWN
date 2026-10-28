@@ -52,5 +52,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         DataAnalyzer = 44,
         CloakingDevice = 45,
         CargoExpander = 46,
+        IonWeb = 47,
+        Interdictor = 48,
+        Jammer = 49,
+        TargetPainter = 50,
+        Afterburner = 51,
     }
 }

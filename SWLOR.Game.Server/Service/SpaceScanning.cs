@@ -218,9 +218,28 @@ namespace SWLOR.Game.Server.Service
                         SendMessageToPC(operatorCreature, ColorToken.Cyan(message));
                 }
 
+                if (ScanningRules.Located(before, after))
+                    GiveScanExperience(ship, signature.Tier);
+
                 if (after >= ScanningTuning.InfoLocatedPercent && !signature.IsRevealed)
                     RevealSite(signature, ship);
             }
+        }
+
+        /// <summary>
+        /// Espionage XP for a located signature (W11k) to the player who runs the launcher: the crew member at the Sensors
+        /// seat, otherwise the pilot. A droid at the seat earns none.
+        /// </summary>
+        private static void GiveScanExperience(uint ship, int tier)
+        {
+            var operatorPlayer = SpaceCrew.GetStatSource(ship);
+            if (!GetIsObjectValid(operatorPlayer) || !GetIsPC(operatorPlayer) || GetIsDM(operatorPlayer) || GetIsDMPossessed(operatorPlayer))
+                return;
+
+            var delta = ScanningRules.EspionageXpDelta(tier, GetPlayerSkillRank(operatorPlayer, SkillType.Espionage));
+            var xp = Skill.GetDeltaXP(delta);
+            if (xp > 0)
+                Skill.GiveSkillXP(operatorPlayer, SkillType.Espionage, xp);
         }
 
         /// <summary>

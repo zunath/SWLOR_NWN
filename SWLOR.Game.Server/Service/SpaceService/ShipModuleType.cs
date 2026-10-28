@@ -29,5 +29,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         ProbeLauncher = 24,
         DataAnalyzer = 25,
         CloakingDevice = 26,
+        IonWeb = 27,
+        Interdictor = 28,
+        Jammer = 29,
+        TargetPainter = 30,
+        Afterburner = 31,
     }
 }

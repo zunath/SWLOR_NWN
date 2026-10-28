@@ -93,6 +93,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return (before, Percent(signature, playerId));
         }
 
+        /// <summary>Whether a cycle located a signature for its scanner: its strength crossed into 100% (W11k).</summary>
+        public static bool Located(int before, int after) =>
+            before < ScanningTuning.InfoLocatedPercent && after >= ScanningTuning.InfoLocatedPercent;
+
+        /// <summary>
+        /// The Espionage XP delta for a located signature (W11k): its level (tier x 10, tiers 1-6) against the operator's
+        /// Espionage rank, the shape of the Gathering rule for mining, gas and salvage. <see cref="Skill.GetDeltaXP"/>
+        /// turns it into XP and gives 0 below its table.
+        /// </summary>
+        public static int EspionageXpDelta(int tier, int espionageRank) => Math.Clamp(tier, 1, 6) * 10 - espionageRank;
+
         /// <summary>How much the Scanner tab shows at a strength.</summary>
         public static SignatureInfoLevel InfoLevel(int percent)
         {

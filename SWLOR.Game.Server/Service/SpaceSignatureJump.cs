@@ -98,9 +98,6 @@ namespace SWLOR.Game.Server.Service
                 PlayerPlugin.SetQuickBarSlot(player, firstEmpty, PlayerQuickBarSlot.UseFeat(FeatType.ShipJumpToSignature));
         }
 
-        /// <summary>Whether an Interdictor holds the ship. Interdictors have no mechanic yet, so nothing holds a ship.</summary>
-        public static bool IsShipInterdicted(uint ship) => false;
-
         /// <summary>Whether a pilot's jump drive is spooling.</summary>
         public static bool IsSpoolingSignatureJump(uint player) => _signatureJumps.ContainsKey(player);
 
@@ -111,6 +108,13 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrEmpty(cloakBlock))
             {
                 SendMessageToPC(player, ColorToken.Red(cloakBlock));
+                return false;
+            }
+
+            // An Interdictor's hold keeps the drive from spooling (W11k); a hold that starts mid-spool breaks it off.
+            if (IsShipInterdicted(player))
+            {
+                SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(SignatureJumpRefusal.Interdicted)));
                 return false;
             }
 

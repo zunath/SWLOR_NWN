@@ -246,6 +246,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 new("SHIP"),
                 new("Speed", $"{Math.Round(stats.SpeedMultiplier * 100)}%"),
                 new("Power Routing", PowerRoutingRules.GetName(stats.PowerRouting)),
+                HullTraitsRow(stats.HullTraits),
             };
 
             if (stats.CloakText != null)
@@ -267,6 +268,21 @@ namespace SWLOR.Game.Server.Service.SpaceService
             rows.AddRange((stats.CargoLines ?? new List<(string Name, int Units)>())
                 .Select(line => new ShipHudStatRow(line.Name, line.Units.ToString())));
             return rows;
+        }
+
+        /// <summary>
+        /// The longest Hull Traits value the Stats tab's fixed value column shows whole; a longer list moves into the
+        /// wider label column ("Hull Traits: A, B, C").
+        /// </summary>
+        public const int HullTraitsValueLength = 16;
+
+        /// <summary>The Stats tab's one Hull Traits row (W11k).</summary>
+        public static ShipHudStatRow HullTraitsRow(string traits)
+        {
+            traits = string.IsNullOrWhiteSpace(traits) ? "None" : traits;
+            return traits.Length <= HullTraitsValueLength
+                ? new ShipHudStatRow("Hull Traits", traits)
+                : new ShipHudStatRow($"Hull Traits: {traits}", string.Empty);
         }
 
         private static string FormatPercent(int percent)

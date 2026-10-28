@@ -223,6 +223,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return names.Count == 0 ? "Hull traits: none" : $"Hull traits: {string.Join(", ", names)}";
         }
 
+        /// <summary>The Ship HUD's Hull Traits value: the hull's trait names, or "None" (W11k).</summary>
+        public static string HullTraitNames(IEnumerable<ShipComponentTraitType> traits)
+        {
+            var names = (traits ?? Enumerable.Empty<ShipComponentTraitType>())
+                .Select(Get).Where(x => x != null).Select(x => x.Name).ToList();
+            return names.Count == 0 ? "None" : string.Join(", ", names);
+        }
+
         /// <summary>Ship Management's hull trait tooltip: what each trait does on the hull, one per line.</summary>
         public static string HullTraitsTooltip(IEnumerable<ShipComponentTraitType> traits)
         {

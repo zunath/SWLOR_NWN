@@ -6958,6 +6958,27 @@
     "Call": "SendMessageToPC(player, $\"{Droid.GetDroidName(controller)} is no longer posted aboard a ship and is back with you.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Service/SpaceElectronicWarfare.cs",
+    "Line": 38,
+    "Member": "RefuseWhileInterdicted",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Red(refusal))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceElectronicWarfare.cs",
+    "Line": 106,
+    "Member": "ApplyInterdiction",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(target, ColorToken.Red(SignatureJumpRules.Message(SignatureJumpRefusal.Interdicted)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceElectronicWarfare.cs",
+    "Line": 110,
+    "Member": "ApplyInterdiction",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(target, ColorToken.Red($\"{ShipElectronicWarfareRules.InterdictedMessage} You cannot jump, dock or cloak while it holds.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/SpaceHud.cs",
     "Line": 82,
     "Member": "Toggle",
@@ -7050,6 +7071,13 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 151,
+    "Member": "RejoinRiftRun",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Cyan(\n                $\"You rejoin the Rift Run in chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}, the {RiftRunTuning.Rooms[run.Room].Name}: {left} left.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
     "Line": 234,
     "Member": "PayRiftRun",
     "Delivery": "Retained",
@@ -7117,6 +7145,13 @@
     "Member": "BeginSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(cloakBlock))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 117,
+    "Member": "BeginSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(SignatureJumpRefusal.Interdicted)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",

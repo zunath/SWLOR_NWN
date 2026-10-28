@@ -41,6 +41,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var spaceWaypointTag = GetLocalString(self, "STARPORT_TELEPORT_WAYPOINT");
             var player = Player;
 
+            // An Interdictor's hold keeps a ship from docking (W11k).
+            if (Space.RefuseWhileInterdicted(player))
+            {
+                Close();
+                return;
+            }
+
             // An incursion's blockade holding at this dock takes its docking services offline.
             var blockade = Space.GetIncursionDockRefusal(self);
             if (!string.IsNullOrEmpty(blockade))
@@ -300,6 +307,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     };
 
                     DB.Set(dbProperty);
+
+                    // A hold that started while the menu was open still stops the docking.
+                    if (Space.RefuseWhileInterdicted(player))
+                    {
+                        Close();
+                        return;
+                    }
 
                     Close();
                     Space.WarpPlayerInsideShip(player);

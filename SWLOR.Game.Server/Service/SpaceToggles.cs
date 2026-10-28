@@ -160,6 +160,10 @@ namespace SWLOR.Game.Server.Service
             SaveShipStatus(creature, status);
             RefreshSlotVisuals(creature, status, slotNumber);
 
+            // An Afterburner's speed ends with it.
+            if (IsAfterburnerSlot(status, slotNumber))
+                ApplyShipSpeed(creature, status);
+
             // Switching the Cloaking Device off, by hand or by any auto-off, ends the cloak.
             if (_cloaks.TryGet(creature, out var cloak) && cloak.Slot == slotNumber)
                 EndCloak(creature, null, false);
@@ -204,8 +208,11 @@ namespace SWLOR.Game.Server.Service
             if (status == null || Toggles(status).Count == 0) return;
 
             var slots = Toggles(status).Select(x => x.Slot).ToList();
+            var afterburner = slots.Any(slot => IsAfterburnerSlot(status, slot));
             Toggles(status).Clear();
             SaveShipStatus(creature, status);
+            if (afterburner)
+                ApplyShipSpeed(creature, status);
 
             foreach (var slot in slots)
             {
@@ -393,7 +400,7 @@ namespace SWLOR.Game.Server.Service
                     TargetDead = targetValid && GetIsDead(target),
                     TargetTypeAllowed = !needsTarget || IsToggleTargetAllowed(detail, target, targetStatus),
                     PvpForbidden = needsTarget && targetValid && target != creature &&
-                                   IsOffensiveShipModule(detail.Type) && !CanShipAttack(creature, target),
+                                   ShipToggleRules.TargetsEnemy(detail.Type) && !CanShipAttack(creature, target),
                     CheckRange = needsTarget && targetValid && target != creature,
                     Distance = targetValid ? GetDistanceBetween(creature, target) : 0f,
                     MaxDistance = GetShipModuleMaxDistance(creature, status, target, targetStatus, module),

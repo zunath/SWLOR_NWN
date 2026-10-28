@@ -243,6 +243,10 @@ namespace SWLOR.Game.Server.Service
             if (GetIsDead(player) || _pendingShipLaunches.ContainsKey(player))
                 return false;
 
+            // An Interdictor's hold keeps a ship from docking at a derelict (W11k).
+            if (RefuseWhileInterdicted(player))
+                return false;
+
             TryGetTargetDerelict(player, out var wreck, out var signature);
             var refusal = DerelictRules.GetBoardRefusal(BuildDerelictRequest(player, ship, wreck, signature));
             if (refusal != DerelictRefusal.None)

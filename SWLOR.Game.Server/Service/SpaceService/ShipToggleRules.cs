@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 case ShipModuleType.ShieldHardener:
                 case ShipModuleType.ProbeLauncher:
                 case ShipModuleType.CloakingDevice:
+                case ShipModuleType.Afterburner:
                     return ShipToggleTargetMode.SelfCentered;
                 default:
                     return ShipToggleTargetMode.Follow;
@@ -49,6 +50,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
                    type == ShipModuleType.BeamLaser ||
                    type == ShipModuleType.CombatLaser;
         }
+
+        /// <summary>
+        /// Whether a module of this type works against an enemy ship it targets: a weapon, or an Ion Web, Interdictor,
+        /// Jammer or Target Painter. PvP rules gate both, and droid crew run both at the pilot's target.
+        /// </summary>
+        public static bool TargetsEnemy(ShipModuleType type) =>
+            IsOffensive(type) || ShipElectronicWarfareRules.IsHostile(type);
 
         /// <summary>Whether a module of this type restores shield (an NPC ship runs it while shield is missing).</summary>
         public static bool RepairsShield(ShipModuleType type)

@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import cloak  # noqa: E402
 import components as comp  # noqa: E402
 import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
@@ -58,6 +59,8 @@ ART = {
     "probe_launcher": (523, 238, "iit_smprobe"),
     # The space slicing update (W12b), in the ESS9 bank.
     "data_analyzer": (523, 240, "iit_smdatanlz"),
+    # The cloaking update, in the ESS9 bank: the item reuses an existing inventory model, only the action icon is new.
+    "cloaking_device": (523, 36, "iit_smcloak"),
 }
 
 W = m.WEAPONS
@@ -178,6 +181,8 @@ FAMILIES = [
                   f"within {s['SweepRange']} m. Espionage strengthens the scan."),
     ("DataAnalyzer", "Data Analyzer", "Data Analyzer", "sm_dataan", "Mid", "Espionage", "OnePress", slicing.ANALYZER_RECAST_SECONDS,
      slicing.ANALYZER_CAPACITOR, slicing.ANALYZER_RANGE, "data_analyzer", False, p(), lambda r, s: slicing.ANALYZER_DESCRIPTION),
+    ("CloakingDevice", "Cloaking Device", "Cloak", "sm_cloak", "Mid", "Piloting", "Toggle", cloak.CYCLE_SECONDS, cloak.CAPACITOR, 0,
+     "cloaking_device", False, p(**cloak.STATS), lambda r, s: cloak.describe(r)),
 ]
 
 MATERIALS = {1: ("ref_tilarium", "elec_ruined"), 2: ("ref_currian", "elec_flawed"), 3: ("ref_idailia", "elec_good"),
@@ -320,6 +325,9 @@ COMPONENT_LATE_FAMILIES = {"ProbeLauncher"}
 # (the ammo variants), so no earlier value moves.
 REWARD_LATE_FAMILIES = {"DataAnalyzer"}
 
+# Families added after the Data Analyzer (the cloaking update). Their recipe IDs follow it, so no earlier value moves.
+CLOAK_LATE_FAMILIES = {"CloakingDevice"}
+
 # Families with one item and no rank requirement: any hull fits it (the Data Analyzer, plan section 24).
 SINGLE_STEP_FAMILIES = {"DataAnalyzer"}
 
@@ -357,11 +365,12 @@ def named_steps(recipe_start):
             Components=named_bill(key, row), Cost=rw.NAMED_COST, **s))
     return out
 
-def module_steps(late_recipe_start=None, component_late_start=None, reward_late_start=None):
+def module_steps(late_recipe_start=None, component_late_start=None, reward_late_start=None, cloak_late_start=None):
     steps, recipe = [], RECIPE_TYPE_START
     late_recipe = late_recipe_start
     post_recipe = component_late_start
     reward_recipe = reward_late_start
+    cloak_recipe = cloak_late_start
     for (key, name, short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) in FAMILIES:
         single = key in SINGLE_STEP_FAMILIES
         for r in ([0] if single else CAPITAL_STEPS if capital else m.STEPS):
@@ -371,17 +380,20 @@ def module_steps(late_recipe_start=None, component_late_start=None, reward_late_
             late = key in LATE_FAMILIES
             post = key in COMPONENT_LATE_FAMILIES
             after_rewards = key in REWARD_LATE_FAMILIES
+            after_cloak = key in CLOAK_LATE_FAMILIES
             steps.append(dict(
                 Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=name if single else f"{name} Mk {mk}",
                 ShortName=(short if single else f"{short} {mk}")[:14],
                 Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
                 Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s),
-                RecipeType=reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
+                RecipeType=cloak_recipe if after_cloak else reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
                 Components=module_bill(key, r, row, capital),
                 Cost=100 + 30 * r + (2000 if capital else 0), **s))
-            if after_rewards:
+            if after_cloak:
+                cloak_recipe = None if cloak_recipe is None else cloak_recipe + 1
+            elif after_rewards:
                 reward_recipe = None if reward_recipe is None else reward_recipe + 1
             elif post:
                 post_recipe = None if post_recipe is None else post_recipe + 1
@@ -592,10 +604,11 @@ def full_catalog():
     """
     Every module step, ship deed and component recipe with its RecipeType: the earlier families, then the hulls, then
     LATE_FAMILIES, then the component recipes (W9a), then COMPONENT_LATE_FAMILIES, so no earlier value moves; then
-    rewards.py's block (W9b): the named rank-50 modules (appended to the steps) and the rare component recipes.
+    rewards.py's block (W9b): the named rank-50 modules (appended to the steps) and the rare component recipes; then
+    REWARD_LATE_FAMILIES and CLOAK_LATE_FAMILIES.
     """
     all_steps = module_steps()
-    early = [s for s in all_steps if s["Family"] not in LATE_FAMILIES | COMPONENT_LATE_FAMILIES | REWARD_LATE_FAMILIES]
+    early = [s for s in all_steps if s["Family"] not in LATE_FAMILIES | COMPONENT_LATE_FAMILIES | REWARD_LATE_FAMILIES | CLOAK_LATE_FAMILIES]
     late = [s for s in all_steps if s["Family"] in LATE_FAMILIES]
     hulls = ships(RECIPE_TYPE_START + len(early))
     recipes = component_recipes(RECIPE_TYPE_START + len(early) + len(hulls) + len(late))
@@ -605,7 +618,8 @@ def full_catalog():
     named = named_steps(rw.RECIPE_START)
     rare = rare_recipes(rw.RECIPE_START + len(named))
     reward_end = max(x["RecipeType"] for x in named + rare + ammo_recipes()) + 1
-    steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1, reward_end)
+    cloak_start = reward_end + len([s for s in all_steps if s["Family"] in REWARD_LATE_FAMILIES])
+    steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1, reward_end, cloak_start)
     return steps + named, hulls, recipes + rare
 
 

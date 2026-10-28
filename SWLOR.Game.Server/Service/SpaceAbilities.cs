@@ -31,7 +31,8 @@ namespace SWLOR.Game.Server.Service
         public static uint GetSelectedTarget(uint ship)
         {
             var target = GetLocalObject(ship, "SPACE_TARGET");
-            return GetIsObjectValid(target) && !GetIsDead(target) && GetArea(target) == GetArea(ship)
+            return GetIsObjectValid(target) && !GetIsDead(target) && GetArea(target) == GetArea(ship) &&
+                   !Space.IsShipHiddenFrom(ship, target)
                 ? target
                 : OBJECT_INVALID;
         }
@@ -149,6 +150,10 @@ namespace SWLOR.Game.Server.Service
             var status = Space.GetShipStatus(ship);
             if (status == null)
                 return "You must be piloting a ship.";
+
+            var cloakBlock = Space.GetCloakWeaponBlock(ship);
+            if (!string.IsNullOrEmpty(cloakBlock))
+                return cloakBlock;
 
             if (!GetIsObjectValid(target) || target == ship)
                 return "A target is required.";

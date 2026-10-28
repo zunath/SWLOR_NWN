@@ -8,6 +8,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The ship is still in space and alive.</summary>
         public bool ShipInSpace { get; set; } = true;
 
+        /// <summary>The ship is cloaking or cloaked and the module is not the Cloaking Device itself.</summary>
+        public bool ShipCloaked { get; set; }
+
         /// <summary>False for modules that work around the ship and ignore their target.</summary>
         public bool NeedsTarget { get; set; } = true;
 

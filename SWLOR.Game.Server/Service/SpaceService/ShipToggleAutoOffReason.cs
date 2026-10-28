@@ -13,5 +13,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         ValidationFailed = 5,
         NoCapacitor = 6,
         PvpForbidden = 7,
+        Cloaked = 8,
     }
 }

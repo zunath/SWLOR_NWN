@@ -127,7 +127,7 @@ public class ShipComponentTests
     {
         var recipes = GenericRecipes.ToList();
         recipes.Should().HaveCount(130, "9 families x 5 tiers, plain plus 17 crafted variants per tier");
-        var first = RevampModuleCatalog.Steps.Where(x => x.Family is not (ShipModuleFamily.ProbeLauncher or ShipModuleFamily.DataAnalyzer) && !x.Named).Select(x => (int)x.RecipeType)
+        var first = RevampModuleCatalog.Steps.Where(x => x.Family is not (ShipModuleFamily.ProbeLauncher or ShipModuleFamily.DataAnalyzer or ShipModuleFamily.CloakingDevice) && !x.Named).Select(x => (int)x.RecipeType)
             .Concat(RevampShipCatalog.Hulls.Select(x => (int)x.RecipeType)).Max() + 1;
         first.Should().BeGreaterThan(7347);
         recipes.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(first, 130), "numbered after every module and hull");
@@ -275,6 +275,7 @@ public class ShipComponentTests
         [ShipModuleFamily.EWarArray] = ShipComponentFamily.SensorSuite,
         [ShipModuleFamily.ProbeLauncher] = ShipComponentFamily.SensorSuite,
         [ShipModuleFamily.DataAnalyzer] = ShipComponentFamily.SensorSuite,
+        [ShipModuleFamily.CloakingDevice] = ShipComponentFamily.SensorSuite,
         [ShipModuleFamily.MiningLaser] = ShipComponentFamily.ExtractionHead,
         [ShipModuleFamily.StripMiner] = ShipComponentFamily.ExtractionHead,
         [ShipModuleFamily.Salvager] = ShipComponentFamily.ExtractionHead,

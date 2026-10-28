@@ -98,15 +98,19 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Whether an Interdictor holds the ship. Interdictors have no mechanic yet, so nothing holds a ship.</summary>
         public static bool IsShipInterdicted(uint ship) => false;
 
-        /// <summary>Whether the ship is cloaked. The Cloaking Device (plan section 32) does not exist yet.</summary>
-        public static bool IsShipCloaked(uint ship) => false;
-
         /// <summary>Whether a pilot's jump drive is spooling.</summary>
         public static bool IsSpoolingSignatureJump(uint player) => _signatureJumps.ContainsKey(player);
 
         /// <summary>Starts the spool of a jump to a signature, or tells the pilot why it cannot start.</summary>
         public static bool BeginSignatureJump(uint player, string signatureId)
         {
+            var cloakBlock = GetCloakAbilityBlock(player);
+            if (!string.IsNullOrEmpty(cloakBlock))
+            {
+                SendMessageToPC(player, ColorToken.Red(cloakBlock));
+                return false;
+            }
+
             var signature = FindSignature(signatureId);
             var refusal = SignatureJumpRules.GetStartRefusal(
                 IsPlayerInSpaceMode(player),
@@ -213,6 +217,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            var cloakBlock = ShipCloakRules.GetModuleBlock(GetCloakPhase(player), 0, false, false);
+            if (!string.IsNullOrEmpty(cloakBlock))
+            {
+                SendMessageToPC(player, ColorToken.Red(cloakBlock));
+                return false;
+            }
+
             var now = DateTime.UtcNow;
             var last = _lastSensorSweep.TryGetValue(player, out var at) ? at : (DateTime?)null;
             if (!SensorSweepRules.IsReady(last, now))
@@ -246,6 +257,10 @@ namespace SWLOR.Game.Server.Service
                 var cloaked = IsShipCloaked(ship);
                 if (!SensorSweepRules.Includes(distance, range, cloaked))
                     continue;
+
+                // The sweep sees through the cloak: the sweeper's party sees the ship for a few seconds.
+                if (cloaked)
+                    RevealCloakedShip(ship, player);
 
                 contacts.Add(new SensorSweepContact
                 {

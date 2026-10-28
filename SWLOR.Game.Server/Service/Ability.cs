@@ -802,6 +802,14 @@ namespace SWLOR.Game.Server.Service
                 return Deny("You cannot act while incapacitated.");
             }
 
+            // A cloaking or cloaked ship uses no abilities.
+            if (inSpace)
+            {
+                var cloakBlock = Space.GetCloakAbilityBlock(activator);
+                if (!string.IsNullOrEmpty(cloakBlock))
+                    return Deny(cloakBlock);
+            }
+
             // Must have appropriate levels in the perk to use the ability.
             if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
             {

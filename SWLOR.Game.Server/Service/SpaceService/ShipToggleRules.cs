@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 case ShipModuleType.CapitalEwar:
                 case ShipModuleType.ShieldHardener:
                 case ShipModuleType.ProbeLauncher:
+                case ShipModuleType.CloakingDevice:
                     return ShipToggleTargetMode.SelfCentered;
                 default:
                     return ShipToggleTargetMode.Follow;
@@ -140,6 +141,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (!check.ShipInSpace)
                 return ShipToggleAutoOffReason.ShipLeftSpace;
 
+            if (check.ShipCloaked)
+                return ShipToggleAutoOffReason.Cloaked;
+
             if (check.NeedsTarget)
             {
                 if (!check.TargetValid || check.TargetDead)
@@ -183,6 +187,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     return $"{moduleName} switched off: {validationError}";
                 case ShipToggleAutoOffReason.NoCapacitor:
                     return $"{moduleName} switched off: not enough capacitor.";
+                case ShipToggleAutoOffReason.Cloaked:
+                    return $"{moduleName} switched off: the ship is cloaked.";
                 default:
                     return string.Empty;
             }

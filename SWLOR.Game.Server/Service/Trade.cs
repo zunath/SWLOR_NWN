@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            var closed = Space.GetIncursionExchangeRefusal(exchangeType);
+            var closed = Space.GetIncursionExchangeRefusal(dock);
             if (!string.IsNullOrEmpty(closed))
             {
                 SendMessageToPC(player, ColorToken.Red(closed));

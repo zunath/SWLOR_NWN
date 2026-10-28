@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ShipDefinition;
 using SWLOR.Game.Server.Feature.ShipRewardDefinition;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -76,9 +77,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>A new incursion of a region: every area's progress at zero and the blockaded docks found in it.</summary>
-        public static ActiveIncursion Create(IncursionRegion region, IncursionInvader invader, DateTime now, IReadOnlyDictionary<string, int> docks)
+        public static ActiveIncursion Create(IncursionRegion region, IncursionInvader invader, DateTime now, IReadOnlyDictionary<string, int> docks,
+            IReadOnlyDictionary<string, string> stationDocks = null)
         {
-            return new ActiveIncursion
+            var incursion = new ActiveIncursion
             {
                 Center = region.Center,
                 Invader = invader,
@@ -87,6 +89,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Areas = region.Areas.ToDictionary(x => x.Resref, _ => new IncursionAreaProgress()),
                 Blockades = docks.ToDictionary(x => x.Key, x => x.Value),
             };
+
+            // Player station docks (W11o): blockaded like a planet dock, but they serve no planet, so breaking the planet
+            // dock's blockade reopens the planet's exchange whatever the stations' blockades do.
+            foreach (var (key, stationId) in stationDocks ?? new Dictionary<string, string>())
+            {
+                incursion.Blockades[key] = (int)PlanetType.Invalid;
+                incursion.StationBlockades[key] = stationId;
+            }
+
+            return incursion;
         }
 
         // Spawns
@@ -128,6 +140,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool IsBlockadeHolding(ActiveIncursion incursion, string dockKey) =>
             incursion != null && incursion.Blockades.ContainsKey(dockKey) && !incursion.BrokenBlockades.Contains(dockKey);
 
+        /// <summary>A player station's dock key: its anchor's area and tag, the docking point's teleport waypoint.</summary>
+        public static string StationDockKey(StationAnchor anchor) => anchor == null ? string.Empty : DockKey(anchor.AreaResref, anchor.Tag);
+
+        /// <summary>Whether a blockade holds at a player station's dock (W11o): its docking and Trade Exchange are closed.</summary>
+        public static bool IsStationBlockaded(ActiveIncursion incursion, string stationId) =>
+            incursion != null && !string.IsNullOrEmpty(stationId) &&
+            incursion.StationBlockades.Any(x => x.Value == stationId && IsBlockadeHolding(incursion, x.Key));
+
         /// <summary>An exchange is closed while a blockade holds at a dock that serves it.</summary>
         public static bool IsExchangeClosed(ActiveIncursion incursion, TradeExchangeType exchange)
         {
@@ -135,6 +155,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 return false;
 
             return incursion.Blockades.Any(x => !incursion.BrokenBlockades.Contains(x.Key) &&
+                                                x.Value != (int)PlanetType.Invalid &&
                                                 TradeLookup.GetExchangeForPlanet((PlanetType)x.Value) == exchange);
         }
 

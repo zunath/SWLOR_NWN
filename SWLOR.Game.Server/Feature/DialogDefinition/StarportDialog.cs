@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return;
                 }
 
-                var closed = Space.GetIncursionExchangeRefusal(dock.Exchange);
+                var closed = Space.GetIncursionExchangeRefusal(dock);
                 if (!string.IsNullOrEmpty(closed))
                 {
                     SendMessageToPC(player, ColorToken.Red(closed));

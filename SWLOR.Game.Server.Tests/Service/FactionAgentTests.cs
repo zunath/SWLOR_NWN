@@ -489,10 +489,18 @@ public class FactionAgentTests
 
             items.Should().Contain(x => x.Category == FactionTokenStoreCategory.RiftKey && x.Resref == "rift_key_t55");
             items.Where(x => x.Category == FactionTokenStoreCategory.Ammo).Should().HaveCount(3);
-            var component = items.Single(x => x.Category == FactionTokenStoreCategory.ManufacturerComponent);
-            var source = RevampComponentCatalog.ManufacturerComponents.Single(x => x.Manufacturer == maker);
-            component.Resref.Should().Be(source.Resref);
-            component.Trait.Should().Be(source.Trait);
+            // The faction maker's component first, then the black markets' (W11o: Chiss at the Smugglers and the Hutts).
+            var componentMakers = new[] { maker }.Concat(FactionAgentTuning.BlackMarketMakers.TryGetValue(faction, out var extra)
+                ? extra : Array.Empty<ShipManufacturer>()).ToList();
+            var components = items.Where(x => x.Category == FactionTokenStoreCategory.ManufacturerComponent).ToList();
+            components.Should().HaveCount(componentMakers.Count, faction.ToString());
+            for (var i = 0; i < componentMakers.Count; i++)
+            {
+                var source = RevampComponentCatalog.ManufacturerComponents.Single(x => x.Manufacturer == componentMakers[i]);
+                components[i].Resref.Should().Be(source.Resref);
+                components[i].Trait.Should().Be(source.Trait);
+                components[i].Name.Should().Be(source.Name);
+            }
             items.Where(x => x.Category == FactionTokenStoreCategory.DesignSchematic).Should().NotBeEmpty(faction.ToString())
                 .And.OnlyContain(x => RevampRewardCatalog.HullDesigns.Any(d => d.Resref == x.Resref && makers[d.ShipTag] == maker && !d.WildSpaceOnly));
             items.Where(x => x.Category == FactionTokenStoreCategory.ShipSchematic)
@@ -515,6 +523,24 @@ public class FactionAgentTests
 
         foreach (var (category, price) in (JObject)reference["StorePrices"]!)
             FactionAgentTuning.StorePrices[Enum.Parse<FactionTokenStoreCategory>(category)].Should().Be(price!.Value<int>());
+    }
+
+    [Test]
+    public void BlackMarketStores_SellTheChissSensorArray()
+    {
+        // Appendix D: the Chiss have no faction; their component comes from the black markets at Smuggler's Moon and
+        // Tatooine (the Smugglers' and the Hutt Cartel's agents). The Rift Raider part stays Wild Space only.
+        FactionAgentTuning.BlackMarketMakers.Keys.Should().BeEquivalentTo(new[] { FactionType.Smuggler, FactionType.HuttCartel });
+        var chiss = RevampComponentCatalog.ManufacturerComponents.Single(x => x.Manufacturer == ShipManufacturer.Chiss);
+        foreach (var faction in AgentFactions)
+        {
+            var sells = FactionAgentRules.GetStoreItems(faction)
+                .Any(x => x.Category == FactionTokenStoreCategory.ManufacturerComponent && x.Trait == chiss.Trait);
+            sells.Should().Be(faction is FactionType.Smuggler or FactionType.HuttCartel, faction.ToString());
+        }
+
+        AgentFactions.SelectMany(FactionAgentRules.GetStoreItems)
+            .Should().NotContain(x => x.Trait == RevampComponentCatalog.ManufacturerComponents.Single(m => m.Manufacturer == ShipManufacturer.RiftRaider).Trait);
     }
 
     [Test]

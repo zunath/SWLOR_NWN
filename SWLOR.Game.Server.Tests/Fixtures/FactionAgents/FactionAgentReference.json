@@ -1340,6 +1340,11 @@
         "Quantity": 1
       },
       {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_sensor_5",
+        "Quantity": 1
+      },
+      {
         "Category": "RiftKey",
         "Resref": "rift_key_t1",
         "Quantity": 1
@@ -1404,6 +1409,11 @@
       {
         "Category": "ManufacturerComponent",
         "Resref": "sc_reactor_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_sensor_5",
         "Quantity": 1
       },
       {

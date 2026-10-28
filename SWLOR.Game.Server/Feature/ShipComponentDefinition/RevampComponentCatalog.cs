@@ -200,6 +200,17 @@ namespace SWLOR.Game.Server.Feature.ShipComponentDefinition
             new ShipComponentRecipe { RecipeType = RecipeType.ShipComponentPrototypeCore, Family = ShipComponentFamily.PrototypeCore, Tier = 5, Resref = "sc_protocore", Skill = SkillType.Engineering, RecipeLevel = 45, Trait = ShipComponentTraitType.None, Name = "Prototype Core", Components = new[] { ("proto_tech", 1), ("sc_sensor_5", 1) } },
         };
 
+        /// <summary>
+        /// The capital parts (W11o): the top band above tier 5 that Capital hulls take for their Hull Frames, Ship
+        /// Reactor and Thruster Assembly. Tier 6 marks the band; the parts keep their components' traits.
+        /// </summary>
+        public static readonly IReadOnlyList<ShipComponentRecipe> CapitalPartRecipes = new List<ShipComponentRecipe>
+        {
+            new ShipComponentRecipe { RecipeType = RecipeType.ShipComponentCapitalStructure, Family = ShipComponentFamily.HullFrame, Tier = 6, Resref = "capc_struc", Skill = SkillType.Smithery, RecipeLevel = 45, Trait = ShipComponentTraitType.None, Name = "Capital Class Structural Components", Components = new[] { ("sc_hframe_5", 2), ("ref_arda", 1) } },
+            new ShipComponentRecipe { RecipeType = RecipeType.ShipComponentCapitalReactor, Family = ShipComponentFamily.ShipReactor, Tier = 6, Resref = "capc_react", Skill = SkillType.Engineering, RecipeLevel = 45, Trait = ShipComponentTraitType.None, Name = "Capital Class Reactor", Components = new[] { ("sc_reactor_5", 1), ("ref_arda", 1) } },
+            new ShipComponentRecipe { RecipeType = RecipeType.ShipComponentCapitalThrusters, Family = ShipComponentFamily.ThrusterAssembly, Tier = 6, Resref = "capc_thrust", Skill = SkillType.Smithery, RecipeLevel = 45, Trait = ShipComponentTraitType.None, Name = "Capital Class Thrusters", Components = new[] { ("sc_thruster_5", 1), ("ref_arda", 1) } },
+        };
+
         public static readonly IReadOnlyList<ShipComponentTrait> Traits = new List<ShipComponentTrait>
         {
             new ShipComponentTrait { Type = ShipComponentTraitType.Reinforced, Name = "Reinforced", Kind = ShipTraitKind.Crafted, Families = new[] { ShipComponentFamily.HullFrame }, Effects = new[] { new ShipTraitEffect(ShipTraitStat.Hull, 6), new ShipTraitEffect(ShipTraitStat.Resistance, 6), new ShipTraitEffect(ShipTraitStat.Speed, -2) }, Description = "+6% hull, +6% resistances, -2% speed" },

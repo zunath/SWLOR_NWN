@@ -4148,6 +4148,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipAfterburner35 = 7790,
         ShipAfterburner40 = 7791,
         ShipAfterburner45 = 7792,
+        ShipComponentCapitalStructure = 7793,
+        ShipComponentCapitalReactor = 7794,
+        ShipComponentCapitalThrusters = 7795,
         // END space revamp catalog
 
         // Industrial droids (tools/SpaceRevampBalance/droids.py): parts 7700-7724, protocol discs 7725-7732.

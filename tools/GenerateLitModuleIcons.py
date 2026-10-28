@@ -2,7 +2,9 @@
 
 A lit icon is the same 32x32 art with an "active" border: the semantic frame is pushed toward white, a
 semantic-colored glow bleeds into the art along the inside of the frame, and the art is lifted slightly.
-The semantic frame hue is kept, so the module still reads as its role. The output name swaps the "iit_sm"
+The semantic frame hue is kept, so the module still reads as its role. A pale frame (Utility white-steel) cannot
+get brighter, so its outer rings stay white-steel and the inner rings and glow take a saturated accent of the same
+hue, matching the colored families' strength. The output name swaps the "iit_sm"
 prefix for "iit_sl" (see ShipToggleRules.LitTextureName). Output is opaque, 32x32, bottom-left origin TGA.
 
 Usage (from the repository root):
@@ -13,6 +15,7 @@ Then generate each lit icon's six recharge frames:
     powershell -File tools/GenerateCooldownIcons.ps1 -IconResRefs iit_slcmblaser,iit_slshldrepair -Force
 """
 import argparse
+import colorsys
 import sys
 from pathlib import Path
 
@@ -23,18 +26,31 @@ ICON_DIR = Path(__file__).resolve().parent.parent / "SWLOR_Haks" / "sw_ability"
 NORMAL_PREFIX = "iit_sm"
 LIT_PREFIX = "iit_sl"
 
-# Frame rings, counted in pixels from the outer edge, as (white mix, semantic mix) of the target color:
+# Frame rings, counted in pixels from the outer edge, as (white mix, uses accent) of the target color:
 # a white-hot rim, the solid semantic ring, a filled-in ring where the normal frame has a dark gap, and a pale inner rail.
-RING_TARGETS = ((0.75, 1.0), (0.0, 1.0), (0.0, 1.0), (0.45, 1.0))
-# Glow strength on the first rows inside the frame (additive semantic color).
+# For a colored frame the accent is the semantic color itself, so every ring uses it.
+RING_TARGETS = ((0.75, False), (0.0, False), (0.0, True), (0.45, True))
+# Glow strength on the first rows inside the frame (additive accent color).
 GLOW = (0.50, 0.26, 0.10)
 FRAME_RINGS = len(RING_TARGETS)
+# A semantic color below this HSV saturation is a pale frame and gets a saturated accent of its own hue, at the
+# saturation and value of the colored categories (Utility #DDE6F0 becomes about #59A5FF).
+PALE_SATURATION = 0.2
+ACCENT_SATURATION = 0.65
 
 
 def lit_name(normal):
     if not normal.lower().startswith(NORMAL_PREFIX):
         raise ValueError(f"{normal} does not start with {NORMAL_PREFIX}")
     return LIT_PREFIX + normal[len(NORMAL_PREFIX):]
+
+
+def accent_color(semantic):
+    red, green, blue = (float(channel) / 255.0 for channel in semantic)
+    hue, saturation, _ = colorsys.rgb_to_hsv(red, green, blue)
+    if saturation >= PALE_SATURATION:
+        return semantic
+    return np.array(colorsys.hsv_to_rgb(hue, ACCENT_SATURATION, 1.0), dtype=np.float32) * 255.0
 
 
 def make_lit(normal_path):
@@ -45,6 +61,7 @@ def make_lit(normal_path):
     size = pixels.shape[0]
     # The semantic color sits on the frame's second ring, mid-edge.
     semantic = pixels[1, size // 2].copy()
+    accent = accent_color(semantic)
 
     result = pixels.copy()
     ys, xs = np.mgrid[0:size, 0:size]
@@ -57,13 +74,14 @@ def make_lit(normal_path):
     # Glow bleeding inward from the frame.
     for step, strength in enumerate(GLOW):
         mask = ring == FRAME_RINGS + step
-        result[mask] = np.clip(result[mask] + semantic * strength, 0, 255)
+        result[mask] = np.clip(result[mask] + accent * strength, 0, 255)
 
     # Frame: replace the rings with their lit colors, leaving the near-black rounded-corner pixels dark.
     white = np.array([255.0, 255.0, 255.0], dtype=np.float32)
-    for index, (whiten, _) in enumerate(RING_TARGETS):
+    for index, (whiten, uses_accent) in enumerate(RING_TARGETS):
         mask = ring == index
-        target = semantic + (white - semantic) * whiten
+        base = accent if uses_accent else semantic
+        target = base + (white - base) * whiten
         weight = np.clip((pixels[mask].max(axis=1) - 30.0) / 60.0, 0.0, 1.0)[:, None]
         # Dark gap pixels of the normal frame (ring 2) count as frame too.
         if index == 2:

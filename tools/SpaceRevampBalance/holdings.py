@@ -39,7 +39,9 @@ REFERENCE_RATE = {1: 4100, 2: 6300, 3: 8500, 4: 7600, 5: 9200, 6: 22200}
 GROSS_MINUTES = 12
 UPKEEP_SHARE = 0.15             # of the day's output value at base price, droid included, charged every day
 LEVEL_OUTPUT = {1: 1.0, 2: 1.25, 3: 1.45}
-PLANT_SHARE = 0.5               # the Processing Plant refines up to this share of each day's output
+PLANT_SHARE = 0.35              # the Processing Plant refines up to this share of each day's output. W11e: was 0.5, which
+                                # put three holdings at their best at 91 minutes a day on average and the best three types
+                                # at 96, above the 90-minute (1.5 hour) passive cap; now 86 and 90 (81 after events)
 MAX_LEVEL = 3
 
 # ---------------------------------------------------------------------------------------------------------------

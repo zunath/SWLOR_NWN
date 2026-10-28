@@ -13,12 +13,24 @@ METAL = {1: "aluminum", 2: "steel", 3: "obsidian", 4: "crystal", 5: "diamond"}
 MINERAL = {1: "quadrenium", 2: "vintrium", 3: "ionite", 4: "katrium", 5: "zinsiam"}
 GEM = {1: "jade", 2: "agate", 3: "citrine", 4: "ruby", 5: "emerald"}
 HERB = {1: "herb_v", 2: "herb_m", 3: "herb_c", 4: "herb_x", 5: "herb_t"}
+# The ground mining ladder's refined ores, at the same item value as the tier's space ore (Veldite ... Jasioclase).
+GROUND_REFINED = {1: "ref_veldite", 2: "ref_scordspar", 3: "ref_plagionite", 4: "ref_keromber", 5: "ref_jasioclase"}
 DURELIUM = "ore_durelium"
 TIBANNA = "gas_tibanna"
 
+# Balance pass (W11e): a gem or metal signature made a hull cost 1.9-2.7x its pre-component material value (a tier 1
+# gem is 350 credits beside 20 for refined ore), so in the tiers a hull recipe takes these components the signature is
+# the tier's ground refined ore instead: Hull Frames from tier 3 (Large and Capital hulls), Ordnance Assemblies in tiers
+# 1-2 (Bombers), Sensor Suites in tiers 1-2 (Interceptors, Explorers) and Extraction Heads in tiers 3-4 (Mining Barge
+# Advanced, Industrials). Every hull now costs at most 1.27x its old value; the other tiers keep their gem or metal.
 
-def _durelium_or_metal(t):
-    return DURELIUM if t <= 2 else METAL[t]
+
+def _durelium_or_ore(t):
+    return DURELIUM if t <= 2 else GROUND_REFINED[t]
+
+
+def _in_tiers(tiers, swapped, other):
+    return lambda t: swapped[t] if t in tiers else other[t]
 
 
 def _tibanna_or(other):
@@ -29,7 +41,7 @@ def _tibanna_or(other):
 # Each component costs two material units (one base, one signature), so it stands in for two units of the
 # module or hull bill it joins and the total material count stays where it was.
 FAMILIES = [
-    ("hframe", "HullFrame", "Hull Frame", "Smithery", 229, REFINED.get, _durelium_or_metal,
+    ("hframe", "HullFrame", "Hull Frame", "Smithery", 229, REFINED.get, _durelium_or_ore,
      "The ribbed metal skeleton of a hull or a plating module. Durelium in the lower tiers."),
     ("reactor", "ShipReactor", "Ship Reactor", "Engineering", 230, ELECTRONICS.get, _tibanna_or(REFINED),
      "A compact starship reactor core that powers a hull and feeds capacitor modules. Tibanna Gas in tiers 3 and 4."),
@@ -37,13 +49,13 @@ FAMILIES = [
      "An engine nozzle with its mount and fuel lines, for hulls and thruster modules."),
     ("emitter", "EnergyEmitter", "Energy Emitter", "Engineering", 232, ELECTRONICS.get, _tibanna_or(MINERAL),
      "The focusing assembly of an energy weapon or damage amplifier. Tibanna Gas in tiers 3 and 4."),
-    ("ordnance", "OrdnanceAssembly", "Ordnance Assembly", "Smithery", 233, REFINED.get, METAL.get,
+    ("ordnance", "OrdnanceAssembly", "Ordnance Assembly", "Smithery", 233, REFINED.get, _in_tiers((1, 2), GROUND_REFINED, METAL),
      "A launcher breech and feed for missiles, torpedoes and explosive amplifiers."),
     ("shieldprj", "ShieldProjector", "Shield Projector", "Engineering", 234, ELECTRONICS.get, MINERAL.get,
      "A shield emitter dish for shield boosters, repairers and hardeners."),
-    ("sensor", "SensorSuite", "Sensor Suite", "Engineering", 235, ELECTRONICS.get, GEM.get,
+    ("sensor", "SensorSuite", "Sensor Suite", "Engineering", 235, ELECTRONICS.get, _in_tiers((1, 2), GROUND_REFINED, GEM),
      "A sensor pod for targeting computers and electronic warfare."),
-    ("extract", "ExtractionHead", "Extraction Head", "Engineering", 236, ELECTRONICS.get, METAL.get,
+    ("extract", "ExtractionHead", "Extraction Head", "Engineering", 236, ELECTRONICS.get, _in_tiers((3, 4), GROUND_REFINED, METAL),
      "A cutting and focusing head for mining lasers, salvagers and gas harvesters."),
     ("lifesup", "LifeSupportSystem", "Life Support System", "Agriculture", 237, FIBERPLAST.get, HERB.get,
      "A hydroponic air and water system for freighters, cruisers and command ships."),

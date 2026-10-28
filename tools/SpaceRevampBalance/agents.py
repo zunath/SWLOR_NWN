@@ -16,7 +16,7 @@ Sources:
   (SpaceSpawnDefinition: Smuggler's Moon flies tier 1, Mid Rim 1 tier 5, Mid Rim 2 tier 6), with trade.py's lane graph.
 - Space combat credits per hour: scanning.combat_rate (trade.py's baseline with the space lockboxes normal kills drop).
 - Kill, site, slicing and raider values: scanning.py and slicing.py, valued the same way they are there.
-- Ore: the asteroid tables' tier ores (HarvestingLootTableDefinition), mined at stations.MINER_ORE_PER_HOUR and given
+- Ore: the asteroid tables' tier ores (HarvestingLootTableDefinition), mined at mining.open_orbit_ore_per_hour() and given
   up at the 40% store markdown.
 - Store prices: rewards.DESIGN_SCHEMATIC_COST and SHIP_SCHEMATIC_COST, the item blueprints' Cost.
 """
@@ -29,8 +29,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rewards as rw  # noqa: E402
 import scanning  # noqa: E402
+import mining  # noqa: E402
 import slicing  # noqa: E402
-import stations  # noqa: E402
 import trade  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
@@ -140,7 +140,9 @@ KILL_COUNT = {"Invalid": 10, "Fighter": 8, "Interceptor": 6, "Gunship": 3}      
 KILL_ROLES = list(KILL_COUNT)
 ORE = {1: "ore_tilarium", 2: "ore_currian", 3: "ore_idailia", 4: "ore_barinium", 5: "ore_gostian", 6: "ore_gostian"}
 ORE_QUANTITY = {1: 60, 2: 60, 3: 60, 4: 60, 5: 60, 6: 60}
-ORE_PER_MINUTE = stations.MINER_ORE_PER_HOUR / 60
+# Ore a minute mining the quota's tier rocks (mining.py; W11e, was an assumed 360 ore an hour at every tier). Tier 6
+# hands in Gostian, a tier 5 rock.
+ORE_PER_MINUTE = {t: mining.open_orbit_ore_per_hour(min(5, t)) / 60 for t in range(1, 7)}
 COURIER_VOLUME = {1: 10, 2: 10, 3: 20, 4: 20, 5: 40, 6: 40}
 COURIER_STOP_MINUTES = trade.STOP_MINUTES
 CONVOY_FLIGHT_MINUTES = 4.0   # the hauler's flight to its starlane; assumed
@@ -224,7 +226,7 @@ def mission_minutes(kind, tier, hops=0, role="Invalid", site="CombatSite"):
     if kind == "SealedCourier":
         return BASE_MINUTES + COURIER_STOP_MINUTES + HOP_MINUTES * max(1, hops)
     if kind == "MiningQuota":
-        return travel_minutes(0) + ORE_QUANTITY[tier] / ORE_PER_MINUTE
+        return travel_minutes(0) + ORE_QUANTITY[tier] / ORE_PER_MINUTE[tier]
     if kind == "ConvoyEscort":
         return travel_minutes(hops) + CONVOY_FLIGHT_MINUTES + CONVOY_RAIDERS[tier] * scanning.KILL_MINUTES
     if kind == "ScanDown":
@@ -518,7 +520,7 @@ def tuning_cs():
              f"        public const double BaseMinutes = {cs_double(BASE_MINUTES)};",
              f"        public const double HopMinutes = {cs_double(HOP_MINUTES)};",
              f"        public const double CourierStopMinutes = {cs_double(COURIER_STOP_MINUTES)};",
-             f"        public const double OrePerMinute = {cs_double(ORE_PER_MINUTE)};",
+             f"        public static readonly double[] OrePerMinute = {cs_tier_doubles(ORE_PER_MINUTE.get)};",
              f"        public const double ConvoyFlightMinutes = {cs_double(CONVOY_FLIGHT_MINUTES)};",
              f"        public const double RaiderKillMinutes = {cs_double(scanning.KILL_MINUTES)};",
              f"        public const float ConvoySpawnDelaySeconds = {CONVOY_SPAWN_DELAY_SECONDS}f;",
@@ -675,7 +677,7 @@ def agents_tab(Sheet):
         ["Travel", f"{BASE_MINUTES:g} min + {2 * HOP_MINUTES:g} min a jump", "", "", "", "", "", "there and back to the agent's dock"],
         ["Kill time", ", ".join(f"{r if r != 'Invalid' else 'any'} {KILL_MINUTES[r]:g}" for r in KILL_ROLES) + " min", "", "", "", "", "",
          "hunting one role takes longer than any target"],
-        ["Mining", f"{stations.MINER_ORE_PER_HOUR} ore an hour", "", "", "", "", "", "the ore handed in is paid back at the 40% markdown"],
+        ["Mining", "ore an hour (mining.py) " + ", ".join(f"T{t} {60 * ORE_PER_MINUTE[t]:.0f}" for t in TIERS), "", "", "", "", "", "the ore handed in is paid back at the 40% markdown"],
         ["Floor", f"{MINIMUM_SHARE:.0%}", "", "", "", "", "", "a mission's credits never drop below this share of its time's target"],
         ["Tokens", f"{TOKEN_SHARE:.0%} of the credits / {TOKEN_VALUE}", "", "", "", "", "", "at least 1; a token buys about 100 credits of store goods"],
     ])

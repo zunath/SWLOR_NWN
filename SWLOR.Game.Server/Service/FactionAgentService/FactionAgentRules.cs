@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
                 AgentMissionType.SealedCourier => FactionAgentTuning.BaseMinutes + FactionAgentTuning.CourierStopMinutes +
                                                   FactionAgentTuning.HopMinutes * Math.Max(1, hops),
                 AgentMissionType.MiningQuota => FactionAgentTuning.BaseMinutes + 2 * FactionAgentTuning.HopMinutes * 0 +
-                                                FactionAgentTuning.OreQuantity[tier] / FactionAgentTuning.OrePerMinute,
+                                                FactionAgentTuning.OreQuantity[tier] / FactionAgentTuning.OrePerMinute[tier],
                 AgentMissionType.ConvoyEscort => travel + FactionAgentTuning.ConvoyFlightMinutes +
                                                  FactionAgentTuning.ConvoyRaiders[tier] * FactionAgentTuning.RaiderKillMinutes,
                 AgentMissionType.ScanDown => travel + FactionAgentTuning.ScanDownMinutes[site][tier],

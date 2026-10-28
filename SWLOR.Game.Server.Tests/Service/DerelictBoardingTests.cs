@@ -401,7 +401,7 @@ public class DerelictBoardingTests
     public void LootStep_EachWaveClearedRaisesTheStrongbox(int tierIndex)
     {
         var step = DerelictRules.WaveStepPercent(tierIndex);
-        step.Should().BeInRange(10, 60);
+        step.Should().BeInRange(5, 60);
         var baseCredits = DerelictTuning.StrongboxCredits[tierIndex];
         DerelictRules.StrongboxCredits(tierIndex, 0).Should().Be(baseCredits);
         for (var waves = 1; waves <= DerelictTuning.MaximumWaves; waves++)

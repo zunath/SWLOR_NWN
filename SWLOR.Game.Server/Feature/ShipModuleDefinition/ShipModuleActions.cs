@@ -516,10 +516,22 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 Stat.GetStatAdjustment(pilot, StatType.SpaceMiningCycleSpeedPercent));
         }
 
-        /// <summary>The ore the pilot's Prospector (Gathering) adds to each mining cycle.</summary>
+        /// <summary>The percent the pilot's Prospector (Gathering) adds to each mining cycle's ore.</summary>
         private static int GetProspectorBonus(uint pilot)
         {
             return Stat.GetStatAdjustment(pilot, StatType.SpaceMiningYieldBonus);
+        }
+
+        /// <summary>The ship's carried fraction of an ore (hundredths) from Prospector's percent, between cycles.</summary>
+        private const string MiningYieldCarryVariable = "SPACE_MINING_YIELD_CARRY";
+
+        /// <summary>A cycle's ore after Prospector, carrying the fraction on the ship (SpaceCombatMath.MiningYield).</summary>
+        private static int ApplyProspector(uint activator, int amount)
+        {
+            var carry = GetLocalInt(activator, MiningYieldCarryVariable);
+            var ore = SpaceCombatMath.MiningYield(amount, GetProspectorBonus(activator), ref carry);
+            SetLocalInt(activator, MiningYieldCarryVariable, carry);
+            return ore;
         }
 
         /// <summary>
@@ -534,11 +546,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>The firing module's RareFind traits, read while its action runs.</summary>
         private static int TraitRareFind() => ShipTraitRules.Sum(ShipModuleTraitContext.Current, ShipTraitStat.RareFind);
 
-        /// <summary>The asteroid's remaining units, rolled (3-6) the first time anyone mines it.</summary>
+        /// <summary>
+        /// The asteroid's remaining units, rolled the first time anyone mines it: 1d4 + 2 at its tier's size
+        /// (SpaceCombatMath.AsteroidUnits; W11e).
+        /// </summary>
         private static void RollAsteroidUnits(uint target)
         {
             if (GetLocalInt(target, "ASTEROID_REMAINING_UNITS") <= 0)
-                SetLocalInt(target, "ASTEROID_REMAINING_UNITS", Random.D4(1) + 2);
+                SetLocalInt(target, "ASTEROID_REMAINING_UNITS",
+                    SpaceCombatMath.AsteroidUnits(Random.D4(1) + 2, GetLocalInt(target, "ASTEROID_TIER")));
         }
 
         /// <summary>Mines one cycle of an asteroid and delivers the ore when the cycle ends.</summary>
@@ -566,10 +582,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (shipStatus == null)
                     return;
 
-                // Perk & module bonuses. These increase the overall yield of each asteroid.
-                var amountToMine = SpaceCombatMath.MiningYield(
-                    SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus),
-                    GetProspectorBonus(activator));
+                // Module bonuses set the cycle's amount and the asteroid units it uses; Prospector adds its percent to
+                // the ore delivered, the fraction carried to the ship's next cycle.
+                var baseAmount = SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus);
+                var amountToMine = ApplyProspector(activator, baseAmount);
 
                 // Refresh remaining units (could have changed since the start)
                 var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -581,7 +597,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     return;
                 }
 
-                remainingUnits -= SpaceCombatMath.MiningUnitsPerCycle(amountToMine);
+                remainingUnits -= SpaceCombatMath.MiningUnitsPerCycle(baseAmount);
 
                 // Fully deplete the rock - destroy it.
                 if (remainingUnits <= 0)
@@ -647,11 +663,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     return;
 
                 // The same per-cycle ore as a mining laser, over every cycle the asteroid has left.
-                var amountToMine = SpaceCombatMath.StripMinerYield(
-                    SpaceCombatMath.MiningYield(
-                        SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus),
-                        GetProspectorBonus(activator)),
-                    remainingUnits);
+                var amountToMine = ApplyProspector(activator, SpaceCombatMath.StripMinerYield(
+                    SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus),
+                    remainingUnits));
 
                 SetLocalInt(target, "ASTEROID_REMAINING_UNITS", 0);
                 SetPlotFlag(target, false);

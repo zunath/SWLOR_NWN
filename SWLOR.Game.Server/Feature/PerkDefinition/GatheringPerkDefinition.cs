@@ -269,20 +269,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ProspectorTrait)
-                .Description("+1 ore per asteroid cycle.")
-                .IncreasesStat(StatType.SpaceMiningYieldBonus, 1)
+                .Description("+5% ore from mining lasers and strip miners.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 5)
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 10)
 
                 .AddPerkLevel()
-                .Description("+2 ore per asteroid cycle.")
-                .IncreasesStat(StatType.SpaceMiningYieldBonus, 2)
+                .Description("+10% ore from mining lasers and strip miners.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 25)
 
                 .AddPerkLevel()
-                .Description("+3 ore per asteroid cycle.")
-                .IncreasesStat(StatType.SpaceMiningYieldBonus, 3)
+                .Description("+15% ore from mining lasers and strip miners.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40);
         }

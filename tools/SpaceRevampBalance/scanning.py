@@ -290,7 +290,8 @@ def overhead_minutes(tier):
 def site_credits(kind, tier):
     """The credits in a site's cache, rounded to 25; its item pulls are counted against the target as well."""
     target = EXPLORE_PREMIUM * combat_rate(tier) / 60 * (site_minutes(kind, tier) + overhead_minutes(tier))
-    credits = target - own_value(kind, tier) - CACHE_ITEM_PULLS * elite_pull_value(tier)
+    with slicing.generated_values():  # the generated credits, also under --store-price
+        credits = target - own_value(kind, tier) - CACHE_ITEM_PULLS * elite_pull_value(tier)
     return max(0, int(25 * round(credits / 25)))
 
 

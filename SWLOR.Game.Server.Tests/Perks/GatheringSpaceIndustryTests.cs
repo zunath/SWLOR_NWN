@@ -110,9 +110,9 @@ public class GatheringSpaceIndustryTests
     {
         var perks = BuildPerks();
 
-        perks[PerkType.Prospector].PerkLevels[1].Description.Should().Be("+1 ore per asteroid cycle.");
-        perks[PerkType.Prospector].PerkLevels[2].Description.Should().Be("+2 ore per asteroid cycle.");
-        perks[PerkType.Prospector].PerkLevels[3].Description.Should().Be("+3 ore per asteroid cycle.");
+        perks[PerkType.Prospector].PerkLevels[1].Description.Should().Be("+5% ore from mining lasers and strip miners.");
+        perks[PerkType.Prospector].PerkLevels[2].Description.Should().Be("+10% ore from mining lasers and strip miners.");
+        perks[PerkType.Prospector].PerkLevels[3].Description.Should().Be("+15% ore from mining lasers and strip miners.");
         perks[PerkType.DeepCore].PerkLevels[1].Description.Should().Be("+10 to the rare-metal chance from asteroids.");
         perks[PerkType.DeepCore].PerkLevels[2].Description.Should().Be("+20 to the rare-metal chance from asteroids.");
         perks[PerkType.RapidExtraction].PerkLevels[1].Description.Should().Be("Mining, gas and salvage cycles are 10% faster.");
@@ -133,8 +133,8 @@ public class GatheringSpaceIndustryTests
     [Test]
     public void ThePerks_SetTheStatsTheSpaceCodeReads()
     {
-        foreach (var (rank, ore) in new[] { (1, 1), (2, 2), (3, 3) })
-            Stat(PerkType.Prospector, rank, StatType.SpaceMiningYieldBonus).Should().Be(ore);
+        foreach (var (rank, percent) in new[] { (1, 5), (2, 10), (3, 15) })
+            Stat(PerkType.Prospector, rank, StatType.SpaceMiningYieldBonus).Should().Be(percent);
 
         Stat(PerkType.DeepCore, 1, StatType.SpaceRareMetalChance).Should().Be(10);
         Stat(PerkType.DeepCore, 2, StatType.SpaceRareMetalChance).Should().Be(20);
@@ -188,13 +188,44 @@ public class GatheringSpaceIndustryTests
         SpaceCombatMath.MiningCycleSeconds(baseSeconds, percent).Should().BeApproximately(expected, 0.0001f);
     }
 
-    [TestCase(1, 0, 1)]
-    [TestCase(1, 1, 2)]
-    [TestCase(2, 3, 5)]
-    [TestCase(2, -4, 2)]
-    public void Prospector_AddsToTheLegacyYield(int legacyYield, int prospector, int expected)
+    [TestCase(1, 0, 0, 1, 0)]
+    [TestCase(1, 15, 0, 1, 15)]
+    [TestCase(1, 15, 90, 2, 5)]
+    [TestCase(6, 15, 0, 6, 90)]
+    [TestCase(6, 15, 20, 7, 10)]
+    [TestCase(0, 10, 0, 1, 10)]
+    [TestCase(2, -4, 0, 2, 0)]
+    [TestCase(1, 5, 250, 2, 4)]
+    public void Prospector_AddsItsPercentAndCarriesTheFraction(int amount, int percent, int carry, int expected, int carryAfter)
     {
-        SpaceCombatMath.MiningYield(legacyYield, prospector).Should().Be(expected);
+        SpaceCombatMath.MiningYield(amount, percent, ref carry).Should().Be(expected);
+        carry.Should().Be(carryAfter);
+    }
+
+    [TestCase(15, 20, 23)]
+    [TestCase(10, 10, 11)]
+    [TestCase(5, 20, 21)]
+    public void Prospector_PaysItsPercentOverManyOneOreCycles(int percent, int cycles, int expected)
+    {
+        var carry = 0;
+        var ore = 0;
+        for (var i = 0; i < cycles; i++)
+            ore += SpaceCombatMath.MiningYield(1, percent, ref carry);
+
+        ore.Should().Be(expected, "small yields still gain through the carried fraction");
+    }
+
+    [TestCase(1, 3, 3)]
+    [TestCase(1, 6, 5)]
+    [TestCase(3, 6, 4)]
+    [TestCase(5, 3, 2)]
+    [TestCase(5, 6, 3)]
+    [TestCase(5, 0, 1)]
+    [TestCase(0, 4, 3)]
+    public void AsteroidUnits_ShrinkWithTheAsteroidTier(int tier, int roll, int expected)
+    {
+        // W11e (mining.py): tier 1 85%, tier 2 100%, tier 3 70%, tier 4 60%, tier 5 55% of the 1d4 + 2 roll.
+        SpaceCombatMath.AsteroidUnits(roll, tier).Should().Be(expected);
     }
 
     [Test]
@@ -233,9 +264,10 @@ public class GatheringSpaceIndustryTests
         table.GetRandomItemWithRareChance(10, 10).Resref.Should().BeOneOf(items);
     }
 
-    [TestCase(0, 0.10)]
-    [TestCase(10, 0.19)]
-    [TestCase(20, 0.28)]
+    // W11e (mining.py): an Ardanium rock's normal pick is 1 Zinsiam in 289, so Deep Core's points are nearly all of it.
+    [TestCase(0, 0.0035)]
+    [TestCase(10, 0.103)]
+    [TestCase(20, 0.203)]
     public void DeepCore_RaisesTheRareShareByTheBonusPointsOfTheRemainder(int bonus, double expectedShare)
     {
         var table = new HarvestingLootTableDefinition().BuildLootTables()["ASTEROID_ARDANIUM"];
@@ -280,7 +312,7 @@ public class GatheringSpaceIndustryTests
         foreach (var method in new[] { mine, strip })
         {
             method.Should().Contain("MiningCycleSeconds(activator,");
-            method.Should().Contain("GetProspectorBonus(activator)");
+            method.Should().Contain("ApplyProspector(activator,");
             method.Should().Contain("GetAsteroidOre(activator, lootTable, rareFind)");
             method.Should().Contain("var rareFind = TraitRareFind();", "the Precision trait is read while the module fires");
             method.Should().NotContain("PerkType.StarshipMining", "Starship Mining was refunded and its term removed");

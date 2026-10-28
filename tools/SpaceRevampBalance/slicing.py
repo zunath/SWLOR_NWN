@@ -101,10 +101,15 @@ SOURCE_NAMES = {"DataCan": "Data can", "LockedCache": "Locked cache", "WreckData
 # better schematic odds than salvage (section 12); locked caches hold a site's best loot; lockboxes hold components,
 # ammo, credits and parts with rare traits, never cargo (section 12). Customs scans pay nothing: the clean scan is the
 # reward.
+# Balance pass (W11e): the tables are out of 400 and the schematic and Prototype Tech picks kept about their old weights
+# out of 100 (a quarter of their old odds or less; the rest went to components with a rare trait). At the old odds,
+# valuing those items at their store price put exploring at 123-137% of each tier's combat with the generated credits;
+# now 116.7-119.7% (scanning.py --sim --store-price). The credit model values every pick but ammo and credits as one
+# component, so the cut moves none of the generated credits and the component-valued figure stays 113.7-115.3%.
 BONUS_WEIGHTS = {
-    "DataCan": {"DesignSchematic": 10, "RecipeUnlock": 5, "ShipSchematic": 2, "AgentIntel": 20, "Component": 41, "RareComponent": 22},
-    "LockedCache": {"RareComponent": 35, "Component": 30, "Ammo": 20, "DesignSchematic": 7, "RecipeUnlock": 3, "PrototypeTech": 5},
-    "WreckDataCore": {"DesignSchematic": 15, "RecipeUnlock": 8, "ShipSchematic": 4, "PrototypeTech": 5, "RareComponent": 35, "Component": 33},
+    "DataCan": {"DesignSchematic": 10, "RecipeUnlock": 4, "ShipSchematic": 2, "AgentIntel": 80, "Component": 164, "RareComponent": 140},
+    "LockedCache": {"RareComponent": 186, "Component": 120, "Ammo": 80, "DesignSchematic": 7, "RecipeUnlock": 2, "PrototypeTech": 5},
+    "WreckDataCore": {"DesignSchematic": 15, "RecipeUnlock": 6, "ShipSchematic": 2, "PrototypeTech": 5, "RareComponent": 240, "Component": 132},
     "SpaceLockbox": {"Component": 35, "RareComponent": 20, "Ammo": 30, "Credits": 15},
 }
 
@@ -172,10 +177,24 @@ def pool_value(resrefs):
 
 
 # The payout model counts a schematic or Prototype Tech pick as one component, as scanning.py does not count the salvage
-# rare finds that give the same items: they are unlocks and research inputs, not income. At their store prices (Design
-# Schematic 2,000, Ship and Module Schematics 10,000, Prototype Tech 1,000, at the 40% markdown) tier 5 slicing would
-# pay about 130% of combat instead of 115% (--sim --store-price shows it).
+# rare finds that give the same items: they are unlocks and research inputs, not income. --sim --store-price values them
+# at their store prices instead (Design Schematic 2,000, Ship and Module Schematics 10,000, Prototype Tech 1,000, at the
+# 40% markdown) while every credit amount stays the generated one (base_credits and scanning.site_credits always use
+# the component model), so it shows what the game pays a player who sells them. Before W11e the store-price run
+# re-derived the credits as well, which hid the store value below tier 5.
 SCHEMATICS_AT_STORE_PRICE = "--store-price" in sys.argv
+
+
+class generated_values:
+    """Within the block, picks are valued as the generators value them (schematics as components)."""
+
+    def __enter__(self):
+        global SCHEMATICS_AT_STORE_PRICE
+        self.saved, SCHEMATICS_AT_STORE_PRICE = SCHEMATICS_AT_STORE_PRICE, False
+
+    def __exit__(self, *_):
+        global SCHEMATICS_AT_STORE_PRICE
+        SCHEMATICS_AT_STORE_PRICE = self.saved
 
 
 def kind_value(kind, tier, credits):
@@ -207,7 +226,8 @@ def board_rate(tier):
 def base_credits(source, tier):
     """CREDIT_SHARE of a board's pay, but never so much that credits and the bonus pick pay more than the board."""
     share = CREDIT_SHARE[source] * board_rate(tier)
-    room = board_rate(tier) - bonus_value(source, tier, 0)
+    with generated_values():
+        room = board_rate(tier) - bonus_value(source, tier, 0)
     return max(MINIMUM_CREDITS, int(25 * round(min(share, room) / 25)))
 
 

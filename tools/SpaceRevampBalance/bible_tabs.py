@@ -2,6 +2,7 @@
 
 usage: python bible_tabs.py           (run checks.py first; it writes the Space Balance tab from checks.md; trade.py --check too)
        python bible_tabs.py --check   (exit 1 when a tab differs from the workbook; writes nothing)
+       python bible_tabs.py --income  (prints the W11e income summary as Markdown; reads no workbook)
 Every untouched zip entry is copied byte for byte. Re-running replaces the six tabs in place.
 """
 import html
@@ -423,6 +424,7 @@ def balance():
             s.note(line.strip())
         i += 1
     zones(s)
+    balance_summary(s)
     return s
 
 
@@ -433,13 +435,14 @@ ZONES = [
      "Currian 12, Idailia 3. Durelium asteroids are 62% of nodes; Viscara Orbit has none (its Tilarium drops Durelium at weight 4 of 37).",
      "SPACE_VISCARA_BELT: T1 and T2 ships at the open-orbit weights, every W5b role; no Sith/Mandalorian capitals.",
      "Kills only (default 4% Aurodium needs a T5+ wreck)."],
-    ["Mid Rim Nebula", "space_midrimneb", "T3-4", "Mid Rim 1 (beside the Viscara arrival)", 75, 56,
+    ["Mid Rim Nebula", "space_midrimneb", "T3-4", "Hutlar Orbit (beside the Mon Cala arrival; W11e, was Mid Rim 1)", 75, 56,
      "SPACE_RESOURCES_MIDRIM_NEBULA_ZONE: Tibanna Gas clouds T3 30 / T4 30, Idailia 10, Barinium 10. Clouds are 75% of "
      "nodes (Mid Rim 1's nebula table: 43%), about 56 clouds against about 22.",
      "SPACE_MIDRIM_NEBULA: T3 and T4 ships at the open-orbit weights, every W5b role; no Sith/Mandalorian capitals.",
      "Kills only."],
     ["Korriban Debris Field", "space_korrdebris", "T5", "Korriban Orbit (beside the Mid Rim 2 arrival)", 75, 56,
-     "SPACE_RESOURCES_KORRIBAN_DEBRIS: Gostian 25, Ardanium 3 (3x Korriban Orbit's Ardanium weight, 11% of nodes against 4%).",
+     "SPACE_RESOURCES_KORRIBAN_DEBRIS: Idailia, Barinium and Gostian 25 each, Ardanium 4 (W11e, mining.py; 5% of nodes "
+     "against Korriban Orbit's 4%).",
      "SPACE_KORRIBAN_DEBRIS: T5 ships at the open-orbit weights, minelayers x2 (3840), derelict turrets t5derturret1/2 "
      "2400 each (turret rows 2153/2154 on the t5platform preset), Sith/Mandalorian capitals as in the T5 orbits.",
      "SALVAGE_AURODIUM_PERCENT 15 (default 4): 3.75x the Aurodium per salvage cycle on T5-T6 wrecks."],
@@ -455,6 +458,203 @@ def zones(s):
     s.table(["Tier", "Zone", "Area", "Reached from", "Nodes", "Ships", "Resources", "Enemies", "Salvage"],
             [[z[2], z[0], z[1], z[3], z[4], z[5], z[6], z[7], z[8]] for z in ZONES])
     return s
+
+
+# -----------------------------------------------------------------------------------------------------------------
+# Balance summary (W11e): credits per hour of every space activity by tier, from each generator's own model
+# -----------------------------------------------------------------------------------------------------------------
+SUMMARY_TIERS = ["T1", "T2", "T3", "T4", "T5", "T6", "T5.5"]
+ACTIVE_BAND = (100, 140)       # of the tier's combat rate: every active activity
+CONTRABAND_BAND = (150, 200)   # contraband trade after customs and pirates
+MINING_BAND = (88, 107)        # "about 90-100%": a no-perk miner (W11e), level with the strip miner
+STORE_EXPLORE_MAX = 120        # exploring with schematics and Prototype Tech at their store price
+PASSIVE_CAP_MINUTES = 90       # passive income per character a day, in minutes of the tier's combat rate
+
+
+def income_rows():
+    """
+    The whole-game income table (plan section 19, "Balance summary (W11e)"): one row per activity with a (credits per
+    hour, percent of the tier's combat) cell per tier it has, its band and its source. Combat is the tier's space combat
+    with the space lockboxes normal kills drop (scanning.combat_rate; T5.5 is Wild Space), and every percent is of that
+    row. Trade is one galaxy-wide loop, measured against T3 combat as trade.py measures it.
+    """
+    import agents
+    import derelicts
+    import events
+    import mining
+    import scanning
+    import slicing
+    import trade
+    import wildspace
+
+    combat = {f"T{t}": scanning.combat_rate(t) for t in range(1, 7)}
+    combat["T5.5"] = wildspace.combat_rate()[2]
+
+    def cells(values):
+        return {k: (v, 100 * v / combat[k]) for k, v in values.items()}
+
+    def tiers(fn, wild=None):
+        out = {f"T{t}": fn(t) for t in range(1, 7)}
+        if wild is not None:
+            out["T5.5"] = wild
+        return out
+
+    def slicing_rate(t):
+        """Slicing is done at sites: the data sites and locked caches, their slicing, cache and share of the overhead."""
+        w = {k: v for k, v in scanning.mix(t).items() if k in ("DataSite", "LockedCache")}
+        value = sum(v * scanning.site_value(k, t) for k, v in w.items())
+        minutes = sum(v * (scanning.site_minutes(k, t) + scanning.overhead_minutes(t)) for k, v in w.items())
+        return value / minutes * 60
+
+    def store_explore(t):
+        saved = slicing.SCHEMATICS_AT_STORE_PRICE
+        slicing.SCHEMATICS_AT_STORE_PRICE = True
+        try:
+            return scanning.explore_rate(t)
+        finally:
+            slicing.SCHEMATICS_AT_STORE_PRICE = saved
+
+    def rift(tenths):
+        return events.run_value(tenths, events.fraction_left(tenths)) / events.run_minutes(tenths) * 60
+
+    def incursion(hours):
+        return lambda t: events.incursion_percent(t, hours) / 100 * events.combat_rate(t * 10)
+
+    risk = trade.outcome()
+    exalted = trade.standing_outcome_cached()["Tiers"][-1]
+    t3 = combat["T3"]
+    expanders = [sum(trade.simulate(trade.expanded_hold(hold, (45, 45, 45, 45)), lawful=True)) / 4
+                 for _name, hold in trade.HULLS if hold >= 480]
+
+    def galaxy(value):
+        return {"T3": (value, 100 * value / t3)}
+
+    w = derelicts.WILD_SPACE_INDEX
+    team = derelicts.SALVAGE_REFERENCE_INDUSTRY
+
+    def best_area(key):
+        """The best area of each tier for a mining row (a miner goes where the rocks pay most)."""
+        out = {}
+        for r in mining.rows():
+            label = "T5.5" if r["tier"] == mining.WILD_SPACE_TIER else f"T{r['tier']}"
+            if r[key] > 0:
+                out[label] = max(out.get(label, 0.0), r[key])
+        return out
+
+    return [
+        ("Combat (normal kills, 60 an hour, space lockboxes)", cells(combat), "baseline", "trade.py, slicing.py"),
+        ("Wild Space combat (Rift Raiders, stolen cargo)", cells({"T5.5": combat["T5.5"]}), "100-140%", "wildspace.py"),
+        ("Trade, legal goods after risk (freighters, 4-hour average)", galaxy(risk["LegalPerHour"]), "100-140%", "trade.py"),
+        ("Trade, legal goods at Exalted standing", galaxy(exalted["LegalPerHour"]), "100-140%", "trade.py"),
+        ("Trade, legal goods, freighter with four Cargo Expanders Mk X (best hull)", galaxy(max(expanders)), "100-140%",
+         "trade.py (W11d; speed loss not modelled)"),
+        ("Trade, every good after customs and pirates", galaxy(risk["ContrabandPerHour"]), "150-200%", "trade.py"),
+        ("Trade, every good at Exalted standing", galaxy(exalted["ContrabandPerHour"]), "150-200%", "trade.py"),
+        ("Freight contracts (no cargo bought, deposit only)", galaxy(risk["FreightPerHour"]), "75% (W7b)", "trade.py"),
+        ("Exploring (schematics valued as components)", cells(tiers(scanning.explore_rate)), "100-140%", "scanning.py"),
+        ("Exploring (schematics and Prototype Tech at store price)", cells(tiers(store_explore)), "at most 120%",
+         "scanning.py --store-price"),
+        ("Slicing sites (data sites and locked caches, with their caches)", cells(tiers(slicing_rate)), "100-140%",
+         "slicing.py, scanning.py"),
+        ("Faction agent missions (credits)", cells(tiers(agents.tier_rate)), "100-140%", "agents.py"),
+        ("Faction agent missions (tokens at 100 credits)", cells(tiers(lambda t: agents.tier_rate(t, with_tokens=True))),
+         "100-140%", "agents.py"),
+        ("Derelict boarding", cells(tiers(derelicts.board_rate, derelicts.board_rate(w))), "100-140%", "derelicts.py"),
+        ("Contested derelict (one boarder, one defender; per player)",
+         cells(tiers(lambda t: derelicts.contested_rates(t)[3], derelicts.contested_rates(w)[3])), "100-140%",
+         "derelicts.py"),
+        ("Derelict salvage team (solo pilot, Industry 80 droids)",
+         cells(tiers(lambda t: derelicts.salvage_rate(t, team), derelicts.salvage_rate(w, team))),
+         "60-70% of boarding (W15c)", "derelicts.py"),
+        ("Incursion (4 active hours)", cells(tiers(incursion(events.ACTIVE_HOURS))), "100-140%", "events.py"),
+        ("Incursion (2 active hours)", cells(tiers(incursion(2))), "100-140%", "events.py"),
+        ("Rift Run (solo, typical pace)", cells({**{f"T{t}": rift(10 * t) for t in range(1, 6)}, "T5.5": rift(55)}),
+         "100-140%", "events.py"),
+        ("Mining, three Mining Lasers, no perks (best area of the tier)", cells(best_area("credits")), "about 90-100%",
+         "mining.py"),
+        ("Strip mining, Industrial, no perks (best area of the tier)", cells(best_area("strip")), "about 90-100%", "mining.py"),
+        ("Mining with Prospector III and Rapid Extraction II", cells(best_area("perks")), "at most 140%", "mining.py"),
+        ("Strip mining with Prospector III and Rapid Extraction II", cells(best_area("perk_strip")), "at most 140%", "mining.py"),
+    ]
+
+
+def passive_rows():
+    """Passive income a day in minutes of the tier's combat rate: three holdings per character (holdings.py) and a
+    station's Asteroid Drill (stations.py; the city's ore, not a character's)."""
+    import holdings
+    import scanning
+    import stations
+    import wildspace
+
+    rows = holdings.income_rows()
+
+    def average(key):
+        return 3 * sum(r[key] for r in rows) / len(rows)
+
+    best = sorted(rows, key=lambda r: -r["l3_plant"])[:3]
+    out = [
+        ("Three holdings, level 1 (average type)", f"{average('l1'):.0f} min"),
+        ("Three holdings, level 3, best droid, Processing Plant (average type)", f"{average('l3_plant'):.0f} min"),
+        ("Three holdings at their best, the three best types",
+         f"{sum(r['l3_plant'] for r in best):.0f} min ({sum(r['l3_plant'] * r['events'] for r in best):.0f} after events)"),
+    ]
+    ratios = []
+    for d in stations.drill_income():
+        rate = wildspace.combat_rate()[2] if d["area"].startswith("space_ws") else scanning.combat_rate(d["tier"])
+        ratios.append((d["day"] / rate * 60, d["best"] / rate * 60))
+    out.append(("Asteroid Drill, per city (no droid / best droid)",
+                f"{min(r[0] for r in ratios):.0f}-{max(r[0] for r in ratios):.0f} / "
+                f"{min(r[1] for r in ratios):.0f}-{max(r[1] for r in ratios):.0f} min, before the city's 5,000 credits a "
+                "day of upkeep"))
+    return out
+
+
+def summary_flags(rows):
+    """The cells outside their band (active 100-140%, contraband 150-200%, store-valued exploring at most 120%)."""
+    bands = {"100-140%": ACTIVE_BAND, "150-200%": CONTRABAND_BAND, "at most 120%": (0, STORE_EXPLORE_MAX),
+             "about 90-100%": MINING_BAND, "at most 140%": (0, ACTIVE_BAND[1])}
+    out = []
+    for name, data, band, _src in rows:
+        if band in bands:
+            lo, hi = bands[band]
+            out += [f"{name} {k} {pct:.1f}%" for k, (_v, pct) in data.items() if not lo <= round(pct, 1) <= hi]
+    return out
+
+
+def summary_cell(data, key):
+    return f"{data[key][0]:,.0f} ({data[key][1]:.0f}%)" if key in data else "-"
+
+
+def balance_summary(s):
+    """The Balance summary (W11e) tables on the Space Balance tab."""
+    rows = income_rows()
+    s.title("Balance summary (W11e): credits per hour of every space activity, and its share of the tier's combat rate")
+    s.note("From each generator's --sim model. Combat counts the space lockboxes normal kills drop; T5.5 is Wild Space. "
+           "Trade is one galaxy-wide loop measured against T3 combat. Bands: active activities 100-140% of the tier's "
+           "combat, contraband after risk 150-200%, passive income at most 90 minutes of the tier's combat a day per "
+           "character. Freight contracts and salvage teams have their own lower targets (no cargo bought; a droid team "
+           "does the work). Short incursion stints and fast Rift Runs pay more per hour by design (fixed rewards).")
+    s.table(["Activity"] + SUMMARY_TIERS + ["Band", "Source"],
+            [[name] + [summary_cell(data, k) for k in SUMMARY_TIERS] + [band, src] for name, data, band, src in rows])
+    flags = summary_flags(rows)
+    s.note("Outside band: " + ("; ".join(flags) if flags else "none."))
+    s.title("Passive income a day (minutes of the tier's combat rate)")
+    s.table(["Source", "Per day", "", "", "", "", "", "", "", ""],
+            [[name, value, "", "", "", "", "", "", "", ""] for name, value in passive_rows()])
+    return s
+
+
+def print_summary():
+    """bible_tabs.py --income: the summary as Markdown, for the plan; reads no workbook."""
+    rows = income_rows()
+    print("| Activity | " + " | ".join(SUMMARY_TIERS) + " | Band |")
+    print("|---" * (len(SUMMARY_TIERS) + 2) + "|")
+    for name, data, band, _src in rows:
+        print(f"| {name} | " + " | ".join(summary_cell(data, k) for k in SUMMARY_TIERS) + f" | {band} |")
+    print("\nOutside band: " + ("; ".join(summary_flags(rows)) or "none"))
+    print()
+    for name, value in passive_rows():
+        print(f"- {name}: {value}")
 
 
 # -----------------------------------------------------------------------------------------------------------------
@@ -776,6 +976,9 @@ def write(sheets):
 
 
 if __name__ == "__main__":
+    if "--income" in sys.argv:
+        print_summary()
+        sys.exit(0)
     import agents
     import derelicts
     import droids

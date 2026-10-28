@@ -239,9 +239,24 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static int ExtractionBaseAmount(int industrialBonus, int moduleBonus) =>
             1 + Math.Max(0, industrialBonus) / 4 + Math.Max(0, moduleBonus) / 6;
 
-        /// <summary>The ore one mining cycle yields: the base amount plus Prospector (or a cycle's perk bonus).</summary>
-        public static int MiningYield(int baseAmount, int prospectorBonus) =>
-            Math.Max(1, baseAmount) + Math.Max(0, prospectorBonus);
+        /// <summary>
+        /// The ore one mining or strip cycle delivers (W11e): the base amount plus Prospector's percent of it. The fraction
+        /// below a whole ore is carried in <paramref name="carryHundredths"/> (hundredths of an ore, kept per ship) to the
+        /// next cycle, so a 1-ore cycle still gains: at +15%, about every seventh cycle delivers one more ore.
+        /// </summary>
+        public static int MiningYield(int baseAmount, int prospectorPercent, ref int carryHundredths)
+        {
+            var exact = Math.Max(1, baseAmount) * (100 + Math.Max(0, prospectorPercent)) + Math.Clamp(carryHundredths, 0, 99);
+            carryHundredths = exact % 100;
+            return exact / 100;
+        }
+
+        /// <summary>
+        /// An asteroid's units when it is first mined (W11e): the 1d4 + 2 <paramref name="roll"/> at its tier's
+        /// <see cref="SpaceMiningTuning.AsteroidUnitPercent"/>, rounded half up, at least 1.
+        /// </summary>
+        public static int AsteroidUnits(int roll, int asteroidTier) =>
+            Math.Max(1, (Math.Max(0, roll) * SpaceMiningTuning.AsteroidUnitPercent(asteroidTier) + 50) / 100);
 
         /// <summary>The asteroid units one mining laser cycle of <paramref name="amount"/> ore uses up.</summary>
         public static int MiningUnitsPerCycle(int amount) => 1 + Math.Max(0, amount) / 2;

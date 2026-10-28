@@ -6608,7 +6608,7 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         SpaceMarkTargetIcon = 1214,
 
-        /// <summary>Ore added to every cycle of a mining laser or strip miner on an asteroid (Prospector).</summary>
+        /// <summary>Percent added to the ore of every mining laser or strip miner cycle on an asteroid, the fraction carried (Prospector).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceMiningYieldBonus = 1215,
 

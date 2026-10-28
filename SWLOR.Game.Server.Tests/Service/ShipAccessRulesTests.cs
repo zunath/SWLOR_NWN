@@ -27,7 +27,7 @@ public class ShipAccessRulesTests
     private static readonly (string Area, string Parent, string Creatures, string Resources)[] Zones =
     {
         ("space_viscbelt", "viscaraorbit", "SPACE_VISCARA_BELT", "SPACE_RESOURCES_VISCARA_BELT"),
-        ("space_midrimneb", "space_midrim1", "SPACE_MIDRIM_NEBULA", "SPACE_RESOURCES_MIDRIM_NEBULA_ZONE"),
+        ("space_midrimneb", "hutlar_orbit", "SPACE_MIDRIM_NEBULA", "SPACE_RESOURCES_MIDRIM_NEBULA_ZONE"),
         ("space_korrdebris", "space_korriban", "SPACE_KORRIBAN_DEBRIS", "SPACE_RESOURCES_KORRIBAN_DEBRIS"),
     };
 

@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SummaryText = $"Level {holding.Level} {detail.Name} at {planet}. {detail.Description}";
             OutputText = $"Makes {units} {Name(detail.Output)} a day" +
                          (droidPercent > 0 ? $" (+{droidPercent}% from its droid)" : string.Empty) +
-                         (holding.HasProcessingPlant && holding.RefineOutput ? $"; the plant refines half of it: {chainText}." : ".");
+                         (holding.HasProcessingPlant && holding.RefineOutput ? $"; the plant refines up to {HoldingRules.GetPlantUnits(units)} of it: {chainText}." : ".");
             var stock = DescribeGoods(holding.Warehouse);
             StockText = $"Warehouse: {(stock.Length > 0 ? stock : "empty")} ({HoldingRules.GetStoredVolume(holding.Warehouse)} / " +
                         $"{HoldingRules.GetStorageVolume(holding, detail)} volume).";

@@ -92,7 +92,8 @@ WAVE_GAP_SECONDS = 30          # after a wave is cleared
 MAXIMUM_WAVES = 3
 WAVE_RING_METERS = 25          # the wave arrives on a ring around the derelict
 CONTESTED_PREMIUM = 1.30       # a mixed group's rate per player on a contested derelict, of the tier's combat rate
-WAVE_STEP_MINIMUM = 10         # every wave cleared raises the strongbox at least this much (percent)
+WAVE_STEP_MINIMUM = 5          # every wave cleared raises the strongbox at least this much (percent); W11e: was 10, which
+                               # held the T3-T4 groups at 138-142% of combat, above the 100-140% band (now 131-134%)
 WAVE_STEP_MAXIMUM = 60
 DEFENDER_SHARE_PERCENT = 50    # of the strongbox (with its step-up) each party defender within range gets when it opens
 DEFENSE_RADIUS = 60            # a player ship this close to the derelict defends it

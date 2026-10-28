@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
         /// <summary>Output by level (index 1-3).</summary>
         public static readonly double[] LevelOutput = { 0.0, 1.0, 1.25, 1.45 };
         public const double UpkeepShare = 0.15;
-        public const double PlantShare = 0.5;
+        public const double PlantShare = 0.35;
         public const double SellBackShare = 0.5;
         public const int StorageDays = 7;
         public const int ForeclosureDays = 14;

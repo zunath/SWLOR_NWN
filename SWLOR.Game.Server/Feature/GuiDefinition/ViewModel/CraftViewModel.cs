@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -1482,8 +1483,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            ProcessBlueprintBonuses(item);
+            var blueprintTraits = ProcessBlueprintBonuses(item);
             ShipComponents.ApplyCraftedTraits(_recipe, recipe, item, _components);
+            ShipComponents.AddTraits(item, blueprintTraits);
 
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
@@ -1528,13 +1530,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
-        private void ProcessBlueprintBonuses(uint item)
+        /// <summary>
+        /// Applies the active blueprint's bonuses to the crafted item. A ship module blueprint's bonuses are blueprint
+        /// traits, returned for the caller to stamp after the component traits.
+        /// </summary>
+        private List<ShipComponentTraitType> ProcessBlueprintBonuses(uint item)
         {
+            var traits = new List<ShipComponentTraitType>();
             if (!_hasBlueprint)
-                return;
+                return traits;
 
             // Random bonuses
             var recipe = Craft.GetRecipe(_recipe);
+            if (ShipBlueprintRules.IsResearchable(recipe))
+            {
+                var family = ShipBlueprintRules.ComponentFamily(recipe);
+                for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
+                {
+                    var trait = ShipBlueprintRules.Pick(family, ShipBlueprintRules.BonusTier(recipe.Level, currentBonus), Random.Next);
+                    if (trait == ShipComponentTraitType.None)
+                        continue;
+
+                    traits.Add(trait);
+                    SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {ShipTraitRules.Get(trait).Name}"));
+                }
+
+                traits.AddRange(_activeBlueprint.GuaranteedTraits);
+                BiowareXP2.IPSafeAddItemProperty(item,
+                    ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, _activeBlueprint.Level),
+                    0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                return traits;
+            }
+
             for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
             {
                 var tier = currentBonus;
@@ -1572,6 +1599,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Identify the blueprint level on the finished item
             var blueprintLevelIP = ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, _activeBlueprint.Level);
             BiowareXP2.IPSafeAddItemProperty(item, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            return traits;
         }
 
         /// <summary>Returns an item to the player, or holds it at the station when it does not fit.</summary>

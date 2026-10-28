@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Whether the resref is a component item.</summary>
         public static bool IsComponent(string resref) => resref != null && _components.ContainsKey(resref);
 
+        /// <summary>The family of a component item, or Invalid when the resref is not one.</summary>
+        public static ShipComponentFamily FamilyOf(string resref) =>
+            resref != null && _components.TryGetValue(resref, out var item) ? item.Family : ShipComponentFamily.Invalid;
+
         /// <summary>The component item of a family at a tier (clamped to 1-5).</summary>
         public static string ComponentResref(ShipComponentFamily family, int tier)
         {

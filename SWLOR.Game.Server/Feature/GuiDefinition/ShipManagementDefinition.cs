@@ -179,6 +179,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
+                        row.AddComboBox()
+                            .BindOptions(model => model.HullDesignOptions)
+                            .BindSelectedIndex(model => model.SelectedHullDesignIndex)
+                            .BindIsEnabled(model => model.IsHullDesignEnabled)
+                            .SetHeight(35f);
+
+                        row.AddButton()
+                            .BindIsEnabled(model => model.IsHullDesignEnabled)
+                            .BindText(model => model.RefitDesignText)
+                            .BindOnClicked(model => model.OnClickRefitDesign())
+                            .SetTooltip("Refit the ship to the chosen Hull Design. Design Schematics unlock more designs.")
+                            .SetHeight(35f);
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddLabel()
                             .SetText("High-Powered Slots")
                             .SetHeight(20f);

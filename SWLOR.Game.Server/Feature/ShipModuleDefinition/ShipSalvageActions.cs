@@ -162,8 +162,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (ShipSalvageRules.RareFindPercent(wreck.Difficulty) > 0 &&
                     ShipSalvageRules.RollsRareFind(wreck.Difficulty, Random.Next(100) - traitRareFind))
                 {
-                    var rare = Loot.GetLootTableByName(ShipSalvageRules.RareFindTable(wreck.Tier, wreck.Difficulty)).GetRandomItem();
-                    yield.Add(rare.Resref);
+                    // Some rare finds are a schematic or rare torpedoes; the rest come from the tier's table.
+                    var reward = ShipRareFindRules.Roll(wreck.Tier, wreck.Difficulty, Random.Next);
+                    if (reward.Count > 0)
+                        yield.AddRange(reward);
+                    else
+                        yield.Add(Loot.GetLootTableByName(ShipSalvageRules.RareFindTable(wreck.Tier, wreck.Difficulty)).GetRandomItem().Resref);
                 }
 
                 var areaAurodium = GetLocalInt(GetArea(target), ShipSalvageRules.AurodiumPercentVariable);

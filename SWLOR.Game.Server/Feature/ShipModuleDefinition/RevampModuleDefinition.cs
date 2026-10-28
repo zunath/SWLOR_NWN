@@ -164,6 +164,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 });
         }
 
+        /// <summary>
+        /// A launcher: it spends one ammo item per shot, the pilot's loaded variant first, then plain ammo, then any
+        /// variant carried, and a variant changes the shot and adds its rider (<see cref="ShipAmmoRules"/>).
+        /// </summary>
         private void AmmoWeapon(ShipModuleStep step, string missingAmmoMessage)
         {
             var ammoResref = ShipModuleActions.GetAmmoResref(step.Family);
@@ -172,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .ValidationAction((activator, status, _, targetStatus, _) =>
                 {
-                    var ammoError = ShipModuleActions.AmmoError(activator, ammoResref, missingAmmoMessage);
+                    var ammoError = ShipModuleActions.LauncherAmmoError(activator, step.Family, ammoResref, missingAmmoMessage);
                     return string.IsNullOrWhiteSpace(ammoError)
                         ? ShipNpcRules.TargetError(step.Family, status, targetStatus?.Size ?? ShipSize.Small)
                         : ammoError;
@@ -180,9 +184,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
                 {
                     var fired = Effective(step);
-                    var shot = BuildShot(fired, status, targetStatus);
-                    ShipModuleActions.ConsumeAmmo(activator, ammoResref);
-                    ShipModuleActions.FireStep(fired, activator, status, target, targetStatus, shot, false);
+                    var ammo = ShipModuleActions.PickAmmo(activator, step.Family, ammoResref);
+                    var variant = ShipAmmoRules.Variant(ammo);
+                    var shot = ShipAmmoRules.Apply(BuildShot(fired, status, targetStatus), variant);
+                    ShipModuleActions.ConsumeAmmo(activator, ammo ?? ammoResref);
+                    ShipModuleActions.FireStep(fired, activator, status, target, targetStatus, shot, false,
+                        ShipModuleActions.AmmoRider(activator, target, shot, variant));
                 });
         }
 

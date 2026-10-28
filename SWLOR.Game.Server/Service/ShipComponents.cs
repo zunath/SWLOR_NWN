@@ -43,6 +43,15 @@ namespace SWLOR.Game.Server.Service
             SetName(item, ShipTraitRules.DecoratedName(GetName(item, true), traits));
         }
 
+        /// <summary>Adds traits to the ones an item already carries (a blueprint's bonuses on a crafted module).</summary>
+        public static void AddTraits(uint item, IReadOnlyCollection<ShipComponentTraitType> traits)
+        {
+            if (traits == null || traits.Count == 0)
+                return;
+
+            SetTraits(item, GetTraits(item).Concat(traits).ToList());
+        }
+
         /// <summary>
         /// After a successful craft: a crafted variant stamps its trait on the component it made, and a ship module
         /// inherits the traits of the components it consumed.

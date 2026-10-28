@@ -247,6 +247,12 @@ namespace SWLOR.Game.Server.Service
                     _shipTypes.Add(shipType, shipDetail);
                     _shipAppearances.Add(shipDetail.Appearance);
 
+                    // Hull Designs give ships other appearances; they are ship models too.
+                    foreach (var design in HullDesignRules.DesignsFor(shipType))
+                    {
+                        _shipAppearances.Add(design.Appearance);
+                    }
+
                     if (!_shipItemResrefs.Contains(shipDetail.ItemResref))
                         _shipItemResrefs.Add(shipDetail.ItemResref);
                 }
@@ -368,7 +374,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Determines whether an item is starship ammo.
+        /// Determines whether an item is starship ammo, its launcher variants included.
         /// </summary>
         public static bool IsStarshipAmmo(uint item)
         {
@@ -380,7 +386,13 @@ namespace SWLOR.Game.Server.Service
             {
                 return true;
             }
-            return false;
+            return ShipAmmoRules.Variant(resref) != null;
+        }
+
+        /// <summary>The appearance a player ship shows: its Hull Design from a Refit, else its model's own.</summary>
+        public static AppearanceType GetShipAppearance(PlayerShip ship, ShipDetail shipDetail)
+        {
+            return HullDesignRules.ShipAppearance(ship.Status.ItemTag, shipDetail.Appearance, ship.HullDesignAppearance);
         }
 
         /// <summary>
@@ -941,8 +953,8 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.OriginalAppearanceType = currentAppearance;
             }
 
-            // Update player appearance to match that of the ship.
-            SetCreatureAppearanceType(player, shipDetail.Appearance);
+            // Update player appearance to match that of the ship and its Hull Design.
+            SetCreatureAppearanceType(player, GetShipAppearance(dbPlayerShip, shipDetail));
             Stat.ApplyCreatureMovementRate(player);
 
             // Set active ship Id and serialize the player's hot bar.
@@ -1293,7 +1305,7 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(dbProperty);
 
                     var clone = CreateObject(ObjectType.Creature, "player_starship", location);
-                    SetCreatureAppearanceType(clone, shipDetail.Appearance);
+                    SetCreatureAppearanceType(clone, GetShipAppearance(dbShip, shipDetail));
                     SetName(clone, dbProperty.CustomName);
 
                     _shipClones[dbShip.Id] = clone;

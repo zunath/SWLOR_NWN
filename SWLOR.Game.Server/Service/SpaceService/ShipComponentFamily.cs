@@ -17,5 +17,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         SensorSuite = 7,
         ExtractionHead = 8,
         LifeSupportSystem = 9,
+        ThorilideCore = 10,
+        AurodiumPlating = 11,
+        PrototypeCore = 12,
     }
 }

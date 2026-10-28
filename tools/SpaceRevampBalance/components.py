@@ -150,6 +150,62 @@ TRAITS = [
 # Salvage odds per wreck difficulty (plan sections 12 and 14 give none; draft): the chance a salvage cycle also yields
 # one salvaged component of the wreck's tier (1-5), and the chance that component's trait is rare. Every salvaged
 # component carries a trait. Trait Hunter adds its rank's points to the rare chance.
+# Research blueprint traits (W9b, plan section 14): a researched module blueprint's item bonuses. Each stat has three
+# tiers; as on the ground, a blueprint's nth item bonus rolls tier n, capped by the recipe's level band (levels 0-20
+# tier 1, 21-40 tier 2), and a module only rolls stats its component family's modules carry. Draft numbers.
+BLUEPRINT_STATS = [
+    # stat, trait name, families, tier values
+    ("Damage", "DMG", ["EnergyEmitter", "OrdnanceAssembly"], [2, 3, 4]),
+    ("Accuracy", "Accuracy", ["EnergyEmitter", "OrdnanceAssembly", "SensorSuite"], [2, 3, 4]),
+    ("CapacitorCost", "Efficiency", ["EnergyEmitter", "OrdnanceAssembly", "ShieldProjector", "SensorSuite", "ExtractionHead",
+                                     "HullFrame"], [-10, -15, -20]),
+    ("Hull", "Hull", ["HullFrame"], [2, 3, 4]),
+    ("Shield", "Shield", ["ShieldProjector"], [2, 3, 4]),
+    ("Repair", "Repair", ["ShieldProjector", "HullFrame"], [2, 3, 4]),
+    ("Capacitor", "Capacitor", ["ShipReactor"], [2, 3, 4]),
+    ("CapacitorRegen", "Regen", ["ShipReactor"], [2, 3, 4]),
+    ("Defense", "Defense", ["HullFrame"], [2, 3, 4]),
+    ("Resistance", "Resistance", ["HullFrame", "ShieldProjector"], [2, 3, 4]),
+    ("Evasion", "Evasion", ["ThrusterAssembly"], [1, 2, 3]),
+    ("Yield", "Yield", ["ExtractionHead"], [1, 1, 2]),
+]
+BLUEPRINT_TRAIT_START = 61
+BLUEPRINT_TIER_NAMES = ["I", "II", "III"]
+
+
+def blueprint_traits():
+    """(id, enum, name, "Blueprint", families, effects, tier) for every blueprint trait."""
+    out, tid = [], BLUEPRINT_TRAIT_START
+    for stat, label, fams, values in BLUEPRINT_STATS:
+        for tier, value in enumerate(values, 1):
+            out.append((tid, f"Refined{stat}{tier}", f"Refined {label} {BLUEPRINT_TIER_NAMES[tier - 1]}", "Blueprint",
+                        fams, [(stat, value)], tier))
+            tid += 1
+    return out
+
+
+TRAITS += [t[:6] for t in blueprint_traits()]
+
+# Rare components (W9b, plan section 14 and Appendix D): one top-band item each, crafted from a rare material and a
+# tier 5 component. The named rank-50 modules take a Thorilide Core and an Aurodium Plating; Advanced hull recipes and
+# the rare-trait stand-in come with the manufacturer components (W9c). Prototype Tech has no source until Wild Space
+# (W12c). key, enum, name, skill, ESS9 model, recipe inputs, description.
+RARE_FAMILIES = [
+    ("thorcore", "ThorilideCore", "Thorilide Core", "Engineering", 246, [("thor_crys", 2), ("sc_reactor_5", 1)],
+     "A Ship Reactor rebuilt around a lattice of Thorilide crystal, for named modules and Advanced ships."),
+    ("aurplate", "AurodiumPlating", "Aurodium Plating", "Smithery", 247, [("aurodium", 3), ("sc_hframe_5", 1)],
+     "A Hull Frame clad in salvaged Aurodium alloy, for named modules and Advanced ships."),
+    ("protocore", "PrototypeCore", "Prototype Core", "Engineering", 248, [("proto_tech", 1), ("sc_sensor_5", 1)],
+     "A Sensor Suite wired to stolen prototype tech, for the Rift Raider ships."),
+]
+RARE_TIER = 5
+RARE_RECIPE_LEVEL = 45
+
+
+def rare_resref(short):
+    return f"sc_{short}"
+
+
 SALVAGED_COMPONENT_PERCENT = {"Normal": 10, "Elite": 20, "Boss": 30}
 RARE_TRAIT_PERCENT = {"Normal": 5, "Elite": 10, "Boss": 20}
 TRAIT_HUNTER = [10, 20]

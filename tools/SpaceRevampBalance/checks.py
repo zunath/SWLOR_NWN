@@ -333,5 +333,43 @@ out.append(f"Weapons: weapons use {-m.POWER_ROUTING['Weapons']['cap']}% less cap
            f"{worst_score:.0%} of Balanced (Shields gains in long fights and pays in kill time). Capacitor and speed, the other "
            "modes' gains, are not measured by these fights.\n")
 
+# M. Named rank-50 modules (the top band, W9b)
+import rewards  # noqa: E402
+
+out.append("## M. Named rank-50 modules: a Fighter on named modules vs the top band (levels 45-52)\n")
+rows, worst_spread, slowest_ratio, worst_gain, step_ratios = [], 0.0, 0.0, 0.0, []
+pilot45 = m.pilot_for(45)
+for L in (45, 50, 52):
+    r40 = {role: fight([m.player_ship("Fighter", 40, m.FIT["Fighter"], pilot=pilot45)], [m.npc_ship(role, L)])
+           for role in m.NORMAL_ROLES}
+    r45 = {role: fight([m.player_ship("Fighter", 45, m.FIT["Fighter"], pilot=pilot45)], [m.npc_ship(role, L)])
+           for role in m.NORMAL_ROLES}
+    named = {role: fight([m.player_ship("Fighter", 45, m.FIT["Fighter"], pilot=pilot45, named=True)], [m.npc_ship(role, L)])
+             for role in m.NORMAL_ROLES}
+    step = sum(r40[k]["mean"] for k in r40) / sum(r45[k]["mean"] for k in r45)
+    step_ratios.append(step)
+    means = [r["mean"] for r in named.values()]
+    spread = max(means) / min(means)
+    worst_spread = max(worst_spread, spread)
+    slowest_ratio = max(slowest_ratio, max(means) / m.GROUND_TTK[45])
+    speedup = sum(r45[k]["mean"] for k in r45) / sum(named[k]["mean"] for k in named)
+    worst_gain = max(worst_gain, speedup)
+    rows.append([f"L{L}", m.GROUND_TTK[45]] + [f"{named[k]['mean']:.0f}s ({named[k]['left']:.0%}) vs {r45[k]['mean']:.0f}s"
+                                               for k in m.NORMAL_ROLES]
+                + [f"{max(means) / m.GROUND_TTK[45]:.0%}", f"{spread:.2f}x", f"{step:.2f}x", f"{speedup:.2f}x"])
+table(["Enemy level", "Ground T5 s"] + [f"{k}: named vs rank 45" for k in m.NORMAL_ROLES]
+      + ["Slowest vs ground T5", "Slowest / fastest", "Rank step (40 -> 45)", "Named speed-up"], rows)
+elite_named = fight([m.player_ship("Fighter", 45, m.FIT["Fighter"], pilot=pilot45, named=True)], [m.npc_ship("Fighter", 50, "Elite")])
+elite_r45 = fight([m.player_ship("Fighter", 45, m.FIT["Fighter"], pilot=pilot45)], [m.npc_ship("Fighter", 50, "Elite")])
+cap = min(rewards.NAMED_GAIN_CAP, min(step_ratios))
+out.append(f"Mean time to kill (hull + shield left), every fit on the same rank-45 pilot. The named fit is every module at its "
+           f"named numbers: rank 45 plus {rewards.NAMED_STEP_SHARE:.0%} of the rank 40 -> 45 step, at least +1, Attack and "
+           f"Accuracy included (weapons {rewards.named_value(90, 80)}). Rank step: a rank-45 fit's kill speed over a rank-40 fit "
+           f"({min(step_ratios):.2f}x-{max(step_ratios):.2f}x). Targets: the named speed-up stays at or below the rank step, "
+           f"capped at {rewards.NAMED_GAIN_CAP}x ({cap:.2f}x here; worst {worst_gain:.2f}x, "
+           f"{'met' if worst_gain <= cap + 0.005 else 'NOT MET'}), and the top band keeps the fight-length bands (every role "
+           f"within the ground T5 time, slowest / fastest <= 1.5x): worst spread {worst_spread:.2f}x, slowest "
+           f"{slowest_ratio:.0%} of the ground T5 time. Level-50 Elite Fighter: named {cell(elite_named)}, rank 45 {cell(elite_r45)}.\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

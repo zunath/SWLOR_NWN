@@ -45,7 +45,8 @@ def recipe_rows():
     rows = []
     for s in steps:
         rows.append(dict(sheet=SHEET_NAME, skill="Engineering", enum=s["RecipeName"], category="ShipModule", name=s["Name"],
-                         level=s["RecipeLevel"], resref=s["Tag"], enhancement="Module", slots=1, components=s["Components"]))
+                         level=s["RecipeLevel"], resref=s["Tag"], enhancement="Module", slots=2 if s.get("Named") else 1,
+                         components=s["Components"]))
     for h in hulls:
         rows.append(dict(sheet=SHEET_NAME, skill="Engineering", enum=h["RecipeName"], category="Starship",
                          name="Ship Deed: " + h["Name"], level=h["RecipeLevel"], resref=h["Tag"], enhancement="Starship",
@@ -53,6 +54,10 @@ def recipe_rows():
     for x in components:
         rows.append(dict(sheet=SHEET_BY_SKILL[x["Skill"]], skill=x["Skill"], enum=x["RecipeName"], category="ShipComponent",
                          name=x["Name"], level=x["RecipeLevel"], resref=x["Resref"], enhancement="N/A", slots=0,
+                         components=x["Components"]))
+    for x in c.ammo_recipes():
+        rows.append(dict(sheet=SHEET_NAME, skill="Engineering", enum=x["RecipeName"], category="StarshipAmmo", name=x["Name"],
+                         level=x["RecipeLevel"], quantity=x["Quantity"], resref=x["Resref"], enhancement="N/A", slots=0,
                          components=x["Components"]))
     for r in rows:
         assert len(r["components"]) <= len(COMPONENT_COLUMNS), r["enum"]
@@ -67,7 +72,7 @@ def cell(ref, value):
 
 def row_xml(number, r):
     cells = [("A", r["skill"]), ("D", r["enum"]), ("E", r["category"]), ("G", r["name"]), ("H", r["level"]),
-             ("I", 1), ("J", r["resref"]), ("K", r["enhancement"]), ("L", r["slots"])]
+             ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["enhancement"]), ("L", r["slots"])]
     for column, (resref, quantity) in zip(COMPONENT_COLUMNS, r["components"]):
         cells.append((column, resref))
         cells.append((col_after(column), quantity))

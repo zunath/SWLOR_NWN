@@ -781,6 +781,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>The selected ship's Standard design and the Hull Designs the player unlocked for its model.</summary>
+        public GuiBindingList<GuiComboEntry> HullDesignOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedHullDesignIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public bool IsHullDesignEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string RefitDesignText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>The appearance of each entry in <see cref="HullDesignOptions"/>.</summary>
+        private readonly List<AppearanceType> _hullDesignAppearances = new();
+
         private List<PlayerShip> GetMyShips()
         {
             return PlayerShipAccess.GetOwnedShips(GetObjectUUID(Player));
@@ -1023,6 +1051,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShipLocation = string.Empty;
                 IsRepairEnabled = false;
                 RepairText = "Repair";
+                LoadHullDesigns(null, null, false);
             }
             else
             {
@@ -1468,10 +1497,85 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                   gold >= repairPrice &&
                                   isAtCurrentLocation;
                 RepairText = $"Repair ({repairPrice} cr)";
+                LoadHullDesigns(ship, shipDetail, IsRefitEnabled && !isInSpace && !isDockedAboard);
             }
 
             ToggleRegisterButtons();
         }
+
+        /// <summary>
+        /// Fills the Hull Design list for the selected ship: its Standard design and the designs the player unlocked
+        /// for its model, with the ship's current design selected.
+        /// </summary>
+        private void LoadHullDesigns(PlayerShip ship, ShipDetail shipDetail, bool canRefit)
+        {
+            _hullDesignAppearances.Clear();
+            var options = new GuiBindingList<GuiComboEntry>();
+            if (ship == null || shipDetail == null)
+            {
+                HullDesignOptions = options;
+                SelectedHullDesignIndex = 0;
+                IsHullDesignEnabled = false;
+                RefitDesignText = "Refit Design";
+                return;
+            }
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+            _hullDesignAppearances.Add(shipDetail.Appearance);
+            options.Add(new GuiComboEntry(HullDesignRules.StandardDesignName, 0));
+            foreach (var design in HullDesignRules.UnlockedFor(ship.Status.ItemTag, dbPlayer.UnlockedHullDesigns))
+            {
+                options.Add(new GuiComboEntry(design.Name, _hullDesignAppearances.Count));
+                _hullDesignAppearances.Add(design.Appearance);
+            }
+
+            var current = Space.GetShipAppearance(ship, shipDetail);
+            HullDesignOptions = options;
+            SelectedHullDesignIndex = Math.Max(0, _hullDesignAppearances.IndexOf(current));
+            IsHullDesignEnabled = canRefit && _hullDesignAppearances.Count > 1;
+            RefitDesignText = $"Refit Design ({HullDesignRules.RefitFee(ship.Status.Size)} cr)";
+        }
+
+        /// <summary>A starport Refit: changes the selected ship to the chosen Hull Design, for a fee.</summary>
+        public Action OnClickRefitDesign() => () =>
+        {
+            if (SelectedShipIndex <= -1 || SelectedHullDesignIndex < 0 || SelectedHullDesignIndex >= _hullDesignAppearances.Count)
+                return;
+
+            var dbShip = DB.Get<PlayerShip>(_shipIds[SelectedShipIndex]);
+            var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+            var appearance = _hullDesignAppearances[SelectedHullDesignIndex];
+            if (appearance == Space.GetShipAppearance(dbShip, shipDetail))
+            {
+                FloatingTextStringOnCreature("The ship already has that design.", Player, false);
+                return;
+            }
+
+            var fee = HullDesignRules.RefitFee(dbShip.Status.Size);
+            var designName = HullDesignRules.DesignName(dbShip.Status.ItemTag, shipDetail.Appearance, appearance);
+            ShowModal($"A refit to the {designName} design will cost you {fee} credits. Will you pay for the refit?", () =>
+            {
+                var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+                if (!HullDesignRules.CanRefitTo(dbShip.Status.ItemTag, shipDetail.Appearance, appearance, dbPlayer.UnlockedHullDesigns))
+                {
+                    FloatingTextStringOnCreature(ColorToken.Red("You have not unlocked that design."), Player, false);
+                    return;
+                }
+
+                if (GetGold(Player) < fee)
+                {
+                    FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), Player, false);
+                    return;
+                }
+
+                AssignCommand(Player, () => TakeGoldFromCreature(fee, Player, true));
+                dbShip.HullDesignAppearance = appearance == shipDetail.Appearance ? 0 : (int)appearance;
+                DB.Set(dbShip);
+
+                FloatingTextStringOnCreature(ColorToken.Green($"Ship refitted to the {designName} design!"), Player, false);
+                LoadShip();
+            });
+        };
 
         private void SetMidSlot(int slot, bool visible, string resref, string tooltip)
         {

@@ -22,6 +22,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int CapacitorCost { get; set; }
         public int Range { get; set; }
         public bool Capital { get; set; }
+
+        /// <summary>A named rank-50 module: its recipe needs a Module Schematic and gives 2 enhancement slots.</summary>
+        public bool Named { get; set; }
+
         public string Texture { get; set; }
         public string Description { get; set; }
         public RecipeType RecipeType { get; set; }

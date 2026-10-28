@@ -25,6 +25,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public uint Area { get; set; }
         public List<uint> Pilots { get; set; } = new();
         public Dictionary<uint, Location> Origins { get; set; } = new();
+
+        /// <summary>The ship each pilot flies in, so a pilot who logs out can rejoin with the same ship (W11k).</summary>
+        public Dictionary<uint, string> ShipIds { get; set; } = new();
+
+        /// <summary>
+        /// The ships whose pilots logged out while the run was open, by ship ID, with the location the run returns them
+        /// to. Their pilot rejoins at the current chamber on taking the controls again while the run is open.
+        /// </summary>
+        public Dictionary<string, Location> AwayShips { get; set; } = new();
         public List<uint> Enemies { get; set; } = new();
     }
 }

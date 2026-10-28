@@ -96,6 +96,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The percentage an Ion Web slows its target by, before the Interceptor's strength bonus.</summary>
         public int WebPercent { get; set; }
 
+        /// <summary>The range in meters at which an Interdictor holds its target, before the Interceptor's range bonus.</summary>
+        public int InterdictRange { get; set; }
+
         /// <summary>The Accuracy a Jammer takes from its target (a negative number).</summary>
         public int TargetAccuracy { get; set; }
 

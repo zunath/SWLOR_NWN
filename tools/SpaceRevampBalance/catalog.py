@@ -196,15 +196,16 @@ FAMILIES = [
      p(CargoPercent=trade.expander_percent, SpeedPercent=trade.CARGO_EXPANDER_SPEED_PERCENT),
      lambda r, s: f"+{s['CargoPercent']}% cargo bay (of the hull's cargo) and {s['SpeedPercent']}% speed. Several expanders stack."),
     # The E-War and Afterburner modules (W11k), from the Ship Modules (Revamp) tab's draft rows. The draft gives no range
-    # for the Jammer and Target Painter; they take the E-War Array's 30 m. The Interdictor's range grows with its rank.
+    # for the Jammer and Target Painter; they take the E-War Array's 30 m. The Interdictor's range grows with its rank, so it
+# is a stat (InterdictRange), as the Probe Launcher's Sweep range is.
     ("IonWeb", "Ion Web", "Ion Web", "sm_web", "Mid", "Piloting", "Toggle", 3.0, 3, 20, "ion_web", False,
      p(WebPercent=lambda r: 20 + r // 3),
      lambda r, s: f"Webs your target while on: -{s['WebPercent']}% speed, renewed every 3 seconds. 20 m range. Interceptors "
                   f"web 25% harder and 50% farther."),
-    ("Interdictor", "Interdictor", "Interdict", "sm_intd", "Mid", "Piloting", "Toggle", 4.0, 5, lambda r: 15 + r // 5,
-     "interdictor", False, p(),
+    ("Interdictor", "Interdictor", "Interdict", "sm_intd", "Mid", "Piloting", "Toggle", 4.0, 5, 0,
+     "interdictor", False, p(InterdictRange=lambda r: 15 + r // 5),
      lambda r, s: f"Holds your target while on: it cannot jump a starlane or to a signature, dock, cross a rift or cloak, "
-                  f"and its Afterburner shuts down. {15 + r // 5} m range (50% farther on Interceptors)."),
+                  f"and its Afterburner shuts down. {s['InterdictRange']} m range (50% farther on Interceptors)."),
     ("Jammer", "Jammer", "Jammer", "sm_jam", "Mid", "Piloting", "Toggle", 4.0, 4, 30, "jammer", False,
      p(TargetAccuracy=lambda r: -(4 + round(0.4 * r))),
      lambda r, s: f"Jams your target while on: {s['TargetAccuracy']} Accuracy, renewed every 4 seconds. 30 m range."),
@@ -432,7 +433,7 @@ def module_steps(late_recipe_start=None, component_late_start=None, reward_late_
             steps.append(dict(
                 Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=name if single else f"{name} Mk {mk}",
                 ShortName=(short if single else f"{short} {mk}")[:14],
-                Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng(r) if callable(rng) else rng, Capital=capital,
+                Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
                 Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s),
                 RecipeType=ewar_recipe if after_cargo else cargo_recipe if after_droids else cloak_recipe if after_cloak else reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",

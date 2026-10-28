@@ -107,6 +107,8 @@ namespace SWLOR.Game.Server.Service
             {
                 var pilot = pilots[index];
                 run.Origins[pilot] = GetLocation(pilot);
+                if (TryGetFlownShip(pilot, out var flown))
+                    run.ShipIds[pilot] = flown.Id;
                 JumpIntoRiftRoom(run, pilot, index);
                 foreach (var player in GetShipCrewPlayers(pilot))
                 {
@@ -118,6 +120,37 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Space, $"RIFT RUN STARTED - {PlayerName.GetAuditName(user)} - {key.Resref}, {pilots.Count} ship(s): " +
                                       string.Join(", ", pilots.Select(PlayerName.GetAuditName)));
+        }
+
+        /// <summary>The open run a logged-out pilot's ship waits in, or null (W11k).</summary>
+        private static RiftRun FindRejoinableRiftRun(string shipId) =>
+            _riftRuns.Values.FirstOrDefault(x => RiftRunRules.CanRejoin(x, shipId) && GetIsObjectValid(x.Area));
+
+        /// <summary>
+        /// Where a pilot taking the controls of a ship waiting in an open Rift Run launches: the run's current chamber.
+        /// Null when the ship is in no open run, so the launch goes where the ship is as usual.
+        /// </summary>
+        private static Location GetRiftRunRejoinLocation(string shipId)
+        {
+            var run = FindRejoinableRiftRun(shipId);
+            if (run == null)
+                return null;
+
+            var (dx, dy) = RiftRunRules.ArrivalOffset(run.Pilots.Count);
+            return RiftRoomLocation(run, run.Room, dx, dy);
+        }
+
+        /// <summary>A pilot launched back into the pocket their ship waits in: they are one of the run's ships again.</summary>
+        private static void RejoinRiftRun(uint pilot, string shipId)
+        {
+            var run = FindRejoinableRiftRun(shipId);
+            if (run == null || GetArea(pilot) != run.Area || !RiftRunRules.Rejoin(run, pilot, shipId))
+                return;
+
+            var left = RiftRunRules.FormatTimer(RiftRunRules.SecondsLeft(run.StartedAt, DateTime.UtcNow));
+            SendMessageToPC(pilot, ColorToken.Cyan(
+                $"You rejoin the Rift Run in chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}, the {RiftRunTuning.Rooms[run.Room].Name}: {left} left."));
+            Log.Write(LogGroup.Space, $"RIFT RUN REJOINED - {PlayerName.GetAuditName(pilot)} - {run.Key.Resref}, chamber {run.Room + 1}");
         }
 
         private static Location RiftRoomLocation(RiftRun run, int room, float dx = 0f, float dy = 0f)
@@ -165,9 +198,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Ships that died (and left in pods), logged out or were moved out of the pocket are out of the run.
+            // Ships that died (and left in pods), logged out or were moved out of the pocket are out of the run. A pilot
+            // who logged out can rejoin while the run is open (W11k): their ship waits in the pocket.
             if ((now - run.StartedAt).TotalSeconds >= RiftRunRules.ArrivalGraceSeconds)
+            {
+                foreach (var pilot in run.Pilots.Where(x => !GetIsObjectValid(x)).ToList())
+                    RiftRunRules.MarkAway(run, pilot);
                 run.Pilots.RemoveAll(x => !GetIsObjectValid(x) || GetArea(x) != run.Area || !IsPlayerInSpaceMode(x));
+            }
 
             run.Enemies.RemoveAll(x => !GetIsObjectValid(x) || GetIsDead(x));
             var secondsLeft = RiftRunRules.SecondsLeft(run.StartedAt, now);

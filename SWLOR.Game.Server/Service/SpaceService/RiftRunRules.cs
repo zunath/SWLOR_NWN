@@ -12,6 +12,45 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Seconds after the pocket opens before ships still arriving count as gone.</summary>
         public const int ArrivalGraceSeconds = 15;
 
+        /// <summary>
+        /// A pilot logged out (their creature is gone): their ship waits in the pocket for them to rejoin while the run is
+        /// open (W11k). Does nothing for a pilot the run does not know.
+        /// </summary>
+        public static void MarkAway(RiftRun run, uint pilot)
+        {
+            if (!run.ShipIds.Remove(pilot, out var shipId))
+                return;
+
+            run.Origins.Remove(pilot, out var origin);
+            run.AwayShips[shipId] = origin;
+        }
+
+        /// <summary>
+        /// Whether a ship whose pilot logged out may rejoin its run: the run is still open (not cleared and returning, not
+        /// closing). A closed run keeps the shipped behaviour: the ship goes back to its dock when the pocket closes.
+        /// </summary>
+        public static bool CanRejoin(RiftRun run, string shipId) =>
+            run != null && !string.IsNullOrEmpty(shipId) && run.AwayShips.ContainsKey(shipId) &&
+            run.Phase is not (RiftRunPhase.Returning or RiftRunPhase.Closing);
+
+        /// <summary>
+        /// The pilot is back aboard their ship in the pocket: they count as one of its ships again, so they fight on and
+        /// keep their payout share, and the run returns them where they opened it.
+        /// </summary>
+        public static bool Rejoin(RiftRun run, uint pilot, string shipId)
+        {
+            if (!CanRejoin(run, shipId))
+                return false;
+
+            run.AwayShips.Remove(shipId, out var origin);
+            if (!run.Pilots.Contains(pilot))
+                run.Pilots.Add(pilot);
+            run.ShipIds[pilot] = shipId;
+            if (origin != null)
+                run.Origins[pilot] = origin;
+            return true;
+        }
+
         public static RiftKeyDetail FindKey(string resref) =>
             RiftRunTuning.Keys.FirstOrDefault(x => x.Resref == resref);
 

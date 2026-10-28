@@ -677,6 +677,15 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A ship waiting in an open Rift Run while its pilot was logged out launches into the run's current chamber
+            // (W11k).
+            var rejoinLocation = GetRiftRunRejoinLocation(dbShip.Id);
+            if (rejoinLocation != null)
+            {
+                BeginShipLaunch(player, dbShip.Id, rejoinLocation, GetLocation(player));
+                return;
+            }
+
             var dbProperty = DB.Get<WorldProperty>(propertyId);
 
             // The existence of a current location means the ship is currently in space.
@@ -759,6 +768,7 @@ namespace SWLOR.Game.Server.Service
             SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", launch.PilotLocation);
             SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
             EnterSpaceMode(player, launch.ShipId, launch.PilotLocation);
+            RejoinRiftRun(player, launch.ShipId);
             return true;
         }
 

@@ -39,6 +39,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Where the Engineer routes power.</summary>
         public ShipPowerRouting PowerRouting { get; set; }
 
+        /// <summary>The hull's traits for the Hull Traits row (W11k): their names, or "None".</summary>
+        public string HullTraits { get; set; } = "None";
+
         /// <summary>The Cloaking Device's state for the Cloak line, or null when the ship has none fitted.</summary>
         public string CloakText { get; set; }
 
@@ -82,6 +85,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Evasion = status.Evasion,
                 SpeedMultiplier = PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting),
                 PowerRouting = status.PowerRouting,
+                HullTraits = ShipTraitRules.HullTraitNames(status.HullTraits),
                 HighFitted = status.HighPowerModules?.Count ?? 0,
                 MidFitted = status.MidPowerModules?.Count ?? 0,
                 LowFitted = status.LowPowerModules?.Count ?? 0,

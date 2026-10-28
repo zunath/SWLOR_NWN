@@ -608,11 +608,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // Deliver the units to the ship's hold, or the pilot when it is full. A droid in the ship's droid bay
                 // adds to the ore delivered (not to what the asteroid loses) and, with Prospecting, to the rare chance.
                 var delivered = DroidIndustryRules.ApplyPercent(amountToMine, Space.GetDroidBayYieldPercent(activator));
-                var bayRareFind = rareFind + Space.GetDroidBayRareFindBonus(activator);
+                rareFind += Space.GetDroidBayRareFindBonus(activator);
                 var ore = new List<string>();
                 for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable, bayRareFind).Resref);
+                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);
@@ -666,11 +666,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var lootTable = Loot.GetLootTableByName(lootTableId);
 
                 var delivered = DroidIndustryRules.ApplyPercent(amountToMine, Space.GetDroidBayYieldPercent(activator));
-                var bayRareFind = rareFind + Space.GetDroidBayRareFindBonus(activator);
+                rareFind += Space.GetDroidBayRareFindBonus(activator);
                 var ore = new List<string>();
                 for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable, bayRareFind).Resref);
+                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);

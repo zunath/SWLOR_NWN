@@ -250,22 +250,6 @@ public class AppearanceEditorLayoutTests
             $"{partialName} must fit below the tab panel");
     }
 
-    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
-    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
-    public void TheMinimumWindowShowsTheMapColoursAndATwoColumnBrowser(string partialName)
-    {
-        var width = AppearanceEditorDefinition.MinimumWindowWidth;
-        BrowserColumns(width, hasSideColumns: true).Should().BeGreaterThanOrEqualTo(2);
-        var browser = BrowserGroup(partialName);
-        var contentRow = PathTo(_partials[partialName], browser).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        var sides = contentRow.Elements.Where(widget => !ReferenceEquals(widget, browser)).ToArray();
-        var grid = _partials[FullHeightGrid(2)];
-        (sides.Sum(MinimumWidth) + NaturalWidth(grid)).Should().BeLessThanOrEqualTo(width - 60f);
-        var height = sides.Max(MinimumHeight);
-        height.Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.MinimumWindowHeight
-            - AppearanceEditorDefinition.TabPanelHeight - 60f, $"{partialName} side columns fit the minimum height");
-    }
-
     // ------------------------------------------------------------------ body map
 
     [TestCase(AppearanceEditorViewModel.EditorArmorPartial, true)]
@@ -322,6 +306,10 @@ public class AppearanceEditorLayoutTests
         {
             var button = Walk(armor).Single(widget => widget.Id == id);
             ReadProperty<string>(button, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCopyEnabled));
+            ReadProperty<float>(button, "Width").Should().Be(ReadProperty<float>(button, "Height"),
+                "the copy buttons are square slots under the arms");
+            ReadProperty<string>(button, "Resref").Should().Be(id == "ae_copy_right" ? "arrow_left" : "arrow_right",
+                "each arrow points at the side it copies to");
             AssertSingleHandler(button, "click", method);
             Walk(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().NotContain(widget => widget.Id == id);
         }

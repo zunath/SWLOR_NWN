@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        public const float MapWidth = 320f;
+        public const float MapWidth = 280f;
         public const float ColoursWidth = 372f;
         public const float WeaponCategoryWidth = 200f;
         public const float TileSize = 96f; // pictures are 96x96; drawn 1:1 so they stay sharp
@@ -29,12 +29,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public const float TabPanelHeight = 44f;
         private const float NoItemLabelWidth = 130f;
 
-        /// <summary>
-        /// The smallest window that shows the body map, the colours and a two-column part browser
-        /// without scrolling. Smaller saved or dragged sizes are grown back to it.
-        /// </summary>
-        public const float MinimumWindowWidth = 1010f;
-        public const float MinimumWindowHeight = 750f;
+        private const float SideColumnWidth = 58f;
+        private const float PairColumnWidth = 58f;
+        private const float CenterColumnWidth = 120f;
 
         private static readonly GuiColor Highlight = new(255, 196, 40);
 
@@ -251,24 +248,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                 });
 
-                if (equipment)
-                {
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetId("ae_copy_right")
-                            .SetText("Copy to Right")
-                            .SetTooltip("Copies the left side's parts and colours to the right side.")
-                            .BindIsEnabled(model => model.IsCopyEnabled)
-                            .BindOnClicked(model => model.OnClickCopyToRight());
-                        row.AddButton()
-                            .SetId("ae_copy_left")
-                            .SetText("Copy to Left")
-                            .SetTooltip("Copies the right side's parts and colours to the left side.")
-                            .BindIsEnabled(model => model.IsCopyEnabled)
-                            .BindOnClicked(model => model.OnClickCopyToLeft());
-                    });
-                }
                 col.AddRow(fill => fill.AddSpacer());
             });
         }
@@ -283,8 +262,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddSlot(side, AppearanceEditorSlot.RightBicep, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.RightForearm, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.RightHand, true, SlotSize);
+                side.AddRow(gap => gap.AddSpacer().SetHeight(24f));
+                AddCopyButton(side, "ae_copy_left", "arrow_right",
+                    "Copy to Left: copies the right side's parts and colours to the left side.",
+                    model => model.OnClickCopyToLeft());
                 side.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(64f);
+            }).SetWidth(SideColumnWidth);
             row.AddColumn(center =>
             {
                 AddSlot(center, AppearanceEditorSlot.Head, true, SlotSize);
@@ -296,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddPair(center, AppearanceEditorSlot.RightShin, AppearanceEditorSlot.LeftShin, true);
                 AddPair(center, AppearanceEditorSlot.RightFoot, AppearanceEditorSlot.LeftFoot, true);
                 center.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(140f);
+            }).SetWidth(CenterColumnWidth);
             row.AddColumn(side =>
             {
                 AddSlot(side, AppearanceEditorSlot.Cloak, true, SlotSize);
@@ -305,8 +288,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddSlot(side, AppearanceEditorSlot.LeftBicep, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.LeftForearm, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.LeftHand, true, SlotSize);
+                side.AddRow(gap => gap.AddSpacer().SetHeight(24f));
+                AddCopyButton(side, "ae_copy_right", "arrow_left",
+                    "Copy to Right: copies the left side's parts and colours to the right side.",
+                    model => model.OnClickCopyToRight());
                 side.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(64f);
+            }).SetWidth(SideColumnWidth);
         }
 
         /// <summary>
@@ -326,7 +313,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             }
 
             row.AddColumn(side => Arm(side, AppearanceEditorSlot.RightBicep, AppearanceEditorSlot.RightForearm,
-                AppearanceEditorSlot.RightHand)).SetWidth(64f);
+                AppearanceEditorSlot.RightHand)).SetWidth(SideColumnWidth);
             row.AddColumn(center =>
             {
                 AddSlot(center, AppearanceEditorSlot.Head, false, SlotSize);
@@ -336,9 +323,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddPair(center, AppearanceEditorSlot.RightShin, AppearanceEditorSlot.LeftShin, false);
                 AddPair(center, AppearanceEditorSlot.RightFoot, AppearanceEditorSlot.LeftFoot, false);
                 center.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(140f);
+            }).SetWidth(CenterColumnWidth);
             row.AddColumn(side => Arm(side, AppearanceEditorSlot.LeftBicep, AppearanceEditorSlot.LeftForearm,
-                AppearanceEditorSlot.LeftHand)).SetWidth(64f);
+                AppearanceEditorSlot.LeftHand)).SetWidth(SideColumnWidth);
+        }
+
+        /// <summary>A square copy button under one arm; its arrow points at the side it copies to.</summary>
+        private static void AddCopyButton(GuiColumn<AppearanceEditorViewModel> col, string id, string arrow,
+            string tooltip, Expression<System.Func<AppearanceEditorViewModel, System.Action>> onClick)
+        {
+            col.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddButtonImage()
+                    .SetId(id)
+                    .SetImageResref(arrow)
+                    .SetTooltip(tooltip)
+                    .SetWidth(SlotSize)
+                    .SetHeight(SlotSize)
+                    .SetMargin(2f)
+                    .BindIsEnabled(model => model.IsCopyEnabled)
+                    .BindOnClicked(onClick);
+                row.AddSpacer();
+            });
         }
 
         private void AddPair(GuiColumn<AppearanceEditorViewModel> col, AppearanceEditorSlot right, AppearanceEditorSlot left, bool equipment)
@@ -346,8 +353,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 row.AddSpacer();
-                row.AddColumn(c => AddSlot(c, right, equipment, SlotSize)).SetWidth(62f);
-                row.AddColumn(c => AddSlot(c, left, equipment, SlotSize)).SetWidth(62f);
+                row.AddColumn(c => AddSlot(c, right, equipment, SlotSize)).SetWidth(PairColumnWidth);
+                row.AddColumn(c => AddSlot(c, left, equipment, SlotSize)).SetWidth(PairColumnWidth);
                 row.AddSpacer();
             });
         }
@@ -388,6 +395,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AppearanceArmorColor.Metal1, partRow: false);
             AddItemSwatchRow(col, "Base 2", "Global", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
                 AppearanceArmorColor.Metal2, partRow: false);
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsPartColorsVisible);
+                row.AddLabel()
+                    .BindText(model => model.SelectedPartColorsTitle)
+                    .SetTooltip("Part colours apply only to the selected body part. A blank part colour uses the Base colour.")
+                    .SetHeight(20f);
+            });
             AddItemSwatchRow(col, "Part 1", "SelectedPart", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
                 AppearanceArmorColor.Metal1, partRow: true);
             AddItemSwatchRow(col, "Part 2", "SelectedPart", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
@@ -415,11 +430,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         button.SetId($"ae_part_swatch_{channel}")
                             .BindOnClicked(model => model.OnClickPartSwatch(copy))
                             .BindOnMouseDown(model => model.OnMouseDownPartSwatch(copy))
-                            .SetTooltip("Right-click to use the base colour.");
+                            .SetTooltip("Colours only the selected part. Right-click to clear it back to the Base colour.");
                     }
                     else
                     {
                         button.SetId($"ae_base_swatch_{channel}")
+                            .SetTooltip("Colours the whole item. A part with a blank part colour uses this one.")
                             .BindOnClicked(model => model.OnClickBaseSwatch(copy));
                     }
                     row.AddLabel().BindText(Bind<string>(name + "Code")).SetWidth(30f).SetHeight(SwatchHeight);
@@ -428,8 +444,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddButton()
                         .SetId("ae_use_base")
-                        .SetText("Base")
-                        .SetTooltip("Clear the selected part colour so it uses the base colour.")
+                        .SetText("Clear")
+                        .SetTooltip("Clears the selected part colour so it uses the Base colour again.")
                         .BindIsEnabled(model => model.IsUseBaseEnabled)
                         .SetWidth(52f)
                         .SetHeight(SwatchHeight)

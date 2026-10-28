@@ -161,7 +161,9 @@ public class AppearanceEditorColorStateTests
         queue.ToString().Should().Contain("DelayCommand(");
         queue.ToString().Should().Contain("generation != _resizeGeneration",
             "only the last geometry update of a drag resizes the grid");
-        Invocations(queue).Should().BeEquivalentTo("DelayCommand", "EnsureMinimumWindowSize", "ApplyBrowserColumns");
+        Invocations(queue).Should().BeEquivalentTo(new[] { "DelayCommand", "ApplyBrowserColumns" },
+            "a resize never changes the window size the player dragged to");
+        queue.ToString().Should().NotContain("Geometry = ");
 
         var apply = FindMethod(browser, "ApplyBrowserColumns");
         apply.ToString().Should().Contain("if (!force && columns == _browserColumns && rows == _browserRows)",

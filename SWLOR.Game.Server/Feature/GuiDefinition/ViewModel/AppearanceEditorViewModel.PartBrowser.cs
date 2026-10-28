@@ -357,6 +357,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string SelectedPartMetal1Code { get => Get<string>(); set => Set(value); }
         public string SelectedPartMetal2Code { get => Get<string>(); set => Set(value); }
         public bool IsPartColorsVisible { get => Get<bool>(); set => Set(value); }
+        public string SelectedPartColorsTitle { get => Get<string>(); set => Set(value); }
 
         public GuiRectangle BodySkinRegion { get => Get<GuiRectangle>(); set => Set(value); }
         public GuiRectangle BodyHairRegion { get => Get<GuiRectangle>(); set => Set(value); }
@@ -671,23 +672,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Grows a window smaller than the editor's minimum (an old saved size, or a drag) back to
-        /// the minimum, within the player's screen, so no panel is cut off.
+        /// Caps a saved window larger than the player's screen to it and pulls it back on screen.
+        /// Never grows a window, so a player can shrink the editor and it stays that size.
         /// </summary>
         /// <param name="screenWidth">Screen width in physical pixels (0 when unknown), like Geometry X.</param>
         /// <param name="screenHeight">Screen height in physical pixels (0 when unknown), like Geometry Y.</param>
         /// <param name="scale">GUI scale; a window's on-screen size is its width and height times this.</param>
-        internal static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight, float scale)
+        internal static GuiRectangle FitWindowToScreen(GuiRectangle geometry, float screenWidth, float screenHeight, float scale)
         {
             if (geometry == null)
                 return null;
             if (scale <= 0f)
                 scale = 1f;
-            var width = Math.Max(geometry.Width, AppearanceEditorDefinition.MinimumWindowWidth);
-            var height = Math.Max(geometry.Height, AppearanceEditorDefinition.MinimumWindowHeight);
+            var width = geometry.Width;
+            var height = geometry.Height;
             var x = geometry.X;
             var y = geometry.Y;
-            // A saved size larger than this screen (or the minimum on a small screen) is capped to it.
             if (screenWidth > 0f)
             {
                 width = Math.Min(width, screenWidth / scale);
@@ -703,12 +703,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return new GuiRectangle(x, y, width, height);
         }
 
-        private void EnsureMinimumWindowSize()
+        /// <summary>Runs once when the window opens, never on a resize, so a drag is never undone.</summary>
+        private void FitWindowToPlayerScreen()
         {
             var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
             var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
             var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
-            var fitted = FitMinimumWindow(Geometry, screenWidth, screenHeight, scale);
+            var fitted = FitWindowToScreen(Geometry, screenWidth, screenHeight, scale);
             if (fitted != null && !ReferenceEquals(fitted, Geometry))
                 Geometry = fitted;
         }
@@ -720,7 +721,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (generation != _resizeGeneration || Geometry == null)
                     return;
-                EnsureMinimumWindowSize();
                 if (!IsSettingsSelected)
                     ApplyBrowserColumns();
             });
@@ -925,9 +925,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetIfChanged(nameof(IsPartColorsVisible), visible);
             if (!visible)
                 return;
+            SetIfChanged(nameof(SelectedPartColorsTitle), PartColorsTitle(_selectedSlot));
             foreach (var channel in SwatchChannels)
                 MirrorPartSwatch(channel);
             SyncSelectedPartSelection();
+        }
+
+        /// <summary>Names the part the Part rows colour, e.g. "Left Shoulder only (blank = Base)".</summary>
+        internal static string PartColorsTitle(AppearanceEditorSlot slot)
+        {
+            var name = string.Concat(slot.ToString().Select((letter, index) =>
+                index > 0 && char.IsUpper(letter) ? " " + letter : letter.ToString()));
+            return $"{name} only (blank = Base)";
         }
 
         private void MirrorPartSwatch(AppearanceArmorColor channel)

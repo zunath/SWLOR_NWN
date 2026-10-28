@@ -88,7 +88,7 @@ public class RiftRunTests
         // Aces: their tier's key in their own table.
         var aceTables = new SpaceAceLootTableDefinition().BuildLootTables();
         foreach (var ace in SWLOR.Game.Server.Feature.ShipRewardDefinition.RevampAceCatalog.Aces)
-            aceTables[ace.LootTable].Should().Contain(x => x.Resref == RiftRunRules.KeyForTier(ace.Tier).Resref, ace.Tag);
+            aceTables[ace.LootTable].Should().Contain(x => x.Resref == (ace.WildSpace ? "rift_key_t55" : RiftRunRules.KeyForTier(ace.Tier).Resref), ace.Tag);
         foreach (var key in RiftRunTuning.Keys.Take(5))
             aceTables.Values.SelectMany(x => x).Should().Contain(x => x.Resref == key.Resref, "every tier 1-5 key has an ace source");
 

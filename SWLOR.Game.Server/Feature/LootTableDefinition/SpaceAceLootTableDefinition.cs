@@ -32,6 +32,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             AceKorribanDebris();
             AceMidRim2();
             AceKorriban();
+            AceVeshPulsar();
+            AceTheMaw();
+            AceIonVeil();
+            AceKorvaxMagnetar();
+            AceEmberGiant();
+            AceShipGraveyard();
 
             return _builder.Build();
         }
@@ -228,6 +234,96 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTuned }))
                 .AddItem("sc_emitter_5", 15, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTargetingCore }))
+                .AddItem("rift_key_t55", 15, 1, true);
+        }
+
+        /// <summary>Kessa Vane (the Vesh Pulsar).</summary>
+        private void AceVeshPulsar()
+        {
+            _builder.Create("SPACE_ACE_VESH_PULSAR")
+                .IsRare()
+                .AddItem("dsgn_10192", 30, 1, true)
+                .AddItem("proto_tech", 10, 1, true)
+                .AddItem("structure_0450", 20, 1, true)
+                .AddItem("sc_thruster_5", 25, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CorellianModified }))
+                .AddItem("sc_hframe_5", 15, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RaiderRefitHull }))
+                .AddItem("rift_key_t55", 15, 1, true);
+        }
+
+        /// <summary>Old Mother Garrow (The Maw).</summary>
+        private void AceTheMaw()
+        {
+            _builder.Create("SPACE_ACE_THE_MAW")
+                .IsRare()
+                .AddItem("dsgn_10079", 30, 1, true)
+                .AddItem("proto_tech", 10, 1, true)
+                .AddItem("structure_0451", 20, 1, true)
+                .AddItem("sc_ordnance_5", 25, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTuned }))
+                .AddItem("sc_hframe_5", 15, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RaiderRefitHull }))
+                .AddItem("rift_key_t55", 15, 1, true);
+        }
+
+        /// <summary>Jex Turlo (the Ion Veil).</summary>
+        private void AceIonVeil()
+        {
+            _builder.Create("SPACE_ACE_ION_VEIL")
+                .IsRare()
+                .AddItem("dsgn_2001", 30, 1, true)
+                .AddItem("proto_tech", 10, 1, true)
+                .AddItem("structure_0452", 20, 1, true)
+                .AddItem("sc_sensor_5", 25, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.ChissCalibrated }))
+                .AddItem("sc_hframe_5", 15, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RaiderRefitHull }))
+                .AddItem("rift_key_t55", 15, 1, true);
+        }
+
+        /// <summary>Brann Halvek (the Korvax Magnetar).</summary>
+        private void AceKorvaxMagnetar()
+        {
+            _builder.Create("SPACE_ACE_KORVAX_MAGNETAR")
+                .IsRare()
+                .AddItem("dsgn_10210", 30, 1, true)
+                .AddItem("proto_tech", 10, 1, true)
+                .AddItem("structure_0453", 20, 1, true)
+                .AddItem("sc_emitter_5", 25, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTuned }))
+                .AddItem("sc_hframe_5", 15, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RaiderRefitHull }))
+                .AddItem("rift_key_t55", 15, 1, true);
+        }
+
+        /// <summary>Captain Seris Kol (the Ember Giant).</summary>
+        private void AceEmberGiant()
+        {
+            _builder.Create("SPACE_ACE_EMBER_GIANT")
+                .IsRare()
+                .AddItem("dsgn_10211", 30, 1, true)
+                .AddItem("proto_tech", 10, 1, true)
+                .AddItem("structure_0454", 20, 1, true)
+                .AddItem("sc_hframe_5", 25, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.MandalorianForged }))
+                .AddItem("sc_hframe_5", 15, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RaiderRefitHull }))
+                .AddItem("rift_key_t55", 15, 1, true);
+        }
+
+        /// <summary>Warlord Tasker Vohl (the Ship Graveyard).</summary>
+        private void AceShipGraveyard()
+        {
+            _builder.Create("SPACE_ACE_SHIP_GRAVEYARD")
+                .IsRare()
+                .AddItem("dsgn_10195", 30, 1, true)
+                .AddItem("proto_tech", 10, 1, true)
+                .AddItem("structure_0455", 20, 1, true)
+                .AddItem("sc_shieldprj_5", 25, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RepublicGrade }))
+                .AddItem("sc_hframe_5", 15, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RaiderRefitHull }))
                 .AddItem("rift_key_t55", 15, 1, true);
         }
     }

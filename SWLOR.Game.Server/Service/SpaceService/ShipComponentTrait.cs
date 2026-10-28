@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string Name { get; set; }
         public ShipTraitKind Kind { get; set; }
 
+        /// <summary>A blueprint trait's tier (1-3); 0 for every other kind.</summary>
+        public int Tier { get; set; }
+
         /// <summary>The component families that can carry the trait.</summary>
         public IReadOnlyList<ShipComponentFamily> Families { get; set; } = new ShipComponentFamily[0];
 

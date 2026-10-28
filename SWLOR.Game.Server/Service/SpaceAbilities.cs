@@ -331,9 +331,10 @@ namespace SWLOR.Game.Server.Service
             if (options.DamageType.HasValue)
                 shot.DamageType = options.DamageType.Value;
 
-            var ammo = ShipModuleActions.GetAmmoResref(step.Family);
-            if (consumeAmmo && ammo != null)
-                ShipModuleActions.ConsumeAmmo(activator, ammo);
+            // An ability's launcher shot spends the ammo the launcher would fire next, plain or a variant.
+            var plainAmmo = ShipModuleActions.GetAmmoResref(step.Family);
+            if (consumeAmmo && plainAmmo != null)
+                ShipModuleActions.ConsumeAmmo(activator, ShipModuleActions.PickAmmo(activator, step.Family, plainAmmo) ?? plainAmmo);
 
             var roll = ShipModuleActions.FireStep(step, activator, status, target, targetStatus, shot, true);
             if (roll == null)

@@ -237,6 +237,12 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
+
+        /// <summary>
+        /// The Hull Designs this character unlocked with Design Schematics (plan section 7), keyed
+        /// "ship deed tag:appearance" (<c>HullDesignRules.Key</c>). Older records load empty.
+        /// </summary>
+        public Dictionary<string, DateTime> UnlockedHullDesigns { get; set; } = new();
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }

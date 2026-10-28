@@ -3,12 +3,14 @@ using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -31,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             public int TimeReduction { get; set; }
             public int ItemBonuses { get; set; }
             public List<ItemProperty> GuaranteedBonuses { get; set; }
+            public List<ShipComponentTraitType> GuaranteedTraits { get; set; }
             public int CreditCost { get; set; }
             public int TimeCost { get; set; }
             public int RequiredPerkLevel { get; set; }
@@ -170,6 +173,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 TimeReduction = blueprint.TimeReduction,
                 ItemBonuses = blueprint.ItemBonuses,
                 GuaranteedBonuses = blueprint.GuaranteedBonuses,
+                GuaranteedTraits = blueprint.GuaranteedTraits,
                 CreditCost = creditCost,
                 TimeCost = timeCost,
                 RequiredPerkLevel = perkLevel
@@ -200,7 +204,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : $"Licensed Runs: {researchJob.CurrentLicensedRuns}";
                 TimeReduction = $"Time Reduction: -{researchJob.TimeReduction}%";
                 ItemBonuses = $"Item Bonuses: {researchJob.ItemBonuses}";
-                GuaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                var guaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                foreach (var line in ShipTraitRules.DescribeLines(researchJob.GuaranteedTraits))
+                {
+                    guaranteedBonuses.Add(line);
+                }
+                GuaranteedBonuses = guaranteedBonuses;
                 CreditCost = $"Price: {researchJob.CreditCost}cr";
                 TimeCost = $"Time: {researchJob.TimeString}";
                 NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
@@ -329,35 +338,58 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. Are you sure you want to start the job?",
                 () =>
                 {
-                    var jobValidation = ValidateJob();
-                    if (!string.IsNullOrWhiteSpace(jobValidation))
+                    // A ship module blueprint can spend a Prototype Tech for a guaranteed top-tier bonus.
+                    var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
+                    if (ShipBlueprintRules.IsResearchable(Craft.GetRecipe(_recipeType)) && GetIsObjectValid(prototypeTech))
                     {
-                        FloatingTextStringOnCreature(jobValidation, Player, false);
-                        ChangePartialView(PartialView, StartStageView);
+                        ShowModal("Spend one Prototype Tech on this job? The blueprint gains a guaranteed top-tier bonus when the job completes.",
+                            () => StartJob(researchJob, true),
+                            () => StartJob(researchJob, false),
+                            "Spend",
+                            "Don't Spend");
                         return;
                     }
 
-                    var now = DateTime.UtcNow;
-                    var dbResearchJob = new ResearchJob
-                    {
-                        ParentPropertyId = _researchTerminalPropertyId,
-                        PlayerId = GetObjectUUID(Player),
-                        DateStarted = now,
-                        DateCompleted = now.AddSeconds(researchJob.TimeCost),
-                        SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
-                        Level = researchJob.CurrentLevel,
-                        Recipe = _recipeType
-                    };
-                    DB.Set(dbResearchJob);
-
-                    AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
-                    DestroyObject(_blueprintItem);
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                    StartJob(researchJob, false);
                 }, () =>
                 {
                     ChangePartialView(PartialView, StartStageView);
                 });
         };
+
+        private void StartJob(ResearchJobDetails researchJob, bool spendPrototypeTech)
+        {
+            var jobValidation = ValidateJob();
+            if (!string.IsNullOrWhiteSpace(jobValidation))
+            {
+                FloatingTextStringOnCreature(jobValidation, Player, false);
+                ChangePartialView(PartialView, StartStageView);
+                return;
+            }
+
+            var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
+            var usesPrototypeTech = spendPrototypeTech && GetIsObjectValid(prototypeTech);
+            if (usesPrototypeTech)
+                Item.ReduceItemStack(prototypeTech, 1);
+
+            var now = DateTime.UtcNow;
+            var dbResearchJob = new ResearchJob
+            {
+                ParentPropertyId = _researchTerminalPropertyId,
+                PlayerId = GetObjectUUID(Player),
+                DateStarted = now,
+                DateCompleted = now.AddSeconds(researchJob.TimeCost),
+                SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
+                Level = researchJob.CurrentLevel,
+                Recipe = _recipeType,
+                PrototypeTech = usesPrototypeTech
+            };
+            DB.Set(dbResearchJob);
+
+            AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
+            DestroyObject(_blueprintItem);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+        }
 
         public Action ClickCancelJob() => () =>
         {
@@ -466,6 +498,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             void AddGuaranteedBonus(int tier)
             {
+                // A ship module blueprint's guaranteed bonuses are blueprint traits.
+                if (ShipBlueprintRules.IsResearchable(recipe))
+                {
+                    var trait = ShipBlueprintRules.PickGuaranteed(
+                        ShipBlueprintRules.ComponentFamily(recipe), tier, blueprintDetails.GuaranteedTraits, Random.Next);
+                    if (trait != ShipComponentTraitType.None)
+                        blueprintDetails.GuaranteedTraits.Add(trait);
+                    return;
+                }
+
                 var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
                 ItemProperty ip;
 
@@ -549,6 +591,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         AddGuaranteedBonus(3);
                     break;
             }
+
+            if (dbJob.PrototypeTech)
+                AddGuaranteedBonus(RevampRewardCatalog.PrototypeTechBonusTier);
 
             if (isNewBlueprint)
             {

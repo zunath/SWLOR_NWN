@@ -23,7 +23,8 @@ public class RevampCatalogTests
     {
         var steps = RevampModuleCatalog.Steps;
 
-        steps.Should().HaveCount(308, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b)");
+        steps.Should().HaveCount(324,
+            "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + 16 named rank-50 modules (W9b)");
         steps.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
         steps.Select(x => x.Name).Should().OnlyHaveUniqueItems();
         foreach (var step in steps)
@@ -42,7 +43,11 @@ public class RevampCatalogTests
         foreach (var family in RevampModuleCatalog.Steps.GroupBy(x => x.Family))
         {
             var first = family.First();
-            family.Select(x => x.Rank).Should().Equal(first.Capital ? CapitalRanks : StandardRanks, family.Key.ToString());
+            var ladder = first.Capital ? CapitalRanks : StandardRanks;
+            if (family.Any(x => x.Named))
+                ladder = ladder.Append(50).ToArray();
+            family.Select(x => x.Rank).Should().Equal(ladder, family.Key.ToString());
+            family.Where(x => x.Named).Should().OnlyContain(x => x.Rank == 50, family.Key.ToString());
             family.Select(x => x.Row).Distinct().Should().ContainSingle(family.Key.ToString());
             family.Select(x => x.Skill).Distinct().Should().ContainSingle(family.Key.ToString());
             family.Select(x => x.Activation).Distinct().Should().ContainSingle(family.Key.ToString());
@@ -130,7 +135,7 @@ public class RevampCatalogTests
         {
             Enum.IsDefined(step.RecipeType).Should().BeTrue(step.Tag);
             step.RecipeType.ToString().Should().Be($"Ship{step.Family}{step.Rank:00}");
-            step.RecipeLevel.Should().BeInRange(1, 50, step.Tag);
+            step.RecipeLevel.Should().BeInRange(1, step.Named ? 52 : 50, step.Tag);
             step.Components.Should().NotBeEmpty(step.Tag);
         }
 
@@ -145,7 +150,9 @@ public class RevampCatalogTests
         var all = steps.Select(x => x.RecipeType).Concat(hulls.Select(x => x.RecipeType)).ToList();
         all.Should().OnlyHaveUniqueItems();
         all.Select(x => x.ToString()).Should().OnlyHaveUniqueItems();
-        all.Should().OnlyContain(x => (int)x >= 7000 && (int)x < 7000 + 358);
+        all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x)).Should().OnlyContain(x => (int)x >= 7000 && (int)x < 7000 + 358);
+        steps.Where(x => x.Named).Select(x => (int)x.RecipeType).Should().OnlyContain(x => x >= 7488 && x < 7488 + 16,
+            "the named modules open the W9b RecipeType block, after the component recipes");
     }
 
     [Test]

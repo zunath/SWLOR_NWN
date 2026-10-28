@@ -16,5 +16,11 @@ namespace SWLOR.Game.Server.Entity
         public string SerializedItem { get; set; }
         public int Level { get; set; }
         public RecipeType Recipe { get; set; }
+
+        /// <summary>
+        /// The job spent a Prototype Tech when it started (ship module blueprints): completing it adds a guaranteed
+        /// top-tier blueprint trait. Older records load false.
+        /// </summary>
+        public bool PrototypeTech { get; set; }
     }
 }

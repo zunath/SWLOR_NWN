@@ -47,6 +47,12 @@ public class ShipComponentTests
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
+    private static bool IsRare(ShipComponentFamily family) => RevampComponentCatalog.RareFamilies.Contains(family);
+
+    private static IEnumerable<ShipComponentItem> GenericItems => RevampComponentCatalog.Items.Where(x => !IsRare(x.Family));
+
+    private static IEnumerable<ShipComponentRecipe> GenericRecipes => RevampComponentCatalog.Recipes.Where(x => !IsRare(x.Family));
+
     private static ShipComponentFamily FamilyOf(string resref) =>
         RevampComponentCatalog.Items.Single(x => x.Resref == resref).Family;
 
@@ -76,7 +82,7 @@ public class ShipComponentTests
     [Test]
     public void EveryFamily_HasOneItemPerTier()
     {
-        RevampComponentCatalog.Items.Should().HaveCount(45);
+        GenericItems.Should().HaveCount(45);
         foreach (var (family, (shortName, _)) in Families)
         {
             for (var tier = 1; tier <= 5; tier++)
@@ -94,7 +100,7 @@ public class ShipComponentTests
     {
         var root = FindRepositoryRoot().FullName;
         var models = new Dictionary<ShipComponentFamily, int>();
-        foreach (var item in RevampComponentCatalog.Items)
+        foreach (var item in GenericItems)
         {
             var path = Path.Combine(root, "Module", "uti", $"{item.Resref}.uti.json");
             File.Exists(path).Should().BeTrue(item.Resref);
@@ -119,9 +125,9 @@ public class ShipComponentTests
     [Test]
     public void ComponentRecipes_FollowTheHullsAndSalvageFamiliesWithoutMovingAnyEarlierNumber()
     {
-        var recipes = RevampComponentCatalog.Recipes;
+        var recipes = GenericRecipes.ToList();
         recipes.Should().HaveCount(130, "9 families x 5 tiers, plain plus 17 crafted variants per tier");
-        var first = RevampModuleCatalog.Steps.Select(x => (int)x.RecipeType)
+        var first = RevampModuleCatalog.Steps.Where(x => !x.Named).Select(x => (int)x.RecipeType)
             .Concat(RevampShipCatalog.Hulls.Select(x => (int)x.RecipeType)).Max() + 1;
         first.Should().BeGreaterThan(7347);
         recipes.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(first, 130), "numbered after every module and hull");
@@ -137,7 +143,7 @@ public class ShipComponentTests
     [Test]
     public void ComponentRecipes_UseTheFamilysSkillAndTwoMaterialsOfTheirTier()
     {
-        foreach (var recipe in RevampComponentCatalog.Recipes)
+        foreach (var recipe in GenericRecipes)
         {
             recipe.Skill.Should().Be(Families[recipe.Family].Skill, recipe.RecipeType.ToString());
             recipe.Resref.Should().Be(ShipTraitRules.ComponentResref(recipe.Family, recipe.Tier));
@@ -199,7 +205,7 @@ public class ShipComponentTests
     public void ComponentRecipeDefinition_RegistersEveryRecipeInTheShipComponentCategory()
     {
         var recipes = new ShipComponentRecipes().BuildRecipes();
-        recipes.Should().HaveCount(130);
+        recipes.Should().HaveCount(133, "130 generic component recipes and the three rare components (W9b)");
 
         foreach (var row in RevampComponentCatalog.Recipes)
         {
@@ -276,7 +282,7 @@ public class ShipComponentTests
     [Test]
     public void EveryModuleRecipe_TakesItsFamilysComponentOfItsTier()
     {
-        foreach (var step in RevampModuleCatalog.Steps)
+        foreach (var step in RevampModuleCatalog.Steps.Where(x => !x.Named))
         {
             var components = step.Components.Where(x => ShipTraitRules.IsComponent(x.Resref)).ToList();
             components.Should().ContainSingle(step.Tag);
@@ -337,7 +343,7 @@ public class ShipComponentTests
     [Test]
     public void ModuleRecipes_KeepTheirMaterialUnitsPerRank()
     {
-        foreach (var step in RevampModuleCatalog.Steps)
+        foreach (var step in RevampModuleCatalog.Steps.Where(x => !x.Named))
         {
             var before = (step.Row == ShipModulePowerType.High ? 5 : 3) * (step.Capital ? 2 : 1);
             Units(step.Components).Should().Be(before, $"{step.Tag}: 3 ore + 2 electronics on High, 2 + 1 otherwise, x2 capital");

@@ -13,5 +13,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>A salvage-only trait crafting cannot make.</summary>
         Rare = 3,
+
+        /// <summary>A researched blueprint's item bonus, stamped on the module it crafts.</summary>
+        Blueprint = 4,
     }
 }

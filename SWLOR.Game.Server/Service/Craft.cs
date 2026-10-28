@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -175,11 +176,13 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
-        private static bool IsResearchableRecipe(RecipeDetail recipe)
+        /// <summary>Whether the Research Terminal can turn a recipe into a blueprint: weapons, armor, food and ship modules.</summary>
+        public static bool IsResearchableRecipe(RecipeDetail recipe)
         {
             return recipe.EnhancementType == RecipeEnhancementType.Weapon ||
                    recipe.EnhancementType == RecipeEnhancementType.Armor ||
-                   recipe.EnhancementType == RecipeEnhancementType.Food;
+                   recipe.EnhancementType == RecipeEnhancementType.Food ||
+                   ShipBlueprintRules.IsResearchable(recipe);
         }
 
         private static void CacheEnhancementSubTypes()
@@ -1051,6 +1054,7 @@ namespace SWLOR.Game.Server.Service
             var recipeId = GetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID");
             blueprintDetail.Recipe = (RecipeType)recipeId;
             blueprintDetail.RandomEnhancementSlotGranted = GetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED");
+            blueprintDetail.GuaranteedTraits = ShipTraitRules.Parse(GetLocalString(blueprint, ShipBlueprintRules.GuaranteedTraitsVariable));
 
             var blueprintProperties = new List<(ItemProperty Property, ItemPropertyType Type, int SubType, int CostValue)>();
             for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
@@ -1140,6 +1144,8 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", (int)blueprintDetail.Recipe);
             SetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED", blueprintDetail.RandomEnhancementSlotGranted);
+            if (blueprintDetail.GuaranteedTraits.Count > 0)
+                SetLocalString(blueprint, ShipBlueprintRules.GuaranteedTraitsVariable, ShipTraitRules.Format(blueprintDetail.GuaranteedTraits));
 
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprintDetail.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.LicensedRuns, blueprintDetail.LicensedRuns), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import components as comp  # noqa: E402
 import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
+import rewards as rw  # noqa: E402
 import trade  # noqa: E402
 
 ROOT = m.REPO
@@ -242,8 +243,24 @@ def component_recipes(recipe_start):
 
 
 def material_cost(resref):
+    if resref == rw.PROTOTYPE_TECH:  # generated here, so its listed value comes from rewards.py
+        return rw.PROTOTYPE_TECH_COST
     d = json.loads((ROOT / "Module" / "uti" / f"{resref}.uti.json").read_text(encoding="utf-8"))
     return d["Cost"]["value"]
+
+
+def rare_recipes(recipe_start):
+    """The rare component recipes (components.RARE_FAMILIES), numbered in rewards.py's block."""
+    return [dict(RecipeName=f"ShipComponent{enum}", RecipeType=recipe_start + i, Family=enum, Tier=comp.RARE_TIER,
+                 Resref=comp.rare_resref(short), Skill=skill, RecipeLevel=comp.RARE_RECIPE_LEVEL, Trait="None",
+                 Name=name, Components=inputs)
+            for i, (short, enum, name, skill, _model, inputs, _desc) in enumerate(comp.RARE_FAMILIES)]
+
+
+def rare_items():
+    return [dict(Family=enum, Tier=comp.RARE_TIER, Resref=comp.rare_resref(short), Name=name, Model=model, Skill=skill,
+                 Cost=sum(material_cost(r) * q for r, q in inputs), Description=desc)
+            for (short, enum, name, skill, model, inputs, desc) in comp.RARE_FAMILIES]
 
 
 def expand_bill(bill):
@@ -275,12 +292,49 @@ def component_items():
             mats = comp.components_for_recipe(enum, t)
             out.append(dict(Family=enum, Tier=t, Resref=comp.resref(short, t), Name=f"{name} (Tier {t})", Model=model,
                             Skill=skill, Cost=sum(material_cost(r) * q for r, q in mats), Description=desc))
-    return out
+    return out + rare_items()
 
 
 # Families added after the 50 hulls (the salvage update W6a, the trade risk update W7b). Their recipe IDs follow the
 # hulls' so no earlier RecipeType value moves.
 LATE_FAMILIES = {"Salvager", "GasHarvester", "SmugglingCompartment"}
+
+
+# The numbers a named rank-50 module scales up from its family's rank-45 step (rewards.named_value); flags, multipliers,
+# penalties and tiers stay as they are.
+NAMED_SCALED = {"Dmg", "Shield", "Hull", "Repair", "MaxCapacitor", "CapacitorRestore", "CapacitorRegen", "ModuleAccuracy",
+                "ModuleDefense", "ModuleEvasion", "ResistAll", "ResistThermal", "ResistEM", "ResistExplosive",
+                "DamageThermal", "DamageEM", "DamageExplosive", "DamageAll", "AuraShieldPercent"}
+
+
+def named_bill(family, row):
+    """A named module's recipe: twice its family's rank-45 bill plus a Thorilide Core and an Aurodium Plating."""
+    return [(res, 2 * q) for res, q in module_bill(family, 45, row, False)] + rw.NAMED_EXTRA
+
+
+def named_stats(stats):
+    s = {k: (rw.named_value(v) if k in NAMED_SCALED else v) for k, v in stats(45).items()}
+    if s.get("Attack"):
+        s["Attack"] = s["Accuracy"] = 2 * rw.NAMED_RANK
+    return s
+
+
+def named_steps(recipe_start):
+    """The named rank-50 modules (rewards.NAMED), each a rank-50 step of its family with its own name."""
+    families = {f[0]: f for f in FAMILIES}
+    out = []
+    for i, (key, item_name, short) in enumerate(rw.NAMED):
+        (_k, _name, _short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) = families[key]
+        assert not capital and len(short) <= 14, key
+        s = named_stats(stats)
+        base, model_part, texture = ART[art]
+        out.append(dict(
+            Family=key, Rank=rw.NAMED_RANK, Tag=f"{prefix}_{rw.NAMED_RANK}", Name=item_name, ShortName=short, Row=row,
+            Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=False, Named=True,
+            Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(rw.NAMED_RANK, s),
+            RecipeType=recipe_start + i, RecipeName=f"Ship{key}{rw.NAMED_RANK}", RecipeLevel=rw.NAMED_RECIPE_LEVEL,
+            Components=named_bill(key, row), Cost=rw.NAMED_COST, **s))
+    return out
 
 
 def module_steps(late_recipe_start=None):
@@ -509,9 +563,30 @@ def catalog():
 
 
 def full_catalog():
-    """The catalog plus the component recipes (W9a), numbered after every module and hull so nothing earlier moves."""
+    """
+    The catalog plus the component recipes (W9a), numbered after every module and hull so nothing earlier moves, then
+    rewards.py's block (W9b): the named rank-50 modules (appended to the steps) and the rare component recipes.
+    """
     steps, hulls = catalog()
-    return steps, hulls, component_recipes(max(x["RecipeType"] for x in steps + hulls) + 1)
+    components = component_recipes(max(x["RecipeType"] for x in steps + hulls) + 1)
+    assert max(x["RecipeType"] for x in components) < rw.RECIPE_START
+    named = named_steps(rw.RECIPE_START)
+    return steps + named, hulls, components + rare_recipes(rw.RECIPE_START + len(named))
+
+
+def ammo_recipes():
+    """The missile variant recipes (rewards.AMMO with a signature material), one per tier, after the rare components."""
+    recipe = rw.RECIPE_START + len(rw.NAMED) + len(comp.RARE_FAMILIES)
+    out = []
+    for a in rw.AMMO:
+        if a["signature"] is None:
+            continue
+        for t, plain in rw.PLAIN_MISSILE.items():
+            out.append(dict(RecipeName=f"ShipAmmo{a['key']}{t}", RecipeType=recipe, Resref=a["resref"], Name=a["name"],
+                            Tier=t, RecipeLevel=plain["level"], Quantity=plain["quantity"],
+                            Components=plain["components"] + [(a["signature"](t), t)]))
+            recipe += 1
+    return out
 
 
 def enum_cs(name, summary, members):
@@ -534,18 +609,21 @@ def component_catalog_cs(items, recipes):
         f'Skill = SkillType.{x["Skill"]}, RecipeLevel = {x["RecipeLevel"]}, Trait = ShipComponentTraitType.{x["Trait"]}, '
         f'Name = {json.dumps(x["Name"])}, Components = {cs_pairs(x["Components"])} }},' for x in recipes)
     trait_rows = []
-    for (_tid, enum, name, kind, fams, effects) in comp.TRAITS:
+    tiers = {t[0]: t[6] for t in comp.blueprint_traits()}
+    for (tid, enum, name, kind, fams, effects) in comp.TRAITS:
         fam = ", ".join(f"ShipComponentFamily.{f}" for f in fams)
         eff = ", ".join(f"new ShipTraitEffect(ShipTraitStat.{st}, {v})" for st, v in effects)
+        tier = f"Tier = {tiers[tid]}, " if tid in tiers else ""
         trait_rows.append(
             f'            new ShipComponentTrait {{ Type = ShipComponentTraitType.{enum}, Name = {json.dumps(name)}, '
-            f'Kind = ShipTraitKind.{kind}, Families = new[] {{ {fam} }}, Effects = new[] {{ {eff} }}, '
+            f'Kind = ShipTraitKind.{kind}, {tier}Families = new[] {{ {fam} }}, Effects = new[] {{ {eff} }}, '
             f'Description = {json.dumps(comp.effect_text(effects))} }},')
 
     def odds(d):
         return ", ".join(f"[WreckDifficulty.{k}] = {v}" for k, v in d.items())
 
     salvage = ", ".join(f"ShipComponentFamily.{f}" for f in comp.SALVAGE_FAMILIES)
+    rare = ", ".join(f"ShipComponentFamily.{f[1]}" for f in comp.RARE_FAMILIES)
     return (HEADER + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Service.CraftService;\n"
             "using SWLOR.Game.Server.Service.SkillService;\nusing SWLOR.Game.Server.Service.SpaceService;\n\n"
             "namespace SWLOR.Game.Server.Feature.ShipComponentDefinition\n{\n"
@@ -558,6 +636,8 @@ def component_catalog_cs(items, recipes):
             + "\n".join(trait_rows) + "\n        };\n\n"
             "        /// <summary>The families a wreck can yield as salvaged components (life support never comes from salvage).</summary>\n"
             f"        public static readonly IReadOnlyList<ShipComponentFamily> SalvageFamilies = new[] {{ {salvage} }};\n\n"
+            "        /// <summary>The rare component families: one top-band item each, never salvaged.</summary>\n"
+            f"        public static readonly IReadOnlyList<ShipComponentFamily> RareFamilies = new[] {{ {rare} }};\n\n"
             "        /// <summary>The chance per salvage cycle of one salvaged component.</summary>\n"
             "        public static readonly IReadOnlyDictionary<WreckDifficulty, int> SalvagedComponentPercent = "
             f"new Dictionary<WreckDifficulty, int> {{ {odds(comp.SALVAGED_COMPONENT_PERCENT)} }};\n\n"
@@ -567,28 +647,217 @@ def component_catalog_cs(items, recipes):
             "    }\n}\n")
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Rewards (W9b): Hull Designs, Design and Ship Schematics, Module Schematics, ammo variants (rewards.py)
+# ---------------------------------------------------------------------------------------------------------------
+def ship_tier(gate):
+    return min(5, gate // 10 + 1)
+
+
+def wild_space_only(hull):
+    return hull["Manufacturer"] in {x.replace(" ", "") for x in rw.WILD_SPACE_MAKERS}
+
+
+def designs(hulls):
+    """Every Hull Design a Design Schematic unlocks: per ship its launch skins, Pattern A, B, ..."""
+    by_name = {h["Name"]: h for h in hulls}
+    models = {h["Appearance"] for h in hulls}
+    out, seen = [], set()
+    for ship, skins in rw.LAUNCH_SKINS.items():
+        h = by_name[ship]
+        for i, appearance in enumerate(skins):
+            assert appearance not in seen and appearance not in models, (ship, appearance)
+            seen.add(appearance)
+            name = f"Pattern {rw.DESIGN_LETTERS[i]}"
+            out.append(dict(ShipTag=h["Tag"], ShipName=ship, Appearance=appearance, Name=name,
+                            Resref=f"dsgn_{appearance}", Tier=ship_tier(h["PilotingRank"]), Size=h["Size"],
+                            WildSpaceOnly=wild_space_only(h)))
+    return out
+
+
+def ship_schematics(hulls):
+    """The Ship Schematic of every Advanced ship: a recipe unlock for its deed recipe."""
+    out = []
+    for h in hulls:
+        if not h["Advanced"]:
+            continue
+        resref = ("schm_" + h["Tag"][3:])[:16]
+        out.append(dict(ShipTag=h["Tag"], ShipName=h["Name"], RecipeName=h["RecipeName"], RecipeType=h["RecipeType"],
+                        Resref=resref, Tier=ship_tier(h["PilotingRank"]),
+                        WildSpaceOnly=wild_space_only(h)))
+    assert len({x["Resref"] for x in out}) == len(out)
+    return out
+
+
+def module_schematics(steps):
+    return [dict(Family=s["Family"], Tag=s["Tag"], Name=s["Name"], RecipeName=s["RecipeName"], RecipeType=s["RecipeType"],
+                 Resref=rw.unlock_resref(s["Tag"][:s["Tag"].rindex("_")]))
+            for s in steps if s.get("Named")]
+
+
+DIFFICULTY = {"Elite": "WreckDifficulty.Elite", "Boss": "WreckDifficulty.Boss"}
+RIDER = {"None": "ShipAmmoRider.None", "Slow": "ShipAmmoRider.Slow", "Burn": "ShipAmmoRider.Burn"}
+
+
+def reward_catalog_cs(steps, hulls, ammo):
+    q = json.dumps
+    design_rows = "\n".join(
+        f'            new ShipHullDesign {{ ShipTag = {q(d["ShipTag"])}, ShipName = {q(d["ShipName"])}, '
+        f'Appearance = (AppearanceType){d["Appearance"]}, Name = {q(d["Name"])}, Resref = {q(d["Resref"])}, '
+        f'Tier = {d["Tier"]}, WildSpaceOnly = {cs(d["WildSpaceOnly"])} }},' for d in designs(hulls))
+    ship_rows = "\n".join(
+        f'            new ShipSchematic {{ ShipTag = {q(x["ShipTag"])}, ShipName = {q(x["ShipName"])}, '
+        f'RecipeType = RecipeType.{x["RecipeName"]}, Resref = {q(x["Resref"])}, Tier = {x["Tier"]}, '
+        f'WildSpaceOnly = {cs(x["WildSpaceOnly"])} }},' for x in ship_schematics(hulls))
+    module_rows = "\n".join(
+        f'            new ShipModuleSchematic {{ Family = ShipModuleFamily.{x["Family"]}, ModuleTag = {q(x["Tag"])}, '
+        f'RecipeType = RecipeType.{x["RecipeName"]}, Resref = {q(x["Resref"])} }},' for x in module_schematics(steps))
+    ammo_rows = "\n".join(
+        f'            new ShipAmmoVariant {{ Resref = {q(a["resref"])}, Name = {q(a["name"])}, '
+        f'Launcher = ShipModuleFamily.{a["family"]}, DamageType = CombatDamageType.{a["damage"]}, DmgPercent = {a["dmg"]}, '
+        f'Accuracy = {a["accuracy"]}, ShieldDamageMultiplier = {a["shield"]}, Rider = {RIDER[a["rider"]]}, '
+        f'RiderPercent = {a["rider_percent"]}, RiderSeconds = {a["rider_seconds"]}, Crafted = {cs(a["signature"] is not None)} }},'
+        for a in rw.AMMO)
+    ammo_recipe_rows = "\n".join(
+        f'            new ShipAmmoRecipe {{ RecipeType = RecipeType.{x["RecipeName"]}, Resref = {q(x["Resref"])}, '
+        f'Name = {q(x["Name"])}, Tier = {x["Tier"]}, RecipeLevel = {x["RecipeLevel"]}, Quantity = {x["Quantity"]}, '
+        f'Components = {cs_pairs(x["Components"])} }},' for x in ammo)
+    fee = ", ".join(f"[ShipSize.{k}] = {v}" for k, v in rw.REFIT_FEE.items())
+    finds = ", ".join(
+        f"[{DIFFICULTY[k]}] = new ShipRareFindReward {{ DesignPercent = {v['design']}, ShipPercent = {v['ship']}, "
+        f"TorpedoPercent = {v['torpedo']} }}" for k, v in rw.RARE_FIND_REWARDS.items())
+    return (HEADER + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Service.CombatService;\n"
+            "using SWLOR.Game.Server.Service.CraftService;\nusing SWLOR.Game.Server.Service.SpaceService;\n"
+            "using SWLOR.NWN.API.NWScript.Enum;\n\n"
+            "namespace SWLOR.Game.Server.Feature.ShipRewardDefinition\n{\n"
+            "    public static class RevampRewardCatalog\n    {\n"
+            "        /// <summary>The Hull Designs a Design Schematic unlocks (plan section 7, Appendix C launch skins).</summary>\n"
+            "        public static readonly IReadOnlyList<ShipHullDesign> HullDesigns = new List<ShipHullDesign>\n        {\n"
+            f"{design_rows}\n        }};\n\n"
+            "        /// <summary>The Ship Schematics: recipe unlocks for the Advanced ships' deeds.</summary>\n"
+            "        public static readonly IReadOnlyList<ShipSchematic> ShipSchematics = new List<ShipSchematic>\n        {\n"
+            f"{ship_rows}\n        }};\n\n"
+            "        /// <summary>The Module Schematics: recipe unlocks for the named rank-50 modules.</summary>\n"
+            "        public static readonly IReadOnlyList<ShipModuleSchematic> ModuleSchematics = new List<ShipModuleSchematic>\n        {\n"
+            f"{module_rows}\n        }};\n\n"
+            "        /// <summary>The launcher ammo variants.</summary>\n"
+            "        public static readonly IReadOnlyList<ShipAmmoVariant> AmmoVariants = new List<ShipAmmoVariant>\n        {\n"
+            f"{ammo_rows}\n        }};\n\n"
+            "        /// <summary>The crafted ammo variants' recipes, one per tier.</summary>\n"
+            "        public static readonly IReadOnlyList<ShipAmmoRecipe> AmmoRecipes = new List<ShipAmmoRecipe>\n        {\n"
+            f"{ammo_recipe_rows}\n        }};\n\n"
+            "        /// <summary>The credits a starport Refit to another Hull Design costs, by hull size.</summary>\n"
+            f"        public static readonly IReadOnlyDictionary<ShipSize, int> RefitFee = new Dictionary<ShipSize, int> {{ {fee} }};\n\n"
+            "        /// <summary>The share of an elite or boss wreck's rare finds that is a schematic or a rare torpedo.</summary>\n"
+            "        public static readonly IReadOnlyDictionary<WreckDifficulty, ShipRareFindReward> RareFindRewards = "
+            f"new Dictionary<WreckDifficulty, ShipRareFindReward> {{ {finds} }};\n\n"
+            f"        public const int RareTorpedoQuantity = {rw.RARE_TORPEDO_QUANTITY};\n"
+            f"        public const int BurnTickSeconds = {rw.BURN_TICK_SECONDS};\n"
+            f"        public const string PrototypeTechResref = {q(rw.PROTOTYPE_TECH)};\n"
+            f"        public const int PrototypeTechBonusTier = {rw.PROTOTYPE_TECH_BONUS_TIER};\n"
+            "    }\n}\n")
+
+
+TEMPLATE_RECIPE = ROOT / "Module" / "uti" / "recipe_aurek.uti.json"
+TEMPLATE_AMMO = ROOT / "Module" / "uti" / "ship_missile.uti.json"
+TEMPLATE_MATERIAL = ROOT / "Module" / "uti" / "aurodium.uti.json"
+AMMO_BASE = 535  # ESS9, stackable
+DESIGN_SCHEMATIC_TAG = "DESIGN_SCHEMATIC"
+
+
+def local_string(name, value):
+    return {"__struct_id": 0, "Name": {"type": "cexostring", "value": name}, "Type": {"type": "dword", "value": 3},
+            "Value": {"type": "cexostring", "value": value}}
+
+
+def unlock_item(template, resref, tag, name, cost, description, variables):
+    """A usable unlock item on the recipe book model: the template's Activate Item property, its locals replaced."""
+    d = copy.deepcopy(template)
+    d["Tag"]["value"] = tag
+    d["TemplateResRef"]["value"] = resref
+    d["LocalizedName"]["value"] = {"0": name}
+    d["Cost"]["value"] = cost
+    d["AddCost"]["value"] = cost
+    d["Description"]["value"] = {"0": description}
+    d["DescIdentified"]["value"] = {"0": description}
+    d["VarTable"]["value"] = variables
+    return json.dumps(d, indent=2, ensure_ascii=False) + "\n"
+
+
+def reward_blueprints(steps, hulls):
+    out = {}
+    recipe = json.loads(TEMPLATE_RECIPE.read_text(encoding="utf-8"))
+    for x in module_schematics(steps):
+        out[f"Module/uti/{x['Resref']}.uti.json"] = unlock_item(
+            recipe, x["Resref"], "RECIPE", f"Module Schematic: {x['Name']}", rw.SHIP_SCHEMATIC_COST,
+            f"Teaches the Engineering recipe for the {x['Name']}, a named rank-50 ship module.",
+            [local_string("RECIPES", str(x["RecipeType"]))])
+    for x in ship_schematics(hulls):
+        out[f"Module/uti/{x['Resref']}.uti.json"] = unlock_item(
+            recipe, x["Resref"], "RECIPE", f"Ship Schematic: {x['ShipName']}", rw.SHIP_SCHEMATIC_COST,
+            f"Teaches the Engineering recipe for the {x['ShipName']}, an Advanced ship.",
+            [local_string("RECIPES", str(x["RecipeType"]))])
+    for d in designs(hulls):
+        out[f"Module/uti/{d['Resref']}.uti.json"] = unlock_item(
+            recipe, d["Resref"], DESIGN_SCHEMATIC_TAG, f"Design Schematic: {d['ShipName']} - {d['Name']}",
+            rw.DESIGN_SCHEMATIC_COST,
+            f"Unlocks the {d['Name']} Hull Design of the {d['ShipName']}. A starport Refit in Ship Management can then "
+            "change any of your ships of that model to it.", [])
+    ammo = json.loads(TEMPLATE_AMMO.read_text(encoding="utf-8"))
+    ammo["StackSize"]["value"] = 1
+    use = recipe["PropertiesList"]["value"][0]
+    for a in rw.AMMO:
+        props = copy.deepcopy(ammo["PropertiesList"]["value"]) + [copy.deepcopy(use)]
+        text = a["description"] + " Use it to load your launchers with it, and again to go back to standard ammo."
+        out[f"Module/uti/{a['resref']}.uti.json"] = uti(ammo, a["resref"], a["name"], AMMO_BASE, a["model"],
+                                                        rw.AMMO_COST[a["family"]], props, text)
+    material = json.loads(TEMPLATE_MATERIAL.read_text(encoding="utf-8"))
+    out[f"Module/uti/{rw.PROTOTYPE_TECH}.uti.json"] = no_economy(uti(
+        material, rw.PROTOTYPE_TECH, rw.PROTOTYPE_TECH_NAME, AMMO_BASE, rw.PROTOTYPE_TECH_MODEL, rw.PROTOTYPE_TECH_COST,
+        copy.deepcopy(material["PropertiesList"]["value"]), rw.PROTOTYPE_TECH_DESCRIPTION))
+    return out
+
+
+def no_economy(text):
+    """Prototype Tech has no source until Wild Space (W12c): flagged NO_ECONOMY until then."""
+    d = json.loads(text)
+    flag = {"type": "list", "value": [{"__struct_id": 0, "Name": {"type": "cexostring", "value": "NO_ECONOMY"},
+                                       "Type": {"type": "dword", "value": 1}, "Value": {"type": "int", "value": 1}}]}
+    d.pop("VarTable", None)
+    ordered = {}
+    for k, v in d.items():
+        if k == "xModelPart1":
+            ordered["VarTable"] = flag
+        ordered[k] = v
+    ordered.setdefault("VarTable", flag)
+    return json.dumps(ordered, indent=2, ensure_ascii=False) + "\n"
+
+
 def writes():
     steps, hulls, recipes = full_catalog()
     items = component_items()
+    ammo = ammo_recipes()
     files = {
         "SWLOR.Game.Server/Feature/ShipModuleDefinition/RevampModuleCatalog.cs": module_catalog_cs(steps),
         "SWLOR.Game.Server/Feature/ShipDefinition/RevampShipCatalog.cs": ship_catalog_cs(hulls),
         "SWLOR.Game.Server/Feature/ShipComponentDefinition/RevampComponentCatalog.cs": component_catalog_cs(items, recipes),
         "SWLOR.Game.Server/Service/SpaceService/ShipComponentFamily.cs": enum_cs(
             "ShipComponentFamily", "A family of ship components (plan section 14, Appendix D).",
-            [("Invalid", 0)] + [(f[1], i) for i, f in enumerate(comp.FAMILIES, 1)]),
+            [("Invalid", 0)] + [(f[1], i) for i, f in enumerate(comp.FAMILIES + comp.RARE_FAMILIES, 1)]),
         "SWLOR.Game.Server/Service/SpaceService/ShipComponentTraitType.cs": enum_cs(
             "ShipComponentTraitType",
             "A trait a ship component carries into the module built from it. Items and ship statuses store the number.",
             [("None", 0)] + [(t[1], t[0]) for t in comp.TRAITS]),
     }
-    files["SWLOR.Game.Server/Service/CraftService/RecipeType.cs"] = recipe_enum(steps, hulls + recipes)
+    files["SWLOR.Game.Server/Service/CraftService/RecipeType.cs"] = recipe_enum(steps, hulls + recipes + ammo)
+    files["SWLOR.Game.Server/Feature/ShipRewardDefinition/RevampRewardCatalog.cs"] = reward_catalog_cs(steps, hulls, ammo)
     npc_source = (ROOT / "SWLOR.Game.Server/Feature/SpaceObjectDefinition/NPCSpaceObjectDefinition.cs").read_text(encoding="utf-8")
     npc_tags = re.findall(r'_builder\.Create\("([^"]+)"\)', npc_source)
     files["SWLOR.Game.Server/Feature/SpaceObjectDefinition/RevampNpcShipCatalog.cs"] = npc_catalog.catalog_cs(
         HEADER, npc_catalog.entries(ROOT, npc_tags))
     files.update(blueprints(steps, hulls))
     files.update(component_blueprints(items))
+    files.update(reward_blueprints(steps, hulls))
     return files, steps, hulls
 
 

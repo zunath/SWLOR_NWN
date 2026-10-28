@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -37,6 +38,63 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             var item = GetItemPossessedBy(activator, resref);
             var stackSize = GetItemStackSize(item);
             return stackSize <= 0 ? message : string.Empty;
+        }
+
+        /// <summary>
+        /// The ammo a launcher spends next for a player: the loaded variant, plain ammo or any variant carried (see
+        /// <see cref="ShipAmmoRules.Pick"/>). Null for an NPC ship, which fires plain ammo without spending any, and
+        /// for a player who carries none.
+        /// </summary>
+        public static string PickAmmo(uint activator, ShipModuleFamily launcher, string plainResref)
+        {
+            if (!GetIsPC(activator)) return null;
+
+            var loaded = GetLocalString(activator, ShipAmmoRules.LoadedVariable(launcher));
+            return ShipAmmoRules.Pick(launcher, plainResref, loaded,
+                resref => GetItemStackSize(GetItemPossessedBy(activator, resref)) > 0);
+        }
+
+        /// <summary>An error message when a player carries no ammo a launcher can fire, plain or variant.</summary>
+        public static string LauncherAmmoError(uint activator, ShipModuleFamily launcher, string plainResref, string message)
+        {
+            if (!GetIsPC(activator)) return string.Empty;
+
+            return PickAmmo(activator, launcher, plainResref) == null ? message : string.Empty;
+        }
+
+        /// <summary>
+        /// What an ammo variant does once its hit lands: a Slow variant slows a target whose hull it damaged, a Burn
+        /// variant burns the target for a share of the hit's damage every tick. Null for plain ammo.
+        /// </summary>
+        public static Action<ShipShotResult> AmmoRider(uint activator, uint target, SpaceWeaponShot shot, ShipAmmoVariant variant)
+        {
+            if (variant == null || variant.Rider == ShipAmmoRider.None)
+                return null;
+
+            return landed =>
+            {
+                if (ShipAmmoRules.Slows(variant, landed.HullDamage))
+                {
+                    ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(variant.RiderPercent), target, variant.RiderSeconds);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Slow), target);
+                }
+
+                var burn = ShipAmmoRules.BurnDamage(landed.Damage, variant);
+                for (var tick = 1; tick <= ShipAmmoRules.BurnTicks(variant); tick++)
+                {
+                    DelayCommand(tick * RevampRewardCatalog.BurnTickSeconds, () =>
+                    {
+                        if (!GetIsObjectValid(target) || Space.GetShipStatus(target) == null)
+                            return;
+
+                        AssignCommand(activator, () =>
+                        {
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), target);
+                            Space.ApplyShipDamage(activator, target, burn, shot.ShieldBypass, shot.ShieldDamageMultiplier);
+                        });
+                    });
+                }
+            };
         }
 
         /// <summary>Uses up one ammo item. NPC ships have none to use.</summary>
@@ -98,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// Fires one shot of a weapon module family with that family's effects and returns its roll (null if the
         /// ship cannot fire). Launcher ammo is the caller's to spend. With <paramref name="singleImpact"/> a Laser
         /// Battery fires its one bolt instead of its volley, for abilities that must not scale with weapon count.
+        /// A launcher runs <paramref name="afterDamage"/> once its hit lands (an ammo variant's rider).
         /// </summary>
         public static ShipShotResult FireStep(
             ShipModuleStep step,
@@ -106,7 +165,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             uint target,
             ShipStatus targetStatus,
             SpaceWeaponShot shot,
-            bool singleImpact)
+            bool singleImpact,
+            Action<ShipShotResult> afterDamage = null)
         {
             switch (step.Family)
             {
@@ -126,10 +186,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         ? FireBolt(activator, status, target, targetStatus, shot)
                         : FireVolley(activator, status, target, targetStatus, shot, BatteryVolleyRadius, BatteryVolleyExtraTargets);
                 case ShipModuleFamily.MissileLauncher:
-                    return FireMissile(activator, status, target, targetStatus, shot, false);
+                    return FireMissile(activator, status, target, targetStatus, shot, false, afterDamage);
                 case ShipModuleFamily.TorpedoLauncher:
                 case ShipModuleFamily.AssaultConcussionMissile:
-                    return FireMissile(activator, status, target, targetStatus, shot, true);
+                    return FireMissile(activator, status, target, targetStatus, shot, true, afterDamage);
                 default:
                     return null;
             }
@@ -301,7 +361,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             uint target,
             ShipStatus targetStatus,
             SpaceWeaponShot shot,
-            bool heavy)
+            bool heavy,
+            Action<ShipShotResult> afterDamage = null)
         {
             var targetDistance = GetDistanceBetween(activator, target);
             var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
@@ -330,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit, 0.5f), target);
                 }
 
-                Space.CompleteWeaponShot(activator, target, shot, result);
+                Space.CompleteWeaponShot(activator, target, shot, result, 0f, afterDamage);
             });
 
             return result;

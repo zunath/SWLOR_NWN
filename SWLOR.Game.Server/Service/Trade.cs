@@ -18,10 +18,14 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static partial class Trade
     {
-        /// <summary>The cargo bay of a ship: its hull's Cargo stat. Ships without a revamp hull have none.</summary>
+        /// <summary>
+        /// The cargo bay of a ship: its hull's Cargo stat and its Cargo Expanders' share of it
+        /// (<see cref="ShipCargoRules"/>). Ships without a revamp hull have none.
+        /// </summary>
         public static int GetCargoCapacity(PlayerShip ship)
         {
-            return Space.FindShipDetail(ship?.Status?.ItemTag)?.Hull?.Cargo ?? 0;
+            var hullCargo = Space.FindShipDetail(ship?.Status?.ItemTag)?.Hull?.Cargo ?? 0;
+            return ShipCargoRules.GetCapacity(hullCargo, ship?.Status);
         }
 
         /// <summary>The cargo bay volume filled: commodities and sealed freight.</summary>

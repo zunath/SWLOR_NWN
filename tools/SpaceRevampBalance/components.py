@@ -85,7 +85,7 @@ MODULE_COMPONENT = {
     "PowerDiverter": "ShipReactor",
     "HullPlating": "HullFrame", "HullRepairer": "HullFrame", "ThermalPlating": "HullFrame", "EMPlating": "HullFrame",
     "ExplosivePlating": "HullFrame", "AdaptivePlating": "HullFrame", "ReinforcedPlating": "HullFrame",
-    "SmugglingCompartment": "HullFrame",
+    "SmugglingCompartment": "HullFrame", "CargoExpander": "HullFrame",
     "Thrusters": "ThrusterAssembly", "AdvancedThrusters": "ThrusterAssembly",
     "TargetingComputer": "SensorSuite", "TargetingArray": "SensorSuite", "EWarArray": "SensorSuite",
     "ProbeLauncher": "SensorSuite", "DataAnalyzer": "SensorSuite", "CloakingDevice": "SensorSuite",

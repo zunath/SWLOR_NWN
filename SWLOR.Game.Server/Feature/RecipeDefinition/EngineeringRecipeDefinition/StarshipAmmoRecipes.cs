@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             _builder.Create(RecipeType.Missile35, SkillType.Engineering)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_missile")
-                .Level(25)
+                .Level(35)
                 .Quantity(35)
                 .Component("ref_barinium", 9)
                 .Component("elec_imperfect", 2);

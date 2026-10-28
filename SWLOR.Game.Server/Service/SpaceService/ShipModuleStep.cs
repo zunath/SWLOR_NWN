@@ -75,6 +75,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The percentage a Smuggling Compartment cuts the customs scan chance by.</summary>
         public int ScanReduction { get; set; }
 
+        /// <summary>
+        /// The share of the hull's own cargo a Cargo Expander adds to the cargo bay, in percent. Expanders stack
+        /// (<see cref="SWLOR.Game.Server.Service.TradeService.ShipCargoRules"/>).
+        /// </summary>
+        public int CargoPercent { get; set; }
+
         // Scanning
         /// <summary>The signal a Probe Launcher cycle adds to every hidden signature, before bonuses.</summary>
         public int ScanStrength { get; set; }

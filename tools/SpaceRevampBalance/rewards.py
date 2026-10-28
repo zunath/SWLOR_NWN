@@ -124,6 +124,9 @@ DESIGN_LETTERS = "ABCDEFGH"
 STANDARD_DESIGN = "Standard"
 # The Refit fee by hull size (section 17 "Refit: fee"): 1,000 credits times the size's repair multiplier.
 REFIT_FEE = {"Small": 1000, "Medium": 1500, "Large": 2500, "Capital": 4000}
+# The direct ship transfer fee by hull size (section 17 "Ship transfer: fee by hull size"; the gaps pass W11d draft): the
+# same starport paperwork scale as the Refit fee. A market sale pays the market tax instead.
+TRANSFER_FEE = dict(REFIT_FEE)
 DESIGN_SCHEMATIC_COST = 2000
 SHIP_SCHEMATIC_COST = 10000
 

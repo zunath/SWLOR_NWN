@@ -53,6 +53,11 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
         LiveNodes.Add(node);
     }
 
+    /// <summary>The units a node kept from harvesting before Prospecting, by node.</summary>
+    public Dictionary<uint, int> LegacyStocks { get; } = new();
+
+    public int LegacyStock(uint node) => LegacyStocks.TryGetValue(node, out var units) ? units : 0;
+
     public bool NodeExists(uint node) => LiveNodes.Contains(node);
 
     public double GemChance(string lootTable) => GemChanceValue;

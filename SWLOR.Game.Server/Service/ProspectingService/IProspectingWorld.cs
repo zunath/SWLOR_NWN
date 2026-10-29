@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>Stores the node's content, so the next session starts where this one left it.</summary>
         void SaveNode(uint node, string content);
 
+        /// <summary>The units left on a node partly harvested before Prospecting, or 0 when it has none.</summary>
+        int LegacyStock(uint node);
+
         /// <summary>True when the node is still in the world.</summary>
         bool NodeExists(uint node);
 

@@ -246,7 +246,7 @@ public class CraftSessionLifecycleTests
         lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
 
         _world.Crafted.Should().ContainSingle();
-        _player.HeldCraftItems.Should().Equal("crafted test_item", "crafted test_item");
+        _player.HeldCraftItems.Should().Equal("crafted test_item copy 1", "crafted test_item copy 2");
         _player.PendingCraftReturns.SelectMany(entry => entry.Items).Should().Equal(_world.Crafted);
         _world.Messages.Should().Contain(CraftSessionLifecycle.HeldItemsMessage);
     }
@@ -999,6 +999,28 @@ public class CraftSessionLifecycleTests
         var again = CrashAndLogIn(saved);
         LogIn(again);
         _world.Returned.Should().Equal("crafted test_item");
+    }
+
+    [Test]
+    public void RecoverAtLogin_AfterAStopBeforeTheOutputReachedTheInventory_GivesTheOutput_AndDoesNotFailTheCraft()
+    {
+        _world.ExportNow();
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+        _world.RunQueuedExport();
+        _world.StopBeforeDelivery = true;
+
+        var stop = () => lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
+
+        stop.Should().Throw<ServerStoppedException>();
+        _world.StopBeforeDelivery = false;
+        var saved = CrashAndLogIn();
+        saved.ActiveCraftSession.Should().BeNull("the save that ended the session ran before the output was delivered");
+        saved.PendingCraftReturns.Should().ContainSingle().Which.Items.Should().Equal("crafted test_item");
+        LogIn(saved, 100, 100).Settled.Should().BeFalse("the won craft is not settled again as a failure");
+
+        _world.Returned.Should().Equal("crafted test_item");
+        saved.PendingCraftXp.Should().BeEmpty("the XP saved with the settlement is given at login");
     }
 
     [Test]

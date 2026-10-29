@@ -119,6 +119,20 @@ public class ProspectingLifecycleTests
     }
 
     [Test]
+    public void ANodePartlyHarvestedBeforeProspecting_KeepsItsRemainingStock_InsteadOfRollingAFreshPool()
+    {
+        // No pool roll: Next(1, 101) is the seam count, then Next(1, 10001) for the seam's kind.
+        var lifecycle = Lifecycle(1, RichRoll);
+        _world.LegacyStocks[NodeId] = 2;
+
+        var begin = lifecycle.Begin(Request());
+
+        begin.Opened.Should().BeTrue();
+        _world.Nodes[NodeId].Should().Be("P2S100:r");
+        begin.Session.Engine.Pool.Should().Be(2);
+    }
+
+    [Test]
     public void ATableWithAGemMakesPocketsAtAShareOfItsGemChance_AskedOfTheWorldForTheNodesTable()
     {
         // The world reports the table's gem chance (a tenth here); a seam is a pocket when its roll out of 10000 is within 0.15 of that.

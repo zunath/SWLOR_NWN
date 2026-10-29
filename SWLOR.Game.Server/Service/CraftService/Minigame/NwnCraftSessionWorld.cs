@@ -188,13 +188,13 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return item;
     }
 
-    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe)
+    public List<CraftedUnit> PrepareUnits(uint player, uint item, RecipeDetail recipe)
     {
-        var result = new CraftedUnits(new List<string>(), new List<string>());
+        var units = new List<CraftedUnit>();
         if (!GetIsObjectValid(item))
         {
             Log.Write(LogGroup.Error, $"The finished item '{recipe.Resref}' for {GetObjectUUID(player)} could not be created.", true);
-            return result;
+            return units;
         }
 
         var made = new List<uint> { item };
@@ -206,28 +206,24 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
                 made.Add(CopyItem(item, storage, true));
         }
 
+        // A copy that could not be made stands as the finished item's serialized form, to be held.
         var serialized = ObjectPlugin.Serialize(item);
         foreach (var unit in made)
-        {
-            if (!GetIsObjectValid(unit))
-            {
-                // A copy that could not be made is held as the finished item itself.
-                result.Held.Add(serialized);
-                continue;
-            }
+            units.Add(new CraftedUnit(unit, GetIsObjectValid(unit) ? ObjectPlugin.Serialize(unit) : serialized));
 
-            var form = ObjectPlugin.Serialize(unit);
-            if (Item.FitsInInventory(player, unit) && ObjectPlugin.AcquireItem(player, unit))
-            {
-                result.Delivered.Add(form);
-                continue;
-            }
+        return units;
+    }
 
-            DestroyObject(unit);
-            result.Held.Add(form);
-        }
+    public bool DeliverUnit(uint player, CraftedUnit unit)
+    {
+        if (!GetIsObjectValid(unit.Item))
+            return false;
 
-        return result;
+        if (Item.FitsInInventory(player, unit.Item) && ObjectPlugin.AcquireItem(player, unit.Item))
+            return true;
+
+        DestroyObject(unit.Item);
+        return false;
     }
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);

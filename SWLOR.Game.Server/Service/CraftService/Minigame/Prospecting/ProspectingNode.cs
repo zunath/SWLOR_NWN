@@ -64,7 +64,20 @@ public sealed record ProspectingNode
         if (random == null)
             throw new ArgumentNullException(nameof(random));
 
-        var pool = random.Next(1, ProspectingRules.PoolDie + 1);
+        return Create(random, gemChance, random.Next(1, ProspectingRules.PoolDie + 1));
+    }
+
+    /// <summary>
+    /// A node first worked with <paramref name="pool"/> units already set, as a node harvested before Prospecting keeps its remaining
+    /// stock: full Stability and its seams rolled as <see cref="Create(IMinigameRandom, double)"/> does.
+    /// </summary>
+    public static ProspectingNode Create(IMinigameRandom random, double gemChance, int pool)
+    {
+        if (random == null)
+            throw new ArgumentNullException(nameof(random));
+        if (pool < 1)
+            throw new ArgumentOutOfRangeException(nameof(pool), "A new node holds at least one unit.");
+
         var seamRoll = random.Next(1, ProspectingRules.OneSeamWeight + ProspectingRules.TwoSeamsWeight + ProspectingRules.ThreeSeamsWeight + 1);
         var seamCount = Math.Min(pool, seamRoll <= ProspectingRules.OneSeamWeight ? 1
             : seamRoll <= ProspectingRules.OneSeamWeight + ProspectingRules.TwoSeamsWeight ? 2

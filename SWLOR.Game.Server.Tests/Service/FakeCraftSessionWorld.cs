@@ -128,10 +128,14 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>True to model an inventory with no room for any unit of the output.</summary>
     public bool OutputLost { get; set; }
 
-    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe)
+    /// <summary>True to stop the server as the first unit of a finished craft would reach the inventory.</summary>
+    public bool StopBeforeDelivery { get; set; }
+
+    public List<CraftedUnit> PrepareUnits(uint player, uint item, RecipeDetail recipe)
     {
         Events.Add("finish");
-        var result = new CraftedUnits(new List<string>(), new List<string>());
+        _deliveredThisCraft = 0;
+        var result = new List<CraftedUnit>();
         var units = NonStackingResrefs.Contains(recipe.Resref) ? System.Math.Max(1, recipe.Quantity) : 1;
         var original = _craftedNames[item];
         Crafted.Remove(original);
@@ -146,19 +150,28 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
                 _craftedNames[made] = $"{original} copy {unit}";
             }
 
-            if (!OutputLost && result.Delivered.Count < OutputRoom)
-            {
-                result.Delivered.Add(_craftedNames[made]);
-                Crafted.Add(_craftedNames[made]);
-            }
-            else
-            {
-                result.Held.Add(original);
-            }
+            // An output that never reached the inventory stands as the finished item's own form, as a copy that could not be made does.
+            result.Add(OutputLost ? new CraftedUnit(0, original) : new CraftedUnit(made, _craftedNames[made]));
         }
 
         return result;
     }
+
+    public bool DeliverUnit(uint player, CraftedUnit unit)
+    {
+        if (StopBeforeDelivery)
+            throw new ServerStoppedException();
+
+        Events.Add("deliver");
+        if (unit.Item == 0 || _deliveredThisCraft >= OutputRoom)
+            return false;
+
+        _deliveredThisCraft++;
+        Crafted.Add(unit.Serialized);
+        return true;
+    }
+
+    private int _deliveredThisCraft;
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => VendorValues.Add(addGoldPiece);
 

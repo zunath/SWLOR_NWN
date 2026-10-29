@@ -58,11 +58,17 @@ public interface ICraftSessionWorld
     uint CreateFinishedItem(RecipeDetail recipe);
 
     /// <summary>
-    /// Moves the finished <paramref name="item"/>, bonuses applied, to the player. A template that does not stack made one item, so the
-    /// rest of the recipe's quantity are copies of it. Each unit is serialized first: the ones that fit the inventory are delivered, the
-    /// rest are held, so the full quantity is always accounted for with its bonuses.
+    /// The units of the finished <paramref name="item"/>, bonuses applied and serialized, still outside the player's inventory. A template
+    /// that does not stack made one item, so the rest of the recipe's quantity are copies of it; a copy that could not be made is the
+    /// finished item's serialized form with an invalid item.
     /// </summary>
-    CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe);
+    List<CraftedUnit> PrepareUnits(uint player, uint item, RecipeDetail recipe);
+
+    /// <summary>
+    /// Puts a prepared unit in the player's inventory. Returns false, and destroys the unit, when it does not fit or could not be made;
+    /// the caller then holds its serialized form.
+    /// </summary>
+    bool DeliverUnit(uint player, CraftedUnit unit);
 
     void ApplyVendorValue(uint item, int addGoldPiece);
 

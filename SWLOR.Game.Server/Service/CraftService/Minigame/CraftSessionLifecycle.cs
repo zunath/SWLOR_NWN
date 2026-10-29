@@ -164,23 +164,31 @@ public sealed class CraftSessionLifecycle
         if (firstTime)
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
 
-        // The full quantity is accounted for: units in the inventory are delivered, the rest are held until there is room.
-        var units = _world.FinishUnits(player, item, recipe);
-        if (units.Held.Count > 0)
-        {
-            dbPlayer.HeldCraftItems ??= new List<string>();
-            dbPlayer.HeldCraftItems.AddRange(units.Held);
-            _world.Message(player, HeldItemsMessage);
-        }
-
-        // The finished items are in the inventory only in memory: the record that ends the session carries them until a file holds them.
+        // The output is listed as a pending return in the save that ends the session, before any of it reaches the inventory: a stop
+        // after that save leaves a return the next login gives again, and a stop before it leaves the session to settle as unfinished.
         // The XP the craft earned is entitled in the same save, so a stop between this save and the award loses neither.
-        if (units.Delivered.Count > 0)
-            RecordReturn(player, dbPlayer, units.Delivered);
+        var units = _world.PrepareUnits(player, item, recipe);
+        var output = units.Count > 0 ? RecordReturn(player, dbPlayer, units.Select(unit => unit.Serialized).ToList()) : null;
         dbPlayer.ActiveCraftSession = null;
         if (outcome.Xp > 0)
             AddPendingXp(dbPlayer, recipe.Skill, outcome.Xp);
         _world.SaveRecord(dbPlayer);
+
+        // The full quantity stays accounted for: units in the inventory stay in the return, the rest move to the held items until there is room.
+        var held = units.Where(unit => !_world.DeliverUnit(player, unit)).Select(unit => unit.Serialized).ToList();
+        if (held.Count > 0)
+        {
+            foreach (var serialized in held)
+                output.Items.Remove(serialized);
+            if (output.Items.Count == 0)
+                dbPlayer.PendingCraftReturns.Remove(output);
+
+            dbPlayer.HeldCraftItems ??= new List<string>();
+            dbPlayer.HeldCraftItems.AddRange(held);
+            _world.SaveRecord(dbPlayer);
+            _world.Message(player, HeldItemsMessage);
+        }
+
         _world.PersistCharacter(player);
         _world.EndStationWork(player);
 
@@ -395,14 +403,16 @@ public sealed class CraftSessionLifecycle
     /// Lists items just put in the inventory as a pending return at the next craft file sequence. The caller saves the record, in the same
     /// save that takes the items off the record, and then exports the character.
     /// </summary>
-    private void RecordReturn(uint player, Player dbPlayer, List<string> items)
+    private PendingCraftReturn RecordReturn(uint player, Player dbPlayer, List<string> items)
     {
-        dbPlayer.PendingCraftReturns ??= new List<PendingCraftReturn>();
-        dbPlayer.PendingCraftReturns.Add(new PendingCraftReturn
+        var entry = new PendingCraftReturn
         {
             Sequence = _world.AdvanceFileSequence(player),
             Items = items
-        });
+        };
+        dbPlayer.PendingCraftReturns ??= new List<PendingCraftReturn>();
+        dbPlayer.PendingCraftReturns.Add(entry);
+        return entry;
     }
 
     /// <summary>Forgets pending returns an export has since put in the character file. The next save of the record keeps the change.</summary>

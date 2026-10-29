@@ -201,9 +201,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbJob = GetJob();
             ExperimentLines = new GuiBindingList<string>();
 
-            // An experiment left open (a crash, or a window closed without being settled) ends with its saved evidence.
+            // An experiment left open (a crash, or a window closed without being settled) ends with its saved evidence. Only its owner's
+            // window settles it: another player looking at the terminal never ends an experiment its owner may still be working.
             var jobChanged = false;
-            if (ResearchExperimentLifecycle.IsOpen(dbJob) && !Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
+            var owned = ResearchExperimentLifecycle.IsOwnedBy(dbJob, GetObjectUUID(Player));
+            if (owned && ResearchExperimentLifecycle.IsOpen(dbJob) && !Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
             {
                 ResearchExperimentLifecycle.Settle(dbJob, ServiceMinigameRandom.Instance);
                 jobChanged = true;
@@ -212,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // A settled experiment whose XP was never given (the player logged out or was dead when it settled) pays it now, once.
             // The payout records the XP on the player before it marks the job, so a stop in between never pays it twice; a dead
             // player is paid the next time the window opens.
-            if (ResearchExperimentLifecycle.IsExperimentXpOwed(dbJob))
+            if (owned && ResearchExperimentLifecycle.IsExperimentXpOwed(dbJob))
             {
                 ResearchExperimentService.GrantExperimentXp(Player, dbJob);
                 jobChanged |= dbJob.Experiment.XpGranted;

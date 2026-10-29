@@ -94,6 +94,7 @@ namespace SWLOR.Game.Server.Entity
             PendingScavengeFinds = new Dictionary<string, int>();
             ScavengeFindsAwaitingRoom = new Dictionary<string, int>();
             PendingHarvestReturns = new List<PendingHarvestReturn>();
+            HarvestAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
@@ -260,6 +261,9 @@ namespace SWLOR.Game.Server.Entity
         // Prospecting harvest units paid out that the character file may not hold yet, each with the file sequence it needs.
         // See HarvestReturnJournal for how a login settles them.
         public List<PendingHarvestReturn> PendingHarvestReturns { get; set; }
+        // Prospecting harvest units that had no room in the inventory, by resref. They wait here, never on the ground, and are given
+        // at the next harvest or login that has room.
+        public Dictionary<string, int> HarvestAwaitingRoom { get; set; }
         // When the player first opened each crafting minigame, which is when its help page opened by itself.
         public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
         // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is

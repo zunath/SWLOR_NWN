@@ -109,17 +109,40 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         public void GiveHarvest(uint player, uint node, HarvestPayout payout)
         {
-            // Every unit stays in the journal until an export covers it, the ones placed at the player's feet too. Ground items do not
-            // survive a server stop, so after a stop the journal is the only record of them; without a stop, the export that covers the
-            // entry drops it, so a login never gives a unit that still exists on the ground.
+            // Units an earlier harvest had no room for go first.
+            DeliverAwaiting(player);
+
+            // A unit with no room waits on the player record (HarvestAwaitingRoom), never on the ground, so a stop cannot lose it. It
+            // leaves the journal in the same save, since no file holds it. A creature with no record (a DM) still gets it at its feet.
+            var dbPlayer = payout.Sequence > 0 ? DB.Get<Player>(GetObjectUUID(player)) : null;
+            var held = false;
             var dropped = false;
             foreach (var resref in payout.Units)
-                dropped |= Deliver(player, resref);
+            {
+                if (TryPutInInventory(player, resref))
+                    continue;
+
+                if (dbPlayer != null)
+                {
+                    HarvestReturnJournal.Hold(dbPlayer, payout.Sequence, resref);
+                    held = true;
+                }
+                else
+                {
+                    CreateObject(ObjectType.Item, resref, GetLocation(player));
+                    dropped = true;
+                }
+            }
+
+            if (held)
+                DB.Set(dbPlayer);
 
             // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
             for (var roll = 0; roll < payout.Delivery.Rolls; roll++)
                 Loot.SpawnLoot(node, player, "LOOT_TABLE_");
 
+            if (held)
+                SendMessageToPC(player, HarvestHeldMessage);
             if (dropped)
                 SendMessageToPC(player, HarvestDroppedMessage);
 
@@ -130,32 +153,82 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         }
 
         /// <summary>
-        /// Puts one unit in the player's inventory. When it did not arrive there (no room), it is placed at the player's feet instead, so
-        /// a harvest the node has already paid out is never lost. The inventory count decides, since a unit that merged into a stack can
-        /// come back as an invalid handle. Returns true when the unit ended up outside the inventory.
+        /// Creates one unit in the player's inventory. Returns false, leaving nothing behind, when it did not arrive there: the inventory
+        /// count decides, since a unit that merged into a stack can come back as an invalid handle, and a created item the engine left on
+        /// the ground is destroyed.
         /// </summary>
-        private static bool Deliver(uint player, string resref)
+        private static bool TryPutInInventory(uint player, string resref)
         {
             var before = NwnQuickCraftWorld.CountComponent(player, resref);
             var item = CreateItemOnObject(resref, player);
             if (NwnQuickCraftWorld.CountComponent(player, resref) > before)
-                return false;
+                return true;
 
-            // A valid item that did not reach the inventory is already on the ground.
-            if (!GetIsObjectValid(item))
-                CreateObject(ObjectType.Item, resref, GetLocation(player));
-            return true;
+            if (GetIsObjectValid(item))
+                DestroyObject(item);
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to put each unit in the inventory. The ones that arrive are journaled at a new craft file sequence and the rest wait on
+        /// <see cref="Player.HarvestAwaitingRoom"/>, both in <paramref name="dbPlayer"/>, which the caller saves. Returns how many arrived.
+        /// </summary>
+        private static int DeliverToRecord(uint player, Player dbPlayer, IReadOnlyCollection<string> units)
+        {
+            var placed = new List<string>();
+            dbPlayer.HarvestAwaitingRoom ??= new Dictionary<string, int>();
+            foreach (var resref in units)
+            {
+                if (TryPutInInventory(player, resref))
+                    placed.Add(resref);
+                else
+                    dbPlayer.HarvestAwaitingRoom[resref] = dbPlayer.HarvestAwaitingRoom.GetValueOrDefault(resref) + 1;
+            }
+
+            if (placed.Count > 0)
+            {
+                var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
+                SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+                HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, placed);
+            }
+
+            return placed.Count;
+        }
+
+        /// <summary>Gives the units waiting for room that fit now, in one save.</summary>
+        private static void DeliverAwaiting(uint player)
+        {
+            if (!Journaled(player))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            var units = HarvestReturnJournal.TakeAwaiting(dbPlayer);
+            if (units.Count == 0)
+                return;
+
+            var placed = DeliverToRecord(player, dbPlayer, units);
+            DB.Set(dbPlayer);
+            if (placed > 0)
+                SendMessageToPC(player, HarvestCollectedMessage);
         }
 
         public const string HarvestDroppedMessage = "Your inventory is full, so some of the harvest was placed at your feet.";
 
+        public const string HarvestHeldMessage =
+            "Your inventory is full. The rest of your harvest waits for you; make room, then harvest again or log in to collect it.";
+
+        public const string HarvestCollectedMessage = "Harvest that was waiting for room is now in your inventory.";
+
         public const string HarvestReturnedMessage = "Harvest you gathered before the server went down has been returned to you.";
 
         /// <summary>
-        /// At login: gives again the harvest the loaded character file predates (see <see cref="HarvestReturnJournal"/>). The old entries
-        /// are cleared in the same record save that journals the units at a new sequence, made before they are delivered, so they stay
-        /// protected until a file holds them. Call it before anything exports the character, since it compares the journal with the
-        /// sequence the file loaded with.
+        /// At login: gives again the harvest the loaded character file predates (see <see cref="HarvestReturnJournal"/>), and the units
+        /// waiting for room. The old entries are cleared in the same record save that journals the units given again at a new sequence
+        /// and keeps the ones still without room waiting, so they stay protected until a file holds them. Call it before anything
+        /// exports the character, since it compares the journal with the sequence the file loaded with.
         /// </summary>
         public void ReturnPendingHarvest(uint player)
         {
@@ -164,28 +237,20 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 return;
 
             var redo = HarvestReturnJournal.TakeAtLogin(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.LoadedVariable));
-            if (redo == null)
+            var returned = redo?.SelectMany(unit => Enumerable.Repeat(unit.Key, unit.Value)).ToList() ?? new List<string>();
+            var waiting = HarvestReturnJournal.TakeAwaiting(dbPlayer);
+            if (redo == null && waiting.Count == 0)
                 return;
 
-            var units = redo.SelectMany(unit => Enumerable.Repeat(unit.Key, unit.Value)).ToList();
-            if (units.Count > 0)
-            {
-                var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
-                SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
-                HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, units);
-            }
-
+            var placed = DeliverToRecord(player, dbPlayer, returned.Concat(waiting).ToList());
             DB.Set(dbPlayer);
-            if (units.Count == 0)
-                return;
 
-            var dropped = false;
-            foreach (var resref in units)
-                dropped |= Deliver(player, resref);
-
-            SendMessageToPC(player, HarvestReturnedMessage);
-            if (dropped)
-                SendMessageToPC(player, HarvestDroppedMessage);
+            if (returned.Count > 0)
+                SendMessageToPC(player, HarvestReturnedMessage);
+            else if (placed > 0)
+                SendMessageToPC(player, HarvestCollectedMessage);
+            if (dbPlayer.HarvestAwaitingRoom.Count > 0)
+                SendMessageToPC(player, HarvestHeldMessage);
         }
 
         public int GetGatheringRank(uint player) => Skill.GetCreatureSkillRank(player, SkillType.Gathering);

@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
     /// <see cref="Player.PendingHarvestReturns"/> with the next craft file sequence, together with its Gathering XP as waiting craft XP, in one
     /// record save made before the node is reduced. A stop at any point after it cannot lose the units or the XP: a login whose file
     /// predates the entry gives the units again, a file at or above it drops the entry, and the waiting XP is given at login like any
-    /// craft XP. Units placed at the player's feet stay in the entry too: ground items do not survive a server stop, so after a stop
-    /// the entry is their only record, and without a stop the export that covers the entry drops it. Entries an export has covered
+    /// craft XP. A unit with no room in the inventory leaves its entry and waits on <see cref="Player.HarvestAwaitingRoom"/> in the
+    /// same save, never on the ground, until a harvest or login has room for it. Entries an export has covered
     /// are also dropped while playing.
     /// </summary>
     public static class HarvestReturnJournal
@@ -30,6 +30,41 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 .ToDictionary(group => group.Key, group => group.Count());
             if (items.Count > 0)
                 dbPlayer.PendingHarvestReturns.Add(new PendingHarvestReturn { Sequence = sequence, Items = items });
+        }
+
+        /// <summary>
+        /// Moves one unit with no room in the inventory off the entry at <paramref name="sequence"/> and onto
+        /// <see cref="Player.HarvestAwaitingRoom"/>, in the record the caller saves. It is never put on the ground, so it stays durable
+        /// on the record until it is delivered.
+        /// </summary>
+        public static void Hold(Player dbPlayer, int sequence, string resref)
+        {
+            var entry = dbPlayer.PendingHarvestReturns?.FirstOrDefault(pending => pending.Sequence == sequence);
+            if (entry != null && entry.Items.TryGetValue(resref, out var quantity))
+            {
+                if (quantity > 1)
+                    entry.Items[resref] = quantity - 1;
+                else
+                    entry.Items.Remove(resref);
+
+                if (entry.Items.Count == 0)
+                    dbPlayer.PendingHarvestReturns.Remove(entry);
+            }
+
+            dbPlayer.HarvestAwaitingRoom ??= new Dictionary<string, int>();
+            dbPlayer.HarvestAwaitingRoom[resref] = dbPlayer.HarvestAwaitingRoom.GetValueOrDefault(resref) + 1;
+        }
+
+        /// <summary>Empties <see cref="Player.HarvestAwaitingRoom"/> and returns its units, which the caller tries to deliver or holds again.</summary>
+        public static List<string> TakeAwaiting(Player dbPlayer)
+        {
+            var waiting = dbPlayer.HarvestAwaitingRoom;
+            if (waiting == null || waiting.Count == 0)
+                return new List<string>();
+
+            var units = waiting.SelectMany(unit => Enumerable.Repeat(unit.Key, unit.Value)).ToList();
+            waiting.Clear();
+            return units;
         }
 
         /// <summary>

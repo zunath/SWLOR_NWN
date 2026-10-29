@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 statusResistanceType: ResistanceType.Disruption,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion,
+                damagePercentAdjustment: DeviceAbilityEffects.GetBlastDamageAdjustment(activator),
                 afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, radius),
                 alwaysApplyAreaVisualEffect: true);
         }

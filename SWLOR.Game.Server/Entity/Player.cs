@@ -275,6 +275,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<ResistanceType, int> Resistances { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
+        public List<ExtraHotbar> ExtraHotbars { get; set; } = new();
         public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }
         public float HeadAppearanceScale { get; set; }

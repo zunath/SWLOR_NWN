@@ -27,7 +27,8 @@ public class AppearanceEditorLayoutTests
     private static readonly string[] EditorPanels =
     {
         AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial,
-        AppearanceEditorViewModel.EditorWeaponPartial, AppearanceEditorViewModel.SettingsPartial
+        AppearanceEditorViewModel.EditorWeaponPartial, AppearanceEditorViewModel.SettingsPartial,
+        AppearanceEditorViewModel.OutfitsPartial
     };
 
     private static readonly (string Partial, int Columns, int Rows)[] BrowserGrids =
@@ -156,8 +157,8 @@ public class AppearanceEditorLayoutTests
         var settings = toggles.Single(toggle => ReadProperty<string>(toggle, "SelectedValueBindName") ==
             nameof(AppearanceEditorViewModel.SettingsTabToggleValue));
         PathTo(main, primary).SkipLast(1).Should().OnlyContain(widget => Width(widget) == 0f);
-        Width(primary).Should().Be(300f);
-        Width(settings).Should().Be(150f);
+        Width(primary).Should().Be(AppearanceEditorDefinition.TabWidth * 2);
+        Width(settings).Should().Be(AppearanceEditorDefinition.TabWidth);
         AssertEquipmentPicker(PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last());
         var slot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
         PathTo(main, slot).Should().OnlyContain(widget => Width(widget) == 0f,
@@ -182,8 +183,8 @@ public class AppearanceEditorLayoutTests
         var rows = column.Elements.ToList();
         // No hidden rows above the editors: a hidden row still takes up height.
         rows.Should().ContainSingle();
-        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().BeEmpty(
-            "the equipment picker shares the tab row");
+        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Where(combo => combo.Id != "ae_quick_outfit")
+            .Should().BeEmpty("the equipment picker shares the tab row");
         var content = rows.Single();
         ReadProperty<string>(content, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
 
@@ -216,9 +217,12 @@ public class AppearanceEditorLayoutTests
         AppearanceEditorViewModel.ToEquipmentTypeValue(2).Should().Be(0, "a cloak belongs to the armor entry");
         var message = Walk(row).OfType<GuiLabel<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
         ReadProperty<string>(message, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsNoEditableItemVisible));
-        var outfits = Walk(row).Single(widget => widget.Id == "ae_outfits");
-        ReadProperty<string>(outfits, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
-        AssertSingleHandler(outfits, "click", nameof(AppearanceEditorViewModel.OnClickOutfits));
+        Walk(row).Should().NotContain(widget => widget.Id == "ae_outfits",
+            "outfits are a tab of the editor, not a separate window");
+        var outfitsTab = Walk(row).OfType<GuiToggles<AppearanceEditorViewModel>>()
+            .Single(toggles => ReadProperty<string>(toggles, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsOutfitsVisible));
+        ReadProperty<string>(outfitsTab, "SelectedValueBindName").Should().Be(nameof(AppearanceEditorViewModel.OutfitsTabToggleValue));
+        Width(outfitsTab).Should().Be(AppearanceEditorDefinition.TabWidth);
     }
 
     [Test]
@@ -319,6 +323,46 @@ public class AppearanceEditorLayoutTests
         {
             ReadProperty<string>(slots.Single(widget => widget.Id == "ae_slot_Head"), "Tooltip").Should().Be("Helmet");
         }
+    }
+
+    [Test]
+    public void QuickOutfitRowIsOnlyOnTheEquipmentMap()
+    {
+        var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
+        var combo = Walk(armor).Single(widget => widget.Id == "ae_quick_outfit");
+        ReadProperty<string>(combo, "SelectedIndexBindName").Should().Be(nameof(AppearanceEditorViewModel.QuickOutfitValue));
+        foreach (var (id, method, enabled) in new[]
+                 {
+                     ("ae_quick_wear", nameof(AppearanceEditorViewModel.OnClickQuickWear), nameof(AppearanceEditorViewModel.IsQuickWearEnabled)),
+                     ("ae_quick_undo", nameof(AppearanceEditorViewModel.OnClickUndoOutfit), nameof(AppearanceEditorViewModel.IsUndoOutfitEnabled))
+                 })
+        {
+            var button = Walk(armor).Single(widget => widget.Id == id);
+            ReadProperty<string>(button, "IsEnabledBindName").Should().Be(enabled);
+            AssertSingleHandler(button, "click", method);
+        }
+
+        foreach (var partial in new[] { AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorWeaponPartial })
+            Walk(_partials[partial]).Should().NotContain(widget => widget.Id == "ae_quick_outfit");
+    }
+
+    [Test]
+    public void OutfitsTabWiresEveryWardrobeAction()
+    {
+        var outfits = _partials[AppearanceEditorViewModel.OutfitsPartial];
+        foreach (var (id, method) in new[]
+                 {
+                     ("ae_outfit_slot", nameof(AppearanceEditorViewModel.OnClickOutfitSlot)),
+                     ("ae_outfit_new", nameof(AppearanceEditorViewModel.OnClickNewOutfit)),
+                     ("ae_outfit_delete", nameof(AppearanceEditorViewModel.OnClickDeleteOutfit)),
+                     ("ae_outfit_rename", nameof(AppearanceEditorViewModel.OnClickRenameOutfit)),
+                     ("ae_outfit_store", nameof(AppearanceEditorViewModel.OnClickStoreOutfit)),
+                     ("ae_outfit_wear", nameof(AppearanceEditorViewModel.OnClickWearOutfit)),
+                     ("ae_outfit_undo", nameof(AppearanceEditorViewModel.OnClickUndoOutfit))
+                 })
+            AssertSingleHandler(Walk(outfits).Single(widget => widget.Id == id), "click", method);
+
+        Slots(outfits).Should().BeEmpty("the Outfits tab holds no part browser");
     }
 
     [Test]

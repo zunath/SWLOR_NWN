@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using System.Linq.Expressions;
@@ -27,7 +28,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float PickerWidth = 196f;
         private const float PickerHeight = 100f;
         public const float TabPanelHeight = 44f;
+        /// <summary>Width of one tab option; NUI keeps about this much per option whatever the control's width.</summary>
+        public const float TabWidth = 150f;
+        public const float EquipmentPickerWidth = 150f;
         private const float NoItemLabelWidth = 130f;
+        private const float OutfitButtonWidth = 64f;
+        private const float OutfitListWidth = 280f;
+        private const float OutfitStoreButtonWidth = 170f;
 
         /// <summary>
         /// Editor size in a window too small for one column of pictures. The editor keeps this
@@ -55,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 case AppearanceEditorViewModel.EditorArmorCompactPartial: definition.BuildEquipmentEditor(panel, true); break;
                 case AppearanceEditorViewModel.EditorWeaponCompactPartial: definition.BuildWeaponEditor(panel, true); break;
                 case AppearanceEditorViewModel.SettingsPartial: definition.BuildSettings(panel); break;
+                case AppearanceEditorViewModel.OutfitsPartial: definition.BuildOutfits(panel); break;
                 default:
                     for (var columns = 1; columns <= AppearanceEditorViewModel.MaxBrowserColumns; columns++)
                     {
@@ -87,6 +95,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .DefinePartialView(AppearanceEditorViewModel.EditorArmorCompactPartial, partial => BuildEquipmentEditor(partial, true))
                 .DefinePartialView(AppearanceEditorViewModel.EditorWeaponCompactPartial, partial => BuildWeaponEditor(partial, true))
                 .DefinePartialView(AppearanceEditorViewModel.SettingsPartial, BuildSettings)
+                .DefinePartialView(AppearanceEditorViewModel.OutfitsPartial, BuildOutfits)
                 .AddStandardLayout(layout =>
                 {
                     layout.SetTabPanelHeight(TabPanelHeight);
@@ -117,13 +126,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddOption("Appearance")
                 .AddOption("Equipment")
                 .BindSelectedValue(model => model.EditorTabToggleValue)
-                .SetWidth(300f)
+                .SetWidth(TabWidth * 2)
+                .SetHeight(28f);
+            row.AddToggles()
+                .AddOption("Wardrobe")
+                .BindSelectedValue(model => model.OutfitsTabToggleValue)
+                .BindIsVisible(model => model.IsOutfitsVisible)
+                .SetWidth(TabWidth)
                 .SetHeight(28f);
             row.AddToggles()
                 .AddOption("Settings")
                 .BindSelectedValue(model => model.SettingsTabToggleValue)
                 .BindIsVisible(model => model.IsSettingsVisible)
-                .SetWidth(150f)
+                .SetWidth(TabWidth)
                 .SetHeight(28f);
             row.AddSpacer().SetWidth(12f);
             row.AddComboBox()
@@ -132,15 +147,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddOption("Weapon (Off)", AppearanceEditorViewModel.OffHandEquipmentValue)
                 .BindSelectedIndex(model => model.EquipmentTypeValue)
                 .BindIsVisible(model => model.IsEquipmentSelected)
-                .SetWidth(200f)
+                .SetWidth(EquipmentPickerWidth)
                 .SetHeight(28f);
-            row.AddButton()
-                .SetId("ae_outfits")
-                .SetText("Outfits")
-                .BindIsVisible(model => model.IsEquipmentSelected)
-                .SetWidth(100f)
-                .SetHeight(28f)
-                .BindOnClicked(model => model.OnClickOutfits());
             row.AddLabel()
                 .SetText("Nothing to edit.")
                 .BindIsVisible(model => model.IsNoEditableItemVisible)
@@ -280,6 +288,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddBodyMap(row);
                     row.AddSpacer();
                 });
+
+                if (equipment)
+                    AddQuickOutfitRows(col);
 
                 col.AddRow(fill => fill.AddSpacer());
             });
@@ -927,6 +938,159 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var model = Expression.Parameter(typeof(AppearanceEditorViewModel), "model");
             return Expression.Lambda<System.Func<AppearanceEditorViewModel, TValue>>(
                 Expression.Property(model, propertyName), model);
+        }
+
+        // ---------------------------------------------------------------- outfits
+        /// <summary>
+        /// Quick wear under the equipment body map: pick a saved outfit and wear it, or undo the
+        /// last change. It uses the map's own free space, so the window does not grow.
+        /// </summary>
+        private static void AddQuickOutfitRows(GuiColumn<AppearanceEditorViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsOutfitsVisible);
+                row.AddComboBox()
+                    .SetId("ae_quick_outfit")
+                    .BindOptions(model => model.QuickOutfitOptions)
+                    .BindSelectedIndex(model => model.QuickOutfitValue)
+                    .BindIsEnabled(model => model.IsQuickWearEnabled)
+                    .SetTooltip("Saved outfits")
+                    .SetHeight(32f);
+            });
+            // Wear and Undo sit under the picker, which takes the map's full width.
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsOutfitsVisible);
+                row.AddSpacer();
+                row.AddButton()
+                    .SetId("ae_quick_wear")
+                    .SetText("Wear")
+                    .SetTooltip("Wear the chosen outfit on your clothes and helmet.")
+                    .BindIsEnabled(model => model.IsQuickWearEnabled)
+                    .BindOnClicked(model => model.OnClickQuickWear())
+                    .SetWidth(OutfitButtonWidth)
+                    .SetHeight(32f);
+                row.AddButton()
+                    .SetId("ae_quick_undo")
+                    .SetText("Undo")
+                    .SetTooltip("Undo: restores the look you wore before the last outfit change.")
+                    .BindIsEnabled(model => model.IsUndoOutfitEnabled)
+                    .BindOnClicked(model => model.OnClickUndoOutfit())
+                    .SetWidth(OutfitButtonWidth)
+                    .SetHeight(32f);
+                row.AddSpacer();
+            });
+        }
+
+        /// <summary>
+        /// The wardrobe: a fixed list of saved outfits beside details that take the rest of the
+        /// window, like the editors' part browser.
+        /// </summary>
+        private void BuildOutfits(GuiGroup<AppearanceEditorViewModel> partial)
+        {
+            partial.SetScrollbars(NuiScrollbars.None);
+            partial.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(slots =>
+                    {
+                        slots.SetShowBorder(true).SetScrollbars(NuiScrollbars.None);
+                        slots.AddColumn(list =>
+                        {
+                            list.AddRow(header => header.AddLabel()
+                                .BindText(model => model.WardrobeCapacityText)
+                                .SetHeight(26f)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                .SetVerticalAlign(NuiVerticalAlign.Middle));
+                            list.AddRow(listRow => listRow.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .SetId("ae_outfit_slot")
+                                            .BindText(model => model.OutfitSlotNames)
+                                            .BindIsToggled(model => model.OutfitSlotToggles)
+                                            .BindOnClicked(model => model.OnClickOutfitSlot());
+                                    });
+                                })
+                                .BindRowCount(model => model.OutfitSlotNames));
+                            list.AddRow(buttons =>
+                            {
+                                buttons.AddButton()
+                                    .SetId("ae_outfit_new")
+                                    .SetText("New")
+                                    .BindOnClicked(model => model.OnClickNewOutfit())
+                                    .SetHeight(32f);
+                                buttons.AddButton()
+                                    .SetId("ae_outfit_delete")
+                                    .SetText("Delete")
+                                    .BindIsEnabled(model => model.IsOutfitSelected)
+                                    .BindOnClicked(model => model.OnClickDeleteOutfit())
+                                    .SetHeight(32f);
+                            });
+                        });
+                    }).SetWidth(OutfitListWidth);
+
+                    row.AddGroup(details =>
+                    {
+                        details.SetShowBorder(true).SetScrollbars(NuiScrollbars.None);
+                        details.AddColumn(detail =>
+                        {
+                            detail.AddRow(nameRow =>
+                            {
+                                nameRow.BindIsVisible(model => model.IsOutfitSelected);
+                                nameRow.AddTextEdit()
+                                    .SetId("ae_outfit_name")
+                                    .SetPlaceholder("Name")
+                                    .BindValue(model => model.OutfitName)
+                                    .SetMaxLength(Wardrobe.MaxNameLength)
+                                    .SetHeight(32f);
+                                nameRow.AddButton()
+                                    .SetId("ae_outfit_rename")
+                                    .SetText("Rename")
+                                    .BindIsEnabled(model => model.IsOutfitRenameEnabled)
+                                    .BindOnClicked(model => model.OnClickRenameOutfit())
+                                    .SetWidth(90f)
+                                    .SetHeight(32f);
+                            });
+                            detail.AddRow(textRow =>
+                            {
+                                textRow.BindIsVisible(model => model.IsOutfitSelected);
+                                textRow.AddText().BindText(model => model.OutfitDetails);
+                            });
+                            detail.AddRow(actions =>
+                            {
+                                actions.BindIsVisible(model => model.IsOutfitSelected);
+                                actions.AddButton()
+                                    .SetId("ae_outfit_store")
+                                    .SetText("Save Current Look")
+                                    .SetTooltip("Saves your worn clothes, and your helmet if you wear one, to this outfit.")
+                                    .BindOnClicked(model => model.OnClickStoreOutfit())
+                                    .SetWidth(OutfitStoreButtonWidth)
+                                    .SetHeight(32f);
+                                actions.AddButton()
+                                    .SetId("ae_outfit_wear")
+                                    .SetText("Wear")
+                                    .BindIsEnabled(model => model.IsOutfitWearEnabled)
+                                    .BindOnClicked(model => model.OnClickWearOutfit())
+                                    .SetWidth(OutfitButtonWidth)
+                                    .SetHeight(32f);
+                                actions.AddButton()
+                                    .SetId("ae_outfit_undo")
+                                    .SetText("Undo")
+                                    .SetTooltip("Undo: restores the look you wore before the last outfit change.")
+                                    .BindIsEnabled(model => model.IsUndoOutfitEnabled)
+                                    .BindOnClicked(model => model.OnClickUndoOutfit())
+                                    .SetWidth(OutfitButtonWidth)
+                                    .SetHeight(32f);
+                                actions.AddSpacer();
+                            });
+                        });
+                    });
+                });
+            });
         }
 
         // ---------------------------------------------------------------- settings

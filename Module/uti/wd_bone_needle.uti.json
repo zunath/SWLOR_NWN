@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 175
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 536
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 175
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A long needle carved from a fang of Maw-Seer Ghal, a Vellen flesheater of the Viscara ruins. It is hard enough to stitch heavy leather without bending. Vessa Thrane, the couturier on the Nar Shaddaa Promenade, uses it to expand a wardrobe's pattern locker."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A long needle carved from a fang of Maw-Seer Ghal, a Vellen flesheater of the Viscara ruins. It is hard enough to stitch heavy leather without bending. Vessa Thrane, the couturier on the Nar Shaddaa Promenade, uses it to expand a wardrobe's pattern locker."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Maw-Seer Bone Needle"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 69
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "wd_bone_needle"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "wd_bone_needle"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 69
+  }
+}

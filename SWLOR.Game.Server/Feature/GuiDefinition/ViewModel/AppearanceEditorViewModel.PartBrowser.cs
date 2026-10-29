@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>Points the browser at the parts of the selected body-map slot or weapon part.</summary>
         private void RefreshPartBrowser()
         {
-            if (IsSettingsSelected || DoesNotHaveItemEquipped)
+            if (IsPartEditorHidden || DoesNotHaveItemEquipped)
             {
                 ClearBrowser();
                 return;
@@ -752,7 +752,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (generation != _resizeGeneration || Geometry == null)
                     return;
-                if (!IsSettingsSelected)
+                if (!IsPartEditorHidden)
                     ApplyBrowserColumns();
             });
         }

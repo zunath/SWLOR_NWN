@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 175
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 536
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 175
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A set of small metal tags, each etched with an index code. A master pattern locker needs one for every look it holds. Vessa Thrane, the couturier on the Nar Shaddaa Promenade, uses it to expand a wardrobe's pattern locker."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A set of small metal tags, each etched with an index code. A master pattern locker needs one for every look it holds. Vessa Thrane, the couturier on the Nar Shaddaa Promenade, uses it to expand a wardrobe's pattern locker."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Pattern Index Tags"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 181
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "wd_index_tags"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "wd_index_tags"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 181
+  }
+}

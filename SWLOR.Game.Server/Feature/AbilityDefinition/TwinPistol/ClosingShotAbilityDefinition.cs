@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 {
                     FlatPower = 6,
                     StaminaCost = 4,
+                    CadencePowerPerCharge = 2,
                     SpendsCadence = true,
                 });
 
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 {
                     FlatPower = 10,
                     StaminaCost = 8,
+                    CadencePowerPerCharge = 2,
                     SpendsCadence = true,
                 });
 
@@ -35,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 {
                     FlatPower = 14,
                     StaminaCost = 10,
+                    CadencePowerPerCharge = 2,
                     SpendsCadence = true,
                 });
             return builder.Build();

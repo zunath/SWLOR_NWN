@@ -26,7 +26,7 @@ public class TwinPistolTests
         _catalog.Get(FeatType.ControlledBurst2).TwinPistol.WeaponPowerPercent.Should().Be(75);
         _catalog.Get(FeatType.FinalSalvo).TwinPistol.CadencePowerPerCharge.Should().Be(4);
         _catalog.Get(FeatType.FinalSalvo).WeaponAbilityCadenceDamagePerCharge.Should().Be(4);
-        _catalog.Get(FeatType.ClosingShot3).WeaponAbilityCadenceDamagePerCharge.Should().BeNull();
+        _catalog.Get(FeatType.ClosingShot3).WeaponAbilityCadenceDamagePerCharge.Should().Be(2);
         _catalog.Get(FeatType.LeadShot4).WeaponAbilityCadenceOnHit.Should().Be(1);
         _catalog.Get(FeatType.TempoShot2).WeaponAbilityCadenceOnHit.Should().Be(2);
         _catalog.Get(FeatType.LeadShot1).KeepsWeaponAbilityCadence.Should().BeTrue();
@@ -153,6 +153,30 @@ public class TwinPistolTests
         // Steady Cadence III adds +3 to the generic +2 per charge, once per gun.
         actor.Stats.CadenceDamagePowerApplied.Should().Be(3 * (2 + 3) * 2);
         actor.WeaponTraits.Paired.Cadence.Should().Be(1, "Closing Shot spends at payment, then its chained hit grants one");
+    }
+
+    [Test]
+    public void WithoutTheCadenceTrait_ClosingShotSpendsLeadShotsCadenceAtItsOwnRate()
+    {
+        var scenario = TwinPistolScenarios.Create(true, false);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Perks = new() { "LeadShot:4", "ClosingShot:3" };
+        spec.StmRegenPer30Seconds = 0;
+        spec.Abilities = new List<AbilityUseSpec>
+        {
+            new() { Feat = "LeadShot4", MinIntervalSeconds = 600 },
+            new() { Feat = "ClosingShot3", MinimumCadence = 1, MinIntervalSeconds = 600 }
+        };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.Spec.WeaponLoadout.Accuracy = 10000;
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 2 && actor.Casting == null, 12, "Lead then Closing Shot");
+        actor.Stats.CadenceSpent.Should().Be(1, "Lead Shot's pool exists before the Cadence trait is bought");
+        actor.Stats.CadenceDamagePowerApplied.Should().Be(1 * 2 * 2, "Closing Shot's own +2 per charge, once per gun");
+        actor.Stats.CadenceChains.Should().Be(0, "chaining belongs to the Cadence trait");
+        actor.WeaponTraits.Paired.Cadence.Should().Be(0);
     }
 
     [Test]

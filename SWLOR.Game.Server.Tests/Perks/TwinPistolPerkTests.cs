@@ -231,7 +231,7 @@ public class TwinPistolPerkTests
         {
             ability.KeepsWeaponAbilityCadence.Should().BeFalse();
             ability.WeaponAbilityCadenceOnHit.Should().Be(0);
-            ability.WeaponAbilityCadenceDamagePerCharge.Should().BeNull("Closing Shot uses the generic +2 per charge");
+            ability.WeaponAbilityCadenceDamagePerCharge.Should().Be(2, "Closing Shot spends at its own +2 per charge, even without the Cadence trait");
         }
         var salvo = new FinalSalvoAbilityDefinition().BuildAbilities().Values.Single();
         salvo.KeepsWeaponAbilityCadence.Should().BeFalse();

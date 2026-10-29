@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.ShipRewardDefinition;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -1026,23 +1027,33 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         }
 
         /// <summary>
-        /// Every Wild Space system (plan section 23, the six areas in WildSpaceTuning.Systems): Rift Raiders flying all
-        /// eight W5b roles and the pirate hulls, at the open-orbit weights (tools/SpaceRevampBalance/wildspace.py
-        /// SPAWN_WEIGHTS) with the bomber at the role ships' weight. No convoys, capitals or aces.
+        /// Every Wild Space system (plan section 23, the six areas in WildSpaceTuning.Systems), each with its own table:
+        /// Rift Raiders flying all eight W5b roles and the pirate hulls, at the open-orbit weights
+        /// (tools/SpaceRevampBalance/wildspace.py SPAWN_WEIGHTS) with the bomber at the role ships' weight, and the
+        /// system's own ace (W11o). No convoys or capitals.
         /// </summary>
         private void WildSpace()
         {
-            _builder.Create("SPACE_WILD_SPACE", "Space - Wild Space");
-            foreach (var (tag, weight) in new[]
-                     {
-                         ("rrfighter", 38400), ("rrinterceptor", 19200), ("rrgunship", 3840), ("rrbomber", 1920), ("rrewar", 1920),
-                         ("rrsniper", 1920), ("rrminelayer", 1920), ("rrlogistics", 1440), ("rrcarrier", 480)
-                     })
+            foreach (var system in WildSpaceTuning.Systems)
             {
-                _builder.AddSpawn(ObjectType.Creature, tag)
-                    .WithFrequency(weight)
-                    .RandomlyWalks()
-                    .ReturnsHome();
+                _builder.Create(system.SpawnTable, $"Space - {system.Name}");
+                foreach (var (tag, weight) in new[]
+                         {
+                             ("rrfighter", 38400), ("rrinterceptor", 19200), ("rrgunship", 3840), ("rrbomber", 1920), ("rrewar", 1920),
+                             ("rrsniper", 1920), ("rrminelayer", 1920), ("rrlogistics", 1440), ("rrcarrier", 480)
+                         })
+                {
+                    _builder.AddSpawn(ObjectType.Creature, tag)
+                        .WithFrequency(weight)
+                        .RandomlyWalks()
+                        .ReturnsHome();
+                }
+
+                foreach (var ace in RevampAceCatalog.Aces)
+                {
+                    if (ace.WildSpace && ace.AreaResref == system.AreaResref)
+                        AddAce(ace.Tag);
+                }
             }
         }
     }

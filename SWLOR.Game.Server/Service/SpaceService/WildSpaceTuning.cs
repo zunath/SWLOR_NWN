@@ -23,12 +23,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The six Wild Space systems, one per environment. They have no starlanes or docks.</summary>
         public static readonly IReadOnlyList<WildSpaceSystem> Systems = new List<WildSpaceSystem>
         {
-            new WildSpaceSystem { AreaResref = "space_wspulsar", Name = "Wild Space - Vesh Pulsar", Environment = WildSpaceEnvironment.Pulsar },
-            new WildSpaceSystem { AreaResref = "space_wsblkhole", Name = "Wild Space - The Maw", Environment = WildSpaceEnvironment.BlackHole },
-            new WildSpaceSystem { AreaResref = "space_wsionstorm", Name = "Wild Space - Ion Veil", Environment = WildSpaceEnvironment.IonStorm },
-            new WildSpaceSystem { AreaResref = "space_wsmagnetar", Name = "Wild Space - Korvax Magnetar", Environment = WildSpaceEnvironment.Magnetar },
-            new WildSpaceSystem { AreaResref = "space_wsredgiant", Name = "Wild Space - Ember Giant", Environment = WildSpaceEnvironment.RedGiant },
-            new WildSpaceSystem { AreaResref = "space_wsgraveyrd", Name = "Wild Space - Ship Graveyard", Environment = WildSpaceEnvironment.ShipGraveyard },
+            new WildSpaceSystem { AreaResref = "space_wspulsar", Name = "Wild Space - Vesh Pulsar", Environment = WildSpaceEnvironment.Pulsar, SpawnTable = "SPACE_WILD_SPACE_PULSAR" },
+            new WildSpaceSystem { AreaResref = "space_wsblkhole", Name = "Wild Space - The Maw", Environment = WildSpaceEnvironment.BlackHole, SpawnTable = "SPACE_WILD_SPACE_BLACK_HOLE" },
+            new WildSpaceSystem { AreaResref = "space_wsionstorm", Name = "Wild Space - Ion Veil", Environment = WildSpaceEnvironment.IonStorm, SpawnTable = "SPACE_WILD_SPACE_ION_STORM" },
+            new WildSpaceSystem { AreaResref = "space_wsmagnetar", Name = "Wild Space - Korvax Magnetar", Environment = WildSpaceEnvironment.Magnetar, SpawnTable = "SPACE_WILD_SPACE_MAGNETAR" },
+            new WildSpaceSystem { AreaResref = "space_wsredgiant", Name = "Wild Space - Ember Giant", Environment = WildSpaceEnvironment.RedGiant, SpawnTable = "SPACE_WILD_SPACE_RED_GIANT" },
+            new WildSpaceSystem { AreaResref = "space_wsgraveyrd", Name = "Wild Space - Ship Graveyard", Environment = WildSpaceEnvironment.ShipGraveyard, SpawnTable = "SPACE_WILD_SPACE_SHIP_GRAVEYARD" },
         };
 
         public static readonly IReadOnlyDictionary<WildSpaceEnvironment, string> EnvironmentNames = new Dictionary<WildSpaceEnvironment, string>

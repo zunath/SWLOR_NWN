@@ -59,6 +59,11 @@ FACTION_NAMES = {"RepublicMilitary": "Republic Military", "Czerka": "Czerka Corp
 # The ship maker whose Design Schematics, Ship Schematics and manufacturer component each faction's store sells.
 FACTION_MAKER = {"RepublicMilitary": "Republic", "Czerka": "Czerka", "Smuggler": "Corellian", "HuttCartel": "Hutt",
                  "Mandalorian": "Mandalorian", "SithMilitary": "Sith"}
+# Makers with no faction of their own whose manufacturer component the black-market factions' stores also sell (W11o,
+# Appendix D: the Chiss Sensor Array comes from the black markets at Smuggler's Moon, Tatooine and Hutlar). The Smugglers
+# and the Hutt Cartel have the agents at Smuggler's Moon and Tatooine; Hutlar's agents are Czerka and Mandalorian. Same
+# category, price and standing gate as the faction maker's own component. The Rift Raider part stays Wild Space only.
+BLACK_MARKET_MAKERS = {"Smuggler": ["Chiss"], "HuttCartel": ["Chiss"]}
 
 MISSION_TYPES = ["Kill", "SealedCourier", "MiningQuota", "ConvoyEscort", "ScanDown", "DataHeist"]
 MISSION_TYPE_IDS = {k: i for i, k in enumerate(MISSION_TYPES, 1)}
@@ -385,8 +390,9 @@ def store(faction):
     rows = [("Ammo", r, None, AMMO_QUANTITY, None) for r in AMMO]
     rows += [("DesignSchematic", d["Resref"], f"Design Schematic: {d['ShipName']} {d['Name']}", 1, None)
              for d in design_rows() if makers.get(d["ShipTag"], ("", False))[0] == maker and not d["WildSpaceOnly"]]
-    comp = maker_component(maker)
-    rows.append(("ManufacturerComponent", comp["Resref"], comp["Name"], 1, comp["Trait"]))
+    for m in [maker] + BLACK_MARKET_MAKERS.get(faction, []):
+        comp = maker_component(m)
+        rows.append(("ManufacturerComponent", comp["Resref"], comp["Name"], 1, comp["Trait"]))
     rows += [("RiftKey", r, None, 1, None) for _, r in rift_keys(faction)]
     rows += [("ShipSchematic", s["Resref"], f"Ship Schematic: {s['ShipName']}", 1, None)
              for s in schematic_rows() if makers.get(s["ShipTag"], ("", False))[0] == maker and not s["WildSpaceOnly"]]
@@ -582,6 +588,11 @@ def tuning_cs():
               "        public static readonly IReadOnlyDictionary<FactionType, ShipManufacturer> FactionMakers = new Dictionary<FactionType, ShipManufacturer> { "
               + ", ".join(f"[FactionType.{f}] = ShipManufacturer.{m}" for f, m in FACTION_MAKER.items()) + " };",
               "",
+              "        /// <summary>The makers without a faction whose component a black-market faction's store also sells (W11o).</summary>",
+              "        public static readonly IReadOnlyDictionary<FactionType, ShipManufacturer[]> BlackMarketMakers = new Dictionary<FactionType, ShipManufacturer[]> { "
+              + ", ".join(f"[FactionType.{f}] = new[] {{ " + ", ".join(f"ShipManufacturer.{m}" for m in ms) + " }"
+                          for f, ms in BLACK_MARKET_MAKERS.items()) + " };",
+              "",
               "        public static readonly IReadOnlyList<FactionAgentDetail> Agents = new List<FactionAgentDetail>",
               "        {"]
     for enum, name, faction, dock, donor, greeting in AGENTS:
@@ -687,7 +698,8 @@ def agents_tab(Sheet):
             [[c, prices[c], STORE_GATES[c], "", "", "", "",
               {"Ammo": f"Ion, Incendiary and Seeker Missiles, {AMMO_QUANTITY} each",
                "DesignSchematic": "the faction maker's Hull Designs (Wild Space only designs left out)",
-               "ManufacturerComponent": "the faction maker's component (with its trait)",
+               "ManufacturerComponent": "the faction maker's component (with its trait); the Smugglers and the Hutt "
+                                        "Cartel also sell the Chiss Sensor Array (the black markets, W11o)",
                "RiftKey": "Rift Keys: tier 1 up to the faction's highest dock tier (at most 5), and tier 5.5",
                "ShipSchematic": "the faction maker's Advanced ships"}[c]] for c in STORE_CATEGORIES])
     s.table(["Rift Key", "Tokens", "Standing", "", "", "", "", "Sold by"],
@@ -696,7 +708,8 @@ def agents_tab(Sheet):
              for t, r in sorted({k for f in FACTION_NAMES for k in rift_keys(f)})])
     s.table(["Faction", "Maker", "Designs", "Ship Schematics", "", "", "", "Manufacturer component"],
             [[FACTION_NAMES[f], FACTION_MAKER[f], sum(1 for x in store(f) if x[0] == "DesignSchematic"),
-              sum(1 for x in store(f) if x[0] == "ShipSchematic"), "", "", "", maker_component(FACTION_MAKER[f])["Name"]]
+              sum(1 for x in store(f) if x[0] == "ShipSchematic"), "", "", "",
+              ", ".join(x[2] for x in store(f) if x[0] == "ManufacturerComponent")]
              for f in FACTION_NAMES])
     return s
 

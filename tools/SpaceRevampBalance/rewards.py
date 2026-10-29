@@ -326,9 +326,63 @@ ACES = [
          lore="A Sith Lord who flies his own bomber over Korriban and hunts the ships that dare come close."),
 ]
 
+# Wild Space aces (W11o; plan section 23 and Appendix D's "Wild Space data sites and aces"): one per Wild Space system, an
+# Elite of the Rift Raiders' level (wildspace.RIFT_RAIDER_LEVEL, 52) copied from the Rift Raider gunship, flying a Hull
+# Design no other creature uses. The tier-indexed parts use the content tier 5 (rare component, legacy ship item), the
+# tables are the Wild Space ones (SPACE_ELITE_WS and the tier 5.5 Rift Key), the maker is the Rift Raiders (their
+# manufacturer component and wreck salvage), and the Module Schematic slot holds Prototype Tech (a Wild Space source)
+# instead: 13 of the 16 named Module Schematics already belong to one ace each. Their achievements follow the trade ones.
+WILD_ACE_LEVEL = 52
+WILD_ACE_ELITE_TABLE = "SPACE_ELITE_WS, 66, 5"
+WILD_ACES = [
+    dict(key="VeshPulsar", tag="ace_wspulsar", name="Kessa Vane", short="Vane", area="space_wspulsar",
+         area_text="the Vesh Pulsar", table="SPACE_WILD_SPACE_PULSAR", tier=5, role="Interceptor", design=10192,
+         maker="Rift Raider", named=None, rare=("ThrusterAssembly", "CorellianModified"),
+         trophy=("Pulsar-Scorched Hatch", "_mdrn_pl_shipp05",
+                 "A hexagonal hatch cut from a raider interceptor, its paint burned away by a pulsar's sweep."),
+         lore="A Rift Raider who times her strikes to the pulsar's beat and is gone before a pilot's sensors recover."),
+    dict(key="TheMaw", tag="ace_wsblkhole", name="Old Mother Garrow", short="Garrow", area="space_wsblkhole",
+         area_text="The Maw", table="SPACE_WILD_SPACE_BLACK_HOLE", tier=5, role="Bomber", design=10079,
+         maker="Rift Raider", named=None, rare=("OrdnanceAssembly", "SithTuned"),
+         trophy=("Gravity-Torn Turbine", "_mdrn_pl_engine2",
+                 "A turbine bent out of true by the pull of a black hole, salvaged from a raider bomber."),
+         lore="The oldest bomber pilot of the Rift Raiders, who herds ships toward the black hole's edge with her torpedoes."),
+    dict(key="IonVeil", tag="ace_wsionstorm", name="Jex Turlo", short="Turlo", area="space_wsionstorm",
+         area_text="the Ion Veil", table="SPACE_WILD_SPACE_ION_STORM", tier=5, role="Electronic Warfare", design=2001,
+         maker="Rift Raider", named=None, rare=("SensorSuite", "ChissCalibrated"),
+         trophy=("Ion-Fused Control Block", "_mdrn_pl_engine3",
+                 "A control block whose tubes were fused solid by an ion storm, pulled from a jamming ship."),
+         lore="A Rift Raider slicer who rides the ion storm in a stolen Republic scout and blinds whatever wanders in."),
+    dict(key="KorvaxMagnetar", tag="ace_wsmagnetar", name="Brann Halvek", short="Halvek", area="space_wsmagnetar",
+         area_text="the Korvax Magnetar", table="SPACE_WILD_SPACE_MAGNETAR", tier=5, role="Sniper", design=10210,
+         maker="Rift Raider", named=None, rare=("EnergyEmitter", "SithTuned"),
+         trophy=("Magnetized Hull Panel", "_mdrn_pl_debri09",
+                 "A blue hull panel still faintly magnetized, cut from a sniper's ship near a magnetar."),
+         lore="A Rift Raider marksman who lets the magnetar drag his targets' shields down before he fires."),
+    dict(key="EmberGiant", tag="ace_wsredgiant", name="Captain Seris Kol", short="Kol", area="space_wsredgiant",
+         area_text="the Ember Giant", table="SPACE_WILD_SPACE_RED_GIANT", tier=5, role="Fighter", design=10211,
+         maker="Rift Raider", named=None, rare=("HullFrame", "MandalorianForged"),
+         trophy=("Ember-Scarred Engine Control", "_mdrn_pl_engctr2",
+                 "An engine control console scarred by a red giant's heat, taken from a raider fighter."),
+         lore="A Rift Raider captain who duels in the red giant's glare, where only her own fighter's shields hold."),
+    dict(key="ShipGraveyard", tag="ace_wsgraveyrd", name="Warlord Tasker Vohl", short="Vohl", area="space_wsgraveyrd",
+         area_text="the Ship Graveyard", table="SPACE_WILD_SPACE_SHIP_GRAVEYARD", tier=5, role="Fighter", design=10195,
+         maker="Rift Raider", named=None, rare=("ShieldProjector", "RepublicGrade"),
+         trophy=("Graveyard Flagship Generator", "_mdrn_pl_genert3",
+                 "A wrecked generator from a Rift Raider flagship, pulled from the ship graveyard as proof of the kill."),
+         lore="The Rift Raider warlord who claims the Ship Graveyard and every wreck in it, flying the coalition's heaviest raider."),
+]
+for _ace in WILD_ACES:
+    _ace["wild"] = True
+ACES = ACES + WILD_ACES
+
 
 def ace_level(ace):
-    return ace["tier"] * ACE_LEVEL_PER_TIER
+    return WILD_ACE_LEVEL if ace.get("wild") else ace["tier"] * ACE_LEVEL_PER_TIER
+
+
+def ace_elite_table(ace):
+    return WILD_ACE_ELITE_TABLE if ace.get("wild") else ACE_ELITE_TABLE.format(tier=ace["tier"])
 
 
 def ace_loot_table(ace):
@@ -385,10 +439,10 @@ CREWED_KILL_ACHIEVEMENT = ("SpaceCrewedKill", "Crewed Kill", "Destroyed a ship i
 # stations and starship interiors. Each places an existing static placeable no other structure uses, and copies the
 # bill, level and tier of the Electronics furniture recipe named last (FurnitureRecipes), so no number is new: one
 # item storage slot and two Structure enhancement slots like every crafted furniture piece.
-# StructureType after the station buildings (5018-5021), RecipeType after the last revamp recipe (7792).
+# StructureType after the station buildings (5018-5021), RecipeType after the capital parts (7793-7795).
 # ---------------------------------------------------------------------------------------------------------------
 DECOR_STRUCTURE_START = 5022
-DECOR_RECIPE_START = 7793
+DECOR_RECIPE_START = 7796
 DECOR_COST = 100   # like every crafted furniture item (structure_0162)
 DECOR_STORAGE = 1
 DECOR_ENHANCEMENT_SLOTS = 2
@@ -429,13 +483,17 @@ def achievements():
         out.append((enum, name, f"Destroyed {article} {faction} ship (tier {tier}) in space."))
     out.append(("SpaceCapitalKill", "Capital Breaker", "Helped destroy a capital ship in space."))
     for ace in ACES:
-        out.append((ace_achievement(ace), f"{ace['short']} Downed", f"Helped destroy the ace {ace['name']} in {ace['area_text']}."))
+        if not ace.get("wild"):
+            out.append((ace_achievement(ace), f"{ace['short']} Downed", f"Helped destroy the ace {ace['name']} in {ace['area_text']}."))
     out.append(("SpaceNamedModule", "Named and Fitted", "Fitted a named rank-50 module to a ship."))
     for _site, enum, name, text in SITE_ACHIEVEMENTS:
         out.append((enum, name, text))
     out.append(("SpaceWildSpace", "Beyond the Map", "Entered Wild Space."))
     for credits, enum, name in TRADE_ACHIEVEMENTS:
         out.append((enum, name, f"Earned {credits:,} credits of trade profit and freight fees."))
+    # W11o: the Wild Space aces, after the last W9c-W12c achievement so no existing id moves.
+    for ace in WILD_ACES:
+        out.append((ace_achievement(ace), f"{ace['short']} Downed", f"Helped destroy the ace {ace['name']} in {ace['area_text']}."))
     for _area, enum, name, text in INTERIOR_ACHIEVEMENTS:
         out.append((enum, name, text))
     out.append(CREWED_KILL_ACHIEVEMENT)

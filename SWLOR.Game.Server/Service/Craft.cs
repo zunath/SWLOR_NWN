@@ -426,6 +426,18 @@ namespace SWLOR.Game.Server.Service
                 recipeDetailColors.Add(GuiColor.White);
             }
 
+            // An Advanced deed's rare-trait slot, or the stand-in for its rare component (W11o).
+            if (detail.Category == RecipeCategoryType.Starship)
+            {
+                var rare = ShipRareComponentRules.RareComponentOf(detail.Components.Keys);
+                var standInText = ShipRareComponentRules.StandInText(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare));
+                if (standInText != null)
+                {
+                    recipeDetails.Add(standInText);
+                    recipeDetailColors.Add(GuiColor.White);
+                }
+            }
+
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.Green);
 

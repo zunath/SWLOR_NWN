@@ -71,6 +71,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>The next tier's key (tier 5 leads to 5.5), or null after 5.5.</summary>
+        /// <summary>Whether an area resref is one of the pocket templates (every key tier's and the tier 5.5 one).</summary>
+        public static bool IsPocketTemplate(string resref) =>
+            !string.IsNullOrEmpty(resref) && RiftRunTuning.Keys.Any(x => x.Template == resref);
+
+        /// <summary>Where a pocket's chamber stands when its template has no waypoint for it.</summary>
+        public static (float X, float Y, float Z) RoomPoint(string template, int room)
+        {
+            var points = RiftRunTuning.TemplateRoomPoints.TryGetValue(template ?? string.Empty, out var own)
+                ? own
+                : RiftRunTuning.RoomPoints;
+            return points[Math.Clamp(room, 0, points.Count - 1)];
+        }
+
         public static RiftKeyDetail NextKey(RiftKeyDetail key) =>
             key == null ? null : RiftRunTuning.Keys.Where(x => x.TierTenths > key.TierTenths).OrderBy(x => x.TierTenths).FirstOrDefault();
 

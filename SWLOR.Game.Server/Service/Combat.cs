@@ -1096,10 +1096,15 @@ namespace SWLOR.Game.Server.Service
                 var isArea = Ability.IsAreaImpact(attacker, ability);
                 var isSingleTarget = Ability.IsSingleTargetImpact(attacker, ability);
                 damage = ApplyTwinBladeAbilityShapeDamageModifier(attacker, skillType, damage, isSingleTarget, isArea);
-                damage = ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, isArea);
+                damage = ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, isSingleTarget, isArea);
                 damage = ApplySkillAreaAbilityDamageModifier(attacker, skillType, damage, isArea);
                 damage = ApplyPhysicalAbilityShapeDamageModifier(attacker, damageType, damage, isSingleTarget);
                 damage = ApplyAreaAbilityAfterDeflectionDamageModifier(attacker, skillType, damage, isArea);
+            }
+            else
+            {
+                // A thrown auto-attack is single-target damage (the Ordnance Stance penalty).
+                damage = ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, true, false);
             }
 
             damage = ApplyMimicryAbilityDamageModifier(attacker, damage, skillType, isAbilityDamage);
@@ -4723,14 +4728,17 @@ namespace SWLOR.Game.Server.Service
             uint attacker,
             SkillType skillType,
             int damage,
+            bool isSingleTarget,
             bool isAreaAbility)
         {
-            if (damage <= 0 || skillType != SkillType.Throwing || !isAreaAbility)
+            if (damage <= 0 || skillType != SkillType.Throwing || !isSingleTarget && !isAreaAbility)
                 return damage;
 
-            var adjustment = Stat.GetStatAdjustment(
-                attacker,
-                StatType.ThrowingAreaAbilityDamagePercentAdjustment);
+            var adjustment = 0;
+            if (isAreaAbility)
+                adjustment += Stat.GetStatAdjustment(attacker, StatType.ThrowingAreaAbilityDamagePercentAdjustment);
+            if (isSingleTarget)
+                adjustment += Stat.GetStatAdjustment(attacker, StatType.ThrowingSingleTargetDamagePercentAdjustment);
             if (adjustment == 0)
                 return damage;
 

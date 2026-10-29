@@ -110,7 +110,7 @@ public class SpaceAchievementTests
         SpaceAchievementRules.IsCrewedKill(1).Should().BeFalse("a pilot alone");
         SpaceAchievementRules.IsCrewedKill(2).Should().BeTrue();
         SpaceAchievementRules.IsCrewedKill(4).Should().BeTrue();
-        ((int)AchievementType.SpaceCrewedKill).Should().Be(221);
+        ((int)AchievementType.SpaceCrewedKill).Should().Be(227);
     }
 
     [TestCase("Service/SpaceAchievements.cs", "GetShipCrewPlayers(GetFiringShip(killer))")]

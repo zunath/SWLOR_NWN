@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
     /// model (<c>tools/SpaceRevampBalance/checks.py</c>, section L): no mode shortens a kill, so a crewed ship
     /// stays at or below N separate ships, and the model's job score is level with Balanced in Shields mode and
     /// lower in the others, whose gains (capacitor and speed) the fights do not measure.
+    /// The Engineer's Engineering rank makes each mode's gain larger (the bonus percent, from
+    /// <see cref="ShipSeatSkillRules.EngineeringRoutingPercent"/>, up to +25%); the penalties never change (W11n,
+    /// checks.py section Q).
     /// </summary>
     public static class PowerRoutingRules
     {
@@ -33,26 +36,30 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Weapons and Shields modes: speed falls by this much (percent).</summary>
         public const int SpeedPenaltyPercent = 10;
 
+        /// <summary>A mode's gain after the Engineer's Engineering bonus, rounded half away from zero.</summary>
+        public static int ScaleGain(int gainPercent, int bonusPercent) =>
+            SpaceCombatMath.ScaleByPercent(gainPercent, Math.Max(0, bonusPercent));
+
         /// <summary>Percent change to weapon modules' capacitor use.</summary>
-        public static int WeaponCapacitorPercent(ShipPowerRouting mode) =>
-            mode == ShipPowerRouting.Weapons ? -WeaponsCapacitorSavingPercent : 0;
+        public static int WeaponCapacitorPercent(ShipPowerRouting mode, int bonusPercent = 0) =>
+            mode == ShipPowerRouting.Weapons ? -ScaleGain(WeaponsCapacitorSavingPercent, bonusPercent) : 0;
 
         /// <summary>Percent change to the ship's weapon damage.</summary>
         public static int WeaponDamagePercent(ShipPowerRouting mode) =>
             mode is ShipPowerRouting.Shields or ShipPowerRouting.Engines ? -WeaponDamagePenaltyPercent : 0;
 
         /// <summary>Percent change to the ship's shield regen.</summary>
-        public static int ShieldRegenPercent(ShipPowerRouting mode) => mode switch
+        public static int ShieldRegenPercent(ShipPowerRouting mode, int bonusPercent = 0) => mode switch
         {
-            ShipPowerRouting.Shields => ShieldRegenBonusPercent,
+            ShipPowerRouting.Shields => ScaleGain(ShieldRegenBonusPercent, bonusPercent),
             ShipPowerRouting.Weapons or ShipPowerRouting.Engines => -ShieldRegenPenaltyPercent,
             _ => 0,
         };
 
         /// <summary>Percent change to the ship's speed.</summary>
-        public static int SpeedPercent(ShipPowerRouting mode) => mode switch
+        public static int SpeedPercent(ShipPowerRouting mode, int bonusPercent = 0) => mode switch
         {
-            ShipPowerRouting.Engines => SpeedBonusPercent,
+            ShipPowerRouting.Engines => ScaleGain(SpeedBonusPercent, bonusPercent),
             ShipPowerRouting.Weapons or ShipPowerRouting.Shields => -SpeedPenaltyPercent,
             _ => 0,
         };
@@ -60,9 +67,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>
         /// A module's capacitor use under the routing: weapon modules only, rounded, at least 1 when it costs any.
         /// </summary>
-        public static int ApplyCapacitorCost(int cost, ShipPowerRouting mode, bool isWeapon)
+        public static int ApplyCapacitorCost(int cost, ShipPowerRouting mode, bool isWeapon, int bonusPercent = 0)
         {
-            var percent = isWeapon ? WeaponCapacitorPercent(mode) : 0;
+            var percent = isWeapon ? WeaponCapacitorPercent(mode, bonusPercent) : 0;
             if (cost <= 0 || percent == 0)
                 return cost;
 
@@ -70,12 +77,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>Shield regen per second under the routing.</summary>
-        public static double ApplyShieldRegen(double regenPerSecond, ShipPowerRouting mode) =>
-            regenPerSecond * (1 + ShieldRegenPercent(mode) / 100.0);
+        public static double ApplyShieldRegen(double regenPerSecond, ShipPowerRouting mode, int bonusPercent = 0) =>
+            regenPerSecond * (1 + ShieldRegenPercent(mode, bonusPercent) / 100.0);
 
         /// <summary>The ship's speed multiplier under the routing.</summary>
-        public static double ApplySpeed(double speedMultiplier, ShipPowerRouting mode) =>
-            speedMultiplier * (1 + SpeedPercent(mode) / 100.0);
+        public static double ApplySpeed(double speedMultiplier, ShipPowerRouting mode, int bonusPercent = 0) =>
+            speedMultiplier * (1 + SpeedPercent(mode, bonusPercent) / 100.0);
 
         /// <summary>Whether a change is allowed now: the routing differs and the cooldown has passed.</summary>
         public static bool CanChange(ShipPowerRouting current, ShipPowerRouting requested, DateTime changedAt, DateTime now) =>
@@ -94,15 +101,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
             _ => "Balanced",
         };
 
-        /// <summary>The routing's effect, as the HUD and the Engineer's message show it.</summary>
-        public static string GetEffect(ShipPowerRouting mode) => mode switch
+        /// <summary>The routing's effect, as the HUD and the Engineer's message show it, with the Engineering bonus.</summary>
+        public static string GetEffect(ShipPowerRouting mode, int bonusPercent = 0) => mode switch
         {
             ShipPowerRouting.Weapons =>
-                $"weapons use {WeaponsCapacitorSavingPercent}% less capacitor; shield regen -{ShieldRegenPenaltyPercent}%, speed -{SpeedPenaltyPercent}%",
+                $"weapons use {ScaleGain(WeaponsCapacitorSavingPercent, bonusPercent)}% less capacitor; shield regen -{ShieldRegenPenaltyPercent}%, speed -{SpeedPenaltyPercent}%",
             ShipPowerRouting.Shields =>
-                $"shield regen +{ShieldRegenBonusPercent}%; weapon damage -{WeaponDamagePenaltyPercent}%, speed -{SpeedPenaltyPercent}%",
+                $"shield regen +{ScaleGain(ShieldRegenBonusPercent, bonusPercent)}%; weapon damage -{WeaponDamagePenaltyPercent}%, speed -{SpeedPenaltyPercent}%",
             ShipPowerRouting.Engines =>
-                $"speed +{SpeedBonusPercent}%; weapon damage -{WeaponDamagePenaltyPercent}%, shield regen -{ShieldRegenPenaltyPercent}%",
+                $"speed +{ScaleGain(SpeedBonusPercent, bonusPercent)}%; weapon damage -{WeaponDamagePenaltyPercent}%, shield regen -{ShieldRegenPenaltyPercent}%",
             _ => "weapons, shields and engines work normally",
         };
 

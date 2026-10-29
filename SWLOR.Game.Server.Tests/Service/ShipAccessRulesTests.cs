@@ -305,7 +305,7 @@ public class ShipAccessRulesTests
             AreaLocal(system.AreaResref, WildSpaceTuning.TierVariable).Should().Be(55, "tier 5.5 is stored in tenths");
             AreaLocal(system.AreaResref, WildSpaceTuning.EnvironmentVariable).Should().Be((int)system.Environment);
             AreaLocal(system.AreaResref, "MAX_SHIP_SIZE").Should().BeNull("every hull may enter Wild Space; rifts cap the size");
-            AreaString(system.AreaResref, "CREATURE_SPAWN_TABLE_ID").Should().Be("SPACE_WILD_SPACE");
+            AreaString(system.AreaResref, "CREATURE_SPAWN_TABLE_ID").Should().Be(system.SpawnTable);
             WildSpaceRules.ContentTier(AreaLocal(system.AreaResref, WildSpaceTuning.TierVariable)!.Value).Should().Be(WildSpaceTuning.ContentTier);
         }
 
@@ -323,9 +323,11 @@ public class ShipAccessRulesTests
             root.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
                 .Select(x => x.GetProperty("TemplateResRef").GetProperty("value").GetString())
                 .Should().NotContain(new[] { "tele_obj", "spc_dock" }, $"{system.AreaResref} is reached only through rifts");
-            // Besides the stuck waypoint, only the player station anchor sites (W13a), which hold no starlane or dock.
+            // Besides the stuck waypoint, only the player station anchor sites (W13a) and the W11o wreck sites, which hold
+            // no starlane or dock.
             root.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
                 .Select(x => x.GetProperty("Tag").GetProperty("value").GetString())
+                .Where(x => x != SpaceHazardTuning.WreckSiteTag)
                 .Should().BeEquivalentTo(new[] { "STUCK_WAYPOINT" }.Concat(
                     SWLOR.Game.Server.Service.StationService.StationRules.GetAnchorsInArea(system.AreaResref).Select(x => x.Tag)));
         }
@@ -358,8 +360,11 @@ public class ShipAccessRulesTests
             ScanningTuning.Areas.Should().ContainSingle(x => x.AreaResref == system.AreaResref && x.WildSpace && x.Tier == WildSpaceTuning.ContentTier);
         }
 
-        creatures.Should().ContainKey("SPACE_WILD_SPACE");
-        creatures["SPACE_WILD_SPACE"].Spawns.Select(x => x.Resref).Should().BeEquivalentTo(WildSpaceTuning.RiftRaiderTags);
+        foreach (var system in WildSpaceTuning.Systems)
+        {
+            creatures.Should().ContainKey(system.SpawnTable);
+            creatures[system.SpawnTable].Spawns.Where(x => !x.IsRare).Select(x => x.Resref).Should().BeEquivalentTo(WildSpaceTuning.RiftRaiderTags);
+        }
         WildSpaceTuning.KnownOrbits.Should().OnlyContain(x => ScanningTuning.Areas.Any(a => a.AreaResref == x && !a.WildSpace));
     }
 

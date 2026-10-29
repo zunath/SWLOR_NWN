@@ -1901,6 +1901,41 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "space_riftpkt_t1"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_riftpkt_t2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_riftpkt_t3"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_riftpkt_t4"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_riftpkt_t5"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "space_wsionstorm"
         }
       },

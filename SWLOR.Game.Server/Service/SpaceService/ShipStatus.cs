@@ -118,6 +118,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>When the routing last changed; it can change again <see cref="PowerRoutingRules.ChangeCooldownSeconds"/> later.</summary>
         public DateTime PowerRoutingChangedAt { get; set; }
 
+        /// <summary>
+        /// How much larger the routing's gain is, from the Engineering rank of the Engineer who set it (W11n,
+        /// <see cref="ShipSeatSkillRules.EngineeringRoutingPercent"/>). Saved data without it reads as 0; it returns to 0
+        /// with the routing.
+        /// </summary>
+        public int PowerRoutingBonusPercent { get; set; }
+
         /// <summary>A Shield Hardener keeps this resistance bonus to every type until this time.</summary>
         public DateTime HardenedUntil { get; set; }
 

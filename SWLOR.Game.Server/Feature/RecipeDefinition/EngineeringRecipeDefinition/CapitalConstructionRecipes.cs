@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             CapitalShipComponents();
 
-            return _builder.Build();
+            // W11o: the structural components, reactor and thrusters are the capital top band now, crafted from tier 5
+            // components (ShipComponentRecipes). Their legacy level 52 recipes stay so saved unlocks still find them, but
+            // are no longer crafted.
+            var recipes = _builder.Build();
+            foreach (var retired in new[] { RecipeType.CapitalConstruction, RecipeType.CapitalReactor, RecipeType.CapitalThruster })
+                recipes[retired].IsActive = false;
+            return recipes;
         }
 
         private void CapitalShipComponents()

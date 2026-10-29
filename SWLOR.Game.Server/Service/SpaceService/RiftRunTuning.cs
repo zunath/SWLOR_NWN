@@ -33,15 +33,25 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Where each chamber's arrival point stands when the template has no waypoint for it.</summary>
         public static readonly IReadOnlyList<(float X, float Y, float Z)> RoomPoints = new[] { (60.0f, 60.0f, 3.0f), (160.5f, 250.5f, 3.0f), (225.0f, 130.0f, 3.0f) };
 
+        /// <summary>The per-tier pocket templates (key tiers 1-5) and their chamber points; tier 5.5 uses TemplateResref.</summary>
+        public static readonly IReadOnlyDictionary<string, (float X, float Y, float Z)[]> TemplateRoomPoints = new Dictionary<string, (float X, float Y, float Z)[]>
+        {
+            ["space_riftpkt_t1"] = new[] { (60.0f, 260.0f, 3.0f), (260.0f, 250.0f, 3.0f), (160.0f, 70.0f, 3.0f) },
+            ["space_riftpkt_t2"] = new[] { (60.0f, 60.0f, 3.0f), (250.5f, 160.5f, 3.0f), (130.0f, 225.0f, 3.0f) },
+            ["space_riftpkt_t3"] = new[] { (60.0f, 260.0f, 3.0f), (250.5f, 159.5f, 3.0f), (120.0f, 80.0f, 3.0f) },
+            ["space_riftpkt_t4"] = new[] { (260.0f, 260.0f, 3.0f), (159.5f, 69.5f, 3.0f), (70.0f, 200.0f, 3.0f) },
+            ["space_riftpkt_t5"] = new[] { (60.0f, 250.0f, 3.0f), (170.0f, 60.0f, 3.0f), (250.0f, 210.0f, 3.0f) },
+        };
+
         /// <summary>Every Rift Key, tier 1-5 and 5.5. Every Resref string literal here is an item resref.</summary>
         public static readonly IReadOnlyList<RiftKeyDetail> Keys = new List<RiftKeyDetail>
         {
-            new RiftKeyDetail { Resref = "rift_key_t1", TierTenths = 10, Name = "Rift Key (Tier 1)", CreaturePrefix = "t1", LootTable = "SPACE_ELITE_T1", BaseCredits = 130 },
-            new RiftKeyDetail { Resref = "rift_key_t2", TierTenths = 20, Name = "Rift Key (Tier 2)", CreaturePrefix = "t2", LootTable = "SPACE_ELITE_T2", BaseCredits = 290 },
-            new RiftKeyDetail { Resref = "rift_key_t3", TierTenths = 30, Name = "Rift Key (Tier 3)", CreaturePrefix = "t3", LootTable = "SPACE_ELITE_T3", BaseCredits = 390 },
-            new RiftKeyDetail { Resref = "rift_key_t4", TierTenths = 40, Name = "Rift Key (Tier 4)", CreaturePrefix = "t4", LootTable = "SPACE_ELITE_T4", BaseCredits = 300 },
-            new RiftKeyDetail { Resref = "rift_key_t5", TierTenths = 50, Name = "Rift Key (Tier 5)", CreaturePrefix = "t5", LootTable = "SPACE_ELITE_T5", BaseCredits = 330 },
-            new RiftKeyDetail { Resref = "rift_key_t55", TierTenths = 55, Name = "Rift Key (Tier 5.5)", CreaturePrefix = "rr", LootTable = "SPACE_ELITE_WS", BaseCredits = 400 },
+            new RiftKeyDetail { Resref = "rift_key_t1", TierTenths = 10, Name = "Rift Key (Tier 1)", CreaturePrefix = "t1", LootTable = "SPACE_ELITE_T1", BaseCredits = 130, Template = "space_riftpkt_t1" },
+            new RiftKeyDetail { Resref = "rift_key_t2", TierTenths = 20, Name = "Rift Key (Tier 2)", CreaturePrefix = "t2", LootTable = "SPACE_ELITE_T2", BaseCredits = 290, Template = "space_riftpkt_t2" },
+            new RiftKeyDetail { Resref = "rift_key_t3", TierTenths = 30, Name = "Rift Key (Tier 3)", CreaturePrefix = "t3", LootTable = "SPACE_ELITE_T3", BaseCredits = 390, Template = "space_riftpkt_t3" },
+            new RiftKeyDetail { Resref = "rift_key_t4", TierTenths = 40, Name = "Rift Key (Tier 4)", CreaturePrefix = "t4", LootTable = "SPACE_ELITE_T4", BaseCredits = 300, Template = "space_riftpkt_t4" },
+            new RiftKeyDetail { Resref = "rift_key_t5", TierTenths = 50, Name = "Rift Key (Tier 5)", CreaturePrefix = "t5", LootTable = "SPACE_ELITE_T5", BaseCredits = 330, Template = "space_riftpkt_t5" },
+            new RiftKeyDetail { Resref = "rift_key_t55", TierTenths = 55, Name = "Rift Key (Tier 5.5)", CreaturePrefix = "rr", LootTable = "SPACE_ELITE_WS", BaseCredits = 400, Template = "space_riftpocket" },
         };
 
         public static readonly IReadOnlyList<RiftRoom> Rooms = new List<RiftRoom>

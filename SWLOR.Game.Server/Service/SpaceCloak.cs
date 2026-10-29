@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -15,7 +16,8 @@ namespace SWLOR.Game.Server.Service
     /// seen but uses no module or ability; then the ship is hidden from every player and NPC ship that cannot reveal
     /// it. A ship's own pilot, party and crew, a Sensor Sweep and any ship within the reveal range see it. The
     /// stealth control is the device's shortcut, since native stealth never hides a ship. Cloaks live in memory and end
-    /// with the flight.
+    /// with the flight: a server restart drops every cloak (entering space clears every toggle, and a login strips a
+    /// cloak effect a crash left on the character). The observer's Espionage rank stretches the reveal range (W11n).
     /// </summary>
     public static partial class Space
     {
@@ -103,7 +105,7 @@ namespace SWLOR.Game.Server.Service
 
         // Cloaking Device
 
-        /// <summary>Why the Cloaking Device cannot run on this ship (hull or cargo), or an empty string.</summary>
+        /// <summary>Why the Cloaking Device cannot run on this ship (docked, hull, a hold or cargo), or an empty string.</summary>
         public static string CloakError(uint ship, ShipStatus status)
         {
             var hull = FindShipDetail(status.ItemTag)?.Hull;
@@ -114,8 +116,11 @@ namespace SWLOR.Game.Server.Service
             if (status.IsInterdicted(DateTime.UtcNow))
                 return ShipElectronicWarfareRules.InterdictedMessage;
 
-            var hasCargo = GetIsPC(ship) && Trade.GetUsedVolume(Trade.GetActiveShip(ship)) > 0;
-            return ShipCloakRules.GetStartError(hull.Size, hull.Role, hasCargo);
+            // A ship docked aboard a host (or at a derelict) is out of space; refuse it outright (W11n).
+            var activeShip = GetIsPC(ship) ? Trade.GetActiveShip(ship) : null;
+            var hasCargo = Trade.GetUsedVolume(activeShip) > 0;
+            var isDockedAboard = activeShip != null && IsDockedAboardHost(activeShip, out _);
+            return ShipCloakRules.GetStartError(hull.Size, hull.Role, hasCargo, isDockedAboard);
         }
 
         /// <summary>
@@ -222,17 +227,24 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        /// <summary>Forgets a ship's cloak without messages when the ship leaves space (the flight ends it).</summary>
+        /// <summary>
+        /// Forgets a ship's cloak without messages when the ship leaves space (the flight ends it). The cloak effect goes
+        /// even with no cloak on record, so one a crash saved on the character never outlives the restart.
+        /// </summary>
         private static void ClearCloakState(uint ship)
         {
             if (_cloaks.TryGet(ship, out var state))
-            {
                 RestoreCloakVisibility(ship, state);
-                if (GetIsObjectValid(ship))
-                    RemoveEffectByTag(ship, CloakEffectTag);
-            }
 
+            RemoveStaleCloakEffect(ship);
             _cloaks.Clear(ship);
+        }
+
+        /// <summary>Removes the cloak's ghost effect from a creature, if it has one.</summary>
+        private static void RemoveStaleCloakEffect(uint creature)
+        {
+            if (GetIsObjectValid(creature))
+                RemoveEffectByTag(creature, CloakEffectTag);
         }
 
         /// <summary>
@@ -277,7 +289,40 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var distance = GetArea(observer) == GetArea(target) ? GetDistanceBetween(observer, target) : float.MaxValue;
-            return _cloaks.IsHiddenFrom(target, observer, IsCloakAlly(target, observer), distance, DateTime.UtcNow);
+            return IsCloakHiddenFrom(target, observer, IsCloakAlly(target, observer), distance, DateTime.UtcNow);
+        }
+
+        /// <summary>
+        /// Whether a cloaked ship is hidden from an observer at a distance, with the observer's Espionage bonus. The rank
+        /// is only looked up when it can matter: beyond the cloak's own reveal range and within its largest stretch.
+        /// </summary>
+        private static bool IsCloakHiddenFrom(uint ship, uint observer, bool isAlly, double distance, DateTime now)
+        {
+            var hidden = _cloaks.IsHiddenFrom(ship, observer, isAlly, distance, now);
+            if (!hidden || !_cloaks.TryGet(ship, out var state) ||
+                distance > ShipCloakRules.GetObserverRevealMeters(state.Profile.RevealMeters, int.MaxValue))
+            {
+                return hidden;
+            }
+
+            return _cloaks.IsHiddenFrom(ship, observer, isAlly, distance, now, GetCloakRevealBonusPercent(observer));
+        }
+
+        /// <summary>
+        /// The Espionage bonus an observer sees through a cloak with (W11n): the best rank aboard the observer's ship,
+        /// its pilot's or its Sensors officer's. A seated crew member looks through their own ship's sensors. NPC ships,
+        /// droids and anyone not flying a ship have none.
+        /// </summary>
+        private static int GetCloakRevealBonusPercent(uint observer)
+        {
+            var ship = SpaceCrew.TryGetSeat(observer, out var crewShip, out _) ? crewShip : observer;
+            if (!GetIsObjectValid(ship) || !GetIsPC(ship) || GetIsDM(ship) || !IsPlayerInSpaceMode(ship))
+                return 0;
+
+            var sensors = SpaceCrew.GetSeatOccupant(ship, ShipCrewSeat.Sensors);
+            var sensorsRank = GetIsObjectValid(sensors) && GetIsPC(sensors) ? GetPlayerSkillRank(sensors, SkillType.Espionage) : 0;
+            return ShipSeatSkillRules.EspionageRevealPercent(
+                ShipSeatSkillRules.ShipEspionageRank(GetPlayerSkillRank(ship, SkillType.Espionage), sensorsRank));
         }
 
         /// <summary>Shows or hides the cloaked ship for every player in its area, by who can see through the cloak.</summary>
@@ -292,7 +337,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var distance = GetDistanceBetween(player, ship);
-                if (!_cloaks.IsHiddenFrom(ship, player, IsCloakAlly(ship, player) || GetIsDM(player), distance, now))
+                if (!IsCloakHiddenFrom(ship, player, IsCloakAlly(ship, player) || GetIsDM(player), distance, now))
                     seen.Add(player);
             }
 

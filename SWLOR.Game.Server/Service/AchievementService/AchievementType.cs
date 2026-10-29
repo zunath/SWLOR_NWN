@@ -549,14 +549,26 @@ namespace SWLOR.Game.Server.Service.AchievementService
         SpaceTradeEarnings2 = 216,
         [Achievement("Trade Baron", "Earned 1,000,000 credits of trade profit and freight fees.", true)]
         SpaceTradeEarnings3 = 217,
+        [Achievement("Vane Downed", "Helped destroy the ace Kessa Vane in the Vesh Pulsar.", true)]
+        SpaceAceVeshPulsar = 218,
+        [Achievement("Garrow Downed", "Helped destroy the ace Old Mother Garrow in The Maw.", true)]
+        SpaceAceTheMaw = 219,
+        [Achievement("Turlo Downed", "Helped destroy the ace Jex Turlo in the Ion Veil.", true)]
+        SpaceAceIonVeil = 220,
+        [Achievement("Halvek Downed", "Helped destroy the ace Brann Halvek in the Korvax Magnetar.", true)]
+        SpaceAceKorvaxMagnetar = 221,
+        [Achievement("Kol Downed", "Helped destroy the ace Captain Seris Kol in the Ember Giant.", true)]
+        SpaceAceEmberGiant = 222,
+        [Achievement("Vohl Downed", "Helped destroy the ace Warlord Tasker Vohl in the Ship Graveyard.", true)]
+        SpaceAceShipGraveyard = 223,
         [Achievement("Explore Fighter Ship", "Explore a Fighter class starship.", true)]
-        ExploreStarshipFighter = 218,
+        ExploreStarshipFighter = 224,
         [Achievement("Explore Corvette Ship", "Explore a Corvette class starship.", true)]
-        ExploreStarshipCorvette = 219,
+        ExploreStarshipCorvette = 225,
         [Achievement("Explore Basilisk Ship", "Explore a Basilisk class starship.", true)]
-        ExploreStarshipBasilisk = 220,
+        ExploreStarshipBasilisk = 226,
         [Achievement("Crewed Kill", "Destroyed a ship in space with a crewmate at a station.", true)]
-        SpaceCrewedKill = 221,
+        SpaceCrewedKill = 227,
         // END space achievements
 	}
 

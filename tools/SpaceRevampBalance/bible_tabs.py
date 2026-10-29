@@ -139,7 +139,15 @@ def starships():
          "(5, 15, 25, 35, 45). Droid attributes are 16 + 0.2 x level. A player who takes a droid's seat bumps the droid back to its owner."],
         ["Power routing", "Engineer seat, player only; the mode can change once per 6 s", *[""] * 19, "Weapons: -25% weapon capacitor use, -10% shield regen, -10% speed. "
          "Shields: +15% shield regen, -5% weapon damage, -10% speed. Engines: +20% speed, -5% weapon damage, -10% shield regen. Balanced: no change. "
-         "No mode raises weapon damage, so none kills faster than Balanced."],
+         "No mode raises weapon damage, so none kills faster than Balanced. The Engineer's Engineering rank makes the gain larger: +0.5% per rank, "
+         "up to +25% at 50 (Weapons 31% less capacitor, Shields +19% shield regen, Engines +25% speed); the penalties never change (Space Balance section Q)."],
+        ["Seat skills", "Engineering, Espionage and Leadership ranks (whoever works the module: the crew member at its seat, otherwise the pilot)", *[""] * 19,
+         "Engineering: Shield, Hull and Repair Field repairs and the Hypermatter Injector +0.2% per rank (up to +10% at 50), power routing gain "
+         "+0.5% per rank (up to +25%). Espionage: Jammer, E-War Array and Target Painter strength +0.2% per rank (up to +10%), Probe Launcher "
+         "scan strength +1% per rank (up to +50%), the range at which the ship sees through a cloak +1% per rank (up to +50%; the better of the "
+         "pilot's and the Sensors officer's rank). Leadership: Command orders, auras and range +0.5% per rank (up to +25%), crew effectiveness "
+         "+1% per 10 ranks (up to +5%). Droids and NPC ships have no rank. Only Leadership's crew bonus counts toward the 105% seat cap; the others "
+         "are the crew member's own, as perks are, and add no weapon damage (Space Balance section Q)."],
         ["PvP", "Ground rules", *[""] * 19, "A player's ship attacks another player's ship only when the ground hostility check allows it "
          "(the engine's reputation, area and server PvP setting and the attacker's hostile mark in the player list). Remote repair, capacitor transfer and Command orders skip a hostile player. The PvP damage ramp and the halved hard crowd control apply."],
         ["Ship destruction", "Escape pods", *[""] * 19, "Everyone aboard (pilot, station crew, viewport watchers, passengers) is ejected alive to the dock the ship is towed to and takes the normal ground XP debt. "
@@ -246,14 +254,14 @@ def modules():
         ["Salvager", "High", "Gathering (Helm)", "Toggle", 6.0, 3, "Module", "Salvages wrecks up to its tier."],
         ["Gas Harvester", "High", "Gathering (Helm)", "Toggle", 6.0, 3, "Module", "Harvests gas clouds up to its tier."],
         ["Shield Booster", "Mid", "Piloting (Helm)", "Passive", "", "", "Module", "+ max shield (table)."],
-        ["Shield Repairer", "Mid", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's shield, or your own."],
+        ["Shield Repairer", "Mid", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's shield, or your own. Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
         ["Shield Hardener", "Mid", "Piloting (Engineer)", "Toggle", 4.0, 4, "None", "+ all resistances while on."],
         ["Capacitor Battery", "Mid", "Piloting (Helm)", "Passive", "", "", "Module", "+ max capacitor."],
-        ["Hypermatter Injector", "Mid", "Piloting (Engineer)", "One press", 30.0, 0, "Module", "Restores capacitor; uses a capsule."],
+        ["Hypermatter Injector", "Mid", "Piloting (Engineer)", "One press", 30.0, 0, "Module", "Restores capacitor; uses a capsule. Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
         ["Ion Web", "Mid", "Piloting (Sensors)", "Toggle", 3.0, 3, "None", "Slows the target (Mobility); 20 m. Interceptors +25% strength and +50% range (the Republic Scout +20% more range); the Barracuda is immune. A web breaks a cloak."],
         ["Interdictor", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 5, "None", "While held the target can't jump a starlane or to a signature, dock, board, cross a rift, open a Rift Run or cloak, and its Afterburner shuts down; range in the table (+50% on Interceptors). A hold breaks a cloak."],
-        ["Jammer", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target Accuracy down; 30 m (the E-War Array's range). The stronger jam or E-War Array penalty counts."],
-        ["Target Painter", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target takes more damage from every weapon and ability; 30 m. The stronger paint counts."],
+        ["Jammer", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target Accuracy down; 30 m (the E-War Array's range). The stronger jam or E-War Array penalty counts. Espionage adds +0.2% per rank (up to +10% at 50) to its strength for whoever runs it."],
+        ["Target Painter", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target takes more damage from every weapon and ability; 30 m. The stronger paint counts. Espionage adds +0.2% per rank (up to +10% at 50) to its strength for whoever runs it."],
         ["Afterburner", "Mid", "Piloting (Helm)", "Toggle", 2.0, 3, "None", "+ speed while on (multiplies with routing and the cloak); an Interdictor's hold shuts it down."],
         ["Cloaking Device", "Mid", "Piloting (Helm)", "Toggle", cloak.CYCLE_SECONDS, cloak.CAPACITOR, "None",
          f"Small hulls and Blockade Runners; cloak time {cloak.ENGAGE_SECONDS:g} s ({cloak.ROLE_ENGAGE_SECONDS:g} s on Interceptors, Bombers and Explorers); speed -{cloak.SPEED_PERCENT}% "
@@ -262,7 +270,7 @@ def modules():
         ["Data Analyzer", "Mid", "Espionage (Sensors)", "One press", 20.0, 5, "None", "No rank ladder; the Slicing perk gates targets."],
         ["Targeting Computer", "Mid", "Piloting (Helm)", "Passive", "", "", "None", "+ Accuracy; the best one counts."],
         ["Hull Plating", "Low", "Piloting (Helm)", "Passive", "", "", "Module", "+ max hull and + Defense; only the best Defense counts."],
-        ["Hull Repairer", "Low", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's hull, or your own (80% of the shield amount)."],
+        ["Hull Repairer", "Low", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's hull, or your own (80% of the shield amount). Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
         ["Resist Plating", "Low", "Piloting (Helm)", "Passive", "", "", "None", "One resistance, or all at a cost to Evasion."],
         ["Capacitor Regulator", "Low", "Piloting (Engineer)", "Passive", "", "", "Module", "+ capacitor regen."],
         ["Thrusters", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ Evasion (best one counts) and +5% speed (stacks)."],
@@ -304,8 +312,8 @@ def modules():
     s.title("Capital modules (Capital hulls only; ranks 40 and 45)")
     s.table(["Module", "Row", "Use", "Rank 40", "Rank 45", "", "", "", "", "", "", "", "", "Notes"], [
         ["Bulwark Shield Generator", "Mid", "Toggle", "+15% max shield to allies within 30 m", "+20%", *[""] * 8, "Engineer seat; 8 capacitor per 4 s."],
-        ["Repair Field", "Mid", "Toggle", f"{round(m.REPAIR_STEP[40] * 1.1)} shield per 4 s to allies within 30 m", f"{round(m.REPAIR_STEP[45] * 1.1)}", *[""] * 8, "Engineer seat; 10 capacitor per 4 s; never the capital itself."],
-        ["E-War Array", "Mid", "Toggle", "-12 Accuracy to enemies within 30 m", "-14", *[""] * 8, "Sensors seat; 8 capacitor per 4 s."],
+        ["Repair Field", "Mid", "Toggle", f"{round(m.REPAIR_STEP[40] * 1.1)} shield per 4 s to allies within 30 m", f"{round(m.REPAIR_STEP[45] * 1.1)}", *[""] * 8, "Engineer seat; 10 capacitor per 4 s; never the capital itself. Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
+        ["E-War Array", "Mid", "Toggle", "-12 Accuracy to enemies within 30 m", "-14", *[""] * 8, "Sensors seat; 8 capacitor per 4 s. Espionage adds +0.2% per rank (up to +10% at 50) to its strength for whoever runs it."],
         ["Advanced Thrusters", "Low", "Passive", "+80 Evasion, +10% speed", "+90, +10%", *[""] * 8, "Counts as Thrusters for the best-one rule."],
         ["Redundant Shield Generator", "Low", "Passive", f"+{round(m.HP_STEP[40] * 1.5 * 1.1)} max shield", f"+{round(m.HP_STEP[45] * 1.5 * 1.1)}", *[""] * 8, ""],
         ["Reinforced Plating", "Low", "Passive", f"+{round(m.HP_STEP[40] * 1.5 * 1.1)} max hull, +72 Defense", f"+{round(m.HP_STEP[45] * 1.5 * 1.1)}, +81", *[""] * 8, "Counts as Hull Plating for the best-one rule."],
@@ -669,7 +677,8 @@ def components_tab():
     s.note("Generated by tools/SpaceRevampBalance/components.py and catalog.py. Dev Status: Implemented (W9a). Draft numbers, "
            "tune in testing. The rare components, named rank-50 modules, research blueprint traits, schematics and ammo "
            "variants are on Ship Rewards (Revamp) (W9b); manufacturer components, hull traits and hull research are there "
-           "too (W9c). The rare components' use in Advanced hull recipes and the rare-trait stand-in are not built yet.")
+           "too (W9c). W11o: Advanced hulls take a rare-traited part (a Capital Advanced hull its maker's rare component), "
+           "and Capital hulls take the capital parts (top band); both are below.")
     s.blank()
 
     s.title("Components: one item per family and tier (resref sc_<family>_<tier>, ESS9, one per inventory slot)")
@@ -732,6 +741,36 @@ def components_tab():
                               c.bill_units(after), c.bill_value(after), "",
                               ", ".join(f"{q}x {res}" for res, q in c.hull_bill(role, adv))])
     s.table(["Role", "Size", "Units before", "Value before", "Units after", "Value after", "", "After bill"], hull_rows)
+    s.note("Advanced rows leave out the rare part (next table). Capital rows count the capital parts by their materials: "
+           "their Refined Ardanium replaces the hull's Refined Gostian at the same value (W11o).")
+
+    s.title("Rare parts in Advanced hull recipes (W11o, Appendix D), within the W11e cost band (at most 1.27x pre-revamp)")
+    s.note("Small, Medium and Large Advanced hulls have a rare-trait slot: one more component of the hull's tier, of a family "
+           "the recipe already takes, carrying a rare trait (a salvaged part; section 14's fourth rare component). The "
+           "crafted rare components (650-2,063) do not fit these hulls' budgets. A Capital Advanced hull takes its maker's "
+           "crafted rare component in place of the part it is built on and its electronics (Thorilide Core for the Capital "
+           "Class Reactor); a tier 5 component of any salvage family with a rare trait stands in for it. The slot's or "
+           "stand-in's rare trait becomes a hull trait at half value. Values: material credits; the slot or stand-in from "
+           "the cheapest to the dearest qualifying component.")
+    rows = []
+    for r in c.advanced_cost_rows(c.full_catalog()[1]):
+        rows.append([r["Name"], r["Size"], r["Pre"], r["WithRare"] or "-",
+                     f"{r['WithRare'] / r['Pre']:.2f}x" if r["WithRare"] else "-", f"{r['Cheapest']}-{r['Worst']}",
+                     f"{r['Cheapest'] / r['Pre']:.2f}-{r['Worst'] / r['Pre']:.2f}x",
+                     (r["Rare"] or "rare-trait slot") + "; families: "
+                     + ", ".join(comp.family(f)[2] for f in c.stand_in_families(next(h for h in c.full_catalog()[1] if h["Name"] == r["Name"])))])
+    s.table(["Advanced hull", "Size", "Pre-revamp", "With rare", "Ratio", "With slot or stand-in", "Ratio", "Rare part"], rows)
+
+    s.title("Capital parts: the top band of Capital hull recipes (W11o, plan section 14)")
+    s.note("Three legacy capital construction parts stand above tier 5 for the families every hull takes. A Capital hull "
+           "takes 2 Structural Components, a Reactor and Thrusters instead of its 4 Hull Frames, Ship Reactor and Thruster "
+           "Assembly, and five fewer Refined Gostian per part, so it keeps its material value (4,825-5,025). Recipe level "
+           f"{comp.CAPITAL_PART_LEVEL} (category Capital Construction); the legacy level 52 recipes for these three are "
+           "retired. A part keeps its tier 5 components' traits and passes them on to the hull.")
+    s.table(["Part", "Resref", "Crafted by", "Level", "RecipeType", "Value", "Per Capital hull", "Inputs"],
+            [[x["Name"], x["Resref"], x["Skill"], x["RecipeLevel"], x["RecipeType"], c.material_cost(x["Resref"]),
+              next(p[6] for p in comp.CAPITAL_PARTS if p[1] == x["Resref"]),
+              ", ".join(f"{q}x {r}" for r, q in x["Components"])] for x in c.capital_part_recipes()])
 
     s.title("Component traits: a module crafted from components inherits every trait they carry")
     s.note("Percent effects change the module's own numbers (DMG, Accuracy, capacitor use, hull, shield, repair amount, "
@@ -790,9 +829,9 @@ def rewards_tab():
     s.table(["Module", "Family", "Tag", "Module Schematic", "RecipeType", "Level", "", "Numbers (rank 45 -> named) and bill"], rows)
 
     s.title("Rare components (top band, tier 5)")
-    s.note("Used by the named modules. Advanced hull recipes and the rare-trait stand-in come with the manufacturer "
-           "components (W9c). Prototype Tech drops from space slicing (locked caches and data cores, W12b); Wild Space "
-           "adds more later (W12c).")
+    s.note("Used by the named modules and by Capital Advanced hull recipes (W11o; a rare-traited tier 5 component "
+           "stands in; smaller Advanced hulls take a rare-traited part instead, Ship Components (Revamp)). Prototype Tech drops from space slicing (locked caches and "
+           "data cores, W12b) and Wild Space (W12c).")
     s.table(["Component", "Resref", "Crafted by", "Level", "RecipeType", "", "", "Inputs"],
             [[x["Name"], x["Resref"], x["Skill"], x["RecipeLevel"], x["RecipeType"], "", "",
               ", ".join(f"{q}x {r}" for r, q in x["Components"])] for x in components if x["Family"] in
@@ -863,8 +902,10 @@ def rewards_tab():
            + ", ".join(f"{k} {v}%" for k, v in comp.MANUFACTURER_SALVAGE_PERCENT.items()) + " per salvage cycle. Wreck "
            "makers: Republic and Czerka customs their own; Sith customs, the Imperial fleet (tier 6) and the Sith capitals "
            "Sith; Clan Zel Arun (tier 4) and the Mandalorian capitals Mandalorian; pirate raiders and the other faction "
-           "tiers Corellian; an ace its own maker. Chiss come only from aces for now, Hutt from aces until the Hutt "
-           "enforcers, Rift Raider from Wild Space (W12c). Faction agent stores come later (W13).")
+           "tiers Corellian; an ace its own maker. Chiss come from aces and the black-market stores, Hutt from aces until the Hutt "
+           "enforcers, Rift Raider from Wild Space (W12c). Faction agent stores (W15a) sell their maker's component for 25 "
+           "tokens at Honored, and the Smugglers and the Hutt Cartel also sell the Chiss Sensor Array (the black markets, "
+           "W11o).")
     s.table(["Component", "Maker", "Family", "Item", "", "", "", "Trait effects"],
             [[name, maker, fam, f"sc_{comp.family(fam)[0]}_{comp.MANUFACTURER_TIER}", "", "", "", comp.effect_text(eff)]
              for (_tid, _e, name, maker, fam, eff) in comp.MANUFACTURERS])

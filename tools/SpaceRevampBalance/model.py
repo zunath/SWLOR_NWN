@@ -268,9 +268,41 @@ POWER_ROUTING = {
 }
 
 
-def routed(ship, mode):
-    """A player ship with the Engineer's power routing applied (weapon damage folds into _dmg, as hull bonuses do)."""
-    r = POWER_ROUTING[mode]
+# Ground skills with a space job (ShipSeatSkillRules, W11n): the most each bonus adds at rank 50, growing evenly per rank.
+# support: Shield, Hull and Repair Field repairs and the Hypermatter Injector (Engineering); routing: the power routing's
+# gain (Engineering; penalties unchanged); ewar: Jammer, E-War Array and Target Painter strength (Espionage).
+SEAT_SKILL = dict(support=10, routing=25, ewar=10)
+
+
+def round_half_away(x):
+    return int(abs(x) + 0.5) * (1 if x >= 0 else -1)
+
+
+def scale_percent(value, percent):
+    """SpaceCombatMath.ScaleByPercent: value x (1 + percent / 100), rounded half away from zero."""
+    return value if not percent else round_half_away(value * (1 + percent / 100))
+
+
+def seat_skill_percent(rank, maximum):
+    """ShipSeatSkillRules: maximum x rank / 50, rounded half away from zero, rank capped at 50."""
+    return round_half_away(max(0, min(50, rank)) * maximum / 50)
+
+
+def routing_gain(mode, bonus=0):
+    """A routing mode's percent changes with the Engineer's Engineering bonus: only the gain grows."""
+    r = dict(POWER_ROUTING[mode])
+    if r["cap"] < 0:
+        r["cap"] = -scale_percent(-r["cap"], bonus)
+    for key in ("regen", "speed"):
+        if r[key] > 0:
+            r[key] = scale_percent(r[key], bonus)
+    return r
+
+
+def routed(ship, mode, bonus=0):
+    """A player ship with the Engineer's power routing applied (weapon damage folds into _dmg, as hull bonuses do).
+    bonus: the Engineer's Engineering bonus to the routing's gain (seat_skill_percent(rank, SEAT_SKILL["routing"]))."""
+    r = routing_gain(mode, bonus)
     q = dict(ship)
     q["_dmg"] = ship["_dmg"] + r["dmg"]
     q["shieldRegenPerSecond"] = round(ship["shieldRegenPerSecond"] * (1 + r["regen"] / 100), 2)

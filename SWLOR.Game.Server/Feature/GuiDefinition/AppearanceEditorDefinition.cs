@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float SwatchHeight = 24f;
         private const float PickerWidth = 196f;
         private const float PickerHeight = 100f;
-        public const float TabPanelHeight = 44f;
+        /// <summary>The 28-high tabs plus the panel's padding; at 32 the tab row scrolls.</summary>
+        public const float TabPanelHeight = 36f;
         /// <summary>Width of one tab option; NUI keeps about this much per option whatever the control's width.</summary>
         public const float TabWidth = 150f;
         public const float EquipmentPickerWidth = 150f;
@@ -90,17 +91,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetInitialGeometry(0, 0, 1240f, 720f)
                 .SetTitle("Appearance Editor")
                 .BindOnClosed(model => model.OnCloseWindow())
-                .DefinePartialView(AppearanceEditorViewModel.EditorMainPartial, BuildAppearanceEditor)
-                .DefinePartialView(AppearanceEditorViewModel.EditorArmorPartial, BuildEquipmentEditor)
-                .DefinePartialView(AppearanceEditorViewModel.EditorWeaponPartial, BuildWeaponEditor)
+                .DefinePartialView(AppearanceEditorViewModel.EditorMainPartial, Flush(BuildAppearanceEditor))
+                .DefinePartialView(AppearanceEditorViewModel.EditorArmorPartial, Flush(BuildEquipmentEditor))
+                .DefinePartialView(AppearanceEditorViewModel.EditorWeaponPartial, Flush(BuildWeaponEditor))
                 .DefinePartialView(AppearanceEditorViewModel.EditorMainCompactPartial, partial => BuildAppearanceEditor(partial, true))
                 .DefinePartialView(AppearanceEditorViewModel.EditorArmorCompactPartial, partial => BuildEquipmentEditor(partial, true))
                 .DefinePartialView(AppearanceEditorViewModel.EditorWeaponCompactPartial, partial => BuildWeaponEditor(partial, true))
-                .DefinePartialView(AppearanceEditorViewModel.SettingsPartial, BuildSettings)
-                .DefinePartialView(AppearanceEditorViewModel.OutfitsPartial, BuildOutfits)
+                .DefinePartialView(AppearanceEditorViewModel.SettingsPartial, Flush(BuildSettings))
+                .DefinePartialView(AppearanceEditorViewModel.OutfitsPartial, Flush(BuildOutfits))
                 .AddStandardLayout(layout =>
                 {
                     layout.SetTabPanelHeight(TabPanelHeight);
+                    layout.SetCompactContent();
                     layout.AddTabRow(BuildNavigation);
                     layout.SetContentPartialElement(AppearanceEditorViewModel.MainPartialElement);
                 });
@@ -115,6 +117,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             return _builder.Build();
         }
+
+        /// <summary>Drops the editor partial's own margin so its panels start right under the tabs.</summary>
+        private static Action<GuiGroup<AppearanceEditorViewModel>> Flush(Action<GuiGroup<AppearanceEditorViewModel>> build) =>
+            partial =>
+            {
+                partial.SetMargin(0f);
+                build(partial);
+            };
 
         /// <summary>
         /// Tabs, then the armor or weapon picker while Equipment is open. Helmets and cloaks are

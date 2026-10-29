@@ -194,15 +194,4 @@ public class KatarAnimationRemapPlanTests
 
         changes.Should().HaveCount(current.Count).And.OnlyContain(change => change.Replacement == string.Empty);
     }
-
-    [Test]
-    public void RepositioningDash_KeepsTheCarryLayerItHolds()
-    {
-        // Twin Pistol repositioning maps run_swordr to the same missing clip for the length of its dash.
-        var current = new Dictionary<string, string> { ["run_swordr"] = NamedAnimationPlayback.NoHoldName };
-
-        KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing, carryLayersInUse: true).Should().BeEmpty();
-        KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing)
-            .Should().BeEquivalentTo(new[] { ("run_swordr", string.Empty) });
-    }
 }

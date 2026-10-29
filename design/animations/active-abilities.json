@@ -6030,25 +6030,25 @@
     "Duration": 2
   },
   {
-    "Id": "BlasterSlide",
+    "Id": "LeadShot",
     "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
-    "Name": "Blaster Slide",
-    "DisplayName": "Blaster Slide",
+    "Name": "Lead Shot",
+    "DisplayName": "Lead Shot",
     "InternalName": "sw_blstslide",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Come out of the slide in a low crouch, fire both pistols twice from the crouch, then rise to ready",
+    "Description": "Lead with the right pistol: extend it alone for a quick sighting shot while the left pistol stays tucked at the chest, then bring both back to ready",
     "Reference": "",
-    "PerkId": "BlasterSlide",
+    "PerkId": "LeadShot",
     "Feats": [
-      "BlasterSlide1",
-      "BlasterSlide2",
-      "BlasterSlide3",
-      "BlasterSlide4"
+      "LeadShot1",
+      "LeadShot2",
+      "LeadShot3",
+      "LeadShot4"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/BlasterSlideAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/LeadShotAbilityDefinition.cs"
     ],
     "CurrentPlayback": "Authored impact",
     "SourceAnimation": "bowshot",
@@ -6056,24 +6056,24 @@
     "Duration": 1.05
   },
   {
-    "Id": "GrappleShot",
+    "Id": "ClosingShot",
     "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
-    "Name": "Grapple Shot",
-    "DisplayName": "Grapple Shot",
+    "Name": "Closing Shot",
+    "DisplayName": "Closing Shot",
     "InternalName": "sw_grapshot",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Land from the grapple pull with the left arm still extended, reel it in while the right pistol fires point blank twice",
+    "Description": "Plant and press both pistols forward together onto one point, hold a beat, then fire one heavy paired shot whose recoil rocks the shoulders back before recovering",
     "Reference": "",
-    "PerkId": "GrappleShot",
+    "PerkId": "ClosingShot",
     "Feats": [
-      "GrappleShot1",
-      "GrappleShot2",
-      "GrappleShot3"
+      "ClosingShot1",
+      "ClosingShot2",
+      "ClosingShot3"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/GrappleShotAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/ClosingShotAbilityDefinition.cs"
     ],
     "CurrentPlayback": "Authored impact",
     "SourceAnimation": "bowshot",
@@ -6081,23 +6081,23 @@
     "Duration": 1.05
   },
   {
-    "Id": "PistolRush",
+    "Id": "TempoShot",
     "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
-    "Name": "Pistol Rush",
-    "DisplayName": "Pistol Rush",
+    "Name": "Tempo Shot",
+    "DisplayName": "Tempo Shot",
     "InternalName": "sw_pistrush",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Carry the dash's forward lean into an angled double volley at the target being passed, then straighten",
+    "Description": "Fire three quick, light paired taps from a low hip-level grip on an even beat, swaying the shoulders with each tap, then lower",
     "Reference": "",
-    "PerkId": "PistolRush",
+    "PerkId": "TempoShot",
     "Feats": [
-      "PistolRush1",
-      "PistolRush2"
+      "TempoShot1",
+      "TempoShot2"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/PistolRushAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/TempoShotAbilityDefinition.cs"
     ],
     "CurrentPlayback": "Authored impact",
     "SourceAnimation": "bowshot",

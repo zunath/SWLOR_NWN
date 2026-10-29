@@ -150,7 +150,7 @@ public static class PairedRangedPresentation
             GetItemInSlot(InventorySlot.RightHand, actor) != main ||
             GetItemInSlot(InventorySlot.LeftHand, actor) != companion) return;
         // Lease sources for hits too. Moving a shared source in the same frame can retarget
-        // the other hand's MIRV or a previous target in Pistol Rush before clients see it.
+        // the other hand's MIRV or a previous target of the same volley before clients see it.
         var slot = LeaseProjectileAnchor(pool.BusyUntil, Environment.TickCount64,
             NumericsVector3.Distance(muzzle, destination));
         if (slot < 0) return;

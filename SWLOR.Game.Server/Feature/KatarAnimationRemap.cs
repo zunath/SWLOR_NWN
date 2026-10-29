@@ -90,8 +90,7 @@ namespace SWLOR.Game.Server.Feature
                 (HasMainHandKatar(rightHandBaseItem) && !HasOffHandDaggerOrSword(leftHandBaseItem));
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSObject();
             var changes = KatarAnimationRemapPlan.GetChanges(shouldUseKatarRemap, hasPowerGloves,
-                WeaponAttackAnimation.ReadAnimationReplacements(native), QueuedAttackAnimation.GetActiveSwingKeys(creature),
-                WeaponRepositioning.IsMoving(creature));
+                WeaponAttackAnimation.ReadAnimationReplacements(native), QueuedAttackAnimation.GetActiveSwingKeys(creature));
             if (changes.Count == 0)
                 return;
 

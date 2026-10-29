@@ -61,5 +61,14 @@ namespace SWLOR.CombatSim.Data
         public bool IsHealing { get; init; }
         public string ForceAffinity { get; init; }
         public SWLOR.Game.Server.Service.CombatService.TwinPistolAbilitySpec TwinPistol { get; init; }
+
+        /// <summary>The ability keeps Cadence instead of spending it (Twin Pistol builders).</summary>
+        public bool KeepsWeaponAbilityCadence { get; init; }
+        /// <summary>Cadence the ability grants on its first landed hit without a chain (Lead Shot 1, Tempo Shot 2).</summary>
+        public int WeaponAbilityCadenceOnHit { get; init; }
+        /// <summary>Replaces the generic per-charge Cadence damage (Final Salvo 4); null uses the trait's value.</summary>
+        public int? WeaponAbilityCadenceDamagePerCharge { get; init; }
+        /// <summary>Identifies the ability across its ranks for the Cadence chain, as the server keys it.</summary>
+        public int CadenceChainKey { get; init; }
     }
 }

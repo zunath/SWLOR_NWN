@@ -25,7 +25,7 @@ public class FocusedBurstBalanceTests
 
         var rows = new List<object>();
         foreach (var rank in new[] { 10, 30, 50 })
-        foreach (var rhythm in new[] { false, true })
+        foreach (var rhythm in new[] { true }) // Barrage's only handling slot is Matched Rhythm since the Cadence rework.
         foreach (var variant in new[] { "opening", "sustain", "haste", "slow", "high defense", "high evasion", "mitigation", "single weapon", "double weapon" })
         foreach (var mode in new[] { "channel", "old immediate", "without Focused Burst", "one wave", "two waves" })
         {
@@ -61,7 +61,7 @@ public class FocusedBurstBalanceTests
             }
             rows.Add(new
             {
-                rank, handling = rhythm ? "Matched Rhythm" : "Paired Handling", variant, mode, seconds, samples,
+                rank, handling = rhythm ? "Matched Rhythm" : "Steady Cadence", variant, mode, seconds, samples,
                 firstSeed, lastSeed = firstSeed + samples - 1, skillPoints = catalog.Perks.GetPurchaseCost(spec.Perks),
                 damageMean = mean, dps = mean / seconds, damageMean95HalfWidth = 1.96 * deviation / Math.Sqrt(samples),
                 ordinaryAttempts = actors.Average(actor => actor.Stats.OrdinaryAttempts),

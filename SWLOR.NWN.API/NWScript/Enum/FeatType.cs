@@ -2797,8 +2797,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AutoCastClosingShot2 = 3263,
         AutoCastClosingShot3 = 3264,
         AutoCastFinalSalvo = 3265,
-        AceDisablingShot1 = 3268,
-        AceDisablingShot2 = 3269,
+        AceDisablingShot1 = 3359,
+        AceDisablingShot2 = 3360,
         AceDisablingShot3 = 3270,
         AceDisablingShot4 = 3271,
         AceDoubleShot1 = 3272,
@@ -2888,7 +2888,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SalvageExpertTrait = 3356,
         TraitHunterTrait = 3357,
         ShipJumpToSignature = 3358,
-        AutoCastTempoShot1 = 3359,
-        AutoCastTempoShot2 = 3360,
+        AutoCastTempoShot1 = 3268,
+        AutoCastTempoShot2 = 3269,
 }
 }

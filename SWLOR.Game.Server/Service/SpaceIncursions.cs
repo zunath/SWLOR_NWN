@@ -441,13 +441,7 @@ namespace SWLOR.Game.Server.Service
         {
             var state = IncursionRecord;
             var incursion = state.Active;
-            var online = new Dictionary<string, uint>();
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (!GetIsDM(player))
-                    online[GetObjectUUID(player)] = player;
-            }
-
+            var online = GetOnlinePlayersById();
             var paid = 0;
             foreach (var (playerId, contribution) in incursion.Contributions)
             {
@@ -501,7 +495,24 @@ namespace SWLOR.Game.Server.Service
             _incursionSpawned = false;
         }
 
-        private static void DeliverIncursionPayout(uint player, IncursionPayout payout)
+        /// <summary>The players online now (DMs left out), by persistent player id.</summary>
+        private static Dictionary<string, uint> GetOnlinePlayersById()
+        {
+            var online = new Dictionary<string, uint>();
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsDM(player))
+                    online[GetObjectUUID(player)] = player;
+            }
+
+            return online;
+        }
+
+        private static void DeliverIncursionPayout(uint player, IncursionPayout payout) =>
+            DeliverPayout(player, payout, "Incursion spoils for the {0} region", "INCURSION PAYOUT");
+
+        /// <summary>Gives a payout's credits and items; <paramref name="heading"/> names the event with the area in {0}.</summary>
+        private static void DeliverPayout(uint player, IncursionPayout payout, string heading, string logLabel)
         {
             if (payout.Credits > 0)
                 GiveGoldToCreature(player, payout.Credits);
@@ -516,8 +527,8 @@ namespace SWLOR.Game.Server.Service
 
             ShipHold.DeliverYield(player, items.Where(x => !string.IsNullOrWhiteSpace(x)).ToList());
             SendMessageToPC(player, ColorToken.Green(
-                $"Incursion spoils for the {payout.RegionName} region: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points."));
-            Log.Write(LogGroup.Space, $"INCURSION PAYOUT - {PlayerName.GetAuditName(player)} - {payout.Credits} credits, {string.Join(", ", items)}");
+                $"{string.Format(heading, payout.RegionName)}: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points."));
+            Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Credits} credits, {string.Join(", ", items)}");
         }
 
         /// <summary>A player who was offline when a region was cleared collects the spoils at login.</summary>
@@ -558,6 +569,17 @@ namespace SWLOR.Game.Server.Service
         private static uint GetFiringShip(uint player) =>
             _crewAssignments.TryGetValue(player, out var assignment) ? assignment.Pilot : player;
 
+        /// <summary>The players sharing a pilot's ship now (the crew while the pilot is online), or just the pilot by id and last known name.</summary>
+        private static IReadOnlyList<(string Id, string Name)> GetPilotCrew(string pilotId, IReadOnlyDictionary<string, string> names)
+        {
+            var pilot = GetObjectByUUID(pilotId);
+            if (GetIsObjectValid(pilot) && GetIsPC(pilot))
+                return GetShipCrewPlayers(pilot).Select(x => (GetObjectUUID(x), GetName(x))).ToList();
+
+            names.TryGetValue(pilotId, out var name);
+            return new List<(string Id, string Name)> { (pilotId, name ?? string.Empty) };
+        }
+
         private static IncursionContribution GetContribution(ActiveIncursion incursion, uint player)
         {
             var playerId = GetObjectUUID(player);
@@ -571,21 +593,34 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Called by both ship damage paths: a player ship's damage to an incursion ship counts toward its kill.</summary>
         private static void RecordIncursionDamage(uint attacker, uint target, int amount)
         {
-            if (amount <= 0 || IncursionRecord.Active == null || !GetIsPC(attacker) ||
-                string.IsNullOrEmpty(GetLocalString(target, IncursionRoleVariable)))
+            if (amount <= 0 || !GetIsPC(attacker))
+                return;
+
+            // A capital battle ship (W11p) is tracked apart from the incursion's ships, so neither event clears the other's book.
+            if (_capitalBattleArea != null && GetLocalInt(target, CapitalBattleVariable) == 1)
             {
+                TrackShipDamage(_capitalBattleDamage, _capitalBattleLastHit, _capitalBattlePilotNames, attacker, target, amount);
                 return;
             }
 
+            if (IncursionRecord.Active == null || string.IsNullOrEmpty(GetLocalString(target, IncursionRoleVariable)))
+                return;
+
+            TrackShipDamage(_incursionDamage, _incursionLastHit, _incursionPilotNames, attacker, target, amount);
+        }
+
+        private static void TrackShipDamage(Dictionary<uint, Dictionary<string, double>> damageByShip, Dictionary<uint, string> lastHit,
+            Dictionary<string, string> pilotNames, uint attacker, uint target, int amount)
+        {
             var ship = GetFiringShip(attacker);
             var pilotId = GetObjectUUID(ship);
-            _incursionPilotNames[pilotId] = GetName(ship);
-            if (!_incursionDamage.TryGetValue(target, out var damage))
-                _incursionDamage[target] = damage = new Dictionary<string, double>();
+            pilotNames[pilotId] = GetName(ship);
+            if (!damageByShip.TryGetValue(target, out var damage))
+                damageByShip[target] = damage = new Dictionary<string, double>();
 
             damage.TryGetValue(pilotId, out var dealt);
             damage[pilotId] = dealt + amount;
-            _incursionLastHit[target] = pilotId;
+            lastHit[target] = pilotId;
         }
 
         /// <summary>A destroyed incursion ship's points go to the ships that damaged it, shared by the players aboard each.</summary>
@@ -593,6 +628,12 @@ namespace SWLOR.Game.Server.Service
         public static void CreditIncursionKill()
         {
             var ship = OBJECT_SELF;
+            if (GetLocalInt(ship, CapitalBattleVariable) == 1)
+            {
+                CreditCapitalBattleKill(ship);
+                return;
+            }
+
             var incursion = IncursionRecord.Active;
             if (incursion == null || string.IsNullOrEmpty(GetLocalString(ship, IncursionRoleVariable)))
                 return;
@@ -606,15 +647,7 @@ namespace SWLOR.Game.Server.Service
             var points = IncursionRules.KillPoints(_npcPresets.TryGetValue(GetTag(ship), out var preset) ? preset.Difficulty : "Normal");
             // A pilot still online shares the points with the crew aboard; one who logged out is credited by id and
             // collects a pending payout when the region clears.
-            IncursionRules.CreditKill(incursion, tier, damage, points, killer, pilotId =>
-            {
-                var pilot = GetObjectByUUID(pilotId);
-                if (GetIsObjectValid(pilot) && GetIsPC(pilot))
-                    return GetShipCrewPlayers(pilot).Select(x => (GetObjectUUID(x), GetName(x))).ToList();
-
-                _incursionPilotNames.TryGetValue(pilotId, out var name);
-                return new List<(string Id, string Name)> { (pilotId, name ?? string.Empty) };
-            });
+            IncursionRules.CreditKill(incursion, tier, damage, points, killer, pilotId => GetPilotCrew(pilotId, _incursionPilotNames));
 
             _incursionDirty = true;
         }

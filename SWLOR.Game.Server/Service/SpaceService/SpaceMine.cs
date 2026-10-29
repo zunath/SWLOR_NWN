@@ -17,5 +17,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>A field mine's tier.</summary>
         public int Tier { get; set; }
+
+        /// <summary>A field mine laid in a Wild Space system: it hits as the Rift Raider Minelayer.</summary>
+        public bool WildSpace { get; set; }
     }
 }

@@ -69,6 +69,7 @@ public class IncursionTests
         state.Active.Areas["viscaraorbit"].WavesCleared = 3;
         IncursionRules.AddPoints(state.Active.Contributions["p1"] = new IncursionContribution { Name = "Pilot" }, 2, 12.5);
         state.PendingPayouts["p2"] = new IncursionPayout { Credits = 100, Pulls = { ["SPACE_ELITE_T1"] = 2 } };
+        state.PendingBattlePayouts["p3"] = new IncursionPayout { Credits = 300, Pulls = { ["SPACE_ELITE_T5"] = 1 } };
 
         var copy = Newtonsoft.Json.JsonConvert.DeserializeObject<IncursionState>(Newtonsoft.Json.JsonConvert.SerializeObject(state))!;
         copy.Id.Should().Be(IncursionState.RecordId);
@@ -78,6 +79,7 @@ public class IncursionTests
         copy.Active.Contributions["p1"].Points[2].Should().Be(12.5);
         copy.Active.Blockades.Should().ContainKey("viscaraorbit:Viscara_Orbit");
         copy.PendingPayouts["p2"].Pulls["SPACE_ELITE_T1"].Should().Be(2);
+        copy.PendingBattlePayouts["p3"].Pulls["SPACE_ELITE_T5"].Should().Be(1);
 
         var source = ReadSource("Service", "SpaceIncursions.cs");
         source.Should().Contain("IncursionRules.IsMissed(state.NextStartAt, now)").And.Contain("SpawnIncursion();")
@@ -211,7 +213,7 @@ public class IncursionTests
         var source = ReadSource("Service", "SpaceCapitalBattles.cs");
         source.Should().Contain("if (GetActiveIncursion() != null)", "no capital battle while an incursion runs");
         source.Should().Contain("CapitalBattleRules.Ships(area, invader)");
-        source.Should().NotContain("RecordIncursion", "a capital battle pays only its ships' loot");
+        source.Should().Contain("var paid = PayCapitalBattle();", "destroying the group pays its contributors (W11p; CapitalBattlePayoutTests)");
         ReadSource("Service", "SpaceIncursions.cs").Should().Contain("ProcessCapitalBattle(now);");
     }
 

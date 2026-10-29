@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Entity
             Id = RecordId;
             LastCenter = string.Empty;
             PendingPayouts = new Dictionary<string, IncursionPayout>();
+            PendingBattlePayouts = new Dictionary<string, IncursionPayout>();
         }
 
         /// <summary>When the next weekly incursion starts.</summary>
@@ -29,5 +30,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>Player id to the payout of a player who was offline when the region was cleared.</summary>
         public Dictionary<string, IncursionPayout> PendingPayouts { get; set; }
+
+        /// <summary>
+        /// Player id to the capital battle spoils of a player who was offline when the battle group was destroyed (W11p).
+        /// A new property on an existing record: a record saved before it reads as null, so callers create it on use.
+        /// </summary>
+        public Dictionary<string, IncursionPayout> PendingBattlePayouts { get; set; }
     }
 }

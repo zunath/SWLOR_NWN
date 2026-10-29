@@ -225,7 +225,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// just the pilot (with the last known name) when not.
         /// </summary>
         public static void CreditKill(ActiveIncursion incursion, int tier, IReadOnlyDictionary<string, double> damage, double points, string killer,
-            Func<string, IReadOnlyList<(string Id, string Name)>> aboard)
+            Func<string, IReadOnlyList<(string Id, string Name)>> aboard) =>
+            CreditKill(incursion.Contributions, tier, damage, points, killer, aboard);
+
+        /// <summary>The same credit into any contribution book: an incursion's, or a capital battle's.</summary>
+        public static void CreditKill(Dictionary<string, IncursionContribution> contributions, int tier, IReadOnlyDictionary<string, double> damage,
+            double points, string killer, Func<string, IReadOnlyList<(string Id, string Name)>> aboard)
         {
             foreach (var (pilot, share) in SplitKill(damage, points, killer))
             {
@@ -235,8 +240,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
                 foreach (var (id, name) in crew)
                 {
-                    if (!incursion.Contributions.TryGetValue(id, out var contribution))
-                        incursion.Contributions[id] = contribution = new IncursionContribution();
+                    if (!contributions.TryGetValue(id, out var contribution))
+                        contributions[id] = contribution = new IncursionContribution();
 
                     if (!string.IsNullOrWhiteSpace(name))
                         contribution.Name = name;

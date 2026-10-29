@@ -21,6 +21,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new DmSignatureChoice { Label = "Derelict", Type = SignatureType.Derelict },
         };
 
+        /// <summary>The Start Capital Battle picker: a random orbit first, then each orbit that hosts battles.</summary>
+        public static IReadOnlyList<string> CapitalBattleLabels =>
+            new[] { "Random orbit" }.Concat(IncursionTuning.CapitalBattleAreas.Select(x => $"{x.Name} (tier {x.Tier})")).ToList();
+
+        /// <summary>The orbit picked in the Start Capital Battle picker, or empty for a random one.</summary>
+        public static string GetCapitalBattleArea(int index) =>
+            index >= 1 && index <= IncursionTuning.CapitalBattleAreas.Count ? IncursionTuning.CapitalBattleAreas[index - 1].Resref : string.Empty;
+
         /// <summary>The Rift Key tier labels the picker offers: "Tier 1" to "Tier 5.5".</summary>
         public static IReadOnlyList<string> RiftTierLabels => RiftRunTuning.Keys.Select(x => $"Tier {x.TierLabel}").ToList();
 

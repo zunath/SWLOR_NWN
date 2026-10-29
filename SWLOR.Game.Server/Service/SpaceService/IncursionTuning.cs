@@ -125,6 +125,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const double CapitalBattleFirstMinutes = 60.0;
         public const double CapitalBattleMinutes = 30.0;
         public const float CapitalBattleRingMeters = 12.0f;
+        public const double CapitalBattleMinimumPoints = 1.0;
+        public const int CapitalBattlePulls = 1;
+
+        /// <summary>Credits per capital battle contribution point, by the orbit's tier (index 1-6).</summary>
+        public static readonly double[] CapitalBattleCreditsPerPoint = { 0, 10.0, 19.6, 26.1, 21.2, 24.6, 67.5 };
 
         /// <summary>The open orbits a capital battle can drop into (tier 5-6), each fought at its own tier.</summary>
         public static readonly IReadOnlyList<IncursionArea> CapitalBattleAreas = new List<IncursionArea>

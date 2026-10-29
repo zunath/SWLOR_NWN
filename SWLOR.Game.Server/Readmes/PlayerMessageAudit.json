@@ -1828,7 +1828,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMToolsViewModel.cs",
-    "Line": 410,
+    "Line": 429,
     "Member": "OnListRiftPockets",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, line)"
@@ -7022,21 +7022,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 520,
-    "Member": "DeliverIncursionPayout",
+    "Line": 529,
+    "Member": "DeliverPayout",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Incursion spoils for the {payout.RegionName} region: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"{string.Format(heading, payout.RegionName)}: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 746,
+    "Line": 777,
     "Member": "BroadcastIncursion",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 754,
+    "Line": 785,
     "Member": "MessageIncursionArea",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

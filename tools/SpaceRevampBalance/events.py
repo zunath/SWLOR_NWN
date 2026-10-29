@@ -149,6 +149,21 @@ CAPITAL_BATTLE_MIN_TIER = 5
 CAPITAL_BATTLE_AREAS = [a for a in trade.ORBIT_TIERS if trade.ORBIT_TIERS[a] >= CAPITAL_BATTLE_MIN_TIER
                         and a in wildspace.KNOWN_ORBITS]
 
+# Capital battle payout (W11p). The ships still drop their own loot; destroying the whole battle group also pays each
+# contributor, the way a cleared incursion does: damage is credited by persistent player id (a killing blow adds
+# KILL_BONUS, a ship's points are shared by its pilot and crew), and a pilot who logged out before the end collects at
+# the next login. A group that withdraws pays nothing. A contributor with at least CAPITAL_BATTLE_MIN_POINTS gets
+# CAPITAL_BATTLE_PULLS pull(s) from the orbit tier's SPACE_ELITE table, and credits per point of the orbit's tier. The
+# model is a solo pilot who destroys the whole group at the baseline pace (every kill equivalent takes KILL_MINUTES) and
+# earns the killing blow on each ship: the kills' loot at the combat rate, the pull and the credits come to
+# CAPITAL_BATTLE_TARGET of the tier's combat rate, inside the incursion band (100-140%, plan section 19) and under the
+# incursion's own 130%, since the group is a short, announced fight and offers no region reward. Several pilots share the
+# points, and each one's kill loot and credits shrink together.
+CAPITAL_BATTLE_TARGET = 1.25
+CAPITAL_BATTLE_MIN_POINTS = 1.0
+CAPITAL_BATTLE_PULLS = 1
+CAPITAL_BATTLE_HULLS = ["capital"] + COMMAND_ESCORTS
+
 
 # ---------------------------------------------------------------------------------------------------------------
 # Zone hazards (W11o): standalone minefields in the three Small/Medium zones and pre-placed wrecks in the open orbits,
@@ -181,13 +196,19 @@ WRECK_RESPAWN_MINUTES = 30
 WRECK_LIFETIME_MINUTES = 60
 WRECK_SIZE = "Medium"
 WRECK_DIFFICULTY = "Normal"
-# (area, minefields, field tier): the zones' lower tier.
-MINEFIELDS = [("space_viscbelt", 3, 1), ("space_midrimneb", 3, 3), ("space_korrdebris", 4, 5)]
+# (area, minefields, field tier): the zones' lower tier. W11p adds WILD_MINEFIELDS in each of the six Wild Space systems at
+# the Wild Space content tier (5); the server reads Wild Space from the area, so those mines hit as the Rift Raider
+# Minelayer (tier 5.5) instead of the tier 5 one.
+WILD_MINEFIELDS = 3
+WILD_WRECK_SITES = 2
+MINEFIELDS = ([("space_viscbelt", 3, 1), ("space_midrimneb", 3, 3), ("space_korrdebris", 4, 5)]
+              + [(r, WILD_MINEFIELDS, wildspace.CONTENT_TIER) for r, *_ in wildspace.SYSTEMS])
 # (area, wreck sites, tier): one in each open orbit at its tier, two in the zones and three in the Debris Field and the
 # Ship Graveyard (tier 5 content; the wreck reads Wild Space from its area).
 WRECK_SITES = ([(a, 1, trade.ORBIT_TIERS[a]) for a in wildspace.KNOWN_ORBITS]
                + [("space_viscbelt", 2, 1), ("space_midrimneb", 2, 3), ("space_korrdebris", 3, 5),
-                  ("space_wsgraveyrd", 3, wildspace.CONTENT_TIER)])
+                  ("space_wsgraveyrd", 3, wildspace.CONTENT_TIER)]
+               + [(r, WILD_WRECK_SITES, wildspace.CONTENT_TIER) for r, *_ in wildspace.SYSTEMS if r != "space_wsgraveyrd"])
 
 
 def hazard_placements():
@@ -271,6 +292,44 @@ def credits_per_point(tier):
 def incursion_percent(tier, hours=ACTIVE_HOURS):
     rate, pulls, region = incursion_hourly(tier)
     return 100 * (rate + pulls + region * ACTIVE_HOURS / hours + credits_per_point(tier) * POINTS_PER_HOUR) / rate
+
+
+def battle_equivalents():
+    """The kill equivalents of the battle group: the command ship and its two gunships."""
+    return kill_equivalents(CAPITAL_BATTLE_HULLS)
+
+
+def battle_points():
+    """The points of a solo pilot who destroys the whole group and lands every killing blow."""
+    return battle_equivalents() * (1 + KILL_BONUS)
+
+
+def battle_minutes():
+    """The modeled solo fight: every kill equivalent at the baseline pace."""
+    return battle_equivalents() * KILL_MINUTES
+
+
+def battle_hourly(tier):
+    """(kill loot per hour, pull value per battle, battle minutes) for the battle group of a tier."""
+    return combat_rate(tier * 10), CAPITAL_BATTLE_PULLS * pull_value(elite_table(tier * 10)), battle_minutes()
+
+
+def battle_credits_per_point(tier):
+    rate, pull, minutes = battle_hourly(tier)
+    premium = (CAPITAL_BATTLE_TARGET - 1) * rate * minutes / 60 - pull
+    return round(max(0.0, premium) / battle_points(), 1)
+
+
+def battle_value(tier):
+    """What a solo pilot earns from the whole group at a tier: kill loot, the pull and the credits."""
+    rate, pull, minutes = battle_hourly(tier)
+    return rate * minutes / 60 + pull + battle_credits_per_point(tier) * battle_points()
+
+
+def battle_percent(tier):
+    """The share of the tier's combat rate over the modeled fight."""
+    rate, _pull, minutes = battle_hourly(tier)
+    return 100 * battle_value(tier) / (minutes / 60 * rate)
 
 
 def fighter_pools():
@@ -472,6 +531,15 @@ def report():
     for hours in (2, 8):
         pct = [incursion_percent(t, hours) for t in TIERS]
         print(f"  with {hours} active hours instead of {ACTIVE_HOURS}: {min(pct):.0f}-{max(pct):.0f}% across the tiers")
+    print(f"Capital battles: a destroyed group ({' + '.join(CAPITAL_BATTLE_HULLS)}, {battle_equivalents():g} kill equivalents, "
+          f"{battle_points():.1f} points for a solo pilot, {battle_minutes():.0f} min modeled) pays {CAPITAL_BATTLE_PULLS} pull and credits, "
+          f"target {CAPITAL_BATTLE_TARGET:.0%}")
+    print("  Tier   combat/h  kill loot  pull  cr/point  credits  battle total      %")
+    for t in sorted({trade.ORBIT_TIERS[a] for a in CAPITAL_BATTLE_AREAS}):
+        rate, pull, minutes = battle_hourly(t)
+        credits = battle_credits_per_point(t) * battle_points()
+        print(f"  T{t}  {rate:9,.0f} {rate * minutes / 60:10,.0f} {pull:5,.0f} {battle_credits_per_point(t):9.1f} {credits:8,.0f} "
+              f"{battle_value(t):13,.0f} {battle_percent(t):6.0f}%")
     print(f"Rift Runs: {TIMER_SECONDS // 60} min timer, target {RUN_TARGET:.0%} per minute of run (solo model)")
     print("   Key  combat/min  kill eq  minutes  left  base cr  run value  per min     %   cost  0 left  half left")
     for tenths, resref, _ in KEYS:
@@ -612,6 +680,12 @@ def incursion_cs():
              f"        public const double CapitalBattleFirstMinutes = {cs_double(CAPITAL_BATTLE_FIRST_MINUTES)};",
              f"        public const double CapitalBattleMinutes = {cs_double(CAPITAL_BATTLE_MINUTES)};",
              f"        public const float CapitalBattleRingMeters = {cs_float(CAPITAL_BATTLE_RING_METERS)};",
+             f"        public const double CapitalBattleMinimumPoints = {cs_double(CAPITAL_BATTLE_MIN_POINTS)};",
+             f"        public const int CapitalBattlePulls = {CAPITAL_BATTLE_PULLS};",
+             "",
+             "        /// <summary>Credits per capital battle contribution point, by the orbit's tier (index 1-6).</summary>",
+             "        public static readonly double[] CapitalBattleCreditsPerPoint = { 0, "
+             + ", ".join(cs_double(battle_credits_per_point(t)) for t in TIERS) + " };",
              "",
              "        /// <summary>The open orbits a capital battle can drop into (tier 5-6), each fought at its own tier.</summary>",
              "        public static readonly IReadOnlyList<IncursionArea> CapitalBattleAreas = new List<IncursionArea>", "        {",
@@ -811,12 +885,21 @@ def events_tab(Sheet):
         ["Battle group", "command ship + " + " + ".join(COMMAND_ESCORTS), "", "", "", "", "",
          "the incursion command group of the orbit's tier, Sith or Mandalorian Armada at random"],
         ["Duration", f"{CAPITAL_BATTLE_MINUTES} min", "", "", "", "", "", "then it withdraws; announced server-wide on arrival, destruction and withdrawal"],
-        ["Reward", "the ships' own loot", "", "", "", "", "", "no extra payout: the fight pays what the same ships pay anywhere"],
+        ["Reward", "the ships' own loot + a contribution payout", "", "", "", "", "",
+         f"W11p: destroying the whole group pays each contributor as a cleared incursion does (damage credited by player id, offline "
+         f"pilots paid at login): {CAPITAL_BATTLE_PULLS} pull and credits per point; a withdrawal pays nothing"],
     ])
+    s.table(["Tier", "Combat / h", "Kill loot", "Pull", "Credits / point", "Credits", "Of combat", "Notes"],
+            [[f"T{t}", round(combat_rate(t * 10)), round(battle_hourly(t)[0] * battle_minutes() / 60), round(battle_hourly(t)[1]),
+              battle_credits_per_point(t), round(battle_credits_per_point(t) * battle_points()), f"{battle_percent(t):.0f}%",
+              f"solo pilot, whole group ({battle_equivalents():g} kill equivalents, {battle_minutes():.0f} min modeled)"]
+             for t in sorted({trade.ORBIT_TIERS[a] for a in CAPITAL_BATTLE_AREAS})])
+    s.note(f"Model: the solo pilot destroys the group at the baseline pace with every killing blow; kill loot at the combat rate. "
+           f"Target {CAPITAL_BATTLE_TARGET:.0%} (incursion band 100-140%); a pilot needs {CAPITAL_BATTLE_MIN_POINTS:g} point for the pull.")
     s.title("Zone hazards (W11o): minefields and wreck sites")
     s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
         ["Minefield", f"{MINES_PER_FIELD} mines, {MINE_RING_METERS} m ring", "", "", "", "", "",
-         f"each mine hits as its tier's minelayer mine (Torpedo flags, Bomber torpedo DMG) and re-arms {MINE_REARM_SECONDS} s after it detonates"],
+         f"each mine hits as its tier's minelayer mine (Torpedo flags, Bomber torpedo DMG; in Wild Space, the Rift Raider Minelayer) and re-arms {MINE_REARM_SECONDS} s after it detonates"],
         ["Wreck site", f"{WRECK_SIZE} {WRECK_DIFFICULTY} wreck", "", "", "", "", "",
          f"open to every ship; back {WRECK_RESPAWN_MINUTES} min after it is stripped or expires ({WRECK_LIFETIME_MINUTES} min)"],
     ])

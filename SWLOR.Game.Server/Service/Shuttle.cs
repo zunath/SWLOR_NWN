@@ -250,8 +250,35 @@ namespace SWLOR.Game.Server.Service
                     IsAtBoardingTerminal(player, route.Origin))
                 {
                     _missedBoardings.Clear(playerId);
+                    SendLateBoardingCall(player, playerId, route);
                 }
             }
+        }
+
+        /// <summary>
+        /// Sends the boarding call to a re-armed ticket holder when the route's call for the
+        /// upcoming departure was already announced before they came back.
+        /// </summary>
+        private static void SendLateBoardingCall(uint player, string playerId, (PlanetType Origin, PlanetType Destination) route)
+        {
+            var now = DateTime.UtcNow;
+            var next = ShuttleSchedule.GetNextDepartureUtc(route.Origin, route.Destination, now);
+            if ((next - now).TotalSeconds > BoardingCallSeconds ||
+                !_announcedBoardings.TryGetValue(route, out var announced) || announced != next ||
+                !_boardingNotBeforeUtc.TryGetValue(playerId, out var notBefore) || next < notBefore)
+                return;
+
+            SendBoardingCall(player, route.Destination, next - now);
+        }
+
+        /// <summary>
+        /// Sends the boarding call message to one player.
+        /// </summary>
+        private static void SendBoardingCall(uint player, PlanetType destination, TimeSpan untilDeparture)
+        {
+            var destinationName = Planet.GetPlanetByType(destination).Name;
+            var wait = Time.GetTimeLongIntervals(untilDeparture, false);
+            SendMessageToPC(player, ColorToken.Cyan($"Now boarding: shuttle to {destinationName} departs in {wait}. Be within {(int)BoardingRangeMeters} meters of the flights terminal!"));
         }
 
         /// <summary>
@@ -285,8 +312,6 @@ namespace SWLOR.Game.Server.Service
 
                 _announcedBoardings[route] = next;
 
-                var destinationName = Planet.GetPlanetByType(route.Destination).Name;
-                var wait = Time.GetTimeLongIntervals(next - now, false);
                 foreach (var (playerId, ticketRoute) in _ticketHolders)
                 {
                     if (ticketRoute != route)
@@ -302,7 +327,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(player))
                         continue;
 
-                    SendMessageToPC(player, ColorToken.Cyan($"Now boarding: shuttle to {destinationName} departs in {wait}. Be within {(int)BoardingRangeMeters} meters of the flights terminal!"));
+                    SendBoardingCall(player, route.Destination, next - now);
                 }
             }
         }
@@ -844,6 +869,11 @@ namespace SWLOR.Game.Server.Service
             var originName = Planet.GetPlanetByType(ride.Origin).Name;
             var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
             SendMessageToPC(player, ColorToken.Yellow($"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding."));
+
+            // The reminder above covers this session. Stay quiet about later departures until
+            // the player is back at the terminal.
+            if (!IsAtBoardingTerminal(player, ride.Origin))
+                _missedBoardings.RecordMiss(playerId);
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]

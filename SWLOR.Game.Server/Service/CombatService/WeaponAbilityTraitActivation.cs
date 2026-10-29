@@ -16,6 +16,8 @@ public sealed class WeaponAbilityTraitActivation
     public bool CadenceHitObserved { get; set; }
     /// <summary>Paid within the chain window after a different weapon ability.</summary>
     public bool ContinuesChain { get; set; }
+    /// <summary>A chained hit landing after this (a long-queued ability) no longer continues the chain.</summary>
+    public System.DateTime ChainLandsBy { get; set; } = System.DateTime.MaxValue;
     /// <summary>Cadence the ability itself grants on a landed hit, without a chain.</summary>
     public int CadenceOnHit { get; init; }
     public uint PrimaryWeapon { get; set; }
@@ -28,6 +30,10 @@ public sealed class WeaponAbilityTraitActivation
 
     /// <summary>Cadence a landed hit earns: the larger of the chain's charge and the ability's own grant.</summary>
     public int CadenceEarnedOnHit => System.Math.Max(ContinuesChain ? 1 : 0, CadenceOnHit);
+
+    /// <summary>Cadence a hit landing at <paramref name="now"/> earns; the chain's charge needs it to land in the window.</summary>
+    public int CadenceEarnedOnHitAt(System.DateTime now) =>
+        System.Math.Max(ContinuesChain && now <= ChainLandsBy ? 1 : 0, CadenceOnHit);
 
     public void SetPaidStamina(int paidStamina)
     {

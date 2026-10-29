@@ -96,6 +96,23 @@ public class WeaponAbilityCrossSkillTraitTests
             "an unchained ability without its own grant earns nothing");
     }
 
+    [Test]
+    public void AQueuedChainedHit_LandingAfterTheWindow_EarnsOnlyTheAbilitysOwnGrant()
+    {
+        var state = new PairedRangedTraitState();
+        var config = Config with { CadenceChainWindowSeconds = 6 };
+        state.RecordAbilityUse(Now, config, 1);
+        state.RecordAbilityUse(Now.AddSeconds(2), config, 2, out var landsBy).Should().BeTrue();
+        landsBy.Should().Be(Now.AddSeconds(6), "the chain counts from the previous ability");
+        var queued = Activation(cadenceOnHit: 0, chained: true);
+        queued.ChainLandsBy = landsBy;
+        queued.CadenceEarnedOnHitAt(Now.AddSeconds(6)).Should().Be(1, "the landing window is inclusive");
+        queued.CadenceEarnedOnHitAt(Now.AddSeconds(20)).Should().Be(0, "a hit queued past the window no longer chains");
+        var tempo = Activation(cadenceOnHit: 2, chained: true);
+        tempo.ChainLandsBy = landsBy;
+        tempo.CadenceEarnedOnHitAt(Now.AddSeconds(20)).Should().Be(2, "the ability's own grant does not depend on the chain");
+    }
+
     [TestCase(2, 0, 3, 6)]
     [TestCase(2, 1, 3, 9)]
     [TestCase(2, 3, 3, 15)]

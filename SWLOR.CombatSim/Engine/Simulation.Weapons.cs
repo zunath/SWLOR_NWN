@@ -119,9 +119,10 @@ public sealed partial class Simulation
         // A multi-hand, multi-target or multi-wave activation earns its Cadence once, on its first landed hit.
         if (activation.CadenceHitObserved) return;
         activation.CadenceHitObserved = true;
-        if (activation.CadenceEarnedOnHit > 0)
+        var earned = activation.CadenceEarnedOnHitAt(WeaponNow);
+        if (earned > 0)
             actor.WeaponTraits.Paired.RecordAbilityHit(WeaponNow, WeaponTraitState.Configuration(actor),
-                activation.Snapshot.ActivationId, activation.CadenceEarnedOnHit);
+                activation.Snapshot.ActivationId, earned);
     }
 
     private void RestoreWeaponHitStamina(Combatant actor, PendingCast cast, int requested)

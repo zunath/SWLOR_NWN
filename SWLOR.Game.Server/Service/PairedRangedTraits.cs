@@ -17,12 +17,13 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Reports a weapon ability's first landed hit; its chain or own grant adds Cadence once.</summary>
         public static void RecordWeaponAbilityHit(uint actor, WeaponAbilityTraitActivation activation)
         {
+            var now = DateTime.UtcNow;
             if (activation?.IsCommitted != true || activation.Snapshot.StateGeneration == -1 ||
-                activation.CadenceEarnedOnHit <= 0 || !CanReceiveTraitEvents(actor))
+                activation.CadenceEarnedOnHitAt(now) <= 0 || !CanReceiveTraitEvents(actor))
                 return;
             var state = GetState(actor);
-            state.RecordAbilityHit(DateTime.UtcNow, GetConfiguration(actor), activation.Snapshot.ActivationId,
-                activation.CadenceEarnedOnHit);
+            state.RecordAbilityHit(now, GetConfiguration(actor), activation.Snapshot.ActivationId,
+                activation.CadenceEarnedOnHitAt(now));
             Sync(actor, state);
         }
 
@@ -56,7 +57,11 @@ namespace SWLOR.Game.Server.Service
             }
             activation.IsCommitted = CommitAbility(actor, activation.Snapshot);
             if (activation.IsCommitted && States.TryGetValue(actor, out var state))
-                activation.ContinuesChain = state.RecordAbilityUse(DateTime.UtcNow, GetConfiguration(actor), ChainKey(ability));
+            {
+                activation.ContinuesChain = state.RecordAbilityUse(DateTime.UtcNow, GetConfiguration(actor), ChainKey(ability),
+                    out var landsBy);
+                activation.ChainLandsBy = landsBy;
+            }
         }
 
         /// <summary>Every rank of one ability shares a key, so a rank change is not a different ability.</summary>

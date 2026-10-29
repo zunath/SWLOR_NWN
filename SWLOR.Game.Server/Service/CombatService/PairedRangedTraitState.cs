@@ -154,11 +154,18 @@ namespace SWLOR.Game.Server.Service.CombatService
         /// Records one committed weapon ability. Returns whether it continues a chain: a different ability than the
         /// previous one, used within the chain window. <paramref name="abilityKey"/> identifies the ability across ranks.
         /// </summary>
-        public bool RecordAbilityUse(DateTime now, PairedRangedTraitConfiguration configuration, int abilityKey)
+        public bool RecordAbilityUse(DateTime now, PairedRangedTraitConfiguration configuration, int abilityKey) =>
+            RecordAbilityUse(now, configuration, abilityKey, out _);
+
+        /// <param name="landsBy">When chained, the latest moment its hit may land and still continue the chain.</param>
+        public bool RecordAbilityUse(DateTime now, PairedRangedTraitConfiguration configuration, int abilityKey,
+            out DateTime landsBy)
         {
+            landsBy = configuration.CadenceChainWindowSeconds > 0
+                ? _lastAbilityUsed.AddSeconds(configuration.CadenceChainWindowSeconds)
+                : DateTime.MinValue;
             var chained = configuration.CadenceChainWindowSeconds > 0 && _lastAbilityKey != 0 &&
-                          _lastAbilityKey != abilityKey &&
-                          now <= _lastAbilityUsed.AddSeconds(configuration.CadenceChainWindowSeconds);
+                          _lastAbilityKey != abilityKey && now <= landsBy;
             _lastAbilityKey = abilityKey;
             _lastAbilityUsed = now;
             return chained;

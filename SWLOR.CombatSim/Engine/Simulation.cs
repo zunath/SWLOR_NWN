@@ -908,7 +908,8 @@ namespace SWLOR.CombatSim.Engine
                         caster.Stats.CadenceSpent += cast.WeaponTraits.CadenceSpent;
                         // A paid hostile weapon ability continues the chain after a different one within the window.
                         cast.WeaponActivation.ContinuesChain = caster.WeaponTraits.Paired.RecordAbilityUse(WeaponNow,
-                            WeaponTraitState.Configuration(caster), cast.Ability.CadenceChainKey);
+                            WeaponTraitState.Configuration(caster), cast.Ability.CadenceChainKey, out var landsBy);
+                        cast.WeaponActivation.ChainLandsBy = landsBy;
                         if (cast.WeaponActivation.ContinuesChain) caster.Stats.CadenceChains++;
                     }
                 }

@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImbuementStance1)
-                .Description("While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and gain + 10% Force Attack. Each one that lands costs 2 FP.")
+                .Description("While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage. Each one that lands costs 2 FP. You also gain +10% Force Attack, which applies to Force abilities as well. Converted attacks use your Force Attack bonuses instead of Attack bonuses, but still use your weapon skill and the weapon's damage attribute. Targets defend against them with Force Defense and Willpower.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

@@ -6396,6 +6396,58 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         CadenceBonusDamagePerCharge = 1169,
 
+        /// <summary>Percent skill XP bonus the performer's Inspired grants watchers while dancing.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceDanceXPBonus = 1300,
+
+        /// <summary>Percent of a watcher's XP debt cleared for each minute they watch the performer dance.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceDanceDebtClearPercent = 1301,
+
+        /// <summary>Percent skill XP bonus the performer's Inspired grants watchers while playing an instrument.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceMusicXPBonus = 1302,
+
+        /// <summary>Percent of a watcher's XP debt cleared for each minute they watch the performer play.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceMusicDebtClearPercent = 1303,
+
+        /// <summary>Percent increase to how fast the performer's audience banks Inspired.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceBankingBonusPercent = 1304,
+
+        /// <summary>Percent increase to how fast the musician's audience banks Inspired while a dancer performs within Performance range.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceHarmonyBankingBonusPercent = 1305,
+
+        /// <summary>Extra minutes of Inspired the performer's audience can bank.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceInspiredCapBonusMinutes = 1306,
+
+        /// <summary>Bonus meters added to the performer's Performance range.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceRangeBonusMeters = 1307,
+
+        /// <summary>Percent movement speed the Light Feet routine grants while out of combat.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceLightFeetSpeedPercent = 1308,
+
+        /// <summary>Control and Craftsmanship bonus the Steady Hands set grants for all crafting skills.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceSteadyHandsBonus = 1309,
+
+        /// <summary>Percent fishing catch chance the Angler's Lullaby set grants.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceAnglersLullabyBonus = 1310,
+
+        /// <summary>Extra attribute points granted by the Power Step, Quickstep, and Vigor Reel routines.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceRoutineAttributeBonus = 1311,
+
+        /// <summary>Extra attribute points granted by the Keen Ear, Still Waters, and Silver Tongue sets.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PerformanceSetAttributeBonus = 1312,
+
 
     }
 

@@ -99,6 +99,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Beasts & Stables", "Abilities", "Mimicry & Techniques"),
 
+                Topic("Performance", "Choose Performance to entertain an audience with dance or music and reward the players who stay to watch.",
+                    new[]
+                    {
+                        Style("Performance - Dancing", "Dancing lets you perform for nearby players. While they watch, they earn Inspired, which raises their skill XP and clears part of their XP debt. Dance routines add body bonuses, such as extra movement speed and attribute boosts."),
+                        Style("Performance - Instruments", "Playing an instrument rewards your audience the same way, with mind and crafting bonuses from your music sets. Musicians within range of each other form a band and play the band leader's song.")
+                    },
+                    "Perks", "Combat Basics", "Leadership Combat Styles", "First Aid Combat Styles"),
+
                 Topic("Pistol", "Choose Pistol for shots that reward changing targets or disrupt opponents.",
                     new[]
                     {

@@ -2324,7 +2324,15 @@
     "PerkId": "RallyingStandard",
     "Feats": [
       "RallyingStandard1",
-      "RallyingStandard2"
+      "RallyingStandard2",
+      "Dance1",
+      "Dance2",
+      "Dance3",
+      "Dance4",
+      "PlayInstrument1",
+      "PlayInstrument2",
+      "PlayInstrument3",
+      "PlayInstrument4"
     ],
     "DefinitionFiles": [
       "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/RallyingStandardAbilityDefinition.cs"

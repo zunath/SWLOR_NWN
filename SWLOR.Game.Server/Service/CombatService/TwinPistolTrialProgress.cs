@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.PerkService;
+
 namespace SWLOR.Game.Server.Service.CombatService
 {
     /// <summary>One uninterrupted mastery attempt; incomplete attempts deliberately do not persist.</summary>
@@ -7,9 +9,8 @@ namespace SWLOR.Game.Server.Service.CombatService
         private int _mainHits;
         private int _companionHits;
         private DateTime _firingStarted;
-        private DateTime _movementStarted;
-        private bool _slideLanded;
-        private bool _rushLanded;
+        private DateTime _sequenceStarted;
+        private int _sequenceStep;
 
         public void RecordTargetChange(uint target)
         {
@@ -37,25 +38,28 @@ namespace SWLOR.Game.Server.Service.CombatService
             return _mainHits >= 6 && _companionHits >= 6;
         }
 
-        public bool RecordAbility(DateTime now, bool anyHit, float distanceTravelled, TwinPistolAbilitySpec spec, int momentumSpent)
+        /// <summary>
+        /// Tempo Shot, then Lead Shot, then Closing Shot spending at least two Cadence, each landing a hit,
+        /// all within 18 seconds of the Tempo Shot. Other abilities in between do not break the sequence.
+        /// </summary>
+        public bool RecordAbility(DateTime now, bool anyHit, PerkType perk, int cadenceSpent)
         {
-            if (now >= _movementStarted.AddSeconds(18))
-            {
-                _slideLanded = false;
-                _rushLanded = false;
-                _movementStarted = now;
-            }
-            if (!anyHit || !spec.IsCrossfire)
+            if (now >= _sequenceStarted.AddSeconds(18))
+                _sequenceStep = 0;
+            if (!anyHit)
                 return false;
-            if (distanceTravelled >= 2f && spec.GeneratesMomentum)
+            if (perk == PerkType.TempoShot)
             {
-                if (!_slideLanded && !_rushLanded)
-                    _movementStarted = now;
-                _slideLanded |= spec.Movement == TwinPistolMovementType.Retreat;
-                _rushLanded |= spec.Movement == TwinPistolMovementType.FreeDestination;
+                _sequenceStarted = now;
+                _sequenceStep = 1;
+                return false;
             }
-            return _slideLanded && _rushLanded && spec.SpendsMomentum &&
-                   spec.Movement == TwinPistolMovementType.Approach && momentumSpent >= 2;
+            if (perk == PerkType.LeadShot && _sequenceStep == 1)
+            {
+                _sequenceStep = 2;
+                return false;
+            }
+            return perk == PerkType.ClosingShot && _sequenceStep == 2 && cadenceSpent >= 2;
         }
     }
 }

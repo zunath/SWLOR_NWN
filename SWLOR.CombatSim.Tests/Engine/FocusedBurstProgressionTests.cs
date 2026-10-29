@@ -32,7 +32,7 @@ public class FocusedBurstProgressionTests
                      (30, 16, "Equipment - Weapons E195/F195/G195/I195/J195; Module/uti/proto_twinpistol.uti.json"),
                      (50, 23, "Equipment - Weapons E211/F211/G211/I211/J211; Module/uti/chi_twinpistol.uti.json")
                  })
-        foreach (var rhythm in new[] { false, true })
+        foreach (var rhythm in new[] { true }) // Barrage's only handling slot is Matched Rhythm since the Cadence rework.
         foreach (var haste in new[] { 0, 50 })
         foreach (var mode in new[] { "channel", "old immediate", "without Focused Burst", "first-wave cancel", "one wave", "two waves" })
         {
@@ -63,7 +63,7 @@ public class FocusedBurstProgressionTests
                 rank, weaponDamage = damage, weaponSource = source, delay = 250,
                 attack = spec.WeaponLoadout.Attack, accuracy = spec.WeaponLoadout.Accuracy,
                 defense = target.Defense, evasion = target.Evasion,
-                handling = rhythm ? "Matched Rhythm" : "Paired Handling", haste, mode,
+                handling = rhythm ? "Matched Rhythm" : "Steady Cadence", haste, mode,
                 seconds = 120, samples, firstSeed, lastSeed = firstSeed + samples - 1,
                 lineSkillPoints = catalog.Perks.GetPurchaseCost(spec.Perks), armorSkillPoints = 9,
                 damageMean = mean, dps = mean / 120, damageMean95HalfWidth = 1.96 * deviation / Math.Sqrt(samples),
@@ -77,7 +77,7 @@ public class FocusedBurstProgressionTests
             });
         }
         var completionComparisons = new List<(bool Rhythm, string Partial, double MeanDpsDifference, double HalfWidth95)>();
-        foreach (var rhythm in new[] { false, true })
+        foreach (var rhythm in new[] { true }) // Barrage's only handling slot is Matched Rhythm since the Cadence rework.
         foreach (var partial in new[] { "first-wave cancel", "one wave", "two waves" })
         {
             var differences = completionTraces[(rhythm, "channel")]
@@ -103,7 +103,7 @@ public class FocusedBurstProgressionTests
             partitionOf600Damage = Enumerable.Range(0, 3).Select(index => WeaponImpactDamagePartition.Partition(600, index, 3)).ToArray(),
             completionComparisons = completionComparisons.Select(result => new
             {
-                handling = result.Rhythm ? "Matched Rhythm" : "Paired Handling", partial = result.Partial,
+                handling = result.Rhythm ? "Matched Rhythm" : "Steady Cadence", partial = result.Partial,
                 meanFullMinusPartialDps = result.MeanDpsDifference,
                 paired95HalfWidth = result.HalfWidth95,
                 statisticallyClearPartialAdvantage = result.MeanDpsDifference + result.HalfWidth95 < 0
@@ -114,6 +114,6 @@ public class FocusedBurstProgressionTests
         TestContext.Progress.WriteLine($"Focused Burst authored tiers: {rows.Count} cells x {samples} seeds; {path}");
         foreach (var result in completionComparisons)
             (result.MeanDpsDifference + result.HalfWidth95).Should().BeGreaterThanOrEqualTo(0,
-                $"rank 10 at maximum haste must not show a statistically clear {result.Partial} advantage over completion ({(result.Rhythm ? "Matched Rhythm" : "Paired Handling")})");
+                $"rank 10 at maximum haste must not show a statistically clear {result.Partial} advantage over completion ({(result.Rhythm ? "Matched Rhythm" : "Steady Cadence")})");
     }
 }

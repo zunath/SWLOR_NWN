@@ -68,11 +68,12 @@ namespace SWLOR.CombatSim.Engine
             StatType.AbilityStaminaCostFPRestorePercent,
             StatType.AbilityFPCostStaminaRestorePercentSkillType,
             StatType.AbilityFPCostStaminaRestorePercent
-        }.Concat(Enum.GetValues<StatType>().Where(stat => stat.ToString().StartsWith("PairedRanged", StringComparison.Ordinal)))
+        }.Concat(Enum.GetValues<StatType>().Where(stat => stat.ToString().StartsWith("PairedRanged", StringComparison.Ordinal) ||
+                                                          stat.ToString().StartsWith("Cadence", StringComparison.Ordinal)))
          .Concat(new[] { StatType.AttackDelayReductionPercent, StatType.DualWieldAttackDelayReductionPercent, StatType.OrdinaryAttackDamagePercentAdjustment,
              StatType.OrdinaryAttackHasteRampPerStack, StatType.OrdinaryAttackHasteRampMaximumStacks,
              StatType.OrdinaryAttackHasteRampGrantCooldownSeconds, StatType.OrdinaryAttackHasteRampDurationSeconds,
-             StatType.Accuracy, StatType.MovementHitWeaponAbilityDamagePerCharge })
+             StatType.Accuracy, StatType.EvasionCadenceCooldownSeconds })
          .Distinct().ToArray();
 
         internal static bool SupportsPerkStat(StatType stat) => PerkStatsRead.Contains(stat);
@@ -248,8 +249,6 @@ namespace SWLOR.CombatSim.Engine
                             combatant.NextAttackAt = spec.JoinAtSeconds + (combatant.NextAttackAt - spec.JoinAtSeconds) * combatant.Weapon.SwingSeconds(0) / AttackInterval(spec);
                         }
                         _combatants.Add(combatant);
-                        combatant.WeaponTraits.Movement.Observe(DateTime.UnixEpoch.AddSeconds(spec.JoinAtSeconds), 1,
-                            combatant.WeaponTraits.Position, false);
                     }
 
                     foreach (var use in spec.Abilities)
@@ -268,8 +267,8 @@ namespace SWLOR.CombatSim.Engine
                             throw new InvalidDataException($"'{use.Feat}' WeaponPower needs a WeaponLoadout and a weapon skill.");
                         if (use.Damage is { WeaponPower: null } &&
                             Combat.IsWeaponSkillType(_resolvedUses[use].Info.SkillType) &&
-                            perkStats.GetValueOrDefault(StatType.MovementHitWeaponAbilityDamagePerCharge) > 0)
-                            throw new InvalidDataException($"'{use.Feat}' cannot apply Flow to calibrated final damage; supply explicit authored WeaponPower or omit Flow.");
+                            perkStats.GetValueOrDefault(StatType.CadenceDamagePerCharge) > 0)
+                            throw new InvalidDataException($"'{use.Feat}' cannot apply Cadence to calibrated final damage; supply explicit authored WeaponPower or omit Cadence.");
                         if (_resolvedUses[use].Info.TwinPistol != null && spec.WeaponLoadout == null)
                             throw new InvalidDataException($"'{use.Feat}' needs a WeaponLoadout to resolve its captured hands and traits.");
                         // The loadout autoattack path carries only calibrated queues; a formula queue rides the formula swing.
@@ -455,10 +454,8 @@ namespace SWLOR.CombatSim.Engine
             if (info.TwinPistol != null)
             {
                 if (use.Damage != null) throw new InvalidDataException($"'{use.Feat}' uses its production payload; do not supply a calibrated damage profile.");
-                if (use.Target != AbilityTarget.Enemy || use.LineTargets < 0 || use.MinimumFlow is < 0 or > 3 ||
-                    !float.IsFinite(use.MovementSeconds) || use.MovementSeconds < 0 ||
-                    use.MovementMeters.HasValue && (!float.IsFinite(use.MovementMeters.Value) || use.MovementMeters < 0 || use.MovementMeters > info.TwinPistol.MaxMovementMeters))
-                    throw new InvalidDataException($"'{use.Feat}' has invalid movement, target, or Flow assumptions.");
+                if (use.Target != AbilityTarget.Enemy || use.MinimumCadence is < 0 or > 3)
+                    throw new InvalidDataException($"'{use.Feat}' has invalid target or Cadence assumptions.");
                 if (use.ChannelInterruptAfterSeconds is { } interruptAfter &&
                     (!info.IsChanneled || !float.IsFinite(interruptAfter) || interruptAfter <= 0 || interruptAfter >= info.CastSeconds))
                     throw new InvalidDataException($"'{use.Feat}' has an invalid channel interruption assumption.");
@@ -735,7 +732,7 @@ namespace SWLOR.CombatSim.Engine
                     stm = Math.Max(0, stm + caster.WeaponTraits.Paired.GetAbilityStaminaCostAdjustment(WeaponNow, WeaponTraitState.Configuration(caster)));
                 }
                 stm = DiscountedStamina(caster, stm, false, info);
-                if (info.TwinPistol != null && !CanUseTwin(caster, use, info.TwinPistol)) continue;
+                if (info.TwinPistol != null && !CanUseTwin(caster, use)) continue;
                 if (caster.Fp < fp || caster.Stm < stm)
                 {
                     starved = true;
@@ -795,19 +792,22 @@ namespace SWLOR.CombatSim.Engine
                                       && _rules.Revives == ReviveRule.BlockedInPvpLimitedInPve,
                 FpCost = fp,
                 StmCost = stm,
-                WeaponTargets = info.TwinPistol == null ? null : CaptureTwinTargets(caster, use, info.TwinPistol, target),
                 WeaponDamages = info.TwinPistol == null ? null : CaptureTwinWeaponDamage(caster.Spec.WeaponLoadout),
                 WeaponTraits = caster.Spec.WeaponLoadout != null && info.IsHostile && Combat.IsWeaponSkillType(info.SkillType)
                     ? caster.WeaponTraits.Paired.CaptureAbility(WeaponNow, WeaponTraitState.Configuration(caster), true,
-                        // Twin Pistol builders keep Flow for their finishers, as on the server.
+                        // Builders such as Lead Shot keep Cadence for the spenders, as on the server.
+                        // A foreign ability gains nothing per charge without the Cadence trait, so it leaves them alone.
                         WeaponAbilityTraitPolicy.IsEligibleSpender(info.IsHostile, info.SkillType, info.STM) &&
-                        info.TwinPistol?.SpendsMomentum != false)
+                        !info.KeepsWeaponAbilityCadence && CadenceDamagePerCharge(caster, info) > 0)
                     : null
             };
             if (cast.WeaponTraits != null)
-                cast.WeaponActivation = new WeaponAbilityTraitActivation(cast.WeaponTraits,
-                    info.TwinPistol?.MomentumPowerPerCharge is > 0 ? info.TwinPistol.MomentumPowerPerCharge
-                        : WeaponTraitState.Configuration(caster).MomentumDamagePerCharge);
+            {
+                cast.WeaponActivation = new WeaponAbilityTraitActivation(cast.WeaponTraits, CadenceDamagePerCharge(caster, info))
+                {
+                    CadenceOnHit = info.WeaponAbilityCadenceOnHit
+                };
+            }
 
             caster.Weapon?.HoldSetupForCast(cast, _now);
             caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
@@ -842,9 +842,8 @@ namespace SWLOR.CombatSim.Engine
             var isRevive = effect?.Kind == EffectKind.Revive;
             var targetLost = false;
             var twin = cast.Ability.TwinPistol;
-            if (!cast.Activated && twin != null && twin.Movement != TwinPistolMovementType.FreeDestination && target.IsDead)
+            if (!cast.Activated && twin != null && target.IsDead)
                 return;
-            // Paid Twin travel resolves its captured legal targets, even when none survive.
             if (twin == null && (isRevive ? !target.IsDead : target.IsDead))
             {
                 // Area damage and party heals or shields centered on the caster (Purifying Wave) need no living
@@ -904,7 +903,15 @@ namespace SWLOR.CombatSim.Engine
                     cast.WeaponTraits = cast.WeaponActivation.Snapshot;
                     cast.WeaponActivation.IsCommitted = caster.WeaponTraits.Paired.CommitAbility(WeaponNow,
                         WeaponTraitState.Configuration(caster), cast.WeaponTraits);
-                    if (cast.WeaponActivation.IsCommitted) caster.Stats.FlowSpent += cast.WeaponTraits.MomentumSpent;
+                    if (cast.WeaponActivation.IsCommitted)
+                    {
+                        caster.Stats.CadenceSpent += cast.WeaponTraits.CadenceSpent;
+                        // A paid hostile weapon ability continues the chain after a different one within the window.
+                        cast.WeaponActivation.ContinuesChain = caster.WeaponTraits.Paired.RecordAbilityUse(WeaponNow,
+                            WeaponTraitState.Configuration(caster), cast.Ability.CadenceChainKey, out var landsBy);
+                        cast.WeaponActivation.ChainLandsBy = landsBy;
+                        if (cast.WeaponActivation.ContinuesChain) caster.Stats.CadenceChains++;
+                    }
                 }
                 caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability) *
                     (1 + (cast.Ability.IsHostile ? caster.Weapon?.Stat(StatType.HostileAbilityRecastDelayPercentAdjustment) ?? 0 : 0) / 100d);
@@ -1390,15 +1397,15 @@ namespace SWLOR.CombatSim.Engine
                     var weaponAbility = cast?.WeaponActivation != null;
                     if (weaponAbility) attacker.Stats.AbilityImpacts++;
                     var weapon = (uint)(hit % Math.Min(damage.WeaponItems, attacker.Spec.WeaponLoadout?.DistinctAttackItemCount ?? 1) + 1);
-                    int TakeFlowBonus()
+                    int TakeCadenceBonus()
                     {
                         var bonus = cast?.WeaponActivation?.TryTakeDamageBonus(weapon) ?? 0;
-                        attacker.Stats.FlowDamagePowerApplied += bonus;
+                        attacker.Stats.CadenceDamagePowerApplied += bonus;
                         return bonus;
                     }
                     var (hitLanded, dealt) = damage.WeaponPower != null
                         ? RollNativeWeaponProfile(attacker, victim, damage.WeaponPower, weapon,
-                            weaponAbility ? TakeFlowBonus : null, cast?.WeaponTraits?.AccuracyAdjustment ?? 0,
+                            weaponAbility ? TakeCadenceBonus : null, cast?.WeaponTraits?.AccuracyAdjustment ?? 0,
                             multiplier, alwaysHits)
                         : RollAndApply(attacker, victim, damage, hitBonus, multiplier, alwaysHits,
                             cast?.WeaponTraits?.AccuracyAdjustment ?? 0, beforeDamage == null ? null : () =>

@@ -98,7 +98,7 @@ public class WeaponPvpTests
     [Test]
     public void TwinPistolLoadoutHits_ArmTheDefendersPaybackLikeOtherDirectDamage()
     {
-        var scenario = TwinPistolScenarios.Create(false, false, 60, pvp: true, catalog: _catalog);
+        var scenario = TwinPistolScenarios.Create(false, true, 60, pvp: true, catalog: _catalog);
         var shooter = scenario.Teams[0].Members[0];
         shooter.Abilities = new();
         shooter.WeaponCombat = new() { Attack = 100, Accuracy = 200, Defense = 100, Evasion = 100, EnableCriticals = false };

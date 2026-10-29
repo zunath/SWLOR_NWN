@@ -2552,46 +2552,67 @@
     "Line": 407,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
+    "Line": 413,
+    "Member": "ClickCancelJob",
+    "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ResearchExperimentLifecycle.CannotCancelMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 419,
+    "Line": 423,
+    "Member": "ClickCancelJob",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
+    "Line": 430,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 425,
+    "Line": 436,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Research job cancelled!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 445,
+    "Line": 452,
+    "Member": "ClickCompleteJob",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
+    "Line": 462,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Finish your experiment first.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 461,
+    "Line": 478,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 474,
+    "Line": 491,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 531,
+    "Line": 548,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp))"

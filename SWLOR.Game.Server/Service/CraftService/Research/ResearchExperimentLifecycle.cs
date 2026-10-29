@@ -47,6 +47,14 @@ public static class ResearchExperimentLifecycle
     /// </summary>
     public static bool CanCancel(ResearchJob job) => job != null && job.Experiment == null;
 
+    public const string NotOwnerMessage = "This research job belongs to another player.";
+
+    /// <summary>
+    /// True when the job belongs to <paramref name="playerId"/>. A terminal's job is found by the terminal alone, so a window another
+    /// player left open there can reach it; only its owner may complete, cancel or be paid for it.
+    /// </summary>
+    public static bool IsOwnedBy(ResearchJob job, string playerId) => job != null && job.PlayerId == playerId;
+
     /// <summary>True while the job has an experiment that is not settled.</summary>
     public static bool IsOpen(ResearchJob job) => job?.Experiment is { Status: ResearchExperimentStatus.InProgress };
 

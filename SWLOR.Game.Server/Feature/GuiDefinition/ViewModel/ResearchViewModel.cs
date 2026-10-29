@@ -402,6 +402,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action ClickCancelJob() => () =>
         {
+            if (!ResearchExperimentLifecycle.IsOwnedBy(GetJob(), GetObjectUUID(Player)))
+            {
+                FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false);
+                return;
+            }
+
             if (!ResearchExperimentLifecycle.CanCancel(GetJob()))
             {
                 FloatingTextStringOnCreature(ResearchExperimentLifecycle.CannotCancelMessage, Player, false);
@@ -412,6 +418,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 () =>
                 {
                     var dbJob = GetJob();
+                    if (!ResearchExperimentLifecycle.IsOwnedBy(dbJob, GetObjectUUID(Player)))
+                    {
+                        FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false);
+                        return;
+                    }
 
                     if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem) &&
                         !Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbJob.SerializedItem)))
@@ -436,6 +447,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action ClickCompleteJob() => () =>
         {
             var dbJob = GetJob();
+            if (!ResearchExperimentLifecycle.IsOwnedBy(dbJob, GetObjectUUID(Player)))
+            {
+                FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false);
+                return;
+            }
+
             var recipe = Craft.GetRecipe(dbJob.Recipe);
 
             if (ResearchExperimentLifecycle.IsOpen(dbJob))

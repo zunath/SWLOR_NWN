@@ -143,6 +143,16 @@ public class ResearchExperimentPayoutTests
     }
 
     [Test]
+    public void OnlyTheJobsOwnerOwnsIt()
+    {
+        var job = SettledJob();
+
+        ResearchExperimentLifecycle.IsOwnedBy(job, "player-1").Should().BeTrue();
+        ResearchExperimentLifecycle.IsOwnedBy(job, "player-2").Should().BeFalse();
+        ResearchExperimentLifecycle.IsOwnedBy(null, "player-1").Should().BeFalse();
+    }
+
+    [Test]
     public void TheIdAndTheXpAreSavedTogether_SoNoStopSeparatesThem()
     {
         var (world, player, job) = Fresh();

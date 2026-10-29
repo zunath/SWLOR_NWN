@@ -143,7 +143,7 @@ public static class ResearchExperimentService
     public static int GrantCompletionXp(uint player, ResearchJob job, int level)
     {
         var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        if (dbPlayer == null || job == null)
+        if (dbPlayer == null || !ResearchExperimentLifecycle.IsOwnedBy(job, dbPlayer.Id))
             return 0;
 
         dbPlayer.PaidExperimentJobs ??= new HashSet<string>();

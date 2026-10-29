@@ -59,7 +59,7 @@ public sealed class ResearchExperimentPayout
 
         // A terminal's job belongs to the player who started it. Another player who opens the window there (a stale Recipes window
         // left open at a shared terminal) is never paid it, and nothing is marked.
-        if (job.PlayerId != dbPlayer.Id)
+        if (!ResearchExperimentLifecycle.IsOwnedBy(job, dbPlayer.Id))
             return 0;
 
         dbPlayer.PaidExperimentJobs ??= new HashSet<string>();

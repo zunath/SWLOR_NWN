@@ -1,8 +1,10 @@
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -11,6 +13,7 @@ namespace SWLOR.Game.Server.Service
     public class Death
     {
         private const string DefaultRespawnWaypointTag = "DTH_DEFAULT_RESPAWN_POINT";
+        private const string DebtWaivedVariable = "DEATH_DEBT_WAIVED";
 
         /// <summary>
         /// When a player starts dying, instantly kill them.
@@ -48,6 +51,7 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
+            RecordDeathDebtWaiver(player);
             StatusEffect.ClearStatusEffectsOnDeath(player);
 
             if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
@@ -75,6 +79,24 @@ namespace SWLOR.Game.Server.Service
                 PopUpDeathGUIPanel(player, true, true, 0, RespawnMessage);
 
                 WriteAudit(player);
+            }
+        }
+
+        /// <summary>
+        /// Status effects are cleared when a player dies, so a death-debt waiver is claimed here and
+        /// used when the debt would be charged at respawn. Every death replaces the previous claim.
+        /// </summary>
+        private static void RecordDeathDebtWaiver(uint player)
+        {
+            DeleteLocalInt(player, DebtWaivedVariable);
+            foreach (var effect in StatusEffect.GetCreatureStatusEffects(player).GetAllEffects()
+                         .OfType<IDeathDebtWaiverStatusEffect>().ToList())
+            {
+                if (!effect.TryConsumeDeathDebtWaiver())
+                    continue;
+
+                SetLocalInt(player, DebtWaivedVariable, 1);
+                return;
             }
         }
 
@@ -223,6 +245,13 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (GetLocalInt(player, DebtWaivedVariable) == 1)
+            {
+                DeleteLocalInt(player, DebtWaivedVariable);
+                SendMessageToPC(player, "Requiem spares you any XP debt.");
+                return dbPlayer.XPDebt;
+            }
+
             int multiplier;
 
             // 300+

@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Service
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
         private static readonly Dictionary<StatType, StatTypeAttribute> _statTypeAttributes = new();
+        private static readonly Dictionary<uint, bool> _outOfCombatMovementCombatState = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
@@ -904,6 +905,37 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Out-of-combat movement speed depends on the combat state, which has no event of its own, so a player
+        /// holding that stat has their movement rate re-applied on the heartbeat that sees the state change.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
+        public static void RefreshOutOfCombatMovementRate()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            if (GetStatAdjustment(player, StatType.OutOfCombatMovementSpeedPercentAdjustment) == 0)
+            {
+                _outOfCombatMovementCombatState.Remove(player);
+                return;
+            }
+
+            var inCombat = GetIsInCombat(player);
+            if (_outOfCombatMovementCombatState.TryGetValue(player, out var wasInCombat) && wasInCombat == inCombat)
+                return;
+
+            _outOfCombatMovementCombatState[player] = inCombat;
+            ApplyCreatureMovementRate(player);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ForgetOutOfCombatMovementState()
+        {
+            _outOfCombatMovementCombatState.Remove(GetExitingObject());
+        }
+
         public static float GetMovementSpeedMultiplier(uint creature)
         {
             if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
@@ -934,6 +966,10 @@ namespace SWLOR.Game.Server.Service
         private static float GetMovementSpeedAdjustment(uint creature)
         {
             var adjustment = GetStatAdjustment(creature, StatType.MovementSpeedPercentAdjustment) * 0.01f;
+            var outOfCombatAdjustment = GetStatAdjustment(creature, StatType.OutOfCombatMovementSpeedPercentAdjustment);
+            if (outOfCombatAdjustment != 0 && !GetIsInCombat(creature))
+                adjustment += outOfCombatAdjustment * 0.01f;
+
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 var type = GetEffectType(effect);

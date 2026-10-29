@@ -395,6 +395,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Plays a track for a single player without saving it as their personal track, such as a
+        /// performance band's song. <see cref="RestoreBackgroundMusic"/> puts their normal music back.
+        /// </summary>
+        public static void PlayTemporaryTrack(uint player, int trackId)
+        {
+            ApplyBackgroundTrackToPlayer(player, trackId, trackId);
+        }
+
+        /// <summary>
+        /// Puts back the music a player normally hears: their personal track, otherwise the current
+        /// area's music (which stays off if the area's music was stopped).
+        /// </summary>
+        public static void RestoreBackgroundMusic(uint player)
+        {
+            var personalTrackId = GetPersonalTrackId(player);
+            if (personalTrackId != null)
+            {
+                ApplyBackgroundTrackToPlayer(player, personalTrackId.Value, personalTrackId.Value);
+                return;
+            }
+
+            var area = GetArea(player);
+            ApplyBackgroundTrackToPlayer(player, MusicBackgroundGetDayTrack(area), MusicBackgroundGetNightTrack(area));
+            if (IsAreaMusicStopped(area))
+                PlayerPlugin.MusicBackgroundToggle(player, false);
+        }
+
+        /// <summary>
         /// Sets or clears the battle theme a player hears in combat.
         /// </summary>
         /// <param name="player">The player</param>

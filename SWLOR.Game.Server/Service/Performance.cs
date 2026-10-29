@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -126,6 +127,26 @@ namespace SWLOR.Game.Server.Service
             if (_sessions.TryGetValue(player, out var session) && session.Kind == PerformanceKind.Music)
                 session.Set = set;
 
+            return true;
+        }
+
+        /// <summary>Picks the blended second routine. Only a dancer with Showstopper can use it.</summary>
+        public static bool SetSecondRoutine(uint player, PerformanceRoutineType routine)
+        {
+            if (!IsRoutineUnlocked(player, routine) || Perk.GetPerkLevel(player, PerkType.Showstopper) <= 0)
+                return false;
+
+            GetPreference(player).SecondRoutine = routine;
+            return true;
+        }
+
+        /// <summary>Picks the woven second set. Only a musician with Virtuoso can use it.</summary>
+        public static bool SetSecondSet(uint player, PerformanceSetType set)
+        {
+            if (!IsSetUnlocked(player, set) || Perk.GetPerkLevel(player, PerkType.Virtuoso) <= 0)
+                return false;
+
+            GetPreference(player).SecondSet = set;
             return true;
         }
 

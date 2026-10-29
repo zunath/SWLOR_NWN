@@ -1951,3 +1951,4 @@
 "Ability","PerformanceNoteHigh","PerformanceNoteHigh","Self","","ife_pf_notehi","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","PerformanceFlourish","PerformanceFlourish","Self","","ife_pf_flourish","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","PerformanceOptions","PerformanceOptions","Self","","ife_pf_options","SWLOR_Haks\sw_2da\feat.2da",""
+"StatusEffect","InspiredStatusEffect","Inspired","Beneficial","","ief_nsprd","SWLOR.Game.Server\Feature\StatusEffectDefinition\InspiredStatusEffect.cs",""

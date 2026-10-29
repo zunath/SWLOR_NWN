@@ -112,6 +112,7 @@ namespace SWLOR.Game.Server.Entity
             UndisguisedDescription = string.Empty;
             HasUndisguisedDescriptionSnapshot = false;
             PlayerListFlags = new List<PlayerListFlagType>();
+            PaidShipSaleIds = new List<string>();
         }
 
 
@@ -192,6 +193,13 @@ namespace SWLOR.Game.Server.Entity
         public float MovementRate { get; set; }
         public int CombatReadiness { get; set; }
         public int MarketTill { get; set; }
+
+        /// <summary>
+        /// Ship sales whose proceeds are already in <see cref="MarketTill"/>, saved with the till so a sale that a
+        /// restart left owed is paid once. An entry goes once the ship record no longer owes it. Older records load
+        /// with none.
+        /// </summary>
+        public List<string> PaidShipSaleIds { get; set; }
         public int OutfitSlotLimit { get; set; }
         public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }

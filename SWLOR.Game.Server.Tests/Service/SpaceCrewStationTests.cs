@@ -429,6 +429,19 @@ public class SpaceCrewStationTests
             .Should().Contain("Combat.RestoreAbilityHitStamina(\n                        user,");
     }
 
+    [Test]
+    public void ViewportPassengers_LeaveTheirGroundEffectsBehind()
+    {
+        var source = ReadServerSource("Service", "SpaceCrewStations.cs");
+        var start = source.IndexOf("public static bool BoardCrewStation(", StringComparison.Ordinal);
+        var board = source.Substring(start, source.IndexOf("private static uint CreateCrewCopy(", start, StringComparison.Ordinal) - start);
+        var cleanup = board.IndexOf("StatusEffect.RemoveAllStatusEffects(player);", StringComparison.Ordinal);
+        var hotBar = board.IndexOf("dbPlayer.SerializedHotBar", StringComparison.Ordinal);
+        cleanup.Should().BeGreaterThan(hotBar);
+        board.Substring(hotBar, cleanup - hotBar).Should().NotContain("isViewer",
+            "a passenger's ground aura must not keep buffing the crew in flight");
+    }
+
     private static string ReadServerSource(params string[] path)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

@@ -369,18 +369,16 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.ActiveCrewShipId = dbShip.Id;
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
 
-            if (!isViewer)
+            // Ground effects stay on the ground, as they do for a pilot: a crew member's stats set the strength of what
+            // their station fires, and a viewport passenger's ground aura would otherwise buff the crew in flight.
+            StatusEffect.RemoveAllStatusEffects(player);
+            for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
-                // Ground effects stay on the ground, as they do for a pilot: a crew member's stats set the strength of
-                // what their station fires.
-                StatusEffect.RemoveAllStatusEffects(player);
-                for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
-                {
-                    RemoveEffect(player, effect);
-                }
-
-                PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(player);
+                RemoveEffect(player, effect);
             }
+
+            if (!isViewer)
+                PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(player);
 
             DB.Set(dbPlayer);
 

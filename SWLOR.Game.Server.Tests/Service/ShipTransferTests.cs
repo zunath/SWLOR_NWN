@@ -162,8 +162,30 @@ public class ShipTransferTests
         var source = ReadServerSource("Service", "ShipTransfer.cs");
         ExtractMethod(source, "public static void Accept(").Should().Contain("ShipTransferRules.GetRefusal(BuildCheck(ship, offer.RecipientPlayerId), false)");
         ExtractMethod(source, "public static bool Buy(").Should().Contain("ShipTransferRules.GetRefusal(BuildCheck(ship, buyerId), true)");
-        ExtractMethod(source, "public static bool Buy(").Should().Contain("dbSeller.MarketTill += (int)(listing.Price - listing.Price * taxRate);");
+        ExtractMethod(source, "public static bool Buy(").Should().Contain("ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);");
         ExtractMethod(source, "public static void Offer(").Should().Contain("GetArea(recipient) != dockArea");
+    }
+
+    [Test]
+    public void ASaleOwesItsProceedsWithTheNewOwner_AndPaysThemOnce()
+    {
+        var source = ReadServerSource("Service", "ShipTransfer.cs");
+        var buy = ExtractMethod(source, "public static bool Buy(");
+        buy.IndexOf("ship.SaleId = Guid.NewGuid().ToString();", StringComparison.Ordinal)
+            .Should().BeLessThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\");", StringComparison.Ordinal),
+                "the proceeds owed are saved in the same ship record as the new owner");
+        buy.IndexOf("PaySaleProceeds(ship);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\");", StringComparison.Ordinal));
+
+        var pay = ExtractMethod(source, "private static void PaySaleProceeds(");
+        pay.Should().Contain("!dbSeller.PaidShipSaleIds.Contains(ship.SaleId)", "a sale already in the till is not paid twice");
+        pay.IndexOf("dbSeller.PaidShipSaleIds.Add(ship.SaleId);", StringComparison.Ordinal)
+            .Should().BeLessThan(pay.IndexOf("ship.SaleId = string.Empty;", StringComparison.Ordinal),
+                "the till is paid before the ship stops owing");
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void PayOwedSaleProceeds()");
+
+        new PlayerShip().SaleId.Should().BeEmpty("older ship records owe nothing");
+        new Player().PaidShipSaleIds.Should().BeEmpty();
     }
 
     [Test]

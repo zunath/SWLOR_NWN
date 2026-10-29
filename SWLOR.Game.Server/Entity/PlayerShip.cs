@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Entity
             DockedDerelictId = string.Empty;
             Cargo = new Dictionary<CommodityType, CargoLot>();
             SealedFreight = new List<SealedFreightLot>();
+            SaleId = string.Empty;
+            SaleSellerPlayerId = string.Empty;
         }
 
         [Indexed]
@@ -64,5 +66,18 @@ namespace SWLOR.Game.Server.Entity
         /// records load with none.
         /// </summary>
         public List<SealedFreightLot> SealedFreight { get; set; }
+
+        /// <summary>
+        /// A market sale whose proceeds the seller is still owed (plan section 7), or empty. It is saved with the new
+        /// owner, so a restart between the ownership change and the payout leaves the payout to make at the next
+        /// module load. Older records load empty.
+        /// </summary>
+        public string SaleId { get; set; }
+
+        /// <summary>The player owed <see cref="SaleProceeds"/> for <see cref="SaleId"/>.</summary>
+        public string SaleSellerPlayerId { get; set; }
+
+        /// <summary>The credits owed for <see cref="SaleId"/>, after the market tax.</summary>
+        public int SaleProceeds { get; set; }
     }
 }

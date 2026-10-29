@@ -481,14 +481,13 @@ namespace SWLOR.Game.Server.Service
             var shipName = GetShipName(ship);
             var dockName = GetDockName(ship);
             AssignCommand(buyer, () => TakeGoldFromCreature(listing.Price, buyer, true));
-            Complete(ship, buyerId, "was sold");
 
-            var dbSeller = DB.Get<Player>(listing.PlayerId);
-            if (dbSeller != null)
-            {
-                dbSeller.MarketTill += (int)(listing.Price - listing.Price * taxRate);
-                DB.Set(dbSeller);
-            }
+            // The proceeds owed are saved with the new owner, then paid, so a restart in between cannot lose them.
+            ship.SaleId = Guid.NewGuid().ToString();
+            ship.SaleSellerPlayerId = listing.PlayerId;
+            ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);
+            Complete(ship, buyerId, "was sold");
+            PaySaleProceeds(ship);
 
             var seller = DMPlayerDirectory.GetOnlinePlayer(listing.PlayerId);
             if (GetIsObjectValid(seller))
@@ -497,6 +496,51 @@ namespace SWLOR.Game.Server.Service
             FloatingTextStringOnCreature(ColorToken.Green($"{shipName} is now yours! It is docked at {dockName}."), buyer, false);
             Log.Write(LogGroup.PlayerMarket, $"{GetName(buyer)} [{buyerId}] bought ship {ship.Id} from {listing.SellerName} for {listing.Price} credits.");
             return true;
+        }
+
+        /// <summary>
+        /// Pays the seller the proceeds a sold ship still owes into their market till, once: the till and the sale's
+        /// id are saved together, so a sale already paid is only cleared from the ship.
+        /// </summary>
+        private static void PaySaleProceeds(PlayerShip ship)
+        {
+            if (string.IsNullOrWhiteSpace(ship.SaleId))
+                return;
+
+            var dbSeller = DB.Get<Player>(ship.SaleSellerPlayerId);
+            if (dbSeller != null && !dbSeller.PaidShipSaleIds.Contains(ship.SaleId))
+            {
+                dbSeller.MarketTill += ship.SaleProceeds;
+                dbSeller.PaidShipSaleIds.Add(ship.SaleId);
+                DB.Set(dbSeller);
+            }
+
+            var saleId = ship.SaleId;
+            ship.SaleId = string.Empty;
+            ship.SaleSellerPlayerId = string.Empty;
+            ship.SaleProceeds = 0;
+            DB.Set(ship);
+
+            if (dbSeller != null && dbSeller.PaidShipSaleIds.Remove(saleId))
+                DB.Set(dbSeller);
+        }
+
+        /// <summary>Pays any ship sale proceeds a restart left owed.</summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void PayOwedSaleProceeds()
+        {
+            var count = (int)DB.SearchCount(new DBQuery<PlayerShip>());
+            if (count <= 0)
+                return;
+
+            foreach (var ship in DB.Search(new DBQuery<PlayerShip>().AddPaging(count, 0)))
+            {
+                if (string.IsNullOrWhiteSpace(ship.SaleId))
+                    continue;
+
+                PaySaleProceeds(ship);
+                Log.Write(LogGroup.PlayerMarket, $"Paid owed proceeds for ship {ship.Id} after a restart.");
+            }
         }
 
         /// <summary>The ship deed a ship listing shows when examined, or OBJECT_INVALID. The caller destroys it.</summary>

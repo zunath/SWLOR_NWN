@@ -212,7 +212,8 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                chatComponents = GetEmoteStyle(sender) == EmoteStyle.Regular
+                // A HoloCom hologram relays its owner's words, so the owner's emote style applies.
+                chatComponents = GetEmoteStyle(GetEffectiveChatSpeaker(sender)) == EmoteStyle.Regular
                     ? SplitMessageIntoComponents_Regular(message)
                     : SplitMessageIntoComponents_Novel(message);
 

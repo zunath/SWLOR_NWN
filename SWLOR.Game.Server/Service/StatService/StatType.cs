@@ -6395,6 +6395,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Extra damage per Cadence charge spent, added to the ability's per-charge bonus.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         CadenceBonusDamagePerCharge = 1169,
+        /// <summary>
+        /// Percent damage adjustment applied to grenade, Remote Charge, and Overload Barrage blasts.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BlastDamagePercentAdjustment = 1170,
 
 
     }

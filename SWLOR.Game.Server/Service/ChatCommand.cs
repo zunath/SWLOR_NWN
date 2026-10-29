@@ -107,8 +107,7 @@ namespace SWLOR.Game.Server.Service
 
                 var authorization = Authorization.GetAuthorizationLevel(sender);
 
-                if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && chatCommand.AvailableToAllOnTestEnvironment) ||
-                    chatCommand.Authorization.HasFlag(authorization))
+                if (CanUseCommand(chatCommand, authorization))
                 {
                     Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
                     target =>
@@ -137,10 +136,16 @@ namespace SWLOR.Game.Server.Service
         {
             var authorization = Authorization.GetAuthorizationLevel(sender);
             return _chatCommands
-                .Where(command => command.Value.Authorization.HasFlag(authorization))
+                .Where(command => CanUseCommand(command.Value, authorization))
                 .OrderBy(command => command.Key)
                 .Select(command => (command.Key, command.Value.Description))
                 .ToList();
+        }
+
+        private static bool CanUseCommand(ChatCommandDetail command, AuthorizationLevel authorization)
+        {
+            return _appSettings.ServerEnvironment == ServerEnvironmentType.Test && command.AvailableToAllOnTestEnvironment ||
+                   command.Authorization.HasFlag(authorization);
         }
 
         /// <summary>
@@ -175,8 +180,7 @@ namespace SWLOR.Game.Server.Service
 
             var authorization = Authorization.GetAuthorizationLevel(sender);
 
-            if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && command.AvailableToAllOnTestEnvironment) ||
-                command.Authorization.HasFlag(authorization))
+            if (CanUseCommand(command, authorization))
             {
                 var argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
                 var error = command.ValidateArguments?.Invoke(sender, argsArr);

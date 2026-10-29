@@ -66,14 +66,48 @@ public class ExtraHotbarsTests
     }
 
     [Test]
-    public void BarSize_GrowsAlongItsDirectionOnly()
+    public void ActionModeSlot_RoundTripsThroughJson()
     {
-        var horizontal = ExtraHotbarViewModel.GetWidth(12, false);
-        var vertical = ExtraHotbarViewModel.GetWidth(12, true);
+        var player = new Player();
+        ExtraHotbars.GetBars(player)[0].Slots[5] = new ExtraHotbarSlot
+        {
+            Type = ExtraHotbarSlotType.ActionMode,
+            ActionMode = ActionMode.Stealth
+        };
 
-        horizontal.Should().BeGreaterThan(vertical);
-        ExtraHotbarViewModel.GetHeight(12, true, false).Should().Be(horizontal);
-        ExtraHotbarViewModel.GetHeight(4, false, true)
-            .Should().BeGreaterThan(ExtraHotbarViewModel.GetHeight(4, false, false));
+        var loaded = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))!;
+
+        loaded.ExtraHotbars[0].Slots[5].Type.Should().Be(ExtraHotbarSlotType.ActionMode);
+        loaded.ExtraHotbars[0].Slots[5].ActionMode.Should().Be(ActionMode.Stealth);
+    }
+
+    [TestCase(ActionMode.Detect)]
+    [TestCase(ActionMode.Stealth)]
+    public void OfferedActionModes_HaveANameAndIcon(ActionMode mode)
+    {
+        ExtraHotbars.GetActionModeName(mode).Should().EndWith(" Mode");
+        ExtraHotbars.GetActionModeIcon(mode).Should().StartWith("ife_");
+    }
+
+    [Test]
+    public void BarSize_FollowsTheLayout()
+    {
+        var horizontal = ExtraHotbarViewModel.GetWidth(12, ExtraHotbarLayout.Horizontal);
+        var oneSlot = ExtraHotbarViewModel.GetWidth(1, ExtraHotbarLayout.Horizontal);
+        var slotStep = ExtraHotbarViewModel.GetWidth(2, ExtraHotbarLayout.Horizontal) - oneSlot;
+
+        ExtraHotbarViewModel.GetWidth(12, ExtraHotbarLayout.Vertical).Should().Be(oneSlot);
+        ExtraHotbarViewModel.GetHeight(12, ExtraHotbarLayout.Vertical, false).Should().Be(horizontal);
+
+        // Stacked uses rows of six, so twelve slots are two rows of six.
+        ExtraHotbarViewModel.GetWidth(12, ExtraHotbarLayout.Stacked)
+            .Should().Be(ExtraHotbarViewModel.GetWidth(6, ExtraHotbarLayout.Horizontal));
+        ExtraHotbarViewModel.GetHeight(12, ExtraHotbarLayout.Stacked, false)
+            .Should().Be(ExtraHotbarViewModel.GetHeight(1, ExtraHotbarLayout.Horizontal, false) + slotStep);
+        ExtraHotbarViewModel.GetHeight(4, ExtraHotbarLayout.Stacked, false)
+            .Should().Be(ExtraHotbarViewModel.GetHeight(4, ExtraHotbarLayout.Horizontal, false));
+
+        ExtraHotbarViewModel.GetHeight(4, ExtraHotbarLayout.Horizontal, true)
+            .Should().BeGreaterThan(ExtraHotbarViewModel.GetHeight(4, ExtraHotbarLayout.Horizontal, false));
     }
 }

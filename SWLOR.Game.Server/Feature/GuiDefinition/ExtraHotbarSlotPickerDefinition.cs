@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Abilities", ExtraHotbarSlotPickerViewModel.AbilitiesCategory)
                                     .AddOption("Items", ExtraHotbarSlotPickerViewModel.ItemsCategory)
                                     .AddOption("Chat Commands", ExtraHotbarSlotPickerViewModel.CommandsCategory)
+                                    .AddOption("Combat Modes", ExtraHotbarSlotPickerViewModel.ActionModesCategory)
                                     .BindSelectedIndex(model => model.SelectedCategory)
                                     .SetWidth(150f)
                                     .SetHeight(ControlHeight);

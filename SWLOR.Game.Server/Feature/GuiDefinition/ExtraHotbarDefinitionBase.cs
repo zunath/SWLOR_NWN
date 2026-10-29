@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -22,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(WindowType)
                 .SetInitialGeometry(ExtraHotbarViewModel.InitialX, InitialY,
-                    ExtraHotbarViewModel.GetWidth(ExtraHotbars.MaxSlots, false),
-                    ExtraHotbarViewModel.GetHeight(ExtraHotbars.MaxSlots, false, false))
+                    ExtraHotbarViewModel.GetWidth(ExtraHotbars.MaxSlots, ExtraHotbarLayout.Horizontal),
+                    ExtraHotbarViewModel.GetHeight(ExtraHotbars.MaxSlots, ExtraHotbarLayout.Horizontal, false))
                 .BindTitle(model => model.TitleBar)
                 .SetIsClosable(false)
                 .SetIsResizable(false)
@@ -54,6 +55,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     }
                 }))
+                .DefinePartialView(ExtraHotbarViewModel.StackedPartial, group => group.AddColumn(col =>
+                {
+                    col.SetMargin(0f);
+                    for (var start = 0; start < ExtraHotbars.MaxSlots; start += ExtraHotbarViewModel.StackedRowLength)
+                    {
+                        var first = start;
+                        col.AddRow(row =>
+                        {
+                            row.SetMargin(0f);
+                            for (var slot = first; slot < first + ExtraHotbarViewModel.StackedRowLength; slot++)
+                                AddSlot(row, slot, "s");
+                        });
+                    }
+                }))
                 .AddColumn(col =>
                 {
                     col.SetMargin(0f);
@@ -75,6 +90,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetId($"ehb_{layout}_{slot}")
                 .SetText(string.Empty)
                 .BindTooltip(Bind<string>(ExtraHotbarViewModel.TooltipProperty(slot)))
+                .BindIsEncouraged(Bind<bool>(ExtraHotbarViewModel.IsActiveProperty(slot)))
+                .BindIsVisible(Bind<bool>(ExtraHotbarViewModel.IsVisibleProperty(slot)))
                 .SetWidth(ExtraHotbarViewModel.SlotSize)
                 .SetHeight(ExtraHotbarViewModel.SlotSize)
                 .SetMargin(ExtraHotbarViewModel.SlotMargin)

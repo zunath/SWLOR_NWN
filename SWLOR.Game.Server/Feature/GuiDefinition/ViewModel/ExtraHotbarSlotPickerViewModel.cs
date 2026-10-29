@@ -16,8 +16,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int AbilitiesCategory = 0;
         public const int ItemsCategory = 1;
         public const int CommandsCategory = 2;
+        public const int ActionModesCategory = 3;
 
-        private sealed record Entry(FeatType Feat, uint Item, string Command);
+        private sealed record Entry(FeatType Feat, uint Item, string Command, ActionMode ActionMode = ActionMode.Detect);
 
         private readonly List<Entry> _entries = new();
         private int _barIndex;
@@ -121,6 +122,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         tooltips.Add(description);
                     }
                     break;
+                case ActionModesCategory:
+                    foreach (var mode in ExtraHotbars.GetAvailableActionModes(Player))
+                    {
+                        var name = ExtraHotbars.GetActionModeName(mode);
+                        if (!Matches(name))
+                            continue;
+
+                        _entries.Add(new Entry(FeatType.Invalid, OBJECT_INVALID, string.Empty, mode));
+                        icons.Add(ExtraHotbars.GetActionModeIcon(mode));
+                        names.Add(name);
+                        tooltips.Add($"Click the slot to turn {name} on or off.");
+                    }
+                    break;
             }
 
             EntryIcons = icons;
@@ -159,6 +173,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     break;
                 case CommandsCategory:
                     ExtraHotbars.AssignChatCommand(Player, _barIndex, _slotIndex, entry.Command);
+                    Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
+                    break;
+                case ActionModesCategory:
+                    ExtraHotbars.AssignActionMode(Player, _barIndex, _slotIndex, entry.ActionMode);
                     Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
                     break;
             }

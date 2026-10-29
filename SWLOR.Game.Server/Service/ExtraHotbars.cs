@@ -5,9 +5,11 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -97,7 +99,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void LockBarsOnExit()
         {
-            _unlockedPlayers.Remove(GetExitingObject());
+            var player = GetExitingObject();
+            if (!_unlockedPlayers.Remove(player))
+                return;
+
+            // The window positions are saved on exit, so bars are put back in their locked spots first.
+            SaveLockedPositions(player);
         }
 
         /// <summary>
@@ -129,6 +136,30 @@ namespace SWLOR.Game.Server.Service
                 _unlockedPlayers.Remove(player);
 
             Gui.PublishRefreshEvent(player, new ExtraHotbarRefreshEvent());
+            if (!isUnlocked)
+                SaveLockedPositions(player);
+        }
+
+        /// <summary>
+        /// Saves where each open bar's slots sit, without the title bar shown while bars are unlocked.
+        /// </summary>
+        private static void SaveLockedPositions(uint player)
+        {
+            var dbPlayer = GetDbPlayer(player);
+            if (dbPlayer == null)
+                return;
+
+            foreach (var windowType in _windowTypes)
+            {
+                if (!Gui.IsWindowOpen(player, windowType))
+                    continue;
+
+                var viewModel = (ExtraHotbarViewModel)Gui.GetPlayerWindow(player, windowType).ViewModel;
+                viewModel.ApplyLockedGeometry();
+                dbPlayer.WindowGeometries[windowType] = viewModel.Geometry;
+            }
+
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -177,6 +208,15 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        public static void AssignActionMode(uint player, int barIndex, int slotIndex, ActionMode mode)
+        {
+            SetSlot(player, barIndex, slotIndex, new ExtraHotbarSlot
+            {
+                Type = ExtraHotbarSlotType.ActionMode,
+                ActionMode = mode
+            });
+        }
+
         public static void ClearSlot(uint player, int barIndex, int slotIndex)
         {
             SetSlot(player, barIndex, slotIndex, new ExtraHotbarSlot());
@@ -215,6 +255,9 @@ namespace SWLOR.Game.Server.Service
                 case ExtraHotbarSlotType.Command:
                     ChatCommand.RunCommand(player, slot.Command);
                     break;
+                case ExtraHotbarSlotType.ActionMode:
+                    ToggleActionMode(player, slot.ActionMode);
+                    break;
             }
         }
 
@@ -232,6 +275,45 @@ namespace SWLOR.Game.Server.Service
         }
 
         public static string GetAbilityIcon(FeatType feat) => Get2DAString("feat", "ICON", (int)feat);
+
+        /// <summary>
+        /// The combat modes the player can turn on. Detect is open to everyone and Stealth needs the Stealth perk;
+        /// every other native mode needs a feat players cannot get, and Parry has no effect in SWLOR combat.
+        /// </summary>
+        public static List<ActionMode> GetAvailableActionModes(uint player)
+        {
+            var modes = new List<ActionMode> { ActionMode.Detect };
+            if (Perk.GetPerkLevel(player, PerkType.Stealth) > 0)
+                modes.Add(ActionMode.Stealth);
+
+            return modes;
+        }
+
+        public static string GetActionModeName(ActionMode mode) => mode switch
+        {
+            ActionMode.Detect => "Detect Mode",
+            ActionMode.Stealth => "Stealth Mode",
+            _ => mode.ToString()
+        };
+
+        public static string GetActionModeIcon(ActionMode mode) => mode switch
+        {
+            ActionMode.Detect => "ife_awareness",
+            ActionMode.Stealth => "ife_stealth1",
+            _ => string.Empty
+        };
+
+        private static void ToggleActionMode(uint player, ActionMode mode)
+        {
+            if (!GetAvailableActionModes(player).Contains(mode))
+            {
+                SendMessageToPC(player, ColorToken.Red($"You cannot use {GetActionModeName(mode)}."));
+                return;
+            }
+
+            SetActionMode(player, mode, !GetActionMode(player, mode));
+            RefreshStatusSoon(player);
+        }
 
         private static void UseAbility(uint player, FeatType feat)
         {
@@ -309,7 +391,7 @@ namespace SWLOR.Game.Server.Service
             if (targetTypes == TargetSelf || targetTypes == 0)
             {
                 AssignCommand(player, () => ActionUseItemOnObject(item, property, player));
-                RefreshItemCountsSoon(player);
+                RefreshStatusSoon(player);
                 return;
             }
 
@@ -328,7 +410,7 @@ namespace SWLOR.Game.Server.Service
                     AssignCommand(player, () => ActionUseItemAtLocation(item, property, location));
                 }
 
-                RefreshItemCountsSoon(player);
+                RefreshStatusSoon(player);
             }, (targetTypes & TargetGround) != 0);
         }
 
@@ -387,33 +469,33 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleAcquire)]
         public static void RefreshOnAcquire()
         {
-            RefreshItemCounts(GetModuleItemAcquiredBy());
+            RefreshStatus(GetModuleItemAcquiredBy());
         }
 
         [NWNEventHandler(ScriptName.OnModuleUnacquire)]
         public static void RefreshOnUnacquire()
         {
-            RefreshItemCounts(GetModuleItemLostBy());
+            RefreshStatus(GetModuleItemLostBy());
         }
 
-        // Scripted item uses lower stack sizes directly, which raises no event, so counts also catch up each heartbeat.
+        // Scripted item uses lower stack sizes and attacks drop stealth without an event, so slots also catch up each heartbeat.
         [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public static void RefreshOnHeartbeat()
         {
-            RefreshItemCounts(OBJECT_SELF);
+            RefreshStatus(OBJECT_SELF);
         }
 
-        private static void RefreshItemCountsSoon(uint player)
+        private static void RefreshStatusSoon(uint player)
         {
-            DelayCommand(1f, () => RefreshItemCounts(player));
+            DelayCommand(1f, () => RefreshStatus(player));
         }
 
-        private static void RefreshItemCounts(uint player)
+        private static void RefreshStatus(uint player)
         {
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new ExtraHotbarItemCountRefreshEvent());
+            Gui.PublishRefreshEvent(player, new ExtraHotbarStatusRefreshEvent());
         }
 
         private static int GetFeatTargetTypes(FeatType feat)

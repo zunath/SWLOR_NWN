@@ -22,4 +22,6 @@ public sealed class ExtraHotbarSlot
     /// The chat command text, including its leading slash and arguments.
     /// </summary>
     public string Command { get; set; } = string.Empty;
+
+    public ActionMode ActionMode { get; set; }
 }

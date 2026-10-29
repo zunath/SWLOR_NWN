@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// </summary>
     public class ExtraHotbarSetupDefinition : IGuiWindowDefinition
     {
-        private const float PanelWidth = 460f;
+        private const float PanelWidth = 500f;
         private const float RowHeight = 30f;
 
         private readonly GuiWindowBuilder<ExtraHotbarSetupViewModel> _builder = new();
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.ExtraHotbarSetup)
-                .SetInitialGeometry(0, 0, 500f, 380f)
+                .SetInitialGeometry(0, 0, 540f, 380f)
                 .SetTitle("Hotbars")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -84,11 +85,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindText(Bind<string>(ExtraHotbarSetupViewModel.SlotCountTextProperty(bar)))
                     .SetWidth(70f)
                     .SetHeight(RowHeight);
-                r.AddCheckBox()
-                    .SetId($"ehb_setup_vertical_{bar}")
-                    .SetText("Vertical")
-                    .BindIsChecked(Bind<bool>(ExtraHotbarSetupViewModel.VerticalProperty(bar)))
-                    .SetWidth(90f)
+                r.AddComboBox()
+                    .SetId($"ehb_setup_layout_{bar}")
+                    .AddOption("Horizontal", (int)ExtraHotbarLayout.Horizontal)
+                    .AddOption("Vertical", (int)ExtraHotbarLayout.Vertical)
+                    .AddOption("Stacked", (int)ExtraHotbarLayout.Stacked)
+                    .BindSelectedIndex(Bind<int>(ExtraHotbarSetupViewModel.LayoutProperty(bar)))
+                    .SetWidth(130f)
                     .SetHeight(RowHeight);
             });
         }

@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string VisibleProperty(int bar) => $"Bar{bar}Visible";
         public static string SlotCountProperty(int bar) => $"Bar{bar}SlotCount";
         public static string SlotCountTextProperty(int bar) => $"Bar{bar}SlotCountText";
-        public static string VerticalProperty(int bar) => $"Bar{bar}Vertical";
+        public static string LayoutProperty(int bar) => $"Bar{bar}Layout";
 
         public bool Bar0Visible { get => Get<bool>(); set => Set(value); }
         public bool Bar1Visible { get => Get<bool>(); set => Set(value); }
@@ -25,9 +26,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Bar1SlotCountText { get => Get<string>(); set => Set(value); }
         public string Bar2SlotCountText { get => Get<string>(); set => Set(value); }
 
-        public bool Bar0Vertical { get => Get<bool>(); set => Set(value); }
-        public bool Bar1Vertical { get => Get<bool>(); set => Set(value); }
-        public bool Bar2Vertical { get => Get<bool>(); set => Set(value); }
+        public int Bar0Layout { get => Get<int>(); set => Set(value); }
+        public int Bar1Layout { get => Get<int>(); set => Set(value); }
+        public int Bar2Layout { get => Get<int>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(bar?.IsVisible ?? false, VisibleProperty(index));
                 Set(bar?.SlotCount ?? ExtraHotbars.MaxSlots, SlotCountProperty(index));
                 Set(FormatSlotCount(bar?.SlotCount ?? ExtraHotbars.MaxSlots), SlotCountTextProperty(index));
-                Set(bar?.IsVertical ?? false, VerticalProperty(index));
+                Set((int)(bar?.Layout ?? ExtraHotbarLayout.Horizontal), LayoutProperty(index));
             }
 
             WatchOnClient(model => model.Bar0Visible);
@@ -46,9 +47,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.Bar0SlotCount);
             WatchOnClient(model => model.Bar1SlotCount);
             WatchOnClient(model => model.Bar2SlotCount);
-            WatchOnClient(model => model.Bar0Vertical);
-            WatchOnClient(model => model.Bar1Vertical);
-            WatchOnClient(model => model.Bar2Vertical);
+            WatchOnClient(model => model.Bar0Layout);
+            WatchOnClient(model => model.Bar1Layout);
+            WatchOnClient(model => model.Bar2Layout);
 
             ChangePartialView(ContentElement, MainPartial);
             ExtraHotbars.SetUnlocked(Player, true);
@@ -69,10 +70,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Set(FormatSlotCount(slotCount), SlotCountTextProperty(index));
                     ExtraHotbars.UpdateBar(Player, index, bar => bar.SlotCount = slotCount);
                 }
-                else if (propertyName == VerticalProperty(index))
+                else if (propertyName == LayoutProperty(index))
                 {
-                    var isVertical = Get<bool>(propertyName);
-                    ExtraHotbars.UpdateBar(Player, index, bar => bar.IsVertical = isVertical);
+                    var layout = (ExtraHotbarLayout)Get<int>(propertyName);
+                    ExtraHotbars.UpdateBar(Player, index, bar => bar.Layout = layout);
                 }
             }
         }

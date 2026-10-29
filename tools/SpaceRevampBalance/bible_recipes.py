@@ -20,6 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import catalog as c  # noqa: E402
+import components as comp  # noqa: E402
 import droids  # noqa: E402
 import model as m  # noqa: E402
 import stations  # noqa: E402
@@ -31,6 +32,8 @@ RESEARCH_COLUMN = {"Engineering Recipes": "AC", "Smithery Recipes": "AC", "Cooki
 FABRICATION_SHEET = "Fabrication Recipes"
 # The Fabrication tab has a Base Item Storage Slots column (K), so its enhancement and component columns sit one later.
 FABRICATION_COMPONENT_COLUMNS = ["N", "P", "R", "T", "V", "X", "Z", "AB"]
+# W11o: the capital parts are filed under Capital Construction in the recipe registry (ShipComponentRecipes.cs).
+CAPITAL_PART_RESREFS = {part[1] for part in comp.CAPITAL_PARTS}
 STYLE = 14  # centered body style the tabs' newest rows use
 COMPONENT_COLUMNS = ["M", "O", "Q", "S", "U", "W", "Y", "AA"]  # quantity sits in the next column
 
@@ -60,7 +63,8 @@ def recipe_rows():
                          name="Ship Deed: " + h["Name"], level=h["RecipeLevel"], resref=h["Tag"], enhancement="Starship",
                          slots=1, components=h["Components"]))
     for x in components:
-        rows.append(dict(sheet=SHEET_BY_SKILL[x["Skill"]], skill=x["Skill"], enum=x["RecipeName"], category="ShipComponent",
+        rows.append(dict(sheet=SHEET_BY_SKILL[x["Skill"]], skill=x["Skill"], enum=x["RecipeName"],
+                         category="CapitalConstruction" if x["Resref"] in CAPITAL_PART_RESREFS else "ShipComponent",
                          name=x["Name"], level=x["RecipeLevel"], resref=x["Resref"], enhancement="N/A", slots=0,
                          components=x["Components"]))
     for x in c.ammo_recipes():

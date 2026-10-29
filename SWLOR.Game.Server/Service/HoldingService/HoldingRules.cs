@@ -555,7 +555,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
                 RemoveStock(holding.Supplies, commodity, units);
         }
 
-        private static void AddStock(Dictionary<CommodityType, int> stock, CommodityType commodity, int units)
+        public static void AddStock(Dictionary<CommodityType, int> stock, CommodityType commodity, int units)
         {
             if (units <= 0)
                 return;

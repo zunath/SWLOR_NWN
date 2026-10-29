@@ -247,14 +247,14 @@ namespace SWLOR.Game.Server.Service
                 holding.UpkeepOwed = 0;
             }
 
+            // The units leave the warehouse and are noted as a pending collection in one save, then the ship loads them.
             foreach (var (commodity, units) in plan)
-            {
-                CargoHoldRules.AddUnits(ship.Cargo, commodity, units, HoldingRules.GetCostBasis(commodity, units));
                 HoldingRules.RemoveStock(holding.Warehouse, commodity, units);
-            }
-
-            DB.Set(ship);
+            holding.PendingCollectionId = Guid.NewGuid().ToString();
+            holding.PendingCollectionShipId = ship.Id;
+            holding.PendingCollection = new Dictionary<CommodityType, int>(plan);
             DB.Set(holding);
+            FinishCollection(holding, ship);
 
             var loaded = string.Join(", ", plan.Select(x => $"{x.Value} {TradeLookup.GetCommodity(x.Key)?.Name}"));
             var left = holding.Warehouse.Values.Sum();
@@ -263,6 +263,52 @@ namespace SWLOR.Game.Server.Service
                 (upkeep > 0 ? $", paying {upkeep} credits of upkeep" : string.Empty) +
                 (left > 0 ? $". {left} units stay in the warehouse." : ".")));
             Log.Write(LogGroup.Space, $"HOLDING COLLECT - {PlayerName.GetAuditName(player)} - {holding.Id} - {loaded} - upkeep {upkeep} - ship {ship.Id}");
+        }
+
+        /// <summary>
+        /// Loads a holding's pending collection into its ship, unless the ship already saved it, then clears it. A ship
+        /// that no longer exists has the units returned to the warehouse.
+        /// </summary>
+        private static void FinishCollection(PlanetaryHolding holding, PlayerShip ship)
+        {
+            if (string.IsNullOrWhiteSpace(holding.PendingCollectionId))
+                return;
+
+            if (ship == null)
+            {
+                foreach (var (commodity, units) in holding.PendingCollection)
+                    HoldingRules.AddStock(holding.Warehouse, commodity, units);
+            }
+            else if (ship.LastHoldingCollectionId != holding.PendingCollectionId)
+            {
+                foreach (var (commodity, units) in holding.PendingCollection)
+                    CargoHoldRules.AddUnits(ship.Cargo, commodity, units, HoldingRules.GetCostBasis(commodity, units));
+                ship.LastHoldingCollectionId = holding.PendingCollectionId;
+                DB.Set(ship);
+            }
+
+            holding.PendingCollectionId = string.Empty;
+            holding.PendingCollectionShipId = string.Empty;
+            holding.PendingCollection.Clear();
+            DB.Set(holding);
+        }
+
+        /// <summary>Finishes any holding collection a restart left pending.</summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void FinishPendingCollections()
+        {
+            var count = (int)DB.SearchCount(new DBQuery<PlanetaryHolding>());
+            if (count <= 0)
+                return;
+
+            foreach (var holding in DB.Search(new DBQuery<PlanetaryHolding>().AddPaging(count, 0)))
+            {
+                if (string.IsNullOrWhiteSpace(holding.PendingCollectionId))
+                    continue;
+
+                FinishCollection(holding, DB.Get<PlayerShip>(holding.PendingCollectionShipId));
+                Log.Write(LogGroup.Space, $"HOLDING COLLECT - finished the pending collection for holding {holding.Id} after a restart");
+            }
         }
 
         /// <summary>Unloads a good the holding needs from the ship's cargo bay into its supplies, up to what it still takes.</summary>

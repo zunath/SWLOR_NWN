@@ -144,16 +144,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Pays every contributor of a destroyed battle group: at once to a pilot online, or kept in the incursion record
-        /// for the next login. Returns how many pilots were paid.
+        /// Pays every contributor of a destroyed battle group. Every payout is saved as pending first, then the pilots
+        /// online collect theirs at once and the rest at their next login, so a restart partway through loses no share.
+        /// Returns how many pilots were paid.
         /// </summary>
         private static int PayCapitalBattle()
         {
             var state = IncursionRecord;
             state.PendingBattlePayouts ??= new Dictionary<string, IncursionPayout>();
             var online = GetOnlinePlayersById();
+            var collecting = new List<(string PlayerId, uint Player)>();
             var paid = 0;
-            var pending = false;
             foreach (var (playerId, contribution) in _capitalBattleContributions)
             {
                 var payout = CapitalBattleRules.BuildPayout(contribution, _capitalBattleArea);
@@ -161,19 +162,16 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 paid++;
+                CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout));
                 if (online.TryGetValue(playerId, out var player))
-                {
-                    DeliverPayout(player, payout, "Capital battle spoils at {0}", "CAPITAL BATTLE PAYOUT");
-                }
-                else
-                {
-                    CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout));
-                    pending = true;
-                }
+                    collecting.Add((playerId, player));
             }
 
-            if (pending)
+            if (paid > 0)
                 SaveIncursions();
+
+            foreach (var (playerId, player) in collecting)
+                CollectPendingPayout(player, state.PendingBattlePayouts, playerId, "Capital battle spoils at {0}", "CAPITAL BATTLE PAYOUT");
 
             Log.Write(LogGroup.Space, $"CAPITAL BATTLE DESTROYED - {_capitalBattleInvader} in {_capitalBattleArea.Resref}, {paid} contributors paid");
             return paid;

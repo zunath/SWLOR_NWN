@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Entity
             SealedFreight = new List<SealedFreightLot>();
             SaleId = string.Empty;
             SaleSellerPlayerId = string.Empty;
+            LastHoldingCollectionId = string.Empty;
         }
 
         [Indexed]
@@ -79,5 +80,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The credits owed for <see cref="SaleId"/>, after the market tax.</summary>
         public int SaleProceeds { get; set; }
+
+        /// <summary>
+        /// The last Planetary Holding collection loaded into the cargo bay, saved with the cargo, so a collection a
+        /// restart left pending is not loaded twice. Older records load empty.
+        /// </summary>
+        public string LastHoldingCollectionId { get; set; }
     }
 }

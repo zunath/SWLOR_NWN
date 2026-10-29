@@ -140,8 +140,8 @@ public class CapitalBattlePayoutTests
         withdraw = withdraw[..withdraw.IndexOf("EndCapitalBattle(now)", StringComparison.Ordinal)];
         withdraw.Should().Contain("No spoils are paid.").And.NotContain("PayCapitalBattle");
 
-        battles.Should().Contain("DeliverPayout(player, payout,", "an online pilot is paid at once")
-            .And.Contain("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout))", "an offline pilot's spoils are kept")
+        battles.Should().Contain("CollectPendingPayout(player, state.PendingBattlePayouts, playerId,", "an online pilot collects at once")
+            .And.Contain("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout))", "every pilot's spoils are kept until collected")
             .And.Contain("_capitalBattleContributions.Clear();").And.Contain("_capitalBattleDamage.Clear();");
 
         var incursions = ReadSource("Service", "SpaceIncursions.cs");

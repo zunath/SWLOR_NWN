@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.Entity
             DroidItemId = string.Empty;
             DroidName = string.Empty;
             Log = new List<string>();
+            PendingCollectionId = string.Empty;
+            PendingCollectionShipId = string.Empty;
+            PendingCollection = new Dictionary<CommodityType, int>();
         }
 
         [Indexed]
@@ -88,5 +91,18 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The latest events, newest last.</summary>
         public List<string> Log { get; set; }
+
+        /// <summary>
+        /// A collection taken from the warehouse whose ship may not have saved it yet, or empty. It is saved with the
+        /// warehouse it came from, so a restart before the ship saves finishes the collection at the next module load.
+        /// Older records load empty.
+        /// </summary>
+        public string PendingCollectionId { get; set; }
+
+        /// <summary>The ship <see cref="PendingCollection"/> goes to.</summary>
+        public string PendingCollectionShipId { get; set; }
+
+        /// <summary>The units taken for <see cref="PendingCollectionId"/>.</summary>
+        public Dictionary<CommodityType, int> PendingCollection { get; set; }
     }
 }

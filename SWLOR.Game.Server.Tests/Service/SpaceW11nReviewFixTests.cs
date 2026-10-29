@@ -267,6 +267,40 @@ public class SpaceW11nReviewFixTests
     }
 
     [Test]
+    public void ACapitalBattle_SavesEveryShareAsPendingBeforeAnyoneCollects()
+    {
+        var pay = Between(ReadSource("Service", "SpaceCapitalBattles.cs").Replace("\r\n", "\n"),
+            "private static int PayCapitalBattle()", "/// <summary>A pilot who was offline");
+        pay.Should().NotContain("DeliverPayout(", "online pilots collect from the saved pending payouts");
+        pay.IndexOf("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout));", StringComparison.Ordinal)
+            .Should().BeLessThan(pay.IndexOf("SaveIncursions();", StringComparison.Ordinal));
+        pay.IndexOf("SaveIncursions();", StringComparison.Ordinal)
+            .Should().BeLessThan(pay.IndexOf("CollectPendingPayout(player, state.PendingBattlePayouts, playerId,", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void AHoldingCollection_IsNotedWithTheWarehouse_AndLoadedIntoTheShipOnce()
+    {
+        var source = ReadSource("Service", "PlanetaryHoldings.cs").Replace("\r\n", "\n");
+        var collect = Between(source, "public static void Collect(", "private static void FinishCollection(");
+        collect.IndexOf("holding.PendingCollectionId = Guid.NewGuid().ToString();", StringComparison.Ordinal)
+            .Should().BeLessThan(collect.IndexOf("DB.Set(holding);", StringComparison.Ordinal));
+        collect.IndexOf("DB.Set(holding);", StringComparison.Ordinal)
+            .Should().BeLessThan(collect.IndexOf("FinishCollection(holding, ship);", StringComparison.Ordinal));
+        collect.Should().NotContain("CargoHoldRules.AddUnits(", "the ship loads the units only through the pending collection");
+
+        var finish = Between(source, "private static void FinishCollection(", "public static void FinishPendingCollections()");
+        finish.Should().Contain("ship.LastHoldingCollectionId != holding.PendingCollectionId", "a ship that already saved the units is not loaded twice");
+        finish.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
+            .Should().BeLessThan(finish.IndexOf("holding.PendingCollectionId = string.Empty;", StringComparison.Ordinal));
+        finish.Should().Contain("HoldingRules.AddStock(holding.Warehouse, commodity, units);", "a ship that is gone has the units returned");
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void FinishPendingCollections()");
+
+        new SWLOR.Game.Server.Entity.PlanetaryHolding().PendingCollectionId.Should().BeEmpty("older holdings have no collection pending");
+        new SWLOR.Game.Server.Entity.PlayerShip().LastHoldingCollectionId.Should().BeEmpty();
+    }
+
+    [Test]
     public void PendingSpoils_AreNotRemovedBeforeTheDelayedCallback()
     {
         var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");

@@ -9,7 +9,7 @@ using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class EshanCivilianPatrolTests
+public class CivilianPatrolTests
 {
     [TestCase(null)]
     [TestCase("")]
@@ -148,8 +148,8 @@ public class EshanCivilianPatrolTests
 
     private static T Invoke<T>(string methodName, params object[] arguments)
     {
-        var method = typeof(EshanCivilianPatrol).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static)
-            ?? throw new MissingMethodException(typeof(EshanCivilianPatrol).FullName, methodName);
+        var method = typeof(CivilianPatrol).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new MissingMethodException(typeof(CivilianPatrol).FullName, methodName);
         return (T)method.Invoke(null, arguments)!;
     }
 }

@@ -734,6 +734,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         ScopewrightCap = 697,
         WindcallerMantle = 698,
         WarbandHelm = 699,
+        PatternThreadSpool = 700,
+        PatternLoomHeddle = 701,
+        PatternTemplatePlates = 702,
+        LoomTensionWeights = 703,
+        PatternIndexTags = 704,
         SithPowerGlove = 6288,
         #endregion
 

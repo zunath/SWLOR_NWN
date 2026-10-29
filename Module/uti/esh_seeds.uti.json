@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Edible seeds recovered from Thyrsian exile or scrapyard smuggler supplies. Toast and grind them for Echani sweet seed-paste cakes; these are cooking ingredients."
+      "0": "Edible seeds recovered from Thyrsian exile or scrapyard smuggler supplies, or gathered from Silverwood Seed Bushes. Toast and grind them for Echani sweet seed-paste cakes; these are cooking ingredients."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Edible seeds recovered from Thyrsian exile or scrapyard smuggler supplies. Toast and grind them for Echani sweet seed-paste cakes; these are cooking ingredients."
+      "0": "Edible seeds recovered from Thyrsian exile or scrapyard smuggler supplies, or gathered from Silverwood Seed Bushes. Toast and grind them for Echani sweet seed-paste cakes; these are cooking ingredients."
     }
   },
   "Identified": {

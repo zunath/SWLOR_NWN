@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Fragrant scallions reclaimed from Neo-Crusader provisions. Used in Echani noodles, buns, flatbread, claypot rice, and steamed fish."
+      "0": "Fragrant scallions reclaimed from Neo-Crusader provisions or foraged in the Veylan Groves. Used in Echani noodles, buns, flatbread, claypot rice, and steamed fish."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Fragrant scallions reclaimed from Neo-Crusader provisions. Used in Echani noodles, buns, flatbread, claypot rice, and steamed fish."
+      "0": "Fragrant scallions reclaimed from Neo-Crusader provisions or foraged in the Veylan Groves. Used in Echani noodles, buns, flatbread, claypot rice, and steamed fish."
     }
   },
   "Identified": {

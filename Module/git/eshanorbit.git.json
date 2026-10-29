@@ -3301,7 +3301,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Docking Point:Eshan"
+            "0": "Docking Point: Eshan"
           }
         },
         "OnClick": {
@@ -4311,7 +4311,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 187
+          "value": 188
         }
       },
       {

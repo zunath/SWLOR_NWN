@@ -619,9 +619,9 @@ namespace SWLOR.Game.Server.Service.NPCService
         Eshan_NeoCrusaderHunter = 301,
         [NPCGroup("Eshan Neo-Crusader Vanguards")]
         Eshan_NeoCrusaderVanguard = 302,
-        [NPCGroup("Eshan Neo-Crusader Heavy Troopers")]
+        [NPCGroup("Eshan Neo-Crusader Heavy Gunners")]
         Eshan_NeoCrusaderHeavy = 303,
-        [NPCGroup("Eshan Neo-Crusader Medics")]
+        [NPCGroup("Eshan Neo-Crusader Field Medics")]
         Eshan_NeoCrusaderMedic = 304,
         [NPCGroup("Eshan Neo-Crusader Captains")]
         Eshan_NeoCrusaderCaptain = 305,

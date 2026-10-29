@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("eshan_heavy_silence", "Silence the Heavy Guns")
 
                 .AddState()
-                .SetStateJournalText("Eliminate five Neo-Crusader Heavy Troopers threatening Eshan's routes, then report to Security Officer Talia Venn in the Silver Gate District.")
+                .SetStateJournalText("Eliminate five Neo-Crusader Heavy Gunners threatening Eshan's routes, then report to Security Officer Talia Venn in the Silver Gate District.")
                 .AddKillObjective(NPCGroupType.Eshan_NeoCrusaderHeavy, 5)
 
                 .AddState()
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("eshan_medic_cutoff", "Cut the Lifeline")
 
                 .AddState()
-                .SetStateJournalText("Eliminate five Neo-Crusader Medics supporting enemy assault cells, then report to Security Officer Talia Venn in the Silver Gate District.")
+                .SetStateJournalText("Eliminate five Neo-Crusader Field Medics supporting enemy assault cells, then report to Security Officer Talia Venn in the Silver Gate District.")
                 .AddKillObjective(NPCGroupType.Eshan_NeoCrusaderMedic, 5)
 
                 .AddState()

@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class EshanCivilianPatrol
+    public static class CivilianPatrol
     {
         private const string RouteVariable = "ESHAN_PATROL_ROUTE";
         private const string IndexVariable = "ESHAN_PATROL_INDEX";
@@ -116,13 +116,8 @@ namespace SWLOR.Game.Server.Feature
         {
             // Conversation menus and authored graphs share the NUI conversation window.
             // Other NPC interactions can open a different window tethered to the same owner.
-            for (var observer = GetFirstObjectInArea(area, ObjectType.Creature);
-                 GetIsObjectValid(observer);
-                 observer = GetNextObjectInArea(area, ObjectType.Creature))
+            foreach (var observer in Area.GetPlayersInArea(area))
             {
-                if (!GetIsPC(observer) && !GetIsDM(observer) && !GetIsDMPossessed(observer))
-                    continue;
-
                 if (Gui.HasOpenWindowTetheredTo(observer, creature))
                     return true;
             }

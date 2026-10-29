@@ -30,7 +30,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 192
+          "value": 193
         }
       },
       {
@@ -192630,10 +192630,6 @@
                       "type": "byte",
                       "value": 0
                     },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": ""
-                    },
                     "Cost": {
                       "type": "dword",
                       "value": 112
@@ -192658,6 +192654,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
@@ -192668,10 +192668,6 @@
                       "type": "byte",
                       "value": 4
                     },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 64
-                    },
                     "Plot": {
                       "type": "byte",
                       "value": 0
@@ -192679,6 +192675,14 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -192700,17 +192704,25 @@
                       "type": "word",
                       "value": 4
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -192727,10 +192739,6 @@
                       "type": "byte",
                       "value": 0
                     },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": ""
-                    },
                     "Cost": {
                       "type": "dword",
                       "value": 13
@@ -192751,6 +192759,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
@@ -192761,10 +192773,6 @@
                       "type": "byte",
                       "value": 36
                     },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 64
-                    },
                     "Plot": {
                       "type": "byte",
                       "value": 0
@@ -192772,6 +192780,14 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -192793,17 +192809,25 @@
                       "type": "word",
                       "value": 36
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 2
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -192819,10 +192843,6 @@
                     "Charges": {
                       "type": "byte",
                       "value": 0
-                    },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": ""
                     },
                     "Cost": {
                       "type": "dword",
@@ -192846,6 +192866,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
@@ -192856,10 +192880,6 @@
                       "type": "byte",
                       "value": 174
                     },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 64
-                    },
                     "Plot": {
                       "type": "byte",
                       "value": 0
@@ -192867,6 +192887,14 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -192888,17 +192916,25 @@
                       "type": "word",
                       "value": 174
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -192914,10 +192950,6 @@
                     "Charges": {
                       "type": "byte",
                       "value": 4
-                    },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": ""
                     },
                     "Cost": {
                       "type": "dword",
@@ -192941,6 +192973,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
@@ -192950,10 +192986,6 @@
                     "ModelPart1": {
                       "type": "byte",
                       "value": 108
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 23
                     },
                     "Plot": {
                       "type": "byte",
@@ -193026,6 +193058,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -193046,17 +193086,25 @@
                       "type": "word",
                       "value": 108
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   }
                 ]
@@ -193076,23 +193124,23 @@
           "type": "list",
           "value": []
         },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
         "XPosition": {
           "type": "float",
           "value": 57.8
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
         },
         "YPosition": {
           "type": "float",
           "value": 135.4
         },
         "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
           "type": "float",
           "value": 0.0
         }
@@ -193251,10 +193299,6 @@
                       "type": "byte",
                       "value": 107
                     },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": "1"
-                    },
                     "Cost": {
                       "type": "dword",
                       "value": 1954
@@ -193276,6 +193320,10 @@
                       }
                     },
                     "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
                       "type": "byte",
                       "value": 1
                     },
@@ -193301,10 +193349,6 @@
                     "Metal2Color": {
                       "type": "byte",
                       "value": 94
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 8
                     },
                     "Plot": {
                       "type": "byte",
@@ -193501,6 +193545,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -193593,17 +193645,25 @@
                       "type": "word",
                       "value": 53
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -193628,10 +193688,6 @@
                       "type": "byte",
                       "value": 23
                     },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": ""
-                    },
                     "Cost": {
                       "type": "dword",
                       "value": 1563
@@ -193651,6 +193707,10 @@
                       }
                     },
                     "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
                       "type": "byte",
                       "value": 1
                     },
@@ -193680,10 +193740,6 @@
                     "ModelPart1": {
                       "type": "byte",
                       "value": 14
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 9
                     },
                     "Plot": {
                       "type": "byte",
@@ -193880,6 +193936,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -193900,17 +193964,25 @@
                       "type": "word",
                       "value": 14
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 2
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -193926,10 +193998,6 @@
                     "Charges": {
                       "type": "byte",
                       "value": 0
-                    },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": "1"
                     },
                     "Cost": {
                       "type": "dword",
@@ -193951,6 +194019,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "id": 13337,
                       "type": "cexolocstring",
@@ -193969,10 +194041,6 @@
                     "ModelPart3": {
                       "type": "byte",
                       "value": 53
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 15
                     },
                     "Plot": {
                       "type": "byte",
@@ -194169,6 +194237,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -194197,17 +194273,25 @@
                       "type": "word",
                       "value": 53
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -194223,10 +194307,6 @@
                     "Charges": {
                       "type": "byte",
                       "value": 0
-                    },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": ""
                     },
                     "Cost": {
                       "type": "dword",
@@ -194252,6 +194332,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "id": 90884,
                       "type": "cexolocstring",
@@ -194262,10 +194346,6 @@
                     "ModelPart1": {
                       "type": "byte",
                       "value": 59
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 19
                     },
                     "Plot": {
                       "type": "byte",
@@ -194462,6 +194542,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -194482,17 +194570,25 @@
                       "type": "word",
                       "value": 59
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   }
                 ]
@@ -194538,10 +194634,6 @@
                       "type": "byte",
                       "value": 0
                     },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": ""
-                    },
                     "Cost": {
                       "type": "dword",
                       "value": 486
@@ -194566,6 +194658,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "id": 13065,
                       "type": "cexolocstring",
@@ -194576,10 +194672,6 @@
                     "ModelPart1": {
                       "type": "byte",
                       "value": 53
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 23
                     },
                     "Plot": {
                       "type": "byte",
@@ -194621,6 +194713,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -194641,17 +194741,25 @@
                       "type": "word",
                       "value": 53
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   }
                 ]
@@ -194686,23 +194794,23 @@
           "type": "list",
           "value": []
         },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
         "XPosition": {
           "type": "float",
           "value": 54.5
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
         },
         "YPosition": {
           "type": "float",
           "value": 125.9
         },
         "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
           "type": "float",
           "value": 0.0
         }
@@ -194784,10 +194892,6 @@
                       "type": "byte",
                       "value": 0
                     },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": "1"
-                    },
                     "Cost": {
                       "type": "dword",
                       "value": 29
@@ -194805,6 +194909,10 @@
                       "value": {}
                     },
                     "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
                       "type": "byte",
                       "value": 1
                     },
@@ -194826,10 +194934,6 @@
                     "ModelPart3": {
                       "type": "byte",
                       "value": 11
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 34
                     },
                     "Plot": {
                       "type": "byte",
@@ -194933,6 +195037,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -194961,17 +195073,25 @@
                       "type": "word",
                       "value": 11
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -194987,10 +195107,6 @@
                     "Charges": {
                       "type": "byte",
                       "value": 0
-                    },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": "1"
                     },
                     "Cost": {
                       "type": "dword",
@@ -195014,6 +195130,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "id": 166,
                       "type": "cexolocstring",
@@ -195032,10 +195152,6 @@
                     "ModelPart3": {
                       "type": "byte",
                       "value": 11
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 36
                     },
                     "Plot": {
                       "type": "byte",
@@ -195139,6 +195255,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -195167,17 +195291,25 @@
                       "type": "word",
                       "value": 11
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 2
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   },
                   {
@@ -195193,10 +195325,6 @@
                     "Charges": {
                       "type": "byte",
                       "value": 0
-                    },
-                    "Comment": {
-                      "type": "cexostring",
-                      "value": "1"
                     },
                     "Cost": {
                       "type": "dword",
@@ -195218,6 +195346,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "id": 1552,
                       "type": "cexolocstring",
@@ -195236,10 +195368,6 @@
                     "ModelPart3": {
                       "type": "byte",
                       "value": 81
-                    },
-                    "PaletteID": {
-                      "type": "byte",
-                      "value": 51
                     },
                     "Plot": {
                       "type": "byte",
@@ -195343,6 +195471,14 @@
                         }
                       ]
                     },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "StackSize": {
                       "type": "word",
                       "value": 1
@@ -195371,17 +195507,25 @@
                       "type": "word",
                       "value": 81
                     },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
                     },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
                     }
                   }
                 ]
@@ -195437,23 +195581,23 @@
           "type": "list",
           "value": []
         },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
         "XPosition": {
           "type": "float",
           "value": 57.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
         },
         "YPosition": {
           "type": "float",
           "value": 129.5
         },
         "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
           "type": "float",
           "value": 0.0
         }

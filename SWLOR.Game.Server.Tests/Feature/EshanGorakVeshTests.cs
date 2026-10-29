@@ -16,7 +16,7 @@ public class EshanGorakVeshTests
     private const string QuestId = "eshan_icebound_hunt";
 
     [Test]
-    public void BossLoot_GuaranteesOneShardEmeraldAndUniqueHideWithoutWolfDrops()
+    public void BossLoot_RollsOneWeightedGemAndGuaranteesTheUniqueHideWithoutWolfDrops()
     {
         using var creature = ReadJson("Module", "utc", "esh_gorakvesh.utc.json");
         var tables = new EshanLootTableDefinition().BuildLootTables();
@@ -29,7 +29,7 @@ public class EshanGorakVeshTests
             .ToArray();
 
         rolls.Select(roll => roll[0]).Should().OnlyHaveUniqueItems();
-        foreach (var resref in new[] { "chiro_shard", "emerald", "esh_gorak_hide" })
+        foreach (var resref in new[] { "esh_gorak_hide" })
         {
             var roll = rolls.Single(candidate => tables[candidate[0]].Any(item => item.Resref == resref));
             roll[1].Should().Be("100");
@@ -37,6 +37,10 @@ public class EshanGorakVeshTests
             tables[roll[0]].Should().ContainSingle();
             tables[roll[0]][0].MaxQuantity.Should().Be(1);
         }
+
+        rolls.Should().ContainSingle(roll => roll.SequenceEqual(new[] { "ESHAN_GORAK_VESH_GEMS", "100", "1" }));
+        tables["ESHAN_GORAK_VESH_GEMS"].Select(item => item.Resref)
+            .Should().BeEquivalentTo(new[] { "emerald", "chiro_shard" });
 
         rolls.SelectMany(roll => tables[roll[0]]).Should().NotContain(item =>
             item.Resref == "esh_wolf_meat" || item.Resref == "esh_wolf_pelt" ||

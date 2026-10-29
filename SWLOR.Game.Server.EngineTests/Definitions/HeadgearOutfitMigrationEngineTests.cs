@@ -1,14 +1,10 @@
-using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -45,7 +41,7 @@ public static partial class MigrationEngineTests
                 var converted = Deserialize(ctx, DB.Get<InventoryItem>(bank.Id).Data);
                 ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(converted), "The same legacy payload in actual storage is converted");
                 Invoke("MigrationObject", "DestroyTemporaryObject", converted);
-                LoadOutfit(BindOutfit());
+                LoadOutfit();
                 ctx.AssertEqual(156, GetItemAppearance(chest, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), "Historical torso applies through the production outfit loader");
             });
             await ctx.WaitFrameAsync();
@@ -57,13 +53,11 @@ public static partial class MigrationEngineTests
                 {
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, model);
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorColor, 0, color);
-                    var view = BindOutfit();
-                    view.OnClickStoreOutfit()();
-                    view.OnModalConfirmClick()();
+                    ctx.Assert(Wardrobe.Store(player, DB.Get<PlayerOutfit>(outfit.Id), out _), "The production outfit store saves the worn clothes");
                     StoredItemSweepRunner.Run();
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, model + 2);
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorColor, 0, color + 2);
-                    LoadOutfit(BindOutfit());
+                    LoadOutfit();
                     ctx.AssertEqual(model, GetItemAppearance(chest, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), $"Cycle {cycle}: normal outfit save and load restores the model");
                     ctx.AssertEqual(color, GetItemAppearance(chest, ItemAppearanceType.ArmorColor, 0), $"Cycle {cycle}: normal outfit save and load restores the dye");
                 });
@@ -82,21 +76,11 @@ public static partial class MigrationEngineTests
             DB.Delete<InventoryItem>(bank.Id);
         }
 
-        OutfitViewModel BindOutfit()
+        void LoadOutfit()
         {
-            var geometry = new GuiRectangle(0, 0, 800, 600);
-            var view = new OutfitViewModel { Geometry = geometry };
-            view.Bind(player, 0, geometry, GuiWindowType.Outfits, null, OBJECT_INVALID);
-            var ids = (List<string>)typeof(OutfitViewModel).GetField("_outfitIds", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view);
-            view.SelectedSlotIndex = ids.IndexOf(outfit.Id);
-            ctx.Assert(view.SelectedSlotIndex >= 0, "The production outfit query finds the owned outfit");
-            return view;
-        }
-
-        void LoadOutfit(OutfitViewModel view)
-        {
-            view.OnClickLoadOutfit()();
-            view.OnModalConfirmClick()();
+            var owned = Wardrobe.GetOutfits(GetObjectUUID(player)).Find(saved => saved.Id == outfit.Id);
+            ctx.Assert(owned != null, "The production outfit query finds the owned outfit");
+            ctx.Assert(Wardrobe.Wear(player, owned, out _), "The production outfit loader wears the outfit");
         }
 
         int CarriedCount()

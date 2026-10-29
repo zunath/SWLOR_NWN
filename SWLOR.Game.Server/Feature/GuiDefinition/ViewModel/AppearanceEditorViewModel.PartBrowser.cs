@@ -110,6 +110,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>Wears a part picked in the editor or the part browser window.</summary>
         internal void ApplyBrowserPart(int partId)
         {
+            if (IsPartEditorHidden)
+                return;
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped || !_browserIds.Contains(partId))
                 return;

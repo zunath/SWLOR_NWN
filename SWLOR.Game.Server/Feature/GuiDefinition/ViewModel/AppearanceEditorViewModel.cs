@@ -1648,6 +1648,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsPartEditorHidden)
             {
                 IsNoEditableItemVisible = false;
+                // Wardrobe and Settings edit no parts: drop the part list and close its browser.
+                ClearBrowser();
                 if (IsSettingsSelected)
                     LoadSettings();
                 else

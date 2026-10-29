@@ -688,6 +688,14 @@ public class AppearanceEditorLayoutTests
         window.InitialGeometry.Width.Should().Be(AppearancePartBrowserDefinition.WindowWidth);
         window.InitialGeometry.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
         IsResizable(new AppearancePartBrowserDefinition()).Should().BeFalse();
+
+        // A screen smaller than the window (low resolution, high GUI scale) scrolls the content.
+        var authored = AuthoredWindow(new AppearancePartBrowserDefinition());
+        var content = ((IReadOnlyDictionary<string, IGuiWidget>)authored.GetType().GetProperty("PartialViews")!
+            .GetValue(authored)!)[WindowMain];
+        var tile = Walk(content).Single(widget => widget.Id == "ae_tile_0");
+        PathTo(content, tile).Should().Contain(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal) &&
+            ReadProperty<NuiScrollbars>(widget, "Scrollbars") == NuiScrollbars.Auto);
     }
 
     // ------------------------------------------------------------------ settings
@@ -870,17 +878,20 @@ public class AppearanceEditorLayoutTests
         : widget.Elements.Select(MinimumHeight).DefaultIfEmpty(0f).Max();
 
     /// <summary>Builds a window definition and reads whether its authored window can be resized.</summary>
-    private static bool IsResizable(IGuiWindowDefinition definition)
+    private static bool IsResizable(IGuiWindowDefinition definition) =>
+        ReadProperty<bool>(AuthoredWindow(definition), "IsResizable");
+
+    /// <summary>Builds a window definition and returns the window its builder authored.</summary>
+    private static object AuthoredWindow(IGuiWindowDefinition definition)
     {
         using var validation = GuiLayoutValidator.BeginValidationOnlyBuild();
         definition.BuildWindow();
         var builder = definition.GetType()
             .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(definition)!;
-        var window = builder.GetType()
+        return builder.GetType()
             .GetField("_activeWindow", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(builder)!;
-        return ReadProperty<bool>(window, "IsResizable");
     }
 
     private static bool IsWidget(IGuiWidget widget, Type genericType) =>

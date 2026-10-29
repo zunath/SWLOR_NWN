@@ -27,7 +27,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Part Browser")
-                .AddColumn(BuildBrowser);
+                .AddColumn(root => root.AddRow(row => row.AddGroup(group =>
+                {
+                    // A screen too small for the window scrolls its content instead of cutting it off.
+                    group.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
+                    group.AddColumn(BuildBrowser);
+                })));
 
             return _builder.Build();
         }

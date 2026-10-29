@@ -149,6 +149,20 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
+    public void LeavingThePartTabsClosesThePartBrowser()
+    {
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        var browser = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.PartBrowser.cs")).GetRoot();
+        var hidden = FindMethod(root, "SelectEditorTab").DescendantNodes().OfType<IfStatementSyntax>()
+            .Single(statement => statement.Condition.ToString() == "IsPartEditorHidden");
+        hidden.Statement.ToString().Should().Contain("ClearBrowser()",
+            "Wardrobe and Settings must not leave a browser that can still change parts");
+        FindMethod(browser, "ClearBrowser").ToString().Should().Contain("ClosePartBrowser()");
+        FindMethod(browser, "ApplyBrowserPart").ToString().Should().Contain("if (IsPartEditorHidden)",
+            "a late tile click from the browser does nothing on Wardrobe or Settings");
+    }
+
+    [Test]
     public void GeometryUpdatesNeverRebuildTheFixedSizeEditor()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -43,6 +44,14 @@ public class PlaceableWalkmeshFormatTests
         FindProblem(System.Text.Encoding.ASCII.GetBytes(mesh.Replace("\r\r\n", "\r\n"))).Should().BeNull();
     }
 
+    [Test]
+    public void FindProblem_RejectsNonNumericVertexRows()
+    {
+        var mesh = "node trimesh x\r\n verts 1\r\n faces 1\r\n 0 0 0 1 0 0 0 1\r\nendnode\r\n";
+
+        FindProblem(System.Text.Encoding.ASCII.GetBytes(mesh)).Should().NotBeNull();
+    }
+
     private static string? FindProblem(byte[] content)
     {
         var lines = SplitLines(content);
@@ -56,7 +65,8 @@ public class PlaceableWalkmeshFormatTests
                 vertexCount = int.Parse(vertices.Groups[2].Value);
                 for (var v = 1; v <= vertexCount; v++)
                 {
-                    if (i + v >= lines.Count || Fields(lines[i + v]).Length < 3)
+                    var coordinates = i + v < lines.Count ? Fields(lines[i + v]) : [];
+                    if (coordinates.Length < 3 || coordinates.Take(3).Any(field => !float.TryParse(field, NumberStyles.Float, CultureInfo.InvariantCulture, out _)))
                         return $"line {i + v + 1} should hold vertex {v - 1}";
                 }
 

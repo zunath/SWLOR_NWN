@@ -340,6 +340,25 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
+    public void EachFindPutInTheSite_LeavesTheRecordInTheSameStep_SoAStopPartWayCannotDuplicateIt()
+    {
+        var lifecycle = Lifecycle(1, 0, 3, 1, 0, 2);
+        var session = lifecycle.Start(Request());
+        lifecycle.Act(session, SearchAt(0));
+        _world.UtcNow = _world.UtcNow.AddSeconds(SearchRules.ActionSeconds);
+        lifecycle.Act(session, SearchAt(1));
+        session.Finds.Should().HaveCount(2);
+        _world.Log.Clear();
+        _world.PendingSaves.Clear();
+
+        lifecycle.Abandon(session, ScavengeEnd.WindowClosed);
+
+        _world.Log.Should().ContainInOrder("create", "pending", "create", "pending");
+        _world.PendingSaves[0].Should().Equal(session.Finds[1]);
+        _world.PendingSaves[1].Should().BeEmpty();
+    }
+
+    [Test]
     public void FindsAFullSiteCannotTake_StaySavedAndGoToTheScavenger()
     {
         var lifecycle = Lifecycle(1, 0, 3);

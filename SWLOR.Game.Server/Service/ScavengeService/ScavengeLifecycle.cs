@@ -367,19 +367,22 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             }
             else
             {
-                // Only what the site took leaves the record; a full site leaves the rest saved, and the scavenger gets it at once.
+                // Only what the site took leaves the record, one find at a time: after each transfer the record keeps the finds still to
+                // place and any shortfall, so a stop part-way never leaves a find both in the site and on the record. A full site leaves the
+                // rest saved, and the scavenger gets it at once.
                 var shortfall = new List<ScavengeFind>();
-                foreach (var find in session.Finds)
+                for (var index = 0; index < session.Finds.Count; index++)
                 {
+                    var find = session.Finds[index];
                     var name = _world.CreateItem(request.Site, find.Resref, find.Quantity, out var placed);
                     if (placed > 0)
                         names.Add($"{placed}x {name}");
                     if (placed < find.Quantity)
                         shortfall.Add(find with { Quantity = find.Quantity - placed });
+
+                    _world.SavePendingFinds(session.Player, shortfall.Concat(session.Finds.Skip(index + 1)).ToList());
                 }
 
-                if (session.Finds.Count > 0)
-                    _world.SavePendingFinds(session.Player, shortfall);
                 if (shortfall.Count > 0)
                     _world.ReturnPendingFinds(session.Player);
 

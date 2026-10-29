@@ -89,11 +89,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             for (var gem = 0; gem < delivery.Gems && gems.Count > 0; gem++)
                 units.Add(Pick(gems).Resref);
 
-            JournalHarvest(player, units);
-
-            var dropped = false;
-            foreach (var resref in units)
-                dropped |= Deliver(player, resref);
+            var dropped = DeliverAndJournal(player, units);
 
             // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
             for (var roll = 0; roll < delivery.Rolls; roll++)
@@ -130,26 +126,46 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         public const string HarvestReturnedMessage = "Harvest you gathered before the server went down has been returned to you.";
 
-        /// <summary>Saves a payout in the player's harvest journal at the next craft file sequence, before its units are delivered.</summary>
-        private static void JournalHarvest(uint player, IReadOnlyCollection<string> units)
+        /// <summary>
+        /// Delivers the units, then saves the ones that reached the inventory in the player's harvest journal at the next craft file
+        /// sequence. A unit left at the player's feet is not journaled: it is not in the character file either way, so giving it again
+        /// at login would duplicate it. A caller that already changed the record passes it as <paramref name="dbPlayer"/>, so its change
+        /// and the new entry are one save. Returns true when a unit ended up at the player's feet.
+        /// </summary>
+        private static bool DeliverAndJournal(uint player, IReadOnlyCollection<string> units, Player dbPlayer = null)
         {
-            if (units.Count == 0 || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return;
+            var placed = new List<string>();
+            var dropped = false;
+            foreach (var resref in units)
+            {
+                if (Deliver(player, resref))
+                    dropped = true;
+                else
+                    placed.Add(resref);
+            }
 
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return dropped;
+
+            dbPlayer ??= DB.Get<Player>(GetObjectUUID(player));
             if (dbPlayer == null)
-                return;
+                return dropped;
 
-            var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
-            SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
-            HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, units);
+            if (placed.Count > 0)
+            {
+                var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
+                SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+                HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, placed);
+            }
+
             DB.Set(dbPlayer);
+            return dropped;
         }
 
         /// <summary>
-        /// At login: gives again the harvest the loaded character file predates (see <see cref="HarvestReturnJournal"/>). The units given
-        /// again are journaled at a new sequence, so they stay protected until a file holds them. Call it before anything exports the
-        /// character, since it compares the journal with the sequence the file loaded with.
+        /// At login: gives again the harvest the loaded character file predates (see <see cref="HarvestReturnJournal"/>). The old entries
+        /// are cleared in the same record save that journals the units given again at a new sequence, so they stay protected until a file
+        /// holds them. Call it before anything exports the character, since it compares the journal with the sequence the file loaded with.
         /// </summary>
         public void ReturnPendingHarvest(uint player)
         {
@@ -161,15 +177,14 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             if (redo == null)
                 return;
 
-            DB.Set(dbPlayer);
             if (redo.Count == 0)
+            {
+                DB.Set(dbPlayer);
                 return;
+            }
 
             var units = redo.SelectMany(unit => Enumerable.Repeat(unit.Key, unit.Value)).ToList();
-            JournalHarvest(player, units);
-            var dropped = false;
-            foreach (var resref in units)
-                dropped |= Deliver(player, resref);
+            var dropped = DeliverAndJournal(player, units, dbPlayer);
 
             SendMessageToPC(player, HarvestReturnedMessage);
             if (dropped)

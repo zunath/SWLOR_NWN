@@ -7,16 +7,17 @@ namespace SWLOR.Game.Server.Service.ProspectingService
     /// <summary>
     /// Keeps a Prospecting payout recoverable until the character file holds it. The node is saved depleted and the Gathering XP is
     /// saved on the player record at once, but the units go to the inventory, which reaches the character file only on its next export.
-    /// Each payout is written to <see cref="Player.PendingHarvestReturns"/> with the next craft file sequence before its units are
-    /// delivered, so a crash before the export cannot keep the node's depletion and the XP while losing the units: a login whose file
-    /// predates the entry gives them again, and a file at or above it drops the entry. Entries an export has covered are also dropped
-    /// while playing.
+    /// The units of each payout that reached the inventory are written to <see cref="Player.PendingHarvestReturns"/> with the next craft
+    /// file sequence, in the same call that delivers them and before the XP is given, so a crash before the export cannot keep the
+    /// node's depletion and the XP while losing the units: a login whose file predates the entry gives them again, and a file at or
+    /// above it drops the entry. Units left at the player's feet are never journaled, since no file holds them either way. Entries an
+    /// export has covered are also dropped while playing.
     /// </summary>
     public static class HarvestReturnJournal
     {
         /// <summary>
         /// Adds a payout at <paramref name="sequence"/>, the craft file sequence just advanced for it, first forgetting the entries the
-        /// last export (<paramref name="exported"/>) has put in the character file. The caller saves the record before delivering.
+        /// last export (<paramref name="exported"/>) has put in the character file. The caller saves the record before giving the XP.
         /// </summary>
         public static void Record(Player dbPlayer, int exported, int sequence, IEnumerable<string> resrefs)
         {
@@ -32,7 +33,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         /// <summary>
         /// At login: empties the journal and returns the units of every payout the loaded character file (<paramref name="loaded"/>)
-        /// predates, which the player must be given again. Returns null when the journal was already empty, so nothing needs saving.
+        /// predates, which the player must be given again. The caller journals the units it gives again in the same record save that keeps
+        /// this clearing, so no save leaves them unprotected. Returns null when the journal was already empty, so nothing needs saving.
         /// </summary>
         public static Dictionary<string, int> TakeAtLogin(Player dbPlayer, int loaded)
         {

@@ -70,6 +70,10 @@ namespace SWLOR.Game.Server.Service
             foreach (var template in SpaceService.RiftRunTuning.Keys.Select(x => x.Template).Distinct())
                 AreasByResref.Remove(template);
 
+            // Planetary holdings' outdoor sites (W11o) are instances of these templates.
+            foreach (var areaResref in HoldingService.HoldingTuning.OutdoorSiteResrefs)
+                AreasByResref.Remove(areaResref);
+
             foreach (var areaResref in Property.GetAllInstanceAreaResrefs())
             {
                 if (AreasByResref.ContainsKey(areaResref))

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Feature.SpaceObjectDefinition;
 using SWLOR.Game.Server.Feature.TradeDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -239,10 +240,60 @@ public class IncursionTests
 
         ReadSource("Feature", "DialogDefinition", "StarportDockDialog.cs").Should().Contain("Space.GetIncursionDockRefusal(self)");
         ReadSource("Feature", "DialogDefinition", "StarportDialog.cs").Should().Contain("Space.GetIncursionExchangeRefusal(exchange)")
-            .And.Contain("Space.GetIncursionExchangeRefusal(dock.Exchange)");
-        ReadSource("Service", "Trade.cs").Should().Contain("Space.GetIncursionExchangeRefusal(exchangeType)");
+            .And.Contain("Space.GetIncursionExchangeRefusal(dock)");
+        ReadSource("Service", "Trade.cs").Should().Contain("Space.GetIncursionExchangeRefusal(dock)");
         var docks = ReadSource("Service", "SpaceIncursions.cs");
-        docks.Should().Contain("DockLandingWaypointVariable").And.Contain("Station.StationCityVariable", "ship-only and station docks hold no blockade");
+        docks.Should().Contain("DockLandingWaypointVariable").And.Contain("Station.StationCityVariable", "ship-only docks hold none; station docks are listed apart");
+    }
+
+    [Test]
+    public void StationBlockades_CloseTheStationOnlyUntilBrokenOrTheStationIsGone()
+    {
+        var anchor = StationRules.GetAnchorsInArea("viscaraorbit").First();
+        var stationKey = IncursionRules.StationDockKey(anchor);
+        stationKey.Should().Be($"viscaraorbit:{anchor.Tag}", "a station's docking point teleports to its anchor");
+        IncursionRules.StationDockKey(null).Should().BeEmpty();
+
+        var viscara = IncursionRules.DockKey("viscaraorbit", "Viscara_Orbit");
+        var incursion = IncursionRules.Create(Region("viscaraorbit"), IncursionInvader.Sith, Wednesday,
+            new Dictionary<string, int> { [viscara] = (int)PlanetType.Viscara },
+            new Dictionary<string, string> { [stationKey] = "station-1" });
+
+        incursion.Blockades.Should().ContainKey(stationKey).WhoseValue.Should().Be((int)PlanetType.Invalid, "a station dock serves no planet");
+        IncursionRules.IsBlockadeHolding(incursion, stationKey).Should().BeTrue("docking at the station is refused through its dock key");
+        IncursionRules.IsStationBlockaded(incursion, "station-1").Should().BeTrue();
+        IncursionRules.IsStationBlockaded(incursion, "station-2").Should().BeFalse();
+        IncursionRules.IsStationBlockaded(null, "station-1").Should().BeFalse();
+
+        // Breaking the planet dock's blockade reopens the planet exchange even while the station's holds.
+        incursion.BrokenBlockades.Add(viscara);
+        IncursionRules.IsExchangeClosed(incursion, TradeExchangeType.Viscara).Should().BeFalse();
+        IncursionRules.IsStationBlockaded(incursion, "station-1").Should().BeTrue();
+        IncursionRules.IsCleared(incursion).Should().BeFalse("every blockade, the station's included, must break");
+
+        incursion.BrokenBlockades.Add(stationKey);
+        IncursionRules.IsStationBlockaded(incursion, "station-1").Should().BeFalse();
+
+        // Older saved incursions read no station blockades.
+        var saved = JsonSerializer.Deserialize<ActiveIncursion>("{\"Center\":\"viscaraorbit\"}")!;
+        saved.StationBlockades.Should().BeEmpty();
+
+        var source = ReadSource("Service", "SpaceIncursions.cs");
+        source.Should().Contain("GetIncursionStationDocks(area.Resref)").And.Contain("IncursionRules.Create(region, invader, DateTime.UtcNow, docks, stationDocks)");
+        source.Should().Contain("ReleaseLostStationBlockades(incursion)", "a retrieved or lost station never holds the region open");
+        source.Should().Contain("dock.IsCity && IncursionRules.IsStationBlockaded(incursion, dock.CityId)");
+        ReadSource("Service", "TradeFreight.cs").Should().Contain("Space.GetIncursionExchangeRefusal(GetDock(dockId, exchange))");
+
+        // A Jump Beacon cannot jump a ship into a blockaded station; leaving one is allowed, as launching is.
+        var request = new JumpRequest
+        {
+            ShipDocked = true, CanPilot = true, OriginPermits = true, DestinationPermits = true, OriginBeaconLevel = 3,
+            DestinationBeaconLevel = 3, ShipSize = ShipSize.Small, FuelAboard = 99, DestinationBlockaded = true,
+        };
+        StationBuildingRules.GetJumpRefusal(request).Should().Be(JumpRefusal.DestinationBlockaded);
+        StationBuildingRules.DescribeJumpRefusal(JumpRefusal.DestinationBlockaded, request).Should().Contain("blockades that station");
+        ReadSource("Service", "StationBuildings.cs").Should().Contain("DestinationBlockaded = destination != null && Space.IsStationBlockaded(destination.Id)");
+        ((int)JumpRefusal.DestinationBlockaded).Should().Be(10);
     }
 
     [Test]
@@ -300,10 +351,10 @@ public class IncursionTests
     public void FreightContracts_AreRefusedAtAnExchangeABlockadeClosed()
     {
         var freight = ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n");
-        freight.Should().Contain("var closed = Space.GetIncursionExchangeRefusal(exchange);");
-        System.Text.RegularExpressions.Regex.Matches(freight, @"if \(IsFreightExchangeClosed\(player, exchange\)\)\n\s+return;")
+        freight.Should().Contain("var closed = Space.GetIncursionExchangeRefusal(GetDock(dockId, exchange));");
+        System.Text.RegularExpressions.Regex.Matches(freight, @"if \(IsFreightExchangeClosed\(player, exchange, dockId\)\)\n\s+return;")
             .Count.Should().Be(2, "both accepting and delivering are refused");
-        freight.IndexOf("IsFreightExchangeClosed(player, exchange)", StringComparison.Ordinal)
+        freight.IndexOf("IsFreightExchangeClosed(player, exchange, dockId)", StringComparison.Ordinal)
             .Should().BeLessThan(freight.IndexOf("TakeGoldFromCreature(offer.Deposit", StringComparison.Ordinal), "no deposit is taken first");
         IncursionRules.ExchangeRefusal(IncursionInvader.Sith).Should().Contain("The exchange is closed");
     }

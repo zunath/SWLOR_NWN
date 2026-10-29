@@ -245,6 +245,53 @@ public class SpaceAceTests
         }
     }
 
+    [Test]
+    public void SpaceDecor_IsCraftedFurnitureThatPlacesItsOwnExistingPlaceable()
+    {
+        var decor = new[] { StructureType.CaptainsHolotable, StructureType.StarMapPedestal, StructureType.HoloStarGlobe };
+        decor.Select(x => (int)x).Should().Equal(5022, 5023, 5024);
+        var others = Enum.GetValues<StructureType>()
+            .Where(x => !decor.Contains(x))
+            .Select(x => x.GetAttribute<StructureType, StructureAttribute>()?.Resref)
+            .ToHashSet();
+        var recipes = new SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition.SpaceDecorRecipes().BuildRecipes();
+        var furniture = new SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition.FurnitureRecipes().BuildRecipes();
+        var copies = new Dictionary<StructureType, SWLOR.Game.Server.Service.CraftService.RecipeType>
+        {
+            [StructureType.CaptainsHolotable] = SWLOR.Game.Server.Service.CraftService.RecipeType.ConsoleCircularCommand,
+            [StructureType.StarMapPedestal] = SWLOR.Game.Server.Service.CraftService.RecipeType.HoloDisplay,
+            [StructureType.HoloStarGlobe] = SWLOR.Game.Server.Service.CraftService.RecipeType.HoloProjector2,
+        };
+        var palette = File.ReadAllText(Path.Combine(Root(), "Module", "itp", "itempalcus.itp.json"));
+
+        foreach (var structure in decor)
+        {
+            var detail = structure.GetAttribute<StructureType, StructureAttribute>();
+            detail.IsActive.Should().BeTrue();
+            detail.ItemStorage.Should().Be(1, "like every crafted furniture piece");
+            detail.RestrictedPropertyTypes.Should().HaveFlag(PropertyType.House).And.HaveFlag(PropertyType.Starship).And.HaveFlag(PropertyType.City);
+            File.Exists(Path.Combine(Root(), "Module", "utp", detail.Resref + ".utp.json")).Should().BeTrue(detail.Resref);
+            others.Should().NotContain(detail.Resref, "decor looks like no other structure");
+
+            var resref = $"structure_{(int)structure:0000}";
+            using var uti = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "uti", resref + ".uti.json")));
+            uti.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(29);
+            uti.RootElement.GetProperty("ModelPart1").GetProperty("value").GetInt32().Should().Be(202);
+            uti.RootElement.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be(detail.Name);
+            palette.Should().Contain($"\"{resref}\"");
+
+            var recipe = recipes.Values.Single(x => x.Resref == resref);
+            var copied = furniture[copies[structure]];
+            recipe.Skill.Should().Be(SWLOR.Game.Server.Service.SkillService.SkillType.Fabrication);
+            recipe.Category.Should().Be(copied.Category);
+            recipe.Level.Should().Be(copied.Level, "decor copies an existing furniture recipe's level");
+            recipe.EnhancementSlots.Should().Be(copied.EnhancementSlots);
+            recipe.Components.Should().BeEquivalentTo(copied.Components, "and its bill");
+        }
+
+        recipes.Keys.Select(x => (int)x).Should().Equal(7796, 7797, 7798);
+    }
+
     // Helpers
 
     private static int Weight(IEnumerable<SWLOR.Game.Server.Service.LootService.LootTableItem> table, string resref) =>

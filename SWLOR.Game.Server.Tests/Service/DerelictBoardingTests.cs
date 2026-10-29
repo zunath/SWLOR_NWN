@@ -238,7 +238,8 @@ public class DerelictBoardingTests
     public void Templates_AreExistingStarshipInteriors_WithAnEntranceAndAnExit()
     {
         var layouts = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Feature", "PropertyLayoutDefinition", "StarshipLayoutDefinition.cs"));
-        DerelictTuning.TemplateResrefs.Should().HaveCount(3).And.HaveSameCount(DerelictTuning.TemplateNames);
+        DerelictTuning.TemplateResrefs.Should().HaveCount(7).And.HaveSameCount(DerelictTuning.TemplateNames);
+        DerelictTuning.TemplateResrefs.Should().Contain(new[] { "ship_mule_z", "ship_falchion_z", "ship_saber_z", "ship_corv_v" }, "W11o added the roomy hull layouts");
         foreach (var resref in DerelictTuning.TemplateResrefs)
         {
             layouts.Should().Contain($".AreaInstance(\"{resref}\")");

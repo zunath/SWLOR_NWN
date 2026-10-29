@@ -28,6 +28,9 @@ namespace SWLOR.Game.Server.Service.StationService
         /// <summary>The ship's hull deed tag, for hulls that burn less fuel.</summary>
         public string HullTag { get; init; } = string.Empty;
 
+        /// <summary>An incursion's blockade holds at the destination station's dock (W11o).</summary>
+        public bool DestinationBlockaded { get; init; }
+
         /// <summary>Station Fuel units in the ship's cargo bay.</summary>
         public int FuelAboard { get; init; }
     }

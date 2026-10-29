@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Service
     /// <summary>
     /// Space achievements (plan section 14): first kill of each faction tier, a capital kill, each ace, a named module
     /// fitted, the first jump to each kind of scanned site, Wild Space and trade earnings. Which achievement a milestone
-    /// earns is <see cref="SpaceAchievementRules"/>.
+    /// earns is <see cref="SpaceAchievementRules"/>. W11o added a crewed kill; the Fighter, Corvette and Basilisk interiors
+    /// grant their exploration achievements through the area's EXPLORE_ACHIEVEMENT_ID local, as every starship interior does.
     /// </summary>
     public static partial class Space
     {
@@ -33,6 +34,14 @@ namespace SWLOR.Game.Server.Service
             var tierKill = SpaceAchievementRules.TierKill(ShipSalvageRules.WreckTier(GetTag(creature), preset.Level));
             if (tierKill != AchievementType.Invalid)
                 Achievement.GiveAchievement(killer, tierKill);
+
+            // A kill made with a crewmate at a station (W11o): everyone aboard the killing ship earns it.
+            var aboard = GetShipCrewPlayers(GetFiringShip(killer));
+            if (SpaceAchievementRules.IsCrewedKill(aboard.Count))
+            {
+                foreach (var player in aboard)
+                    Achievement.GiveAchievement(player, AchievementType.SpaceCrewedKill);
+            }
 
             var ace = ShipAceRules.Get(GetTag(creature));
             if (preset.Size != ShipSize.Capital && ace == null)

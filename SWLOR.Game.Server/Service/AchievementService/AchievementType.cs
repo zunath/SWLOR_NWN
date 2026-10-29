@@ -561,6 +561,14 @@ namespace SWLOR.Game.Server.Service.AchievementService
         SpaceAceEmberGiant = 222,
         [Achievement("Vohl Downed", "Helped destroy the ace Warlord Tasker Vohl in the Ship Graveyard.", true)]
         SpaceAceShipGraveyard = 223,
+        [Achievement("Explore Fighter Ship", "Explore a Fighter class starship.", true)]
+        ExploreStarshipFighter = 224,
+        [Achievement("Explore Corvette Ship", "Explore a Corvette class starship.", true)]
+        ExploreStarshipCorvette = 225,
+        [Achievement("Explore Basilisk Ship", "Explore a Basilisk class starship.", true)]
+        ExploreStarshipBasilisk = 226,
+        [Achievement("Crewed Kill", "Destroyed a ship in space with a crewmate at a station.", true)]
+        SpaceCrewedKill = 227,
         // END space achievements
 	}
 

@@ -64,12 +64,30 @@ INPUT_STOCK_DAYS = 7            # the Processing Plant's delivered input is acce
 EVENT_INTERVAL_DAYS = 3
 BOOM_CHANCE = 0.12              # the next day's output doubles
 SETBACK_CHANCE = 0.05           # breakdown, blight, sandstorm, cave-in, storm or sickness: output stops until repaired
-RAID_CHANCE = 0.05              # bandits carry off part of the warehouse (the ground fight is deferred)
+RAID_CHANCE = 0.05              # bandits hold the site: drive them off there, or they carry off part of the warehouse
 CUSTOMS_CHANCE = 0.20           # contraband holdings only: pay a fine or lose the banned stock
 BOOM_MULTIPLIER = 2
 RAID_LOSS_SHARE = 0.5
 CUSTOMS_FINE_RATE = trade.FINE_RATE   # of the banned stock's base value, as at a customs patrol
 CUSTOMS_ANSWER_DAYS = 2
+# Bandit raid ground fight (W11o): a raid no longer takes the stock at once. The raiders hold the holding's site until the
+# owner (and party guests) kill them there, which keeps the stock; RAID_ANSWER_DAYS later an undefended raid takes
+# RAID_LOSS_SHARE of the warehouse, as every raid did before. Like a customs inspection, no other event rolls meanwhile.
+RAID_ANSWER_DAYS = CUSTOMS_ANSWER_DAYS
+RAIDERS_PER_RAID = 4            # half a derelict's crew (derelicts.py INTERIOR_ENEMIES 8): a short fight
+RAID_ENTRANCE_CLEAR_METERS = 8  # raiders spawn at least this far from the site entrance, as derelict enemies do
+# Raiders by the holding dock's orbit tier (index 1-6): existing Normal humanoid ground creatures of the matching ground
+# level band (the Bible's World NPCs tab; derelicts.py's bands, tier 6 on the 5.5 band), with their own loot:
+# Viscara's outlaws (6); Mandalorian rangers, hunters and warriors (13-14); the eco-terrorists (27); Nar Shaddaa's pirates,
+# thieves and blades (33); Nar Shaddaa troublemakers, Dantari hunters and Kwi tribals (41-44); the Sith temple guards (55).
+RAIDER_ROSTERS = {
+    1: ["looter_1", "looter_2"],
+    2: ["man_ranger_1", "man_hunter", "man_warrior_1"],
+    3: ["ecoterr_1", "ecoterr_2"],
+    4: ["nar_pirate", "nar_thief", "nar_redblade", "nar_hiddenblade"],
+    5: ["nar_troublemaker", "dantarihunter", "vdathtribal"],
+    6: ["vkorrdun1rifle", "vkorrdun1sword"],
+}
 REPAIR_DAYS = 0.5               # repair goods worth this many days of a level 1 batch, at least REPAIR_MIN_UNITS
 REPAIR_MIN_UNITS = 2
 LOG_ENTRIES = 8
@@ -89,18 +107,20 @@ SETBACKS = {
 # ---------------------------------------------------------------------------------------------------------------
 # The Desalination Plant's chain is Station Fuel's second source (W13b makes it a CZ-220 export): water cracked into
 # hyperfuel with reactor power, standing in for the plan's Reactor Cores + Tibanna Gas, since Tibanna is not a commodity.
-# Ground sites reuse building-template interiors (already instance templates, kept out of saved locations) as each
-# holding's site office; real outdoor sites need area design (deferred).
+# Ground sites: W14b reused building-template interiors (already instance templates, kept out of saved locations) as
+# each holding's site office. W11o moved the outdoor types to four outdoor templates, stripped copies of existing areas
+# (OUTDOOR_SITES): fields and ranches holding_plains, groves and camps holding_forest, flats and yards holding_desert,
+# mines and digs holding_cave. The assembly line, desalination plant, spice lab and kelp fishery keep their interiors.
 # id, enum, name, exchange, output, level 2 goods, level 3 goods, Processing Plant build goods,
 # chain (own units, input, input units, refined, refined units), setback, repair good, customs inspections, site, text.
 HOLDINGS = [
     (1, "CrystalMine", "Crystal Mine", "Viscara", "ViscaranCrystals",
      ["CzerkaMachineParts"], ["ReactorCores", "HullSections"], ["HullSections"],
-     (5, "CzerkaMachineParts", 2, "FocusingLenses", 2), "CaveIn", "CzerkaMachineParts", False, "house_int_7",
+     (5, "CzerkaMachineParts", 2, "FocusingLenses", 2), "CaveIn", "CzerkaMachineParts", False, "holding_cave",
      "A crystal mine in the Viscaran hills."),
     (2, "Apiary", "Apiary", "Viscara", "VelesHoney",
      ["AraciaTimber"], ["CzerkaMachineParts", "MedicalSupplies"], ["HullSections"],
-     (2, "WitchHerbs", 1, "MedicalSupplies", 2), "Blight", "MedicalSupplies", False, "house_int_1",
+     (2, "WitchHerbs", 1, "MedicalSupplies", 2), "Blight", "MedicalSupplies", False, "holding_forest",
      "Hives in the Veles groves."),
     (3, "AssemblyLine", "Assembly Line", "CZ220", "CzerkaMachineParts",
      ["JawaSalvage"], ["HullSections", "ViscaranCrystals"], ["HullSections"],
@@ -116,19 +136,19 @@ HOLDINGS = [
      "A desalination plant on the Mon Cala shore; its reactors can crack water into station fuel."),
     (6, "TimberCamp", "Timber Camp", "Hutlar", "AraciaTimber",
      ["CzerkaMachineParts"], ["ReactorCores", "MedicalSupplies"], ["HullSections"],
-     (2, "CzerkaMachineParts", 1, "PrefabShelters", 1), "Breakdown", "CzerkaMachineParts", False, "house_int_10",
+     (2, "CzerkaMachineParts", 1, "PrefabShelters", 1), "Breakdown", "CzerkaMachineParts", False, "holding_forest",
      "A logging camp in Hutlar's Aracia forests."),
     (7, "ByyskRanch", "Byysk Ranch", "Hutlar", "ByyskHides",
      ["Grain"], ["CzerkaMachineParts", "MedicalSupplies"], ["HullSections"],
-     (4, "WitchHerbs", 3, "MedicalSupplies", 6), "Sickness", "MedicalSupplies", False, "house_int_1",
+     (4, "WitchHerbs", 3, "MedicalSupplies", 6), "Sickness", "MedicalSupplies", False, "holding_plains",
      "Byysk pens and a tannery on Hutlar."),
     (8, "MoistureFarm", "Moisture Farm", "Tatooine", "PurifiedWater",
      ["CzerkaMachineParts"], ["CzerkaMachineParts", "ReactorCores"], ["HullSections"],
-     (1, "Grain", 1, "RationPacks", 1), "Sandstorm", "CzerkaMachineParts", False, "house_int_4",
+     (1, "Grain", 1, "RationPacks", 1), "Sandstorm", "CzerkaMachineParts", False, "holding_desert",
      "Vaporators on the Tatooine flats."),
     (9, "ScrapYard", "Scrap Yard", "Tatooine", "JawaSalvage",
      ["CzerkaMachineParts"], ["ReactorCores", "HullSections"], ["AraciaTimber"],
-     (3, "AraciaTimber", 1, "PrefabShelters", 1), "Sandstorm", "CzerkaMachineParts", False, "player_rnd",
+     (3, "AraciaTimber", 1, "PrefabShelters", 1), "Sandstorm", "CzerkaMachineParts", False, "holding_desert",
      "A Jawa trading scrap yard outside Anchorhead."),
     (10, "SpiceLab", "Spice Lab", "SmugglersMoon", "Moonspice",
      ["MedicalSupplies"], ["CzerkaMachineParts", "ReactorCores"], ["HullSections"],
@@ -136,24 +156,32 @@ HOLDINGS = [
      "A hidden spice lab in the Smuggler's Moon undercity."),
     (11, "SaltWorks", "Salt Works", "SmugglersMoon", "NeonSalt",
      ["CzerkaMachineParts"], ["ReactorCores", "PurifiedWater"], ["HullSections"],
-     (5, "Seafood", 3, "RationPacks", 3), "Breakdown", "CzerkaMachineParts", False, "house_int_10",
+     (5, "Seafood", 3, "RationPacks", 3), "Breakdown", "CzerkaMachineParts", False, "holding_desert",
      "Evaporation pans on the Smuggler's Moon salt flats."),
     (12, "ExcavationDig", "Excavation Dig", "Korriban", "SithRelics",
      ["CzerkaMachineParts"], ["ReactorCores", "MedicalSupplies"], ["HullSections"],
-     (1, "EncryptedDataChips", 2, "SithHolocrons", 1), "CaveIn", "CzerkaMachineParts", True, "house_int_7",
+     (1, "EncryptedDataChips", 2, "SithHolocrons", 1), "CaveIn", "CzerkaMachineParts", True, "holding_cave",
      "A licensed dig among the Korriban tombs."),
     (13, "HerbGrove", "Herb Grove", "Dathomir", "WitchHerbs",
      ["PurifiedWater"], ["CzerkaMachineParts", "Grain"], ["HullSections"],
-     (3, "ByyskHides", 4, "MedicalSupplies", 6), "Blight", "MedicalSupplies", False, "house_int_1",
+     (3, "ByyskHides", 4, "MedicalSupplies", 6), "Blight", "MedicalSupplies", False, "holding_forest",
      "Herb beds tended at the edge of the Dathomir jungle."),
     (14, "GrainFarm", "Grain Farm", "Dantooine", "Grain",
      ["CzerkaMachineParts"], ["ReactorCores", "PurifiedWater"], ["AraciaTimber"],
-     (1, "PurifiedWater", 1, "RationPacks", 1), "Blight", "MedicalSupplies", False, "house_int_4",
+     (1, "PurifiedWater", 1, "RationPacks", 1), "Blight", "MedicalSupplies", False, "holding_plains",
      "Grain fields on the Dantooine plains."),
     (15, "BanthaRanch", "Bantha Ranch", "Dantooine", "BanthaMilk",
      ["AraciaTimber"], ["CzerkaMachineParts", "MedicalSupplies"], ["HullSections"],
-     (2, "NeonSalt", 1, "AgedBanthaCheese", 1), "Sickness", "MedicalSupplies", False, "house_int_10",
+     (2, "NeonSalt", 1, "AgedBanthaCheese", 1), "Sickness", "MedicalSupplies", False, "holding_plains",
      "A bantha ranch and dairy on Dantooine."),
+]
+# Outdoor site templates (W11o): resref, name, the area each is a stripped copy of (scenery only, one entrance and the
+# Holding Office Terminal at a spot the source area's creatures or landing waypoints stood on).
+OUTDOOR_SITES = [
+    ("holding_plains", "Holding Site - Plains", "dan_wildplain"),
+    ("holding_forest", "Holding Site - Forest", "viscara_forkwest"),
+    ("holding_desert", "Holding Site - Desert", "tat_anc_nedunes"),
+    ("holding_cave", "Holding Site - Cave", "vrotrdantcrystal"),
 ]
 REFINE_PREMIUM_RANGE = (1.10, 1.25)   # a refined batch is worth more than both inputs (plan section 26), by about a fifth
 
@@ -329,8 +357,12 @@ OWNER_VISIT_DAYS = 7
 SIM_DAYS = 3000
 
 
-def simulate_events(h, level=1, seed=1):
-    """Share of the event-free output a holding delivers over SIM_DAYS (customs fines counted as lost output)."""
+def simulate_events(h, level=1, seed=1, defend=False):
+    """
+    Share of the event-free output a holding delivers over SIM_DAYS (customs fines counted as lost output). An owner who
+    defends (W11o) drives every raid off at the site, so raids take nothing; otherwise a raid takes its share at once
+    (the worst case: the answer window only delays the loss).
+    """
     rng = random.Random(seed)
     stock, delivered, fines, boom, stopped, countdown = 0, 0, 0.0, 0, False, EVENT_INTERVAL_DAYS
     capacity = STORAGE_DAYS * daily_units(h, level)
@@ -345,7 +377,8 @@ def simulate_events(h, level=1, seed=1):
                 elif r < BOOM_CHANCE + SETBACK_CHANCE:
                     stopped = True
                 elif r < BOOM_CHANCE + SETBACK_CHANCE + RAID_CHANCE:
-                    stock -= round_half_up(stock * RAID_LOSS_SHARE)
+                    if not defend:
+                        stock -= round_half_up(stock * RAID_LOSS_SHARE)
                 elif h[11] and r < BOOM_CHANCE + SETBACK_CHANCE + RAID_CHANCE + CUSTOMS_CHANCE:
                     fines += CUSTOMS_FINE_RATE * stock
         if not stopped:
@@ -370,7 +403,7 @@ def income_rows():
             value=day_value(h), upkeep=upkeep(h, 1), price=purchase_price(h),
             l1=minutes(h, 1), l2=minutes(h, 2), l3=minutes(h, 3), l3_mid=minutes(h, 3, MID_DROID_PERCENT),
             l3_best=minutes(h, 3, BEST_DROID_PERCENT), l3_plant=minutes(h, 3, BEST_DROID_PERCENT, True),
-            events=simulate_events(h), payback=payback(h)))
+            events=simulate_events(h), defended=simulate_events(h, defend=True), payback=payback(h)))
     return rows
 
 
@@ -396,6 +429,8 @@ def report():
               f"{r['l3_plant']:>6.0f} {r['events']:>6.0%}  " + "/".join(f"{d:.0f}" for d in r["payback"].values()))
     rows = income_rows()
     print()
+    print(f"Events kept, undefended raids {sum(r['events'] for r in rows) / len(rows):.1%} on average; an owner who drives every "
+          f"raid off at the site keeps {sum(r['defended'] for r in rows) / len(rows):.1%} (W11o raid ground fight).")
     print(f"One character with three holdings, the average of every type: level 1 {3 * sum(r['l1'] for r in rows) / len(rows):.0f} "
           f"minutes a day, level 3 {3 * sum(r['l3'] for r in rows) / len(rows):.0f}, level 3 with the best droid "
           f"{3 * sum(r['l3_best'] for r in rows) / len(rows):.0f}, and with Processing Plants {3 * sum(r['l3_plant'] for r in rows) / len(rows):.0f}.")
@@ -512,6 +547,17 @@ def tuning_cs():
         f"        public const double RaidLossShare = {cs_double(RAID_LOSS_SHARE)};",
         f"        public const double CustomsFineRate = {cs_double(CUSTOMS_FINE_RATE)};",
         f"        public const int CustomsAnswerDays = {CUSTOMS_ANSWER_DAYS};",
+        f"        public const int RaidAnswerDays = {RAID_ANSWER_DAYS};",
+        f"        public const int RaidersPerRaid = {RAIDERS_PER_RAID};",
+        f"        public const float RaidEntranceClearMeters = {RAID_ENTRANCE_CLEAR_METERS}f;",
+        "        /// <summary>Raider blueprints by the holding dock's orbit tier (index 1-6).</summary>",
+        "        public static readonly string[][] RaiderRosters =",
+        "        {",
+        "            new string[0],",
+        *[f"            new[] {{ {', '.join(cs_string(r) for r in RAIDER_ROSTERS[t])} }}," for t in range(1, 7)],
+        "        };",
+        "        /// <summary>The outdoor site templates (W11o): instance templates, kept out of saved locations.</summary>",
+        f"        public static readonly string[] OutdoorSiteResrefs = {{ {', '.join(cs_string(x[0]) for x in OUTDOOR_SITES)} }};",
         f"        public const int LogEntries = {LOG_ENTRIES};",
         "",
         "        /// <summary>Credits an hour of space combat by orbit tier (index 1-6): the income check's reference.</summary>",
@@ -568,13 +614,19 @@ def holdings_tab(Sheet):
         ["Droid staff", f"+{droids.HOLDING_OUTPUT_PERCENT_PER_INDUSTRY:g}% / Industry", f"+{BEST_DROID_PERCENT}% best", "", "", "", "",
          "Efficiency Protocol applies; the droid stays at its post"],
         ["Events", f"every {EVENT_INTERVAL_DAYS} days", f"boom {BOOM_CHANCE:.0%}", f"setback {SETBACK_CHANCE:.0%}", f"raid {RAID_CHANCE:.0%}",
-         f"customs {CUSTOMS_CHANCE:.0%}", "", f"boom x{BOOM_MULTIPLIER} for a day; a raid takes {RAID_LOSS_SHARE:.0%} of the stock; "
+         f"customs {CUSTOMS_CHANCE:.0%}", "", f"boom x{BOOM_MULTIPLIER} for a day; raiders hold the site: kill them there within "
+         f"{RAID_ANSWER_DAYS} days or they take {RAID_LOSS_SHARE:.0%} of the stock; "
          f"customs fine {CUSTOMS_FINE_RATE:.0%} of the banned stock's base value within {CUSTOMS_ANSWER_DAYS} days or it is confiscated"],
     ])
+    s.title("Bandit raids and sites (W11o)")
+    s.table(["Dock tier", "Raiders", "", "", "", "", "", "Blueprints"],
+            [[t, RAIDERS_PER_RAID, "", "", "", "", "", ", ".join(RAIDER_ROSTERS[t])] for t in range(1, 7)] +
+            [[f"Site {r}", n, "", "", "", "", "", f"stripped copy of {src}; " +
+              ", ".join(h[2] for h in HOLDINGS if h[12] == r)] for r, n, src in OUTDOOR_SITES])
     s.title("Income (daily net, minutes of the dock tier's space combat rate)")
-    s.table(["Holding", "Tier rate", "L1", "L2", "L3", "L3 + best droid", "+ plant", "Events (output kept)"],
+    s.table(["Holding", "Tier rate", "L1", "L2", "L3", "L3 + best droid", "+ plant", "Events (output kept; raids defended)"],
             [[r["name"], r["rate"], round(r["l1"]), round(r["l2"]), round(r["l3"]), round(r["l3_best"]), round(r["l3_plant"]),
-              f"{r['events']:.0%}"] for r in income_rows()])
+              f"{r['events']:.0%} ({r['defended']:.0%})"] for r in income_rows()])
     s.title("Upgrade payback (days of the extra daily net, no droid; goods at base price)")
     s.table(["Holding", "Level 2", "Level 3", "Processing Plant", "", "", "", "Notes"],
             [[r["name"], round(r["payback"]["L2"]), round(r["payback"]["L3"]), round(r["payback"]["Plant"]), "", "", "",

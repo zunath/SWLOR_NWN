@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int BoardingHoldMinutes = 40;
 
         /// <summary>The interior templates (existing starship interiors) and the names their instances take.</summary>
-        public static readonly string[] TemplateResrefs = new[] { "ship_merchant_z", "ship_throne_z", "ship_consul_z" };
-        public static readonly string[] TemplateNames = new[] { "Derelict Merchant Freighter", "Derelict Throne Yacht", "Derelict Consular Cruiser" };
+        public static readonly string[] TemplateResrefs = new[] { "ship_merchant_z", "ship_throne_z", "ship_consul_z", "ship_mule_z", "ship_falchion_z", "ship_saber_z", "ship_corv_v" };
+        public static readonly string[] TemplateNames = new[] { "Derelict Merchant Freighter", "Derelict Throne Yacht", "Derelict Consular Cruiser", "Derelict Mule Hauler", "Derelict Falchion Runner", "Derelict Saber Prospector", "Derelict Corvette" };
         public static readonly string[] DressingResrefs = new[] { "swd2_debr001", "swd3_dbpil02", "swd_jkpl001", "swd_jkpl002", "zep_smokesm" };
         public const int DressingCount = 10;
         public const int InteriorEnemies = 8;

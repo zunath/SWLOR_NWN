@@ -40,6 +40,25 @@ public class CrossSkillWeaponTraitTests
     }
 
     [Test]
+    public void WithoutTheCadenceTrait_LeadShotStillGrantsCadence_AndForeignAbilitiesLeaveIt()
+    {
+        var scenario = Create("DoubleShot1", "DoubleShot:1", 2, 1, 1, true);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Perks.Remove("Cadence");
+        spec.Perks.Add("LeadShot:1");
+        spec.Abilities.Insert(0, new() { Feat = "LeadShot1", MinIntervalSeconds = 600 });
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.NextAttackAt = double.PositiveInfinity; actor.NextActionAt = 0;
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1 && actor.Casting == null, 8, "Lead Shot");
+        actor.WeaponTraits.Paired.Cadence.Should().Be(1, "Lead Shot carries its own Cadence pool");
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 2 && actor.Stats.AbilityImpacts > 2, 8, "foreign Double Shot");
+        actor.Stats.CadenceSpent.Should().Be(0, "a foreign ability gains nothing per charge without the Cadence trait");
+        actor.Stats.CadenceChains.Should().Be(0, "chaining belongs to the Cadence trait");
+        actor.WeaponTraits.Paired.Cadence.Should().Be(1);
+    }
+
+    [Test]
     public void OrdinaryHits_NeverGrantCadence()
     {
         var (sim, actor) = Spawn(); actor.Spec.Abilities.Clear(); actor.NextActionAt = double.PositiveInfinity;

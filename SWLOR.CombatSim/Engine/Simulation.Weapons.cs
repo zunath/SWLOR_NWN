@@ -27,6 +27,14 @@ public sealed partial class Simulation
         return actor.WeaponTraits.Paired.Cadence >= use.MinimumCadence;
     }
 
+    // PairedRangedTraits.CaptureWeaponAbility: the ability's per-charge override or the trait's, plus Steady Cadence.
+    private static int CadenceDamagePerCharge(Combatant actor, Data.AbilityInfo info)
+    {
+        var configuration = WeaponTraitState.Configuration(actor);
+        return (info.WeaponAbilityCadenceDamagePerCharge ?? configuration.CadenceDamagePerCharge) +
+               configuration.CadenceBonusDamagePerCharge;
+    }
+
     private static int[] CaptureTwinWeaponDamage(WeaponLoadoutSpec weapon) =>
         weapon.DistinctAttackItemCount == 2
             ? new[] { EffectiveMainWeaponDamage(weapon), weapon.OffhandDamage }

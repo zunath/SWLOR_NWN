@@ -144,6 +144,26 @@ public class TwinPistolPerkTests
     }
 
     [Test]
+    public void CadenceGrantingShots_CarryTheBaseCadencePool()
+    {
+        var perks = ReadPerks();
+        var levels = perks[PerkType.LeadShot].PerkLevels.Values.Concat(perks[PerkType.TempoShot].PerkLevels.Values).ToArray();
+        levels.Should().HaveCount(6);
+        foreach (var level in levels)
+        {
+            var stats = level.StatBonuses.ToDictionary(x => x.Stat, x => x.Calculate(0));
+            stats.Should().Equal(new Dictionary<StatType, int>
+            {
+                [StatType.CadenceMaximum] = 3,
+                [StatType.CadenceDurationSeconds] = 12,
+            }, "the shots' Cadence grant needs a pool even before the Cadence trait is bought");
+        }
+        var trait = perks[PerkType.Cadence].PerkLevels[1].StatBonuses.ToDictionary(x => x.Stat, x => x.Calculate(0));
+        trait[StatType.CadenceMaximum].Should().Be(3, "the pool matches the trait, so owning both changes nothing");
+        trait[StatType.CadenceDurationSeconds].Should().Be(12);
+    }
+
+    [Test]
     public void PassiveStatBonuses_DoNotRequireAnEquippedPair()
     {
         var bonuses = ReadPerks().Values.SelectMany(perk => perk.PerkLevels.Values)

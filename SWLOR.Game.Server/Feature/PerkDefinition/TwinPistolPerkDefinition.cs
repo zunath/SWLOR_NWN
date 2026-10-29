@@ -241,6 +241,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LeadShot1)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(1)
                 .Description("Deals weapon DMG + 4. Grants 1 Cadence.")
                 .Price(2)
@@ -248,6 +250,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LeadShot2)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(2)
                 .Description("Deals weapon DMG + 8. Grants 1 Cadence.")
                 .Price(2)
@@ -256,6 +260,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LeadShot3)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(3)
                 .Description("Deals weapon DMG + 12. Grants 1 Cadence.")
                 .Price(3)
@@ -264,6 +270,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LeadShot4)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(4)
                 .Description("Deals weapon DMG + 16. Grants 1 Cadence.")
                 .Price(5)
@@ -367,6 +375,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempoShot1)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(1)
                 .Description("Deals 60% weapon DMG + 6. Grants 2 Cadence.")
                 .Price(3)
@@ -374,6 +384,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempoShot2)
+                .IncreasesStat(StatType.CadenceMaximum, 3)
+                .IncreasesStat(StatType.CadenceDurationSeconds, 12)
                 .DroidAISlots(2)
                 .Description("Deals 60% weapon DMG + 12. Grants 2 Cadence.")
                 .Price(3)

@@ -796,17 +796,14 @@ namespace SWLOR.CombatSim.Engine
                 WeaponTraits = caster.Spec.WeaponLoadout != null && info.IsHostile && Combat.IsWeaponSkillType(info.SkillType)
                     ? caster.WeaponTraits.Paired.CaptureAbility(WeaponNow, WeaponTraitState.Configuration(caster), true,
                         // Builders such as Lead Shot keep Cadence for the spenders, as on the server.
+                        // A foreign ability gains nothing per charge without the Cadence trait, so it leaves them alone.
                         WeaponAbilityTraitPolicy.IsEligibleSpender(info.IsHostile, info.SkillType, info.STM) &&
-                        !info.KeepsWeaponAbilityCadence)
+                        !info.KeepsWeaponAbilityCadence && CadenceDamagePerCharge(caster, info) > 0)
                     : null
             };
             if (cast.WeaponTraits != null)
             {
-                // PairedRangedTraits.CaptureWeaponAbility: the ability's per-charge override or the trait's, plus Steady Cadence.
-                var configuration = WeaponTraitState.Configuration(caster);
-                cast.WeaponActivation = new WeaponAbilityTraitActivation(cast.WeaponTraits,
-                    (info.WeaponAbilityCadenceDamagePerCharge ?? configuration.CadenceDamagePerCharge) +
-                    configuration.CadenceBonusDamagePerCharge)
+                cast.WeaponActivation = new WeaponAbilityTraitActivation(cast.WeaponTraits, CadenceDamagePerCharge(caster, info))
                 {
                     CadenceOnHit = info.WeaponAbilityCadenceOnHit
                 };

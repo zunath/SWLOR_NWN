@@ -34,9 +34,11 @@ namespace SWLOR.Game.Server.Service
                 return new WeaponAbilityTraitActivation(
                     new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), false, false, 0, 0) { StateGeneration = -1 }, 0);
             var configuration = GetConfiguration(actor);
-            return new WeaponAbilityTraitActivation(CaptureAbility(actor, true, !ability.KeepsWeaponAbilityCadence),
-                (ability.WeaponAbilityCadenceDamagePerCharge ?? configuration.CadenceDamagePerCharge) +
-                configuration.CadenceBonusDamagePerCharge)
+            var damagePerCharge = (ability.WeaponAbilityCadenceDamagePerCharge ?? configuration.CadenceDamagePerCharge) +
+                                  configuration.CadenceBonusDamagePerCharge;
+            // Without the Cadence trait a foreign ability gains nothing per charge, so it leaves the charges alone.
+            var spendsCadence = !ability.KeepsWeaponAbilityCadence && damagePerCharge > 0;
+            return new WeaponAbilityTraitActivation(CaptureAbility(actor, true, spendsCadence), damagePerCharge)
                 {
                     PrimaryWeapon = Combat.GetAbilityAttackWeapon(actor, ability.SkillType),
                     CadenceOnHit = ability.WeaponAbilityCadenceOnHit

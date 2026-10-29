@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(WindowType)
+            var window = _builder.CreateWindow(WindowType)
                 .SetInitialGeometry(ExtraHotbarViewModel.InitialX, InitialY,
                     ExtraHotbarViewModel.GetWidth(ExtraHotbars.MaxSlots, ExtraHotbarLayout.Horizontal),
                     ExtraHotbarViewModel.GetHeight(ExtraHotbars.MaxSlots, ExtraHotbarLayout.Horizontal, false))
@@ -31,45 +31,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(false)
                 .SetShowBorder(false)
                 .BindIsTransparent(model => model.IsTransparent)
-                .SetKeepsOpenOnAreaChange(true)
-                .DefinePartialView(ExtraHotbarViewModel.HorizontalPartial, group => group.AddColumn(col =>
+                .SetKeepsOpenOnAreaChange(true);
+
+            // Hidden widgets still take up layout space, so each slot count gets a layout holding only those slots.
+            foreach (var layout in System.Enum.GetValues<ExtraHotbarLayout>())
+            {
+                for (var slotCount = 1; slotCount <= ExtraHotbars.MaxSlots; slotCount++)
                 {
-                    col.SetMargin(0f);
-                    col.AddRow(row =>
-                    {
-                        row.SetMargin(0f);
-                        for (var slot = 0; slot < ExtraHotbars.MaxSlots; slot++)
-                            AddSlot(row, slot, "h");
-                    });
-                }))
-                .DefinePartialView(ExtraHotbarViewModel.VerticalPartial, group => group.AddColumn(col =>
-                {
-                    col.SetMargin(0f);
-                    for (var slot = 0; slot < ExtraHotbars.MaxSlots; slot++)
-                    {
-                        var index = slot;
-                        col.AddRow(row =>
-                        {
-                            row.SetMargin(0f);
-                            AddSlot(row, index, "v");
-                        });
-                    }
-                }))
-                .DefinePartialView(ExtraHotbarViewModel.StackedPartial, group => group.AddColumn(col =>
-                {
-                    col.SetMargin(0f);
-                    for (var start = 0; start < ExtraHotbars.MaxSlots; start += ExtraHotbarViewModel.StackedRowLength)
-                    {
-                        var first = start;
-                        col.AddRow(row =>
-                        {
-                            row.SetMargin(0f);
-                            for (var slot = first; slot < first + ExtraHotbarViewModel.StackedRowLength; slot++)
-                                AddSlot(row, slot, "s");
-                        });
-                    }
-                }))
-                .AddColumn(col =>
+                    var count = slotCount;
+                    window.DefinePartialView(ExtraHotbarViewModel.SlotsPartial(layout, count),
+                        group => AddSlots(group, layout, count));
+                }
+            }
+
+            window.AddColumn(col =>
                 {
                     col.SetMargin(0f);
                     col.AddRow(row =>
@@ -82,16 +57,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return _builder.Build();
         }
 
-        private static void AddSlot(GuiRow<ExtraHotbarViewModel> row, int slot, string layout)
+        private static void AddSlots(GuiGroup<ExtraHotbarViewModel> group, ExtraHotbarLayout layout, int slotCount)
+        {
+            var rowLength = layout switch
+            {
+                ExtraHotbarLayout.Vertical => 1,
+                ExtraHotbarLayout.Stacked => ExtraHotbarViewModel.StackedRowLength,
+                _ => slotCount
+            };
+
+            group.AddColumn(col =>
+            {
+                col.SetMargin(0f);
+                for (var first = 0; first < slotCount; first += rowLength)
+                {
+                    var rowStart = first;
+                    col.AddRow(row =>
+                    {
+                        row.SetMargin(0f);
+                        for (var slot = rowStart; slot < System.Math.Min(rowStart + rowLength, slotCount); slot++)
+                            AddSlot(row, slot);
+                    });
+                }
+            });
+        }
+
+        private static void AddSlot(GuiRow<ExtraHotbarViewModel> row, int slot)
         {
             // A plain button with the icon drawn over it, so an empty slot shows only its frame.
             const float inset = 2f;
             row.AddButton()
-                .SetId($"ehb_{layout}_{slot}")
+                .SetId($"ehb_slot_{slot}")
                 .SetText(string.Empty)
                 .BindTooltip(Bind<string>(ExtraHotbarViewModel.TooltipProperty(slot)))
                 .BindIsEncouraged(Bind<bool>(ExtraHotbarViewModel.IsActiveProperty(slot)))
-                .BindIsVisible(Bind<bool>(ExtraHotbarViewModel.IsVisibleProperty(slot)))
                 .SetWidth(ExtraHotbarViewModel.SlotSize)
                 .SetHeight(ExtraHotbarViewModel.SlotSize)
                 .SetMargin(ExtraHotbarViewModel.SlotMargin)

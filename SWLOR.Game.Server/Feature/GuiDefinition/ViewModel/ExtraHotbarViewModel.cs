@@ -16,9 +16,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<ExtraHotbarStatusRefreshEvent>
     {
         public const string SlotsElement = "extra_hotbar_slots";
-        public const string HorizontalPartial = "EXTRA_HOTBAR_HORIZONTAL";
-        public const string VerticalPartial = "EXTRA_HOTBAR_VERTICAL";
-        public const string StackedPartial = "EXTRA_HOTBAR_STACKED";
         public const int StackedRowLength = 6;
 
         public const float SlotSize = 36f;
@@ -38,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string CommandIcon = "ife_emotes";
 
         private ExtraHotbar _bar;
-        private ExtraHotbarLayout _layout;
+        private string _slotsPartial;
         private bool _useDefaultSpot;
         private bool _hasTitleBar;
 
@@ -47,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string CountProperty(int slot) => $"Slot{slot}Count";
         public static string HasIconProperty(int slot) => $"Slot{slot}HasIcon";
         public static string IsActiveProperty(int slot) => $"Slot{slot}IsActive";
-        public static string IsVisibleProperty(int slot) => $"Slot{slot}IsVisible";
+        public static string SlotsPartial(ExtraHotbarLayout layout, int slotCount) =>
+            $"EXTRA_HOTBAR_{layout.ToString().ToUpperInvariant()}_{slotCount}";
 
         public static float GetWidth(int slotCount, ExtraHotbarLayout layout) =>
             GetColumns(slotCount, layout) * SlotStep + WindowPadding * 2f;
@@ -137,26 +135,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool Slot10IsActive { get => Get<bool>(); set => Set(value); }
         public bool Slot11IsActive { get => Get<bool>(); set => Set(value); }
 
-        public bool Slot0IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot1IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot2IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot3IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot4IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot5IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot6IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot7IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot8IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot9IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot10IsVisible { get => Get<bool>(); set => Set(value); }
-        public bool Slot11IsVisible { get => Get<bool>(); set => Set(value); }
-
         private int BarIndex => ExtraHotbars.GetBarIndex(WindowType);
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var dbPlayer = DB.Get<Entity.Player>(GetObjectUUID(Player));
             _useDefaultSpot = dbPlayer == null || !dbPlayer.WindowGeometries.ContainsKey(WindowType);
-            _layout = ExtraHotbarLayout.Horizontal;
+            _slotsPartial = null;
             _hasTitleBar = false;
             TitleBar = false;
             IsTransparent = true;
@@ -165,12 +150,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(string.Empty, IconProperty(slot));
                 Set(false, HasIconProperty(slot));
                 Set(false, IsActiveProperty(slot));
-                Set(true, IsVisibleProperty(slot));
                 Set(string.Empty, TooltipProperty(slot));
                 Set(string.Empty, CountProperty(slot));
             }
 
-            ChangePartialView(SlotsElement, HorizontalPartial);
             LoadBar();
         }
 
@@ -201,24 +184,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TitleBar = isUnlocked ? $"Hotbar {BarIndex + 1}" : false;
             IsTransparent = !isUnlocked;
 
-            if (_bar.Layout != _layout)
+            var slotsPartial = SlotsPartial(_bar.Layout, _bar.SlotCount);
+            if (slotsPartial != _slotsPartial)
             {
-                _layout = _bar.Layout;
-                ChangePartialView(SlotsElement, _layout switch
-                {
-                    ExtraHotbarLayout.Vertical => VerticalPartial,
-                    ExtraHotbarLayout.Stacked => StackedPartial,
-                    _ => HorizontalPartial
-                });
+                _slotsPartial = slotsPartial;
+                ChangePartialView(SlotsElement, slotsPartial);
             }
 
             for (var slot = 0; slot < ExtraHotbars.MaxSlots; slot++)
-            {
                 RefreshSlot(slot, _bar.Slots[slot]);
-                var isVisible = slot < _bar.SlotCount;
-                if (Get<bool>(IsVisibleProperty(slot)) != isVisible)
-                    Set(isVisible, IsVisibleProperty(slot));
-            }
 
             ResizeToFit(isUnlocked);
         }

@@ -124,7 +124,11 @@ namespace SWLOR.Game.Server.Service
                 if (bars[index].IsVisible && !isOpen)
                     Gui.TogglePlayerWindow(player, windowType);
                 else if (!bars[index].IsVisible && isOpen)
+                {
+                    // Closing saves the window's position, which must not include an unlocked bar's title bar.
+                    ((ExtraHotbarViewModel)Gui.GetPlayerWindow(player, windowType).ViewModel).ApplyLockedGeometry();
                     Gui.ClosePlayerWindow(player, windowType);
+                }
             }
         }
 

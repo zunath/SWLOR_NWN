@@ -11660,6 +11660,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vessa Thrane"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vessa_thrane"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 30.0
                     },
                     "FACTION": {

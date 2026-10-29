@@ -100,7 +100,9 @@ internal static class StoredItemSweep
         changed += pass.Process<ResearchJob>(job => MigrateData(converter, job.SerializedItem, value => job.SerializedItem = value) |
             (space?.Migrate(job.SerializedItem, value => job.SerializedItem = value, null) ?? false));
         // Cosmetic chest templates retain Armor so ApplyOutfit can still load them.
-        changed += pass.Process<PlayerOutfit>(outfit => MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false));
+        changed += pass.Process<PlayerOutfit>(outfit =>
+            MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false) |
+            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value));
         changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value) |
             (space?.Migrate(creature.Data, value => creature.Data = value, null) ?? false));
         changed += pass.Process<PlayerShip>(ship =>

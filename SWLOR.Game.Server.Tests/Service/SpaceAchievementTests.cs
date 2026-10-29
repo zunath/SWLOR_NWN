@@ -15,12 +15,12 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class SpaceAchievementTests
 {
-    private static readonly AchievementType[] Space = Enum.GetValues<AchievementType>().Where(x => (int)x >= 187).ToArray();
+    private static readonly AchievementType[] Space = Enum.GetValues<AchievementType>().Where(x => (int)x >= 188).ToArray();
 
     [Test]
     public void SpaceAchievements_FollowTheGroundOnesAndAreActive()
     {
-        Space.Select(x => (int)x).Should().BeEquivalentTo(Enumerable.Range(187, Space.Length), "numbered after Final Salvo (186)");
+        Space.Select(x => (int)x).Should().BeEquivalentTo(Enumerable.Range(188, Space.Length), "numbered after Master Wardrobe (187)");
         Space.Length.Should().Be(6 + 1 + RevampAceCatalog.Aces.Count + 1 + 6 + 1 + 3 + 3 + 1, "W11o appended three interiors and the crewed kill");
         foreach (var achievement in Space)
         {
@@ -110,7 +110,7 @@ public class SpaceAchievementTests
         SpaceAchievementRules.IsCrewedKill(1).Should().BeFalse("a pilot alone");
         SpaceAchievementRules.IsCrewedKill(2).Should().BeTrue();
         SpaceAchievementRules.IsCrewedKill(4).Should().BeTrue();
-        ((int)AchievementType.SpaceCrewedKill).Should().Be(227);
+        ((int)AchievementType.SpaceCrewedKill).Should().Be(228);
     }
 
     [TestCase("Service/SpaceAchievements.cs", "GetShipCrewPlayers(GetFiringShip(killer))")]

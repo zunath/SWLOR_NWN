@@ -486,8 +486,8 @@ public class WildSpaceTests
         ReadServerSource("Service", "SpaceDeath.cs").Should().Contain("SpaceDeathRules.ModulesDrop(IsWildSpace(GetArea(creature)), killerIsPlayer)");
         ReadServerSource("Service", "SpaceDeath.cs").Should().Contain("public const string WildSpaceVariable = \"WILD_SPACE\";");
 
-        // Achievement 214 keys on the same WILD_SPACE area local the six systems carry (ShipAccessRulesTests).
-        ((int)SWLOR.Game.Server.Service.AchievementService.AchievementType.SpaceWildSpace).Should().Be(214);
+        // Achievement 215 keys on the same WILD_SPACE area local the six systems carry (ShipAccessRulesTests).
+        ((int)SWLOR.Game.Server.Service.AchievementService.AchievementType.SpaceWildSpace).Should().Be(215);
         ReadServerSource("Service", "SpaceAchievements.cs")
             .Should().Contain("!IsWildSpace(OBJECT_SELF))\n                return;\n\n            Achievement.GiveAchievement(player, AchievementType.SpaceWildSpace);");
     }

@@ -207,7 +207,7 @@ public class SpaceAceTests
         Aces.Select(x => x.DesignResref).Should().OnlyHaveUniqueItems();
         Aces.Where(x => !x.WildSpace).Select(x => x.ModuleSchematicResref).Should().OnlyHaveUniqueItems();
         Aces.Where(x => x.WildSpace).Should().HaveCount(6).And.OnlyContain(x => x.Manufacturer == ShipManufacturer.RiftRaider);
-        Aces.Where(x => x.WildSpace).Select(x => (int)x.Achievement).Should().Equal(218, 219, 220, 221, 222, 223);
+        Aces.Where(x => x.WildSpace).Select(x => (int)x.Achievement).Should().Equal(219, 220, 221, 222, 223, 224);
         Aces.Select(x => x.TrophyResref).Should().OnlyHaveUniqueItems();
         Aces.Select(x => x.Achievement).Should().OnlyHaveUniqueItems();
     }

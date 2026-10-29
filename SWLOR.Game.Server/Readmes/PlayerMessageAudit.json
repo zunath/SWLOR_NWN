@@ -1239,6 +1239,41 @@
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"No {(itemType == 1 ? \"helmet\" : \"cloak\")} is equipped.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
+    "Line": 230,
+    "Member": "OnClickNewOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(limit < Wardrobe.MaxSlotLimit\n                    ? $\"Your wardrobe holds {limit} outfits. {Wardrobe.ExpansionHint}\"\n                    : $\"Your wardrobe holds {limit} outfits.\", _target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
+    "Line": 289,
+    "Member": "OnClickStoreOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, _target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
+    "Line": 318,
+    "Member": "OnClickUndoOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, _target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
+    "Line": 331,
+    "Member": "WearOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, _target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
+    "Line": 337,
+    "Member": "WearOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(string.IsNullOrEmpty(message) ? $\"Now wearing {outfit.Name}.\" : message, _target, false)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AreaNotesViewModel.cs",
     "Line": 172,
     "Member": "SaveNote",
@@ -2343,27 +2378,6 @@
     "Member": "OnClickAddCategory",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"A category named '{name}' already exists.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/OutfitViewModel.cs",
-    "Line": 192,
-    "Member": "OnClickStoreOutfit",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"You do not have any clothes equipped.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/OutfitViewModel.cs",
-    "Line": 248,
-    "Member": "OnClickLoadOutfit",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"You do not have any clothes equipped.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/OutfitViewModel.cs",
-    "Line": 286,
-    "Member": "OnClickNew",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You may only create {maxOutfits} outfits.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
@@ -7880,6 +7894,13 @@
     "Member": "RemovePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Wardrobe.cs",
+    "Line": 60,
+    "Member": "ExpandSlotLimit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your wardrobe now holds {limit} outfits.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",

@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -251,22 +252,32 @@ public class AppearancePreviewTests
     }
 
     [TestCase(720f, 4, 3)]
-    [TestCase(674f, 4, 3)]
-    [TestCase(673f, 4, 2)]
-    [TestCase(536f, 4, 2)]
-    [TestCase(535f, 4, 1)]
-    [TestCase(812f, 4, 4)]
-    [TestCase(811f, 4, 3)]
-    [TestCase(714f, 2, 3)]
-    [TestCase(713f, 2, 2)]
+    [TestCase(656f, 4, 3)]
+    [TestCase(655f, 4, 2)]
+    [TestCase(518f, 4, 2)]
+    [TestCase(517f, 4, 1)]
+    [TestCase(794f, 4, 4)]
+    [TestCase(793f, 4, 3)]
+    [TestCase(696f, 2, 3)]
+    [TestCase(695f, 2, 2)]
     [TestCase(100f, 1, 1)]
-    [TestCase(640f, 1, 1)]
-    [TestCase(686f, 1, 2)]
+    [TestCase(622f, 1, 1)]
+    [TestCase(668f, 1, 2)]
     [TestCase(4000f, 4, 4)]
     public void BrowserRowsFollowTheWindowHeight(float height, int columns, int expected) =>
         ((int)typeof(AppearanceEditorViewModel)
             .GetMethod("BrowserRowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { height, columns })!).Should().Be(expected);
+            .Invoke(null, new object[] { height, columns, 0f })!).Should().Be(expected);
+
+    // The Equipment tab's slot tabs take one row's worth of height from the pictures.
+    [TestCase(830f, 4, 4)]
+    [TestCase(829f, 4, 3)]
+    [TestCase(692f, 4, 3)]
+    [TestCase(691f, 4, 2)]
+    public void EquipmentSlotTabsLeaveRoomAboveThePictures(float height, int columns, int expected) =>
+        ((int)typeof(AppearanceEditorViewModel)
+            .GetMethod("BrowserRowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { height, columns, AppearanceEditorDefinition.EquipmentTabsHeight })!).Should().Be(expected);
 
     // width, height, x, y, screen width, screen height, scale -> width, height
     [TestCase(600f, 400f, 40f, 30f, 0f, 0f, 1f, 600f, 400f)]
@@ -320,8 +331,8 @@ public class AppearancePreviewTests
     [TestCase(854f, 720f, true, false)]
     [TestCase(853f, 720f, true, true)]
     [TestCase(760f, 720f, true, true)]
-    [TestCase(1240f, 548f, true, false)]
-    [TestCase(1240f, 547f, true, true)]
+    [TestCase(1240f, 530f, true, false)]
+    [TestCase(1240f, 529f, true, true)]
     [TestCase(404f, 720f, false, false)]
     [TestCase(403f, 720f, false, true)]
     [TestCase(0f, 0f, true, false)]
@@ -329,7 +340,7 @@ public class AppearancePreviewTests
     {
         ((bool)typeof(AppearanceEditorViewModel)
             .GetMethod("IsCompactWindow", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { width, height, hasSideColumns })!).Should().Be(expected);
+            .Invoke(null, new object[] { width, height, hasSideColumns, 0f })!).Should().Be(expected);
         if (!expected && width > 0f)
             BrowserColumnsForWidth(width, hasSideColumns).Should().BeGreaterThanOrEqualTo(1,
                 "a window that is not compact fits at least one column of pictures");

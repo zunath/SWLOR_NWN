@@ -34,6 +34,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float NoItemLabelWidth = 130f;
         private const float OutfitButtonWidth = 64f;
         private const float OutfitListWidth = 280f;
+        /// <summary>New and Delete share the list's width; unsized buttons take about 150 each and overflow it.</summary>
+        public const float OutfitListButtonWidth = (OutfitListWidth - 32f) / 2;
         private const float OutfitStoreButtonWidth = 170f;
 
         /// <summary>
@@ -1022,12 +1024,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetId("ae_outfit_new")
                                     .SetText("New")
                                     .BindOnClicked(model => model.OnClickNewOutfit())
+                                    .SetWidth(OutfitListButtonWidth)
                                     .SetHeight(32f);
                                 buttons.AddButton()
                                     .SetId("ae_outfit_delete")
                                     .SetText("Delete")
                                     .BindIsEnabled(model => model.IsOutfitSelected)
                                     .BindOnClicked(model => model.OnClickDeleteOutfit())
+                                    .SetWidth(OutfitListButtonWidth)
                                     .SetHeight(32f);
                             });
                         });

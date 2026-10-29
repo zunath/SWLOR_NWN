@@ -366,6 +366,19 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
+    public void NewAndDeleteFitInsideTheOutfitList()
+    {
+        var outfits = _partials[AppearanceEditorViewModel.OutfitsPartial];
+        var list = Walk(outfits).OfType<GuiGroup<AppearanceEditorViewModel>>()
+            .Single(group => Width(group) > 0 && Walk(group).Any(widget => widget.Id == "ae_outfit_delete"));
+        var buttons = new[] { "ae_outfit_new", "ae_outfit_delete" }
+            .Select(id => Width(Walk(list).Single(widget => widget.Id == id))).ToArray();
+
+        buttons.Should().AllSatisfy(width => width.Should().BePositive("an unsized button takes about 150 and overflows the list"));
+        buttons.Sum().Should().BeLessThan(Width(list), "both buttons fit the list's border with room for padding");
+    }
+
+    [Test]
     public void CopyButtonsAreOnlyOnTheEquipmentMap()
     {
         var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];

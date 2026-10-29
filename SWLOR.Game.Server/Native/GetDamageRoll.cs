@@ -375,8 +375,9 @@ namespace SWLOR.Game.Server.Native
             attackData.AddDamage((ushort)damageType.GetNativeDamageType(), damage);
         }
 
-        // Pay at the attack-roll boundary, including misses. Damage can be queried speculatively
-        // or repeatedly for one swing, so it must only read the conversion decision made here.
+        // Decide at the attack-roll boundary; SettleForceConversionStanceAttack pays once the result
+        // is known. Damage can be queried speculatively or repeatedly for one swing, so it must only
+        // read the conversion decision made here.
         internal static void PrepareForceConversionStanceAttack(
             CNWSCreature attacker,
             CNWSObject defender,
@@ -396,19 +397,37 @@ namespace SWLOR.Game.Server.Native
             if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
                 return;
 
+            // Not enough FP to pay the upkeep: the swing stays its normal type and no FP is spent.
             var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);
-            if (fpCost > 0)
-            {
-                // Not enough FP to pay the upkeep: the swing stays its normal type and no FP is spent.
-                if (Stat.GetCurrentFP(attacker.m_idSelf) < fpCost)
-                    return;
-
-                Stat.ReduceFP(attacker.m_idSelf, fpCost);
-            }
+            if (fpCost > 0 && Stat.GetCurrentFP(attacker.m_idSelf) < fpCost)
+                return;
 
             // Offset the index so an absent local (zero) cannot match the first attack.
             SetLocalInt(attacker.m_idSelf, ForceConversionAttackIndex, attacker.m_pcCombatRound.m_nCurrentAttack + 1);
             SetLocalObject(attacker.m_idSelf, ForceConversionAttackTarget, defender.m_idSelf);
+        }
+
+        // Only a landed swing pays the upkeep. A miss or deflection deals no damage, so its
+        // conversion is cleared without charging FP.
+        internal static void SettleForceConversionStanceAttack(
+            CNWSCreature attacker,
+            CNWSObject defender,
+            bool landed)
+        {
+            if (GetLocalInt(attacker.m_idSelf, ForceConversionAttackIndex) != attacker.m_pcCombatRound.m_nCurrentAttack + 1 ||
+                GetLocalObject(attacker.m_idSelf, ForceConversionAttackTarget) != defender.m_idSelf)
+                return;
+
+            if (!landed)
+            {
+                DeleteLocalInt(attacker.m_idSelf, ForceConversionAttackIndex);
+                DeleteLocalObject(attacker.m_idSelf, ForceConversionAttackTarget);
+                return;
+            }
+
+            var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);
+            if (fpCost > 0)
+                Stat.ReduceFP(attacker.m_idSelf, fpCost);
         }
 
         private static WeaponDamageProfile ApplyForceConversionStance(

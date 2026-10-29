@@ -483,7 +483,7 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Twin Suns", "Completed Jek Talin's sustained Twin Pistol firing trial.", true)]
         TwinSuns = 185,
-        [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol movement and Flow trial.", true)]
+        [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol Cadence trial.", true)]
         FinalSalvo = 186,
 	}
 

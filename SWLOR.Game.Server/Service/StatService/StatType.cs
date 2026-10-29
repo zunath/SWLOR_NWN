@@ -6322,49 +6322,49 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         PairedRangedDirectDamageCostCooldownSeconds = 1141,
 
-        /// <summary>Maximum earned movement charges.</summary>
+        /// <summary>Maximum Cadence charges.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMomentumMaximum = 1142,
+        CadenceMaximum = 1142,
 
-        /// <summary>Duration refreshed by earned movement charges.</summary>
+        /// <summary>Duration refreshed by each Cadence gain.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMomentumDurationSeconds = 1143,
+        CadenceDurationSeconds = 1143,
 
-        /// <summary>Ordinary-shot accuracy per earned movement charge.</summary>
+        /// <summary>Ordinary-shot accuracy per Cadence charge.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMomentumAccuracyPerCharge = 1144,
+        CadenceAccuracyPerCharge = 1144,
 
         /// <summary>Stamina restored per charge spent when the activation lands a hit.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMomentumStaminaRestorePerCharge = 1145,
+        CadenceStaminaRestorePerCharge = 1145,
 
         /// <summary>Maximum stamina restored by one charge spender.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMomentumStaminaRestoreMaximum = 1146,
+        CadenceStaminaRestoreMaximum = 1146,
 
         /// <summary>Minimum interval between successful charge-spender refunds.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        PairedRangedMomentumRestoreCooldownSeconds = 1147,
+        CadenceRestoreCooldownSeconds = 1147,
 
-        /// <summary>Minimum interval between accuracy-versus-evasion misses granting a charge.</summary>
+        /// <summary>Minimum interval between accuracy-versus-evasion misses granting Cadence.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        PairedRangedEvasionMomentumCooldownSeconds = 1148,
+        EvasionCadenceCooldownSeconds = 1148,
 
-        /// <summary>Flat accuracy for the next matching ability after a landed moving attack.</summary>
+        /// <summary>Flat accuracy for the next hostile weapon ability after gaining Cadence.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMovementNextAbilityAccuracy = 1149,
+        CadenceNextAbilityAccuracy = 1149,
 
-        /// <summary>Duration of the one-charge moving-attack accuracy bonus.</summary>
+        /// <summary>Duration of the one-charge Cadence accuracy bonus.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMovementAccuracyDurationSeconds = 1150,
+        CadenceAccuracyDurationSeconds = 1150,
 
-        /// <summary>Minimum interval between moving-attack accuracy grants.</summary>
+        /// <summary>Minimum interval between Cadence accuracy grants.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        PairedRangedMovementAccuracyCooldownSeconds = 1151,
+        CadenceAccuracyCooldownSeconds = 1151,
 
-        /// <summary>Stance charge duration; applied only on a new charge grant or refresh.</summary>
+        /// <summary>Stance Cadence duration; applied only on a new charge grant or refresh.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedMomentumExtendedDurationSeconds = 1153,
+        CadenceExtendedDurationSeconds = 1153,
 
         /// <summary>Multiplicative adjustment to ordinary weapon damage after outgoing bonuses; excludes activated abilities.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -6386,13 +6386,19 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         OrdinaryAttackHasteRampDurationSeconds = 1130,
 
-        /// <summary>Captured Flow damage budget per charge for one hostile weapon ability activation.</summary>
+        /// <summary>Captured Cadence damage budget per charge for one hostile weapon ability activation.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        MovementHitWeaponAbilityDamagePerCharge = 1166,
+        CadenceDamagePerCharge = 1166,
 
         /// <summary>Haste that applies only while wielding two weapons (Twin Pistols or any dual wield).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DualWieldAttackDelayReductionPercent = 1167,
+        /// <summary>Seconds after a paid weapon ability in which a different one continues the Cadence chain.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CadenceChainWindowSeconds = 1168,
+        /// <summary>Extra damage per Cadence charge spent, added to the ability's per-charge bonus.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CadenceBonusDamagePerCharge = 1169,
 
 
     }

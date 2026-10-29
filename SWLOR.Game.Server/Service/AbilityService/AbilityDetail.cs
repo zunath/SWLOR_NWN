@@ -65,9 +65,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
-        public int? WeaponAbilityFlowDamagePerCharge { get; set; }
-        /// <summary>A Twin Pistol builder ability keeps Flow; only its finishers and other skills' weapon abilities spend it.</summary>
-        public bool KeepsWeaponAbilityFlow { get; set; }
+        public int? WeaponAbilityCadenceDamagePerCharge { get; set; }
+        /// <summary>A Twin Pistol builder ability keeps Cadence; only its finishers and other skills' weapon abilities spend it.</summary>
+        public bool KeepsWeaponAbilityCadence { get; set; }
+        /// <summary>Cadence a landed hit grants once per activation without a chain; 0 for the chain rule alone.</summary>
+        public int WeaponAbilityCadenceOnHit { get; set; }
         /// <summary>
         /// The impact schedules damage through a status or callback even when its immediate
         /// base damage is zero. Hostile hit damage bonuses remain eligible on that impact.
@@ -82,11 +84,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool PreservesStealthDuringActivation { get; set; }
         public bool RequiresTarget { get; set; }
         public bool HasExplicitMaxRange { get; set; }
-        /// <summary>
-        /// A location cast past <see cref="MaxRange"/> is accepted, and the ability itself shortens it
-        /// toward the clicked point, instead of being refused as out of range.
-        /// </summary>
-        public bool ClampsLocationTargetToMaxRange { get; set; }
         public bool UsesActiveAttackTarget { get; set; }
         /// <summary>Allows the optional cursor-free self-cast command for a self-legal support cast.</summary>
         public bool AllowsSelfQuickCast { get; set; }

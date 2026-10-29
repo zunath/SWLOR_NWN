@@ -42,8 +42,8 @@ public class TwinPistolPerkTests
         }
         var effects = ReadNativeRows("effecticons.2da");
         foreach (var charges in new[] { 1, 2, 3 })
-            effects.Rows[(int)new MomentumStatusEffect(charges).Icon][effects.Columns["Label"]]
-                .Should().Be($"Flow{charges}");
+            effects.Rows[(int)new CadenceStatusEffect(charges).Icon][effects.Columns["Label"]]
+                .Should().Be($"Cadence{charges}");
         var baseItems = ReadNativeRows("baseitems.2da");
         baseItems.Rows[(int)BaseItem.CompanionPistol][baseItems.Columns["label"]].Should().Be("companionpistol");
         var skills = ReadNativeRows("iprp_skill.2da");
@@ -51,18 +51,17 @@ public class TwinPistolPerkTests
     }
 
     [Test]
-    public void Flow_DisplayNameIsDistinctFromTwinBladeMomentumWithoutChangingPerkIdentity()
+    public void Cadence_DisplayNameIsDistinctFromTwinBladeMomentumAndRetiredFlowWording()
     {
         var twinPistol = ReadPerks();
-        twinPistol[PerkType.TwinPistolMomentum].Name.Should().Be("Flow");
+        twinPistol[PerkType.Cadence].Name.Should().Be("Cadence");
         twinPistol.Values.SelectMany(perk => perk.PerkLevels.Values)
-            .Select(level => level.Description).Should().NotContain(description => description.Contains("Momentum"));
-        twinPistol[PerkType.GrappleShot].PerkLevels.Values.Should()
-            .OnlyContain(level => !level.Description.Contains("Spend all Flow"), "Grapple Shot uses the generic Flow bonus");
+            .Select(level => level.Description).Should().NotContain(description =>
+                description.Contains("Momentum") || description.Contains("Flow") || description.Contains("move"));
         foreach (var charges in new[] { 1, 2, 3 })
         {
-            var effect = new MomentumStatusEffect(charges);
-            effect.Name.Should().Be($"Flow ({charges})");
+            var effect = new CadenceStatusEffect(charges);
+            effect.Name.Should().Be($"Cadence ({charges})");
             effect.Clone().Name.Should().Be(effect.Name);
         }
 
@@ -74,9 +73,40 @@ public class TwinPistolPerkTests
         var bladePerks = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
             .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(builder)!;
         bladePerks[PerkType.Momentum].Name.Should().Be("Momentum");
-        bladePerks[PerkType.Momentum].Type.Should().NotBe(PerkType.TwinPistolMomentum);
+        bladePerks[PerkType.Momentum].Type.Should().NotBe(PerkType.Cadence);
         typeof(AchievementType).GetField(nameof(AchievementType.FinalSalvo))!
-            .GetCustomAttribute<AchievementAttribute>()!.Description.Should().Contain("Flow").And.NotContain("Momentum");
+            .GetCustomAttribute<AchievementAttribute>()!.Description.Should().Contain("Cadence").And.NotContain("Momentum");
+    }
+
+    [Test]
+    public void CadenceTraits_UseTheAuthoredChainChargeAndAccuracyValues()
+    {
+        var perks = ReadPerks();
+        Stats(perks[PerkType.Cadence], 1).Should().BeEquivalentTo(new Dictionary<StatType, int>
+        {
+            [StatType.CadenceMaximum] = 3,
+            [StatType.CadenceDurationSeconds] = 12,
+            [StatType.CadenceChainWindowSeconds] = 6,
+            [StatType.CadenceAccuracyPerCharge] = 2,
+            [StatType.CadenceDamagePerCharge] = 2,
+        });
+        Stats(perks[PerkType.ChangingAngles], 1).Should().BeEquivalentTo(new Dictionary<StatType, int>
+        {
+            [StatType.CadenceNextAbilityAccuracy] = 5,
+            [StatType.CadenceAccuracyDurationSeconds] = 8,
+            [StatType.CadenceAccuracyCooldownSeconds] = 10,
+        });
+        Stats(perks[PerkType.TwinPistolSecondWind], 1).Should().BeEquivalentTo(new Dictionary<StatType, int>
+        {
+            [StatType.EvasionCadenceCooldownSeconds] = 10,
+        });
+        RequiredPerk(perks[PerkType.TwinPistolSecondWind].PerkLevels[1]).Should().Be(PerkType.Cadence);
+        Stats(perks[PerkType.TwinPistolFollowThrough], 1).Should().BeEquivalentTo(new Dictionary<StatType, int>
+        {
+            [StatType.CadenceStaminaRestorePerCharge] = 1,
+            [StatType.CadenceStaminaRestoreMaximum] = 3,
+            [StatType.CadenceRestoreCooldownSeconds] = 12,
+        });
     }
 
     [TestCase(PerkCategoryType.TwinPistolBarrage)]
@@ -95,26 +125,22 @@ public class TwinPistolPerkTests
     }
 
     [Test]
-    public void HandlingBonuses_OfferExclusiveSpeedOrDamagePurchasesAtEveryRank()
+    public void HandlingSlots_MatchedRhythmAndSteadyCadence_CanBothBePurchased()
     {
         var perks = ReadPerks();
         perks[PerkType.MatchedRhythm].Category.Should().Be(PerkCategoryType.TwinPistolBarrage);
-        perks[PerkType.PairedHandling].Category.Should().Be(PerkCategoryType.TwinPistolCrossfire);
+        perks[PerkType.SteadyCadence].Category.Should().Be(PerkCategoryType.TwinPistolCrossfire);
         var speed = perks[PerkType.MatchedRhythm].PerkLevels.Values.ToArray();
-        var damage = perks[PerkType.PairedHandling].PerkLevels.Values.ToArray();
+        var cadence = perks[PerkType.SteadyCadence].PerkLevels.Values.ToArray();
         speed.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.DualWieldAttackDelayReductionPercent);
-        damage.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.PairedRangedOrdinaryDamagePercentAdjustment);
+        cadence.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.CadenceBonusDamagePerCharge);
         speed.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(3, 6, 8);
-        damage.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(5, 8, 10);
-        foreach (var (levels, forbidden) in new[] { (speed, PerkType.PairedHandling), (damage, PerkType.MatchedRhythm) })
-        foreach (var level in levels)
-        {
-            var exclusion = level.Requirements.OfType<PerkRequirementCannotHavePerk>().Single();
-            typeof(PerkRequirementCannotHavePerk).GetField("_cannotHavePerkType", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(exclusion).Should().Be(forbidden);
-        }
+        cadence.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(1, 2, 3);
+        speed.Concat(cadence).SelectMany(x => x.Requirements).OfType<PerkRequirementCannotHavePerk>().Should().BeEmpty(
+            "Matched Rhythm no longer excludes the Crossfire handling slot");
+        RequiredPerk(perks[PerkType.SteadyCadence].PerkLevels[1]).Should().Be(PerkType.Cadence,
+            "Steady Cadence only adds to charges the Cadence trait creates");
         ReadPerks().Values.SelectMany(x => x.PerkLevels.Values).Sum(x => x.Price).Should().Be(120);
-        (120 - speed.Sum(x => x.Price)).Should().Be(110, "the handling exclusion limits the legal combined purchase budget");
     }
 
     [Test]
@@ -128,55 +154,85 @@ public class TwinPistolPerkTests
     }
 
     [Test]
-    public void Abilities_KeepTheirSharedPistolCooldowns_AndGroundRushAllowsEmptyDestinations()
+    public void Abilities_KeepTheirSharedPistolCooldowns_AndCrossfireShotsAreStationarySingleTargetAttacks()
     {
         var volley = new PairedVolleyAbilityDefinition().BuildAbilities();
-        var slide = new BlasterSlideAbilityDefinition().BuildAbilities();
+        var lead = new LeadShotAbilityDefinition().BuildAbilities();
         var focus = new FocusedBurstAbilityDefinition().BuildAbilities();
-        var grapple = new GrappleShotAbilityDefinition().BuildAbilities();
+        var closing = new ClosingShotAbilityDefinition().BuildAbilities();
         var controlled = new ControlledBurstAbilityDefinition().BuildAbilities();
-        var rush = new PistolRushAbilityDefinition().BuildAbilities();
-        foreach (var ability in volley.Values.Concat(slide.Values))
+        var tempo = new TempoShotAbilityDefinition().BuildAbilities();
+        foreach (var ability in volley.Values.Concat(lead.Values))
         {
             ability.RecastGroup.Should().Be(RecastGroup.TwinVolley);
             ability.RecastDelay(0).Should().Be(18f);
         }
-        foreach (var ability in focus.Values.Concat(grapple.Values))
+        foreach (var ability in focus.Values.Concat(closing.Values))
         {
             ability.RecastGroup.Should().Be(RecastGroup.DoubleShot);
             ability.RecastDelay(0).Should().Be(24f);
         }
-        foreach (var ability in controlled.Values.Concat(rush.Values))
+        foreach (var ability in controlled.Values.Concat(tempo.Values))
         {
             ability.RecastGroup.Should().Be(RecastGroup.FanTheHammer);
             ability.RecastDelay(0).Should().Be(30f);
         }
-        foreach (var ability in rush.Values)
+        foreach (var ability in lead.Values.Concat(closing.Values).Concat(tempo.Values))
         {
-            ability.RequiresTarget.Should().BeFalse();
-            ability.RequiresLocationTarget.Should().BeTrue();
-            ability.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Rect);
-            ability.Targeting.SizeX.Should().Be(6f);
-            ability.Targeting.SizeY.Should().Be(4f);
-            ability.MaxRange.Should().Be(6f);
-            ability.ClampsLocationTargetToMaxRange.Should().BeTrue("a click past 6m rushes the full 6m toward it");
-            ability.Targeting.Spell.Should().NotBe(Spell.Invalid);
+            ability.RequiresTarget.Should().BeTrue();
+            ability.IsSingleTargetAbility.Should().BeTrue();
+            ability.RequiresLocationTarget.Should().BeFalse("Crossfire shots no longer pick a ground destination");
+            ability.MaxRange.Should().Be(25f);
         }
-        volley.Values.Concat(slide.Values).Concat(focus.Values).Concat(grapple.Values).Concat(controlled.Values)
-            .Should().OnlyContain(x => !x.ClampsLocationTargetToMaxRange, "only the free-destination dash clamps its click");
-        rush.Values.Select(x => x.Targeting.Spell).Should().OnlyHaveUniqueItems();
-        var all = volley.Values.Concat(slide.Values).Concat(focus.Values).Concat(grapple.Values)
-            .Concat(controlled.Values).Concat(rush.Values).ToArray();
+        var all = volley.Values.Concat(lead.Values).Concat(focus.Values).Concat(closing.Values)
+            .Concat(controlled.Values).Concat(tempo.Values).ToArray();
         all.Should().OnlyContain(x => x.SkillType == SkillType.TwinPistol && x.IsHostileAbility);
         all.SelectMany(x => x.Requirements).OfType<AbilityRequirementStamina>().Should().HaveCount(all.Length);
-        volley.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
-            .Should().Equal(3, 5, 8, 12);
-        grapple.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
-            .Should().Equal(4, 8, 10);
-        slide.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
-            .Should().Equal(3, 5, 8, 12);
-        rush.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
-            .Should().Equal(6, 9);
+        Stamina(volley).Should().Equal(3, 5, 8, 12);
+        Stamina(lead).Should().Equal(3, 5, 8, 12);
+        Stamina(closing).Should().Equal(4, 8, 10);
+        Stamina(tempo).Should().Equal(6, 9);
+    }
+
+    [Test]
+    public void CrossfireShots_BuildOrSpendCadenceAsAuthored()
+    {
+        foreach (var ability in new LeadShotAbilityDefinition().BuildAbilities().Values)
+        {
+            ability.KeepsWeaponAbilityCadence.Should().BeTrue();
+            ability.WeaponAbilityCadenceOnHit.Should().Be(1);
+        }
+        foreach (var ability in new TempoShotAbilityDefinition().BuildAbilities().Values)
+        {
+            ability.KeepsWeaponAbilityCadence.Should().BeTrue();
+            ability.WeaponAbilityCadenceOnHit.Should().Be(2);
+        }
+        foreach (var ability in new ClosingShotAbilityDefinition().BuildAbilities().Values)
+        {
+            ability.KeepsWeaponAbilityCadence.Should().BeFalse();
+            ability.WeaponAbilityCadenceOnHit.Should().Be(0);
+            ability.WeaponAbilityCadenceDamagePerCharge.Should().BeNull("Closing Shot uses the generic +2 per charge");
+        }
+        var salvo = new FinalSalvoAbilityDefinition().BuildAbilities().Values.Single();
+        salvo.KeepsWeaponAbilityCadence.Should().BeFalse();
+        salvo.WeaponAbilityCadenceDamagePerCharge.Should().Be(4);
+        foreach (var ability in new PairedVolleyAbilityDefinition().BuildAbilities().Values
+                     .Concat(new FocusedBurstAbilityDefinition().BuildAbilities().Values))
+        {
+            ability.KeepsWeaponAbilityCadence.Should().BeTrue("Barrage abilities keep Cadence");
+            ability.WeaponAbilityCadenceOnHit.Should().Be(0);
+        }
+
+        var perks = ReadPerks();
+        Descriptions(perks[PerkType.LeadShot]).Should().Equal(
+            "Deals weapon DMG + 4. Grants 1 Cadence.", "Deals weapon DMG + 8. Grants 1 Cadence.",
+            "Deals weapon DMG + 12. Grants 1 Cadence.", "Deals weapon DMG + 16. Grants 1 Cadence.");
+        Descriptions(perks[PerkType.ClosingShot]).Should().Equal(
+            "Deals weapon DMG + 6. Spends all Cadence for +2 DMG per charge.",
+            "Deals weapon DMG + 10. Spends all Cadence for +2 DMG per charge.",
+            "Deals weapon DMG + 14. Spends all Cadence for +2 DMG per charge.");
+        Descriptions(perks[PerkType.TempoShot]).Should().Equal(
+            "Deals 60% weapon DMG + 6. Grants 2 Cadence.", "Deals 60% weapon DMG + 12. Grants 2 Cadence.");
     }
 
     [Test]
@@ -209,7 +265,7 @@ public class TwinPistolPerkTests
         akimbo.StatGroup.Stats[StatType.OrdinaryAttackHasteRampMaximumStacks].Should().Be(5);
         akimbo.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-30);
         crossfire.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-20);
-        crossfire.StatGroup.Stats[StatType.PairedRangedMomentumExtendedDurationSeconds].Should().Be(18);
+        crossfire.StatGroup.Stats[StatType.CadenceExtendedDurationSeconds].Should().Be(18);
         akimbo.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         crossfire.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         akimbo.CanApply(0).Should().BeEmpty("the stance has no equipment gate");
@@ -218,6 +274,24 @@ public class TwinPistolPerkTests
             .Concat(new CrossfireStanceAbilityDefinition().BuildAbilities().Values);
         stances.Should().OnlyContain(x => x.CustomValidation == null);
         stances.Should().OnlyContain(x => x.RecastDelay(0) == 30f && x.ActivationDelay(0, 0, 1) == 2f);
+    }
+
+    private static int[] Stamina(Dictionary<FeatType, AbilityDetail> abilities) =>
+        abilities.Values.OrderBy(x => x.AbilityLevel)
+            .Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM).ToArray();
+
+    private static string[] Descriptions(PerkDetail perk) =>
+        perk.PerkLevels.OrderBy(level => level.Key).Select(level => level.Value.Description).ToArray();
+
+    private static Dictionary<StatType, int> Stats(PerkDetail perk, int level) =>
+        perk.PerkLevels[level].StatBonuses.ToDictionary(bonus => bonus.Stat, bonus => bonus.Calculate(0));
+
+    private static PerkType RequiredPerk(PerkLevel level)
+    {
+        var requirement = level.Requirements.OfType<PerkRequirementMustHavePerk>().Single();
+        return (PerkType)typeof(PerkRequirementMustHavePerk)
+            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+            .Single(field => field.FieldType == typeof(PerkType)).GetValue(requirement)!;
     }
 
     private static (Dictionary<string, int> Columns, Dictionary<int, string[]> Rows) ReadNativeRows(string name)

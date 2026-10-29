@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class TwinPistolCrossSkillEngineTests
 {
+    // No perk grants this stat after the Cadence rework; a temporary modifier keeps its dual-wield gating covered.
+    private const string PairedOrdinaryGroup = "PAIRED_ORDINARY_TEST";
+
     private static uint _observedTarget = OBJECT_INVALID;
     private static int _damageEvents;
     private static uint _queuedActor = OBJECT_INVALID;
@@ -70,7 +73,7 @@ public static class TwinPistolCrossSkillEngineTests
                     CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
                     if (stance) StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
-                    PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, 12);
+                    PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, 12);
                     ctx.SeedRandom(94561);
                     _queuedActor = actor;
                     _queuedTarget = target;
@@ -167,19 +170,19 @@ public static class TwinPistolCrossSkillEngineTests
 
                 baseline = Sample(64, 0, false);
                 ctx.Assert(baseline.All(damage => damage > 20), "The seeded baseline stays clear of minimum-damage rounding");
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
+                TemporaryStatModifier.Replace(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10, 120f, PairedOrdinaryGroup);
                 ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-                    "The purchased handling trait contributes ten percent");
-                // Paired Handling offsets the paired firing cycle, so a single pistol captures none of it.
-                AssertDamage(Sample(64, 0, false), 0, 0, false, "Paired Handling on one pistol");
+                    "The paired ordinary damage stat contributes ten percent");
+                // The paired ordinary damage stat offsets the paired firing cycle, so a single pistol captures none of it.
+                AssertDamage(Sample(64, 0, false), 0, 0, false, "Paired ordinary damage on one pistol");
 
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
+                TemporaryStatModifier.Consume(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, PairedOrdinaryGroup);
                 GrantTwinSuns(12);
                 AssertDamage(Sample(8, 0, true), 0, 0, true, "Twin Suns");
                 ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null,
                     "The sixth ordinary attempt exhausts the Twin Suns status");
 
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
+                TemporaryStatModifier.Replace(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10, 120f, PairedOrdinaryGroup);
                 StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
                 AssertDamage(Sample(8, 0, true), 0, -30, true, "Akimbo with one-pistol handling and Twin Suns");
@@ -188,7 +191,7 @@ public static class TwinPistolCrossSkillEngineTests
                 GrantTwinSuns(12);
                 AssertDamage(Sample(8, 0, true), 0, -20, true, "Crossfire with one-pistol handling and Twin Suns");
                 StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
-                player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
+                TemporaryStatModifier.Consume(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, PairedOrdinaryGroup);
 
                 // Use the same production grant/expiry path with a short fixture lifetime.
                 GrantTwinSuns(1);
@@ -221,7 +224,7 @@ public static class TwinPistolCrossSkillEngineTests
         void GrantTwinSuns(int seconds)
         {
             var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
-            PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, seconds);
+            PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, seconds);
             ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                 "The production activation completion grants six ordinary attempts");
         }
@@ -314,13 +317,13 @@ public static class TwinPistolCrossSkillEngineTests
                         });
                     }
                     var baseline = Sample();
-                    player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
-                    ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), "The purchased handling trait is present outside pistol equipment");
+                    TemporaryStatModifier.Replace(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10, 120f, PairedOrdinaryGroup);
+                    ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), "The paired ordinary damage stat is present outside pistol equipment");
                     var handling = Sample();
-                    // Paired Handling needs two weapons; a single saber or rifle captures none of it.
+                    // The paired ordinary damage stat needs two weapons; a single saber or rifle captures none of it.
                     ctx.Assert(Math.Abs(handling - baseline) < .01,
-                        $"The single {resref} gains no Paired Handling bonus ({baseline:0.00}->{handling:0.00})");
-                    player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
+                        $"The single {resref} gains no paired ordinary damage bonus ({baseline:0.00}->{handling:0.00})");
+                    TemporaryStatModifier.Consume(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, PairedOrdinaryGroup);
                     StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var akimbo = Sample();
                     ctx.Assert(akimbo / baseline is > .67 and < .71,

@@ -31,44 +31,18 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
         twinSuns.ExpectedActivatorStatusEffects = new[] { typeof(TwinSunsStatusEffect) };
         cases.Add(twinSuns);
 
-        foreach (var feat in new[] { FeatType.BlasterSlide1, FeatType.BlasterSlide2, FeatType.BlasterSlide3, FeatType.BlasterSlide4 })
+        // Lead Shot and Tempo Shot grant their own Cadence on a landed hit, without needing a chain.
+        foreach (var feat in new[] { FeatType.LeadShot1, FeatType.LeadShot2, FeatType.LeadShot3, FeatType.LeadShot4,
+                     FeatType.TempoShot1, FeatType.TempoShot2 })
         {
-            var slide = MovementAttack(feat);
-            slide.MinimumActivatorDistanceToTargetAfterImpact = 3.5f;
-            slide.MinimumActivatorTravelDistanceAfterImpact = 2f;
-            slide.SetupNPCPerkLevels[PerkType.TwinPistolMomentum] = 1;
-            slide.ExpectedActivatorStatusEffects = new[] { typeof(MomentumStatusEffect) };
-            cases.Add(slide);
+            var attack = Attack(feat);
+            attack.SetupNPCPerkLevels[PerkType.Cadence] = 1;
+            attack.ExpectedActivatorStatusEffects = new[] { typeof(CadenceStatusEffect) };
+            cases.Add(attack);
         }
 
-        foreach (var feat in new[] { FeatType.GrappleShot1, FeatType.GrappleShot2, FeatType.GrappleShot3 })
-        {
-            var grapple = MovementAttack(feat);
-            grapple.TargetDistanceMeters = 6f;
-            grapple.MaximumActivatorDistanceToTargetAfterImpact = 2f;
-            grapple.MinimumActivatorTravelDistanceAfterImpact = 3f;
-            cases.Add(grapple);
-        }
-
-        // Rank I uses a player-style ground cursor beside the enemy.
-        var rush = MovementAttack(FeatType.PistolRush1);
-        rush.TargetDistanceMeters = 2.5f;
-        // The enemy stays within the four-meter firing corridor, off the travel path.
-        rush.GroundTargetOffsetMeters = new System.Numerics.Vector2(4.2f, 2f);
-        rush.MinimumActivatorTravelDistanceAfterImpact = 4f;
-        rush.MaximumActivatorDistanceToGroundTargetAfterImpact = .75f;
-        rush.SetupNPCPerkLevels[PerkType.TwinPistolMomentum] = 1;
-        rush.ExpectedActivatorStatusEffects = new[] { typeof(MomentumStatusEffect) };
-        cases.Add(rush);
-
-        // Rank II is cast the way NPC and droid AI casts it, at the enemy's own location; the dash must
-        // pass beside the enemy and still strike it.
-        var aiRush = MovementAttack(FeatType.PistolRush2);
-        aiRush.TargetDistanceMeters = 3.5f;
-        aiRush.MinimumActivatorTravelDistanceAfterImpact = 3f;
-        aiRush.SetupNPCPerkLevels[PerkType.TwinPistolMomentum] = 1;
-        aiRush.ExpectedActivatorStatusEffects = new[] { typeof(MomentumStatusEffect) };
-        cases.Add(aiRush);
+        foreach (var feat in new[] { FeatType.ClosingShot1, FeatType.ClosingShot2, FeatType.ClosingShot3 })
+            cases.Add(Attack(feat));
 
         cases.Add(new AbilityBehaviorCase
         {
@@ -110,12 +84,4 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
         ExpectsRecast = true,
         VerifiesImmediateRecastRejection = true,
     };
-
-    private static AbilityBehaviorCase MovementAttack(FeatType feat)
-    {
-        var attack = Attack(feat);
-        attack.TargetIsStationary = true;
-        attack.SearchForSafeMovementLane = true;
-        return attack;
-    }
 }

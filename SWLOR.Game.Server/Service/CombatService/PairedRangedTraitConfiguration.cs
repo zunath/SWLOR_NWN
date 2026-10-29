@@ -13,17 +13,19 @@ namespace SWLOR.Game.Server.Service.CombatService
         public int DirectDamageNextAbilityStaminaReduction { get; init; }
         public int DirectDamageCostWindowSeconds { get; init; }
         public int DirectDamageCostCooldownSeconds { get; init; }
-        public int MomentumMaximum { get; init; }
-        public int MomentumDurationSeconds { get; init; }
-        public int MomentumAccuracyPerCharge { get; init; }
-        public int MomentumDamagePerCharge { get; init; }
-        public int MomentumStaminaRestorePerCharge { get; init; }
-        public int MomentumStaminaRestoreMaximum { get; init; }
-        public int MomentumRestoreCooldownSeconds { get; init; }
-        public int EvasionMomentumCooldownSeconds { get; init; }
-        public int MovementNextAbilityAccuracy { get; init; }
-        public int MovementAccuracyDurationSeconds { get; init; }
-        public int MovementAccuracyCooldownSeconds { get; init; }
-        public int MomentumExtendedDurationSeconds { get; init; }
+        public int CadenceMaximum { get; init; }
+        public int CadenceDurationSeconds { get; init; }
+        public int CadenceChainWindowSeconds { get; init; }
+        public int CadenceAccuracyPerCharge { get; init; }
+        public int CadenceDamagePerCharge { get; init; }
+        public int CadenceBonusDamagePerCharge { get; init; }
+        public int CadenceStaminaRestorePerCharge { get; init; }
+        public int CadenceStaminaRestoreMaximum { get; init; }
+        public int CadenceRestoreCooldownSeconds { get; init; }
+        public int EvasionCadenceCooldownSeconds { get; init; }
+        public int CadenceNextAbilityAccuracy { get; init; }
+        public int CadenceAccuracyDurationSeconds { get; init; }
+        public int CadenceAccuracyCooldownSeconds { get; init; }
+        public int CadenceExtendedDurationSeconds { get; init; }
     }
 }

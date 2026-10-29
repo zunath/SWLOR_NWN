@@ -55077,6 +55077,21 @@
           "type": "int",
           "value": 91
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PERFORMANCE_VENUE_RATING"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 3
+        }
       }
     ]
   },

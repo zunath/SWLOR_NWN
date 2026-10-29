@@ -178,7 +178,8 @@ namespace SWLOR.Game.Server.Service
             {
                 var item = GetItemInSlot(slot, player);
                 if (GetIsObjectValid(item) &&
-                    TryParseFamily(GetLocalString(item, InstrumentFamilyVariable), out family))
+                    (PerformanceInstrumentCatalog.TryGetFamily(GetResRef(item), out family) ||
+                     TryParseFamily(GetLocalString(item, InstrumentFamilyVariable), out family)))
                 {
                     instrumentSlot = slot;
                     instrument = item;

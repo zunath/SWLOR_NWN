@@ -624,7 +624,7 @@ public class ShipComponentTests
     [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "|| ShipComponents.IsStandInCandidate(recipe, item)")]
     [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "AggregateStandIns(recipe, components, remainingComponents, result);")]
     [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "foreach (var standIn in ShipComponents.ReserveStandIns(recipe, components))")]
-    [TestCase("Service/Craft.cs", "var standInText = ShipRareComponentRules.StandInText(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare));")]
+    [TestCase("Service/Craft.cs", "foreach (var line in ShipRareComponentRules.StandInLines(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare)))")]
     [TestCase("Service/ShipComponents.cs", "if (CarriesTraits(GetResRef(component)))")]
     [TestCase("Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs", "Traits = ShipComponents.GetTraitsOrNull(item),")]
     [TestCase("Service/SpaceRevamp.cs", "Step = detail.Step, Traits = module.Traits")]

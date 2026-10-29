@@ -430,10 +430,9 @@ namespace SWLOR.Game.Server.Service
             if (detail.Category == RecipeCategoryType.Starship)
             {
                 var rare = ShipRareComponentRules.RareComponentOf(detail.Components.Keys);
-                var standInText = ShipRareComponentRules.StandInText(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare));
-                if (standInText != null)
+                foreach (var line in ShipRareComponentRules.StandInLines(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare)))
                 {
-                    recipeDetails.Add(standInText);
+                    recipeDetails.Add(line);
                     recipeDetailColors.Add(GuiColor.White);
                 }
             }

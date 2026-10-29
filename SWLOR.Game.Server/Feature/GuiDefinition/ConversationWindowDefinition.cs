@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         // NUI labels draw a single line, so the speaker name is wrapped by the view model onto three label rows of the
         // 150 px portrait column; "Docking Point: CZ-220" or "Docking Point: Smuggler's Moon Station" fits without clipping.
-        private const float SpeakerNameRowHeight = 22f;
+        private const float SpeakerNameRowHeight = 18f;
 
         public GuiConstructedWindow BuildWindow()
         {

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -8,7 +9,8 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// <summary>
 /// Defects found by the W11r live-client pass: the conversation speaker name clipped to one line ("Docking Point: CZ-2",
 /// "Requisitions Officer"), a DM-placed derelict that could not be boarded until a party scanned it, the DM Tools status
-/// line cut off and showing "CombatSite", and "1 pilots share the spoils".
+/// line cut off and showing "CombatSite", "1 pilots share the spoils", a station Shipyard that threw because its state shared
+/// its building's id, and an Advanced deed's rare-trait line cut off in the recipe window.
 /// </summary>
 public class SpaceW11rLiveFixTests
 {
@@ -138,5 +140,42 @@ public class SpaceW11rLiveFixTests
     {
         ReadSource("Service", "SpaceCapitalBattles.cs").Should().Contain("CapitalBattleRules.DescribeSpoilsShare(paid)").And.NotContain("pilots share the spoils");
         ReadSource("Service", "SpaceIncursions.cs").Should().Contain("CapitalBattleRules.DescribeSpoilsShare(paid)").And.NotContain("pilots share the spoils");
+    }
+
+    // Station building state
+
+    [Test]
+    public void AStationBuildingsState_HasAKeyOfItsOwn()
+    {
+        StationBuildingState.KeyFor("building-1").Should().NotBe("building-1",
+            "the DB's per-frame cache is keyed by id alone, so the state cannot share its building's id");
+        StationBuildingState.KeyFor("building-1").Should().Be("station-building:building-1");
+    }
+
+    [Test]
+    public void StationBuildings_ReadAndWriteTheStateByItsOwnKey()
+    {
+        var source = ReadSource("Service", "StationBuildings.cs");
+        source.Should().Contain("DB.Get<StationBuildingState>(StationBuildingState.KeyFor(building.Id))");
+        source.Should().Contain("Id = StationBuildingState.KeyFor(building.Id),");
+        source.Should().Contain("BuildingId = building.Id,");
+        source.Should().Contain("DB.Exists<StationBuildingState>(StationBuildingState.KeyFor(building.Id))");
+        source.Should().Contain("!DB.Exists<WorldProperty>(beacon.BuildingId)");
+        source.Should().NotContain("DB.Get<StationBuildingState>(building.Id)");
+        source.Should().NotContain("DB.Exists<StationBuildingState>(building.Id)");
+    }
+
+    // Recipe window stand-in line
+
+    [Test]
+    public void TheStandInLine_WrapsOntoDetailRows()
+    {
+        var lines = ShipRareComponentRules.StandInLines("sd_aurekstrikefi", null);
+        lines.Should().HaveCountGreaterThan(1);
+        lines.Should().OnlyContain(x => x.Length <= ShipRareComponentRules.DetailLineCharacters);
+        string.Join(" ", lines.Select(x => x.Trim())).Should().Be(ShipRareComponentRules.StandInText("sd_aurekstrikefi", null));
+        lines[0].Should().StartWith("1x Tier 2 component with a rare trait");
+
+        ShipRareComponentRules.StandInLines("sd_striker", null).Should().BeEmpty();
     }
 }

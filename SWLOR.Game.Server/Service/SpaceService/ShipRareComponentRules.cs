@@ -166,6 +166,37 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return $"1x Tier {tier} component with a rare trait ({families})";
         }
 
+        /// <summary>The characters a recipe detail row shows before the craft window cuts it off.</summary>
+        public const int DetailLineCharacters = 44;
+
+        /// <summary>
+        /// <see cref="StandInText"/> wrapped at word breaks onto recipe detail rows, which are single-line labels; the
+        /// whole line ("...Thruster Assembly, Energy Emitter)") was cut off even in a widened window (W11r). Empty for
+        /// other recipes.
+        /// </summary>
+        public static List<string> StandInLines(string deedResref, string rareName)
+        {
+            var lines = new List<string>();
+            var text = StandInText(deedResref, rareName);
+            if (text == null)
+                return lines;
+
+            var current = string.Empty;
+            foreach (var word in text.Split(' '))
+            {
+                if (current.Length > 0 && current.Length + 1 + word.Length > DetailLineCharacters)
+                {
+                    lines.Add(current);
+                    current = "  " + word;
+                }
+                else
+                    current = current.Length == 0 ? word : current + " " + word;
+            }
+
+            lines.Add(current);
+            return lines;
+        }
+
         private static string FamilyName(ShipComponentFamily family)
         {
             var name = RevampComponentCatalog.Items.First(x => x.Family == family).Name;

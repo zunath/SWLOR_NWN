@@ -245,7 +245,7 @@ public class EngineeringPerkLineTests
         var circuitStats = Enum.GetValues<StatType>().Where(stat => stat.ToString().StartsWith("Circuit", StringComparison.Ordinal)).ToList();
 
         circuitStats.Should().HaveCount(18);
-        circuitStats.Select(stat => (int)stat).Should().BeEquivalentTo(Enumerable.Range(1170, 18));
+        circuitStats.Select(stat => (int)stat).Should().BeEquivalentTo(Enumerable.Range(1171, 17).Append(1264));
         foreach (var stat in circuitStats)
         {
             CircuitPerkStats.FromStats(read => read == stat ? 7 : 0).Should().NotBeEquivalentTo(CircuitPerkStats.None, $"{stat} must change the perk stats");
@@ -265,7 +265,7 @@ public class EngineeringPerkLineTests
             .Distinct()
             .ToList();
 
-        granted.Should().BeEquivalentTo(Enumerable.Range(1170, 18).Select(id => (StatType)id));
+        granted.Should().BeEquivalentTo(Enumerable.Range(1171, 17).Append(1264).Select(id => (StatType)id));
     }
 
     [Test]
@@ -274,6 +274,6 @@ public class EngineeringPerkLineTests
         ((int)PerkType.ConductiveWiring).Should().Be(844);
         Overclocker.Concat(Technician).Select(perk => (int)perk).Should().OnlyContain(id => id >= 844 && id <= 863);
         Enum.GetValues<StatType>().Where(stat => stat.ToString().StartsWith("Circuit", StringComparison.Ordinal))
-            .Select(stat => (int)stat).Should().OnlyContain(id => id >= 1168 && id <= 1187);
+            .Select(stat => (int)stat).Should().OnlyContain(id => (id >= 1171 && id <= 1187) || id == 1264);
     }
 }

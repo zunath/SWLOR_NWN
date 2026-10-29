@@ -6395,6 +6395,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Extra damage per Cadence charge spent, added to the ability's per-charge bonus.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         CadenceBonusDamagePerCharge = 1169,
+        /// <summary>
+        /// Percent damage adjustment applied to grenade, Remote Charge, and Overload Barrage blasts.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BlastDamagePercentAdjustment = 1170,
 
         /// <summary>Percentage points of output each Load point adds to Circuit Wire, Tune and Discharge, on top of the recipe's own. A style may lower it.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -6406,7 +6411,7 @@ namespace SWLOR.Game.Server.Service.StatService
 
         /// <summary>Points added to the recipe's Circuit overload line.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CircuitOverloadLine = 1170,
+        CircuitOverloadLine = 1264,
 
         /// <summary>Load a Circuit Wire or Tune adds beyond its usual amount.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

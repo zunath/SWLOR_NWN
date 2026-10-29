@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Service
 
                 var payout = IncursionRules.BuildPayout(contribution, region, incursion.Invader, max => Random.Next(max));
                 paid++;
-                CapitalBattleRules.AddPending(state.PendingPayouts, playerId, payout);
+                CapitalBattleRules.AddPending(state.PendingPayouts, playerId, RollPulls(payout));
                 if (online.TryGetValue(playerId, out var player))
                     collecting.Add((playerId, player));
             }
@@ -530,6 +530,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             ShipHold.DeliverYield(player, items.Where(x => !string.IsNullOrWhiteSpace(x)).ToList());
+
+            // Saved with the character at once, so the window before the payout is cleared is as short as it can be.
+            ExportSingleCharacter(player);
             SendMessageToPC(player, ColorToken.Green(
                 $"{string.Format(heading, payout.RegionName)}: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points."));
             Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Credits} credits, {string.Join(", ", items)}");
@@ -555,8 +558,25 @@ namespace SWLOR.Game.Server.Service
             CollectPendingPayout(player, IncursionRecord.PendingPayouts, playerId, "Incursion spoils for the {0} region", "INCURSION PAYOUT");
 
         /// <summary>
-        /// Gives a player online their pending payout, then clears it and saves: a restart before the save leaves it to
-        /// collect at the next login.
+        /// Rolls a payout's loot pulls into items once, before it is saved as pending, so a payout collected again after
+        /// a restart gives the same items rather than new rolls.
+        /// </summary>
+        private static IncursionPayout RollPulls(IncursionPayout payout)
+        {
+            foreach (var (table, pulls) in payout.Pulls)
+            {
+                var lootTable = Loot.GetLootTableByName(table);
+                for (var pull = 0; pull < pulls; pull++)
+                    payout.Items.Add(lootTable.GetRandomItem().Resref);
+            }
+
+            payout.Pulls.Clear();
+            return payout;
+        }
+
+        /// <summary>
+        /// Gives a player online their pending payout and saves the character, then clears the payout and saves: a
+        /// restart before the character is saved leaves it to collect at the next login.
         /// </summary>
         private static void CollectPendingPayout(uint player, Dictionary<string, IncursionPayout> pending, string playerId, string heading, string logLabel)
         {

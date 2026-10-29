@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, payout);
+                    CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout));
                     pending = true;
                 }
             }

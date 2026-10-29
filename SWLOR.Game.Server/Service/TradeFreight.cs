@@ -97,6 +97,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // The proceeds are paid and saved with the character before the contract is cleared, so a restart in between
+            // leaves the load to deliver again rather than losing the fee.
+            if (!contract.IsAgentCourier)
+            {
+                GiveGoldToCreature(player, result.Fee + result.DepositReturned);
+                ExportSingleCharacter(player);
+            }
+
             ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id);
             dbPlayer.FreightContracts.Remove(contract);
             DB.Set(ship);
@@ -107,8 +115,6 @@ namespace SWLOR.Game.Server.Service
                 FactionAgents.OnCourierDelivered(player, contract.Id, result.IsLate);
                 return;
             }
-
-            GiveGoldToCreature(player, result.Fee + result.DepositReturned);
 
             SendMessageToPC(player, result.IsLate
                 ? ColorToken.Red($"Freight delivered late: {result.Fee} credits paid, and the deposit of {contract.Deposit} credits is forfeit.")

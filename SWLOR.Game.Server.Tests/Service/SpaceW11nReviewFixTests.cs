@@ -200,7 +200,7 @@ public class SpaceW11nReviewFixTests
         var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
         var start = source.IndexOf("private static void CompleteIncursion(", StringComparison.Ordinal);
         var complete = source[start..source.IndexOf("private static void EndIncursion(", start, StringComparison.Ordinal)];
-        complete.Should().Contain("CapitalBattleRules.AddPending(state.PendingPayouts, playerId, payout);");
+        complete.Should().Contain("CapitalBattleRules.AddPending(state.PendingPayouts, playerId, RollPulls(payout));");
         complete.Should().NotContain("DeliverPayout(");
         complete.IndexOf("EndIncursion(true);", StringComparison.Ordinal)
             .Should().BeLessThan(complete.IndexOf("CollectPendingIncursionPayout(player, playerId);", StringComparison.Ordinal),
@@ -224,6 +224,46 @@ public class SpaceW11nReviewFixTests
     {
         ReadSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs").Replace("\r\n", "\n")
             .Should().Contain("dbShip.Status.HighPowerModules.Count > 0 ||\n                        dbShip.Status.MidPowerModules.Count > 0 ||\n                        dbShip.Status.LowPowerModules.Count > 0");
+    }
+
+    [Test]
+    public void PendingSpoils_AreRolledOnce_AndSavedWithTheCharacterBeforeTheyAreCleared()
+    {
+        var incursions = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
+        incursions.Should().Contain("CapitalBattleRules.AddPending(state.PendingPayouts, playerId, RollPulls(payout));");
+        ReadSource("Service", "SpaceCapitalBattles.cs").Should().Contain("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout));");
+
+        var deliver = Between(incursions, "private static void DeliverPayout(", "/// <summary>A player who was offline");
+        deliver.IndexOf("ShipHold.DeliverYield(", StringComparison.Ordinal)
+            .Should().BeLessThan(deliver.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void FreightProceeds_ArePaidAndSavedBeforeTheContractIsCleared()
+    {
+        var deliver = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
+            "public static void DeliverFreight(", "public static void AbandonFreight(");
+        var paid = deliver.IndexOf("GiveGoldToCreature(player, result.Fee + result.DepositReturned);", StringComparison.Ordinal);
+        paid.Should().BeGreaterThan(0);
+        paid.Should().BeLessThan(deliver.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal));
+        deliver.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal)
+            .Should().BeLessThan(deliver.IndexOf("dbPlayer.FreightContracts.Remove(contract);", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void DrillOre_IsSavedWithTheCharacterBeforeTheStockIs()
+    {
+        var collect = Between(ReadSource("Service", "StationBuildings.cs").Replace("\r\n", "\n"),
+            "public static void CollectDrill(", "// Droids");
+        collect.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal).Should().BeGreaterThan(0);
+        collect.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal)
+            .Should().BeLessThan(collect.IndexOf("DB.Set(state);", StringComparison.Ordinal));
+    }
+
+    private static string Between(string source, string start, string end)
+    {
+        var from = source.IndexOf(start, StringComparison.Ordinal);
+        return source[from..source.IndexOf(end, from, StringComparison.Ordinal)];
     }
 
     [Test]

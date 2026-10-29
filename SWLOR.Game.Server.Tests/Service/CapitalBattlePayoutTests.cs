@@ -141,7 +141,7 @@ public class CapitalBattlePayoutTests
         withdraw.Should().Contain("No spoils are paid.").And.NotContain("PayCapitalBattle");
 
         battles.Should().Contain("DeliverPayout(player, payout,", "an online pilot is paid at once")
-            .And.Contain("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, payout)", "an offline pilot's spoils are kept")
+            .And.Contain("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout))", "an offline pilot's spoils are kept")
             .And.Contain("_capitalBattleContributions.Clear();").And.Contain("_capitalBattleDamage.Clear();");
 
         var incursions = ReadSource("Service", "SpaceIncursions.cs");

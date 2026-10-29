@@ -301,6 +301,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // The ore is saved with the character before the drill's stock is, so the window in which a restart could
+            // let it be collected twice is as short as it can be.
+            if (collected.Count > 0)
+                ExportSingleCharacter(player);
+
             DB.Set(state);
             SendMessageToPC(player, collected.Count > 0
                 ? ColorToken.Green($"Collected from the Asteroid Drill: {string.Join(", ", collected)}.")

@@ -10,10 +10,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         public int Credits { get; set; }
 
-        /// <summary>Loot table name to the number of pulls from it, rolled when the payout is delivered.</summary>
+        /// <summary>
+        /// Loot table name to the number of pulls from it. A payout saved as pending has them rolled into <see cref="Items"/>
+        /// first; any left (older pending records) are rolled when it is delivered.
+        /// </summary>
         public Dictionary<string, int> Pulls { get; set; } = new();
 
-        /// <summary>Items given as they are (a Ship Schematic).</summary>
+        /// <summary>Items given as they are (a Ship Schematic, or pulls already rolled).</summary>
         public List<string> Items { get; set; } = new();
 
         public double Points { get; set; }

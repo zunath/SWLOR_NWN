@@ -72,7 +72,10 @@ public sealed class SpaceFight
         };
     }
 
-    /// <summary>Runs one step starting at <paramref name="now"/> seconds: modules that are due act, then pools regenerate.</summary>
+    /// <summary>
+    /// Runs one step starting at <paramref name="now"/> seconds: modules that are due act, then pools regenerate, unless
+    /// the step ended the fight, and never past the scenario's duration.
+    /// </summary>
     public void Step(double now)
     {
         var actors = Ships.Where(s => s.IsAlive).ToList();
@@ -88,8 +91,16 @@ public sealed class SpaceFight
             RunAbilities(ship, now);
         }
 
+        // A fight that ended in this step stops here, so the result reads the pools as the killing shot left them.
+        if (!Ships.Any(s => s.SideIndex == AttackerSide && s.IsAlive) || !Ships.Any(s => s.SideIndex == DefenderSide && s.IsAlive))
+            return;
+
+        var seconds = Math.Min(_scenario.TimeStepSeconds, _scenario.DurationSeconds - now);
+        if (seconds <= 0)
+            return;
+
         foreach (var ship in actors.Where(s => s.IsAlive))
-            ship.Regenerate(_scenario.TimeStepSeconds);
+            ship.Regenerate(seconds);
     }
 
     private ShipState FirstLivingEnemy(ShipState ship) =>

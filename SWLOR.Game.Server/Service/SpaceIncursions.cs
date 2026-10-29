@@ -533,8 +533,9 @@ namespace SWLOR.Game.Server.Service
 
             // Saved with the character at once, so the window before the payout is cleared is as short as it can be.
             ExportSingleCharacter(player);
+            var points = payout.Points > 0 ? $" for {payout.Points:0.#} contribution points" : string.Empty;
             SendMessageToPC(player, ColorToken.Green(
-                $"{string.Format(heading, payout.RegionName)}: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points."));
+                $"{string.Format(heading, payout.RegionName)}: {payout.Credits} credits and {items.Count} item(s){points}."));
             Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Credits} credits, {string.Join(", ", items)}");
         }
 

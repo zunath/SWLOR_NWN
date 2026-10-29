@@ -188,4 +188,34 @@ public class SpaceFightTests
         result.DefendersDestroyedAt.Should().NotBeNull();
         result.EndedAt.Should().Be(result.DefendersDestroyedAt);
     }
+
+    [Test]
+    public void SpaceFight_EndingInAStep_LeavesThePoolsAsTheKillingShotLeftThem()
+    {
+        // The first cycle at 0 seconds kills the target and spends 5 of 10 capacitor; nothing regenerates after that.
+        var attacker = SpaceTestShips.Ship("Gunship", capacitor: 10, weapons: SpaceTestShips.Laser(dmg: 1000, capacitorPerCycle: 5));
+        attacker.CapacitorRegenPerSecond = 100;
+        var scenario = SpaceTestShips.Scenario(attacker, SpaceTestShips.Ship("Target", hull: 1), durationSeconds: 10);
+        var fight = new SpaceFight(scenario, seed: 1);
+
+        var result = fight.Run();
+
+        result.EndedAt.Should().Be(0);
+        fight.Ships[0].Capacitor.Should().Be(5);
+    }
+
+    [Test]
+    public void SpaceFight_LastPartialStep_RegeneratesOnlyUpToTheDuration()
+    {
+        // 0.25 seconds in 0.1-second steps: the third step regenerates 0.05 seconds, not a full step.
+        var attacker = SpaceTestShips.Ship("Gunship", capacitor: 1000);
+        attacker.CapacitorRegenPerSecond = 100;
+        var scenario = SpaceTestShips.Scenario(attacker, SpaceTestShips.Ship("Target", hull: 1000000), durationSeconds: 0.25);
+        var fight = new SpaceFight(scenario, seed: 1);
+        fight.Ships[0].Capacitor = 0;
+
+        fight.Run();
+
+        fight.Ships[0].Capacitor.Should().BeApproximately(25, 1e-6);
+    }
 }

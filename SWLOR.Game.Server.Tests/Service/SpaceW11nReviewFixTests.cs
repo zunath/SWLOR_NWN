@@ -208,6 +208,22 @@ public class SpaceW11nReviewFixTests
     }
 
     [Test]
+    public void AClearedRiftRun_SavesEverySpoilAsPendingBeforeAnyoneCollects()
+    {
+        var source = ReadSource("Service", "SpaceRiftRuns.cs").Replace("\r\n", "\n");
+        var start = source.IndexOf("private static void PayRiftRun(", StringComparison.Ordinal);
+        var pay = source[start..source.IndexOf("public static void DeliverPendingRiftRunPayout()", start, StringComparison.Ordinal)];
+        pay.Should().Contain("CapitalBattleRules.AddPending(state.PendingRiftPayouts, pilotId,");
+        pay.Should().Contain("CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId,");
+        pay.Should().NotContain("GiveGoldToCreature(");
+        pay.Should().NotContain("ShipHold.DeliverYield(");
+        pay.IndexOf("SaveIncursions();", StringComparison.Ordinal)
+            .Should().BeLessThan(pay.IndexOf("CollectPendingPayout(player, state.PendingRiftPayouts,", StringComparison.Ordinal),
+                "every share of the clear is saved before anyone collects");
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void DeliverPendingRiftRunPayout()");
+    }
+
+    [Test]
     public void PendingSpoils_AreClearedOnlyAfterTheyAreDelivered()
     {
         var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");

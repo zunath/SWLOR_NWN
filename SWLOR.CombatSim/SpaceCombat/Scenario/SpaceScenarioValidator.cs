@@ -82,6 +82,10 @@ public static class SpaceScenarioValidator
                 throw Invalid($"{name} needs cycleSeconds of at least {MinimumCycleSeconds}.");
             if (weapon.Size.HasValue && !Enum.IsDefined(weapon.Size.Value))
                 throw Invalid($"{name} has an unknown size.");
+            if (!Enum.IsDefined(weapon.Family))
+                throw Invalid($"{name} has an unknown family.");
+            if (!Enum.IsDefined(weapon.DamageType))
+                throw Invalid($"{name} has an unknown damageType.");
             if (!(weapon.ShieldDamageMultiplier > 0) || double.IsInfinity(weapon.ShieldDamageMultiplier))
                 throw Invalid($"{name} needs shieldDamageMultiplier above 0.");
             RequireNotNegative(name, "capacitorPerCycle", weapon.CapacitorPerCycle);

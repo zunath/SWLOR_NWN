@@ -88,6 +88,8 @@ public class SpaceScenarioSpecTests
         ShouldBeRejected(s => s.Attackers.Ships[0].Weapons[0].CycleSeconds = 0, "cycleSeconds");
         ShouldBeRejected(s => s.Attackers.Ships[0].Weapons[0].Rank = 51, "rank");
         ShouldBeRejected(s => s.Attackers.Ships[0].Weapons[0].ShieldDamageMultiplier = 0, "shieldDamageMultiplier");
+        ShouldBeRejected(s => s.Attackers.Ships[0].Weapons[0].Family = (ModuleFamily)99, "unknown family");
+        ShouldBeRejected(s => s.Attackers.Ships[0].Weapons[0].DamageType = (SpaceDamageType)99, "unknown damageType");
         ShouldBeRejected(s => s.Attackers.Ships[0].Resistances.EM = 101, "resistance");
         ShouldBeRejected(s => s.Attackers.Ships[0].Abilities.Add(new BurstAbilitySpec { Name = "Burst", Weapon = "Missing" }), "borrows weapon 'Missing'");
     }

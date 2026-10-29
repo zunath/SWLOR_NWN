@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Entity
             LastCenter = string.Empty;
             PendingPayouts = new Dictionary<string, IncursionPayout>();
             PendingBattlePayouts = new Dictionary<string, IncursionPayout>();
+            PendingRiftPayouts = new Dictionary<string, IncursionPayout>();
         }
 
         /// <summary>When the next weekly incursion starts.</summary>
@@ -36,5 +37,12 @@ namespace SWLOR.Game.Server.Entity
         /// A new property on an existing record: a record saved before it reads as null, so callers create it on use.
         /// </summary>
         public Dictionary<string, IncursionPayout> PendingBattlePayouts { get; set; }
+
+        /// <summary>
+        /// Player id to the Rift Run spoils of a cleared pocket, saved before any are handed out so a restart mid-payout
+        /// leaves the rest to collect at the next login. A new property on an existing record: a record saved before it
+        /// reads as null, so callers create it on use.
+        /// </summary>
+        public Dictionary<string, IncursionPayout> PendingRiftPayouts { get; set; }
     }
 }

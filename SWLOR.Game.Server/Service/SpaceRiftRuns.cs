@@ -290,34 +290,69 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Error, $"Rift Run {run.Id}: no ship of wave {run.Wave} in chamber {run.Room} could be created ({string.Join(", ", tags)}).");
         }
 
-        /// <summary>Pays each ship that finished: credits shared by the players aboard, item pulls to the pilot's hold.</summary>
+        /// <summary>
+        /// Pays each ship that finished: credits shared by the players aboard, item pulls to the pilot's hold. Every share
+        /// is saved as pending before any is handed out, so a restart mid-payout leaves the rest to collect at login.
+        /// </summary>
         private static void PayRiftRun(RiftRun run)
         {
             var secondsLeft = run.FinishedSecondsLeft;
             var credits = RiftRunRules.Credits(run.Key, secondsLeft);
             var pulls = RiftRunRules.Pulls(secondsLeft);
             var table = Loot.GetLootTableByName(run.Key.LootTable);
+            var state = IncursionRecord;
+            state.PendingRiftPayouts ??= new Dictionary<string, IncursionPayout>();
+            var collecting = new Dictionary<string, uint>();
             foreach (var pilot in run.Pilots)
             {
-                var aboard = GetShipCrewPlayers(pilot);
-                foreach (var (playerId, share) in RiftRunRules.ShareCredits(credits, aboard.Select(GetObjectUUID).ToList()))
-                {
-                    var player = aboard.First(x => GetObjectUUID(x) == playerId);
-                    if (share > 0)
-                        GiveGoldToCreature(player, share);
-                    SendMessageToPC(player, ColorToken.Green(
-                        $"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare: {share} credits. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds."));
-                }
-
                 var items = Enumerable.Range(0, pulls).Select(_ => table.GetRandomItem().Resref).ToList();
                 var nextKey = RiftRunRules.NextKey(run.Key);
                 if (nextKey != null && Random.Next(100) < RiftRunTuning.NextKeyPercent)
                     items.Add(nextKey.Resref);
 
-                ShipHold.DeliverYield(pilot, items.Where(x => !string.IsNullOrWhiteSpace(x)).ToList());
+                var pilotId = GetObjectUUID(pilot);
+                CapitalBattleRules.AddPending(state.PendingRiftPayouts, pilotId, new IncursionPayout
+                {
+                    Items = items.Where(x => !string.IsNullOrWhiteSpace(x)).ToList(),
+                    RegionName = run.Key.Name
+                });
+                if (GetIsObjectValid(pilot))
+                    collecting[pilotId] = pilot;
+
+                var aboard = GetShipCrewPlayers(pilot);
+                foreach (var (playerId, share) in RiftRunRules.ShareCredits(credits, aboard.Select(GetObjectUUID).ToList()))
+                {
+                    var player = aboard.First(x => GetObjectUUID(x) == playerId);
+                    CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId, new IncursionPayout { Credits = share, RegionName = run.Key.Name });
+                    collecting[playerId] = player;
+                    SendMessageToPC(player, ColorToken.Green(
+                        $"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds."));
+                }
+
                 Log.Write(LogGroup.Space, $"RIFT RUN CLEARED - {PlayerName.GetAuditName(pilot)} - {run.Key.Resref}, {secondsLeft} s left, " +
                                           $"{credits} credits, {string.Join(", ", items)}");
             }
+
+            SaveIncursions();
+            foreach (var (playerId, player) in collecting)
+                CollectPendingPayout(player, state.PendingRiftPayouts, playerId, "Rift Run spoils", "RIFT RUN PAYOUT");
+        }
+
+        /// <summary>A player whose Rift Run spoils were saved but not handed out (a restart mid-payout) collects them at login.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void DeliverPendingRiftRunPayout()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (IncursionRecord.PendingRiftPayouts == null || !IncursionRecord.PendingRiftPayouts.ContainsKey(playerId))
+                return;
+
+            // The payout stays pending until delivery: a player who disconnects within the delay collects it at the next login.
+            DelayCommand(6f, () => CollectPendingPayout(player, IncursionRecord.PendingRiftPayouts, playerId,
+                "Rift Run spoils", "RIFT RUN PAYOUT"));
         }
 
         private static void ReturnFromRiftPocket(RiftRun run, uint pilot)

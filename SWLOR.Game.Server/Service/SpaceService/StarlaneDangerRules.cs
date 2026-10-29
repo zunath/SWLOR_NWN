@@ -112,11 +112,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return $"Warning: {destinationName} is dangerous. " + string.Join(" ", GetReasons(danger, fromAreaResref, toAreaResref));
         }
 
-        /// <summary>A lane's description with its danger sentences added after the original text.</summary>
-        public static string GetDescription(string original, StarlaneDanger danger, string fromAreaResref, string toAreaResref)
+        /// <summary>
+        /// A lane's description with its danger sentences added after the original text. An original equal to
+        /// <paramref name="stockText"/> (the engine's "nothing special" placeable text) is dropped, so the warning stands alone.
+        /// </summary>
+        public static string GetDescription(string original, StarlaneDanger danger, string fromAreaResref, string toAreaResref,
+            string stockText = null)
         {
             if (danger == StarlaneDanger.None)
                 return original ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(stockText) && original?.Trim() == stockText.Trim())
+                original = string.Empty;
 
             var warning = "Dangerous lane. " + string.Join(" ", GetReasons(danger, fromAreaResref, toAreaResref));
             return string.IsNullOrWhiteSpace(original) ? warning : $"{original.TrimEnd()}\n\n{warning}";

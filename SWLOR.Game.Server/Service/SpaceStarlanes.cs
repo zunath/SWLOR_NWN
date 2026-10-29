@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.Service
         private const string StarlaneTag = "tele_obj";
         private const string StarlaneDestinationVariable = "DESTINATION";
         private const string StarlaneDangerMarkedVariable = "STARLANE_DANGER_MARKED";
+        // dialog.tlk 6792, "There is nothing special about this object.": what GetDescription returns for a lane, whose
+        // template description (strref 14533 with an empty override) is blank.
+        private const int StarlaneStockDescriptionStrRef = 6792;
 
         /// <summary>Tags the dangerous lanes of an area the first time anyone enters it.</summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
@@ -39,7 +42,8 @@ namespace SWLOR.Game.Server.Service
                 if (!name.Contains(StarlaneDangerRules.NameMarker))
                     SetName(lane, name + StarlaneDangerRules.GetNameTag(danger, GetResRef(destinationArea)));
 
-                SetDescription(lane, StarlaneDangerRules.GetDescription(GetDescription(lane), danger, fromResref, GetResRef(destinationArea)));
+                SetDescription(lane, StarlaneDangerRules.GetDescription(GetDescription(lane), danger, fromResref, GetResRef(destinationArea),
+                    GetStringByStrRef(StarlaneStockDescriptionStrRef)));
             }
         }
 

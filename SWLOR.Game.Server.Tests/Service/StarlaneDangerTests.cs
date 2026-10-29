@@ -122,6 +122,17 @@ public class StarlaneDangerTests
     }
 
     [Test]
+    public void TheDescription_DropsTheEngineStockText()
+    {
+        const string stock = "There is nothing special about this object.";
+
+        StarlaneDangerRules.GetDescription(stock, StarlaneDanger.HigherTier, "viscaraorbit", "moncalaorbit", stock)
+            .Should().StartWith("Dangerous lane.").And.NotContain("nothing special");
+        StarlaneDangerRules.GetDescription("A starlane.", StarlaneDanger.HigherTier, "viscaraorbit", "moncalaorbit", stock)
+            .Should().StartWith("A starlane.");
+    }
+
+    [Test]
     public void EveryText_IsAscii()
     {
         foreach (var danger in new[]

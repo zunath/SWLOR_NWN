@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Service
         private const string StarlaneTag = "tele_obj";
         private const string StarlaneDestinationVariable = "DESTINATION";
         private const string StarlaneDangerMarkedVariable = "STARLANE_DANGER_MARKED";
+        // The lane template's description strref: "There is nothing special about this object."
+        private const int StarlaneStockDescriptionStrRef = 14533;
 
         /// <summary>Tags the dangerous lanes of an area the first time anyone enters it.</summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
@@ -39,7 +41,8 @@ namespace SWLOR.Game.Server.Service
                 if (!name.Contains(StarlaneDangerRules.NameMarker))
                     SetName(lane, name + StarlaneDangerRules.GetNameTag(danger, GetResRef(destinationArea)));
 
-                SetDescription(lane, StarlaneDangerRules.GetDescription(GetDescription(lane), danger, fromResref, GetResRef(destinationArea)));
+                SetDescription(lane, StarlaneDangerRules.GetDescription(GetDescription(lane), danger, fromResref, GetResRef(destinationArea),
+                    GetStringByStrRef(StarlaneStockDescriptionStrRef)));
             }
         }
 

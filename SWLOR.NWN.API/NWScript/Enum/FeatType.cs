@@ -2835,5 +2835,14 @@ namespace SWLOR.NWN.API.NWScript.Enum
         PlayInstrument4 = 3433,
         SteadyHands2Trait = 3434,
         VirtuosoTrait = 3435,
+        PerformanceStepLeft = 3436,
+        PerformanceStepUp = 3437,
+        PerformanceStepDown = 3438,
+        PerformanceStepRight = 3439,
+        PerformanceNoteLow = 3440,
+        PerformanceNoteMid = 3441,
+        PerformanceNoteHigh = 3442,
+        PerformanceFlourish = 3443,
+        PerformanceOptions = 3444,
 }
 }

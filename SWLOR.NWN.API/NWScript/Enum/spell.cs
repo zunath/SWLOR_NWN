@@ -1709,5 +1709,14 @@ namespace SWLOR.NWN.API.NWScript.Enum
         PlayInstrument2 = 1617,
         PlayInstrument3 = 1830,
         PlayInstrument4 = 1831,
+        PerformanceStepLeft = 1832,
+        PerformanceStepUp = 1833,
+        PerformanceStepDown = 1834,
+        PerformanceStepRight = 1835,
+        PerformanceNoteLow = 1836,
+        PerformanceNoteMid = 1837,
+        PerformanceNoteHigh = 1838,
+        PerformanceFlourish = 1839,
+        PerformanceOptions = 1840,
     }
 }

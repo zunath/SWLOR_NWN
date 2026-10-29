@@ -6448,6 +6448,18 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         PerformanceSetAttributeBonus = 1312,
 
+        /// <summary>
+        /// Percent adjustment applied to creature movement speed only while the creature is out of combat.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OutOfCombatMovementSpeedPercentAdjustment = 1313,
+
+        /// <summary>
+        /// Percent-point adjustment added to the chance that a fishing attempt catches something.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FishingCatchChancePercentAdjustment = 1314,
+
 
     }
 

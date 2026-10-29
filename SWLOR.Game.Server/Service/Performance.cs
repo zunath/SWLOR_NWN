@@ -1,15 +1,690 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using Vector3 = System.Numerics.Vector3;
+
 namespace SWLOR.Game.Server.Service
 {
     public static class Performance
     {
+        private const string AllowNoInstrumentVariable = "PERFORMANCE_ALLOW_NO_INSTRUMENT";
+        private const string InstrumentFamilyVariable = "PERFORMANCE_INSTRUMENT_FAMILY";
+        private const float LoopingAnimationSeconds = 9999.9f;
+
+        private const int FirstBarSlotCount = 12;
+        private const int FlourishSlot = 4;
+        private const int OptionsSlot = 5;
+        private const int StopSlot = 6;
+
+        private static readonly Dictionary<uint, PerformanceSession> _sessions = new();
+        private static readonly Dictionary<string, PerformancePreference> _preferences = new();
+
+        private static readonly FeatType[] _danceToggleFeats =
+            { FeatType.Dance1, FeatType.Dance2, FeatType.Dance3, FeatType.Dance4 };
+
+        private static readonly FeatType[] _musicToggleFeats =
+            { FeatType.PlayInstrument1, FeatType.PlayInstrument2, FeatType.PlayInstrument3, FeatType.PlayInstrument4 };
+
+        private static readonly FeatType[] _danceCueFeats =
+        {
+            FeatType.PerformanceStepLeft, FeatType.PerformanceStepUp,
+            FeatType.PerformanceStepDown, FeatType.PerformanceStepRight
+        };
+
+        private static readonly FeatType[] _musicCueFeats =
+        {
+            FeatType.PerformanceNoteLow, FeatType.PerformanceNoteMid, FeatType.PerformanceNoteHigh
+        };
+
+        private static readonly FeatType[] _allModeFeats =
+            _danceCueFeats.Concat(_musicCueFeats)
+                .Concat(new[] { FeatType.PerformanceFlourish, FeatType.PerformanceOptions }).ToArray();
+
         public static void ToggleDance(uint activator, int level)
         {
-            SendMessageToPC(activator, "Performances are coming soon.");
+            Toggle(activator, PerformanceKind.Dance, level);
         }
 
         public static void TogglePlayInstrument(uint activator, int level)
         {
-            SendMessageToPC(activator, "Performances are coming soon.");
+            Toggle(activator, PerformanceKind.Music, level);
+        }
+
+        public static bool IsModeFeat(FeatType feat)
+        {
+            return Array.IndexOf(_allModeFeats, feat) >= 0;
+        }
+
+        /// <summary>A performer's own Dance or Play Instrument feat doubles as the Stop button, so it is routed here before the busy check can refuse it.</summary>
+        public static bool IsModeFeat(uint activator, FeatType feat)
+        {
+            return IsModeFeat(feat) || _sessions.ContainsKey(activator) && IsToggleFeat(feat);
+        }
+
+        public static bool TryGetSession(uint performer, out PerformanceSession session)
+        {
+            return _sessions.TryGetValue(performer, out session);
+        }
+
+        public static IReadOnlyList<PerformanceSession> GetSessions()
+        {
+            return _sessions.Values.ToArray();
+        }
+
+        public static PerformancePreference GetPreference(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            if (!_preferences.TryGetValue(playerId, out var preference))
+            {
+                preference = new PerformancePreference();
+                _preferences[playerId] = preference;
+            }
+
+            return preference;
+        }
+
+        public static bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine)
+        {
+            return Perk.GetPerkLevel(player, PerformanceRiderCatalog.GetUnlockPerk(routine)) > 0;
+        }
+
+        public static bool IsSetUnlocked(uint player, PerformanceSetType set)
+        {
+            return Perk.GetPerkLevel(player, PerformanceRiderCatalog.GetUnlockPerk(set)) > 0;
+        }
+
+        public static bool SetRoutine(uint player, PerformanceRoutineType routine)
+        {
+            if (!IsRoutineUnlocked(player, routine))
+                return false;
+
+            GetPreference(player).Routine = routine;
+            if (_sessions.TryGetValue(player, out var session) && session.Kind == PerformanceKind.Dance)
+            {
+                session.Routine = routine;
+                StartLoopingAnimation(session);
+            }
+
+            return true;
+        }
+
+        public static bool SetSet(uint player, PerformanceSetType set)
+        {
+            if (!IsSetUnlocked(player, set))
+                return false;
+
+            GetPreference(player).Set = set;
+            if (_sessions.TryGetValue(player, out var session) && session.Kind == PerformanceKind.Music)
+                session.Set = set;
+
+            return true;
+        }
+
+        public static void SetTempo(uint player, PerformanceTempo tempo)
+        {
+            GetPreference(player).Tempo = tempo;
+            if (_sessions.TryGetValue(player, out var session))
+                ApplyTempo(session, tempo);
+        }
+
+        /// <summary>
+        /// Whether the player may play music right now and which instrument family they are using.
+        /// Until instruments exist, the module or player local int PERFORMANCE_ALLOW_NO_INSTRUMENT lets anyone play;
+        /// a local string PERFORMANCE_INSTRUMENT_FAMILY on the player or module then picks the family (Strings by default).
+        /// </summary>
+        public static bool HasInstrumentEquipped(uint player, out PerformanceInstrumentFamily family)
+        {
+            return TryFindInstrument(player, out family, out _, out _);
+        }
+
+        // Found once when a performance starts; each beat then checks only that slot (see IsInstrumentStillEquipped).
+        private static bool TryFindInstrument(
+            uint player,
+            out PerformanceInstrumentFamily family,
+            out InventorySlot instrumentSlot,
+            out uint instrument)
+        {
+            for (var slot = InventorySlot.Head; slot <= InventorySlot.Belt; slot++)
+            {
+                var item = GetItemInSlot(slot, player);
+                if (GetIsObjectValid(item) &&
+                    TryParseFamily(GetLocalString(item, InstrumentFamilyVariable), out family))
+                {
+                    instrumentSlot = slot;
+                    instrument = item;
+                    return true;
+                }
+            }
+
+            instrumentSlot = InventorySlot.Invalid;
+            instrument = OBJECT_INVALID;
+
+            var module = GetModule();
+            if (GetLocalInt(module, AllowNoInstrumentVariable) != 0 || GetLocalInt(player, AllowNoInstrumentVariable) != 0)
+            {
+                if (!TryParseFamily(GetLocalString(player, InstrumentFamilyVariable), out family) &&
+                    !TryParseFamily(GetLocalString(module, InstrumentFamilyVariable), out family))
+                {
+                    family = PerformanceInstrumentFamily.Strings;
+                }
+
+                return true;
+            }
+
+            family = PerformanceInstrumentFamily.None;
+            return false;
+        }
+
+        public static void HandleInput(uint activator, FeatType feat)
+        {
+            if (!_sessions.TryGetValue(activator, out var session))
+            {
+                // A mode feat with no live session is left over from an interrupted performance.
+                RecoverInterruptedPerformance(activator);
+                RemoveModeFeats(activator);
+                return;
+            }
+
+            if (IsToggleFeat(feat))
+            {
+                EndPerformance(activator, PerformanceEndReason.Stopped);
+                return;
+            }
+
+            var now = DateTime.UtcNow;
+            session.MarkInput(now);
+
+            if (feat == FeatType.PerformanceFlourish)
+            {
+                TryFlourish(session, now);
+                return;
+            }
+
+            if (feat == FeatType.PerformanceOptions)
+            {
+                ApplyTempo(session, session.Tempo.Next());
+                GetPreference(activator).Tempo = session.Tempo;
+                return;
+            }
+
+            if (!TryGetCue(feat, out var cue) || !PerformanceCueGenerator.GetLanes(session.Kind).Contains(cue))
+                return;
+
+            if (session.RegisterCue(cue, now) == PerformanceInputResult.Hit)
+                PlayHitAnimation(session, cue);
+        }
+
+        public static void EndPerformance(uint player, PerformanceEndReason reason)
+        {
+            if (!_sessions.Remove(player, out var session))
+                return;
+
+            session.BeatSchedule?.Dispose();
+            session.BeatSchedule = null;
+
+            if (GetIsObjectValid(player))
+            {
+                RestorePlayer(player);
+                if (Activity.GetBusyType(player) == ActivityStatusType.Performing)
+                    Activity.ClearBusy(player);
+
+                if (reason != PerformanceEndReason.LoggedOut)
+                {
+                    if (reason != PerformanceEndReason.Died)
+                        ReleaseAnimation(player, reason);
+
+                    var message = GetEndMessage(reason);
+                    if (!string.IsNullOrEmpty(message))
+                        SendMessageToPC(player, message);
+                }
+            }
+
+            try
+            {
+                PerformanceAudience.OnSessionEnded(session, reason);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex, "Performance audience cleanup failed: PlayerId={PlayerId}", session.PlayerId);
+            }
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void RecoverOnLogin()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            RecoverInterruptedPerformance(player);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void EndOnLogout()
+        {
+            EndPerformance(GetExitingObject(), PerformanceEndReason.LoggedOut);
+        }
+
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void EndOnAreaExit()
+        {
+            EndPerformance(GetExitingObject(), PerformanceEndReason.AreaExit);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        public static void EndOnDeath()
+        {
+            EndPerformance(GetLastPlayerDied(), PerformanceEndReason.Died);
+        }
+
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+        public static void EndOnDamage()
+        {
+            EndPerformance(OBJECT_SELF, PerformanceEndReason.Combat);
+        }
+
+        [NWNEventHandler(ScriptName.OnInputAttackObjectBefore)]
+        public static void EndOnAttack()
+        {
+            EndPerformance(OBJECT_SELF, PerformanceEndReason.Combat);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
+        public static void EndOnInstrumentUnequipped()
+        {
+            var player = GetPCItemLastUnequippedBy();
+            if (!_sessions.TryGetValue(player, out var session) || session.Kind != PerformanceKind.Music)
+                return;
+
+            if (!string.IsNullOrEmpty(GetLocalString(GetPCItemLastUnequipped(), InstrumentFamilyVariable)))
+                EndPerformance(player, PerformanceEndReason.InstrumentRemoved);
+        }
+
+        private static void Toggle(uint player, PerformanceKind kind, int level)
+        {
+            if (_sessions.ContainsKey(player))
+            {
+                EndPerformance(player, PerformanceEndReason.Stopped);
+                return;
+            }
+
+            var family = PerformanceInstrumentFamily.None;
+            var instrumentSlot = InventorySlot.Invalid;
+            var instrument = OBJECT_INVALID;
+            string error = null;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                error = "Only players may perform.";
+            else if (GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
+                error = "You cannot perform right now.";
+            else if (GetIsInCombat(player))
+                error = "You cannot perform while in combat.";
+            else if (Activity.IsBusy(player))
+                error = "You are busy.";
+            else if (Space.IsPlayerInSpaceMode(player))
+                error = "You cannot perform in space.";
+            else if (kind == PerformanceKind.Music && !TryFindInstrument(player, out family, out instrumentSlot, out instrument))
+                error = "You must equip an instrument to play music.";
+
+            if (error != null)
+            {
+                SendMessageToPC(player, error);
+                return;
+            }
+
+            StartPerformance(player, kind, level, family, instrumentSlot, instrument);
+        }
+
+        private static void StartPerformance(
+            uint player,
+            PerformanceKind kind,
+            int level,
+            PerformanceInstrumentFamily family,
+            InventorySlot instrumentSlot,
+            uint instrument)
+        {
+            var playerId = GetObjectUUID(player);
+
+            // A hot bar saved by an interrupted performance is the player's real one; restore it before saving again.
+            RecoverInterruptedPerformance(player);
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+            {
+                SendMessageToPC(player, "You cannot perform right now.");
+                return;
+            }
+
+            var toggleFeats = kind == PerformanceKind.Dance ? _danceToggleFeats : _musicToggleFeats;
+            var toggleFeat = toggleFeats[Math.Clamp(level, 1, toggleFeats.Length) - 1];
+
+            dbPlayer.PerformanceSavedHotBar = CreaturePlugin.SerializeQuickbar(player) ?? string.Empty;
+            DB.Set(dbPlayer);
+
+            foreach (var feat in GetModeFeats(kind))
+                CreaturePlugin.AddFeat(player, feat);
+
+            ApplyModeQuickbar(player, kind, toggleFeat);
+            Activity.SetBusy(player, ActivityStatusType.Performing);
+
+            var preference = GetPreference(player);
+            var now = DateTime.UtcNow;
+            var session = new PerformanceSession(
+                player, kind, family, preference.Tempo, now, new System.Random(HashCode.Combine(player, now.Ticks)))
+            {
+                PlayerId = playerId,
+                Area = GetArea(player),
+                StartPosition = GetPosition(player),
+                ToggleFeat = toggleFeat,
+                PerkLevel = level,
+                InstrumentSlot = instrumentSlot,
+                Instrument = instrument,
+                Routine = IsRoutineUnlocked(player, preference.Routine)
+                    ? preference.Routine
+                    : PerformanceRoutineType.CantinaShuffle,
+                Set = IsSetUnlocked(player, preference.Set)
+                    ? preference.Set
+                    : PerformanceSetType.CantinaStandards
+            };
+
+            _sessions[player] = session;
+            StartLoopingAnimation(session);
+            ScheduleBeats(session);
+
+            SendMessageToPC(player, kind == PerformanceKind.Dance
+                ? "You begin to dance. Use the step buttons on your hot bar to match the cues."
+                : "You begin to play. Use the note buttons on your hot bar to match the cues.");
+            PresentBeat(session);
+        }
+
+        private static void ScheduleBeats(PerformanceSession session)
+        {
+            session.BeatSchedule?.Dispose();
+            session.BeatSchedule = Scheduler.ScheduleRepeating(
+                () => OnBeat(session),
+                TimeSpan.FromSeconds(session.Tempo.GetBeatSeconds()));
+        }
+
+        private static void OnBeat(PerformanceSession session)
+        {
+            var player = session.Performer;
+            var profilerStart = FrameProfiler.Start();
+            try
+            {
+                if (!_sessions.TryGetValue(player, out var live) || live != session)
+                {
+                    session.BeatSchedule?.Dispose();
+                    return;
+                }
+
+                var endReason = GetEndTrigger(session);
+                if (endReason.HasValue)
+                {
+                    EndPerformance(player, endReason.Value);
+                    return;
+                }
+
+                session.AdvanceBeat();
+                PresentBeat(session);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex, "Performance beat failed: PlayerId={PlayerId}", session.PlayerId);
+                try
+                {
+                    EndPerformance(player, PerformanceEndReason.Invalid);
+                }
+                catch (Exception endEx)
+                {
+                    Log.WriteError(endEx, "Performance cleanup failed: PlayerId={PlayerId}", session.PlayerId);
+                    _sessions.Remove(player);
+                    session.BeatSchedule?.Dispose();
+                }
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.Scheduler, profilerStart, "PerformanceBeat");
+            }
+        }
+
+        private static PerformanceEndReason? GetEndTrigger(PerformanceSession session)
+        {
+            var player = session.Performer;
+            if (!GetIsObjectValid(player))
+                return PerformanceEndReason.Invalid;
+            if (GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
+                return PerformanceEndReason.Died;
+            if (GetArea(player) != session.Area)
+                return PerformanceEndReason.AreaExit;
+            if (GetIsInCombat(player))
+                return PerformanceEndReason.Combat;
+            if (Vector3.Distance(GetPosition(player), session.StartPosition) > PerformanceMath.MaxMoveDistanceMeters)
+                return PerformanceEndReason.Moved;
+            if (session.Kind == PerformanceKind.Music && !IsInstrumentStillEquipped(session))
+                return PerformanceEndReason.InstrumentRemoved;
+            if (session.IsIdle(DateTime.UtcNow))
+                return PerformanceEndReason.Idle;
+
+            return null;
+        }
+
+        // One slot lookup per beat. Sessions started under the no-instrument test allowance have no item to check.
+        private static bool IsInstrumentStillEquipped(PerformanceSession session)
+        {
+            return session.Instrument == OBJECT_INVALID ||
+                   GetItemInSlot(session.InstrumentSlot, session.Performer) == session.Instrument;
+        }
+
+        private static void ApplyTempo(PerformanceSession session, PerformanceTempo tempo)
+        {
+            session.Tempo = tempo;
+            ScheduleBeats(session);
+            SendMessageToPC(
+                session.Performer,
+                $"Tempo: {tempo} ({tempo.GetBeatSeconds():0.0}s beats, x{tempo.GetXPMultiplier():0.##} XP).");
+        }
+
+        private static void TryFlourish(PerformanceSession session, DateTime now)
+        {
+            var performer = session.Performer;
+            if (!session.TryConsumeFlourish(now))
+            {
+                SendMessageToPC(performer, $"Flourish is not ready ({session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}).");
+                return;
+            }
+
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Improve_Ability_Score), performer);
+            AssignCommand(performer, () => PlayAnimation(
+                session.Kind == PerformanceKind.Dance ? Animation.FireForgetVictory1 : Animation.FireForgetVictory2));
+            SendMessageToPC(performer, "Flourish!");
+            PerformanceAudience.OnFlourish(session);
+        }
+
+        private static void PresentBeat(PerformanceSession session)
+        {
+            var strip = string.Join(" | ", new[] { session.Current }.Concat(session.Upcoming)
+                .Select((beat, index) => DescribeBeat(beat, index == 0)));
+            FloatingTextStringOnCreature(
+                $"{strip}  [{session.Quality}] Streak {session.Streak} Flourish {session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}",
+                session.Performer,
+                false);
+        }
+
+        private static string DescribeBeat(PerformanceBeat beat, bool isCurrent)
+        {
+            var text = beat.IsRest
+                ? "hold"
+                : beat.IsChord ? $"{beat.Primary}+{beat.Second}" : beat.Primary.ToString();
+            return isCurrent ? $"[{text.ToUpperInvariant()}]" : text;
+        }
+
+        private static void ApplyModeQuickbar(uint player, PerformanceKind kind, FeatType toggleFeat)
+        {
+            ClearFirstBar(player);
+
+            var cueFeats = kind == PerformanceKind.Dance ? _danceCueFeats : _musicCueFeats;
+            for (var slot = 0; slot < cueFeats.Length; slot++)
+                PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.UseFeat(cueFeats[slot]));
+
+            PlayerPlugin.SetQuickBarSlot(player, FlourishSlot, PlayerQuickBarSlot.UseFeat(FeatType.PerformanceFlourish));
+            PlayerPlugin.SetQuickBarSlot(player, OptionsSlot, PlayerQuickBarSlot.UseFeat(FeatType.PerformanceOptions));
+            PlayerPlugin.SetQuickBarSlot(player, StopSlot, PlayerQuickBarSlot.UseFeat(toggleFeat));
+        }
+
+        private static void RemoveModeFeats(uint player)
+        {
+            foreach (var feat in _allModeFeats)
+                CreaturePlugin.RemoveFeat(player, feat);
+        }
+
+        private static void ClearFirstBar(uint player)
+        {
+            for (var slot = 0; slot < FirstBarSlotCount; slot++)
+                PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+        }
+
+        private static void RestorePlayer(uint player)
+        {
+            RemoveModeFeats(player);
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+            {
+                ClearFirstBar(player);
+                return;
+            }
+
+            var saved = dbPlayer.PerformanceSavedHotBar;
+            if (string.IsNullOrWhiteSpace(saved) || !CreaturePlugin.DeserializeQuickbar(player, saved))
+                ClearFirstBar(player);
+
+            dbPlayer.PerformanceSavedHotBar = null;
+            DB.Set(dbPlayer);
+        }
+
+        // Restores the hot bar and feats after a crash, a failed cleanup, or a stale mode button.
+        private static void RecoverInterruptedPerformance(uint player)
+        {
+            if (_sessions.ContainsKey(player))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer?.PerformanceSavedHotBar == null)
+                return;
+
+            RestorePlayer(player);
+            if (Activity.GetBusyType(player) == ActivityStatusType.Performing)
+                Activity.ClearBusy(player);
+        }
+
+        private static void StartLoopingAnimation(PerformanceSession session)
+        {
+            var player = session.Performer;
+            var animation = GetLoopingAnimation(session);
+            AssignCommand(player, () => ActionPlayAnimation(animation, 1f, LoopingAnimationSeconds));
+        }
+
+        // Walking away or attacking replaces the queue; only an idle or animating queue is safe to clear.
+        private static void ReleaseAnimation(uint player, PerformanceEndReason reason)
+        {
+            var action = GetCurrentAction(player);
+            if (action != ActionType.Invalid && action != ActionType.Wait)
+                return;
+
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                if (reason == PerformanceEndReason.Stopped)
+                    ActionPlayAnimation(Animation.FireForgetBow);
+            });
+        }
+
+        private static Animation GetLoopingAnimation(PerformanceSession session)
+        {
+            if (session.Kind == PerformanceKind.Music)
+            {
+                return session.InstrumentFamily == PerformanceInstrumentFamily.Horns
+                    ? Animation.PlayFlute
+                    : Animation.PlayGuitar;
+            }
+
+            return session.Routine switch
+            {
+                PerformanceRoutineType.LightFeet => Animation.BootDance,
+                PerformanceRoutineType.PowerStep => Animation.BootDance,
+                PerformanceRoutineType.VigorReel => Animation.BootDance,
+                _ => Animation.DanceHandsUp
+            };
+        }
+
+        // Placeholder accents until authored step clips exist; notes leave the instrument loop undisturbed.
+        private static void PlayHitAnimation(PerformanceSession session, PerformanceCue cue)
+        {
+            if (session.Kind != PerformanceKind.Dance)
+                return;
+
+            var animation = cue switch
+            {
+                PerformanceCue.Left => Animation.FireForgetHeadTurnLeft,
+                PerformanceCue.Right => Animation.FireForgetHeadTurnRight,
+                PerformanceCue.Up => Animation.FireForgetVictory1,
+                _ => Animation.FireForgetDodgeDuck
+            };
+            AssignCommand(session.Performer, () => PlayAnimation(animation));
+        }
+
+        private static string GetEndMessage(PerformanceEndReason reason)
+        {
+            return reason switch
+            {
+                PerformanceEndReason.Stopped => "You finish your performance.",
+                PerformanceEndReason.Combat => "Your performance ends because you are in combat.",
+                PerformanceEndReason.Moved => "Your performance ends because you moved.",
+                PerformanceEndReason.Idle => "Your performance ends because you stopped following the beat.",
+                PerformanceEndReason.InstrumentRemoved => "Your performance ends because your instrument was removed.",
+                _ => string.Empty
+            };
+        }
+
+        private static IEnumerable<FeatType> GetModeFeats(PerformanceKind kind)
+        {
+            var cueFeats = kind == PerformanceKind.Dance ? _danceCueFeats : _musicCueFeats;
+            return cueFeats.Concat(new[] { FeatType.PerformanceFlourish, FeatType.PerformanceOptions });
+        }
+
+        private static bool IsToggleFeat(FeatType feat)
+        {
+            return Array.IndexOf(_danceToggleFeats, feat) >= 0 || Array.IndexOf(_musicToggleFeats, feat) >= 0;
+        }
+
+        private static bool TryGetCue(FeatType feat, out PerformanceCue cue)
+        {
+            switch (feat)
+            {
+                case FeatType.PerformanceStepLeft: cue = PerformanceCue.Left; return true;
+                case FeatType.PerformanceStepUp: cue = PerformanceCue.Up; return true;
+                case FeatType.PerformanceStepDown: cue = PerformanceCue.Down; return true;
+                case FeatType.PerformanceStepRight: cue = PerformanceCue.Right; return true;
+                case FeatType.PerformanceNoteLow: cue = PerformanceCue.Low; return true;
+                case FeatType.PerformanceNoteMid: cue = PerformanceCue.Mid; return true;
+                case FeatType.PerformanceNoteHigh: cue = PerformanceCue.High; return true;
+                default: cue = PerformanceCue.Left; return false;
+            }
+        }
+
+        private static bool TryParseFamily(string text, out PerformanceInstrumentFamily family)
+        {
+            return Enum.TryParse(text, true, out family) &&
+                   family != PerformanceInstrumentFamily.None &&
+                   Enum.IsDefined(family);
         }
     }
 }

@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         /// <summary>
         /// Left column: spawn an enemy squad of one faction tier and role near the DM, a trade convoy of that tier, or an
-        /// incursion centred on the DM's orbit (plan section 30). Right column: place a derelict or a hidden signature
+        /// incursion centred on the DM's orbit (plan section 30), or a capital battle in a picked orbit. Right column: place a derelict or a hidden signature
         /// where the DM clicks (plan sections 24 and 28), open, close and list Rift Pockets (plan section 31) and break a
         /// ship's cloak (plan section 6).
         /// </summary>
@@ -449,6 +449,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetText("Start Convoy")
                     .SetTooltip("Start a trade convoy of the picked faction's tier around you")
                     .BindOnClicked(model => model.OnStartConvoy())
+                    .SetHeight(35f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Battle")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(SpaceLabelWidth);
+                row.AddComboBox()
+                    .BindOptions(model => model.SpaceBattleOptions)
+                    .BindSelectedIndex(model => model.SpaceBattleIndex)
+                    .SetWidth(SpaceFieldWidth);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText("Start Capital Battle")
+                    .SetTooltip("Drop an armada battle group into the picked tier 5-6 orbit (a random one by default) for 30 minutes; destroying it pays its contributors")
+                    .BindOnClicked(model => model.OnStartCapitalBattle())
                     .SetHeight(35f);
             });
         }

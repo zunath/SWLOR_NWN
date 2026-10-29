@@ -323,11 +323,11 @@ public class ShipAccessRulesTests
             root.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
                 .Select(x => x.GetProperty("TemplateResRef").GetProperty("value").GetString())
                 .Should().NotContain(new[] { "tele_obj", "spc_dock" }, $"{system.AreaResref} is reached only through rifts");
-            // Besides the stuck waypoint, only the player station anchor sites (W13a) and the W11o wreck sites, which hold
-            // no starlane or dock.
+            // Besides the stuck waypoint, only the player station anchor sites (W13a) and the W11o/W11p wreck sites and
+            // minefields, which hold no starlane or dock.
             root.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
                 .Select(x => x.GetProperty("Tag").GetProperty("value").GetString())
-                .Where(x => x != SpaceHazardTuning.WreckSiteTag)
+                .Where(x => x != SpaceHazardTuning.WreckSiteTag && x != SpaceHazardTuning.MinefieldTag)
                 .Should().BeEquivalentTo(new[] { "STUCK_WAYPOINT" }.Concat(
                     SWLOR.Game.Server.Service.StationService.StationRules.GetAnchorsInArea(system.AreaResref).Select(x => x.Tag)));
         }

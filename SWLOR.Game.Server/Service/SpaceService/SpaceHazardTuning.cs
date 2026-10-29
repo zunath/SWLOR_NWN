@@ -29,6 +29,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new SpaceHazardPlacement { AreaResref = "space_viscbelt", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 1 },
             new SpaceHazardPlacement { AreaResref = "space_midrimneb", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 3 },
             new SpaceHazardPlacement { AreaResref = "space_korrdebris", WaypointTag = "SPACE_MINEFIELD", Count = 4, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wspulsar", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsblkhole", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsionstorm", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsmagnetar", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsredgiant", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsgraveyrd", WaypointTag = "SPACE_MINEFIELD", Count = 3, Tier = 5 },
             new SpaceHazardPlacement { AreaResref = "viscaraorbit", WaypointTag = "SPACE_WRECK_SITE", Count = 1, Tier = 1 },
             new SpaceHazardPlacement { AreaResref = "moncalaorbit", WaypointTag = "SPACE_WRECK_SITE", Count = 1, Tier = 2 },
             new SpaceHazardPlacement { AreaResref = "hutlar_orbit", WaypointTag = "SPACE_WRECK_SITE", Count = 1, Tier = 3 },
@@ -43,6 +49,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new SpaceHazardPlacement { AreaResref = "space_midrimneb", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 3 },
             new SpaceHazardPlacement { AreaResref = "space_korrdebris", WaypointTag = "SPACE_WRECK_SITE", Count = 3, Tier = 5 },
             new SpaceHazardPlacement { AreaResref = "space_wsgraveyrd", WaypointTag = "SPACE_WRECK_SITE", Count = 3, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wspulsar", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsblkhole", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsionstorm", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsmagnetar", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 5 },
+            new SpaceHazardPlacement { AreaResref = "space_wsredgiant", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 5 },
         };
     }
 }

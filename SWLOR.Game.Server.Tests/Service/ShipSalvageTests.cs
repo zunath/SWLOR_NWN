@@ -502,9 +502,9 @@ public class ShipSalvageTests
     public void ZoneHazards_AreModuleWaypointsWithTheirTiersInTheTunedAreas()
     {
         SpaceHazardTuning.Placements.Where(x => x.WaypointTag == SpaceHazardTuning.MinefieldTag).Select(x => x.AreaResref)
-            .Should().BeEquivalentTo("space_viscbelt", "space_midrimneb", "space_korrdebris");
+            .Should().BeEquivalentTo(new[] { "space_viscbelt", "space_midrimneb", "space_korrdebris" }.Concat(WildSpaceTuning.Systems.Select(x => x.AreaResref)));
         SpaceHazardTuning.Placements.Where(x => x.WaypointTag == SpaceHazardTuning.WreckSiteTag).Select(x => x.AreaResref)
-            .Should().Contain(WildSpaceTuning.KnownOrbits).And.Contain("space_korrdebris", "space_wsgraveyrd");
+            .Should().Contain(WildSpaceTuning.KnownOrbits).And.Contain("space_korrdebris").And.Contain(WildSpaceTuning.Systems.Select(x => x.AreaResref));
 
         foreach (var group in SpaceHazardTuning.Placements.GroupBy(x => x.AreaResref))
         {
@@ -542,6 +542,24 @@ public class ShipSalvageTests
     }
 
     [Test]
+    public void WildSpaceSystems_HoldMinefieldsAndWreckSitesAtTheWildSpaceContentTier()
+    {
+        foreach (var system in WildSpaceTuning.Systems)
+        {
+            var placements = SpaceHazardTuning.Placements.Where(x => x.AreaResref == system.AreaResref).ToList();
+            placements.Single(x => x.WaypointTag == SpaceHazardTuning.MinefieldTag).Count.Should().Be(3, system.AreaResref);
+            placements.Where(x => x.WaypointTag == SpaceHazardTuning.WreckSiteTag).Sum(x => x.Count).Should().BeGreaterThanOrEqualTo(2, system.AreaResref);
+            placements.Should().OnlyContain(x => x.Tier == WildSpaceTuning.ContentTier, "Wild Space content is tier 5 (tier 5.5 in the area)");
+        }
+
+        SpaceHazardRules.MinelayerTag(5, true).Should().Be("rrminelayer", "a Wild Space mine hits as the Rift Raider Minelayer");
+        SpaceHazardRules.MinelayerTag(5).Should().Be("t5minelayer");
+        RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == SpaceHazardRules.MinelayerTag(5, true)).MineDmg
+            .Should().BeGreaterThanOrEqualTo(RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == "t5minelayer").MineDmg);
+        ReadSource("Service", "SpaceHazards.cs").Should().Contain("WildSpace = IsWildSpace(area)");
+    }
+
+    [Test]
     public void FieldMines_HitAsTheirTiersMinelayerAndReArm()
     {
         SpaceHazardRules.SiteTier(0).Should().Be(1);
@@ -560,7 +578,7 @@ public class ShipSalvageTests
         SpaceHazardTuning.MinesPerField.Should().Be(4);
 
         var hazards = ReadSource("Service", "SpaceHazards.cs");
-        hazards.Should().Contain("SpaceHazardRules.MinelayerTag(mine.Tier)").And.Contain("Dmg = preset.MineDmg")
+        hazards.Should().Contain("SpaceHazardRules.MinelayerTag(mine.Tier, mine.WildSpace)").And.Contain("Dmg = preset.MineDmg")
             .And.Contain("ShipShotBuilder.Build(torpedo,").And.Contain("CreateWreck(GetLocation(site.Waypoint), SpaceHazardTuning.WreckName");
         var roles = ReadSource("Service", "SpaceNpcRoles.cs");
         roles.Should().Contain("!mine.Field && (!GetIsObjectValid(mine.Owner)", "a field mine has no minelayer and no lifetime")

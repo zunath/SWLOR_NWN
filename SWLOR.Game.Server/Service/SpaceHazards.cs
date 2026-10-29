@@ -118,20 +118,20 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(mine))
                 return OBJECT_INVALID;
 
-            _spaceMines.Add(new SpaceMine { Mine = mine, Owner = OBJECT_INVALID, LaidAt = now, Field = true, Tier = field.Tier });
+            _spaceMines.Add(new SpaceMine { Mine = mine, Owner = OBJECT_INVALID, LaidAt = now, Field = true, Tier = field.Tier, WildSpace = IsWildSpace(area) });
             return mine;
         }
 
         /// <summary>
-        /// A standalone mine hits as a minelayer's mine of its field's tier: the tier Minelayer preset's mine DMG and
-        /// launcher Attack, Accuracy and rank, fired by the mine itself.
+        /// A standalone mine hits as a minelayer's mine of its field's tier (the Rift Raider Minelayer's in Wild Space):
+        /// the Minelayer preset's mine DMG and launcher Attack, Accuracy and rank, fired by the mine itself.
         /// </summary>
         private static void DetonateFieldMine(SpaceMine mine, uint victim)
         {
             var location = GetLocation(mine.Mine);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), location);
 
-            var minelayer = SpaceHazardRules.MinelayerTag(mine.Tier);
+            var minelayer = SpaceHazardRules.MinelayerTag(mine.Tier, mine.WildSpace);
             var victimStatus = GetShipStatus(victim);
             var torpedo = RevampModuleCatalog.Steps.FirstOrDefault(x => x.Family == ShipModuleFamily.TorpedoLauncher);
             if (victimStatus == null || torpedo == null ||

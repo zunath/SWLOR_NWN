@@ -84,6 +84,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public int SpacePocketIndex { get => Get<int>(); set => Set(value); }
 
+        public GuiBindingList<GuiComboEntry> SpaceBattleOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceBattleIndex { get => Get<int>(); set => Set(value); }
+
         public string SpaceStatus { get => Get<string>(); set => Set(value); }
 
         public GuiColor SpaceStatusColor { get => Get<GuiColor>(); set => Set(value); }
@@ -195,6 +199,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpaceSignatureIndex = 0;
             SpacePocketOptions = ComboOptions(DmSpaceToolRules.RiftTierLabels);
             SpacePocketIndex = 0;
+            SpaceBattleOptions = ComboOptions(DmSpaceToolRules.CapitalBattleLabels);
+            SpaceBattleIndex = 0;
             SpaceStatus = string.Empty;
             SpaceStatusColor = GuiColor.Green;
 
@@ -211,6 +217,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SpaceCountIndex);
             WatchOnClient(model => model.SpaceSignatureIndex);
             WatchOnClient(model => model.SpacePocketIndex);
+            WatchOnClient(model => model.SpaceBattleIndex);
             _skipPaginationSearch = false;
 
             SelectTab(PlaceablesTabId);
@@ -248,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpaceCountIndex = SpaceCountIndex;
             SpaceSignatureIndex = SpaceSignatureIndex;
             SpacePocketIndex = SpacePocketIndex;
+            SpaceBattleIndex = SpaceBattleIndex;
         }
 
         /// <summary>
@@ -326,6 +334,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpaceStatus = message;
             SpaceStatusColor = started ? GuiColor.Green : GuiColor.Red;
             Log.Write(LogGroup.DM, $"{GetName(Player)} start incursion in {GetName(GetArea(Player))}: {message}");
+        };
+
+        /// <summary>
+        /// Starts a capital battle (plan section 11) in the picked orbit, or a random tier 5-6 orbit, when no battle or
+        /// incursion runs. Its ships drop their loot, and destroying the whole group pays its contributors.
+        /// </summary>
+        public Action OnStartCapitalBattle() => () =>
+        {
+            var (started, message) = Space.StartCapitalBattleAt(DmSpaceToolRules.GetCapitalBattleArea(SpaceBattleIndex));
+            ReportSpace(started, message);
+            Log.Write(LogGroup.DM, $"{GetName(Player)} start capital battle: {message}");
         };
 
         /// <summary>Shows a Space tab result: green when it worked, red when it did not.</summary>

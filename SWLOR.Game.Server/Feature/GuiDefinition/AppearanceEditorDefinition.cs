@@ -31,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public const float TabPanelHeight = 36f;
         /// <summary>Width of one tab option; NUI keeps about this much per option whatever the control's width.</summary>
         public const float TabWidth = 150f;
-        public const float EquipmentPickerWidth = 150f;
+        /// <summary>The Equipment tab's Armor / Main Hand / Off Hand row, measured in the client.</summary>
+        public const float EquipmentTabsHeight = 36f;
         private const float NoItemLabelWidth = 130f;
         private const float OutfitButtonWidth = 64f;
         private const float OutfitListWidth = 280f;
@@ -126,11 +127,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 build(partial);
             };
 
-        /// <summary>
-        /// Tabs, then the armor or weapon picker while Equipment is open. Helmets and cloaks are
-        /// picked on the armor body map, so the picker does not list them. Sharing the tab row
-        /// keeps the editors' full height for the body map.
-        /// </summary>
+        /// <summary>The window's tabs. Equipment adds its own Armor / Main Hand / Off Hand row.</summary>
         private void BuildNavigation(GuiRow<AppearanceEditorViewModel> row)
         {
             row.AddSpacer();
@@ -152,23 +149,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindIsVisible(model => model.IsSettingsVisible)
                 .SetWidth(TabWidth)
                 .SetHeight(28f);
-            row.AddSpacer().SetWidth(12f);
-            row.AddComboBox()
-                .AddOption("Armor", AppearanceEditorViewModel.ArmorEquipmentValue)
-                .AddOption("Weapon (Main)", AppearanceEditorViewModel.MainHandEquipmentValue)
-                .AddOption("Weapon (Off)", AppearanceEditorViewModel.OffHandEquipmentValue)
-                .BindSelectedIndex(model => model.EquipmentTypeValue)
-                .BindIsVisible(model => model.IsEquipmentSelected)
-                .SetWidth(EquipmentPickerWidth)
-                .SetHeight(28f);
-            row.AddLabel()
-                .SetText("Nothing to edit.")
-                .BindIsVisible(model => model.IsNoEditableItemVisible)
-                .SetWidth(NoItemLabelWidth)
-                .SetHeight(28f)
-                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                .SetVerticalAlign(NuiVerticalAlign.Middle);
             row.AddSpacer();
+        }
+
+        /// <summary>
+        /// Armor, Main Hand and Off Hand as a second tab row on the Equipment editors, with the
+        /// note shown when that slot holds nothing to edit. The row stays when the slot is empty
+        /// so another slot can be picked. Helmets and cloaks are picked on the armor body map.
+        /// </summary>
+        private static void AddEquipmentTabs(GuiColumn<AppearanceEditorViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddToggles()
+                    .AddOption("Armor")
+                    .AddOption("Main Hand")
+                    .AddOption("Off Hand")
+                    .BindSelectedValue(model => model.EquipmentTypeValue)
+                    .SetWidth(TabWidth * 3)
+                    .SetHeight(28f);
+                row.AddLabel()
+                    .SetText("Nothing to edit.")
+                    .BindIsVisible(model => model.IsNoEditableItemVisible)
+                    .SetWidth(NoItemLabelWidth)
+                    .SetHeight(28f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddSpacer();
+            });
         }
 
         // ---------------------------------------------------------------- editors
@@ -211,6 +219,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             SizeEditor(partial, compact);
             partial.AddColumn(col =>
             {
+                AddEquipmentTabs(col);
                 col.AddRow(row =>
                 {
                     row.BindIsVisible(model => model.HasItemEquipped);
@@ -228,6 +237,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             SizeEditor(partial, compact);
             partial.AddColumn(col =>
             {
+                AddEquipmentTabs(col);
                 col.AddRow(row =>
                 {
                     row.BindIsVisible(model => model.HasItemEquipped);

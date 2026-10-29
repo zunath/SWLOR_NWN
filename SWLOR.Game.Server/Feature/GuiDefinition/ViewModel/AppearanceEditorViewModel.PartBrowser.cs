@@ -675,14 +675,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _ => 0f
         };
 
+        /// <summary>
+        /// Window height outside the picture rows: title, tabs, browser controls and borders. Measured
+        /// as 260 in the client, less the 18 the compact tab layout gave back.
+        /// </summary>
+        private const float BrowserOverhead = 242f;
+
         /// <summary>Window height that holds one row of pictures in a one-column browser.</summary>
-        private static readonly float BrowserMinimumWindowHeight = 260f + StackedControlsHeight(1) + 138f;
+        private static readonly float BrowserMinimumWindowHeight = BrowserOverhead + StackedControlsHeight(1) + 138f;
 
         /// <summary>
         /// True when the window is too small for one column or one row of pictures beside the
         /// other panels; the editor then keeps a fixed size and the window content scrolls.
         /// </summary>
-        internal static bool IsCompactWindow(float windowWidth, float windowHeight, bool hasSideColumns)
+        /// <param name="extraHeight">Height of rows above the panels, such as the Equipment tab's slot tabs.</param>
+        internal static bool IsCompactWindow(float windowWidth, float windowHeight, bool hasSideColumns, float extraHeight = 0f)
         {
             const float sideColumns = AppearanceEditorDefinition.MapWidth + AppearanceEditorDefinition.ColoursWidth + 48f;
             const float weaponColumn = AppearanceEditorDefinition.WeaponCategoryWidth + 50f;
@@ -690,15 +697,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (windowWidth <= 0f || windowHeight <= 0f)
                 return false;
             var available = windowWidth - (hasSideColumns ? sideColumns : weaponColumn) - 44f;
-            return available < tile || windowHeight < BrowserMinimumWindowHeight;
+            return available < tile || windowHeight < BrowserMinimumWindowHeight + extraHeight;
         }
 
         /// <summary>Tile rows that fit the window height; narrow browsers stack their pager on two rows.</summary>
-        internal static int BrowserRowsForHeight(float windowHeight, int columns)
+        /// <param name="extraHeight">Height of rows above the panels, such as the Equipment tab's slot tabs.</param>
+        internal static int BrowserRowsForHeight(float windowHeight, int columns, float extraHeight = 0f)
         {
-            const float overhead = 260f;
             const float row = 138f;
-            var available = windowHeight - overhead - StackedControlsHeight(columns);
+            var available = windowHeight - BrowserOverhead - extraHeight - StackedControlsHeight(columns);
             return Math.Clamp((int)(available / row), 1, MaxBrowserRows);
         }
 
@@ -762,7 +769,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var width = Geometry?.Width ?? 0f;
             var height = Geometry?.Height ?? 0f;
             var hasSideColumns = SelectedItemTypeIndex is not (3 or 4) || IsAppearanceSelected;
-            var compact = IsCompactWindow(width, height, hasSideColumns);
+            var extraHeight = IsEquipmentSelected ? AppearanceEditorDefinition.EquipmentTabsHeight : 0f;
+            var compact = IsCompactWindow(width, height, hasSideColumns, extraHeight);
             if (compact != _isCompactLayout)
             {
                 // Reloading the editor applies the browser grid again for the new layout.
@@ -771,7 +779,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
             var columns = compact ? 1 : width > 0 ? BrowserColumnsForWidth(width, hasSideColumns) : MaxBrowserColumns;
-            var rows = compact ? 1 : height > 0 ? BrowserRowsForHeight(height, columns) : MaxBrowserRows;
+            var rows = compact ? 1 : height > 0 ? BrowserRowsForHeight(height, columns, extraHeight) : MaxBrowserRows;
             if (!force && columns == _browserColumns && rows == _browserRows)
                 return;
             var currentIndex = _browserIds.IndexOf(_browserCurrent);

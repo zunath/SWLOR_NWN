@@ -159,7 +159,7 @@ public class AppearanceEditorLayoutTests
         PathTo(main, primary).SkipLast(1).Should().OnlyContain(widget => Width(widget) == 0f);
         Width(primary).Should().Be(AppearanceEditorDefinition.TabWidth * 2);
         Width(settings).Should().Be(AppearanceEditorDefinition.TabWidth);
-        AssertEquipmentPicker(PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last());
+        AssertNavigation(PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last());
         var slot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
         PathTo(main, slot).Should().OnlyContain(widget => Width(widget) == 0f,
             "the active partial needs the full available window width");
@@ -181,11 +181,19 @@ public class AppearanceEditorLayoutTests
         column.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
 
         var rows = column.Elements.ToList();
-        // No hidden rows above the editors: a hidden row still takes up height.
-        rows.Should().ContainSingle();
         Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Where(combo => combo.Id != "ae_quick_outfit")
-            .Should().BeEmpty("the equipment picker shares the tab row");
-        var content = rows.Single();
+            .Should().BeEmpty("the equipment slots are tabs, not a list");
+        if (partialName == AppearanceEditorViewModel.EditorMainPartial)
+        {
+            // No hidden rows above the editors: a hidden row still takes up height.
+            rows.Should().ContainSingle();
+        }
+        else
+        {
+            rows.Should().HaveCount(2, "the slot tabs sit above the editor");
+            AssertEquipmentTabs(rows.First());
+        }
+        var content = rows.Last();
         ReadProperty<string>(content, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
 
         content.Elements.Should().AllBeOfType<GuiGroup<AppearanceEditorViewModel>>();
@@ -199,24 +207,29 @@ public class AppearanceEditorLayoutTests
         Slots(partial).Should().Equal(AppearanceEditorViewModel.BrowserGridElement);
     }
 
-    private static void AssertEquipmentPicker(IGuiWidget row)
+    private static void AssertEquipmentTabs(IGuiWidget row)
     {
-        var picker = Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
-        ReadProperty<string>(picker, "SelectedIndexBindName").Should()
-            .Be(nameof(AppearanceEditorViewModel.EquipmentTypeValue));
-        ReadProperty<string>(picker, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
-        ReadProperty<List<GuiComboEntry>>(picker, "Options").Select(option => (option.Label, option.Value))
-            .Should().Equal(new[] { ("Armor", 0), ("Weapon (Main)", 1), ("Weapon (Off)", 2) },
-                "entries carry their list position, which the combo reports");
+        ReadProperty<string>(row, "IsVisibleBindName").Should().BeNullOrEmpty("an empty slot still needs the tabs to pick another");
+        var tabs = Walk(row).OfType<GuiToggles<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(tabs, "SelectedValueBindName").Should().Be(nameof(AppearanceEditorViewModel.EquipmentTypeValue));
+        ReadProperty<List<string>>(tabs, "ElementLabels").Should().Equal(new[] { "Armor", "Main Hand", "Off Hand" },
+            "a tab reports its position, which is the equipment value");
+        Width(tabs).Should().Be(AppearanceEditorDefinition.TabWidth * 3);
         foreach (var (entry, itemType) in new[] { (0, 0), (1, 3), (2, 4) })
         {
             AppearanceEditorViewModel.ToItemTypeIndex(entry).Should().Be(itemType);
             AppearanceEditorViewModel.ToEquipmentTypeValue(itemType).Should().Be(entry);
         }
-        AppearanceEditorViewModel.ToEquipmentTypeValue(1).Should().Be(0, "a helmet belongs to the armor entry");
-        AppearanceEditorViewModel.ToEquipmentTypeValue(2).Should().Be(0, "a cloak belongs to the armor entry");
+        AppearanceEditorViewModel.ToEquipmentTypeValue(1).Should().Be(0, "a helmet belongs to the armor tab");
+        AppearanceEditorViewModel.ToEquipmentTypeValue(2).Should().Be(0, "a cloak belongs to the armor tab");
         var message = Walk(row).OfType<GuiLabel<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
         ReadProperty<string>(message, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsNoEditableItemVisible));
+    }
+
+    private static void AssertNavigation(IGuiWidget row)
+    {
+        Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().BeEmpty("the equipment slots are tabs on the Equipment editor");
+        Walk(row).OfType<GuiLabel<AppearanceEditorViewModel>>().Should().BeEmpty("the empty-slot note sits beside the slot tabs");
         Walk(row).Should().NotContain(widget => widget.Id == "ae_outfits",
             "outfits are a tab of the editor, not a separate window");
         var outfitsTab = Walk(row).OfType<GuiToggles<AppearanceEditorViewModel>>()

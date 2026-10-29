@@ -739,14 +739,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        // Equipment picker entries, in list order. Helmets and cloaks are chosen on the armor body map.
+        // Equipment slot tabs, in tab order. Helmets and cloaks are chosen on the armor body map.
         public const int ArmorEquipmentValue = 0;
         public const int MainHandEquipmentValue = 1;
         public const int OffHandEquipmentValue = 2;
         private const int MainHandItemType = 3;
         private const int OffHandItemType = 4;
 
-        /// <summary>Equipment picker value: armor (also while its helmet or cloak is edited) or a weapon hand.</summary>
+        /// <summary>Equipment slot tab: armor (also while its helmet or cloak is edited) or a weapon hand.</summary>
         public int EquipmentTypeValue
         {
             get => Get<int>();
@@ -961,7 +961,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsNoEditableItemVisible = !hasItemEquipped && IsEquipmentSelected;
         }
 
-        /// <summary>The tab row's "Nothing to edit" note: on the Equipment tab with no editable item.</summary>
+        /// <summary>The slot tabs' "Nothing to edit" note: on the Equipment tab with no editable item.</summary>
         public bool IsNoEditableItemVisible { get => Get<bool>(); set => Set(value); }
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)

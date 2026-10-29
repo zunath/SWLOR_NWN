@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class SettingsDefinition : IGuiWindowDefinition
     {
         public const float MinimumWindowWidth = 400f;
-        public const float MinimumWindowHeight = 450f;
+        // Tall enough to show every General row, down to the Hotbars button.
+        public const float MinimumWindowHeight = 570f;
 
         private readonly GuiWindowBuilder<SettingsViewModel> _builder = new();
 

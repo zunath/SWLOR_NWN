@@ -149,7 +149,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col.AddRow(row =>
                             {
                                 row.AddTextEdit()
-                                    .BindValue(model => model.TransportationTax);
+                                    .BindValue(model => model.TransportationTax)
+                                    .BindIsEnabled(model => model.CanEditTaxes);
                             });
 
                             col.AddRow(row =>
@@ -165,7 +166,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col.AddRow(row =>
                             {
                                 row.AddTextEdit()
-                                    .BindValue(model => model.CitizenshipTax);
+                                    .BindValue(model => model.CitizenshipTax)
+                                    .BindIsEnabled(model => model.CanEditTaxes);
                             });
 
                             col.AddRow(row =>

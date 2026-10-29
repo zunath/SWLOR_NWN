@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -235,14 +236,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.ShipyardFee);
         }
 
-        private void RefreshPermissions()
+        private bool RefreshPermissions()
         {
             var playerId = GetObjectUUID(Player);
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
-                .Single();
+                .SingleOrDefault();
+            IsStation = Station.IsStation(dbCity);
+
+            // The permission row is deleted when another manager revokes the player's last permission.
+            if (permission == null)
+            {
+                CanAccessTreasury = false;
+                CanEditTaxes = false;
+                CanManageUpkeep = false;
+                CanUpgradeMedicalCenters = false;
+                CanUpgradeStarports = false;
+                CanUpgradeCantinas = false;
+                CanUpgradeJumpBeacons = false;
+                return false;
+            }
 
             // Permissions
             CanAccessTreasury = permission.Permissions[PropertyPermissionType.AccessTreasury];
@@ -262,11 +277,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // A player station's Jump Beacon level (1-3) caps the hulls it jumps.
             var beaconLevel = GetJumpBeaconLevel(dbCity);
-            IsStation = Station.IsStation(dbCity);
             CanUpgradeJumpBeacons = IsStation &&
                               permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
                               beaconLevel < StationTuning.BeaconMaxLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= beaconLevel + 1;
+
+            return true;
         }
 
         /// <summary>A station's Jump Beacon upgrade level; stations founded before beacons existed start at 1.</summary>
@@ -593,6 +609,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         };
 
+        /// <summary>
+        /// Parses and clamps the entered taxes. Without the Edit Taxes permission the entered text is ignored
+        /// and the stored values are kept.
+        /// </summary>
+        public static void ResolveTaxes(
+            bool canEditTaxes,
+            string citizenshipText,
+            string transportationText,
+            int currentCitizenshipTax,
+            int currentTransportationTax,
+            out int citizenshipTax,
+            out int transportationTax)
+        {
+            if (!canEditTaxes)
+            {
+                citizenshipTax = currentCitizenshipTax;
+                transportationTax = currentTransportationTax;
+                return;
+            }
+
+            if (!int.TryParse(citizenshipText, out citizenshipTax))
+                citizenshipTax = 0;
+
+            if (!int.TryParse(transportationText, out transportationTax))
+                transportationTax = 0;
+
+            citizenshipTax = Math.Clamp(citizenshipTax, 0, 50000);
+            transportationTax = Math.Clamp(transportationTax, 0, 25);
+        }
+
         public Action SaveChanges() => () =>
         {
             if (CityName.Length <= 0)
@@ -602,37 +648,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            if (!RefreshPermissions())
+            {
+                Instructions = "Insufficient permissions.";
+                InstructionsColor = GuiColor.Red;
+                return;
+            }
+
             var dbCity = DB.Get<WorldProperty>(_cityId);
+
+            ResolveTaxes(
+                CanEditTaxes,
+                CitizenshipTax,
+                TransportationTax,
+                dbCity.Taxes[PropertyTaxType.Citizenship],
+                dbCity.Taxes[PropertyTaxType.Transportation],
+                out var citizenshipTax,
+                out var transportationTax);
 
             dbCity.CustomName = CityName;
             if (Station.IsStation(dbCity))
                 Station.RenameExterior(dbCity);
 
-            if (!int.TryParse(CitizenshipTax, out var citizenshipTax))
-            {
-                citizenshipTax = 0;
-            }
-
-            if (!int.TryParse(TransportationTax, out var transportationTax))
-            {
-                transportationTax = 0;
-            }
-
-            if (citizenshipTax < 0)
-                citizenshipTax = 0;
-            else if (citizenshipTax > 50000)
-                citizenshipTax = 50000;
-
-            if (transportationTax < 0)
-                transportationTax = 0;
-            else if (transportationTax > 25)
-                transportationTax = 25;
-
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;
             dbCity.Taxes[PropertyTaxType.Transportation] = transportationTax;
 
             // The Trade Exchange tariff (0 to the cap) is the city leadership's to set: it needs the Edit Taxes permission.
-            RefreshPermissions();
             var tariffRefused = false;
             if (!int.TryParse(ExchangeTariff, out var exchangeTariff))
                 exchangeTariff = GetStoredExchangeTariff(dbCity);

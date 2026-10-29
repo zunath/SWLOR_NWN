@@ -71,11 +71,8 @@ public static class WeaponRotationBalanceEngineTests
     [EngineTest("Controlled Barrage Matched Rhythm rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 480f)]
     public static Task BarrageMatched(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolBarrage, PerkType.MatchedRhythm);
 
-    [EngineTest("Controlled Barrage Paired Handling rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 480f)]
-    public static Task BarrageHandling(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolBarrage, PerkType.PairedHandling);
-
-    [EngineTest("Controlled Crossfire Paired Handling rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 480f)]
-    public static Task CrossfireHandling(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.PairedHandling);
+    [EngineTest("Controlled Crossfire Steady Cadence rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 480f)]
+    public static Task CrossfireSteadyCadence(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.SteadyCadence);
 
     [EngineTest("Controlled Crossfire Matched Rhythm rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 480f)]
     public static Task CrossfireMatched(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.MatchedRhythm);
@@ -86,11 +83,8 @@ public static class WeaponRotationBalanceEngineTests
     [EngineTest("Barrage Matched Rhythm capstone opening records damage at 69 SP", Category = "WeaponOpeningBalance", TimeoutSeconds = 160f)]
     public static Task BarrageMatchedOpening(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolBarrage, PerkType.MatchedRhythm, true);
 
-    [EngineTest("Barrage Paired Handling capstone opening records damage at 69 SP", Category = "WeaponOpeningBalance", TimeoutSeconds = 160f)]
-    public static Task BarrageHandlingOpening(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolBarrage, PerkType.PairedHandling, true);
-
-    [EngineTest("Crossfire Paired Handling capstone opening records damage at 69 SP", Category = "WeaponOpeningBalance", TimeoutSeconds = 160f)]
-    public static Task CrossfireHandlingOpening(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.PairedHandling, true);
+    [EngineTest("Crossfire Steady Cadence capstone opening records damage at 69 SP", Category = "WeaponOpeningBalance", TimeoutSeconds = 160f)]
+    public static Task CrossfireSteadyCadenceOpening(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.SteadyCadence, true);
 
     [EngineTest("Crossfire Matched Rhythm capstone opening records damage at 69 SP", Category = "WeaponOpeningBalance", TimeoutSeconds = 160f)]
     public static Task CrossfireMatchedOpening(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.MatchedRhythm, true);
@@ -137,7 +131,7 @@ public static class WeaponRotationBalanceEngineTests
                 method = "Equal 69-SP native player builds, three fixed seeds by default, with a 12-second input window in the same verified flat corridor. " +
                     "Request the purchased capstone first at zero seconds, then core feats at two, three and four seconds, subject to real timing, readiness and finite stamina. " +
                     "Six/twelve-second snapshots report delivered HP and resolved ordinary/activated damage; an eight-second post-stop drain reconciles exact attribution. " +
-                    "Final Salvo opens without prior Momentum. This representative capstone-first rotation does not establish globally optimized maximum burst."
+                    "Final Salvo opens without prior Cadence. This representative capstone-first rotation does not establish globally optimized maximum burst."
             }));
             return;
         }
@@ -147,7 +141,7 @@ public static class WeaponRotationBalanceEngineTests
             meanSustainedDps = sustained.Average(), minimumSustainedDps = sustained.Min(), maximumSustainedDps = sustained.Max(),
             method = "Equal 69-SP native player builds, three fixed seeds by default, 120s each in a verified flat open corridor. " +
                 "Ordinary resolved damage and completed activated impact damage are tracked separately and reconciled to actual HP after a bounded projectile drain. " +
-                "Timed windows retain delivered HP, resolution totals, actual XYZ, finite stamina and all movement/cast inputs. No timed repositioning or forced hits."
+                "Timed windows retain delivered HP, resolution totals, actual XYZ, finite stamina and all cast inputs. No timed repositioning or forced hits."
         }));
     }
 
@@ -163,8 +157,10 @@ public static class WeaponRotationBalanceEngineTests
         var line = Perk.GetAllPerks().Values.Where(perk => perk.Category == category).ToArray();
         if (!pistol)
         {
-            ctx.Assert(handling is PerkType.MatchedRhythm or PerkType.PairedHandling, "The paired build selects one legal handling purchase");
-            line = line.Where(perk => perk.Type is not (PerkType.MatchedRhythm or PerkType.PairedHandling))
+            // Each line owns one 10-SP handling slot: Matched Rhythm (Barrage) or Steady Cadence (Crossfire, needs Cadence).
+            ctx.Assert(handling == PerkType.MatchedRhythm || handling == PerkType.SteadyCadence && category == PerkCategoryType.TwinPistolCrossfire,
+                "The paired build selects one legal handling purchase");
+            line = line.Where(perk => perk.Type is not (PerkType.MatchedRhythm or PerkType.SteadyCadence))
                 .Append(Perk.GetPerkDetails(handling)).ToArray();
         }
         var armor = Perk.GetPerkDetails(pistol ? PerkType.Doublehand : PerkType.DualWield);
@@ -186,12 +182,12 @@ public static class WeaponRotationBalanceEngineTests
         });
         if (!pistol)
         {
-            var excluded = handling == PerkType.MatchedRhythm ? PerkType.PairedHandling : PerkType.MatchedRhythm;
+            var excluded = handling == PerkType.MatchedRhythm ? PerkType.SteadyCadence : PerkType.MatchedRhythm;
             ctx.AssertEqual(3, Perk.GetPerkLevel(actor, handling), "The selected handling purchase has its actual maximum rank");
-            ctx.AssertEqual(0, Perk.GetPerkLevel(actor, excluded), "The mutually exclusive handling purchase is absent");
+            ctx.AssertEqual(0, Perk.GetPerkLevel(actor, excluded), "The equal-investment build owns only its selected handling purchase");
             foreach (var requirement in Perk.GetPerkDetails(handling).PerkLevels.Values.SelectMany(level => level.Requirements)
-                         .OfType<PerkRequirementCannotHavePerk>())
-                ctx.Assert(string.IsNullOrEmpty(requirement.CheckRequirements(actor)), "The build satisfies actual handling purchase exclusivity");
+                         .OfType<PerkRequirementMustHavePerk>())
+                ctx.Assert(string.IsNullOrEmpty(requirement.CheckRequirements(actor)), "The build satisfies the handling purchase's prerequisites");
         }
         foreach (var requirement in line.SelectMany(perk => perk.PerkLevels.Values)
                      .SelectMany(level => level.Requirements).OfType<PerkRequirementQuest>())
@@ -286,7 +282,7 @@ public static class WeaponRotationBalanceEngineTests
 
         var capstone = pistol ? FeatType.DeadMansHand1 : crossfire ? FeatType.FinalSalvo : FeatType.TwinSuns;
         var coreFeats = pistol ? new[] { FeatType.DoubleShot3, FeatType.QuickDraw4, FeatType.FanTheHammer2 } :
-            crossfire ? new[] { FeatType.BlasterSlide4, FeatType.PistolRush2, FeatType.GrappleShot3 } :
+            crossfire ? new[] { FeatType.TempoShot2, FeatType.LeadShot4, FeatType.ClosingShot3 } :
             new[] { FeatType.FocusedBurst3, FeatType.PairedVolley4, FeatType.ControlledBurst2 };
         var feats = opening ? new[] { capstone }.Concat(coreFeats).ToArray() : coreFeats.Append(capstone).ToArray();
         var next = opening ? new[] { 0d, 2d, 3d, 4d } :
@@ -294,9 +290,6 @@ public static class WeaponRotationBalanceEngineTests
         var casts = feats.ToDictionary(feat => feat, _ => 0);
         var denials = new Dictionary<string, int>();
         var snapshots = new List<object>();
-        var movements = new List<object>();
-        (FeatType Feat, NumericsVector3 Origin, NumericsVector3 Target, NumericsVector3 Cursor,
-            double AcceptedAt, bool SawMoving)? pendingMovement = null;
         var naturalTicks = 0;
         var naturalRestored = 0;
         var nextNatural = 6d;
@@ -334,30 +327,6 @@ public static class WeaponRotationBalanceEngineTests
                 var elapsed = clock.Elapsed.TotalSeconds;
                 if (opening) ctx.Assert(elapsed < inputSeconds + 8, "The opening controller stays within its bounded input budget");
                 SampleCompletedAbilityDamage(actor);
-                if (pendingMovement is { } movement)
-                {
-                    if (WeaponRepositioning.IsMoving(actor))
-                    {
-                        movement.SawMoving = true;
-                        pendingMovement = movement;
-                    }
-                    else if (!Activity.IsBusy(actor) && elapsed >= movement.AcceptedAt + .25d)
-                    {
-                        var end = GetPosition(actor);
-                        var observation = new
-                        {
-                            seed, feat = movement.Feat.ToString(), acceptedAt = movement.AcceptedAt,
-                            finishedAt = elapsed, sawNativeMovement = movement.SawMoving,
-                            origin = XYZ(movement.Origin), targetAtActivation = XYZ(movement.Target), cursor = XYZ(movement.Cursor),
-                            actualEnd = XYZ(end), distanceMoved = NumericsVector3.Distance(movement.Origin, end),
-                            targetNow = XYZ(GetPosition(target)), sameFloor = Math.Abs(end.Z - center.Z) <= .25f
-                        };
-                        ctx.Assert(observation.sameFloor, "Real movement remains on the controlled floor");
-                        movements.Add(observation);
-                        ctx.Log("Movement " + JsonSerializer.Serialize(observation));
-                        pendingMovement = null;
-                    }
-                }
                 if (elapsed >= nextNatural && nextNatural <= inputSeconds)
                 {
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -405,7 +374,7 @@ public static class WeaponRotationBalanceEngineTests
                         controllerAttackResumes,
                         acceptedCasts = casts.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value),
                         denials = new Dictionary<string, int>(denials),
-                        momentum = StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0,
+                        cadence = StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
                         haste = Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent)
                     };
                     snapshots.Add(observation);
@@ -414,41 +383,33 @@ public static class WeaponRotationBalanceEngineTests
                 }
                 for (var index = 0; index < feats.Length; index++)
                 {
-                    if (elapsed < next[index] || Activity.IsBusy(actor) || WeaponRepositioning.IsMoving(actor)) continue;
+                    if (elapsed < next[index] || Activity.IsBusy(actor)) continue;
                     var feat = feats[index];
                     var ability = Ability.GetAbilityDetail(feat);
                     if (Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1) continue;
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
-                        var origin = GetPosition(actor);
-                        var targetPosition = GetPosition(target);
-                        var location = feat == FeatType.PistolRush2 ? RushDestination(actor, target, center) : GetLocation(target);
-                        var accepted = location != null && UsePerkFeat.TryUseAbility(actor,
-                            feat == FeatType.PistolRush2 ? OBJECT_INVALID : target, feat, location);
+                        var accepted = UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target));
                         SampleCompletedAbilityDamage(actor);
                         if (accepted)
                         {
                             casts[feat]++;
                             next[index] = clock.Elapsed.TotalSeconds + ability.RecastDelay(actor) + .1d;
-                            if (feat is FeatType.BlasterSlide4 or FeatType.PistolRush2 or FeatType.GrappleShot3)
-                                pendingMovement = (feat, origin, targetPosition, GetPositionFromLocation(location), elapsed, false);
                         }
                         else
                         {
-                            var reason = location == null ? "No safe Rush lane" : Ability.GetLastActivationDenialReason();
-                            reason = $"{feat}: {reason}";
+                            var reason = $"{feat}: {Ability.GetLastActivationDenialReason()}";
                             denials[reason] = denials.GetValueOrDefault(reason) + 1;
                             if (denials[reason] == 1)
                                 ctx.Log(JsonSerializer.Serialize(new { seed, denied = reason, elapsed,
-                                    actorPosition = XYZ(origin), targetPosition = XYZ(targetPosition),
-                                    cursor = location == null ? null : XYZ(GetPositionFromLocation(location)) }));
+                                    actorPosition = XYZ(GetPosition(actor)), targetPosition = XYZ(GetPosition(target)) }));
                             next[index] = clock.Elapsed.TotalSeconds + 1d;
                         }
                     });
                 }
-                if (Activity.IsBusy(actor) || WeaponRepositioning.IsMoving(actor))
+                if (Activity.IsBusy(actor))
                 {
-                    // Let the normal post-cast/movement resume callback settle first.
+                    // Let the normal post-cast resume callback settle first.
                     nextAttackResumeCheck = clock.Elapsed.TotalSeconds + .25d;
                 }
                 else if (clock.Elapsed.TotalSeconds >= nextAttackResumeCheck)
@@ -483,11 +444,11 @@ public static class WeaponRotationBalanceEngineTests
             ctx.AssertEqual(_attributedDamage, startingHP - GetCurrentHitPoints(target), "Settled event attribution matches actual target HP");
             ctx.SetResultDetail(JsonSerializer.Serialize(new
             {
-                seed, observations = snapshots, movements,
+                seed, observations = snapshots,
                 settled = new { deliveredDamage = _attributedDamage, ordinaryDamage = _ordinaryResolvedDamage,
                     activatedDamage = _activatedResolvedDamage, tailDamageAfterStop = _attributedDamage - deliveredAtStop,
                     drainSeconds = drain.Elapsed.TotalSeconds, activatedDamageByAbility = new Dictionary<string, int>(ActivatedDamageByAbility) },
-                method = (opening ? "Representative capstone-first 12-second opening: request capstone at zero seconds, core feats at two/three/four, with zero initial Momentum. " : string.Empty) +
+                method = (opening ? "Representative capstone-first 12-second opening: request capstone at zero seconds, core feats at two/three/four, with zero initial Cadence. " : string.Empty) +
                     "Real native player inputs against a stationary 30000-HP NPC, defense 94/evasion 134, verified flat corridor and equal 69-SP builds. " +
                     "Timed windows are actual delivered HP; ordinary/activated fields are resolved damage and may include projectiles in flight. " +
                     "Final attribution includes an 8-second post-stop drain and must reconcile exactly. No timed teleports, forced hits, incoming pressure, NPC healing, or stamina refill. " +
@@ -579,9 +540,6 @@ public static class WeaponRotationBalanceEngineTests
         var targetPosition = GetPosition(target);
         ctx.Assert(Math.Abs(actorPosition.Z - targetPosition.Z) <= .25f && LineOfSightObject(actor, target),
             "The starting attacker and target share a floor and actual line of fire");
-        var retreat = actorPosition + NumericsVector3.Normalize(actorPosition - targetPosition) * 4;
-        ctx.AssertEqual(string.Empty, WeaponRepositioning.Validate(actor, GetLocation(actor), Location(ctx.Arena, retreat, 0), 2, 4),
-            "The initial Slide has a legal native movement corridor");
         ctx.Log(JsonSerializer.Serialize(new { corridorArea = CorridorAreaResref, verifiedWidthMeters = 20,
             verifiedHeightMeters = 20, center = XYZ(center), actorPosition = XYZ(actorPosition), targetPosition = XYZ(targetPosition) }));
     }
@@ -636,27 +594,4 @@ public static class WeaponRotationBalanceEngineTests
                 $"rawMilliseconds={actualRawDelay}, effectiveMilliseconds={effectiveDelay}, haste={Combat.CalculateAttackDelayReduction(actor)}, " +
                 $"offhandReduction={Combat.CalculateOffhandAttackDelayReduction(actor)}");
     }
-
-    private static Location RushDestination(uint actor, uint target, NumericsVector3 center)
-    {
-        var origin = GetPosition(actor);
-        var toward = GetPosition(target) - origin;
-        toward.Z = 0;
-        if (toward.LengthSquared() < .01f) return null;
-        toward = NumericsVector3.Normalize(toward);
-        foreach (var length in new[] { 5.9f, 5f, 4f, 3f })
-        foreach (var angle in new[] { .3f, -.3f, .4f, -.4f })
-        {
-            var direction = new NumericsVector3(toward.X * MathF.Cos(angle) - toward.Y * MathF.Sin(angle),
-                toward.X * MathF.Sin(angle) + toward.Y * MathF.Cos(angle), 0);
-            var position = origin + direction * length;
-            position.Z = GetGroundHeight(Location(GetArea(actor), position, 0));
-            if (Math.Abs(position.Z - center.Z) > .25f || Math.Abs(position.X - center.X) > 10 || Math.Abs(position.Y - center.Y) > 10) continue;
-            var location = Location(GetArea(actor), position, 0);
-            if (TwinPistolAbility.IsInTravelLine(GetPosition(target), origin, position, 4) &&
-                string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), location, 2, 6))) return location;
-        }
-        return null;
-    }
-
 }

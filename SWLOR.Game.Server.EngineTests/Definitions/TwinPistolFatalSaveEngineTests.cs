@@ -46,7 +46,7 @@ public static class TwinPistolFatalSaveEngineTests
         if (GetLastPlayerDied() == _actor) _deathEvents++;
     }
 
-    [EngineTest("A native fatal save with no active cast preserves Flow Converging Fire and Twin Suns until actual death", Category = "TwinPistolFatalSave", TimeoutSeconds = 45f)]
+    [EngineTest("A native fatal save with no active cast preserves Cadence Converging Fire and Twin Suns until actual death", Category = "TwinPistolFatalSave", TimeoutSeconds = 45f)]
     public static Task FatalSaveWithoutCast(EngineTestContext ctx) => Verify(ctx, duringCast: false);
 
     [EngineTest("A native fatal save cancels Final Salvo while preserving earned Twin traits until actual death", Category = "TwinPistolFatalSave", TimeoutSeconds = 45f)]
@@ -121,7 +121,7 @@ public static class TwinPistolFatalSaveEngineTests
                 ctx.Assert((DateTime.UtcNow - seededAt).TotalSeconds < 6,
                     "Trait preservation is observed before Converging Fire's shortest authored expiry");
                 AssertEarnedTraits(ctx, actor, target);
-                ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast deadline spends no stamina or Flow");
+                ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast deadline spends no stamina or Cadence");
                 ctx.Assert(!Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1,
                     "The canceled cast starts no capstone recast");
                 ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null,
@@ -174,7 +174,7 @@ public static class TwinPistolFatalSaveEngineTests
         player.Update(record =>
         {
             record.Skills[SkillType.TwinPistol].Rank = 50;
-            foreach (var perk in new[] { PerkType.FinalSalvo, PerkType.TwinPistolMomentum, PerkType.ConvergingFire })
+            foreach (var perk in new[] { PerkType.FinalSalvo, PerkType.Cadence, PerkType.ConvergingFire })
                 record.Perks[perk] = 1;
             foreach (var requirement in Perk.GetPerkDetails(PerkType.FinalSalvo).PerkLevels.Values
                          .SelectMany(level => level.Requirements).OfType<PerkRequirementQuest>())
@@ -208,22 +208,21 @@ public static class TwinPistolFatalSaveEngineTests
 
     private static void SeedEarnedTraits(uint actor, uint target)
     {
+        CadenceFixture.Grant(actor, 3);
         for (var index = 0; index < 3; index++)
         {
-            var activation = PairedRangedTraits.BeginAbility(actor, true, false);
-            PairedRangedTraits.CompleteAbility(actor, activation, true, 3f, true, 0, 0);
             PairedRangedTraits.RecordOrdinaryAttempt(actor, target, long.MaxValue - index);
             PairedRangedTraits.RecordOrdinaryHit(actor, target, long.MaxValue - index);
         }
         var capstone = PairedRangedTraits.BeginAbility(actor, false, false);
-        PairedRangedTraits.CompleteAbility(actor, capstone, true, 0f, false, 0, 0,
+        PairedRangedTraits.CompleteAbility(actor, capstone, true, 0, 0,
             ordinaryBonusAttempts: 6, ordinaryBonusDamagePercent: 25, ordinaryBonusSeconds: 12);
     }
 
     private static void AssertEarnedTraits(EngineTestContext ctx, uint actor, uint target)
     {
-        ctx.AssertEqual(3, StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0,
-            "The survivor retains three earned Flow charges");
+        ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
+            "The survivor retains three earned Cadence charges");
         ctx.Assert(StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null,
             "The survivor retains earned Converging Fire progress");
         ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
@@ -234,7 +233,7 @@ public static class TwinPistolFatalSaveEngineTests
 
     private static void AssertClearedTraits(EngineTestContext ctx, uint actor, string boundary)
     {
-        ctx.Assert(StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor) == null, $"{boundary} clears Flow");
+        ctx.Assert(StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor) == null, $"{boundary} clears Cadence");
         ctx.Assert(StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) == null, $"{boundary} clears Converging Fire");
         ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null, $"{boundary} clears Twin Suns attempts");
     }

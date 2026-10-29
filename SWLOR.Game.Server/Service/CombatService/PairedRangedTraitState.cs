@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service.CombatService
 {
     /// <summary>
     /// Deterministic per-attacker state. Callers provide only eligible ordinary rolls, direct
-    /// hostile damage and accuracy-versus-evasion misses; no perk identities enter this class.
+    /// hostile damage, accuracy-versus-evasion misses and paid weapon abilities; no perk identities enter this class.
     /// </summary>
     public sealed class PairedRangedTraitState
     {
@@ -16,24 +16,28 @@ namespace SWLOR.Game.Server.Service.CombatService
         private readonly Queue<Guid> _activationOrder = new();
         private readonly HashSet<Guid> _committedActivations = new();
         private readonly Queue<Guid> _commitOrder = new();
-        private readonly List<long> _momentumCharges = new();
-        private long _nextMomentumChargeId;
-        private long _movementAccuracyChargeId;
+        private readonly HashSet<Guid> _cadenceActivations = new();
+        private readonly Queue<Guid> _cadenceOrder = new();
+        private readonly List<long> _cadenceCharges = new();
+        private long _nextCadenceChargeId;
+        private long _cadenceAccuracyChargeId;
         private int _stateGeneration;
         private int _ordinaryHitCount;
         private int _sameTargetHits;
         private uint _ordinaryTarget;
+        private int _lastAbilityKey;
+        private DateTime _lastAbilityUsed;
         private DateTime _restoreReady;
         private DateTime _damageCostGrantReady;
-        private DateTime _movementAccuracyGrantReady;
-        private DateTime _momentumRestoreReady;
+        private DateTime _cadenceAccuracyGrantReady;
+        private DateTime _cadenceRestoreReady;
         private DateTime _evasionGrantReady;
         private int _previousExtendedDuration;
 
-        public int Momentum => _momentumCharges.Count;
-        public DateTime MomentumExpires { get; private set; }
+        public int Cadence => _cadenceCharges.Count;
+        public DateTime CadenceExpires { get; private set; }
         public DateTime RepeatedTargetExpires { get; private set; }
-        public DateTime MovementAccuracyExpires { get; private set; }
+        public DateTime CadenceAccuracyExpires { get; private set; }
         public DateTime DamageCostExpires { get; private set; }
         public int BonusAttempts { get; private set; }
         public int BonusDamagePercent { get; private set; }
@@ -45,14 +49,14 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         public void Reconcile(DateTime now, PairedRangedTraitConfiguration configuration)
         {
-            if (_previousExtendedDuration > configuration.MomentumExtendedDurationSeconds && Momentum > 0)
-                MomentumExpires = Earlier(MomentumExpires, now.AddSeconds(configuration.MomentumDurationSeconds));
-            _previousExtendedDuration = configuration.MomentumExtendedDurationSeconds;
+            if (_previousExtendedDuration > configuration.CadenceExtendedDurationSeconds && Cadence > 0)
+                CadenceExpires = Earlier(CadenceExpires, now.AddSeconds(configuration.CadenceDurationSeconds));
+            _previousExtendedDuration = configuration.CadenceExtendedDurationSeconds;
 
-            if (now >= MomentumExpires || configuration.MomentumMaximum <= 0)
-                _momentumCharges.Clear();
-            else if (Momentum > configuration.MomentumMaximum)
-                _momentumCharges.RemoveRange(configuration.MomentumMaximum, Momentum - configuration.MomentumMaximum);
+            if (now >= CadenceExpires || configuration.CadenceMaximum <= 0)
+                _cadenceCharges.Clear();
+            else if (Cadence > configuration.CadenceMaximum)
+                _cadenceCharges.RemoveRange(configuration.CadenceMaximum, Cadence - configuration.CadenceMaximum);
 
             if (now >= RepeatedTargetExpires || configuration.RepeatedTargetRequiredHits <= 0)
                 _sameTargetHits = 0;
@@ -64,7 +68,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             DateTime now, PairedRangedTraitConfiguration configuration, uint target)
         {
             Reconcile(now, configuration);
-            var damageBonus = configuration.OrdinaryDamagePercentAdjustment;
+            var damageBonus = 0;
             if (target == _ordinaryTarget && _sameTargetHits >= configuration.RepeatedTargetRequiredHits &&
                 configuration.RepeatedTargetRequiredHits > 0 && now < RepeatedTargetExpires)
                 damageBonus += configuration.RepeatedTargetDamagePercent;
@@ -73,7 +77,7 @@ namespace SWLOR.Game.Server.Service.CombatService
 
             return new PairedRangedOrdinarySnapshot(
                 damageBonus,
-                Momentum * configuration.MomentumAccuracyPerCharge);
+                Cadence * configuration.CadenceAccuracyPerCharge);
         }
 
         public PairedRangedOrdinarySnapshot RecordOrdinaryAttempt(
@@ -140,43 +144,62 @@ namespace SWLOR.Game.Server.Service.CombatService
         public void RecordAccuracyEvasionMiss(DateTime now, PairedRangedTraitConfiguration configuration)
         {
             Reconcile(now, configuration);
-            if (configuration.MomentumMaximum <= 0 || configuration.EvasionMomentumCooldownSeconds <= 0 || now < _evasionGrantReady)
+            if (configuration.CadenceMaximum <= 0 || configuration.EvasionCadenceCooldownSeconds <= 0 || now < _evasionGrantReady)
                 return;
-            GainMomentum(now, configuration);
-            _evasionGrantReady = now.AddSeconds(configuration.EvasionMomentumCooldownSeconds);
+            GainCadence(now, configuration, 1);
+            _evasionGrantReady = now.AddSeconds(configuration.EvasionCadenceCooldownSeconds);
         }
 
-        public void RecordMovementHit(DateTime now, PairedRangedTraitConfiguration configuration)
+        /// <summary>
+        /// Records one committed weapon ability. Returns whether it continues a chain: a different ability than the
+        /// previous one, used within the chain window. <paramref name="abilityKey"/> identifies the ability across ranks.
+        /// </summary>
+        public bool RecordAbilityUse(DateTime now, PairedRangedTraitConfiguration configuration, int abilityKey) =>
+            RecordAbilityUse(now, configuration, abilityKey, out _);
+
+        /// <param name="landsBy">When chained, the latest moment its hit may land and still continue the chain.</param>
+        public bool RecordAbilityUse(DateTime now, PairedRangedTraitConfiguration configuration, int abilityKey,
+            out DateTime landsBy)
+        {
+            landsBy = configuration.CadenceChainWindowSeconds > 0
+                ? _lastAbilityUsed.AddSeconds(configuration.CadenceChainWindowSeconds)
+                : DateTime.MinValue;
+            var chained = configuration.CadenceChainWindowSeconds > 0 && _lastAbilityKey != 0 &&
+                          _lastAbilityKey != abilityKey && now <= landsBy;
+            _lastAbilityKey = abilityKey;
+            _lastAbilityUsed = now;
+            return chained;
+        }
+
+        /// <summary>Grants an activation's Cadence once, however many hands, targets, repeats or waves land.</summary>
+        public void RecordAbilityHit(DateTime now, PairedRangedTraitConfiguration configuration, Guid activationId, int charges)
         {
             Reconcile(now, configuration);
-            GainMomentum(now, configuration);
-            if (configuration.MovementNextAbilityAccuracy > 0 && now >= _movementAccuracyGrantReady)
-            {
-                MovementAccuracyExpires = now.AddSeconds(configuration.MovementAccuracyDurationSeconds);
-                _movementAccuracyChargeId++;
-                _movementAccuracyGrantReady = now.AddSeconds(configuration.MovementAccuracyCooldownSeconds);
-            }
+            if (charges <= 0 || configuration.CadenceMaximum <= 0 ||
+                !Remember(_cadenceActivations, _cadenceOrder, activationId))
+                return;
+            GainCadence(now, configuration, charges);
         }
 
         public PairedRangedAbilityTraitsSnapshot BeginAbility(
-            DateTime now, PairedRangedTraitConfiguration configuration, bool crossfire, bool spendsMomentum)
+            DateTime now, PairedRangedTraitConfiguration configuration, bool usesNextAbilityAccuracy, bool spendsCadence)
         {
-            var snapshot = CaptureAbility(now, configuration, crossfire, spendsMomentum);
+            var snapshot = CaptureAbility(now, configuration, usesNextAbilityAccuracy, spendsCadence);
             CommitAbility(now, configuration, snapshot);
             return snapshot;
         }
 
         /// <summary>Captures existing charge identities without consuming them during a cast.</summary>
         public PairedRangedAbilityTraitsSnapshot CaptureAbility(
-            DateTime now, PairedRangedTraitConfiguration configuration, bool crossfire, bool spendsMomentum)
+            DateTime now, PairedRangedTraitConfiguration configuration, bool usesNextAbilityAccuracy, bool spendsCadence)
         {
             Reconcile(now, configuration);
-            var charges = spendsMomentum ? Momentum : 0;
-            var accuracy = crossfire && now < MovementAccuracyExpires ? configuration.MovementNextAbilityAccuracy : 0;
-            return new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), crossfire, spendsMomentum, charges, accuracy)
+            var charges = spendsCadence ? Cadence : 0;
+            var accuracy = usesNextAbilityAccuracy && now < CadenceAccuracyExpires ? configuration.CadenceNextAbilityAccuracy : 0;
+            return new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), usesNextAbilityAccuracy, spendsCadence, charges, accuracy)
             {
-                MomentumChargeIds = spendsMomentum ? _momentumCharges.ToArray() : Array.Empty<long>(),
-                MovementAccuracyChargeId = accuracy > 0 ? _movementAccuracyChargeId : 0,
+                CadenceChargeIds = spendsCadence ? _cadenceCharges.ToArray() : Array.Empty<long>(),
+                CadenceAccuracyChargeId = accuracy > 0 ? _cadenceAccuracyChargeId : 0,
                 StateGeneration = _stateGeneration
             };
         }
@@ -192,21 +215,21 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (snapshot == null || snapshot.StateGeneration != _stateGeneration ||
                 !Remember(_committedActivations, _commitOrder, snapshot.ActivationId))
                 return false;
-            if (snapshot.SpendsMomentum)
+            if (snapshot.SpendsCadence)
             {
-                var captured = new HashSet<long>(snapshot.MomentumChargeIds);
-                _momentumCharges.RemoveAll(captured.Contains);
+                var captured = new HashSet<long>(snapshot.CadenceChargeIds);
+                _cadenceCharges.RemoveAll(captured.Contains);
             }
-            if (snapshot.UsesMovementAccuracy && snapshot.MovementAccuracyChargeId != 0 &&
-                snapshot.MovementAccuracyChargeId == _movementAccuracyChargeId)
-                MovementAccuracyExpires = default;
+            if (snapshot.UsesNextAbilityAccuracy && snapshot.CadenceAccuracyChargeId != 0 &&
+                snapshot.CadenceAccuracyChargeId == _cadenceAccuracyChargeId)
+                CadenceAccuracyExpires = default;
             return true;
         }
 
         /// <returns>One activation's recovery, capped by the stamina actually paid.</returns>
         public int CompleteAbility(
             DateTime now, PairedRangedTraitConfiguration configuration, PairedRangedAbilityTraitsSnapshot snapshot,
-            bool anyHit, float distanceTravelled, bool generatesMomentum, int paidStamina, int restoreStaminaOnHit,
+            bool anyHit, int paidStamina, int restoreStaminaOnHit,
             int ordinaryBonusAttempts = 0, int ordinaryBonusDamagePercent = 0, int ordinaryBonusSeconds = 0)
         {
             Reconcile(now, configuration);
@@ -224,37 +247,28 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (!anyHit)
                 return 0;
 
-            if (generatesMomentum && distanceTravelled >= 2f)
-                GainMomentum(now, configuration);
-
-            // The source activation consumed its own snapshot before granting this new charge.
-            if (snapshot.UsesMovementAccuracy && distanceTravelled >= 2f && configuration.MovementNextAbilityAccuracy > 0 && now >= _movementAccuracyGrantReady)
-            {
-                MovementAccuracyExpires = now.AddSeconds(configuration.MovementAccuracyDurationSeconds);
-                _movementAccuracyChargeId++;
-                _movementAccuracyGrantReady = now.AddSeconds(configuration.MovementAccuracyCooldownSeconds);
-            }
-
             var restore = Math.Max(0, restoreStaminaOnHit);
-            if (snapshot.SpendsMomentum && snapshot.MomentumSpent > 0 && configuration.MomentumStaminaRestorePerCharge > 0 && now >= _momentumRestoreReady)
+            if (snapshot.SpendsCadence && snapshot.CadenceSpent > 0 && configuration.CadenceStaminaRestorePerCharge > 0 && now >= _cadenceRestoreReady)
             {
-                restore += Math.Min(snapshot.MomentumSpent * configuration.MomentumStaminaRestorePerCharge,
-                    configuration.MomentumStaminaRestoreMaximum);
-                _momentumRestoreReady = now.AddSeconds(configuration.MomentumRestoreCooldownSeconds);
+                restore += Math.Min(snapshot.CadenceSpent * configuration.CadenceStaminaRestorePerCharge,
+                    configuration.CadenceStaminaRestoreMaximum);
+                _cadenceRestoreReady = now.AddSeconds(configuration.CadenceRestoreCooldownSeconds);
             }
             return Math.Min(Math.Max(0, paidStamina), restore);
         }
 
         public void ClearTransientState()
         {
-            _momentumCharges.Clear();
+            _cadenceCharges.Clear();
             _stateGeneration++;
             _ordinaryHitCount = 0;
             _sameTargetHits = 0;
             _ordinaryTarget = 0;
-            MomentumExpires = default;
+            _lastAbilityKey = 0;
+            _lastAbilityUsed = default;
+            CadenceExpires = default;
             RepeatedTargetExpires = default;
-            MovementAccuracyExpires = default;
+            CadenceAccuracyExpires = default;
             DamageCostExpires = default;
             BonusAttempts = 0;
             BonusExpires = default;
@@ -277,20 +291,27 @@ namespace SWLOR.Game.Server.Service.CombatService
             RepeatedTargetExpires = default;
         }
 
-        public void ClampMomentumDuration(DateTime now, int durationSeconds)
+        public void ClampCadenceDuration(DateTime now, int durationSeconds)
         {
-            if (Momentum > 0)
-                MomentumExpires = Earlier(MomentumExpires, now.AddSeconds(durationSeconds));
+            if (Cadence > 0)
+                CadenceExpires = Earlier(CadenceExpires, now.AddSeconds(durationSeconds));
             _previousExtendedDuration = 0;
         }
 
-        private void GainMomentum(DateTime now, PairedRangedTraitConfiguration configuration)
+        /// <summary>Adds charges up to the cap and refreshes their duration; any gain also offers the next-ability accuracy.</summary>
+        private void GainCadence(DateTime now, PairedRangedTraitConfiguration configuration, int charges)
         {
-            if (configuration.MomentumMaximum <= 0)
+            if (configuration.CadenceMaximum <= 0)
                 return;
-            if (Momentum < configuration.MomentumMaximum)
-                _momentumCharges.Add(++_nextMomentumChargeId);
-            MomentumExpires = now.AddSeconds(Math.Max(configuration.MomentumDurationSeconds, configuration.MomentumExtendedDurationSeconds));
+            for (var i = 0; i < charges && Cadence < configuration.CadenceMaximum; i++)
+                _cadenceCharges.Add(++_nextCadenceChargeId);
+            CadenceExpires = now.AddSeconds(Math.Max(configuration.CadenceDurationSeconds, configuration.CadenceExtendedDurationSeconds));
+            if (configuration.CadenceNextAbilityAccuracy > 0 && now >= _cadenceAccuracyGrantReady)
+            {
+                CadenceAccuracyExpires = now.AddSeconds(configuration.CadenceAccuracyDurationSeconds);
+                _cadenceAccuracyChargeId++;
+                _cadenceAccuracyGrantReady = now.AddSeconds(configuration.CadenceAccuracyCooldownSeconds);
+            }
         }
 
         private static DateTime Earlier(DateTime left, DateTime right) => left < right ? left : right;

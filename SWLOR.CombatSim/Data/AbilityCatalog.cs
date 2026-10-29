@@ -118,7 +118,14 @@ namespace SWLOR.CombatSim.Data
                 IsAimed = detail.RequiresTarget || detail.RequiresLocationTarget,
                 IsHealing = detail.IsHealingAbility,
                 ForceAffinity = perk?.ForceAffinityType?.ToString() ?? string.Empty,
-                TwinPistol = ReadTwinSpec(detail)
+                TwinPistol = ReadTwinSpec(detail),
+                KeepsWeaponAbilityCadence = detail.KeepsWeaponAbilityCadence,
+                WeaponAbilityCadenceOnHit = detail.WeaponAbilityCadenceOnHit,
+                WeaponAbilityCadenceDamagePerCharge = detail.WeaponAbilityCadenceDamagePerCharge,
+                // Mirrors PairedRangedTraits.ChainKey: every rank of one ability shares its key.
+                CadenceChainKey = detail.EffectiveLevelPerkType != SWLOR.Game.Server.Service.PerkService.PerkType.Invalid
+                    ? (int)detail.EffectiveLevelPerkType
+                    : StringComparer.Ordinal.GetHashCode(detail.Name ?? string.Empty) | int.MinValue
             };
         }
 

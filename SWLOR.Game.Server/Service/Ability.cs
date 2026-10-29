@@ -250,11 +250,10 @@ namespace SWLOR.Game.Server.Service
             var traits = GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits;
             if (traits?.IsCommitted != true) return;
             PairedRangedTraits.CompleteWeaponAbilityHit(activator, traits);
-            // A field, channel, or multi-target action is one source activation.
-            // Later ticks cannot turn a new movement into another reward.
-            if (traits.MovementHitObserved) return;
-            traits.MovementHitObserved = true;
-            PairedRangedTraits.RecordLandedWeaponHit(activator, target);
+            // A field, channel, or multi-target action is one source activation; only its first hit earns Cadence.
+            if (traits.CadenceHitObserved) return;
+            traits.CadenceHitObserved = true;
+            PairedRangedTraits.RecordWeaponAbilityHit(activator, traits);
         }
 
         private static int TakeWeaponTraitDamageBonus(uint activator, SkillType skill, TrackedAbilityImpact impact)
@@ -898,7 +897,6 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (ability.HasExplicitMaxRange &&
-                    !ability.ClampsLocationTargetToMaxRange &&
                     GetDistanceBetweenLocations(GetLocation(activator), targetLocation) > ability.MaxRange)
                 {
                     return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");

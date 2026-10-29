@@ -27,8 +27,10 @@ namespace SWLOR.CombatSim.Engine
         public int OrdinaryHits { get; set; }
         public int AbilityImpacts { get; set; }
         public int AbilityHits { get; set; }
-        public int FlowSpent { get; set; }
-        public int FlowDamagePowerApplied { get; set; }
+        public int CadenceSpent { get; set; }
+        /// <summary>Paid hostile weapon abilities that continued a chain (a different ability within the window).</summary>
+        public int CadenceChains { get; set; }
+        public int CadenceDamagePowerApplied { get; set; }
         public double OrdinaryDamage { get; set; }
         public double AbilityDamage { get; set; }
         public Dictionary<string, int> AbilityUses { get; } = new();

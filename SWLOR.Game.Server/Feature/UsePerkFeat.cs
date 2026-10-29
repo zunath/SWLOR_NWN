@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ResumeAttack(uint activator, uint target, bool clearActions = true)
         {
             if (!GetIsObjectValid(activator) ||
-                GetCurrentHitPoints(activator) <= 0 || WeaponRepositioning.IsMoving(activator))
+                GetCurrentHitPoints(activator) <= 0)
             {
                 return;
             }
@@ -341,10 +341,6 @@ namespace SWLOR.Game.Server.Feature
                 ResumeAttack(activator, target, clearActions);
             });
         }
-
-        /// <summary>A completed relocation resumes its captured attack without clearing a newer player action.</summary>
-        public static void ResumeAttackAfterReposition(uint activator, uint target) =>
-            ResumeAttackAfterDelay(activator, target, .1f, clearActions: false);
 
         /// <summary>
         /// Breaks stealth and invisibility effects if the ability is configured to do so.

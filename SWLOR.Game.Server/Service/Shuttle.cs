@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, (PlanetType Origin, PlanetType Destination)> _ticketHolders = new();
         private static readonly Dictionary<string, DateTime> _boardingNotBeforeUtc = new();
         private static readonly Dictionary<(PlanetType Origin, PlanetType Destination), DateTime> _announcedBoardings = new();
+        private static readonly ShuttleMissedBoardingTracker _missedBoardings = new();
         private static DateTime _lastTickUtc;
 
         /// <summary>
@@ -133,6 +134,7 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
 
+            RearmReturnedPassengers();
             ProcessDepartures(now);
             ProcessBoardingCalls(now);
             ProcessArrivals(now);
@@ -184,7 +186,9 @@ namespace SWLOR.Game.Server.Service
                     GetIsDMPossessed(player) ||
                     !IsAtBoardingTerminal(player, origin))
                 {
-                    NotifyMissedBoarding(player, origin, destination, now);
+                    // Tell the player once; later departures stay silent until they return to the terminal.
+                    if (_missedBoardings.RecordMiss(playerId))
+                        NotifyMissedBoarding(player, origin, destination, now);
                     continue;
                 }
 
@@ -193,6 +197,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _ticketHolders.Remove(playerId);
                     _boardingNotBeforeUtc.Remove(playerId);
+                    _missedBoardings.Clear(playerId);
                     continue;
                 }
 
@@ -205,6 +210,7 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(ride);
                 _ticketHolders.Remove(playerId);
                 _boardingNotBeforeUtc.Remove(playerId);
+                _missedBoardings.Clear(playerId);
                 boardedAnyone = true;
 
                 var entrance = flight.EntranceLocation;
@@ -222,6 +228,29 @@ namespace SWLOR.Game.Server.Service
             if (boardedAnyone)
             {
                 Log.Write(LogGroup.Server, $"Shuttle flight {flightId} departed {origin} for {destination}.");
+            }
+        }
+
+        /// <summary>
+        /// Re-enables boarding calls and missed-shuttle messages for players who missed a departure
+        /// and have since come back within range of a flights terminal for their route.
+        /// </summary>
+        private static void RearmReturnedPassengers()
+        {
+            foreach (var playerId in _missedBoardings.GetMissed())
+            {
+                if (!_ticketHolders.TryGetValue(playerId, out var route))
+                {
+                    _missedBoardings.Clear(playerId);
+                    continue;
+                }
+
+                var player = GetOnlinePlayerById(playerId);
+                if (GetIsObjectValid(player) && !GetIsDead(player) && !GetIsDMPossessed(player) &&
+                    IsAtBoardingTerminal(player, route.Origin))
+                {
+                    _missedBoardings.Clear(playerId);
+                }
             }
         }
 
@@ -264,6 +293,9 @@ namespace SWLOR.Game.Server.Service
                         continue;
 
                     if (!_boardingNotBeforeUtc.TryGetValue(playerId, out var notBefore) || next < notBefore)
+                        continue;
+
+                    if (_missedBoardings.HasMissed(playerId))
                         continue;
 
                     var player = GetOnlinePlayerById(playerId);
@@ -693,6 +725,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(ride);
             _ticketHolders[playerId] = (origin, destination);
             _boardingNotBeforeUtc[playerId] = DateTime.UtcNow;
+            _missedBoardings.Clear(playerId);
 
             if (tax > 0 && !string.IsNullOrWhiteSpace(cityPropertyId))
             {
@@ -725,6 +758,7 @@ namespace SWLOR.Game.Server.Service
             DB.Delete<ShuttleRide>(ride.Id);
             _ticketHolders.Remove(playerId);
             _boardingNotBeforeUtc.Remove(playerId);
+            _missedBoardings.Clear(playerId);
 
             SendMessageToPC(player, $"Your shuttle ticket has been refunded for {ride.FarePaid} credits. Taxes are non-refundable.");
             return true;
@@ -805,6 +839,7 @@ namespace SWLOR.Game.Server.Service
 
             _ticketHolders[playerId] = (ride.Origin, ride.Destination);
             _boardingNotBeforeUtc[playerId] = now.AddSeconds(BoardingCallSeconds);
+            _missedBoardings.Clear(playerId);
             var next = GetNextDepartureUtc(ride.Origin, ride.Destination, playerId);
             var wait = Time.GetTimeLongIntervals(next - now, false);
             var originName = Planet.GetPlanetByType(ride.Origin).Name;
@@ -832,6 +867,7 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             _boardingNotBeforeUtc.Remove(playerId);
+            _missedBoardings.Clear(playerId);
 
             Scheduler.Schedule(() =>
             {

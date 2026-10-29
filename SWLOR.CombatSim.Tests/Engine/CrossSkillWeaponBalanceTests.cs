@@ -13,14 +13,14 @@ namespace SWLOR.CombatSim.Tests.Engine;
 public class CrossSkillWeaponBalanceTests
 {
     [Test]
-    public void AuthoredChiroLoadouts_ReportNativeFlowBudgetAndAccuracySensitivity()
+    public void AuthoredChiroLoadouts_ReportNativeCadenceBudgetAndAccuracySensitivity()
     {
         const int samples = 64;
         var catalog = AbilityCatalog.Load();
         var rows = new List<object>();
         foreach (var loadout in Loadouts())
         foreach (var ability in new[] { ("PairedVolley:4", "PairedVolley4"), ("FocusedBurst:3", "FocusedBurst3") })
-        foreach (var flow in new[] { 0, 3 })
+        foreach (var cadence in new[] { 0, 3 })
         {
             var damage = new List<double>();
             var budget = new List<int>();
@@ -28,29 +28,29 @@ public class CrossSkillWeaponBalanceTests
             var refunded = new List<double>();
             foreach (var seed in Enumerable.Range(20261018, samples))
             {
-                var scenario = TwinPistolScenarios.Create(false, false, duration: 5);
+                var scenario = TwinPistolScenarios.Create(false, true, duration: 5);
                 var spec = scenario.Teams[0].Members[0];
-                spec.Perks = new() { ability.Item1, "TwinPistolMomentum", "TwinPistolFollowThrough", "BalancedGrip" };
+                spec.Perks = new() { ability.Item1, "Cadence", "TwinPistolFollowThrough", "BalancedGrip" };
                 spec.Abilities = new() { new() { Feat = ability.Item2, MinIntervalSeconds = 600 } };
                 spec.StmRegenPer30Seconds = 0;
                 spec.WeaponLoadout = loadout.Create();
                 var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), catalog, seed);
                 var actor = sim.Combatants[0];
                 actor.NextActionAt = 0; actor.NextAttackAt = double.PositiveInfinity;
-                for (var i = 0; i < flow; i++) { sim.RecordWeaponMovement(actor, 2); sim.RecordLandedWeaponHit(actor); }
+                sim.GrantCadence(actor, cadence);
                 SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1 && actor.Casting == null, 5, "one complete activation");
-                // Twin Pistol builders keep Flow for their finishers, so only a Flow-spending ability applies it.
-                var spendsFlow = catalog.Get(Enum.Parse<SWLOR.NWN.API.NWScript.Enum.FeatType>(ability.Item2)).TwinPistol?.SpendsMomentum != false;
-                actor.Stats.FlowDamagePowerApplied.Should().Be(spendsFlow ? flow * 2 * loadout.Create().DistinctAttackItemCount : 0);
+                // Twin Pistol builders keep Cadence for the spenders, so only a Cadence-spending ability applies it.
+                var spendsCadence = !catalog.Get(Enum.Parse<SWLOR.NWN.API.NWScript.Enum.FeatType>(ability.Item2)).KeepsWeaponAbilityCadence;
+                actor.Stats.CadenceDamagePowerApplied.Should().Be(spendsCadence ? cadence * 2 * loadout.Create().DistinctAttackItemCount : 0);
                 actor.Stats.StmRefunded.Should().BeLessThan(actor.Stats.StmSpent);
-                damage.Add(actor.Stats.AbilityDamage); budget.Add(actor.Stats.FlowDamagePowerApplied);
+                damage.Add(actor.Stats.AbilityDamage); budget.Add(actor.Stats.CadenceDamagePowerApplied);
                 paid.Add(actor.Stats.StmSpent); refunded.Add(actor.Stats.StmRefunded);
             }
             var mean = damage.Average();
-            rows.Add(new { loadout = loadout.Name, ability = ability.Item2, flow,
+            rows.Add(new { loadout = loadout.Name, ability = ability.Item2, cadence,
                 source = loadout.Source, weapon = loadout.Create(), samples,
                 damageMean = mean, damageMean95HalfWidth = 1.96 * Math.Sqrt(damage.Sum(value => Math.Pow(value - mean, 2)) / (samples - 1)) / Math.Sqrt(samples),
-                flowRawDamageBudget = budget.Average(), staminaPaid = paid.Average(), staminaRefunded = refunded.Average() });
+                cadenceRawDamageBudget = budget.Average(), staminaPaid = paid.Average(), staminaRefunded = refunded.Average() });
         }
         var directory = Environment.GetEnvironmentVariable("TWIN_SIM_OUTPUT") ?? Path.Combine(Path.GetTempPath(), "swlor-twin-cross-skill-sim-20261018");
         Directory.CreateDirectory(directory);
@@ -58,13 +58,13 @@ public class CrossSkillWeaponBalanceTests
         File.WriteAllText(path, JsonSerializer.Serialize(new
         {
             method = "64 fixed paired seeds per cell, native Twin payloads and shared combat math, one complete paid activation with ordinary attacks disabled. " +
-                "All compared profiles purchase the same active/Flow/Follow Through/Balanced Grip perks, and vary only pre-existing 0 or 3 Flow. " +
-                "Flow is generated through three explicit completed 2m movement+landed-weapon-hit events immediately before activation; this is availability sensitivity, not ambient movement or sustain DPS. " +
+                "All compared profiles purchase the same active/Cadence/Follow Through/Balanced Grip perks, and vary only pre-existing 0 or 3 Cadence. " +
+                "Cadence is granted through the server's landed-ability-hit path immediately before activation; this is availability sensitivity, not chain timing or sustain DPS. " +
                 "Real Bible Equipment - Weapons Chiro DMG/delay, rank50 and attributes26; neutral ATT134/ACC134, target DEF94/EVA134/VIT26. " +
                 "Balanced Grip adds5 ACC to every actual attack item; natural Single Weapon20% and optional max Doublehand60% total modify main DMG rating before rolls. " +
                 "Doublehand III costs9 Armor SP; paired/double profiles explicitly assume the separate9 Armor SP offhand-delay reduction. " +
                 "These are legal loadout sensitivities, not equal-SP or complete equipment builds; purchased attributes26 is an upper-attribute control. " +
-                "Two-handed/double weapons are one real item, paired weapons two. Flow contributes one12-DMG budget per distinct item, partitioned across Focused Burst's three waves, with one capped Follow Through refund. " +
+                "Two-handed/double weapons are one real item, paired weapons two. Cadence contributes one12-DMG budget per distinct item, partitioned across Focused Burst's three waves, with one capped Follow Through refund. " +
                 "No geometry, client animation, resistance conversion, item procs, foreign passive families or global cross-skill balance claim.",
             rows
         }, new JsonSerializerOptions { WriteIndented = true }));

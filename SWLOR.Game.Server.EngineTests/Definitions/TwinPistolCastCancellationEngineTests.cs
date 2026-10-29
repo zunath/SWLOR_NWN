@@ -25,7 +25,7 @@ public static class TwinPistolCastCancellationEngineTests
     [EngineTest("Twin Suns weapon swap cancels its unpaid cast without clearing ordinary traits", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
     public static Task TwinSunsSwap(EngineTestContext ctx) => WeaponSwap(ctx, FeatType.TwinSuns, PerkType.TwinSuns);
 
-    [EngineTest("Final Salvo weapon swap preserves captured Momentum and cancels payment and impact", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
+    [EngineTest("Final Salvo weapon swap preserves captured Cadence and cancels payment and impact", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
     public static Task FinalSalvoSwap(EngineTestContext ctx) => WeaponSwap(ctx, FeatType.FinalSalvo, PerkType.FinalSalvo);
 
     [EngineTest("Twin Suns native death cancels its unpaid cast and records exactly one Died interruption", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
@@ -239,7 +239,7 @@ public static class TwinPistolCastCancellationEngineTests
                     $"The real two-second cast starts: {Ability.GetLastActivationDenialReason()}");
                 ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor), "The unpaid capture belongs to the active cast");
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "Starting the cast does not pay stamina");
-                ctx.AssertEqual(3, StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0, "Starting the cast only captures Momentum");
+                ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0, "Starting the cast only captures Cadence");
             });
             await ctx.DelaySecondsAsync(.25f);
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -247,7 +247,7 @@ public static class TwinPistolCastCancellationEngineTests
                 SwapToRifle(ctx, actor, main, companion, replacement);
                 ctx.Assert(!TwinPistolAbility.HasActiveActivation(actor) && !Activity.IsBusy(actor), "The actual equipment event interrupts its captured cast");
                 ctx.AssertEqual(string.Empty, UsePerkFeat.GetActiveAbilityActivationId(actor), "The canceled shared activation is removed");
-                ctx.AssertEqual(3, StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0, "Swapping preserves the unspent captured Momentum");
+                ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0, "Swapping preserves the unspent captured Cadence");
                 ctx.AssertEqual(5, PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(actor, target), "Swapping preserves the repeated-target counter");
                 ctx.Assert(StatusEffect.GetStatusEffect<AkimboStanceStatusEffect>(actor) != null, "Swapping preserves the cross-trained stance");
                 ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0, "Swapping preserves the earned ordinary Haste stack");
@@ -259,7 +259,7 @@ public static class TwinPistolCastCancellationEngineTests
             await ctx.DelaySecondsAsync(2.2f);
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled deadline does not spend stamina");
             ctx.Assert(!Recast.IsOnRecastDelay(actor, Ability.GetAbilityDetail(feat).RecastGroup).Item1, "The canceled deadline starts no capstone recast");
-            ctx.AssertEqual(3, StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0, "The canceled deadline spends no Momentum");
+            ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0, "The canceled deadline spends no Cadence");
             ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled deadline resolves no ability impact");
             ctx.AssertEqual(health, GetCurrentHitPoints(target), "With ordinary misses forced, the canceled cast deals no damage");
             ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null, "The canceled cast grants no ordinary-shot capstone bonus");
@@ -316,7 +316,7 @@ public static class TwinPistolCastCancellationEngineTests
             foreach (var skill in new[] { SkillType.TwinPistol, SkillType.Pistol, SkillType.Rifle, SkillType.Leadership })
                 record.Skills[skill].Rank = 50;
             record.Perks[perk] = 1;
-            record.Perks[PerkType.TwinPistolMomentum] = 1;
+            record.Perks[PerkType.Cadence] = 1;
             record.Perks[PerkType.ConvergingFire] = 1;
             record.Perks[PerkType.WatchfulPresence] = 1;
             foreach (var requirement in Perk.GetPerkDetails(perk).PerkLevels.Values.SelectMany(level => level.Requirements).OfType<PerkRequirementQuest>())
@@ -355,11 +355,10 @@ public static class TwinPistolCastCancellationEngineTests
     private static void SeedExistingTraits(uint actor, uint target)
     {
         StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
-        // Controlled event setup isolates cancellation; movement generation has its own engine coverage.
+        // Controlled event setup isolates cancellation; Cadence generation has its own engine coverage.
+        CadenceFixture.Grant(actor, 3);
         for (var index = 0; index < 3; index++)
         {
-            var snapshot = PairedRangedTraits.BeginAbility(actor, true, false);
-            PairedRangedTraits.CompleteAbility(actor, snapshot, true, 3f, true, 0, 0);
             PairedRangedTraits.RecordOrdinaryAttempt(actor, target, long.MaxValue - index);
             PairedRangedTraits.RecordOrdinaryHit(actor, target, long.MaxValue - index);
             OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - index);

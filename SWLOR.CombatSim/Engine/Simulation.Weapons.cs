@@ -13,41 +13,27 @@ public sealed partial class Simulation
     private DateTime WeaponNow => DateTime.UnixEpoch.AddSeconds(_now);
     private uint TargetId(Combatant target) => (uint)(_combatants.IndexOf(target) + 1);
 
-    /// <summary>Declared completed travel only; fixtures and Twin travel supply actual movement opportunities.</summary>
-    internal void RecordWeaponMovement(Combatant actor, float meters)
-    {
-        if (!float.IsFinite(meters) || meters < 0) throw new ArgumentOutOfRangeException(nameof(meters));
-        actor.WeaponTraits.Position += new System.Numerics.Vector3(meters, 0, 0);
-        actor.WeaponTraits.Movement.Observe(WeaponNow, 1, actor.WeaponTraits.Position, false);
-    }
-
-    internal void RecordLandedWeaponHit(Combatant actor)
-    {
-        actor.WeaponTraits.Movement.Observe(WeaponNow, 1, actor.WeaponTraits.Position, false);
-        if (actor.WeaponTraits.Movement.TryConsumeForHit(1, actor.WeaponTraits.Position))
-            actor.WeaponTraits.Paired.RecordMovementHit(WeaponNow, WeaponTraitState.Configuration(actor));
-    }
+    /// <summary>Grants Cadence through the server's landed-hit path, as one weapon ability activation would.</summary>
+    internal void GrantCadence(Combatant actor, int charges) =>
+        actor.WeaponTraits.Paired.RecordAbilityHit(WeaponNow, WeaponTraitState.Configuration(actor), Guid.NewGuid(), charges);
 
     private static double WeaponInterval(WeaponLoadoutSpec weapon, int haste) =>
         Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(
             weapon.MainDelay, weapon.OffhandDelay, haste, weapon.OffhandDelayReductionPercent)) / 1000.0;
 
-    private bool CanUseTwin(Combatant actor, AbilityUseSpec use, TwinPistolAbilitySpec spec)
+    private bool CanUseTwin(Combatant actor, AbilityUseSpec use)
     {
         actor.WeaponTraits.Paired.Reconcile(WeaponNow, WeaponTraitState.Configuration(actor));
-        if (actor.WeaponTraits.Paired.Momentum < use.MinimumFlow) return false;
-        if (spec.Movement == TwinPistolMovementType.None) return true;
-        if (spec.Movement == TwinPistolMovementType.Approach && use.MovementMeters is >= 0 and < .01f) return true;
-        if (!use.MovementMeters.HasValue || use.MovementMeters < spec.MinimumMovementMeters ||
-            _now < actor.WeaponTraits.MovementReadyAt) return false;
-        return true;
+        return actor.WeaponTraits.Paired.Cadence >= use.MinimumCadence;
     }
 
-    private Combatant[] CaptureTwinTargets(Combatant actor, AbilityUseSpec use, TwinPistolAbilitySpec spec, Combatant target) =>
-        spec.Movement == TwinPistolMovementType.FreeDestination
-            ? Enemies(actor).OrderBy(enemy => ReferenceEquals(enemy, target) ? 0 : 1)
-                .Take(Math.Min(spec.MaximumTargets, use.LineTargets)).ToArray()
-            : new[] { target };
+    // PairedRangedTraits.CaptureWeaponAbility: the ability's per-charge override or the trait's, plus Steady Cadence.
+    private static int CadenceDamagePerCharge(Combatant actor, Data.AbilityInfo info)
+    {
+        var configuration = WeaponTraitState.Configuration(actor);
+        return (info.WeaponAbilityCadenceDamagePerCharge ?? configuration.CadenceDamagePerCharge) +
+               configuration.CadenceBonusDamagePerCharge;
+    }
 
     private static int[] CaptureTwinWeaponDamage(WeaponLoadoutSpec weapon) =>
         weapon.DistinctAttackItemCount == 2
@@ -68,43 +54,22 @@ public sealed partial class Simulation
             actor.NextAttackAt = Math.Max(cast.AttackReadyBeforeChannel, _now);
             return;
         }
-        var config = WeaponTraitState.Configuration(actor);
-        var distance = cast.Use.MovementMeters ?? 0;
-        if (!cast.MovementStarted && spec.Movement != TwinPistolMovementType.None && distance >= .01f)
-        {
-            cast.MovementStarted = true;
-            actor.WeaponTraits.MovementReadyAt = _now + 2;
-            if (cast.Use.MovementSeconds > 0)
-            {
-                cast.Activated = true;
-                cast.ImpactAt = _now + cast.Use.MovementSeconds / (1 + actor.GetStat(StatType.MovementSpeedPercentAdjustment) / 100f);
-                actor.Casting = cast;
-                actor.NextAttackAt = Math.Max(actor.NextAttackAt, cast.ImpactAt + ResumeAttackDelaySeconds);
-                actor.NextActionAt = Math.Max(actor.NextActionAt, cast.ImpactAt + actor.Spec.ReactionSeconds);
-                return;
-            }
-        }
-
-        if (!cast.MovementRecorded && distance > 0)
-        {
-            RecordWeaponMovement(actor, distance);
-            cast.MovementRecorded = true;
-        }
-
         var landed = false;
-        foreach (var target in cast.WeaponTargets.Where(target => IsEngaged(target) && target.TeamIndex != actor.TeamIndex))
+        // Every Twin Pistol attack is a single-target shot at its selected enemy.
+        var target = cast.Target;
+        if (IsEngaged(target) && target.TeamIndex != actor.TeamIndex)
         {
             for (var hand = 0; hand < cast.WeaponDamages.Count; hand++)
             {
                 if (target.IsDead) break;
                 var weaponDamage = cast.WeaponDamages[hand];
-                var flowBonus = cast.WeaponActivation?.TryTakeDamageBonus((uint)(hand + 1), cast.VolleyIndex, spec.VolleyCount) ?? 0;
-                actor.Stats.FlowDamagePowerApplied += WeaponImpactDamagePartition.Partition(flowBonus, cast.VolleyIndex, spec.VolleyCount);
-                var power = weaponDamage * spec.WeaponPowerPercent / 100 + spec.FlatPower + flowBonus;
+                var cadenceBonus = cast.WeaponActivation?.TryTakeDamageBonus((uint)(hand + 1), cast.VolleyIndex, spec.VolleyCount) ?? 0;
+                actor.Stats.CadenceDamagePowerApplied += WeaponImpactDamagePartition.Partition(cadenceBonus, cast.VolleyIndex, spec.VolleyCount);
+                var power = weaponDamage * spec.WeaponPowerPercent / 100 + spec.FlatPower + cadenceBonus;
                 var accuracy = cast.WeaponTraits.AccuracyAdjustment;
                 actor.Stats.AbilityImpacts++;
                 var (hit, damage) = RollWeapon(actor, target, power, accuracy, ordinary: false,
-                    volleyIndex: cast.VolleyIndex, volleyCount: spec.VolleyCount, recordMovement: false);
+                    volleyIndex: cast.VolleyIndex, volleyCount: spec.VolleyCount);
                 landed |= hit;
                 if (hit)
                 {
@@ -148,12 +113,16 @@ public sealed partial class Simulation
         {
             activation.RecoveryCompleted = true;
             var requested = actor.WeaponTraits.Paired.CompleteAbility(WeaponNow, WeaponTraitState.Configuration(actor),
-                cast.WeaponTraits, true, 0, false, cast.StmCost, 0);
+                cast.WeaponTraits, true, cast.StmCost, 0);
             RestoreWeaponHitStamina(actor, cast, requested);
         }
-        if (activation.MovementHitObserved) return;
-        activation.MovementHitObserved = true;
-        RecordLandedWeaponHit(actor);
+        // A multi-hand, multi-target or multi-wave activation earns its Cadence once, on its first landed hit.
+        if (activation.CadenceHitObserved) return;
+        activation.CadenceHitObserved = true;
+        var earned = activation.CadenceEarnedOnHitAt(WeaponNow);
+        if (earned > 0)
+            actor.WeaponTraits.Paired.RecordAbilityHit(WeaponNow, WeaponTraitState.Configuration(actor),
+                activation.Snapshot.ActivationId, earned);
     }
 
     private void RestoreWeaponHitStamina(Combatant actor, PendingCast cast, int requested)
@@ -222,7 +191,7 @@ public sealed partial class Simulation
 
     private (bool Hit, double Damage) RollWeapon(Combatant actor, Combatant target, int power, int accuracyBonus,
         bool ordinary, int damageBonus = 0, int volleyIndex = 0, int volleyCount = 1,
-        bool resolveDamage = true, bool recordMovement = true)
+        bool resolveDamage = true)
     {
         var weapon = actor.Spec.WeaponLoadout;
         var hitChance = Combat.CalculateHitRate(weapon.Accuracy + actor.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0);
@@ -252,7 +221,6 @@ public sealed partial class Simulation
         }
         amount = WeaponImpactDamagePartition.Partition(amount, volleyIndex, volleyCount);
         var dealt = amount > 0 ? ApplyDamage(actor, target, amount, directHostile: true) : 0;
-        if (recordMovement) RecordLandedWeaponHit(actor);
         return (true, dealt);
     }
 
@@ -260,7 +228,7 @@ public sealed partial class Simulation
         (int)(minimum + random.NextDouble() * (maximum - minimum));
 
     private (bool Hit, double Dealt) RollNativeWeaponProfile(Combatant actor, Combatant target,
-        WeaponPowerSpec profile, uint item, Func<int> takeFlowBonus, int accuracyBonus,
+        WeaponPowerSpec profile, uint item, Func<int> takeCadenceBonus, int accuracyBonus,
         double multiplier, bool alwaysHits)
     {
         if (target.IsDead) return (false, 0);
@@ -275,7 +243,7 @@ public sealed partial class Simulation
 
         var rating = item == 1 ? EffectiveMainWeaponDamage(weapon) : weapon.OffhandDamage;
         var power = rating * profile.WeaponDamagePercent / 100 + profile.FlatDamage +
-                    (takeFlowBonus?.Invoke() ?? 0) + (int)(0.15f * weapon.SkillRank);
+                    (takeCadenceBonus?.Invoke() ?? 0) + (int)(0.15f * weapon.SkillRank);
         var critical = _random.Next(1, 101) <= Combat.CalculateAbilityCriticalChance(weapon.AbilityCriticalRateAdjustment)
             ? Combat.StandardCriticalRating : 0;
         var (minimum, maximum) = Combat.CalculateDamageRange(weapon.Attack, power, weapon.DamageAbility,

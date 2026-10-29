@@ -154,7 +154,12 @@ public static class TwinPistolEquipmentEngineTests
     public static async Task WholePairStatDeltas(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
-        player.Update(record => record.Skills[SkillType.TwinPistol].Rank = 25);
+        player.Update(record =>
+        {
+            record.Skills[SkillType.TwinPistol].Rank = 25;
+            // STM gear rebuilds max STM from worn gear, so the fixture's seeded STM, which has no source, would vanish.
+            record.MaxStamina = record.Stamina = Stat.BaseSTM;
+        });
         var actor = player.Creature;
         var main = await CreateCarriedItem(ctx, actor, "b_twinpistol");
         await ctx.ExecuteInCreatureContextAsync(actor, () =>

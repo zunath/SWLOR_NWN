@@ -198,7 +198,9 @@ public class TintMapReviewTests
         definition.Should().NotContain("OnResetTintColor");
         viewModel.Should().NotContain("OnResetTintColor");
         definition.Should().NotContain("IsCustomTintPickerVisible");
-        definitionMethods["BuildEquipmentSelection"].ToString().Should().NotContain("BuildCustomTintEditor");
+        definitionMethods["BuildEquipmentEditor"].ToString().Should().NotContain("BuildCustomTintEditor",
+            "the picker is built once, by BuildColours, so equipment must not add a duplicate");
+        definitionMethods["BuildAppearanceEditor"].ToString().Should().NotContain("BuildCustomTintEditor");
         definitionMethods["BuildWeaponEditor"].ToString().Should().NotContain("BuildColours",
             "weapons have no colour channels");
         var colours = definitionMethods["BuildColours"].ToString();
@@ -3007,27 +3009,25 @@ public class TintMapReviewTests
                     "ArmorColorIndexCalculator",
                     "IsPerPartOverrideVariableName"),
                 "saved palette-zero markers must replace stale markers on the currently equipped armor");
-        var outfitSource = ReadSource(
-            "SWLOR.Game.Server",
-            "Feature",
-            "GuiDefinition",
-            "ViewModel",
-            "OutfitViewModel.cs");
-        var loadMethod = FindMethod(outfitSource, "LoadOutfit");
+        var outfitSource = ReadSource("SWLOR.Game.Server", "Service", "Wardrobe.cs");
+        var loadMethod = FindMethod(outfitSource, "Wear");
         var loadInvocations = loadMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .ToList();
         loadInvocations.Should().Contain(invocation =>
             IsMemberInvocation(invocation, "EquippedItemAppearance", "ApplyOutfit"));
+        loadInvocations.Should().Contain(invocation =>
+            IsMemberInvocation(invocation, "EquippedItemAppearance", "ApplyHelmet"));
         loadInvocations.Select(GetInvokedMethodName).Should().NotContain(new[]
         {
             "CopyItemAndModify", "CopyItem", "ActionEquipItem", "ActionUnequipItem"
         }, "loading an outfit must retain the actual equipped item and its gameplay state");
         var appearanceSource = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition",
             "ItemAppearance", "EquippedItemAppearance.cs");
-        FindMethod(appearanceSource, "ApplyOutfit").DescendantNodes()
-            .OfType<InvocationExpressionSyntax>().Should().Contain(invocation =>
-                IsMemberInvocation(invocation, "TintMapService", "ReplaceItemTintOverrides"));
+        foreach (var method in new[] { "ApplyOutfit", "ApplyHelmet" })
+            FindMethod(appearanceSource, method).DescendantNodes()
+                .OfType<InvocationExpressionSyntax>().Should().Contain(invocation =>
+                    IsMemberInvocation(invocation, "TintMapService", "ReplaceItemTintOverrides"));
 
     }
 

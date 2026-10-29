@@ -112,6 +112,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHeight(32f);
                         });
 
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddButton()
+                                .SetText("Hotbars")
+                                .SetTooltip("Turn extra hotbars on and off, choose their size and layout, and move them.")
+                                .BindOnClicked(model => model.OnClickHotbars())
+                                .SetWidth(230f)
+                                .SetHeight(32f);
+                        });
+
                     });
                 })
 

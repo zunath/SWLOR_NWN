@@ -288,7 +288,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddActionButton(actions, "Notes", model => model.OnClickNotes());
                         AddActionButton(actions, "Guide", model => model.OnClickGuide());
                         AddActionButton(actions, "Achievements", model => model.OnClickAchievements());
-                        AddActionButton(actions, "Hotbars", model => model.OnClickHotbars());
                         AddActionButton(actions, "Settings", model => model.OnClickSettings());
                     });
                 })

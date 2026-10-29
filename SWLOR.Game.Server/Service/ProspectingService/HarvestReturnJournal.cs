@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
     /// <see cref="Player.PendingHarvestReturns"/> with the next craft file sequence, together with its Gathering XP as waiting craft XP, in one
     /// record save made before the node is reduced. A stop at any point after it cannot lose the units or the XP: a login whose file
     /// predates the entry gives the units again, a file at or above it drops the entry, and the waiting XP is given at login like any
-    /// craft XP. Units the delivery leaves at the player's feet are taken off the entry, since no file holds them either way. Entries an
+    /// craft XP. A unit with no room in the inventory is taken off the entry before it is placed at the player's feet, since no file holds it either way. Entries an
     /// export has covered are also dropped while playing.
     /// </summary>
     public static class HarvestReturnJournal

@@ -109,30 +109,31 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         public void GiveHarvest(uint player, uint node, HarvestPayout payout)
         {
-            var dropped = new List<string>();
+            var dbPlayer = payout.Sequence > 0 ? DB.Get<Player>(GetObjectUUID(player)) : null;
+            var dropped = false;
             foreach (var resref in payout.Units)
             {
-                if (Deliver(player, resref))
-                    dropped.Add(resref);
-            }
+                if (TryPutInInventory(player, resref))
+                    continue;
 
-            // A unit left at the player's feet is not in the character file either way, so giving it again at login would duplicate it.
-            if (dropped.Count > 0 && payout.Sequence > 0)
-            {
-                var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+                // A unit placed at the player's feet is not in the character file either way, so giving it again at login would
+                // duplicate it. It leaves the journal in a saved record before it is created on the ground, so no ground unit is ever
+                // still journaled.
                 if (dbPlayer != null)
                 {
-                    HarvestReturnJournal.Remove(dbPlayer, payout.Sequence, dropped);
+                    HarvestReturnJournal.Remove(dbPlayer, payout.Sequence, new[] { resref });
                     DB.Set(dbPlayer);
                 }
+
+                DropAtFeet(player, resref);
+                dropped = true;
             }
 
             // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
             for (var roll = 0; roll < payout.Delivery.Rolls; roll++)
                 Loot.SpawnLoot(node, player, "LOOT_TABLE_");
 
-            if (dropped.Count > 0)
-
+            if (dropped)
                 SendMessageToPC(player, HarvestDroppedMessage);
 
             if (GetIsObjectValid(node))
@@ -148,16 +149,30 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// </summary>
         private static bool Deliver(uint player, string resref)
         {
+            if (TryPutInInventory(player, resref))
+                return false;
+
+            DropAtFeet(player, resref);
+            return true;
+        }
+
+        /// <summary>
+        /// Creates one unit in the player's inventory. Returns false, leaving nothing behind, when it did not arrive there: the inventory
+        /// count decides, and a created item the engine left on the ground is destroyed so the caller decides where the unit goes.
+        /// </summary>
+        private static bool TryPutInInventory(uint player, string resref)
+        {
             var before = NwnQuickCraftWorld.CountComponent(player, resref);
             var item = CreateItemOnObject(resref, player);
             if (NwnQuickCraftWorld.CountComponent(player, resref) > before)
-                return false;
+                return true;
 
-            // A valid item that did not reach the inventory is already on the ground.
-            if (!GetIsObjectValid(item))
-                CreateObject(ObjectType.Item, resref, GetLocation(player));
-            return true;
+            if (GetIsObjectValid(item))
+                DestroyObject(item);
+            return false;
         }
+
+        private static void DropAtFeet(uint player, string resref) => CreateObject(ObjectType.Item, resref, GetLocation(player));
 
         public const string HarvestDroppedMessage = "Your inventory is full, so some of the harvest was placed at your feet.";
 

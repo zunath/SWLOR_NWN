@@ -128,6 +128,21 @@ public class ResearchExperimentPayoutTests
     }
 
     [Test]
+    public void AnotherPlayerAtTheSameTerminal_IsNeverPaidTheJob_AndNothingIsMarked()
+    {
+        var (world, _, job) = Fresh();
+        var other = new Player("player-2");
+
+        var xp = new ResearchExperimentPayout(world).Pay(other, job);
+
+        xp.Should().Be(0);
+        world.Events.Should().BeEmpty();
+        world.XpGiven.Should().Be(0);
+        other.PaidExperimentJobs.Should().NotContain(JobId);
+        job.Experiment.XpGranted.Should().BeFalse("the owner is still owed the XP");
+    }
+
+    [Test]
     public void TheIdAndTheXpAreSavedTogether_SoNoStopSeparatesThem()
     {
         var (world, player, job) = Fresh();

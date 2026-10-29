@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         HarvestPayout ReservePayout(uint player, string lootTable, HarvestDelivery delivery, int xp);
 
         /// <summary>
-        /// Puts a reserved harvest in the player's inventory. A unit with no room leaves the journal before it is placed at the player's feet.
+        /// Puts a reserved harvest in the player's inventory, or at the player's feet when there is no room. The units stay journaled.
         /// </summary>
         void GiveHarvest(uint player, uint node, HarvestPayout payout);
 

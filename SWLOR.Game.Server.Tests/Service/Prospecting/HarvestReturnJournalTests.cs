@@ -57,31 +57,6 @@ public class HarvestReturnJournalTests
     }
 
     [Test]
-    public void UnitsLeftAtThePlayersFeetAreTakenOffTheirEntry_SoALoginCannotGiveThemAgain()
-    {
-        var player = new Player();
-        HarvestReturnJournal.Record(player, exported: 0, sequence: 3, new[] { "ore", "ore", "gem" });
-        HarvestReturnJournal.Record(player, exported: 0, sequence: 4, new[] { "ore" });
-
-        HarvestReturnJournal.Remove(player, sequence: 3, new[] { "ore", "gem" });
-
-        player.PendingHarvestReturns.Select(entry => entry.Sequence).Should().Equal(3, 4);
-        player.PendingHarvestReturns[0].Items.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore"] = 1 });
-        player.PendingHarvestReturns[1].Items.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore"] = 1 }, "another payout's entry is untouched");
-    }
-
-    [Test]
-    public void AnEntryWhoseUnitsAllLandedAtThePlayersFeetIsDropped()
-    {
-        var player = new Player();
-        HarvestReturnJournal.Record(player, exported: 0, sequence: 3, new[] { "ore" });
-
-        HarvestReturnJournal.Remove(player, sequence: 3, new[] { "ore" });
-
-        player.PendingHarvestReturns.Should().BeEmpty();
-    }
-
-    [Test]
     public void ALoginWhoseFilePredatesAPayout_GivesItAgain_AndOneThatHoldsItDropsIt()
     {
         var player = new Player();

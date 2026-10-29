@@ -10,8 +10,9 @@ namespace SWLOR.Game.Server.Service.ProspectingService
     /// <see cref="Player.PendingHarvestReturns"/> with the next craft file sequence, together with its Gathering XP as waiting craft XP, in one
     /// record save made before the node is reduced. A stop at any point after it cannot lose the units or the XP: a login whose file
     /// predates the entry gives the units again, a file at or above it drops the entry, and the waiting XP is given at login like any
-    /// craft XP. A unit with no room in the inventory is taken off the entry before it is placed at the player's feet, since no file holds it either way. Entries an
-    /// export has covered are also dropped while playing.
+    /// craft XP. Units placed at the player's feet stay in the entry too: ground items do not survive a server stop, so after a stop
+    /// the entry is their only record, and without a stop the export that covers the entry drops it. Entries an export has covered
+    /// are also dropped while playing.
     /// </summary>
     public static class HarvestReturnJournal
     {
@@ -29,28 +30,6 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 .ToDictionary(group => group.Key, group => group.Count());
             if (items.Count > 0)
                 dbPlayer.PendingHarvestReturns.Add(new PendingHarvestReturn { Sequence = sequence, Items = items });
-        }
-
-        /// <summary>Takes units that did not reach the inventory off the entry at <paramref name="sequence"/>, dropping the entry once it is empty.</summary>
-        public static void Remove(Player dbPlayer, int sequence, IEnumerable<string> resrefs)
-        {
-            var entry = dbPlayer.PendingHarvestReturns?.FirstOrDefault(pending => pending.Sequence == sequence);
-            if (entry == null)
-                return;
-
-            foreach (var resref in resrefs)
-            {
-                if (!entry.Items.TryGetValue(resref, out var quantity))
-                    continue;
-
-                if (quantity > 1)
-                    entry.Items[resref] = quantity - 1;
-                else
-                    entry.Items.Remove(resref);
-            }
-
-            if (entry.Items.Count == 0)
-                dbPlayer.PendingHarvestReturns.Remove(entry);
         }
 
         /// <summary>

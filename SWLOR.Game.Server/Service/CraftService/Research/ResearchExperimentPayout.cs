@@ -57,6 +57,11 @@ public sealed class ResearchExperimentPayout
         if (dbPlayer == null || job?.Experiment == null || job.Experiment.Status != ResearchExperimentStatus.Settled)
             return 0;
 
+        // A terminal's job belongs to the player who started it. Another player who opens the window there (a stale Recipes window
+        // left open at a shared terminal) is never paid it, and nothing is marked.
+        if (job.PlayerId != dbPlayer.Id)
+            return 0;
+
         dbPlayer.PaidExperimentJobs ??= new HashSet<string>();
 
         // Paid by an earlier call that stopped before it marked the job, or before it gave the XP: repair the mark and give what waits.

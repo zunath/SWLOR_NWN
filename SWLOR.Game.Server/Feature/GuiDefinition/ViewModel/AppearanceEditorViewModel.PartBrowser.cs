@@ -126,7 +126,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         /// <summary>
         /// Places a window of the given size beside the editor: on its right, or on its left when
-        /// the right side is off screen, then pulled fully on screen.
+        /// the right side is off screen. When neither side has room it goes against the screen
+        /// edge that covers less of the editor.
         /// </summary>
         /// <param name="editor">The editor's geometry: X and Y in physical pixels, size in GUI units.</param>
         internal static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,
@@ -136,9 +137,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return null;
             if (scale <= 0f)
                 scale = 1f;
-            var x = editor.X + editor.Width * scale;
-            if (screenWidth > 0f && x + width * scale > screenWidth)
-                x = editor.X - width * scale;
+            var right = editor.X + editor.Width * scale;
+            var left = editor.X - width * scale;
+            float x;
+            if (screenWidth <= 0f || right + width * scale <= screenWidth)
+                x = right;
+            else if (left >= 0f)
+                x = left;
+            else
+            {
+                var rightOverlap = right + width * scale - screenWidth;
+                x = rightOverlap <= -left ? screenWidth - width * scale : 0f;
+            }
             return FitWindowToScreen(new GuiRectangle(Math.Max(0f, x), editor.Y, width, height),
                 screenWidth, screenHeight, scale);
         }

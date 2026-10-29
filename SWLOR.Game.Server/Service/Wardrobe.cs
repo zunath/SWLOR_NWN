@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service.DBService;
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Service
 {
     /// <summary>
     /// Saved outfits: the look of a player's clothes and, when one was worn, their helmet.
-    /// The Appearance Editor's Outfits tab and quick wear row use these operations.
+    /// The Appearance Editor's Wardrobe tab and quick wear row use these operations.
     /// </summary>
     public static class Wardrobe
     {
@@ -25,10 +26,25 @@ namespace SWLOR.Game.Server.Service
             return dbPlayer?.OutfitSlotLimit > 0 ? dbPlayer.OutfitSlotLimit : Player.DefaultOutfitSlotLimit;
         }
 
+        private static readonly Regex NumberPattern = new(@"\d+", RegexOptions.Compiled);
+
+        /// <summary>The player's outfits in display order (see <see cref="SortForDisplay"/>).</summary>
         public static List<PlayerOutfit> GetOutfits(string playerId)
         {
-            return DB.Search(new DBQuery<PlayerOutfit>()
-                    .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false))
+            return SortForDisplay(DB.Search(new DBQuery<PlayerOutfit>()
+                .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false)));
+        }
+
+        /// <summary>
+        /// Search results come back in no fixed order, so the list is sorted by name with numbers
+        /// compared by value ("Outfit #2" before "Outfit #10"), then by id.
+        /// </summary>
+        public static List<PlayerOutfit> SortForDisplay(IEnumerable<PlayerOutfit> outfits)
+        {
+            return outfits
+                .OrderBy(outfit => NumberPattern.Replace(outfit.Name ?? string.Empty, number => number.Value.PadLeft(10, '0')),
+                    System.StringComparer.OrdinalIgnoreCase)
+                .ThenBy(outfit => outfit.Id, System.StringComparer.Ordinal)
                 .ToList();
         }
 

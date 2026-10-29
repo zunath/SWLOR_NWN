@@ -37,6 +37,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition
                 }
             }
 
+            // The capital parts (W11o): the top band Capital hulls take, filed with the other capital construction parts.
+            foreach (var row in RevampComponentCatalog.CapitalPartRecipes)
+            {
+                var recipe = _builder.Create(row.RecipeType, row.Skill)
+                    .Category(RecipeCategoryType.CapitalConstruction)
+                    .Resref(row.Resref)
+                    .Level(row.RecipeLevel)
+                    .Quantity(1);
+
+                foreach (var (resref, quantity) in row.Components)
+                {
+                    recipe.Component(resref, quantity);
+                }
+            }
+
             return _builder.Build();
         }
     }

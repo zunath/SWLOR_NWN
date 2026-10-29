@@ -5,11 +5,13 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Piloting;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -161,7 +163,41 @@ public class PilotingOrdnanceTests
         var status = new OrdnanceStanceStatusEffect();
         status.StatGroup.Stats[StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment].Should().Be(10);
         status.StatGroup.Stats[StatType.SpaceLauncherSingleTargetDamagePercentAdjustment].Should().Be(-10);
-        status.StatGroup.Stats[StatType.ThrowingAreaAbilityDamagePercentAdjustment].Should().Be(10, "the ground stance is unchanged");
+        status.StatGroup.Stats[StatType.ThrowingAreaAbilityDamagePercentAdjustment].Should().Be(10, "the ground stance keeps its area bonus");
+        status.StatGroup.Stats[StatType.ThrowingSingleTargetDamagePercentAdjustment].Should().Be(-10, "the ground stance's described single-target penalty");
+        status.StatGroup.Stats[StatType.SingleTargetDamagePercentAdjustment].Should().Be(0,
+            "the generic single-target stat is read in space too and would cut every ship weapon");
+    }
+
+    [Test]
+    public void OrdnanceStance_AppliesItsSingleTargetPenaltyToThrownDamageOnly()
+    {
+        var effects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        const uint creature = 61307;
+        var stance = new CreatureStatusEffect();
+        stance.Add(new OrdnanceStanceStatusEffect());
+        effects[creature] = stance;
+        try
+        {
+            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, true, false).Should().Be(90,
+                "single-target thrown damage is reduced by 10%");
+            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, false, true).Should().Be(110,
+                "thrown area abilities deal +10% damage");
+            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Throwing, 100, false, false).Should().Be(100);
+            Combat.ApplyThrowingAbilityShapeDamageModifier(creature, SkillType.Rifle, 100, true, false).Should().Be(100,
+                "only Throwing damage takes the stance");
+        }
+        finally
+        {
+            effects.Remove(creature);
+        }
+
+        var source = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..",
+            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        source.Should().Contain("ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, isSingleTarget, isArea)");
+        source.Should().Contain("ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, true, false)",
+            "a thrown auto-attack is single-target damage");
     }
 
     [Test]

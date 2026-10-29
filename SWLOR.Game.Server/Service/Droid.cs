@@ -97,6 +97,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether a creature is an enemy or NPC machine (droid, robot, or construct) and so cannot bleed.
+        /// Player characters and player droids keep their normal Bleed behavior.
+        /// </summary>
+        public static bool IsBloodlessMachine(uint creature)
+        {
+            if (GetIsPC(creature) || IsDroid(creature))
+                return false;
+
+            var racialType = GetRacialType(creature);
+            return racialType == RacialType.Droid ||
+                   racialType == RacialType.Robot ||
+                   racialType == RacialType.Construct;
+        }
+
+        /// <summary>
         /// Whether a droid is still being summoned and restoring its saved equipment.
         /// </summary>
         public static bool IsSpawning(uint droid) => GetLocalBool(droid, DroidIsSpawning);
@@ -1246,6 +1261,10 @@ namespace SWLOR.Game.Server.Service
                 AddItemProperty(DurationType.Permanent,
                     ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)instruction.Perk, instruction.Level), controller);
             SaveConstructedDroid(controller, constructedDroid);
+
+            // A posted droid works at the rating its controller reads now, not the one it had when it was posted.
+            if (IsPosted(controller))
+                Space.RefreshPostedDroid(controller);
         }
 
         [NWNEventHandler(ScriptName.OnDroidBlocked)]

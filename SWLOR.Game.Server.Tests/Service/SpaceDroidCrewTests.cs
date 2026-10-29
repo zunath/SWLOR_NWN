@@ -202,7 +202,8 @@ public class SpaceDroidCrewTests
                 "the array also switches off when the pilot has no hostile target");
 
         ReadServerSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs")
-            .Should().Contain("ShipCrewSeats.ScaleByEffectiveness(\n                        Effective(step).AuraAccuracy, SpaceCrew.GetFireEffectiveness(activator));");
+            .Should().Contain("ShipCrewSeats.ScaleByEffectiveness(\n                        Space.ApplySeatSkillBonus(activator, ShipModuleType.CapitalEwar, Effective(step).AuraAccuracy),\n                        SpaceCrew.GetFireEffectiveness(activator));",
+                "the runner's Espionage rank (W11n) comes first, then the station's effectiveness");
     }
 
     [Test]

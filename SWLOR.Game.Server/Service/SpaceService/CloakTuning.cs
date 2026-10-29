@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int RoleSpeedPercent = 65;
         public const double DecloakLockSeconds = 5.0;
         public const int RevealBaseMeters = 10;
+        public const int EspionageRevealPercentPerRank = 1;
+        public const int EspionageRevealMaximumRank = 50;
         public const double SweepRevealSeconds = 10.0;
         public const double TickSeconds = 1.0;
         public const string PirateFreighterTag = "sd_piratefreight";

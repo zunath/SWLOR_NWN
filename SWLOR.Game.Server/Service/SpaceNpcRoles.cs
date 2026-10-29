@@ -395,8 +395,8 @@ namespace SWLOR.Game.Server.Service
             for (var index = _spaceMines.Count - 1; index >= 0; index--)
             {
                 var mine = _spaceMines[index];
-                if (!GetIsObjectValid(mine.Mine) || !GetIsObjectValid(mine.Owner) || GetIsDead(mine.Owner) ||
-                    ShipNpcRoleRules.IsMineExpired(now, mine.LaidAt))
+                if (!GetIsObjectValid(mine.Mine) ||
+                    !mine.Field && (!GetIsObjectValid(mine.Owner) || GetIsDead(mine.Owner) || ShipNpcRoleRules.IsMineExpired(now, mine.LaidAt)))
                 {
                     if (GetIsObjectValid(mine.Mine))
                         DestroyObject(mine.Mine);
@@ -404,12 +404,15 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                var victims = GetEnemyShipsNear(mine.Owner, GetLocation(mine.Mine), ShipNpcRoleTuning.MineTriggerMeters, 1);
+                var victims = GetEnemyShipsNear(mine.Field ? mine.Mine : mine.Owner, GetLocation(mine.Mine), ShipNpcRoleTuning.MineTriggerMeters, 1);
                 if (victims.Count == 0)
                     continue;
 
                 _spaceMines.RemoveAt(index);
-                DetonateMine(mine, victims[0]);
+                if (mine.Field)
+                    DetonateFieldMine(mine, victims[0]);
+                else
+                    DetonateMine(mine, victims[0]);
             }
         }
 

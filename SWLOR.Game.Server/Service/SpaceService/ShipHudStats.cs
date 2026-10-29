@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 MaxCapacitor = status.MaxCapacitor,
                 Defense = status.Defense,
                 Evasion = status.Evasion,
-                SpeedMultiplier = PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting),
+                SpeedMultiplier = PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting, status.PowerRoutingBonusPercent),
                 PowerRouting = status.PowerRouting,
                 HullTraits = ShipTraitRules.HullTraitNames(status.HullTraits),
                 HighFitted = status.HighPowerModules?.Count ?? 0,

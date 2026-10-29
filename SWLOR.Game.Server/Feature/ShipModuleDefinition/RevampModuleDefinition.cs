@@ -88,10 +88,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Salvager(step);
                     break;
                 case ShipModuleFamily.ShieldRepairer:
-                    Repairer(step, ShipModuleActions.RepairShield);
+                    Repairer(step, ShipModuleType.ShieldRepairer, ShipModuleActions.RepairShield);
                     break;
                 case ShipModuleFamily.HullRepairer:
-                    Repairer(step, ShipModuleActions.RepairHull);
+                    Repairer(step, ShipModuleType.HullRepairer, ShipModuleActions.RepairHull);
                     break;
                 case ShipModuleFamily.ShieldHardener:
                     ShieldHardener(step);
@@ -271,14 +271,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ShipSalvageActions.SalvageWreck(activator, target, (float)step.CycleSeconds, moduleBonus));
         }
 
-        private void Repairer(ShipModuleStep step, System.Action<uint, ShipStatus, uint, ShipStatus, int> repair)
+        /// <summary>A Shield or Hull Repairer: the repairer's Engineering rank adds to the amount (W11n).</summary>
+        private void Repairer(ShipModuleStep step, ShipModuleType type, System.Action<uint, ShipStatus, uint, ShipStatus, int> repair)
         {
             _builder
                 .CanTargetSelf()
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Creature)
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
-                    repair(activator, status, target, targetStatus, ShipShotBuilder.ScaleSupport(Effective(step).Repair, status.Size)));
+                    repair(activator, status, target, targetStatus,
+                        Space.ApplySeatSkillBonus(activator, type, ShipShotBuilder.ScaleSupport(Effective(step).Repair, status.Size))));
         }
 
         private void ShieldHardener(ShipModuleStep step)
@@ -302,7 +304,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidationAction((activator, _, _, _, _) =>
                     ShipModuleActions.AmmoError(activator, ShipModuleActions.FuelCapsuleResref, "You need a fuel capsule to activate this module."))
                 .ActivatedAction((activator, status, _, _, _) =>
-                    ShipModuleActions.InjectCapacitor(activator, status, activator, status, ShipShotBuilder.ScaleSupport(Effective(step).CapacitorRestore, status.Size)));
+                    ShipModuleActions.InjectCapacitor(activator, status, activator, status,
+                        Space.ApplySeatSkillBonus(activator, ShipModuleType.HypermatterInjector,
+                            ShipShotBuilder.ScaleSupport(Effective(step).CapacitorRestore, status.Size))));
         }
 
         private void BulwarkShieldGenerator(ShipModuleStep step)
@@ -338,7 +342,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
-                    var repair = Effective(step).Repair;
+                    // The Engineer's (or pilot's) Engineering rank adds to the field's repair (W11n).
+                    var repair = Space.ApplySeatSkillBonus(activator, ShipModuleType.RepairFieldGenerator, Effective(step).Repair);
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_White), activator, (float)step.CycleSeconds);
 
                     var supported = new List<uint>();
@@ -458,9 +463,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
                     // A station's array works at the effectiveness of whoever runs it (a crew member or a droid), as
-                    // weapon damage and repairs do (plan section 10); the pilot's own runs at 100%.
+                    // weapon damage and repairs do (plan section 10); the pilot's own runs at 100%. The runner's
+                    // Espionage rank strengthens it first, as it does a Jammer's (W11n).
                     var accuracy = ShipCrewSeats.ScaleByEffectiveness(
-                        Effective(step).AuraAccuracy, SpaceCrew.GetFireEffectiveness(activator));
+                        Space.ApplySeatSkillBonus(activator, ShipModuleType.CapitalEwar, Effective(step).AuraAccuracy),
+                        SpaceCrew.GetFireEffectiveness(activator));
                     var seconds = step.CycleSeconds + 0.5;
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, (float)step.CycleSeconds);
 

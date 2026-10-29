@@ -67,12 +67,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// The modules that are on and belong to a seat, in list order. A module whose slot no longer holds a
-        /// registered module is left out.
+        /// The modules that are on, in list order. With a seat, only that seat's modules; with null (the pilot's
+        /// view), every module on the ship, each one a crew seat or droid runs tagged with that seat's name. A module
+        /// whose slot no longer holds a registered module is left out.
         /// </summary>
         public static List<ShipHudModuleRow> BuildModuleRows(
             ShipStatus status,
-            ShipCrewSeat seat,
+            ShipCrewSeat? seat,
             DateTime now,
             Func<string, ShipModuleDetail> getDetail,
             uint currentTarget,
@@ -85,7 +86,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             foreach (var active in status.ActiveModules.OrderBy(x => GetListOrder(x.Slot)))
             {
-                if (!IsSlotInSeat(status, active.Slot, seat))
+                var slotSeat = ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, active.Slot);
+                if (seat.HasValue && slotSeat != seat.Value)
                     continue;
 
                 var module = GetModule(status, active.Slot);
@@ -98,6 +100,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 {
                     Slot = active.Slot,
                     SlotLabel = GetSlotLabel(active.Slot),
+                    SeatLabel = !seat.HasValue && slotSeat != ShipCrewSeat.Pilot ? ShipCrewSeats.GetSeatName(slotSeat) : null,
                     Name = detail.Name,
                     TargetText = GetTargetText(mode, currentTarget, active.TargetId, self, getTargetName),
                     Progress = GetCycleProgress(module.RecastStartedAt, module.RecastTime, now),
@@ -202,7 +205,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>A module row's two lines: the slot and module, then what it works on.</summary>
         public static string GetModuleRowText(ShipHudModuleRow row)
         {
-            return $"{row.SlotLabel}: {row.Name}\nTarget: {row.TargetText}";
+            var seat = string.IsNullOrEmpty(row.SeatLabel) ? string.Empty : $" ({row.SeatLabel})";
+            return $"{row.SlotLabel}: {row.Name}{seat}\nTarget: {row.TargetText}";
         }
 
         /// <summary>The All Weapons button's text.</summary>

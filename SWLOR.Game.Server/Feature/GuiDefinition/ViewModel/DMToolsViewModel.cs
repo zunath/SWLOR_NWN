@@ -76,6 +76,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public int SpaceCountIndex { get => Get<int>(); set => Set(value); }
 
+        public GuiBindingList<GuiComboEntry> SpaceSignatureOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceSignatureIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpacePocketOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpacePocketIndex { get => Get<int>(); set => Set(value); }
+
         public string SpaceStatus { get => Get<string>(); set => Set(value); }
 
         public GuiColor SpaceStatusColor { get => Get<GuiColor>(); set => Set(value); }
@@ -183,6 +191,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpaceFactionIndex = 0;
             SpaceRoleIndex = 0;
             SpaceCountIndex = 2;
+            SpaceSignatureOptions = ComboOptions(DmSpaceToolRules.SignatureChoices.Select(x => x.Label).ToList());
+            SpaceSignatureIndex = 0;
+            SpacePocketOptions = ComboOptions(DmSpaceToolRules.RiftTierLabels);
+            SpacePocketIndex = 0;
             SpaceStatus = string.Empty;
             SpaceStatusColor = GuiColor.Green;
 
@@ -197,6 +209,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SpaceFactionIndex);
             WatchOnClient(model => model.SpaceRoleIndex);
             WatchOnClient(model => model.SpaceCountIndex);
+            WatchOnClient(model => model.SpaceSignatureIndex);
+            WatchOnClient(model => model.SpacePocketIndex);
             _skipPaginationSearch = false;
 
             SelectTab(PlaceablesTabId);
@@ -232,6 +246,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpaceFactionIndex = SpaceFactionIndex;
             SpaceRoleIndex = SpaceRoleIndex;
             SpaceCountIndex = SpaceCountIndex;
+            SpaceSignatureIndex = SpaceSignatureIndex;
+            SpacePocketIndex = SpacePocketIndex;
         }
 
         /// <summary>
@@ -310,6 +326,100 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpaceStatus = message;
             SpaceStatusColor = started ? GuiColor.Green : GuiColor.Red;
             Log.Write(LogGroup.DM, $"{GetName(Player)} start incursion in {GetName(GetArea(Player))}: {message}");
+        };
+
+        /// <summary>Shows a Space tab result: green when it worked, red when it did not.</summary>
+        private void ReportSpace(bool succeeded, string message)
+        {
+            SpaceStatus = message;
+            SpaceStatusColor = succeeded ? GuiColor.Green : GuiColor.Red;
+        }
+
+        /// <summary>
+        /// Asks the DM to click the ground or an object in their area, then runs <paramref name="place"/> with that
+        /// point. A ground click arrives as the area object; a clicked object stands for its own position.
+        /// </summary>
+        private void PickSpacePoint(string prompt, Func<uint, uint, Vector3, (bool Succeeded, string Message)> place)
+        {
+            var dm = DMPresence.GetDM(Player);
+            var controlled = DMPresence.GetControlledCreature(Player);
+            var area = GetArea(controlled);
+            var refusal = DmSpaceToolRules.GetPlaceRefusal(Space.IsSpaceArea(area), GetResRef(area));
+            if (!string.IsNullOrEmpty(refusal))
+            {
+                ReportSpace(false, refusal);
+                return;
+            }
+
+            Targeting.EnterTargetingMode(controlled, ObjectType.All, prompt, target =>
+            {
+                Vector3 position;
+                if (target == area)
+                    position = GetTargetingModeSelectedPosition();
+                else if (GetIsObjectValid(target) && GetArea(target) == area)
+                    position = GetPosition(target);
+                else
+                {
+                    ReportSpace(false, "Pick the ground or an object in this area.");
+                    return;
+                }
+
+                var (succeeded, message) = place(dm, controlled, position);
+                ReportSpace(succeeded, message);
+            }, false);
+        }
+
+        /// <summary>Places a boardable derelict where the DM clicks and opens its site (plan section 28).</summary>
+        public Action OnPlaceDerelict() => () =>
+            PickSpacePoint("Click where to place the derelict.", (dm, controlled, position) =>
+                Space.DmPlaceSignature(dm, controlled, SignatureType.Derelict, position, true));
+
+        /// <summary>Places a hidden signature of the picked kind where the DM clicks, for a Probe Launcher to find (plan section 24).</summary>
+        public Action OnPlaceSignature() => () =>
+        {
+            var type = DmSpaceToolRules.GetSignatureChoice(SpaceSignatureIndex).Type;
+            PickSpacePoint("Click where to place the signature.", (dm, controlled, position) =>
+                Space.DmPlaceSignature(dm, controlled, type, position, false));
+        };
+
+        /// <summary>Opens a Rift Pocket of the picked tier for the player ship the DM clicks, without spending a key (plan section 31).</summary>
+        public Action OnOpenRiftPocket() => () =>
+        {
+            var dm = DMPresence.GetDM(Player);
+            var key = DmSpaceToolRules.GetRiftKey(SpacePocketIndex);
+            Targeting.EnterTargetingMode(DMPresence.GetControlledCreature(Player), ObjectType.Creature,
+                "Click the player's ship to open a Rift Pocket for.", target =>
+                {
+                    var (opened, message) = Space.DmOpenRiftPocket(dm, target, key);
+                    ReportSpace(opened, message);
+                });
+        };
+
+        /// <summary>Closes the Rift Pocket the DM is standing in: its ships go back where they opened it.</summary>
+        public Action OnCloseRiftPocket() => () =>
+        {
+            var (closed, message) = Space.DmCloseRiftPocket(DMPresence.GetDM(Player), DMPresence.GetControlledCreature(Player));
+            ReportSpace(closed, message);
+        };
+
+        /// <summary>Lists the open Rift Pockets in the DM's chat.</summary>
+        public Action OnListRiftPockets() => () =>
+        {
+            ReportSpace(true, Space.DmDescribeRiftPockets());
+            foreach (var line in Space.DmListRiftPockets())
+                DMPresence.SendMessage(Player, line);
+        };
+
+        /// <summary>Breaks the cloak of the ship the DM clicks.</summary>
+        public Action OnUncloakShip() => () =>
+        {
+            var dm = DMPresence.GetDM(Player);
+            Targeting.EnterTargetingMode(DMPresence.GetControlledCreature(Player), ObjectType.Creature,
+                "Click the cloaked ship.", target =>
+                {
+                    var (decloaked, message) = Space.DmDecloakShip(dm, target);
+                    ReportSpace(decloaked, message);
+                });
         };
 
         private string GetAreaResref()

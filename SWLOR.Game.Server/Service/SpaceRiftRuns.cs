@@ -38,7 +38,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Why a Rift Key cannot open a pocket for this user now, or empty.</summary>
-        public static string GetRiftKeyRefusal(uint user, uint item)
+        public static string GetRiftKeyRefusal(uint user, uint item) =>
+            GetRiftOpenRefusal(user, RiftRunRules.FindKey(GetResRef(item)));
+
+        /// <summary>Why a pocket of this key's tier cannot open for this user now, or empty.</summary>
+        private static string GetRiftOpenRefusal(uint user, RiftKeyDetail key)
         {
             // An Interdictor's hold keeps a ship from opening a pocket (W11k).
             var hold = GetInterdictionRefusal(user);
@@ -46,7 +50,7 @@ namespace SWLOR.Game.Server.Service
                 return hold;
 
             var refusal = RiftRunRules.GetStartRefusal(
-                RiftRunRules.FindKey(GetResRef(item)),
+                key,
                 IsPlayerInSpaceMode(user),
                 GetCloakPhase(user) != ShipCloakPhase.Off,
                 Enmity.HasEnmity(user),
@@ -56,7 +60,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Whether an area is a Rift Run pocket.</summary>
-        public static bool IsRiftPocket(uint area) => GetIsObjectValid(area) && GetResRef(area) == RiftRunTuning.TemplateResref;
+        public static bool IsRiftPocket(uint area) => GetIsObjectValid(area) && RiftRunRules.IsPocketTemplate(GetResRef(area));
 
         /// <summary>Opens a pocket for the key user and the party ships nearby, and spends the key.</summary>
         public static void StartRiftRun(uint user, uint item)
@@ -68,7 +72,15 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var key = RiftRunRules.FindKey(GetResRef(item));
+            OpenRiftRun(user, RiftRunRules.FindKey(GetResRef(item)), item);
+        }
+
+        /// <summary>
+        /// Opens a pocket of <paramref name="key"/>'s tier for the user and the party ships nearby. The key item is spent
+        /// when the pocket opens; a DM opening one passes <see cref="OBJECT_INVALID"/> and no key is spent.
+        /// </summary>
+        private static bool OpenRiftRun(uint user, RiftKeyDetail key, uint item)
+        {
             var nearby = new List<(uint Ship, float Distance)>();
             for (var member = GetFirstFactionMember(user); GetIsObjectValid(member); member = GetNextFactionMember(user))
             {
@@ -82,15 +94,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             var pilots = RiftRunRules.PickParty(user, nearby);
-            var area = Area.CreateInstance(RiftRunTuning.TemplateResref, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
+            var area = Area.CreateInstance(key.Template, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
             if (!GetIsObjectValid(area))
             {
                 SendMessageToPC(user, ColorToken.Red("The rift flickers and will not open. Your key is unspent."));
-                Log.Write(LogGroup.Error, $"Rift Run: could not create an instance of {RiftRunTuning.TemplateResref}.");
-                return;
+                Log.Write(LogGroup.Error, $"Rift Run: could not create an instance of {key.Template}.");
+                return false;
             }
 
-            Item.ReduceItemStack(item, 1);
+            if (GetIsObjectValid(item))
+                Item.ReduceItemStack(item, 1);
             var now = DateTime.UtcNow;
             var run = new RiftRun
             {
@@ -113,13 +126,14 @@ namespace SWLOR.Game.Server.Service
                 foreach (var player in GetShipCrewPlayers(pilot))
                 {
                     SendMessageToPC(player, ColorToken.Cyan(
-                        $"{GetName(user)} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within " +
+                        $"{(GetIsObjectValid(item) ? GetName(user) : "A DM")} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within " +
                         $"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside."));
                 }
             }
 
             Log.Write(LogGroup.Space, $"RIFT RUN STARTED - {PlayerName.GetAuditName(user)} - {key.Resref}, {pilots.Count} ship(s): " +
                                       string.Join(", ", pilots.Select(PlayerName.GetAuditName)));
+            return true;
         }
 
         /// <summary>
@@ -167,7 +181,7 @@ namespace SWLOR.Game.Server.Service
         private static Location RiftRoomLocation(RiftRun run, int room, float dx = 0f, float dy = 0f)
         {
             var waypoint = GetNearestObjectByTag($"{RiftRunTuning.RoomWaypointPrefix}{room + 1}", GetFirstObjectInArea(run.Area));
-            var (x, y, z) = RiftRunTuning.RoomPoints[Math.Clamp(room, 0, RiftRunTuning.RoomPoints.Count - 1)];
+            var (x, y, z) = RiftRunRules.RoomPoint(run.Key.Template, room);
             var position = GetIsObjectValid(waypoint) && GetArea(waypoint) == run.Area ? GetPosition(waypoint) : Vector3(x, y, z);
             return Location(run.Area, Vector3(position.X + dx, position.Y + dy, position.Z), 0f);
         }

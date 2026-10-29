@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 2500
+    "value": 641
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2500
+    "value": 641
   },
   "Cursed": {
     "type": "byte",
@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A capital ship's engine block: a tier 5 Thruster Assembly on a Refined Ardanium mount. One goes into every Capital hull. Crafted by Smithery."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A capital ship's engine block: a tier 5 Thruster Assembly on a Refined Ardanium mount. One goes into every Capital hull. Crafted by Smithery."
     }
   },
   "Identified": {

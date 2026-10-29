@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const string FitMessage = "A Cloaking Device fits only Small hulls and Blockade Runners.";
         public const string CargoMessage = "Only Blockade Runners can cloak with cargo aboard.";
         public const string HullMessage = "This hull cannot cloak.";
+        public const string DockedMessage = "You cannot cloak while your ship is docked aboard another ship.";
 
         /// <summary>Whether a hull accepts a Cloaking Device: every Small hull and the Blockade Runner.</summary>
         public static bool CanFit(ShipSize size, ShipRole role) =>
@@ -49,9 +50,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
             RevealMeters = GetRevealMeters(deviceRevealMeters, hullTag),
         };
 
-        /// <summary>Why a ship cannot cloak (or keep its cloak), or an empty string.</summary>
-        public static string GetStartError(ShipSize size, ShipRole role, bool hasCargo)
+        /// <summary>
+        /// Why a ship cannot cloak (or keep its cloak), or an empty string. A ship docked aboard another ship (or at a
+        /// derelict) is out of space and never cloaks.
+        /// </summary>
+        public static string GetStartError(ShipSize size, ShipRole role, bool hasCargo, bool isDockedAboard = false)
         {
+            if (isDockedAboard)
+                return DockedMessage;
+
             if (!CanFit(size, role))
                 return HullMessage;
 
@@ -112,11 +119,22 @@ namespace SWLOR.Game.Server.Service.SpaceService
             phase != ShipCloakPhase.Off || lockSecondsLeft > 0;
 
         /// <summary>
-        /// Whether an observer cannot see a cloaked ship. The ship's own pilot, party and crew, and anyone a Sensor
-        /// Sweep revealed it to, see it; so does any ship within the reveal range. Only a finished cloak hides.
+        /// The range at which an observer sees through a cloak: the cloak's own reveal range stretched by the observer's
+        /// Espionage bonus (<see cref="ShipSeatSkillRules.EspionageRevealPercent"/>, up to +50%).
         /// </summary>
-        public static bool IsHidden(ShipCloakPhase phase, bool isAlly, double distance, int revealMeters, bool isPainted) =>
-            phase == ShipCloakPhase.Cloaked && !isAlly && !isPainted && distance > revealMeters;
+        public static double GetObserverRevealMeters(int revealMeters, int espionageBonusPercent) =>
+            revealMeters * (1 + Math.Clamp(espionageBonusPercent, 0,
+                CloakTuning.EspionageRevealMaximumRank * CloakTuning.EspionageRevealPercentPerRank) / 100.0);
+
+        /// <summary>
+        /// Whether an observer cannot see a cloaked ship. The ship's own pilot, party and crew, and anyone a Sensor
+        /// Sweep revealed it to, see it; so does any ship within the reveal range, which the observer's Espionage
+        /// bonus stretches. Only a finished cloak hides.
+        /// </summary>
+        public static bool IsHidden(ShipCloakPhase phase, bool isAlly, double distance, int revealMeters, bool isPainted,
+            int espionageBonusPercent = 0) =>
+            phase == ShipCloakPhase.Cloaked && !isAlly && !isPainted &&
+            distance > GetObserverRevealMeters(revealMeters, espionageBonusPercent);
 
         /// <summary>A cloaked ship slips past a pirate ambush roll; one still cloaking does not.</summary>
         public static bool DodgesAmbush(ShipCloakPhase phase) => phase == ShipCloakPhase.Cloaked;

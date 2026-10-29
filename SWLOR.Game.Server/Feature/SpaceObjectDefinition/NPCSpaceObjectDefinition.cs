@@ -19,8 +19,22 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             TradeRiskShips();
             Aces();
             RiftRaiders();
+            IncursionArmadas();
 
             return _builder.Build();
+        }
+
+        /// <summary>
+        /// The Sith and Mandalorian Armadas (incursions and capital battles, plan sections 11 and 30): each invader's copy of
+        /// the tier's role ships. Hull and weapons come from RevampNpcShipCatalog; the legacy ship item is the source ship's.
+        /// </summary>
+        private void IncursionArmadas()
+        {
+            foreach (var (tag, itemTag) in IncursionTuning.ArmadaShips)
+            {
+                _builder.Create(tag)
+                    .ItemTag(itemTag);
+            }
         }
 
         /// <summary>

@@ -505,5 +505,116 @@ out.append(f"A matched Fighter keeps its Targeting Computer, or swaps it for a J
            "(-22 against +20 at rank 45) and the paint the Damage Amplifier's (+10%, every type). The Ion Web, Interdictor and "
            "Afterburner change speed and escape only; the simulator has no movement, so they are not fights.\n")
 
+# Q. Seat-skill rank bonuses (W11n): Engineering and Espionage at rank 50
+out.append("## Q. Seat-skill rank bonuses (W11n): Engineering and Espionage at rank 50\n")
+SK = m.SEAT_SKILL
+eng_support, eng_routing, esp_ewar = (m.seat_skill_percent(50, SK[k]) for k in ("support", "routing", "ewar"))
+
+
+def engineered(ship, mode="Balanced", rank=50):
+    """A player ship whose repairs come from an Engineering rank, routed with that rank's stronger gain."""
+    q = m.routed(ship, mode, m.seat_skill_percent(rank, SK["routing"]))
+    bonus = m.seat_skill_percent(rank, SK["support"])
+    q["repairers"] = [dict(r, amountPerCycle=m.scale_percent(r["amountPerCycle"], bonus)) for r in ship["repairers"]]
+    return q
+
+
+# Q1. The Engineer at Engineering 50: routing gain +25% and repairs +10%, crewed ships against Balanced with no rank and
+# against the same number of separate ships (section L's fights).
+rows, q_fastest, q_score = [], 0.0, 0.0
+for role, enemy, separate, separate_enemy, label, separate_label in cases:
+    sep = fight(separate, [separate_enemy])
+    for crew in (1.0, m.CREW_CAP):
+        base = m.player_ship(role, 45, m.FIT[role], crew=crew)
+        plain = fight([m.routed(base, "Balanced")], [enemy()])
+        for mode in m.POWER_ROUTING:
+            r = fight([engineered(base, mode)], [enemy()])
+            q_fastest = max(q_fastest, plain["mean"] / r["mean"])
+            q_score = max(q_score, job(r) / job(plain))
+            rows.append([role, f"{crew:.0%}", label, mode, cell(r), f"{job(r) / job(plain):.0%}",
+                         f"{separate_label}: {sep['mean']:.0f}s", "yes" if r["mean"] >= plain["mean"] - 0.5 else "NO"])
+table(["Ship", "Crew", "Enemy", "Routing (Engineering 50)", "Result", "Job score vs Balanced, no rank", "Separate ships",
+       "Kill no faster than Balanced, no rank"], rows)
+w, s_, e_ = (m.routing_gain(mode, eng_routing) for mode in ("Weapons", "Shields", "Engines"))
+out.append(f"Engineering 50 makes the routing's gain {eng_routing}% larger (Weapons: weapons use {-w['cap']}% less capacitor; "
+           f"Shields: shield regen +{s_['regen']}%; Engines: speed +{e_['speed']}%), its penalties unchanged, and repairs "
+           f"{eng_support}% larger. No crewed fight kills faster than Balanced with no rank, so section L's standing against "
+           f"the separate ships holds (fastest Balanced / Engineering kill-time ratio {q_fastest:.2f}: {'met' if q_fastest <= 1.01 else 'NOT MET'}); the best "
+           f"job score is {q_score:.0%} of Balanced with no rank (repairs and regen add staying power, never kill speed).\n")
+
+# Q2. A solo pilot with Engineering 50: the Gunship's Helm Shield Repairer repairs 10% more.
+rows, solo_high, solo_slowest = [], 0.0, 0.0
+for L in TIERS:
+    g = m.player_ship("Gunship", best_rank("Medium", L), m.FIT["Gunship"])
+    cells = []
+    for role in m.NORMAL_ROLES:
+        npc = m.npc_ship(role, L)
+        a, b = fight([g], [npc]), fight([engineered(g)], [npc])
+        solo_high = max(solo_high, job(b) / job(a))
+        solo_slowest = max(solo_slowest, b["mean"] / m.GROUND_TTK[L])
+        cells.append(f"{role}: {a['mean']:.0f}s / {b['mean']:.0f}s ({job(b) / job(a):.0%})")
+    rows.append([f"T{TIERS.index(L) + 1} (R{L})", "; ".join(cells)])
+table(["Tier", "Gunship vs each Normal role: no rank / Engineering 50 (job vs no rank)"], rows)
+out.append(f"A solo Gunship's Helm Shield Repairer at Engineering 50 gives at most {solo_high:.0%} of the job of the same pilot with "
+           f"no Engineering (the Advanced-ship band is 110%: {'met' if solo_high <= 1.1 else 'NOT MET'}).\n")
+
+# Q3. Espionage 50: jams and paints 10% stronger (section P's fits).
+rows, esp_low, esp_high, esp_party = [], 9.9, 0.0, 0.0
+for L in TIERS:
+    r = min(45, L // 5 * 5)
+    jam, paint = -(4 + round(0.4 * r)), 5 + r // 9
+    jam_e, paint_e = m.scale_percent(jam, esp_ewar), m.scale_percent(paint, esp_ewar)
+    standard = m.player_ship("Fighter", L, m.FIT["Fighter"])
+    swapped = m.player_ship("Fighter", L, no_tc)
+    cells = []
+    for role in m.NORMAL_ROLES:
+        npc = m.npc_ship(role, L)
+        base = fight([standard], [npc])
+        with_jam = fight([swapped], [ewar_target(npc, accuracy=jam_e)])
+        with_paint = fight([swapped], [ewar_target(npc, paint=paint_e)])
+        for res in (with_jam, with_paint):
+            ratio = ewar_job(res) / ewar_job(base)
+            esp_low, esp_high = min(esp_low, ratio), max(esp_high, ratio)
+        cells.append(f"{role}: jam {ewar_job(with_jam) / ewar_job(base):.0%} / paint {ewar_job(with_paint) / ewar_job(base):.0%}")
+    boss = m.npc_ship("Fighter", L, "Boss")
+    party = fight([dict(standard, count=3)], [boss])
+    party_cells = []
+    for lbl, kw in (("jam", dict(accuracy=jam_e)), ("paint", dict(paint=paint_e))):
+        res = fight([dict(standard, count=2), swapped], [ewar_target(boss, **kw)])
+        esp_party = max(esp_party, ewar_job(res) / ewar_job(party))
+        party_cells.append(f"{lbl} {ewar_job(res) / ewar_job(party):.0%}")
+    rows.append([f"T{TIERS.index(L) + 1} (R{L})", f"{jam_e} / +{paint_e}%", "; ".join(cells), " / ".join(party_cells)])
+table(["Tier", "Jam / paint at Espionage 50", "Jammer fit / Target Painter fit (job vs Targeting Computer)",
+       "3 Fighters vs a Boss, one Jammer / one Painter (job vs all TC)"], rows)
+out.append(f"Espionage 50 makes a Jammer's Accuracy penalty and a Target Painter's damage taken {esp_ewar}% stronger. Solo, no swap "
+           f"beats the Targeting Computer by more than 10% (range {esp_low:.0%}-{esp_high:.0%}: "
+           f"{'met' if esp_high <= 1.1 else 'NOT MET'}); in a party one module gives up to {esp_party:.0%} of the all-Targeting-"
+           "Computer party's job.\n")
+
+# Q4. A fully crewed Cruiser at the cap with a Target Painter at the Sensors seat (in place of its Shield Repairer) against
+# 5 Fighters, one of them swapping its Targeting Computer for a Target Painter, both routed Balanced: first with no seat
+# skills, then with Engineering 50 at the Engineer seat and Espionage 50 at the Sensors seat (and on the painting Fighter).
+paint45 = 5 + 45 // 9
+cr_fit = {k: v for k, v in m.FIT["Cruiser"].items() if k != "Shield Repairer"}
+cr_cap_ship = m.player_ship("Cruiser", 45, cr_fit, crew=m.CREW_CAP)
+fi45 = m.player_ship("Fighter", 45, m.FIT["Fighter"])
+fi45_p = m.player_ship("Fighter", 45, no_tc)
+q4_rows, q4_ratio = [], {}
+for label, rank in (("no seat skills", 0), ("Engineering 50 and Espionage 50", 50)):
+    paint = m.scale_percent(paint45, m.seat_skill_percent(rank, SK["ewar"]))
+    cr_q = engineered(cr_cap_ship, "Balanced", rank)
+    crewed = fight([cr_q], [ewar_target(m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0),
+                                        paint=m.round_half_away(paint * m.CREW_CAP))])
+    separate5 = fight([dict(fi45, count=4), fi45_p], [ewar_target(m.npc_ship("Gunship", 45, "Boss", size="Capital"), paint=paint)])
+    q4_ratio[rank] = crewed["mean"] / separate5["mean"]
+    q4_rows.append([label, cell(crewed), cell(separate5), f"{q4_ratio[rank]:.2f}"])
+table(["Seat skills", "Cruiser at the 105% cap with a Target Painter", "5 Fighters, one with a Target Painter",
+       "Cruiser / Fighters kill time"], q4_rows)
+q4_met = q4_ratio[50] >= q4_ratio[0] - 0.02
+out.append(f"Rank 50 seat skills move the crewed Cruiser's kill time against the 5 separate Fighters from {q4_ratio[0]:.2f} to "
+           f"{q4_ratio[50]:.2f} of theirs ({'met: no gain beyond noise' if q4_met else 'NOT MET'}): both sides bring the same painter, "
+           "Engineering adds staying power only, and the 105% cap stays level with N separate ships as in section G. The seat "
+           "skills sit outside the crew cap (they are the crew member's own, as perks are) and add no weapon damage.\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

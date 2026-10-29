@@ -446,9 +446,17 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
             items.AddRange(RevampRewardCatalog.HullDesigns
                 .Where(x => Made(x.ShipTag) && !x.WildSpaceOnly)
                 .Select(x => Item(FactionTokenStoreCategory.DesignSchematic, x.Resref, $"Design Schematic: {x.ShipName} {x.Name}")));
-            var component = RevampComponentCatalog.ManufacturerComponents.FirstOrDefault(x => x.Manufacturer == maker);
-            if (component != null)
-                items.Add(Item(FactionTokenStoreCategory.ManufacturerComponent, component.Resref, component.Name, 1, component.Trait));
+            // The faction maker's component, then any black-market maker's (W11o: the Chiss Sensor Array at the Smugglers
+            // and the Hutt Cartel).
+            var componentMakers = new List<ShipManufacturer> { maker };
+            if (FactionAgentTuning.BlackMarketMakers.TryGetValue(faction, out var blackMarket))
+                componentMakers.AddRange(blackMarket);
+            foreach (var componentMaker in componentMakers)
+            {
+                var component = RevampComponentCatalog.ManufacturerComponents.FirstOrDefault(x => x.Manufacturer == componentMaker);
+                if (component != null)
+                    items.Add(Item(FactionTokenStoreCategory.ManufacturerComponent, component.Resref, component.Name, 1, component.Trait));
+            }
             if (FactionAgentTuning.StoreRiftKeys.TryGetValue(faction, out var keys))
             {
                 items.AddRange(keys.Select(key =>

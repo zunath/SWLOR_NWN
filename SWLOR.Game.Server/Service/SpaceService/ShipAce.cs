@@ -51,5 +51,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>The achievement the killing party earns.</summary>
         public AchievementType Achievement { get; set; }
+
+        /// <summary>A Wild Space ace: a Rift Raider of level 52 with the Wild Space tables and the tier 5.5 Rift Key.</summary>
+        public bool WildSpace { get; set; }
     }
 }

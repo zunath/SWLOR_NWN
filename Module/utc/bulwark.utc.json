@@ -216,7 +216,7 @@
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",

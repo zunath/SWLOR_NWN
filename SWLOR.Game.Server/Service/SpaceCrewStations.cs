@@ -95,6 +95,28 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The percent the seat skill of whoever works a module right now adds to its output (plan section 4, W11n):
+        /// Engineering for repairs and the Hypermatter Injector, Espionage for jams and paints
+        /// (<see cref="ShipSeatSkillRules"/>). The crew member at the module's seat counts, otherwise the pilot, solo
+        /// pilots included; a droid, an NPC ship and a DM add nothing.
+        /// </summary>
+        public static int GetSeatSkillBonusPercent(uint ship, ShipModuleType type)
+        {
+            var skill = ShipSeatSkillRules.GetBonusSkill(type);
+            if (skill == SkillType.Invalid)
+                return 0;
+
+            var source = SpaceCrew.GetStatSource(ship);
+            return GetIsObjectValid(source) && GetIsPC(source) && !GetIsDM(source)
+                ? ShipSeatSkillRules.GetModuleBonusPercent(type, GetPlayerSkillRank(source, skill))
+                : 0;
+        }
+
+        /// <summary>A module's output raised by the seat skill of whoever works it (<see cref="GetSeatSkillBonusPercent"/>).</summary>
+        public static int ApplySeatSkillBonus(uint ship, ShipModuleType type, int amount) =>
+            SpaceCombatMath.ScaleByPercent(amount, GetSeatSkillBonusPercent(ship, type));
+
+        /// <summary>
         /// Why a crew member cannot switch a station module on, or an empty string. The module's rank is checked
         /// against the seat's skill (plan section 10, "Gear rank on stations").
         /// </summary>
@@ -218,7 +240,10 @@ namespace SWLOR.Game.Server.Service
             var routingReset = status.PowerRouting != ShipPowerRouting.Balanced &&
                                !GetIsObjectValid(SpaceCrew.GetSeatOccupant(pilot, ShipCrewSeat.Engineer));
             if (routingReset)
+            {
                 status.PowerRouting = ShipPowerRouting.Balanced;
+                status.PowerRoutingBonusPercent = 0;
+            }
 
             var recalculated = RecalculateShipStats(status, GetAbilityScore(pilot, AbilityType.Willpower), false,
                 slot => GetStationSlotEffectiveness(pilot, status, slot));

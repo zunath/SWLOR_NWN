@@ -9,6 +9,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<ConversationViewModel> _builder = new();
 
+        // The speaker name wraps inside the 150 px portrait column; three lines fit a name such as
+        // "Docking Point: CZ-220" or "Docking Point: Smuggler's Moon Station" without clipping its last line.
+        private const float SpeakerNameHeight = 66f;
+
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Conversation)
@@ -30,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindText(model => model.SpeakerName)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(28f);
+                                    .SetHeight(SpeakerNameHeight);
                             });
                             portrait.AddRow(row =>
                             {
@@ -41,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetWidth(128f)
                                     .SetHeight(200f);
                             });
-                        }).SetWidth(140f);
+                        }).SetWidth(150f);
 
                         header.AddColumn(dialogue =>
                         {

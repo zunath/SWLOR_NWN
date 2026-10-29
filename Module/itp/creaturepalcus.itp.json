@@ -3589,6 +3589,1260 @@
                       "type": "resref",
                       "value": "t4huttenfint"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 33.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 33.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmplt"
+                    }
                   }
                 ]
               },
@@ -4461,7 +5715,8 @@
                             "type": "resref",
                             "value": "abs_rakghoul"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -4498,7 +5753,8 @@
                             "type": "resref",
                             "value": "abs_rakalpha"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -4535,7 +5791,8 @@
                             "type": "resref",
                             "value": "abs_rakbrute"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -4572,7 +5829,8 @@
                             "type": "resref",
                             "value": "abs_rakstalk"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -4723,7 +5981,8 @@
                             "type": "resref",
                             "value": "abs_subzero"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",

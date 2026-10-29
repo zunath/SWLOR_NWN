@@ -58,6 +58,18 @@ def reveal_range(rank):
     return REVEAL_BASE_METERS - rank // REVEAL_RANKS_PER_METER
 
 
+# Espionage (W11n, plan section 4): the observing ship's best Espionage rank (its pilot's or its Sensors officer's)
+# stretches the reveal range by 1% per rank, up to +50% at rank 50 (the Probe Launcher's scan bonus): Mk I 10 -> 15 m,
+# Mk X and the Barracuda 5 -> 7.5 m. A percent of the device's range keeps a better device harder to see at every rank.
+ESPIONAGE_REVEAL_PERCENT_PER_RANK = 1
+ESPIONAGE_REVEAL_MAXIMUM_RANK = 50
+
+
+def espionage_reveal_range(meters, espionage_rank):
+    """Meters at which an observer with this Espionage rank reveals a cloak whose own reveal range is `meters`."""
+    return meters * (1 + min(max(espionage_rank, 0), ESPIONAGE_REVEAL_MAXIMUM_RANK) * ESPIONAGE_REVEAL_PERCENT_PER_RANK / 100)
+
+
 # A Sensor Sweep that finds a cloaked ship reveals it to the sweeper's party this long.
 SWEEP_REVEAL_SECONDS = 10
 
@@ -111,6 +123,8 @@ def tuning_cs():
              f"        public const int RoleSpeedPercent = {ROLE_SPEED_PERCENT};",
              f"        public const double DecloakLockSeconds = {cs_double(DECLOAK_LOCK_SECONDS)};",
              f"        public const int RevealBaseMeters = {REVEAL_BASE_METERS};",
+             f"        public const int EspionageRevealPercentPerRank = {ESPIONAGE_REVEAL_PERCENT_PER_RANK};",
+             f"        public const int EspionageRevealMaximumRank = {ESPIONAGE_REVEAL_MAXIMUM_RANK};",
              f"        public const double SweepRevealSeconds = {cs_double(SWEEP_REVEAL_SECONDS)};",
              f"        public const double TickSeconds = {cs_double(TICK_SECONDS)};",
              f"        public const string PirateFreighterTag = {json.dumps(PIRATE_FREIGHTER_TAG)};",
@@ -153,6 +167,10 @@ def cloak_tab(Sheet):
          "weapons and weapon abilities cannot fire after the ship becomes visible"],
         ["Cloak breaks", "damage, leaving space, cargo, no capacitor, device off", "", "", "", "", "",
          "damage while cloaking cancels the cloak with no lock; damage while cloaked decloaks with the lock"],
+        ["Docked", "cannot cloak", "", "", "", "", "",
+         "a ship docked aboard another ship or at a derelict is refused, and docking ends a cloak"],
+        ["Server restart", "the cloak drops", "", "", "", "", "",
+         "cloaks live in memory; entering space clears every toggle, and logging in strips a leftover cloak effect"],
     ])
     s.title("Reveal range")
     s.table(["Step", "Rank", "Reveal range", "", "", "", "", "Notes"],
@@ -162,6 +180,10 @@ def cloak_tab(Sheet):
         ["Proximity", f"{REVEAL_BASE_METERS} - rank / {REVEAL_RANKS_PER_METER} m", "", "", "", "", "",
          "NPC ships included: a hostile within range keeps its target"],
         ["Barracuda", f"{BARRACUDA_REVEAL_METERS} m", "", "", "", "", "", "hull signature: revealed only by a ship within 5 m"],
+        ["Espionage", f"+{ESPIONAGE_REVEAL_PERCENT_PER_RANK}% per rank, up to +{ESPIONAGE_REVEAL_PERCENT_PER_RANK * ESPIONAGE_REVEAL_MAXIMUM_RANK}%", "", "", "", "", "",
+         f"the observing ship's best Espionage rank (its pilot's or its Sensors officer's; NPC ships and droids have none) stretches "
+         f"every reveal range: at rank {ESPIONAGE_REVEAL_MAXIMUM_RANK} Mk I {espionage_reveal_range(REVEAL_BASE_METERS, ESPIONAGE_REVEAL_MAXIMUM_RANK):g} m, "
+         f"Mk X and the Barracuda {espionage_reveal_range(BARRACUDA_REVEAL_METERS, ESPIONAGE_REVEAL_MAXIMUM_RANK):g} m"],
         ["Sensor Sweep", f"{SWEEP_REVEAL_SECONDS:g} s", "", "", "", "", "",
          "a sweep lists cloaked ships and shows them to the sweeper's party this long"],
         ["Party and crew", "see their own ship", "", "", "", "", "", "the pilot, the pilot's party and crew are never hidden from"],
@@ -172,6 +194,10 @@ def cloak_tab(Sheet):
          "NPCs keep the enmity but skip the target, gain no new aggro and their toggles switch off; a ship within the reveal range is still seen"],
         ["Pirate ambush", "a cloaked ship slips past", "", "", "", "", "", "the ambush roll is skipped while cloaked"],
         ["Customs scan", "no change", "", "", "", "", "", "a patrol scans transponders, not hulls; Slice the Scan and the answer timer work as before"],
+        ["Ion Web, Interdictor", "break the cloak", "", "", "", "", "",
+         "both need the cloaked ship in sight (within the reveal range); a web or hold ends a cloak as damage does, and a held ship cannot cloak"],
+        ["Afterburner", "off while cloaking", "", "", "", "", "",
+         "cloaking switches it off like every toggle and it cannot run while cloaking or cloaked; an Interdictor's hold also shuts it down"],
         ["Stealth action mode", "toggles the device", "", "", "", "", "", "the stealth control never hides a ship by itself; with a device fitted it presses it"],
     ])
     return s

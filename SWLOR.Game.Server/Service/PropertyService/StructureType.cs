@@ -2816,6 +2816,48 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0)]
         HoloStarChart = 449,
+
+        [Structure("Pulsar-Scorched Hatch",
+            "_mdrn_pl_shipp05",
+            "A hexagonal hatch cut from a raider interceptor, its paint burned away by a pulsar's sweep.",
+            true,
+            0)]
+        PulsarScorchedHatch = 450,
+
+        [Structure("Gravity-Torn Turbine",
+            "_mdrn_pl_engine2",
+            "A turbine bent out of true by the pull of a black hole, salvaged from a raider bomber.",
+            true,
+            0)]
+        GravityTornTurbine = 451,
+
+        [Structure("Ion-Fused Control Block",
+            "_mdrn_pl_engine3",
+            "A control block whose tubes were fused solid by an ion storm, pulled from a jamming ship.",
+            true,
+            0)]
+        IonFusedControlBlock = 452,
+
+        [Structure("Magnetized Hull Panel",
+            "_mdrn_pl_debri09",
+            "A blue hull panel still faintly magnetized, cut from a sniper's ship near a magnetar.",
+            true,
+            0)]
+        MagnetizedHullPanel = 453,
+
+        [Structure("Ember-Scarred Engine Control",
+            "_mdrn_pl_engctr2",
+            "An engine control console scarred by a red giant's heat, taken from a raider fighter.",
+            true,
+            0)]
+        EmberScarredEngineControl = 454,
+
+        [Structure("Graveyard Flagship Generator",
+            "_mdrn_pl_genert3",
+            "A wrecked generator from a Rift Raider flagship, pulled from the ship graveyard as proof of the kill.",
+            true,
+            0)]
+        GraveyardFlagshipGenerator = 455,
         // END space trophies
 
         // Buildings start here (5000+)

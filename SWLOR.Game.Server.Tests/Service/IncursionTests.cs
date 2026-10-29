@@ -118,36 +118,100 @@ public class IncursionTests
     // Spawns
 
     [Test]
-    public void Spawns_AreTheTiersRoleShipsAndTheFactionCapitals()
+    public void Spawns_AreTheInvadersArmadaShipsAndTheFactionCapitals()
     {
         var presets = RevampNpcShipCatalog.Ships.ToDictionary(x => x.CreatureTag);
-        for (var tier = 1; tier <= 6; tier++)
+        foreach (var invader in new[] { IncursionInvader.Sith, IncursionInvader.Mandalorian })
         {
-            foreach (var (tag, _) in IncursionRules.WaveShips(tier).Concat(IncursionRules.BlockadeShips(tier))
-                         .Concat(IncursionRules.CommandShips(tier, IncursionInvader.Sith)).Concat(IncursionRules.CommandShips(tier, IncursionInvader.Mandalorian)))
+            for (var tier = 1; tier <= 6; tier++)
             {
-                presets.Should().ContainKey(tag, $"tier {tier}");
-            }
+                foreach (var (tag, hull) in IncursionRules.WaveShips(tier, invader).Concat(IncursionRules.BlockadeShips(tier, invader))
+                             .Concat(IncursionRules.CommandShips(tier, invader)))
+                {
+                    presets.Should().ContainKey(tag, $"{invader} tier {tier} {hull}");
+                    var source = hull == "capital" && tier >= 6 ? tag : $"t{tier}{hull}";
+                    presets[tag].Should().BeEquivalentTo(presets[source], o => o.Excluding(x => x.CreatureTag),
+                        "an armada ship fights exactly as the tier's role ship it copies");
+                }
 
-            IncursionRules.BlockadeShips(tier).Select(x => presets[x.Tag].Difficulty).Should().Contain("Elite", "the blockade's defense platform");
-            presets[IncursionRules.CommandTag(tier, IncursionInvader.Sith)].Difficulty.Should().Be("Boss");
+                IncursionRules.BlockadeShips(tier, invader).Select(x => presets[x.Tag].Difficulty).Should().Contain("Elite", "the blockade's defense platform");
+                presets[IncursionRules.CommandTag(tier, invader)].Difficulty.Should().Be("Boss");
+            }
         }
 
-        IncursionRules.WaveShips(3).Select(x => x.Tag).Should().Equal("t3fighter", "t3fighter", "t3interceptor", "t3bomber");
+        IncursionRules.WaveShips(3, IncursionInvader.Sith).Select(x => x.Tag).Should().Equal("t3sitharmftr", "t3sitharmftr", "t3sitharmint", "t3sitharmbmb");
+        IncursionRules.BlockadeShips(1, IncursionInvader.Mandalorian).Select(x => x.Tag).Should().Equal("t1mandoarmgun", "t1mandoarmgun", "t1mandoarmplt");
         IncursionRules.CommandTag(6, IncursionInvader.Sith).Should().Be("sithcap3");
         IncursionRules.CommandTag(6, IncursionInvader.Mandalorian).Should().Be("mandocap1");
-        IncursionRules.CommandTag(2, IncursionInvader.Mandalorian).Should().Be("t2capital");
-        IncursionRules.UsesInvaderAppearance(5).Should().BeTrue();
-        IncursionRules.UsesInvaderAppearance(6).Should().BeFalse();
-
-        foreach (var invader in IncursionTuning.Invaders)
-        {
-            using var utc = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "utc", $"{invader.CapitalTag}.utc.json")));
-            utc.RootElement.GetProperty("Appearance_Type").GetProperty("value").GetInt32().Should().Be(invader.CapitalAppearance);
-        }
-
+        IncursionRules.CommandTag(2, IncursionInvader.Mandalorian).Should().Be("t2mandoarmcmd");
         IncursionRules.ShipName(IncursionInvader.Sith, "fighter").Should().Be("Sith Armada Fighter");
         IncursionRules.ShipName(IncursionInvader.Mandalorian, "capital").Should().Be("Mandalorian Armada Command Ship");
+    }
+
+    [Test]
+    public void ArmadaCreatures_CopyTheirRoleShipWithTheArmadasNameAndHulls()
+    {
+        IncursionTuning.ArmadaShips.Should().HaveCount(66);
+        IncursionTuning.ArmadaShips.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
+        var definitions = new NPCSpaceObjectDefinition().BuildSpaceObjects();
+        var appearances = new Dictionary<IncursionInvader, Dictionary<string, int>>
+        {
+            [IncursionInvader.Sith] = new() { ["ftr"] = 10092, ["int"] = 10091, ["bmb"] = 10078, ["gun"] = 10082, ["plt"] = 2152, ["cmd"] = 10141 },
+            [IncursionInvader.Mandalorian] = new() { ["ftr"] = 10105, ["int"] = 10161, ["bmb"] = 10106, ["gun"] = 10107, ["plt"] = 2152, ["cmd"] = 10154 },
+        };
+        var hulls = IncursionTuning.ArmadaHullCodes.ToDictionary(x => x.Value, x => x.Key);
+        foreach (var (tag, itemTag) in IncursionTuning.ArmadaShips)
+        {
+            tag.Length.Should().BeLessThanOrEqualTo(16);
+            definitions.Should().ContainKey(tag);
+            var invader = IncursionTuning.Invaders.Single(x => tag.Substring(2).StartsWith(x.TagPrefix));
+            var code = tag.Substring(2 + invader.TagPrefix.Length);
+            var source = $"{tag.Substring(0, 2)}{hulls[code]}";
+            using var utc = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "utc", $"{tag}.utc.json")));
+            using var original = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "utc", $"{source}.utc.json")));
+            var root = utc.RootElement;
+            root.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be(tag);
+            root.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString()
+                .Should().Be(IncursionRules.ShipName(invader.Invader, hulls[code]));
+            root.GetProperty("Appearance_Type").GetProperty("value").GetInt32().Should().Be(appearances[invader.Invader][code]);
+            foreach (var field in new[] { "Equip_ItemList", "VarTable", "FactionID", "ScriptSpawn", "ScriptDeath" })
+                root.GetProperty(field).GetRawText().Should().Be(original.RootElement.GetProperty(field).GetRawText(), $"{tag} {field}");
+            definitions[tag].ShipItemTag.Should().Be(definitions[source].ShipItemTag);
+            itemTag.Should().Be(definitions[source].ShipItemTag);
+        }
+
+        var spawner = ReadSource("Service", "SpaceIncursions.cs");
+        spawner.Should().NotContain("SetName(ship", "the armada creatures carry their own names");
+        spawner.Should().NotContain("SetCreatureAppearanceType", "the armada creatures carry their own hulls");
+    }
+
+    [Test]
+    public void CapitalBattles_DropAnArmadaCommandGroupIntoATier5Or6Orbit()
+    {
+        IncursionTuning.CapitalBattleAreas.Select(x => x.Resref).Should().Equal("space_dathomir", "dantooineorbit", "space_korriban");
+        IncursionTuning.CapitalBattleAreas.Should().OnlyContain(x => x.Tier >= 5);
+        foreach (var area in IncursionTuning.CapitalBattleAreas)
+            TradeCatalog.Orbits.Single(x => x.AreaResref == area.Resref).Tier.Should().Be(area.Tier);
+        CapitalBattleRules.PickArea(_ => 2).Resref.Should().Be("space_korriban");
+        CapitalBattleRules.PickArea(_ => 99).Resref.Should().Be("space_korriban", "a roll past the end is clamped");
+
+        var korriban = IncursionTuning.CapitalBattleAreas[2];
+        CapitalBattleRules.Ships(korriban, IncursionInvader.Sith).Select(x => x.Tag).Should().Equal("sithcap3", "t6sitharmgun", "t6sitharmgun");
+        CapitalBattleRules.Ships(IncursionTuning.CapitalBattleAreas[0], IncursionInvader.Mandalorian).Select(x => x.Tag)
+            .Should().Equal("t5mandoarmcmd", "t5mandoarmgun", "t5mandoarmgun");
+
+        var now = Wednesday;
+        CapitalBattleRules.NextStart(now).Should().Be(now.AddHours(4));
+        CapitalBattleRules.GetStep(3, now, now.AddMinutes(30)).Should().Be(CapitalBattleStep.Running);
+        CapitalBattleRules.GetStep(0, now, now.AddMinutes(30)).Should().Be(CapitalBattleStep.Destroyed);
+        CapitalBattleRules.GetStep(1, now.AddMinutes(30), now.AddMinutes(30)).Should().Be(CapitalBattleStep.Withdraw);
+        IncursionTuning.CapitalBattleMinutes.Should().Be(30);
+
+        var source = ReadSource("Service", "SpaceCapitalBattles.cs");
+        source.Should().Contain("if (GetActiveIncursion() != null)", "no capital battle while an incursion runs");
+        source.Should().Contain("CapitalBattleRules.Ships(area, invader)");
+        source.Should().NotContain("RecordIncursion", "a capital battle pays only its ships' loot");
+        ReadSource("Service", "SpaceIncursions.cs").Should().Contain("ProcessCapitalBattle(now);");
     }
 
     // Blockades, docking and prices

@@ -46,16 +46,14 @@ namespace SWLOR.Game.Server.Feature
         /// mapping holds, so a waiting queued ability keeps its swing clip while a clip saved without
         /// its playback is replaced. Restoring removes every key still carrying this plan's
         /// animation, including ones a saved character brought back after the equipment that
-        /// needed them was gone. <paramref name="carryLayersInUse"/> leaves the carry layers to a
-        /// movement that holds them, such as a weapon repositioning dash.
+        /// needed them was gone.
         /// </summary>
         public static IReadOnlyList<(string Source, string Replacement)> GetChanges(
             bool useRemap, bool usePowerGloveCarry, IReadOnlyDictionary<string, string> current,
-            IReadOnlyCollection<string> activeSwingKeys, bool carryLayersInUse = false)
+            IReadOnlyCollection<string> activeSwingKeys)
         {
             var changes = GetChanges(Pairs, useRemap, current, activeSwingKeys).ToList();
-            if (!carryLayersInUse)
-                changes.AddRange(GetChanges(PowerGloveCarryPairs, usePowerGloveCarry, current, Array.Empty<string>()));
+            changes.AddRange(GetChanges(PowerGloveCarryPairs, usePowerGloveCarry, current, Array.Empty<string>()));
             return changes;
         }
 

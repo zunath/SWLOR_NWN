@@ -147,17 +147,25 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
-        public AbilityBuilder HasWeaponAbilityFlowDamagePerCharge(int damage)
+        public AbilityBuilder HasWeaponAbilityCadenceDamagePerCharge(int damage)
         {
             if (damage < 0) throw new ArgumentOutOfRangeException(nameof(damage));
-            _activeAbility.WeaponAbilityFlowDamagePerCharge = damage;
+            _activeAbility.WeaponAbilityCadenceDamagePerCharge = damage;
             return this;
         }
 
-        /// <summary>The ability neither spends nor benefits from Flow, so it can build charges for a finisher.</summary>
-        public AbilityBuilder KeepsWeaponAbilityFlow()
+        /// <summary>The ability neither spends nor benefits from Cadence, so it can build charges for a finisher.</summary>
+        public AbilityBuilder KeepsWeaponAbilityCadence()
         {
-            _activeAbility.KeepsWeaponAbilityFlow = true;
+            _activeAbility.KeepsWeaponAbilityCadence = true;
+            return this;
+        }
+
+        /// <summary>A landed hit grants this much Cadence once per activation, without needing a chain.</summary>
+        public AbilityBuilder GrantsWeaponAbilityCadence(int charges)
+        {
+            if (charges <= 0) throw new ArgumentOutOfRangeException(nameof(charges));
+            _activeAbility.WeaponAbilityCadenceOnHit = charges;
             return this;
         }
 
@@ -631,16 +639,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             _activeAbility.MaxRange = maxRange;
             _activeAbility.HasExplicitMaxRange = true;
-            return this;
-        }
-
-        /// <summary>
-        /// Accepts a location cast past the max range; the ability's own handlers shorten the
-        /// destination toward the clicked point. Requires <see cref="HasMaxRange"/>.
-        /// </summary>
-        public AbilityBuilder ClampsLocationTargetToMaxRange()
-        {
-            _activeAbility.ClampsLocationTargetToMaxRange = true;
             return this;
         }
 

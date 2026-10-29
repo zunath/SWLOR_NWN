@@ -839,7 +839,6 @@ namespace SWLOR.Game.Server.Service
 
             _ticketHolders[playerId] = (ride.Origin, ride.Destination);
             _boardingNotBeforeUtc[playerId] = now.AddSeconds(BoardingCallSeconds);
-            _missedBoardings.Clear(playerId);
             var next = GetNextDepartureUtc(ride.Origin, ride.Destination, playerId);
             var wait = Time.GetTimeLongIntervals(next - now, false);
             var originName = Planet.GetPlanetByType(ride.Origin).Name;
@@ -867,7 +866,6 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             _boardingNotBeforeUtc.Remove(playerId);
-            _missedBoardings.Clear(playerId);
 
             Scheduler.Schedule(() =>
             {

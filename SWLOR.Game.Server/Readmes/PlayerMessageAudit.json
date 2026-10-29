@@ -5608,14 +5608,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 847,
+    "Line": 846,
     "Member": "RestoreTicketedSession",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 896,
+    "Line": 894,
     "Member": "EnterServer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(current, $\"You resume your shuttle flight to {Planet.GetPlanetByType(ride.Destination).Name}. Estimated arrival: {remaining}.\")"

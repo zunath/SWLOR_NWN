@@ -6401,11 +6401,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// grant it; hostile ground abilities never do.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceHostileAbilityUsedEvasionPercentAdjustment = 1168,
+        SpaceHostileAbilityUsedEvasionPercentAdjustment = 1222,
 
         /// <summary>Seconds SpaceHostileAbilityUsedEvasionPercentAdjustment lasts.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceHostileAbilityUsedEvasionDurationSeconds = 1169,
+        SpaceHostileAbilityUsedEvasionDurationSeconds = 1223,
 
         /// <summary>
         /// Movement speed percent a ship gains after its pilot uses a hostile space ability.

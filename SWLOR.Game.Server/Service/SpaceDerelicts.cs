@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Service
                 IsDerelict = true,
                 Boardable = signature.Boardable,
                 Looted = signature.DerelictLooted || existing?.Looted == true,
-                PartyLocated = ScanningRules.PartyPercent(signature, party) >= ScanningTuning.InfoLocatedPercent,
+                PartyLocated = ScanningRules.IsPartyLocated(signature, party),
                 ShipSize = GetShipSize(ship),
                 Distance = GetArea(wreck) == GetArea(player) ? GetDistanceBetween(player, wreck) : float.MaxValue,
                 InCombat = IsShipInCombat(player),

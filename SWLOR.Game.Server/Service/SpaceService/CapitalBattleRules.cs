@@ -60,6 +60,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>When the next battle group may arrive after one ends or is skipped.</summary>
+        /// <summary>The end of a battle or incursion broadcast: "1 pilot shares the spoils." or "3 pilots share the spoils."</summary>
+        public static string DescribeSpoilsShare(int paid) =>
+            paid == 1 ? "1 pilot shares the spoils." : $"{paid} pilots share the spoils.";
+
         public static DateTime NextStart(DateTime now) => now.AddHours(IncursionTuning.CapitalBattleIntervalHours);
 
         /// <summary>A running battle ends when its ships are all destroyed, or withdraws when its time is up.</summary>

@@ -75,6 +75,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>A boarded derelict's site stays open until then, past its lifetime; null when nobody works it.</summary>
         public DateTime? HeldUntil { get; set; }
 
+        /// <summary>
+        /// A site opened for everyone at once (a DM's Place Derelict): every party counts as having located it, so its
+        /// derelict can be boarded or worked without first scanning it to 100% (W11r).
+        /// </summary>
+        public bool OpenToAll { get; set; }
+
         public bool IsRevealed => RevealedAt != null;
 
         /// <summary>Whether a faction agent placed it for one player's mission; it is not part of its area's signature count.</summary>

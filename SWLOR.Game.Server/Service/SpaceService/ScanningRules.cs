@@ -81,6 +81,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return Math.Clamp((int)Math.Floor(signal / required * 100.0 + 1e-9), 0, 100);
         }
 
+        /// <summary>
+        /// Whether a party has located a signature well enough to work it (board or salvage a derelict): any member's
+        /// strength at the info threshold, or a site opened for everyone (a DM-placed derelict).
+        /// </summary>
+        public static bool IsPartyLocated(ScanSignature signature, IEnumerable<string> partyIds) =>
+            signature != null && (signature.OpenToAll || PartyPercent(signature, partyIds) >= ScanningTuning.InfoLocatedPercent);
+
         /// <summary>Adds a cycle's signal for a scanner and returns its percent before and after.</summary>
         public static (int Before, int After) AddSignal(ScanSignature signature, string playerId, double signal)
         {

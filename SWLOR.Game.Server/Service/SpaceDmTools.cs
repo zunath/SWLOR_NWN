@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Service
             var signature = SignatureSiteRules.Create(Guid.NewGuid().ToString(), resref, detail.Tier, type,
                 position.X, position.Y, position.Z, DateTime.UtcNow, locked: false, wildSpace: detail.WildSpace,
                 boardable: type == SignatureType.Derelict, contested: false);
+            // An opened site needs no scan: its derelict can be boarded at once (W11r).
+            signature.OpenToAll = reveal;
             PlaceSignature(signature);
             if (reveal)
                 RevealSite(signature, controlled, openToAll: true);

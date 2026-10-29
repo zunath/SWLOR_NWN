@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             var kind = signature.Type == SignatureType.Derelict && signature.Boardable
                 ? "boardable derelict"
-                : signature.Type.ToString();
+                : (SignatureChoices.FirstOrDefault(x => x.Type == signature.Type)?.Label ?? signature.Type.ToString()).ToLowerInvariant();
             var tier = signature.WildSpace ? WildSpaceTuning.TierLabel : signature.Tier.ToString();
             return revealed
                 ? $"Placed a tier {tier} {kind} where you pointed. Its site is open."

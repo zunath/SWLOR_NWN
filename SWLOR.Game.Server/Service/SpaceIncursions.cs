@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var name = IncursionRules.GetInvader(incursion.Invader)?.Name;
-            BroadcastIncursion(ColorToken.Green($"INCURSION: the {region.Name} region is cleared and the {name} is in retreat. {paid} pilots share the spoils."));
+            BroadcastIncursion(ColorToken.Green($"INCURSION: the {region.Name} region is cleared and the {name} is in retreat. {CapitalBattleRules.DescribeSpoilsShare(paid)}"));
             Log.Write(LogGroup.Space, $"INCURSION CLEARED - {incursion.Invader} in {incursion.Center}, {paid} contributors paid");
             EndIncursion(true);
         }

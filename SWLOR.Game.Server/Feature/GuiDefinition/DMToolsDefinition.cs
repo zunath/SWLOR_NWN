@@ -372,13 +372,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddSpaceStatus(GuiColumn<DMToolsViewModel> col)
         {
+            // A text element wraps; a label drew one line and cut "...where you pointed. Its site is open." (W11r).
             col.AddRow(row =>
             {
-                row.AddLabel()
+                row.AddText()
                     .BindText(model => model.SpaceStatus)
                     .BindColor(model => model.SpaceStatusColor)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetHeight(20f);
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None)
+                    .SetHeight(44f);
             });
         }
 
@@ -388,7 +390,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 row.AddText()
                     .SetText("Spawn an enemy squad around you. You must be in a space area.")
-                    .SetHeight(44f);
+                    .SetScrollbars(NuiScrollbars.None)
+                    .SetHeight(52f);
             });
 
             col.AddRow(row =>
@@ -480,7 +483,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 row.AddText()
                     .SetText("Place sites where you click, open or close Rift Pockets, and break a ship's cloak.")
-                    .SetHeight(44f);
+                    .SetScrollbars(NuiScrollbars.None)
+                    .SetHeight(52f);
             });
 
             col.AddRow(row =>

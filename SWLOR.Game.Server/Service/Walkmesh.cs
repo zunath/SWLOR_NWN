@@ -139,8 +139,18 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A random location within an area.</returns>
         public static Location GetRandomLocation(uint area)
         {
-            var resref = GetResRef(area);
-            if (!_walkmeshesByArea.ContainsKey(resref))
+            return GetRandomLocation(area, GetResRef(area));
+        }
+
+        /// <summary>
+        /// A random walkable location in <paramref name="area"/> from the walkmesh baked for <paramref name="templateResref"/>.
+        /// An instance made from a template (Area.CreateInstance) gets a generated resref such as "nw_3" that was never
+        /// baked, so callers placing things in an instance pass the template's resref (W11r).
+        /// </summary>
+        public static Location GetRandomLocation(uint area, string templateResref)
+        {
+            var resref = templateResref;
+            if (string.IsNullOrEmpty(resref) || !_walkmeshesByArea.ContainsKey(resref))
                 return Location(area, Vector3.Zero, 0.0f);
 
             var count = _walkmeshesByArea[resref].Count;

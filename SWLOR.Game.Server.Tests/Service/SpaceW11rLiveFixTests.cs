@@ -178,4 +178,30 @@ public class SpaceW11rLiveFixTests
 
         ShipRareComponentRules.StandInLines("sd_striker", null).Should().BeEmpty();
     }
+
+    // Holding raiders
+
+    [Test]
+    public void Raiders_ArePlacedFromTheSiteTemplatesWalkmesh()
+    {
+        // A site is an instance whose resref ("nw_3") was never baked, so every pick fell back to the entrance and the
+        // four raiders spawned on top of the arriving player (W11r).
+        var holdings = ReadSource("Service", "PlanetaryHoldings.cs");
+        holdings.Should().Contain("Walkmesh.GetRandomLocation(site, detail.SiteAreaResref)");
+        holdings.Should().NotContain("Walkmesh.GetRandomLocation(site);");
+
+        var walkmesh = ReadSource("Service", "Walkmesh.cs");
+        walkmesh.Should().Contain("public static Location GetRandomLocation(uint area, string templateResref)");
+        walkmesh.Should().Contain("return GetRandomLocation(area, GetResRef(area));");
+    }
+
+    [Test]
+    public void EveryOutdoorSiteTemplate_IsAModuleArea()
+    {
+        var sites = SWLOR.Game.Server.Feature.HoldingDefinition.HoldingCatalog.Holdings
+            .Select(x => x.SiteAreaResref).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
+        sites.Should().NotBeEmpty();
+        foreach (var site in sites)
+            File.Exists(Path.Combine(Root(), "Module", "are", site + ".are.json")).Should().BeTrue(site);
+    }
 }

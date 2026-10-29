@@ -570,7 +570,8 @@ namespace SWLOR.Game.Server.Service
                 var location = GetSiteEntrance(site);
                 for (var attempt = 0; attempt < RaiderPlacementTries; attempt++)
                 {
-                    var candidate = Walkmesh.GetRandomLocation(site);
+                    // The site is an instance with a generated resref; its template's walkmesh holds the walkable spots.
+                    var candidate = Walkmesh.GetRandomLocation(site, detail.SiteAreaResref);
                     var position = GetPositionFromLocation(candidate);
                     if (position.X == 0f && position.Y == 0f)
                         continue;

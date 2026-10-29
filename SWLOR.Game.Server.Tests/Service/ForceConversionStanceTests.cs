@@ -26,6 +26,8 @@ public class ForceConversionStanceTests
             .Single(node => node.Identifier.ValueText == "ApplyForceConversionStance");
         var prepare = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "PrepareForceConversionStanceAttack");
+        var settle = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "SettleForceConversionStanceAttack");
         var fields = syntax.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(node => node.Declaration.Variables.Any(variable =>
                 variable.Identifier.ValueText is "ForceConversionAttackIndex" or "ForceConversionAttackTarget"));
@@ -74,9 +76,10 @@ public class ForceConversionStanceTests
                 {{string.Join(Environment.NewLine, fields)}}
                 {{profile}}
                 {{prepare}}
+                {{settle}}
                 {{method}}
                 public static object[] Run(CombatDamageType type, bool hasItemDamage, int conversion,
-                    int fp, int fpCost, bool queued, bool creature, bool attack, int queries,
+                    int fp, int fpCost, bool queued, bool creature, bool attack, bool landed, int queries,
                     bool differentTarget, bool differentIndex)
                 {
                     Ints.Clear();
@@ -92,7 +95,10 @@ public class ForceConversionStanceTests
                     };
                     var attacker = new CNWSCreature();
                     if (attack)
+                    {
                         PrepareForceConversionStanceAttack(attacker, defender, SkillType.Lightsaber);
+                        SettleForceConversionStanceAttack(attacker, defender, landed);
+                    }
                     if (differentTarget)
                         defender.m_idSelf = 3;
                     if (differentIndex)
@@ -105,7 +111,7 @@ public class ForceConversionStanceTests
                 }
                 public static object[] NextAttack(bool queued, bool creature, bool sameIndex, int fp)
                 {
-                    Run(CombatDamageType.Ice, true, 1, fp, 2, false, true, true, 1, false, false);
+                    Run(CombatDamageType.Ice, true, 1, fp, 2, false, true, true, true, 1, false, false);
                     var attacker = new CNWSCreature();
                     if (!sameIndex)
                         attacker.m_pcCombatRound.m_nCurrentAttack++;
@@ -115,6 +121,7 @@ public class ForceConversionStanceTests
                     };
                     UsePerkFeat.Queued = queued;
                     PrepareForceConversionStanceAttack(attacker, defender, SkillType.Lightsaber);
+                    SettleForceConversionStanceAttack(attacker, defender, true);
                     var result = ApplyForceConversionStance(attacker, defender,
                         new WeaponDamageProfile(CombatDamageType.Ice, 24, true));
                     return new object[] { result.DamageType, Stat.FP, Stat.Charges };
@@ -147,6 +154,13 @@ public class ForceConversionStanceTests
             .Single(node => node.Expression.ToString() == "GetDamageRoll.PrepareForceConversionStanceAttack");
         preparation.SpanStart.Should().BeLessThan(sharedRoll.DescendantNodes().OfType<IfStatementSyntax>()
             .Single(node => node.Condition.ToString() == "targetObject.m_nObjectType != (int)ObjectType.Creature").SpanStart);
+        // The upkeep is settled from the final attack result, after defensive effects such as concealment.
+        var settlement = sharedRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(node => node.Expression.ToString() == "GetDamageRoll.SettleForceConversionStanceAttack");
+        settlement.ArgumentList.Arguments.Last().ToString()
+            .Should().Be("IsSuccessfulAttackResult(pAttackData.m_nAttackResult)");
+        settlement.SpanStart.Should().BeGreaterThan(sharedRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(node => node.Expression.ToString() == "attacker.ResolveDefensiveEffects").SpanStart);
     }
 
     [Test]
@@ -203,10 +217,18 @@ public class ForceConversionStanceTests
     }
 
     [Test]
-    public void MissedAttack_PaysEvenWhenDamageIsNeverQueried()
+    public void LandedAttack_PaysEvenWhenDamageIsNeverQueried()
     {
         Run(CombatDamageType.Ice, queries: 0)
             .Should().Equal(CombatDamageType.Ice, 24, true, 8, 1);
+    }
+
+    [TestCase(0)]
+    [TestCase(1)]
+    public void MissedAttack_DoesNotPayOrConvert(int queries)
+    {
+        Run(CombatDamageType.Ice, landed: false, queries: queries)
+            .Should().Equal(CombatDamageType.Ice, 24, true, 10, 0);
     }
 
     [TestCase(true, false)]
@@ -237,7 +259,7 @@ public class ForceConversionStanceTests
 
     private object[] Run(CombatDamageType type, bool hasItemDamage = true, int conversion = 1,
         int fp = 10, int fpCost = 2, bool queued = false, bool creature = true, bool attack = true,
-        int queries = 1, bool differentTarget = false, bool differentIndex = false) =>
+        bool landed = true, int queries = 1, bool differentTarget = false, bool differentIndex = false) =>
         (object[])_run.Invoke(null, new object[]
-            { type, hasItemDamage, conversion, fp, fpCost, queued, creature, attack, queries, differentTarget, differentIndex })!;
+            { type, hasItemDamage, conversion, fp, fpCost, queued, creature, attack, landed, queries, differentTarget, differentIndex })!;
 }

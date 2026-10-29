@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             DateTime now, PairedRangedTraitConfiguration configuration, uint target)
         {
             Reconcile(now, configuration);
-            var damageBonus = configuration.OrdinaryDamagePercentAdjustment;
+            var damageBonus = 0;
             if (target == _ordinaryTarget && _sameTargetHits >= configuration.RepeatedTargetRequiredHits &&
                 configuration.RepeatedTargetRequiredHits > 0 && now < RepeatedTargetExpires)
                 damageBonus += configuration.RepeatedTargetDamagePercent;

@@ -10,7 +10,6 @@ public class PairedRangedTraitStateTests
 
     private static readonly PairedRangedTraitConfiguration Configuration = new()
     {
-        OrdinaryDamagePercentAdjustment = 25,
         OrdinaryHitRestoreCount = 3,
         OrdinaryHitStaminaRestore = 1,
         OrdinaryHitRestoreCooldownSeconds = 6,
@@ -70,12 +69,12 @@ public class PairedRangedTraitStateTests
         Hit(state, 0, 1);
         Hit(state, 1, 2);
         var third = state.RecordOrdinaryAttempt(Start.AddSeconds(2), Configuration, 10, 3);
-        third.DamagePercentAdjustment.Should().Be(25);
+        third.DamagePercentAdjustment.Should().Be(0);
         state.RecordOrdinaryHit(Start.AddSeconds(2), Configuration, 10, 3);
-        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10).DamagePercentAdjustment.Should().Be(30);
+        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10).DamagePercentAdjustment.Should().Be(5);
         state.RecordOrdinaryAttempt(Start.AddSeconds(3), Configuration, 20, 4)
-            .DamagePercentAdjustment.Should().Be(25);
-        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10).DamagePercentAdjustment.Should().Be(25);
+            .DamagePercentAdjustment.Should().Be(0);
+        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10).DamagePercentAdjustment.Should().Be(0);
     }
 
     private const int LeadShot = 1;
@@ -263,12 +262,12 @@ public class PairedRangedTraitStateTests
         for (var i = 1; i <= 6; i++)
         {
             var shot = state.RecordOrdinaryAttempt(Start.AddSeconds(i), Configuration, 10, i);
-            shot.DamagePercentAdjustment.Should().Be(50);
+            shot.DamagePercentAdjustment.Should().Be(25);
             var attempts = state.BonusAttempts;
             state.RecordOrdinaryAttempt(Start.AddSeconds(i), Configuration, 10, i);
             state.BonusAttempts.Should().Be(attempts, "duplicate observer callbacks cannot spend another charge");
         }
-        state.GetOrdinarySnapshot(Start.AddSeconds(7), Configuration, 10).DamagePercentAdjustment.Should().Be(25);
+        state.GetOrdinarySnapshot(Start.AddSeconds(7), Configuration, 10).DamagePercentAdjustment.Should().Be(0);
     }
 
     [Test]

@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Service
                 return new PairedRangedOrdinarySnapshot(0, 0);
             return States.TryGetValue(actor, out var state)
                 ? state.GetOrdinarySnapshot(DateTime.UtcNow, GetConfiguration(actor), target)
-                : new PairedRangedOrdinarySnapshot(ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), 0);
+                : new PairedRangedOrdinarySnapshot(0, 0);
         }
 
         private static bool NeedsOrdinaryState(PairedRangedTraitConfiguration configuration) =>
@@ -283,12 +283,11 @@ namespace SWLOR.Game.Server.Service
             configuration.RepeatedTargetRequiredHits > 0 && configuration.RepeatedTargetDamagePercent != 0;
 
         private static PairedRangedOrdinarySnapshot UntrackedSnapshot(PairedRangedTraitConfiguration configuration) =>
-            new(configuration.OrdinaryDamagePercentAdjustment, 0);
+            new(0, 0);
 
         /// <summary>The subset of <see cref="GetConfiguration"/> read by <see cref="NeedsOrdinaryState"/> and <see cref="UntrackedSnapshot"/>.</summary>
         private static PairedRangedTraitConfiguration GetOrdinaryConfiguration(uint actor) => new()
         {
-            OrdinaryDamagePercentAdjustment = ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
             OrdinaryHitRestoreCount = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
             OrdinaryHitStaminaRestore = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
             RepeatedTargetRequiredHits = Read(actor, StatType.PairedRangedRepeatedTargetRequiredHits),
@@ -317,7 +316,6 @@ namespace SWLOR.Game.Server.Service
                 return new PairedRangedTraitConfiguration();
             return new PairedRangedTraitConfiguration
             {
-                OrdinaryDamagePercentAdjustment = ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
                 OrdinaryHitRestoreCount = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
                 OrdinaryHitStaminaRestore = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
                 OrdinaryHitRestoreCooldownSeconds = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),

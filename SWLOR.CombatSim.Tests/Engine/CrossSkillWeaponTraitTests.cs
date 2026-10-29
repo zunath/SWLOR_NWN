@@ -306,8 +306,7 @@ public class CrossSkillWeaponTraitTests
         var paired = (WeaponTraitState.Configuration(actor), WeaponTraitState.DualWieldStat(actor, StatType.DualWieldAttackDelayReductionPercent));
         actor.Spec.WeaponLoadout.OffhandDamage = actor.Spec.WeaponLoadout.OffhandDelay = 0;
         var single = (WeaponTraitState.Configuration(actor), WeaponTraitState.DualWieldStat(actor, StatType.DualWieldAttackDelayReductionPercent));
-        (paired.Item1.OrdinaryDamagePercentAdjustment + paired.Item1.OrdinaryHitStaminaRestore + paired.Item2).Should().BePositive();
-        single.Item1.OrdinaryDamagePercentAdjustment.Should().Be(0);
+        (paired.Item1.OrdinaryHitStaminaRestore + paired.Item2).Should().BePositive();
         single.Item1.OrdinaryHitStaminaRestore.Should().Be(0);
         single.Item1.OrdinaryHitRestoreCount.Should().Be(0);
         single.Item2.Should().Be(0);

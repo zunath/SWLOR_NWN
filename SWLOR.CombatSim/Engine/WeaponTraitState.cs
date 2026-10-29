@@ -16,7 +16,6 @@ public sealed class WeaponTraitState
 
     public static PairedRangedTraitConfiguration Configuration(Combatant actor) => new()
     {
-        OrdinaryDamagePercentAdjustment = DualWieldStat(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
         OrdinaryHitRestoreCount = DualWieldStat(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
         OrdinaryHitStaminaRestore = DualWieldStat(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
         OrdinaryHitRestoreCooldownSeconds = actor.GetStat(StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),

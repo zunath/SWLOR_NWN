@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 public static class TwinPistolCrossSkillEngineTests
 {
     // No perk grants this stat after the Cadence rework; a temporary modifier keeps its dual-wield gating covered.
-    private const string PairedOrdinaryGroup = "PAIRED_ORDINARY_TEST";
 
     private static uint _observedTarget = OBJECT_INVALID;
     private static int _damageEvents;
@@ -170,28 +169,19 @@ public static class TwinPistolCrossSkillEngineTests
 
                 baseline = Sample(64, 0, false);
                 ctx.Assert(baseline.All(damage => damage > 20), "The seeded baseline stays clear of minimum-damage rounding");
-                TemporaryStatModifier.Replace(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10, 120f, PairedOrdinaryGroup);
-                ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-                    "The paired ordinary damage stat contributes ten percent");
-                // The paired ordinary damage stat offsets the paired firing cycle, so a single pistol captures none of it.
-                AssertDamage(Sample(64, 0, false), 0, 0, false, "Paired ordinary damage on one pistol");
-
-                TemporaryStatModifier.Consume(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, PairedOrdinaryGroup);
                 GrantTwinSuns(12);
                 AssertDamage(Sample(8, 0, true), 0, 0, true, "Twin Suns");
                 ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null,
                     "The sixth ordinary attempt exhausts the Twin Suns status");
 
-                TemporaryStatModifier.Replace(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10, 120f, PairedOrdinaryGroup);
                 StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
-                AssertDamage(Sample(8, 0, true), 0, -30, true, "Akimbo with one-pistol handling and Twin Suns");
+                AssertDamage(Sample(8, 0, true), 0, -30, true, "Akimbo on one pistol with Twin Suns");
                 StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
                 StatusEffect.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
-                AssertDamage(Sample(8, 0, true), 0, -20, true, "Crossfire with one-pistol handling and Twin Suns");
+                AssertDamage(Sample(8, 0, true), 0, -20, true, "Crossfire on one pistol with Twin Suns");
                 StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
-                TemporaryStatModifier.Consume(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, PairedOrdinaryGroup);
 
                 // Use the same production grant/expiry path with a short fixture lifetime.
                 GrantTwinSuns(1);
@@ -317,13 +307,6 @@ public static class TwinPistolCrossSkillEngineTests
                         });
                     }
                     var baseline = Sample();
-                    TemporaryStatModifier.Replace(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10, 120f, PairedOrdinaryGroup);
-                    ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), "The paired ordinary damage stat is present outside pistol equipment");
-                    var handling = Sample();
-                    // The paired ordinary damage stat needs two weapons; a single saber or rifle captures none of it.
-                    ctx.Assert(Math.Abs(handling - baseline) < .01,
-                        $"The single {resref} gains no paired ordinary damage bonus ({baseline:0.00}->{handling:0.00})");
-                    TemporaryStatModifier.Consume(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment, PairedOrdinaryGroup);
                     StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var akimbo = Sample();
                     ctx.Assert(akimbo / baseline is > .67 and < .71,
@@ -335,7 +318,7 @@ public static class TwinPistolCrossSkillEngineTests
                         $"The same {resref} pays Crossfire's native ordinary damage cost ({baseline:0.00}->{crossfire:0.00})");
                     StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
                     ClearAllActions();
-                    ctx.Log($"{resref}:256 matched-seed native rolls each, baseline={baseline:0.00}, handling={handling:0.00}, Akimbo={akimbo:0.00}, Crossfire={crossfire:0.00}");
+                    ctx.Log($"{resref}:256 matched-seed native rolls each, baseline={baseline:0.00}, Akimbo={akimbo:0.00}, Crossfire={crossfire:0.00}");
                 });
                 await ctx.DelaySecondsAsync(.75f);
                 async Task<int> CountActualAttacks()

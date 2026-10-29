@@ -6282,10 +6282,6 @@ namespace SWLOR.Game.Server.Service.StatService
 
 
 
-        /// <summary>Exclusive ordinary damage bonus; the strongest paired-ranged handling contribution applies.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedOrdinaryDamagePercentAdjustment = 1131,
-
         /// <summary>Landed ordinary shots required for one resource recovery attempt.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         PairedRangedOrdinaryHitRestoreCount = 1133,

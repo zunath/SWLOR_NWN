@@ -67,6 +67,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => CountInArea(area, "spacemine") >= 1, 10f, "a mine to appear");
         }
 
+        [EngineTest("A mine detonates on a ship beside it and destroys it when it is left at 1 hull", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task MineDestroysAWeakenedShip(EngineTestContext ctx)
+        {
+            // The mine goes off from the mine check (a scheduler task), so its blast and the ship's destruction must not
+            // depend on a script context.
+            var (_, _, target) = await SpawnFightAsync(ctx, "t1minelayer", 62f);
+            var status = Space.GetShipStatus(target);
+            status.Shield = 0;
+            status.Hull = 1;
+            await ctx.WaitUntilAsync(() => GetIsDead(target), 15f, "the weakened ship beside the minelayer to be destroyed by its mine or fire");
+        }
+
         private static int CountInArea(uint area, string tag)
         {
             var count = 0;
@@ -79,11 +91,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return count;
         }
 
-        private static async Task<(uint Area, uint Ship, uint Target)> SpawnFightAsync(EngineTestContext ctx, string resref)
+        private static async Task<(uint Area, uint Ship, uint Target)> SpawnFightAsync(EngineTestContext ctx, string resref, float targetX = 80f)
         {
             var area = ctx.CreateInstancedArea(SpaceAreaResref);
             var ship = SpawnShip(ctx, area, resref, 60f, StandardFaction.Hostile);
-            var target = SpawnShip(ctx, area, TargetResref, 80f, StandardFaction.Defender);
+            var target = SpawnShip(ctx, area, TargetResref, targetX, StandardFaction.Defender);
             await ctx.WaitUntilAsync(() => Space.GetShipStatus(ship) != null && Space.GetShipStatus(target) != null, 5f,
                 "both ships to register as NPC ships");
 

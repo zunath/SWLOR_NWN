@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 1700, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 11 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 5, Input = CommodityType.CzerkaMachineParts, InputUnits = 2, Refined = CommodityType.FocusingLenses, RefinedUnits = 2 },
                 Setback = HoldingSetbackType.CaveIn, RepairGood = CommodityType.CzerkaMachineParts, RepairUnits = 7,
-                CustomsInspections = false, SiteAreaResref = "house_int_7",
+                CustomsInspections = false, SiteAreaResref = "holding_cave",
                 Description = "A crystal mine in the Viscaran hills.",
             },
             new HoldingDetail
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 1700, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 11 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 2, Input = CommodityType.WitchHerbs, InputUnits = 1, Refined = CommodityType.MedicalSupplies, RefinedUnits = 2 },
                 Setback = HoldingSetbackType.Blight, RepairGood = CommodityType.MedicalSupplies, RepairUnits = 8,
-                CustomsInspections = false, SiteAreaResref = "house_int_1",
+                CustomsInspections = false, SiteAreaResref = "holding_forest",
                 Description = "Hives in the Veles groves.",
             },
             new HoldingDetail
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3400, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 22 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 2, Input = CommodityType.CzerkaMachineParts, InputUnits = 1, Refined = CommodityType.PrefabShelters, RefinedUnits = 1 },
                 Setback = HoldingSetbackType.Breakdown, RepairGood = CommodityType.CzerkaMachineParts, RepairUnits = 13,
-                CustomsInspections = false, SiteAreaResref = "house_int_10",
+                CustomsInspections = false, SiteAreaResref = "holding_forest",
                 Description = "A logging camp in Hutlar's Aracia forests.",
             },
             new HoldingDetail
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3400, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 23 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 4, Input = CommodityType.WitchHerbs, InputUnits = 3, Refined = CommodityType.MedicalSupplies, RefinedUnits = 6 },
                 Setback = HoldingSetbackType.Sickness, RepairGood = CommodityType.MedicalSupplies, RepairUnits = 16,
-                CustomsInspections = false, SiteAreaResref = "house_int_1",
+                CustomsInspections = false, SiteAreaResref = "holding_plains",
                 Description = "Byysk pens and a tannery on Hutlar.",
             },
             new HoldingDetail
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3000, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 20 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 1, Input = CommodityType.Grain, InputUnits = 1, Refined = CommodityType.RationPacks, RefinedUnits = 1 },
                 Setback = HoldingSetbackType.Sandstorm, RepairGood = CommodityType.CzerkaMachineParts, RepairUnits = 12,
-                CustomsInspections = false, SiteAreaResref = "house_int_4",
+                CustomsInspections = false, SiteAreaResref = "holding_desert",
                 Description = "Vaporators on the Tatooine flats.",
             },
             new HoldingDetail
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3000, Goods = new Dictionary<CommodityType, int> { { CommodityType.AraciaTimber, 19 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 3, Input = CommodityType.AraciaTimber, InputUnits = 1, Refined = CommodityType.PrefabShelters, RefinedUnits = 1 },
                 Setback = HoldingSetbackType.Sandstorm, RepairGood = CommodityType.CzerkaMachineParts, RepairUnits = 12,
-                CustomsInspections = false, SiteAreaResref = "player_rnd",
+                CustomsInspections = false, SiteAreaResref = "holding_desert",
                 Description = "A Jawa trading scrap yard outside Anchorhead.",
             },
             new HoldingDetail
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3000, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 20 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 5, Input = CommodityType.Seafood, InputUnits = 3, Refined = CommodityType.RationPacks, RefinedUnits = 3 },
                 Setback = HoldingSetbackType.Breakdown, RepairGood = CommodityType.CzerkaMachineParts, RepairUnits = 12,
-                CustomsInspections = false, SiteAreaResref = "house_int_10",
+                CustomsInspections = false, SiteAreaResref = "holding_desert",
                 Description = "Evaporation pans on the Smuggler's Moon salt flats.",
             },
             new HoldingDetail
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 9400, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 63 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 1, Input = CommodityType.EncryptedDataChips, InputUnits = 2, Refined = CommodityType.SithHolocrons, RefinedUnits = 1 },
                 Setback = HoldingSetbackType.CaveIn, RepairGood = CommodityType.CzerkaMachineParts, RepairUnits = 37,
-                CustomsInspections = true, SiteAreaResref = "house_int_7",
+                CustomsInspections = true, SiteAreaResref = "holding_cave",
                 Description = "A licensed dig among the Korriban tombs.",
             },
             new HoldingDetail
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3700, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 25 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 3, Input = CommodityType.ByyskHides, InputUnits = 4, Refined = CommodityType.MedicalSupplies, RefinedUnits = 6 },
                 Setback = HoldingSetbackType.Blight, RepairGood = CommodityType.MedicalSupplies, RepairUnits = 17,
-                CustomsInspections = false, SiteAreaResref = "house_int_1",
+                CustomsInspections = false, SiteAreaResref = "holding_forest",
                 Description = "Herb beds tended at the edge of the Dathomir jungle.",
             },
             new HoldingDetail
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3700, Goods = new Dictionary<CommodityType, int> { { CommodityType.AraciaTimber, 23 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 1, Input = CommodityType.PurifiedWater, InputUnits = 1, Refined = CommodityType.RationPacks, RefinedUnits = 1 },
                 Setback = HoldingSetbackType.Blight, RepairGood = CommodityType.MedicalSupplies, RepairUnits = 17,
-                CustomsInspections = false, SiteAreaResref = "house_int_4",
+                CustomsInspections = false, SiteAreaResref = "holding_plains",
                 Description = "Grain fields on the Dantooine plains.",
             },
             new HoldingDetail
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3600, Goods = new Dictionary<CommodityType, int> { { CommodityType.HullSections, 24 } } },
                 Chain = new HoldingChainDetail { OwnUnits = 2, Input = CommodityType.NeonSalt, InputUnits = 1, Refined = CommodityType.AgedBanthaCheese, RefinedUnits = 1 },
                 Setback = HoldingSetbackType.Sickness, RepairGood = CommodityType.MedicalSupplies, RepairUnits = 17,
-                CustomsInspections = false, SiteAreaResref = "house_int_10",
+                CustomsInspections = false, SiteAreaResref = "holding_plains",
                 Description = "A bantha ranch and dairy on Dantooine.",
             },
         };

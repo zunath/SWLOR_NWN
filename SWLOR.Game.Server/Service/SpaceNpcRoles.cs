@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Service
             state.WavesLaunched++;
 
             // A spawned ship joins the AI's ship list, so the wave launches after the AI tick has run.
-            DelayCommand(0.1f, () =>
+            Scheduler.Schedule(() =>
             {
                 if (!GetIsObjectValid(creature) || GetIsDead(creature))
                     return;
@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Service
                     if (IsRoleTarget(creature, target))
                         Enmity.ModifyEnmity(target, fighter, 1);
                 }
-            });
+            }, TimeSpan.FromSeconds(0.1));
         }
 
         // Minelayer

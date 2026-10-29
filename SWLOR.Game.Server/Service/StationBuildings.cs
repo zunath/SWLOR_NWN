@@ -529,6 +529,7 @@ namespace SWLOR.Game.Server.Service
                 ShipSize = record == null ? ShipSize.Invalid : Space.GetShipSize(record),
                 HullTag = record?.Status?.ItemTag ?? string.Empty,
                 FuelAboard = record == null ? 0 : CargoHoldRules.GetUnits(record.Cargo, CommodityType.StationFuel),
+                DestinationBlockaded = destination != null && Space.IsStationBlockaded(destination.Id),
             };
         }
 

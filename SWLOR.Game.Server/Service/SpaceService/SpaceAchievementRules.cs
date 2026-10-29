@@ -44,6 +44,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static List<AchievementType> TradeEarnings(ulong total) =>
             TradeMilestones.Where(x => total >= x.Credits).Select(x => x.Achievement).ToList();
 
+        /// <summary>Whether a kill earns the crewed kill achievement (W11o): the pilot and at least one player at a station.</summary>
+        public static bool IsCrewedKill(int playersAboard) => playersAboard >= 2;
+
         /// <summary>Whether a fitted module earns the named module achievement: a named rank-50 module.</summary>
         public static bool IsNamedModule(ShipModuleStep step) => step != null && step.Named;
     }

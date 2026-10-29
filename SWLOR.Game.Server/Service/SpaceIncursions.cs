@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Service
         private static bool _incursionDirty;
         private static bool _incursionSpawned;
         private static DateTime _incursionSavedAt;
+        private static DateTime _incursionStationsCheckedAt;
         private static readonly Dictionary<string, List<uint>> _incursionAreaShips = new();
         private static readonly Dictionary<string, IncursionAreaPhase> _incursionAreaPhases = new();
         private static readonly Dictionary<string, DateTime> _incursionNextSpawn = new();
@@ -127,13 +129,16 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var docks = new Dictionary<string, int>();
+            var stationDocks = new Dictionary<string, string>();
             foreach (var area in region.Areas)
             {
                 foreach (var (_, key, planet) in GetIncursionDocks(area.Resref))
                     docks[key] = planet;
+                foreach (var (_, key, stationId) in GetIncursionStationDocks(area.Resref))
+                    stationDocks[key] = stationId;
             }
 
-            state.Active = IncursionRules.Create(region, invader, DateTime.UtcNow, docks);
+            state.Active = IncursionRules.Create(region, invader, DateTime.UtcNow, docks, stationDocks);
             state.LastCenter = region.Center;
             _incursionSpawned = false;
             SpawnIncursion();
@@ -194,6 +199,26 @@ namespace SWLOR.Game.Server.Service
             return docks;
         }
 
+        /// <summary>
+        /// The player stations standing in an area (W11o): (anchor waypoint, dock key, station id). A station's docking point
+        /// stands at its anchor, so the blockade forms there; the anchor waypoint is module data, there before any station loads.
+        /// </summary>
+        private static List<(uint Anchor, string Key, string StationId)> GetIncursionStationDocks(string areaResref)
+        {
+            var docks = new List<(uint Anchor, string Key, string StationId)>();
+            foreach (var anchor in StationRules.GetAnchorsInArea(areaResref))
+            {
+                var station = Station.GetStationAtAnchor(anchor.Id);
+                var waypoint = GetWaypointByTag(anchor.Tag);
+                if (station == null || !GetIsObjectValid(waypoint))
+                    continue;
+
+                docks.Add((waypoint, IncursionRules.StationDockKey(anchor), station.Id));
+            }
+
+            return docks;
+        }
+
         /// <summary>Spawns what the running incursion has left: each area's current wave or command group and the unbroken blockades.</summary>
         private static void SpawnIncursion()
         {
@@ -224,6 +249,22 @@ namespace SWLOR.Game.Server.Service
                     var ships = SpawnIncursionGroup(incursion, GetArea(dock), GetPosition(dock), IncursionRules.BlockadeShips(area.Tier, incursion.Invader),
                         IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, area.Tier);
                     _incursionBlockadeShips[key] = ships;
+                }
+            }
+
+            // Player station docks (W11o) hold the same blockade at their anchor.
+            ReleaseLostStationBlockades(incursion);
+            foreach (var area in region.Areas)
+            {
+                foreach (var anchor in StationRules.GetAnchorsInArea(area.Resref))
+                {
+                    var key = IncursionRules.StationDockKey(anchor);
+                    var waypoint = GetWaypointByTag(anchor.Tag);
+                    if (!IncursionRules.IsBlockadeHolding(incursion, key) || !GetIsObjectValid(waypoint))
+                        continue;
+
+                    _incursionBlockadeShips[key] = SpawnIncursionGroup(incursion, GetArea(waypoint), GetPosition(waypoint),
+                        IncursionRules.BlockadeShips(area.Tier, incursion.Invader), IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, area.Tier);
                 }
             }
 
@@ -322,6 +363,9 @@ namespace SWLOR.Game.Server.Service
                 SpawnIncursionAreaGroup(incursion, area, progress);
             }
 
+            if (now - _incursionStationsCheckedAt >= TimeSpan.FromMinutes(1))
+                ReleaseLostStationBlockades(incursion);
+
             foreach (var key in _incursionBlockadeShips.Keys.ToList())
             {
                 if (PruneIncursionShips(_incursionBlockadeShips, key) > 0)
@@ -349,8 +393,45 @@ namespace SWLOR.Game.Server.Service
             return ships.Count;
         }
 
+        /// <summary>
+        /// Lifts the blockade of a station that is gone (retrieved, lost to upkeep) so the region can still be cleared:
+        /// its ships leave and its dock counts as broken, without a server-wide message.
+        /// </summary>
+        private static void ReleaseLostStationBlockades(ActiveIncursion incursion)
+        {
+            _incursionStationsCheckedAt = DateTime.UtcNow;
+            foreach (var (key, stationId) in incursion.StationBlockades)
+            {
+                if (!IncursionRules.IsBlockadeHolding(incursion, key))
+                    continue;
+
+                var station = DB.Get<WorldProperty>(stationId);
+                if (station != null && !station.IsQueuedForDeletion)
+                    continue;
+
+                if (_incursionBlockadeShips.TryGetValue(key, out var ships))
+                {
+                    foreach (var ship in ships.Where(GetIsObjectValid))
+                        DestroyObject(ship);
+                    _incursionBlockadeShips.Remove(key);
+                }
+
+                incursion.BrokenBlockades.Add(key);
+                _incursionDirty = true;
+                Log.Write(LogGroup.Space, $"INCURSION - station {stationId} is gone; its blockade at {key} is lifted");
+            }
+        }
+
         private static string DescribeDock(string key)
         {
+            var incursion = IncursionRecord.Active;
+            if (incursion != null && incursion.StationBlockades.TryGetValue(key, out var stationId))
+            {
+                var station = DB.Get<WorldProperty>(stationId);
+                if (station != null)
+                    return station.CustomName;
+            }
+
             var waypoint = key.Contains(':') ? key[(key.IndexOf(':') + 1)..] : key;
             return waypoint.Replace("_Orbit", string.Empty).Replace("_", " ");
         }
@@ -617,6 +698,26 @@ namespace SWLOR.Game.Server.Service
             var incursion = IncursionRecord.Active;
             return IncursionRules.IsExchangeClosed(incursion, exchange) ? IncursionRules.ExchangeRefusal(incursion.Invader) : string.Empty;
         }
+
+        /// <summary>
+        /// Why a dock's Trade Exchange is closed, or empty: its exchange's planet dock is blockaded, or (W11o) the dock is a
+        /// player station's Starport and a blockade holds at the station.
+        /// </summary>
+        public static string GetIncursionExchangeRefusal(TradeDock dock)
+        {
+            if (dock == null)
+                return string.Empty;
+
+            var incursion = IncursionRecord.Active;
+            if (dock.IsCity && IncursionRules.IsStationBlockaded(incursion, dock.CityId))
+                return IncursionRules.ExchangeRefusal(incursion.Invader);
+
+            return GetIncursionExchangeRefusal(dock.Exchange);
+        }
+
+        /// <summary>Whether a blockade holds at a player station's dock (W11o).</summary>
+        public static bool IsStationBlockaded(string stationId) =>
+            IncursionRules.IsStationBlockaded(IncursionRecord.Active, stationId);
 
         /// <summary>The incursion price multiplier of an exchange (1 outside a running incursion's region).</summary>
         public static double GetIncursionPriceMultiplier(TradeExchangeType exchange) =>

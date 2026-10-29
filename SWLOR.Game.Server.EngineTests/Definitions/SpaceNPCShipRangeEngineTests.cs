@@ -23,6 +23,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(damaged, $"target {GetDistanceBetween(attacker, target):0.0}m away takes ship damage");
         }
 
+        [EngineTest("NPC weapon damage lands on the target's pools and destroys a ship it leaves at 1 hull", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task WeaponDamageLandsAndDestroys(EngineTestContext ctx)
+        {
+            // The laser's damage lands after a delay (a DelayCommand inside the ship's assigned context), and a hit that
+            // empties the hull destroys the ship through another delayed command.
+            var (_, target) = await SpawnShipsAsync(ctx, 20f, immobilizeAttacker: true);
+            int Pools() => Space.GetShipStatus(target).Shield + Space.GetShipStatus(target).Hull;
+            var before = Pools();
+            await ctx.WaitUntilAsync(() => Pools() < before, 15f, $"the laser's damage to reduce the target's shield and hull from {before}");
+
+            var status = Space.GetShipStatus(target);
+            status.Shield = 0;
+            status.Hull = 1;
+            await ctx.WaitUntilAsync(() => GetIsDead(target), 15f, "the weakened target to be destroyed by the next hit");
+        }
+
         [EngineTest("NPC ship holds fire on an enmity target beyond weapon range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
         public static async Task HoldsFireBeyondWeaponRange(EngineTestContext ctx)
         {

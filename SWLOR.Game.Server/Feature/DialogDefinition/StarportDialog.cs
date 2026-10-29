@@ -143,8 +143,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void AddHoldingsResponse(ConversationMenuPage page, uint player, string landingWaypointTag)
         {
             var area = GetArea(Owner);
-            if (!string.IsNullOrWhiteSpace(Property.GetPropertyId(area)))
+            var starportId = Property.GetPropertyId(area);
+            if (!string.IsNullOrWhiteSpace(starportId))
+            {
+                AddCityHoldingsResponse(page, player, starportId);
                 return;
+            }
 
             var exchange = TradeLookup.GetExchangeForPlanet(Planet.GetPlanetType(area));
             var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag)
@@ -163,9 +167,48 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("Planetary Holdings", () =>
             {
                 Close();
+                PlanetaryHoldings.RehomeStrandedHoldings(player, exchange, landingAreaResref);
                 var payload = new HoldingsPayload(exchange, landingAreaResref);
                 Gui.TogglePlayerWindow(player, GuiWindowType.PlanetaryHoldings, payload, Owner);
             });
+            AddGuestSiteResponses(page, player, landingAreaResref);
+        }
+
+        /// <summary>
+        /// W11o: a player city's Starport sells its planet's holdings, an orbit station's Starport its anchor exchange's;
+        /// ships docked at this Starport collect and deliver. A Wild Space station has none.
+        /// </summary>
+        private void AddCityHoldingsResponse(ConversationMenuPage page, uint player, string starportId)
+        {
+            var dock = Trade.TryGetCityDock(starportId);
+            if (dock == null)
+                return;
+
+            var city = DB.Get<WorldProperty>(dock.CityId);
+            var exchange = HoldingRules.GetCityDockHoldingsExchange(dock.Exchange, Station.GetAnchor(city)?.IsWildSpace ?? false);
+            if (exchange == TradeExchangeType.Invalid)
+                return;
+
+            page.AddResponse("Planetary Holdings", () =>
+            {
+                Close();
+                var payload = new HoldingsPayload(exchange, starportId);
+                Gui.TogglePlayerWindow(player, GuiWindowType.PlanetaryHoldings, payload, Owner);
+            });
+            AddGuestSiteResponses(page, player, starportId);
+        }
+
+        /// <summary>W11o: join an open holding site of a party member at this dock as a guest.</summary>
+        private void AddGuestSiteResponses(ConversationMenuPage page, uint player, string dockId)
+        {
+            foreach (var (holdingId, label) in PlanetaryHoldings.GetGuestSites(player, dockId))
+            {
+                page.AddResponse($"Join {label}", () =>
+                {
+                    Close();
+                    PlanetaryHoldings.JoinSite(player, holdingId, dockId);
+                });
+            }
         }
 
         /// <summary>
@@ -188,7 +231,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return;
                 }
 
-                var closed = Space.GetIncursionExchangeRefusal(dock.Exchange);
+                var closed = Space.GetIncursionExchangeRefusal(dock);
                 if (!string.IsNullOrEmpty(closed))
                 {
                     SendMessageToPC(player, ColorToken.Red(closed));

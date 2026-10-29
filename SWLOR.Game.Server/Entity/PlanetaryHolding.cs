@@ -68,6 +68,13 @@ namespace SWLOR.Game.Server.Entity
 
         public DateTime CustomsDeadline { get; set; }
 
+        /// <summary>
+        /// Raiders hold the site (W11o): kill them there by <see cref="RaidDeadline"/> or they take the raid's share of the
+        /// warehouse. False on holdings saved before, so no migration.
+        /// </summary>
+        public bool RaidPending { get; set; }
+        public DateTime RaidDeadline { get; set; }
+
         /// <summary>The staff droid's controller id (<c>DROID_ITEM_ID</c>), or empty. The controller stays with the owner, cursed.</summary>
         public string DroidItemId { get; set; }
 

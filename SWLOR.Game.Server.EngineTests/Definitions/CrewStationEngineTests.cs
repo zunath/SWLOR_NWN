@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // On a Large hull with one Low station slot, Low slot 3 is hotbar slot 13, an Engineer slot.
         private const int EngineerSlot = 13;
 
+        // The Mk VIII Hull Repairer restores 8, scaled to the hull's size (ShipShotBuilder.ScaleSupport).
+        private static readonly int FullRepair = ShipShotBuilder.ScaleSupport(8, ShipSize.Large);
+
         private static ShipStatus LargeShipWithEngineerRepairer() => new()
         {
             Size = ShipSize.Large,
@@ -89,7 +92,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await ctx.ExecuteInCreatureContextAsync(crew.Creature, () => Space.ActivateShipModule(crew.Creature, stationFeat));
                 Space.TurnOffShipToggles(pilot.Creature);
-                ctx.AssertEqual(18, Hull(), "hull after the Engineer's Hull Repairer cycle (8 at 100%)");
+                ctx.AssertEqual(10 + FullRepair, Hull(), "hull after the Engineer's Hull Repairer cycle (8, scaled to the Large hull)");
 
                 ctx.Assert(CombatPoint.HasCombatPoints(crew.Creature, fighting),
                     "the crew member earns the combat point for their station's repair");
@@ -99,7 +102,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SpaceCrew.ReleaseSeat(crew.Creature);
                 await ctx.ExecuteInCreatureContextAsync(crew.Creature, () => Space.ActivateShipModule(crew.Creature, stationFeat));
                 Space.TurnOffShipToggles(pilot.Creature);
-                ctx.AssertEqual(18, Hull(), "hull after the crew member leaves the seat and presses it");
+                ctx.AssertEqual(10 + FullRepair, Hull(), "hull after the crew member leaves the seat and presses it");
             }
             finally
             {

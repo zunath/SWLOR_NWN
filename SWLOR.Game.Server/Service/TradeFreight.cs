@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (IsFreightExchangeClosed(player, exchange))
+            if (IsFreightExchangeClosed(player, exchange, dockId))
                 return;
 
             FreightContractRules.PruneTaken(dbPlayer.FreightOffersTaken, now);
@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Service
         /// Whether an incursion's blockade has closed the exchange (plan section 30), telling the player so. A closed
         /// exchange neither offers nor takes freight, as it neither buys nor sells; a load waits for the blockade to fall.
         /// </summary>
-        private static bool IsFreightExchangeClosed(uint player, TradeExchangeType exchange)
+        private static bool IsFreightExchangeClosed(uint player, TradeExchangeType exchange, string dockId)
         {
-            var closed = Space.GetIncursionExchangeRefusal(exchange);
+            var closed = Space.GetIncursionExchangeRefusal(GetDock(dockId, exchange));
             if (string.IsNullOrEmpty(closed))
                 return false;
 
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (IsFreightExchangeClosed(player, exchange))
+            if (IsFreightExchangeClosed(player, exchange, dockId))
                 return;
 
             var contract = dbPlayer.FreightContracts.FirstOrDefault(x => x.Id == contractId);

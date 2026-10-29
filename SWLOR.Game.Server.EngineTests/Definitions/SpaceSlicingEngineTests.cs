@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var signature = SignatureSiteRules.Create("engine-slice/" + scanner.Id, GetResRef(area), 1, SignatureType.DataSite,
                 position.X, position.Y, position.Z, System.DateTime.UtcNow);
             Space.PlaceSignature(signature);
+            string registryKey = null;
+            var hadRegistered = false;
+            uint registered = OBJECT_INVALID;
 
             List<uint> Find(string resref)
             {
@@ -65,10 +68,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(GetGold(scanner.Creature) > gold, "each can pays its credits");
 
                 await ctx.WaitUntilAsync(() => Find(SpaceSlicingTuning.DataCanResref).Count == 0, 5, "sliced cans are removed");
-                await ctx.WaitUntilAsync(() => Find(ScanningTuning.CacheResref).Count == 1, 15, "the site cache appears after the cans");
+                // The periodic site check only runs over the configured scan areas, not this arena, so the test runs it, with the
+                // arena standing in for its area resref in the area registry (the check spawns the cache in the registered area).
+                registryKey = GetResRef(area);
+                hadRegistered = Area.GetAreas().TryGetValue(registryKey, out registered);
+                Area.GetAreas()[registryKey] = area;
+                var updateSite = typeof(Space).GetMethod("UpdateSite", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+                ctx.Assert(updateSite != null, "Space.UpdateSite exists");
+                await ctx.WaitUntilAsync(() =>
+                {
+                    updateSite.Invoke(null, new object[] { signature });
+                    return Find(ScanningTuning.CacheResref).Count == 1;
+                }, 15, "the site cache appears after the cans");
             }
             finally
             {
+                if (registryKey != null)
+                {
+                    if (hadRegistered)
+                        Area.GetAreas()[registryKey] = registered;
+                    else
+                        Area.GetAreas().Remove(registryKey);
+                }
+
                 Space.RemoveSignature(signature);
                 foreach (var leftover in Find(SpaceSlicingTuning.DataCanResref).Concat(Find(ScanningTuning.CacheResref)))
                     DestroyObject(leftover);

@@ -169,6 +169,8 @@ namespace SWLOR.Game.Server.Service.StationService
                 return JumpRefusal.OriginNotPermitted;
             if (!request.DestinationPermits)
                 return JumpRefusal.DestinationNotPermitted;
+            if (request.DestinationBlockaded)
+                return JumpRefusal.DestinationBlockaded;
             if (request.ShipSize == ShipSize.Invalid)
                 return JumpRefusal.UnknownSize;
             if (!TakesHull(request.OriginBeaconLevel, request.DestinationBeaconLevel, request.ShipSize))
@@ -187,6 +189,7 @@ namespace SWLOR.Game.Server.Service.StationService
             JumpRefusal.SameStation => "The ship is already at this station.",
             JumpRefusal.OriginNotPermitted => "This station's Jump Beacon is not open to you.",
             JumpRefusal.DestinationNotPermitted => "That station's Jump Beacon does not accept you.",
+            JumpRefusal.DestinationBlockaded => "An armada blockades that station's docks. Docking services there are offline until the blockade is broken.",
             JumpRefusal.UnknownSize => "This ship has no hull size, so no beacon can jump it. Notify an admin.",
             JumpRefusal.HullTooLarge => $"A beacon pair of level {Math.Min(request.OriginBeaconLevel, request.DestinationBeaconLevel)} jumps hulls up to {GetMaxHull(Math.Min(request.OriginBeaconLevel, request.DestinationBeaconLevel))}. Upgrade the beacons from Manage City.",
             JumpRefusal.InsufficientFuel => $"The jump needs {GetJumpFuel(request.ShipSize, request.HullTag)} Station Fuel in the ship's cargo bay; it carries {request.FuelAboard}.",

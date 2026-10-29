@@ -13,5 +13,6 @@ namespace SWLOR.Game.Server.Service.StationService
         HullTooLarge = 7,
         InsufficientFuel = 8,
         UnknownSize = 9,
+        DestinationBlockaded = 10,
     }
 }

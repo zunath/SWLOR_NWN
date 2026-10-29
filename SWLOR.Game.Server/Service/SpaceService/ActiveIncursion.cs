@@ -21,6 +21,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public List<string> BrokenBlockades { get; set; } = new();
 
+        /// <summary>
+        /// The blockaded player station docks (W11o): dock key to the station's city id. Their <see cref="Blockades"/> entry
+        /// serves no planet (0), so they close only the station's own Trade Exchange. Empty on incursions saved before.
+        /// </summary>
+        public Dictionary<string, string> StationBlockades { get; set; } = new();
+
         /// <summary>Player id to contribution.</summary>
         public Dictionary<string, IncursionContribution> Contributions { get; set; } = new();
     }

@@ -139,16 +139,54 @@ public class PlanetaryHoldingTests
     }
 
     [Test]
-    public void Catalog_SitesReuseBuildingTemplateInteriors()
+    public void Catalog_SitesAreInstanceTemplatesWithAnEntranceAndATerminal()
     {
         var layouts = string.Join("\n", Directory.GetFiles(Path.Combine(Root, "SWLOR.Game.Server", "Feature", "PropertyLayoutDefinition"), "*.cs")
             .Select(File.ReadAllText));
+        var areaCache = Source(Path.Combine("Service", "Area.cs"));
+        areaCache.Should().Contain("HoldingService.HoldingTuning.OutdoorSiteResrefs", "the outdoor templates are kept out of saved locations");
         foreach (var resref in HoldingCatalog.Holdings.Select(x => x.SiteAreaResref).Distinct())
         {
-            layouts.Should().Contain($".AreaInstance(\"{resref}\")", $"{resref} is a property instance template, kept out of saved locations");
+            if (!HoldingTuning.OutdoorSiteResrefs.Contains(resref))
+                layouts.Should().Contain($".AreaInstance(\"{resref}\")", $"{resref} is a property instance template, kept out of saved locations");
             var git = File.ReadAllText(Path.Combine(Root, "Module", "git", resref + ".git.json"));
             git.Should().Contain("\"building_exit\"", "the office terminal is the template's exit placeable");
             git.Should().Contain("\"PROPERTY_ENTRANCE\"");
+        }
+    }
+
+    [Test]
+    public void OutdoorSites_AreStrippedCopiesWithOneEntranceAndTheOfficeTerminal()
+    {
+        HoldingTuning.OutdoorSiteResrefs.Should().BeEquivalentTo("holding_plains", "holding_forest", "holding_desert", "holding_cave");
+        Detail(HoldingType.GrainFarm).SiteAreaResref.Should().Be("holding_plains");
+        Detail(HoldingType.TimberCamp).SiteAreaResref.Should().Be("holding_forest");
+        Detail(HoldingType.MoistureFarm).SiteAreaResref.Should().Be("holding_desert");
+        Detail(HoldingType.CrystalMine).SiteAreaResref.Should().Be("holding_cave");
+        Detail(HoldingType.AssemblyLine).SiteAreaResref.Should().Be("player_rnd", "industrial holdings keep their interior");
+        HoldingCatalog.Holdings.Count(x => HoldingTuning.OutdoorSiteResrefs.Contains(x.SiteAreaResref)).Should().Be(11);
+
+        var ifo = File.ReadAllText(Path.Combine(Root, "Module", "ifo", "module.ifo.json"), System.Text.Encoding.Latin1);
+        var categories = File.ReadAllText(Path.Combine(Root, "toolset", "categories.json"));
+        foreach (var resref in HoldingTuning.OutdoorSiteResrefs)
+        {
+            using var git = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "Module", "git", resref + ".git.json"), System.Text.Encoding.Latin1));
+            var g = git.RootElement;
+            foreach (var list in new[] { "Creature List", "Door List", "Encounter List", "SoundList", "StoreList", "TriggerList" })
+                g.GetProperty(list).GetProperty("value").GetArrayLength().Should().Be(0, $"{resref} {list}");
+            g.TryGetProperty("VarTable", out _).Should().BeFalse("no spawn tables, exploration or map locals");
+            var placeables = g.GetProperty("Placeable List").GetProperty("value").EnumerateArray().ToList();
+            placeables.Where(p => p.GetProperty("Tag").GetProperty("value").GetString() == "building_exit").Should().ContainSingle(resref);
+            placeables.Where(p => p.GetProperty("Tag").GetProperty("value").GetString() != "building_exit")
+                .Should().OnlyContain(p => p.GetProperty("Static").GetProperty("value").GetInt32() == 1, "scenery only");
+            g.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+                .Select(w => w.GetProperty("Tag").GetProperty("value").GetString()).Should().Equal("PROPERTY_ENTRANCE");
+
+            using var are = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "Module", "are", resref + ".are.json"), System.Text.Encoding.Latin1));
+            are.RootElement.GetProperty("ResRef").GetProperty("value").GetString().Should().Be(resref);
+            File.Exists(Path.Combine(Root, "Module", "gic", resref + ".gic.json")).Should().BeTrue();
+            ifo.Should().Contain($"\"{resref}\"");
+            categories.Should().Contain($"\"{resref}\"");
         }
     }
 
@@ -453,18 +491,107 @@ public class PlanetaryHoldingTests
     }
 
     [Test]
-    public void Events_ARaidCarriesOffHalfTheStock()
+    public void Events_AnUndefendedRaidCarriesOffHalfTheStockWhenItsWindowRunsOut()
     {
         var warehouse = new Dictionary<CommodityType, int> { { CommodityType.Grain, 11 }, { CommodityType.RationPacks, 1 } };
         HoldingRules.Raid(warehouse).Should().Be(7);
         warehouse[CommodityType.Grain].Should().Be(5);
         warehouse.Should().NotContainKey(CommodityType.RationPacks);
 
+        // W11o: the raiders hold the site; nothing is taken until the answer window runs out.
+        var holding = New(HoldingType.GrainFarm);
+        var raid = new FixedRandom(HoldingTuning.BoomChance + HoldingTuning.SetbackChance);
+        var result = Advance(holding, HoldingTuning.EventIntervalDays, raid);
+        var batch = Detail(HoldingType.GrainFarm).BatchUnits;
+        holding.RaidPending.Should().BeTrue();
+        holding.RaidDeadline.Should().Be(Start.AddDays(HoldingTuning.EventIntervalDays + HoldingTuning.RaidAnswerDays));
+        result.Events.Should().Contain(x => x.Contains("raiders hold the site"));
+        Units(holding, CommodityType.Grain).Should().Be(HoldingTuning.EventIntervalDays * batch);
+
+        // No other event rolls while the raiders hold the site; at the deadline they take half.
+        Advance(holding, HoldingTuning.EventIntervalDays + HoldingTuning.RaidAnswerDays, raid);
+        holding.RaidPending.Should().BeFalse();
+        var before = (HoldingTuning.EventIntervalDays + HoldingTuning.RaidAnswerDays - 1) * batch;
+        Units(holding, CommodityType.Grain).Should().Be(before - (int)Math.Round(before * 0.5, MidpointRounding.AwayFromZero) + batch);
+        holding.Log.Should().Contain(x => x.Contains("nobody drove the raiders off"));
+    }
+
+    [Test]
+    public void Events_ARaidDrivenOffAtTheSiteKeepsTheStock()
+    {
         var holding = New(HoldingType.GrainFarm);
         Advance(holding, HoldingTuning.EventIntervalDays, new FixedRandom(HoldingTuning.BoomChance + HoldingTuning.SetbackChance));
-        var batch = Detail(HoldingType.GrainFarm).BatchUnits;
-        var before = (HoldingTuning.EventIntervalDays - 1) * batch;
-        Units(holding, CommodityType.Grain).Should().Be(before - (int)Math.Round(before * 0.5, MidpointRounding.AwayFromZero) + batch);
+        var stock = Units(holding, CommodityType.Grain);
+
+        var result = new HoldingAdvanceResult();
+        HoldingRules.RepelRaid(holding, Start.AddDays(HoldingTuning.EventIntervalDays + 1), result).Should().BeTrue();
+        holding.RaidPending.Should().BeFalse();
+        result.Events.Should().ContainSingle().Which.Should().Contain("driven off");
+        HoldingRules.RepelRaid(holding, Start, new HoldingAdvanceResult()).Should().BeFalse("no raid is pending");
+
+        Advance(holding, HoldingTuning.EventIntervalDays + HoldingTuning.RaidAnswerDays);
+        Units(holding, CommodityType.Grain).Should().BeGreaterThan(stock, "nothing was taken");
+    }
+
+    [TestCase(HoldingType.CrystalMine, 1)]
+    [TestCase(HoldingType.KelpFishery, 2)]
+    [TestCase(HoldingType.TimberCamp, 3)]
+    [TestCase(HoldingType.MoistureFarm, 4)]
+    [TestCase(HoldingType.GrainFarm, 5)]
+    [TestCase(HoldingType.ExcavationDig, 6)]
+    public void Raiders_AreTheDockTiersRoster(HoldingType type, int tier)
+    {
+        var raiders = HoldingRules.PlanRaiders(Detail(type), max => max - 1);
+        raiders.Should().HaveCount(HoldingTuning.RaidersPerRaid);
+        raiders.Should().OnlyContain(x => HoldingTuning.RaiderRosters[tier].Contains(x));
+    }
+
+    [Test]
+    public void Raiders_AreExistingCreaturesWithTheirOwnLoot()
+    {
+        foreach (var resref in HoldingTuning.RaiderRosters.SelectMany(x => x).Distinct())
+        {
+            using var utc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "Module", "utc", resref + ".utc.json"), System.Text.Encoding.Latin1));
+            utc.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+                .Should().Contain(x => x.GetProperty("Name").GetProperty("value").GetString()!.StartsWith("LOOT_TABLE_"), resref);
+        }
+
+        var service = Source(Path.Combine("Service", "PlanetaryHoldings.cs"));
+        service.Should().Contain("SpawnRaiders(holding, detail, site);").And.Contain("NWNEventHandler(ScriptName.OnCreatureDeathAfter)");
+        service.Should().Contain("HoldingRules.RepelRaid(holding, DateTime.UtcNow, result)");
+        service.Should().Contain("DeleteLocalInt(raider, QuestNpcGroupVariable)", "borrowed creatures give no quest credit");
+        Source(Path.Combine("Feature", "GuiDefinition", "ViewModel", "PlanetaryHoldingsViewModel.cs")).Should().Contain("if (holding.RaidPending)");
+    }
+
+    [Test]
+    public void Guests_ArePartyMembersJoiningTheOwnersOpenSiteAtItsDock()
+    {
+        HoldingRules.CanJoinAsGuest(true, true, true).Should().BeTrue();
+        HoldingRules.CanJoinAsGuest(false, true, true).Should().BeFalse("not in the owner's party");
+        HoldingRules.CanJoinAsGuest(true, false, true).Should().BeFalse("the owner has not opened the site");
+        HoldingRules.CanJoinAsGuest(true, true, false).Should().BeFalse("another dock");
+
+        Source(Path.Combine("Feature", "DialogDefinition", "StarportDialog.cs")).Should().Contain("PlanetaryHoldings.GetGuestSites(player, dockId)")
+            .And.Contain("PlanetaryHoldings.JoinSite(player, holdingId, dockId)");
+        Source(Path.Combine("Feature", "DialogDefinition", "HoldingSiteDialog.cs")).Should().Contain("PlanetaryHoldings.LoadHolding(player, holdingId)",
+            "only the owner manages the holding at the terminal; guests can only leave");
+    }
+
+    [Test]
+    public void CityAndStationStarports_SellTheirPlanetsHoldings()
+    {
+        HoldingRules.GetCityDockHoldingsExchange(TradeExchangeType.Tatooine, false).Should().Be(TradeExchangeType.Tatooine);
+        HoldingRules.GetCityDockHoldingsExchange(TradeExchangeType.Hutlar, true).Should().Be(TradeExchangeType.Invalid, "a Wild Space station has no planet below");
+        HoldingRules.GetCityDockHoldingsExchange(TradeExchangeType.Invalid, false).Should().Be(TradeExchangeType.Invalid);
+        HoldingRules.IsCityDockId(Guid.NewGuid().ToString()).Should().BeTrue();
+        HoldingRules.IsCityDockId("tatooine_dock").Should().BeFalse();
+
+        var dialog = Source(Path.Combine("Feature", "DialogDefinition", "StarportDialog.cs"));
+        dialog.Should().Contain("AddCityHoldingsResponse(page, player, starportId)")
+            .And.Contain("new HoldingsPayload(exchange, starportId)")
+            .And.Contain("PlanetaryHoldings.RehomeStrandedHoldings(player, exchange, landingAreaResref)");
+        Source(Path.Combine("Service", "PlanetaryHoldings.cs")).Should().Contain("Trade.TryGetCityDock(holding.DockId) != null",
+            "a holding whose starport is gone ships from its planet's NPC dock");
     }
 
     [Test]

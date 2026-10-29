@@ -609,14 +609,27 @@ Ewok) and half-orc (Cathar) roots number their flap and cloak joints apart from 
 neither ever moves on them (client-verified for the flaps). On those bodies a skirt's legs
 carry, below the hips, the share the source gave them there on average (`still_share`) and
 the pelvis the rest, with a narrow back seam (`STILL_SEAM`, 25 degrees; per style
-`still_seam`), and capes keep their original binding. A few clips carry no flap or cloak
-tracks (`runfl`, `runfr`, `pausewalkfl`, `pausewalkfr`, injured walks and the custom emotes,
-including `/paraderest`); there the flaps and cloak bones hold their previous pose, as stock
-tabards and cloaks do, so in `/paraderest` a skirt keeps the idle's sideways flap lean.
+`still_seam`), and capes keep their original binding.
 Bothan female chest 310 is not rebound: its external bone table does not match the `pfe0`
 skeleton. Belt 226 and pelvis 198 stay as originally rigged at the test server's request;
 the manifest's `restored` list keeps them so.
 
+The engine keeps a joint that a clip does not track where the previous clip left it. SWLOR's
+custom emotes (`/paraderest` among them) carried no flap tracks, and their libraries'
+skeletons lacked the flap joints, so the flaps kept the idle's sideways lean and the
+flap-hung skirts hung up to 22 cm to one side in parade rest. `FillEmoteFlapTracks.py`
+copies the stock belt and flap joints (`belt_g1` and its chains, with their part IDs and
+bind transforms) into the skeletons of the emote libraries `a_ba_non_combat` and
+`a_ba_non_combat2`, and gives each of their 145 custom emote clips one rest key (identity)
+on every flap joint; the engine only applies clip tracks for joints the animation model's
+skeleton carries (client-verified: tracks without the skeleton joints changed nothing). No
+other normal-phenotype part uses the flap joints, so only these skirts change, and only
+in the custom emotes; the dwarf and half-orc roots number their flaps apart and are
+unaffected. The custom emotes in the other animation libraries (`a_ba_med_weap`, whose
+point-pistol clips another tool owns, `a_ba_int`, `a_fa_int`, `a_ba_dnc`, `a_ba_casts`,
+`jedi_anim`), the robe phenotypes' own banks, and stock clips without flap or cloak tracks
+(`runfl`, `runfr`, `pausewalkfl`, `pausewalkfr`, injured walks) still hold the previous pose,
+as do the cloak bones in every custom emote, as stock cloaks do.
 Neck 32 is a hooded cloak built as a dangly mesh fixed to the neck, so it only swayed
 around the neck and the striding legs passed through its lower half. `NeckCloakSkins.py`
 decompiles it, turns the dangly mesh into an externally skinned mesh with the same geometry,
@@ -630,26 +643,31 @@ walk and run clips the hem of every skirt that reaches below the knee moves agai
 pelvis, at most 7% of leg samples show behind a skirt or cape where its bones swing (55%
 hip-bound; on flapless bodies no more than the original plus 3 points, or 10%), at most 25%
 poke out in front of a closed skirt (originally up to 75%), the 99.5th-percentile edge
-stretch stays below 3.5x (13.7x with the original leg weights), the back panel leans out at
+stretch stays below 4x (13.7x with the original leg weights), the back panel leans out at
 most 65 degrees on average while running, and an open coat reaches at most 30 cm in front
 of the hips below the knees (the tent reached 50). Standing (`pause1`, `pause2`) each hem
 edge stays within 17 cm of where the original put it beside the feet and the hem at most
-20 cm further off-centre (`/paraderest`: 25 and 25 cm), and the back panel leans out at
+20 cm further off-centre (`/paraderest`: 12 and 5 cm), and the back panel leans out at
 most 20 degrees more than the original's. `TestNeckCloakSkins.py` checks the neck 32 skins
 rebuild byte for byte, keep the hood on the neck and the cloak on the cloak bones, and
-cover the legs from behind in walk and run. The originals are read from the Git blobs
-recorded in `ChestSkirtBindings.json` and `NeckCloakSkins.json`. Other parts with
+cover the legs from behind in walk and run. `TestFillEmoteFlapTracks.py` checks the
+emote libraries rebuild byte for byte, change no existing track, carry the flap joints in
+their skeletons and hold the flaps straight under the hips in `/paraderest`. The originals
+are read from the Git blobs recorded in `ChestSkirtBindings.json`, `NeckCloakSkins.json`
+and `EmoteFlapTracks.json`. Other parts with
 leg-weighted skirts are unchanged.
 Run `python -B SWLOR_Haks/tools/ChestSkirtBindings.py --apply` and
-`python -B SWLOR_Haks/tools/NeckCloakSkins.py --apply` (needs CleanModels), then
+`python -B SWLOR_Haks/tools/NeckCloakSkins.py --apply` (needs CleanModels) and
+`python -B SWLOR_Haks/tools/FillEmoteFlapTracks.py --apply`, then
 `python -B SWLOR_Haks/tools/GeneratePartSkinModels.py --apply`,
 `python -B SWLOR_Haks/tools/GenerateShoulderModels.py --apply` and
 `python -B SWLOR_Haks/tools/GenerateNeckModels.py --game-data "<NWN>/data" --apply`, which
 renumber the robe-body aliases whose bone mapping changed. Their `--check`,
-`CheckNeckModels.py` and both test modules (stock dwarf and half-orc animations from
+`CheckNeckModels.py` and the three test modules (stock dwarf and half-orc animations from
 `NWN_GAME_DATA` or the default Steam install; a few minutes) guard them. Rebuild
 `sw_pt_chest.hak`, `sw_pt_belt.hak`, `sw_pt_pelvis.hak`, `sw_pt_neck.hak`,
-`sw_pt_lshoul.hak`, `sw_pt_rshoul.hak` and `sw_2da.hak` together and restart the server,
+`sw_pt_lshoul.hak`, `sw_pt_rshoul.hak`, `sw_cr_creature.hak` and `sw_2da.hak` together
+and restart the server,
 which reads the renumbered aliases from `partrender.2da`, `shoulderrender.2da` and
 `neckrender.2da`.
 

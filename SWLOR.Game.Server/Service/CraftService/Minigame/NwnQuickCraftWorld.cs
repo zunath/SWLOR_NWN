@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Service.SkillService;
@@ -60,10 +61,17 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         return true;
     }
 
+    /// <summary>The units each player's last <see cref="CreateItem"/> made, so a rollback removes those and never an item the player had.</summary>
+    private readonly Dictionary<uint, (List<uint> Items, int Units)> _lastCreated = new();
+
     public bool CreateItem(uint player, RecipeDetail recipe)
     {
         var before = CountComponent(player, recipe.Resref);
-        var placed = KeepIfInInventory(player, NwnCraftSessionWorld.Instance.CreateCraftedItem(player, recipe));
+        var created = new List<uint>();
+        var first = NwnCraftSessionWorld.Instance.CreateCraftedItem(player, recipe);
+        var placed = KeepIfInInventory(player, first);
+        if (placed)
+            created.Add(first);
 
         // The count tells what arrived: an item merged into an existing stack may not come back as a valid object, and a template
         // that does not stack creates one item whatever quantity is asked, so the rest are made one at a time.
@@ -73,18 +81,20 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
             var extra = CreateItemOnObject(recipe.Resref, player, 1);
             SetLocalBool(extra, Item.PlayerProducedItemVariable, true);
             placed = KeepIfInInventory(player, extra);
+            if (placed)
+                created.Add(extra);
             var now = CountComponent(player, recipe.Resref) - before;
             if (now <= gained)
                 break;
             gained = now;
         }
 
+        _lastCreated[player] = (created, Math.Max(0, gained));
         if (gained >= recipe.Quantity)
             return true;
 
         // Only part of the output fit: take that part back too, so a refunded craft leaves no output behind.
-        if (gained > 0)
-            RemoveUnits(player, recipe.Resref, gained);
+        RemoveCreatedItem(player, recipe);
         return false;
     }
 
@@ -124,7 +134,37 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
     public bool TryConsumeComponents(uint player, RecipeDetail recipe) =>
         NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, new List<string>());
 
-    public void RemoveCreatedItem(uint player, RecipeDetail recipe) => RemoveUnits(player, recipe.Resref, recipe.Quantity);
+    /// <summary>
+    /// Removes the units the player's last <see cref="CreateItem"/> made: the items it created, and for units that merged into a stack the
+    /// player already had, that many units of the stack. An item the player had before, such as an enhanced one of the same resref, is never touched.
+    /// </summary>
+    public void RemoveCreatedItem(uint player, RecipeDetail recipe)
+    {
+        if (!_lastCreated.Remove(player, out var last))
+            return;
+
+        var units = last.Units;
+        foreach (var item in last.Items)
+        {
+            if (units <= 0)
+                break;
+            if (!GetIsObjectValid(item) || GetItemPossessor(item) != player)
+                continue;
+
+            // A created handle can be a stack the new units merged into, so only the new units come off it.
+            var size = GetItemStackSize(item);
+            var take = Math.Min(size, units);
+            if (take >= size)
+                DestroyObject(item);
+            else
+                SetItemStackSize(item, size - take);
+            units -= take;
+        }
+
+        // Units that merged without a handle are plain stack units, the same as any other of the resref's stacks.
+        if (units > 0)
+            RemoveUnits(player, recipe.Resref, units);
+    }
 
     public void LogCraft(uint player, string text) => NwnCraftSessionWorld.Instance.LogCraft(player, text);
 

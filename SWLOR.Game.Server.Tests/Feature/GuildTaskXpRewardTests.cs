@@ -34,6 +34,21 @@ public sealed partial class QuestConversationTests
     }
 
     [Test]
+    public void GuildTaskXp_IsRecordedInTheSaveThatCompletesTheTask()
+    {
+        typeof(IQuestRewardSavedWithCompletion).IsAssignableFrom(typeof(GuildTaskXpReward)).Should().BeTrue(
+            "the XP is recorded as waiting craft XP with the completion, so a stop before the award cannot lose it");
+
+        var source = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory,
+            "..", "..", "..", "..", "SWLOR.Game.Server", "Service", "QuestService", "QuestDetail.cs"));
+        var complete = source[source.IndexOf("public void Complete(", StringComparison.Ordinal)..];
+        complete.IndexOf("SaveWithCompletion", StringComparison.Ordinal).Should()
+            .BeLessThan(complete.IndexOf("DB.Set(dbPlayer)", StringComparison.Ordinal), "the reward is recorded before the completion is saved");
+        complete.IndexOf("DB.Set(dbPlayer)", StringComparison.Ordinal).Should()
+            .BeLessThan(complete.IndexOf("GiveReward(player)", StringComparison.Ordinal), "rewards are given after the save");
+    }
+
+    [Test]
     public void EveryCraftingGuildTaskGivesXpForItsCollectedItem_AndNoOtherTaskDoes()
     {
         using var scope = new AssertionScope();

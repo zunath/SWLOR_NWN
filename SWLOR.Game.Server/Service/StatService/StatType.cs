@@ -6395,6 +6395,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Extra damage per Cadence charge spent, added to the ability's per-charge bonus.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         CadenceBonusDamagePerCharge = 1169,
+        /// <summary>
+        /// Percent damage adjustment applied to grenade, Remote Charge, and Overload Barrage blasts.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BlastDamagePercentAdjustment = 1170,
 
         /// <summary>
         /// Evasion percent a ship gains after its pilot uses a hostile space ability. Only space abilities
@@ -6411,7 +6416,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Movement speed percent a ship gains after its pilot uses a hostile space ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceHostileAbilityUsedMovementSpeedPercentAdjustment = 1170,
+        SpaceHostileAbilityUsedMovementSpeedPercentAdjustment = 1286,
 
         /// <summary>Seconds SpaceHostileAbilityUsedMovementSpeedPercentAdjustment lasts.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]

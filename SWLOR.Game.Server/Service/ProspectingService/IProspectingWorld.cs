@@ -35,12 +35,19 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>Destroys a harvester that has no charges left, as it always has been.</summary>
         void DestroyHarvester(uint harvester);
 
-        /// <summary>Puts a harvest in the player's inventory.</summary>
-        void GiveHarvest(uint player, uint node, string lootTable, HarvestDelivery delivery);
+        /// <summary>
+        /// Rolls the harvest's units and saves them with its <paramref name="xp"/> on the player record (the harvest journal and the
+        /// waiting XP) in one save, before the node is reduced, so a stop at any point after leaves both recoverable.
+        /// </summary>
+        HarvestPayout ReservePayout(uint player, string lootTable, HarvestDelivery delivery, int xp);
+
+        /// <summary>Puts a reserved harvest in the player's inventory, taking units left at the player's feet off the journal.</summary>
+        void GiveHarvest(uint player, uint node, HarvestPayout payout);
 
         /// <summary>The player's Gathering rank now, which sets the XP of each unit.</summary>
         int GetGatheringRank(uint player);
 
+        /// <summary>Gives the Gathering XP a reserved harvest saved as waiting, taking it off the record in the same save.</summary>
         void GiveGatheringXp(uint player, int xp);
 
         void Message(uint player, string text);

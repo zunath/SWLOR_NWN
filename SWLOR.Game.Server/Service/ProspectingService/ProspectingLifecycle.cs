@@ -333,20 +333,21 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 engine.Gems - session.Delivered.Gems);
             session.Delivered = new HarvestDelivery(engine.Units, engine.RichRolls, engine.Gems);
 
-            // The node's depletion is saved before the harvest is delivered and the XP given, so a restart in between cannot leave paid
-            // units on the node. A node the action ends is saved spent, and removed once the harvest is out. The delivery journals the
-            // units it put in the inventory (HarvestReturnJournal), so a crash before the character file holds them gives them again at login.
+            // The harvest and its XP are reserved on the player record first (HarvestReturnJournal), then the node's depletion is saved,
+            // then the harvest is delivered and the XP given. A stop after the reservation leaves the units and XP to be given at login,
+            // and the node can never keep units already paid. A node the action ends is saved spent, and removed once the harvest is out.
+            var xp = delivery.Items * XpPerItem(session);
+            var payout = delivery.IsEmpty ? null : _world.ReservePayout(session.Player, session.Request.LootTable, delivery, xp);
             var ending = engine.Ending;
             var removed = ending is ProspectingEnding.MinedOut or ProspectingEnding.Collapsed;
             var after = engine.ToNode();
             _world.SaveNode(session.Node, (removed ? after.Take(after.Pool) : after).Serialize());
-            if (!delivery.IsEmpty)
-                _world.GiveHarvest(session.Player, session.Node, session.Request.LootTable, delivery);
+            if (payout != null)
+                _world.GiveHarvest(session.Player, session.Node, payout);
 
             if (removed)
                 _world.DestroyNode(session.Node);
 
-            var xp = delivery.Items * XpPerItem(session);
             if (xp > 0)
             {
                 _world.GiveGatheringXp(session.Player, xp);
@@ -377,10 +378,11 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                     return;
 
                 var xp = ProspectingQuickHarvest.XpPerUnit(session.Request.NodeTier, _world.GetGatheringRank(session.Player));
-                // As with a board action, the node is saved before the unit is delivered and its XP given.
+                // As with a board action, the unit and its XP are reserved, then the node is saved, then the unit is delivered and its XP given.
+                var payout = _world.ReservePayout(session.Player, session.Request.LootTable, new HarvestDelivery(1, 0, 0), xp);
                 node = node.Take(1);
                 _world.SaveNode(session.Node, node.Serialize());
-                _world.GiveHarvest(session.Player, session.Node, session.Request.LootTable, new HarvestDelivery(1, 0, 0));
+                _world.GiveHarvest(session.Player, session.Node, payout);
                 session.QuickHarvested++;
                 var charges = session.HarvesterCharges - ProspectingQuickHarvest.Charges(1);
 

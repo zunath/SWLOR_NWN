@@ -347,7 +347,26 @@ public class ProspectingLifecycleTests
 
         Do(lifecycle, session, ProspectingActionIds.Strike);
 
-        _world.Order.Should().Equal("node", "harvest", "xp");
+        _world.Order.Should().Equal("reserve", "node", "harvest", "xp");
+    }
+
+    [Test]
+    public void TheHarvestAndItsXpAreReservedBeforeTheNodeIsReduced_SoAStopInBetweenLosesNeither()
+    {
+        var lifecycle = Lifecycle(StrikeTwoUnits);
+        var session = Open(lifecycle, Node(4, "r"), rank: 25, tier: 3);
+        var nodeBefore = _world.Nodes[NodeId];
+        string nodeAtReserve = null;
+        _world.OnReserve = () => nodeAtReserve = _world.Nodes[NodeId];
+        HarvestPayout reserved = null;
+        _world.OnHarvest = () => reserved = _world.Reserved.Single();
+
+        var report = Do(lifecycle, session, ProspectingActionIds.Strike);
+
+        nodeAtReserve.Should().Be(nodeBefore, "the payout is saved before the node loses the units");
+        reserved.Delivery.Should().Be(report.Delivered);
+        reserved.Xp.Should().Be(report.Xp, "the XP is saved with the units, so a stop before the award still gives it");
+        _world.Reserved.Should().BeEmpty("the delivery settles the reservation");
     }
 
     [Test]
@@ -361,7 +380,7 @@ public class ProspectingLifecycleTests
 
         Do(lifecycle, session, ProspectingActionIds.Strike);
 
-        _world.Order.Should().Equal("node", "harvest", "destroy", "xp");
+        _world.Order.Should().Equal("reserve", "node", "harvest", "destroy", "xp");
         ProspectingNode.TryParse(savedAtDelivery, out var saved).Should().BeTrue();
         saved.IsSpent.Should().BeTrue("a restart after the delivery must find nothing left on the node");
     }
@@ -377,7 +396,7 @@ public class ProspectingLifecycleTests
 
         Do(lifecycle, session, ProspectingActionIds.Strike);
 
-        _world.Order.Should().Equal("node", "harvest", "destroy", "xp");
+        _world.Order.Should().Equal("reserve", "node", "harvest", "destroy", "xp");
         ProspectingNode.TryParse(savedAtDelivery, out var saved).Should().BeTrue();
         saved.IsSpent.Should().BeTrue("the rest of a collapsed node is lost, so nothing may be taken from it after a restart");
     }
@@ -401,7 +420,7 @@ public class ProspectingLifecycleTests
         _world.RunNextWork((float)ProspectingRules.HarvestSeconds);
 
         savedAtDelivery.Should().Equal(1, 0);
-        _world.Order.Should().Equal("node", "harvest", "xp", "node", "harvest", "destroy", "xp");
+        _world.Order.Should().Equal("reserve", "node", "harvest", "xp", "reserve", "node", "harvest", "destroy", "xp");
     }
 
     [Test]

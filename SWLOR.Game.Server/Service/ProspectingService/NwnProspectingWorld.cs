@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 DestroyObject(harvester);
         }
 
-        public void GiveHarvest(uint player, uint node, string lootTable, HarvestDelivery delivery)
+        public HarvestPayout ReservePayout(uint player, string lootTable, HarvestDelivery delivery, int xp)
         {
             var table = Loot.GetLootTableByName(lootTable);
             var units = new List<string>();
@@ -89,13 +89,50 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             for (var gem = 0; gem < delivery.Gems && gems.Count > 0; gem++)
                 units.Add(Pick(gems).Resref);
 
-            var dropped = DeliverAndJournal(player, units);
+            var dbPlayer = Journaled(player) ? DB.Get<Player>(GetObjectUUID(player)) : null;
+            if (dbPlayer == null)
+                return new HarvestPayout(delivery, units, 0, xp);
+
+            // The units and the XP are one save: a stop after it gives both at login (the units by the journal, the XP as waiting craft XP).
+            var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
+            SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+            HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, units);
+            if (xp > 0)
+            {
+                dbPlayer.PendingCraftXp ??= new Dictionary<SkillType, int>();
+                dbPlayer.PendingCraftXp[SkillType.Gathering] = dbPlayer.PendingCraftXp.GetValueOrDefault(SkillType.Gathering) + xp;
+            }
+
+            DB.Set(dbPlayer);
+            return new HarvestPayout(delivery, units, sequence, xp);
+        }
+
+        public void GiveHarvest(uint player, uint node, HarvestPayout payout)
+        {
+            var dropped = new List<string>();
+            foreach (var resref in payout.Units)
+            {
+                if (Deliver(player, resref))
+                    dropped.Add(resref);
+            }
+
+            // A unit left at the player's feet is not in the character file either way, so giving it again at login would duplicate it.
+            if (dropped.Count > 0 && payout.Sequence > 0)
+            {
+                var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+                if (dbPlayer != null)
+                {
+                    HarvestReturnJournal.Remove(dbPlayer, payout.Sequence, dropped);
+                    DB.Set(dbPlayer);
+                }
+            }
 
             // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
-            for (var roll = 0; roll < delivery.Rolls; roll++)
+            for (var roll = 0; roll < payout.Delivery.Rolls; roll++)
                 Loot.SpawnLoot(node, player, "LOOT_TABLE_");
 
-            if (dropped)
+            if (dropped.Count > 0)
+
                 SendMessageToPC(player, HarvestDroppedMessage);
 
             if (GetIsObjectValid(node))
@@ -144,7 +181,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                     placed.Add(resref);
             }
 
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            if (!Journaled(player))
                 return dropped;
 
             dbPlayer ??= DB.Get<Player>(GetObjectUUID(player));
@@ -195,9 +232,18 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         public void GiveGatheringXp(uint player, int xp)
         {
-            if (GetIsPC(player) && !GetIsDM(player))
-                Skill.GiveSkillXP(player, SkillType.Gathering, xp, false, false);
+            if (!Journaled(player))
+                return;
+
+            // ReservePayout saved the XP as waiting; the award takes it off the record in the same save, so it is given once.
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var waiting = dbPlayer?.PendingCraftXp?.GetValueOrDefault(SkillType.Gathering) ?? 0;
+            if (waiting > 0)
+                NwnCraftSessionWorld.Instance.AwardPendingXp(player, dbPlayer, SkillType.Gathering, waiting);
         }
+
+        /// <summary>Whether a harvest of this creature is kept on a player record: a player character, not a DM or a possessed creature.</summary>
+        private static bool Journaled(uint player) => GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
 
         public void Message(uint player, string text)
         {

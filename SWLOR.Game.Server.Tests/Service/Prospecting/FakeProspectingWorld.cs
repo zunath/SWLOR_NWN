@@ -43,7 +43,10 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public string LoadNode(uint node) => Nodes.TryGetValue(node, out var content) ? content : null;
 
-    /// <summary>The node saves ("node"), harvest deliveries ("harvest"), node removals ("destroy") and XP awards ("xp"), in order.</summary>
+    /// <summary>
+    /// The payout reservations ("reserve"), node saves ("node"), harvest deliveries ("harvest"), node removals ("destroy") and XP awards
+    /// ("xp"), in order.
+    /// </summary>
     public List<string> Order { get; } = new();
 
     public void SaveNode(uint node, string content)
@@ -84,11 +87,27 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
     /// <summary>Runs as a harvest is delivered, so a test can see what the node held at that moment.</summary>
     public Action OnHarvest { get; set; }
 
-    public void GiveHarvest(uint player, uint node, string lootTable, HarvestDelivery delivery)
+    /// <summary>The payouts reserved and not yet delivered, with their XP: what a login would give after a stop.</summary>
+    public List<HarvestPayout> Reserved { get; } = new();
+
+    /// <summary>Runs as a payout is reserved, so a test can see what the node held at that moment.</summary>
+    public Action OnReserve { get; set; }
+
+    public HarvestPayout ReservePayout(uint player, string lootTable, HarvestDelivery delivery, int xp)
+    {
+        Order.Add("reserve");
+        OnReserve?.Invoke();
+        var payout = new HarvestPayout(delivery, Enumerable.Repeat(lootTable, delivery.Items).ToList(), Reserved.Count + 1, xp);
+        Reserved.Add(payout);
+        return payout;
+    }
+
+    public void GiveHarvest(uint player, uint node, HarvestPayout payout)
     {
         Order.Add("harvest");
         OnHarvest?.Invoke();
-        Harvests.Add(delivery);
+        Reserved.Remove(payout);
+        Harvests.Add(payout.Delivery);
     }
 
     public int GetGatheringRank(uint player) => GatheringRank;

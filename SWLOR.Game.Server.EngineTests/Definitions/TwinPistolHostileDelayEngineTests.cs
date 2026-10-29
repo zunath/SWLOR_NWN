@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -130,6 +132,8 @@ public static class TwinPistolHostileDelayEngineTests
         var initialStamina = 0;
         var afterFirst = 0;
         var replayWeaponDamage = 0;
+        WeaponAbilityTraitActivation queuedTraits = null;
+        var impactAt = DateTime.MaxValue;
         Combat.SetAutoAttackHitResolutionOverride(false);
         Combat.SetAbilityHitResolutionOverride(true);
         try
@@ -192,6 +196,9 @@ public static class TwinPistolHostileDelayEngineTests
             else if (winner == FeatType.Headshot1)
             {
                 await WaitFrames(ctx, () => UsePerkFeat.IsWeaponAbilityQueued(actor, winner), "the held Headshot to queue after the shared delay");
+                queuedTraits = ((Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
+                    .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null))[actor];
+                ctx.Assert(queuedTraits.ContinuesChain, "Headshot is paid within six seconds of Paired Volley, so it continues the chain");
                 ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Replay pays the queued requirement exactly once");
                 // Any hostile weapon ability that costs STM spends all Cadence when its cost is paid.
                 ctx.AssertEqual(0, CadenceCharges(actor), "The paid queued cross-skill ability spends the captured Cadence");
@@ -200,9 +207,13 @@ public static class TwinPistolHostileDelayEngineTests
                 AssignCommand(actor, () => ActionAttack(target));
             }
 
-            await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
-                summary.Ability == winningAbility && !UsePerkFeat.HasQueuedWeaponAbility(actor),
-                "the winning replay to complete one actual impact", 8f);
+            await WaitFrames(ctx, () =>
+                {
+                    var landed = Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
+                        summary.Ability == winningAbility && !UsePerkFeat.HasQueuedWeaponAbility(actor);
+                    if (landed && impactAt == DateTime.MaxValue) impactAt = DateTime.UtcNow;
+                    return landed;
+                }, "the winning replay to complete one actual impact", 8f);
             AssignCommand(actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
             if (winner == FeatType.Headshot1)
@@ -212,9 +223,13 @@ public static class TwinPistolHostileDelayEngineTests
             await ctx.DelaySecondsAsync(1f);
             ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Held input replay has only one payment");
             // Twin builders such as Focused Burst keep Cadence; finishers and other skills' weapon abilities spend it.
-            // The winner lands within the chain window of a different paid ability, so its first hit adds one Cadence.
-            ctx.AssertEqual(winner == FeatType.FocusedBurst1 ? 2 : 1, CadenceCharges(actor),
-                "Only a Cadence-spending winner spends the captured Cadence, and the chained hit grants one fresh charge");
+            // A chained winner's first hit adds one Cadence if it lands within the window. A queued Headshot lands
+            // on the next native hit, which can come after the window closes; then the chain earns nothing.
+            var chainCharge = queuedTraits == null || impactAt <= queuedTraits.ChainLandsBy ? 1 : 0;
+            if (queuedTraits != null)
+                ctx.Log($"Queued Headshot landed {(impactAt - queuedTraits.ChainLandsBy).TotalSeconds:0.00}s relative to its chain deadline.");
+            ctx.AssertEqual(winner == FeatType.FocusedBurst1 ? 1 + chainCharge : chainCharge, CadenceCharges(actor),
+                "Only a Cadence-spending winner spends the captured Cadence, and a hit inside the chain window grants one fresh charge");
             ctx.Assert(OnRecast(actor, winningAbility.RecastGroup), "The winner applies its ordinary recast");
             if (replacement.HasValue)
                 ctx.Assert(!OnRecast(actor, Ability.GetAbilityDetail(held).RecastGroup), "The replaced queued press starts no recast");

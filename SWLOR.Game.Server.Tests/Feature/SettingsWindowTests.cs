@@ -12,11 +12,12 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class SettingsWindowTests
 {
-    [TestCase(375f, 340f, 400f, 450f)]
-    [TestCase(100f, 20f, 400f, 450f)]
-    [TestCase(600f, 340f, 600f, 450f)]
+    [TestCase(375f, 340f, 400f, 570f)]
+    [TestCase(100f, 20f, 400f, 570f)]
+    [TestCase(600f, 340f, 600f, 570f)]
     [TestCase(375f, 640f, 400f, 640f)]
-    [TestCase(400f, 450f, 400f, 450f)]
+    [TestCase(400f, 450f, 400f, 570f)]
+    [TestCase(400f, 570f, 400f, 570f)]
     [TestCase(600f, 640f, 600f, 640f)]
     public void Geometry_RepairsLegacySizesWithoutMovingOrShrinkingTheWindow(
         float width, float height, float expectedWidth, float expectedHeight)
@@ -48,7 +49,7 @@ public class SettingsWindowTests
             callback.Invoke(model, new object[] { nameof(model.Geometry) });
 
             model.Geometry.Width.Should().Be(400f);
-            model.Geometry.Height.Should().Be(450f);
+            model.Geometry.Height.Should().Be(570f);
             model.Geometry.X.Should().Be(37f);
             model.Geometry.Y.Should().Be(52f);
             model.SelectedTabId.Should().Be(3);
@@ -75,7 +76,7 @@ public class SettingsWindowTests
         var (definition, viewModel) = LoadSettingsSources();
         definition.Should().Contain(".SetInitialGeometry(0, 0, MinimumWindowWidth, MinimumWindowHeight)");
         SettingsDefinition.MinimumWindowWidth.Should().Be(400f);
-        SettingsDefinition.MinimumWindowHeight.Should().Be(450f);
+        SettingsDefinition.MinimumWindowHeight.Should().Be(570f);
 
         var initialize = ExtractMethod(viewModel, "protected override void Initialize", "protected override void OnClientPropertyUpdated");
         initialize.IndexOf("EnsureUsableWindowGeometry();", StringComparison.Ordinal)

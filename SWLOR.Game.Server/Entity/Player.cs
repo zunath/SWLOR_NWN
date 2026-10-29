@@ -93,6 +93,7 @@ namespace SWLOR.Game.Server.Entity
             PaidExperimentJobs = new HashSet<string>();
             PendingScavengeFinds = new Dictionary<string, int>();
             ScavengeFindsAwaitingRoom = new Dictionary<string, int>();
+            PendingHarvestReturns = new List<PendingHarvestReturn>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
@@ -256,6 +257,9 @@ namespace SWLOR.Game.Server.Entity
         // kept apart from PendingScavengeFinds (which a board in progress overwrites and which carries the return stamp) and are tried
         // again at a respawn, a login and the start of the next visit. Records saved before this existed hold null, which means none.
         public Dictionary<string, int> ScavengeFindsAwaitingRoom { get; set; }
+        // Prospecting harvest units paid out that the character file may not hold yet, each with the file sequence it needs.
+        // See HarvestReturnJournal for how a login settles them.
+        public List<PendingHarvestReturn> PendingHarvestReturns { get; set; }
         // When the player first opened each crafting minigame, which is when its help page opened by itself.
         public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
         // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is

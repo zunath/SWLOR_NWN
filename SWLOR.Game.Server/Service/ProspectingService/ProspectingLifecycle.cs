@@ -334,7 +334,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             session.Delivered = new HarvestDelivery(engine.Units, engine.RichRolls, engine.Gems);
 
             // The node's depletion is saved before the harvest is delivered and the XP given, so a restart in between cannot leave paid
-            // units on the node. A node the action ends is saved spent, and removed once the harvest is out.
+            // units on the node. A node the action ends is saved spent, and removed once the harvest is out. The delivery journals the
+            // units first (HarvestReturnJournal), so a crash before the character file holds them gives them again at login.
             var ending = engine.Ending;
             var removed = ending is ProspectingEnding.MinedOut or ProspectingEnding.Collapsed;
             var after = engine.ToNode();

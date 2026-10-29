@@ -3704,42 +3704,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 377,
+    "Line": 373,
     "Member": "UseFeat",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 442,
+    "Line": 438,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                            activator,\n                            receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 461,
+    "Line": 457,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 468,
+    "Line": 464,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 1137,
+    "Line": 1133,
     "Member": "DequeueWeaponAbility",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                    target,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 1141,
+    "Line": 1137,
     "Member": "DequeueWeaponAbility",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendDiagnosticToPlayer(target, $\"Your weapon ability {abilityDetail.Name} is no longer queued.\")"
@@ -3795,35 +3795,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 758,
+    "Line": 757,
     "Member": "CanUseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, reason)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1199,
+    "Line": 1197,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1263,
+    "Line": 1261,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3013,
+    "Line": 3011,
     "Member": "SendCombatImpactResultMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3032,
+    "Line": 3030,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
@@ -4327,14 +4327,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 285,
+    "Line": 281,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 372,
+    "Line": 368,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5293,14 +5293,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 92,
+    "Line": 103,
     "Member": "GiveHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestDroppedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 130,
+    "Line": 174,
+    "Member": "ReturnPendingHarvest",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, HarvestReturnedMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "Line": 176,
+    "Member": "ReturnPendingHarvest",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, HarvestDroppedMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "Line": 189,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

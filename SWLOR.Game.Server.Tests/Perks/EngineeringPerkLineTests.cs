@@ -245,7 +245,7 @@ public class EngineeringPerkLineTests
         var circuitStats = Enum.GetValues<StatType>().Where(stat => stat.ToString().StartsWith("Circuit", StringComparison.Ordinal)).ToList();
 
         circuitStats.Should().HaveCount(18);
-        circuitStats.Select(stat => (int)stat).Should().BeEquivalentTo(Enumerable.Range(1168, 18));
+        circuitStats.Select(stat => (int)stat).Should().BeEquivalentTo(Enumerable.Range(1170, 18));
         foreach (var stat in circuitStats)
         {
             CircuitPerkStats.FromStats(read => read == stat ? 7 : 0).Should().NotBeEquivalentTo(CircuitPerkStats.None, $"{stat} must change the perk stats");
@@ -265,7 +265,7 @@ public class EngineeringPerkLineTests
             .Distinct()
             .ToList();
 
-        granted.Should().BeEquivalentTo(Enumerable.Range(1168, 18).Select(id => (StatType)id));
+        granted.Should().BeEquivalentTo(Enumerable.Range(1170, 18).Select(id => (StatType)id));
     }
 
     [Test]

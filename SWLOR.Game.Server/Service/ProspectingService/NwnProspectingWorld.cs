@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -76,23 +77,27 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         public void GiveHarvest(uint player, uint node, string lootTable, HarvestDelivery delivery)
         {
             var table = Loot.GetLootTableByName(lootTable);
-            var dropped = false;
+            var units = new List<string>();
             for (var roll = 0; roll < delivery.Rolls; roll++)
-            {
-                var loot = table.GetRandomItem();
-                dropped |= Deliver(player, loot.Resref);
-
-                // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
-                Loot.SpawnLoot(node, player, "LOOT_TABLE_");
-            }
+                units.Add(table.GetRandomItem().Resref);
 
             var ore = ProspectingGems.OreEntries(table);
             for (var roll = 0; roll < delivery.ExtraOreRolls; roll++)
-                dropped |= Deliver(player, Pick(ore.Count > 0 ? ore : table).Resref);
+                units.Add(Pick(ore.Count > 0 ? ore : table).Resref);
 
             var gems = ProspectingGems.GemEntries(table);
             for (var gem = 0; gem < delivery.Gems && gems.Count > 0; gem++)
-                dropped |= Deliver(player, Pick(gems).Resref);
+                units.Add(Pick(gems).Resref);
+
+            JournalHarvest(player, units);
+
+            var dropped = false;
+            foreach (var resref in units)
+                dropped |= Deliver(player, resref);
+
+            // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
+            for (var roll = 0; roll < delivery.Rolls; roll++)
+                Loot.SpawnLoot(node, player, "LOOT_TABLE_");
 
             if (dropped)
                 SendMessageToPC(player, HarvestDroppedMessage);
@@ -122,6 +127,54 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         }
 
         public const string HarvestDroppedMessage = "Your inventory is full, so some of the harvest was placed at your feet.";
+
+        public const string HarvestReturnedMessage = "Harvest you gathered before the server went down has been returned to you.";
+
+        /// <summary>Saves a payout in the player's harvest journal at the next craft file sequence, before its units are delivered.</summary>
+        private static void JournalHarvest(uint player, IReadOnlyCollection<string> units)
+        {
+            if (units.Count == 0 || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
+            SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+            HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, units);
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// At login: gives again the harvest the loaded character file predates (see <see cref="HarvestReturnJournal"/>). The units given
+        /// again are journaled at a new sequence, so they stay protected until a file holds them. Call it before anything exports the
+        /// character, since it compares the journal with the sequence the file loaded with.
+        /// </summary>
+        public void ReturnPendingHarvest(uint player)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            var redo = HarvestReturnJournal.TakeAtLogin(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.LoadedVariable));
+            if (redo == null)
+                return;
+
+            DB.Set(dbPlayer);
+            if (redo.Count == 0)
+                return;
+
+            var units = redo.SelectMany(unit => Enumerable.Repeat(unit.Key, unit.Value)).ToList();
+            JournalHarvest(player, units);
+            var dropped = false;
+            foreach (var resref in units)
+                dropped |= Deliver(player, resref);
+
+            SendMessageToPC(player, HarvestReturnedMessage);
+            if (dropped)
+                SendMessageToPC(player, HarvestDroppedMessage);
+        }
 
         public int GetGatheringRank(uint player) => Skill.GetCreatureSkillRank(player, SkillType.Gathering);
 

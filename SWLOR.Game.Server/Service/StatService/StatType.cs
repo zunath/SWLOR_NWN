@@ -6398,11 +6398,11 @@ namespace SWLOR.Game.Server.Service.StatService
 
         /// <summary>Percentage points of output each Load point adds to Circuit Wire, Tune and Discharge, on top of the recipe's own. A style may lower it.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CircuitLoadBoostPercent = 1168,
+        CircuitLoadBoostPercent = 1186,
 
         /// <summary>Percent added to the size of a Circuit Discharge burst.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CircuitDischargePowerPercent = 1169,
+        CircuitDischargePowerPercent = 1187,
 
         /// <summary>Points added to the recipe's Circuit overload line.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

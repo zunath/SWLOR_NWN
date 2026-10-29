@@ -290,11 +290,11 @@ public class DevicesGrenadierTests
             concussionGrenade,
             ionGrenade,
             clusterGrenade,
-            disruptionPulse,
             ReadDeviceSource("RemoteChargeAbilityDefinition.cs"),
             thermalDetonator,
         };
         blastDamageSources.Should().OnlyContain(source => source.Contains("DeviceAbilityEffects.GetBlastDamageAdjustment("));
+        disruptionPulse.Should().NotContain("GetBlastDamageAdjustment", "Blast Radius damage covers grenades, Remote Charge, and Overload Barrage only");
 
         var overloadBarrage = ReadDeviceSource("OverloadBarrageAbilityDefinition.cs");
         overloadBarrage.Should().Contain("var blastDamageAdjustment = DeviceAbilityEffects.GetBlastDamageAdjustment(activator, damageAdjustment);");

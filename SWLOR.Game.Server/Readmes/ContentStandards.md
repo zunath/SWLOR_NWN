@@ -1,6 +1,6 @@
 # Content Standards
 
-Read before adding or changing items, enemies, loot, balance values, or locations players reach by ship.
+Read before adding or changing items, enemies, loot, balance values, player head models, or locations players reach by ship.
 
 Sections: Balance · Item generation · Loot · Characters · Ship-access locations
 
@@ -29,6 +29,7 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 ## Characters
 
 - Player characters use only the normal phenotype. The large phenotype is not available to players, so do not build, fix, or verify player assets or code paths for it. Leave the existing large-body fallbacks in the tint renderers alone. `ruleset.2da`'s `CHARGEN_ENABLED_PHENOTYPES` still lists the large phenotype, but the native character-creation controls are moved off screen; players set up their body in game, where no phenotype choice exists. Do not change that setting.
+- A head model players can select (`p??0_headNNN`) stays within 10,000 triangles, counted across every mesh node in the compiled model. Heads render on every character on screen, so this keeps new heads within the range of the existing ones: of the 1,109 `p??0_headNNN` models on haks `master` in October 2026, the median is 840 triangles and the 90th percentile 5,078, and the 199 numbered 200 and up have a median of 4,058 and a 90th percentile of 9,405. A head above the budget needs the user's approval. The 23 existing heads above it stay as they are unless a request covers them, but a replacement of one of them must meet the budget.
 - Only the playable species matter: the appearances registered in `RacialAppearanceRegistry` (Human, Bothan, Chiss, Zabrak, Twi'lek, Mirialan, Echani, Kel Dor, Cyborg, Cathar, Rodian, Trandoshan, Togruta, Wookiee, Mon Calamari, Ugnaught, Droid, Nautolan, Ewok). Their bodies use the human (`p?h`), elf (`p?e`: Bothan, Rodian, Wookiee), half-orc (`p?o`: Cathar), dwarf (`p?d`: Ugnaught, Ewok) and droid (`p?z`) model families. The base NWN race appearances other than Human (elf, half-elf, half-orc, dwarf, gnome, halfling) are not playable, and no species uses the gnome (`p?g`) or halfling (`p?a`) models. Scope fixes, imports, generators, audits, guards and client evidence to playable species on the normal phenotype; do not spend work on anything else.
 
 ## Ship-access locations

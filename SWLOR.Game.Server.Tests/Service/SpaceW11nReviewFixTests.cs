@@ -195,6 +195,38 @@ public class SpaceW11nReviewFixTests
     }
 
     [Test]
+    public void AClearedIncursion_SavesEverySpoilAsPendingBeforeAnyoneCollects()
+    {
+        var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
+        var start = source.IndexOf("private static void CompleteIncursion(", StringComparison.Ordinal);
+        var complete = source[start..source.IndexOf("private static void EndIncursion(", start, StringComparison.Ordinal)];
+        complete.Should().Contain("CapitalBattleRules.AddPending(state.PendingPayouts, playerId, payout);");
+        complete.Should().NotContain("DeliverPayout(");
+        complete.IndexOf("EndIncursion(true);", StringComparison.Ordinal)
+            .Should().BeLessThan(complete.IndexOf("CollectPendingIncursionPayout(player, playerId);", StringComparison.Ordinal),
+                "the incursion's end and its owed spoils are saved before anyone collects");
+    }
+
+    [Test]
+    public void PendingSpoils_AreClearedOnlyAfterTheyAreDelivered()
+    {
+        var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
+        var collect = source[source.IndexOf("private static void CollectPendingPayout(", StringComparison.Ordinal)..];
+        collect.IndexOf("DeliverPayout(player, payout, heading, logLabel);", StringComparison.Ordinal)
+            .Should().BeLessThan(collect.IndexOf("IncursionRules.ClaimPending(pending, playerId, true);", StringComparison.Ordinal));
+        collect.IndexOf("IncursionRules.ClaimPending(pending, playerId, true);", StringComparison.Ordinal)
+            .Should().BeLessThan(collect.IndexOf("SaveIncursions();", StringComparison.Ordinal));
+        ReadSource("Service", "SpaceCapitalBattles.cs").Should().Contain("CollectPendingPayout(player, IncursionRecord.PendingBattlePayouts, playerId,");
+    }
+
+    [Test]
+    public void UnregisteringAShip_IsRefusedWhileAnyModuleIsFitted()
+    {
+        ReadSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs").Replace("\r\n", "\n")
+            .Should().Contain("dbShip.Status.HighPowerModules.Count > 0 ||\n                        dbShip.Status.MidPowerModules.Count > 0 ||\n                        dbShip.Status.LowPowerModules.Count > 0");
+    }
+
+    [Test]
     public void PendingSpoils_AreNotRemovedBeforeTheDelayedCallback()
     {
         var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");

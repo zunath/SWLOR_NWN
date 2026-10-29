@@ -1827,6 +1827,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
+                        dbShip.Status.MidPowerModules.Count > 0 ||
                         dbShip.Status.LowPowerModules.Count > 0)
                     {
                         FloatingTextStringOnCreature($"Please uninstall all modules before unregistering your ship.", Player, false);

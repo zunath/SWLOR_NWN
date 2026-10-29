@@ -436,12 +436,17 @@ namespace SWLOR.Game.Server.Service
             return waypoint.Replace("_Orbit", string.Empty).Replace("_", " ");
         }
 
-        /// <summary>Pays every contributor and ends the incursion.</summary>
+        /// <summary>
+        /// Pays every contributor and ends the incursion. Every payout is saved as pending in the same record that ends
+        /// the incursion, and the players online then collect theirs: a restart in between cannot clear the incursion
+        /// twice, and leaves the spoils for the next login.
+        /// </summary>
         private static void CompleteIncursion(IncursionRegion region)
         {
             var state = IncursionRecord;
             var incursion = state.Active;
             var online = GetOnlinePlayersById();
+            var collecting = new List<(string PlayerId, uint Player)>();
             var paid = 0;
             foreach (var (playerId, contribution) in incursion.Contributions)
             {
@@ -450,16 +455,18 @@ namespace SWLOR.Game.Server.Service
 
                 var payout = IncursionRules.BuildPayout(contribution, region, incursion.Invader, max => Random.Next(max));
                 paid++;
+                CapitalBattleRules.AddPending(state.PendingPayouts, playerId, payout);
                 if (online.TryGetValue(playerId, out var player))
-                    DeliverIncursionPayout(player, payout);
-                else
-                    state.PendingPayouts[playerId] = payout;
+                    collecting.Add((playerId, player));
             }
 
             var name = IncursionRules.GetInvader(incursion.Invader)?.Name;
             BroadcastIncursion(ColorToken.Green($"INCURSION: the {region.Name} region is cleared and the {name} is in retreat. {CapitalBattleRules.DescribeSpoilsShare(paid)}"));
             Log.Write(LogGroup.Space, $"INCURSION CLEARED - {incursion.Invader} in {incursion.Center}, {paid} contributors paid");
             EndIncursion(true);
+
+            foreach (var (playerId, player) in collecting)
+                CollectPendingIncursionPayout(player, playerId);
         }
 
         /// <summary>Ends the running incursion: cleared, or the armada withdraws when time runs out.</summary>
@@ -508,9 +515,6 @@ namespace SWLOR.Game.Server.Service
             return online;
         }
 
-        private static void DeliverIncursionPayout(uint player, IncursionPayout payout) =>
-            DeliverPayout(player, payout, "Incursion spoils for the {0} region", "INCURSION PAYOUT");
-
         /// <summary>Gives a payout's credits and items; <paramref name="heading"/> names the event with the area in {0}.</summary>
         private static void DeliverPayout(uint player, IncursionPayout payout, string heading, string logLabel)
         {
@@ -544,15 +548,24 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             // The payout stays pending until delivery: a player who disconnects within the delay collects it at the next login.
-            DelayCommand(6f, () =>
-            {
-                var payout = IncursionRules.ClaimPending(IncursionRecord.PendingPayouts, playerId, GetIsObjectValid(player));
-                if (payout == null)
-                    return;
+            DelayCommand(6f, () => CollectPendingIncursionPayout(player, playerId));
+        }
 
-                SaveIncursions();
-                DeliverIncursionPayout(player, payout);
-            });
+        private static void CollectPendingIncursionPayout(uint player, string playerId) =>
+            CollectPendingPayout(player, IncursionRecord.PendingPayouts, playerId, "Incursion spoils for the {0} region", "INCURSION PAYOUT");
+
+        /// <summary>
+        /// Gives a player online their pending payout, then clears it and saves: a restart before the save leaves it to
+        /// collect at the next login.
+        /// </summary>
+        private static void CollectPendingPayout(uint player, Dictionary<string, IncursionPayout> pending, string playerId, string heading, string logLabel)
+        {
+            if (pending == null || !GetIsObjectValid(player) || !pending.TryGetValue(playerId, out var payout))
+                return;
+
+            DeliverPayout(player, payout, heading, logLabel);
+            IncursionRules.ClaimPending(pending, playerId, true);
+            SaveIncursions();
         }
 
         // Contribution

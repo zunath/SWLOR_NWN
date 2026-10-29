@@ -192,15 +192,8 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             // The payout stays pending until delivery: a player who disconnects within the delay collects it at the next login.
-            DelayCommand(6f, () =>
-            {
-                var payout = IncursionRules.ClaimPending(IncursionRecord.PendingBattlePayouts, playerId, GetIsObjectValid(player));
-                if (payout == null)
-                    return;
-
-                SaveIncursions();
-                DeliverPayout(player, payout, "Capital battle spoils at {0}", "CAPITAL BATTLE PAYOUT");
-            });
+            DelayCommand(6f, () => CollectPendingPayout(player, IncursionRecord.PendingBattlePayouts, playerId,
+                "Capital battle spoils at {0}", "CAPITAL BATTLE PAYOUT"));
         }
 
         private static void EndCapitalBattle(DateTime now)

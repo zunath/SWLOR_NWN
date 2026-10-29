@@ -156,7 +156,7 @@ public class CapitalBattlePayoutTests
         var source = ReadSource("Service", "SpaceCapitalBattles.cs");
         var handler = source[source.IndexOf("public static void DeliverPendingCapitalBattlePayout()", StringComparison.Ordinal)..];
         handler.IndexOf("PendingBattlePayouts.ContainsKey(playerId)", StringComparison.Ordinal).Should().BeGreaterThan(-1);
-        handler.IndexOf("IncursionRules.ClaimPending(", StringComparison.Ordinal).Should().BeGreaterThan(handler.IndexOf("DelayCommand(6f", StringComparison.Ordinal));
+        handler.IndexOf("CollectPendingPayout(player, IncursionRecord.PendingBattlePayouts, playerId,", StringComparison.Ordinal).Should().BeGreaterThan(handler.IndexOf("DelayCommand(6f", StringComparison.Ordinal));
         handler[..handler.IndexOf("DelayCommand(6f", StringComparison.Ordinal)].Should().NotContain("PendingBattlePayouts.Remove");
         source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]");
     }

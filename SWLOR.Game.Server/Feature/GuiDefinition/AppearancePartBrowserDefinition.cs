@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearancePartBrowserViewModel> _builder = new();
 
-        public const float WindowWidth = 600f;
-        public const float WindowHeight = 570f;
+        public const float WindowWidth = 620f;
+        public const float WindowHeight = 590f;
         private const float TileSize = AppearanceEditorDefinition.TileSize;
         private const float ViewButtonWidth = 80f;
 

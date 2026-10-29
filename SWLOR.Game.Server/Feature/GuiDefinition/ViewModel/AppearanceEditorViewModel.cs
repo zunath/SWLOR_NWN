@@ -949,6 +949,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HasItemEquipped = hasItemEquipped;
             DoesNotHaveItemEquipped = !hasItemEquipped;
             IsNoEditableItemVisible = !hasItemEquipped && IsEquipmentSelected;
+            // An empty slot has no parts: the browser must not keep showing the last item's.
+            if (!hasItemEquipped)
+                ClearBrowser();
         }
 
         /// <summary>The slot tabs' "Nothing to edit" note: on the Equipment tab with no editable item.</summary>

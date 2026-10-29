@@ -19,20 +19,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        public const float MapWidth = 268f;
+        public const float MapWidth = 280f;
         public const float ColoursWidth = 376f;
         public const float WeaponCategoryWidth = 200f;
         /// <summary>
         /// The editor's fixed size; it is not resizable, so a saved size never applies. The four
         /// tabs need about 650 of the width (NUI keeps about 150 per tab).
         /// </summary>
-        public const float EditorWidth = 700f;
+        public const float EditorWidth = 710f;
         public const float EditorHeight = 680f;
         public const float TileSize = 96f; // pictures are 96x96; drawn 1:1 so they stay sharp
         public const float PreviewColumnWidth = 150f;
         private const float PreviewArrowWidth = 30f;
         private const float PreviewViewButtonWidth = 56f;
-        private const float SlotSize = 48f;
+        private const float SlotSize = 52f;
         /// <summary>A swatch is about as wide as its Leather / Cloth / Metal heading.</summary>
         private const float SwatchWidth = 52f;
         private const float SwatchHeight = 24f;
@@ -54,13 +54,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public const float OutfitListButtonWidth = (OutfitListWidth - 32f) / 2;
         private const float OutfitStoreButtonWidth = 170f;
 
-        private const float SideColumnWidth = 54f;
-        private const float PairColumnWidth = 54f;
-        private const float CenterColumnWidth = 112f;
-        private const float NeckSize = 36f;
-        private const float ChestSize = 72f;
-        private const float BeltSize = 40f;
-        private const float PelvisSize = 54f;
+        private const float SideColumnWidth = 58f;
+        private const float PairColumnWidth = 58f;
+        private const float CenterColumnWidth = 120f;
+        private const float NeckSize = 40f;
+        private const float ChestSize = 78f;
+        private const float BeltSize = 44f;
+        private const float PelvisSize = 60f;
 
         internal static readonly GuiColor Highlight = new(255, 196, 40);
 
@@ -300,12 +300,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             row.AddColumn(side =>
             {
                 AddSlot(side, AppearanceEditorSlot.Robe, true, SlotSize);
-                side.AddRow(gap => gap.AddSpacer().SetHeight(8f));
+                side.AddRow(gap => gap.AddSpacer().SetHeight(12f));
                 AddSlot(side, AppearanceEditorSlot.RightShoulder, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.RightBicep, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.RightForearm, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.RightHand, true, SlotSize);
-                side.AddRow(gap => gap.AddSpacer().SetHeight(16f));
+                side.AddRow(gap => gap.AddSpacer().SetHeight(24f));
                 AddCopyButton(side, "ae_copy_left", "arrow_right",
                     "Copy to Left: copies the right side's parts and colours to the left side.",
                     model => model.OnClickCopyToLeft());
@@ -326,12 +326,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             row.AddColumn(side =>
             {
                 AddSlot(side, AppearanceEditorSlot.Cloak, true, SlotSize);
-                side.AddRow(gap => gap.AddSpacer().SetHeight(8f));
+                side.AddRow(gap => gap.AddSpacer().SetHeight(12f));
                 AddSlot(side, AppearanceEditorSlot.LeftShoulder, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.LeftBicep, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.LeftForearm, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.LeftHand, true, SlotSize);
-                side.AddRow(gap => gap.AddSpacer().SetHeight(16f));
+                side.AddRow(gap => gap.AddSpacer().SetHeight(24f));
                 AddCopyButton(side, "ae_copy_right", "arrow_left",
                     "Copy to Right: copies the left side's parts and colours to the right side.",
                     model => model.OnClickCopyToRight());

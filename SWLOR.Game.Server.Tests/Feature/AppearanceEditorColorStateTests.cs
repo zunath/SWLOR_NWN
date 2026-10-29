@@ -158,6 +158,10 @@ public class AppearanceEditorColorStateTests
         hidden.Statement.ToString().Should().Contain("ClearBrowser()",
             "Wardrobe and Settings must not leave a browser that can still change parts");
         FindMethod(browser, "ClearBrowser").ToString().Should().Contain("ClosePartBrowser()");
+        var emptySlot = FindMethod(root, "ToggleItemEquippedFlags").DescendantNodes().OfType<IfStatementSyntax>()
+            .Single(statement => statement.Condition.ToString() == "!hasItemEquipped");
+        emptySlot.Statement.ToString().Should().Contain("ClearBrowser()",
+            "an empty Main Hand or Off Hand must not leave the last item's parts in the browser");
         FindMethod(browser, "ApplyBrowserPart").ToString().Should().Contain("if (IsPartEditorHidden)",
             "a late tile click from the browser does nothing on Wardrobe or Settings");
     }

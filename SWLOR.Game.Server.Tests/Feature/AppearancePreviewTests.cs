@@ -239,14 +239,14 @@ public class AppearancePreviewTests
             .Invoke(null, new object[] { slot })!).Should().Be(expected);
 
     // editor x, screen width, scale -> browser x
-    [TestCase(100f, 1920f, 1f, 800f)]
-    [TestCase(1200f, 1920f, 1f, 600f)]
-    [TestCase(100f, 1280f, 1f, 680f)]
-    [TestCase(0f, 1280f, 1f, 680f)]
+    [TestCase(100f, 1920f, 1f, 810f)]
+    [TestCase(1200f, 1920f, 1f, 580f)]
+    [TestCase(100f, 1280f, 1f, 660f)]
+    [TestCase(0f, 1280f, 1f, 660f)]
     [TestCase(600f, 1280f, 1f, 0f)]
-    [TestCase(100f, 0f, 1f, 800f)]
-    [TestCase(100f, 1920f, 1.5f, 1020f)]
-    [TestCase(1000f, 1920f, 1.5f, 100f)]
+    [TestCase(100f, 0f, 1f, 810f)]
+    [TestCase(100f, 1920f, 1.5f, 990f)]
+    [TestCase(1000f, 1920f, 1.5f, 70f)]
     public void ThePartBrowserOpensBesideTheEditor(float editorX, float screenWidth, float scale, float expectedX)
     {
         var editor = new GuiRectangle(editorX, 50f, AppearanceEditorDefinition.EditorWidth, AppearanceEditorDefinition.EditorHeight);
@@ -257,7 +257,7 @@ public class AppearancePreviewTests
         placed.Y.Should().Be(50f, "the browser lines up with the editor's top");
         placed.Width.Should().Be(AppearancePartBrowserDefinition.WindowWidth);
         placed.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
-        PlaceBeside(null, 600f, 570f, 1920f, 1080f, 1f).Should().BeNull();
+        PlaceBeside(null, 620f, 590f, 1920f, 1080f, 1f).Should().BeNull();
     }
 
     private static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,

@@ -2040,7 +2040,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AshmarkDataConsole = 338,
 
         [Structure("Ashmark Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2110,7 +2110,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         GuttermarkDataConsole = 348,
 
         [Structure("Guttermark Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2180,7 +2180,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         TrailmarkDataConsole = 358,
 
         [Structure("Trailmark Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2250,7 +2250,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         StonewakeDataConsole = 368,
 
         [Structure("Stonewake Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2320,7 +2320,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AegislineDataConsole = 378,
 
         [Structure("Aegisline Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2390,7 +2390,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         VeilcarvedDataConsole = 388,
 
         [Structure("Veilcarved Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2460,7 +2460,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SurgewakeDataConsole = 398,
 
         [Structure("Surgewake Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2530,7 +2530,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         ResonantDataConsole = 408,
 
         [Structure("Resonant Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2600,7 +2600,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         FieldlineDataConsole = 418,
 
         [Structure("Fieldline Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]
@@ -2670,7 +2670,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         CommandlineDataConsole = 428,
 
         [Structure("Commandline Display Plinth",
-            "plc_pedestal",
+            "x3_plc_pedsword",
             "",
             true,
             1)]

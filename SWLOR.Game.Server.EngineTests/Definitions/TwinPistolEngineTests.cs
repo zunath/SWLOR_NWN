@@ -453,7 +453,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
                     Ability.ClearLastCompletedAbilityImpactSummary(actor);
                     var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
-                    PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, 12);
+                    PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, 12);
                     ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                         "The fixture starts with six ordinary attempted-shot charges");
                 });
@@ -683,371 +683,63 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { Stop(actor); }
         }
 
-        [EngineTest("Twin Pistol Slide Rush and Grapple finish movement through the real feat pipeline", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
-        public static async Task MovementAbilityPipeline(EngineTestContext ctx)
+        [EngineTest("Tempo Lead and Closing Shot fire in place and chain Cadence through the real feat pipeline", Category = "TwinPistolCadence", TimeoutSeconds = 120f)]
+        public static async Task CadenceChainPipeline(EngineTestContext ctx)
         {
-            foreach (var movement in new[] { TwinPistolMovementType.Retreat, TwinPistolMovementType.FreeDestination, TwinPistolMovementType.Approach })
+            var (actor, target, _, _) = await CreatePair(ctx);
+            try
             {
-                var (actor, target, _, _) = await CreatePair(ctx);
-                try
+                var origin = GetPosition(actor);
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
                 {
-                    var origin = GetPosition(actor);
-                    SWLOR.NWN.API.Engine.Location destination = null;
-                    NumericsVector3 enemyPosition = default;
-                    var found = false;
-                    await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                    {
-                        ClearAllActions();
-                        for (var direction = 0; direction < 16 && !found; direction++)
-                        {
-                            var angle = direction * MathF.PI / 8;
-                            var unit = new NumericsVector3(MathF.Cos(angle), MathF.Sin(angle), 0);
-                            var distance = movement == TwinPistolMovementType.Approach ? 3.5f : 4f;
-                            var end = origin + unit * distance;
-                            end.Z = GetGroundHeight(Location(ctx.Arena, end, 0));
-                            var travel = Location(ctx.Arena, end, 0);
-                            if (!string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), travel, 2f, 6f))) continue;
-                            enemyPosition = movement switch
-                            {
-                                TwinPistolMovementType.Retreat => origin - unit * 2f,
-                                TwinPistolMovementType.Approach => origin + unit * 5f,
-                                _ => origin + unit * 2f + new NumericsVector3(-unit.Y, unit.X, 0) * 1.2f
-                            };
-                            enemyPosition.Z = GetGroundHeight(Location(ctx.Arena, enemyPosition, 0));
-                            if (!string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor),
-                                    Location(ctx.Arena, enemyPosition, 0), 0f, 6f))) continue;
-                            destination = travel;
-                            found = true;
-                        }
-                        ctx.Assert(found, $"The arena provides a reachable {movement} lane and a legal hostile target position");
-                        ctx.SetNPCResources(actor, 100, 100);
-                        TemporaryStatModifier.Add(actor, StatType.PairedRangedMomentumMaximum, 3, 60f);
-                        TemporaryStatModifier.Add(actor, StatType.PairedRangedMomentumDurationSeconds, 12, 60f);
-                    });
-                    // The controlled target is paralyzed; queued JumpToLocation cannot relocate it.
-                    ObjectPlugin.SetPosition(target, enemyPosition);
-                    await ctx.WaitFrameAsync();
-                    ctx.Assert(NumericsVector3.Distance(enemyPosition, GetPosition(target)) < .05f,
-                        "The stationary target is at the authored relative position before validating movement");
-                    var feat = movement switch
-                    {
-                        TwinPistolMovementType.Retreat => FeatType.BlasterSlide1,
-                        TwinPistolMovementType.Approach => FeatType.GrappleShot1,
-                        _ => FeatType.PistolRush1
-                    };
-                    var perk = movement switch
-                    {
-                        TwinPistolMovementType.Retreat => PerkType.BlasterSlide,
-                        TwinPistolMovementType.Approach => PerkType.GrappleShot,
-                        _ => PerkType.PistolRush
-                    };
-                    Combat.SetAutoAttackHitResolutionOverride(false);
-                    Combat.SetAbilityHitResolutionOverride(true);
-                    await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                    ClearAllActions();
+                    ctx.SetNPCResources(actor, 100, 100);
+                    TemporaryStatModifier.Add(actor, StatType.CadenceMaximum, 3, 60f);
+                    TemporaryStatModifier.Add(actor, StatType.CadenceDurationSeconds, 12, 60f);
+                    TemporaryStatModifier.Add(actor, StatType.CadenceChainWindowSeconds, 6, 60f);
+                    TemporaryStatModifier.Add(actor, StatType.CadenceDamagePerCharge, 2, 60f);
+                    foreach (var (perk, feat) in new[] { (PerkType.TempoShot, FeatType.TempoShot1),
+                                 (PerkType.LeadShot, FeatType.LeadShot1), (PerkType.ClosingShot, FeatType.ClosingShot1) })
                     {
                         ctx.SetNPCPerkLevel(actor, perk, 1);
                         CreaturePlugin.AddFeat(actor, feat);
+                    }
+                });
+                Combat.SetAutoAttackHitResolutionOverride(false);
+                Combat.SetAbilityHitResolutionOverride(true);
+
+                // Tempo Shot grants two on its own; Lead Shot chains for its own one; Closing Shot spends all
+                // three, then its chained hit grants one fresh charge.
+                foreach (var (feat, expected) in new[] { (FeatType.TempoShot1, 2), (FeatType.LeadShot1, 3), (FeatType.ClosingShot1, 1) })
+                {
+                    await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                    {
+                        SWLOR.Game.Server.Service.AbilityService.HostileAbilityDelay.EndForTesting(actor);
                         Ability.ClearLastCompletedAbilityImpactSummary(actor);
-                        var activated = UsePerkFeat.TryUseAbility(actor,
-                            movement == TwinPistolMovementType.FreeDestination ? OBJECT_INVALID : target,
-                            feat, destination);
-                        ctx.Assert(activated, $"{feat} prepayment validation: {Ability.GetLastActivationDenialReason()}; " +
-                            $"actor={GetPosition(actor)}, target={GetPosition(target)}, requested={GetPositionFromLocation(destination)}, " +
-                            $"hostile={GetIsReactionTypeHostile(target, actor)}, objectLOS={LineOfSightObject(actor, target)}, " +
-                            $"vectorLOS={LineOfSightVector(GetPosition(actor), GetPosition(target))}");
+                        ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
+                            $"{feat} validation: {Ability.GetLastActivationDenialReason()}");
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor), "The cast captures its weapon and trait state");
                         TwinPistolCombatLifecycle.Reconcile();
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor),
                             "Out-of-combat reconciliation preserves an authorized cast before its first hostile impact");
                     });
-                    await ctx.WaitUntilAsync(() => !WeaponRepositioning.IsMoving(actor) &&
+                    await ctx.WaitUntilAsync(() => !TwinPistolAbility.HasActiveActivation(actor) && !Activity.IsBusy(actor) &&
                         Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
-                        10f, "confirmed arrival followed by the captured paired impacts");
-                    ctx.Assert(NumericsVector3.Distance(origin, GetPosition(actor)) >= 3f,
-                        "The normal post-cast attack resume did not cancel the movement action");
+                        10f, $"{feat}'s captured paired impacts");
                     var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
                     ctx.Assert(summary.SkillType == SkillType.TwinPistol && summary.AttributedDamage > 0,
-                        "Both actual relocation and the paid Twin Pistol attack completed");
-                    if (movement != TwinPistolMovementType.Approach)
-                        ctx.AssertEqual(1, StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0,
-                            "A landed moving activation grants one Momentum rather than one per gun");
-                }
-                finally
-                {
-                    TwinPistolAbility.Cancel(actor);
-                    Combat.SetAbilityHitResolutionOverride(null);
-                    Stop(actor);
-                    // Finished controlled actors must not occupy the next relative-movement lane.
-                    DestroyObject(actor);
-                    DestroyObject(target);
-                    await ctx.WaitFrameAsync();
+                        $"{feat} completes a paid Twin Pistol attack");
+                    ctx.AssertEqual(expected, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
+                        $"{feat} leaves the authored Cadence once per activation, not once per gun");
+                    ctx.Assert(NumericsVector3.Distance(origin, GetPosition(actor)) < .05f, $"{feat} fires in place");
                 }
             }
-        }
-
-        [EngineTest("Pistol Rush rushes the full reach toward a far click and through a creature on the line", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
-        public static async Task PistolRushClampsFarClickAndPassesThroughCreatures(EngineTestContext ctx)
-        {
-            var (actor, target, _, _) = await CreatePair(ctx);
-            try
-            {
-                var (origin, unit, click) = await FindRushLane(ctx, actor);
-                var enemyPosition = origin + unit * 3f;
-                await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                    enemyPosition.Z = GetGroundHeight(Location(ctx.Arena, enemyPosition, 0)));
-                ObjectPlugin.SetPosition(target, enemyPosition);
-                await ctx.WaitFrameAsync();
-                await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                {
-                    var reach = RushReach(ctx, origin, unit);
-                    var blocked = WeaponRepositioning.Validate(actor, GetLocation(actor), reach, 2f, 6f);
-                    ctx.Assert(blocked.Contains("another creature"),
-                        $"The creature stands on the dash line and blocks a normal move; validation: '{blocked}'");
-                    ctx.AssertEqual(string.Empty, WeaponRepositioning.Validate(actor, GetLocation(actor), reach, 2f, 6f, true),
-                        "A pass-through move ignores the creature on the line");
-                });
-
-                var ghosted = false;
-                await CastRush(ctx, actor, click, expectActivated: true);
-                await ctx.WaitUntilAsync(() =>
-                {
-                    ghosted |= HasPassThroughGhost(actor);
-                    return !WeaponRepositioning.IsMoving(actor) &&
-                           Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0;
-                }, 10f, "arrival past the creature followed by the paired impacts");
-                var moved = GetPosition(actor) - origin;
-                moved.Z = 0;
-                ctx.Assert(moved.Length() is >= 5.5f and <= 6.4f,
-                    $"A click 10m away rushes the full 6m toward it; moved {moved.Length():0.00}m");
-                ctx.Assert(NumericsVector3.Dot(moved, unit) > 4f, "The dash ended past the creature it went through");
-                ctx.Assert(ghosted, "The dash travelled as a cutscene ghost");
-                ctx.Assert(!HasPassThroughGhost(actor), "Arrival removes the temporary ghost effect");
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage > 0,
-                    "The creature passed through is struck by the dash");
-            }
             finally
             {
                 TwinPistolAbility.Cancel(actor);
                 Combat.SetAbilityHitResolutionOverride(null);
+                SWLOR.Game.Server.Service.AbilityService.HostileAbilityDelay.EndForTesting(actor);
                 Stop(actor);
-                DestroyObject(actor);
-                DestroyObject(target);
-                await ctx.WaitFrameAsync();
-            }
-        }
-
-        [EngineTest("Pistol Rush passing through creatures still stops at a placeable wall", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
-        public static async Task PistolRushStillStopsAtWalls(EngineTestContext ctx)
-        {
-            var (actor, target, _, _) = await CreatePair(ctx);
-            var wall = OBJECT_INVALID;
-            try
-            {
-                var (origin, unit, click) = await FindRushLane(ctx, actor);
-                await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                {
-                    var middle = origin + unit * 3f;
-                    middle.Z = GetGroundHeight(Location(ctx.Arena, middle, 0));
-                    wall = CreateObject(SWLOR.NWN.API.NWScript.Enum.ObjectType.Placeable, RushWallBlueprint,
-                        Location(ctx.Arena, middle, (float)(Math.Atan2(unit.Y, unit.X) * 180 / Math.PI) + 90f));
-                    ctx.Track(wall);
-                    ctx.Assert(GetIsObjectValid(wall), "Create a collision placeable on the dash line");
-                });
-                await ctx.WaitFrameAsync();
-                await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                {
-                    var error = WeaponRepositioning.Validate(actor, GetLocation(actor), RushReach(ctx, origin, unit), 2f, 6f, true);
-                    ctx.Assert(error.Contains("blocked"), $"A placeable wall still blocks a pass-through move; validation: '{error}'");
-                });
-                await CastRush(ctx, actor, click, expectActivated: false);
-                await ctx.DelaySecondsAsync(1f);
-                var moved = GetPosition(actor) - origin;
-                moved.Z = 0;
-                ctx.Assert(moved.Length() < .25f, $"The refused dash did not move the caster; moved {moved.Length():0.00}m");
-                ctx.Assert(!HasPassThroughGhost(actor), "A refused dash never applies the ghost effect");
-            }
-            finally
-            {
-                TwinPistolAbility.Cancel(actor);
-                Combat.SetAbilityHitResolutionOverride(null);
-                Stop(actor);
-                DestroyObject(actor);
-                DestroyObject(target);
-                if (GetIsObjectValid(wall)) DestroyObject(wall);
-                await ctx.WaitFrameAsync();
-            }
-        }
-
-        [EngineTest("Pistol Rush clicked onto a creature ends clear of its body", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
-        public static async Task PistolRushOntoACreatureEndsClearOfIt(EngineTestContext ctx)
-        {
-            var (actor, target, _, _) = await CreatePair(ctx);
-            try
-            {
-                var (origin, unit, _) = await FindRushLane(ctx, actor);
-                var enemyPosition = origin + unit * 4f;
-                await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                    enemyPosition.Z = GetGroundHeight(Location(ctx.Arena, enemyPosition, 0)));
-                ObjectPlugin.SetPosition(target, enemyPosition);
-                await ctx.WaitFrameAsync();
-                await CastRush(ctx, actor, Location(ctx.Arena, enemyPosition, 0), expectActivated: true);
-                await ctx.WaitUntilAsync(() => !WeaponRepositioning.IsMoving(actor) &&
-                        Ability.GetLastCompletedAbilityImpactSummary(actor) != null,
-                    10f, "arrival beside the clicked creature");
-                var bodies = CreaturePlugin.GetPersonalSpace(actor) + CreaturePlugin.GetCreaturePersonalSpace(target);
-                var gap = GetPosition(actor) - GetPosition(target);
-                gap.Z = 0;
-                ctx.Assert(gap.Length() >= bodies - WeaponRepositioning.ArrivalTolerance,
-                    $"The dash ends clear of the clicked creature; gap {gap.Length():0.00}m, bodies {bodies:0.00}m");
-                ctx.Assert(!HasPassThroughGhost(actor), "Arrival removes the temporary ghost effect");
-            }
-            finally
-            {
-                TwinPistolAbility.Cancel(actor);
-                Combat.SetAbilityHitResolutionOverride(null);
-                Stop(actor);
-                DestroyObject(actor);
-                DestroyObject(target);
-                await ctx.WaitFrameAsync();
-            }
-        }
-
-        private const string RushWallBlueprint = "_mdrn_pl_crate01";
-
-        /// <summary>
-        /// A direction with open ground for the full 6m dash, and a click 10m along it, well past the dash's reach.
-        /// </summary>
-        private static async Task<(NumericsVector3 Origin, NumericsVector3 Unit, SWLOR.NWN.API.Engine.Location Click)> FindRushLane(
-            EngineTestContext ctx, uint actor)
-        {
-            var origin = GetPosition(actor);
-            var unit = default(NumericsVector3);
-            var found = false;
-            await ctx.ExecuteInCreatureContextAsync(actor, () =>
-            {
-                ClearAllActions();
-                for (var direction = 0; direction < 16 && !found; direction++)
-                {
-                    var angle = direction * MathF.PI / 8;
-                    unit = new NumericsVector3(MathF.Cos(angle), MathF.Sin(angle), 0);
-                    var far = origin + unit * 10f;
-                    if (far.X < 0 || far.Y < 0) continue;
-                    found = string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor),
-                        RushReach(ctx, origin, unit), 2f, 6f));
-                }
-                ctx.Assert(found, "The arena provides an open 6m dash lane");
-                ctx.SetNPCResources(actor, 100, 100);
-            });
-            return (origin, unit, Location(ctx.Arena, origin + unit * 10f, 0));
-        }
-
-        private static SWLOR.NWN.API.Engine.Location RushReach(EngineTestContext ctx, NumericsVector3 origin, NumericsVector3 unit)
-        {
-            var end = origin + unit * 6f;
-            end.Z = GetGroundHeight(Location(ctx.Arena, end, 0));
-            return Location(ctx.Arena, end, 0);
-        }
-
-        private static async Task CastRush(EngineTestContext ctx, uint actor, SWLOR.NWN.API.Engine.Location click, bool expectActivated)
-        {
-            Combat.SetAutoAttackHitResolutionOverride(false);
-            Combat.SetAbilityHitResolutionOverride(true);
-            await ctx.ExecuteInCreatureContextAsync(actor, () =>
-            {
-                ctx.SetNPCPerkLevel(actor, PerkType.PistolRush, 1);
-                CreaturePlugin.AddFeat(actor, FeatType.PistolRush1);
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
-                var activated = UsePerkFeat.TryUseAbility(actor, OBJECT_INVALID, FeatType.PistolRush1, click);
-                ctx.AssertEqual(expectActivated, activated,
-                    $"Pistol Rush activation at {GetPositionFromLocation(click)} from {GetPosition(actor)}; " +
-                    $"denial: '{Ability.GetLastActivationDenialReason()}'");
-            });
-        }
-
-        private static bool HasPassThroughGhost(uint actor)
-        {
-            if (!GetIsObjectValid(actor)) return false;
-            for (var effect = GetFirstEffect(actor); GetIsEffectValid(effect); effect = GetNextEffect(actor))
-                if (GetEffectTag(effect) == WeaponRepositioning.PassThroughEffectTag) return true;
-            return false;
-        }
-
-        [EngineTest("Blaster Slide turns aside when a creature blocks the straight retreat", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
-        public static async Task BlockedRetreatTakesAnAngledLane(EngineTestContext ctx)
-        {
-            var (actor, target, _, _) = await CreatePair(ctx);
-            var blocker = ctx.SpawnCreature("nw_rat001", 3f);
-            try
-            {
-                var origin = GetPosition(actor);
-                NumericsVector3 away = default, enemyPosition = default, blockerPosition = default;
-                var found = false;
-                await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                {
-                    ClearAllActions();
-                    for (var direction = 0; direction < 16 && !found; direction++)
-                    {
-                        var angle = direction * MathF.PI / 8;
-                        var unit = new NumericsVector3(MathF.Cos(angle), MathF.Sin(angle), 0);
-                        bool LaneOpen(float degrees)
-                        {
-                            var (sin, cos) = MathF.SinCos(degrees * MathF.PI / 180f);
-                            var lane = new NumericsVector3(unit.X * cos - unit.Y * sin, unit.X * sin + unit.Y * cos, 0);
-                            var end = origin + lane * 4f;
-                            end.Z = GetGroundHeight(Location(ctx.Arena, end, 0));
-                            return string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), Location(ctx.Arena, end, 0), 2f, 6f));
-                        }
-                        // The straight lane is open terrain, so only the blocker placed on it can refuse it,
-                        // and at least one angled lane is open for the fallback.
-                        var open = LaneOpen(0f) && new[] { 30f, -30f, 60f, -60f }.Any(LaneOpen);
-                        enemyPosition = origin - unit * 2f;
-                        enemyPosition.Z = GetGroundHeight(Location(ctx.Arena, enemyPosition, 0));
-                        open &= string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), Location(ctx.Arena, enemyPosition, 0), 0f, 6f));
-                        if (!open) continue;
-                        away = unit;
-                        blockerPosition = origin + unit * 2f;
-                        blockerPosition.Z = GetGroundHeight(Location(ctx.Arena, blockerPosition, 0));
-                        found = true;
-                    }
-                    ctx.Assert(found, "The arena provides open straight and angled retreat lanes");
-                    ctx.SetNPCResources(actor, 100, 100);
-                });
-                ObjectPlugin.SetPosition(target, enemyPosition);
-                ObjectPlugin.SetPosition(blocker, blockerPosition);
-                ApplyEffectToObject(DurationType.Permanent, EffectCutsceneParalyze(), blocker);
-                await ctx.WaitFrameAsync();
-                ctx.Assert(NumericsVector3.Distance(blockerPosition, GetPosition(blocker)) < .05f,
-                    "The blocker stands on the straight retreat lane");
-
-                Combat.SetAutoAttackHitResolutionOverride(false);
-                Combat.SetAbilityHitResolutionOverride(true);
-                await ctx.ExecuteInCreatureContextAsync(actor, () =>
-                {
-                    ctx.SetNPCPerkLevel(actor, PerkType.BlasterSlide, 1);
-                    CreaturePlugin.AddFeat(actor, FeatType.BlasterSlide1);
-                    Ability.ClearLastCompletedAbilityImpactSummary(actor);
-                    ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.BlasterSlide1, GetLocation(target)),
-                        $"A blocked straight retreat still activates: {Ability.GetLastActivationDenialReason()}");
-                });
-                await ctx.WaitUntilAsync(() => !WeaponRepositioning.IsMoving(actor) &&
-                    Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
-                    10f, "arrival on an angled lane followed by the paired impacts");
-                var moved = GetPosition(actor) - origin;
-                moved.Z = 0;
-                ctx.Assert(moved.Length() >= 2f, $"The slide travelled at least two meters ({moved.Length():0.00})");
-                ctx.Assert(NumericsVector3.Dot(moved, away) > 0, "The slide still moved away from the target");
-                var sideways = MathF.Abs(moved.X * away.Y - moved.Y * away.X);
-                ctx.Assert(sideways > .9f, $"The slide turned off the blocked straight lane (sideways {sideways:0.00})");
-            }
-            finally
-            {
-                TwinPistolAbility.Cancel(actor);
-                Combat.SetAbilityHitResolutionOverride(null);
-                Stop(actor);
-                DestroyObject(actor);
-                DestroyObject(target);
-                DestroyObject(blocker);
-                await ctx.WaitFrameAsync();
             }
         }
 

@@ -198,7 +198,9 @@ public class TintMapReviewTests
         definition.Should().NotContain("OnResetTintColor");
         viewModel.Should().NotContain("OnResetTintColor");
         definition.Should().NotContain("IsCustomTintPickerVisible");
-        definitionMethods["BuildEquipmentSelection"].ToString().Should().NotContain("BuildCustomTintEditor");
+        definitionMethods["BuildEquipmentEditor"].ToString().Should().NotContain("BuildCustomTintEditor",
+            "the picker is built once, by BuildColours, so equipment must not add a duplicate");
+        definitionMethods["BuildAppearanceEditor"].ToString().Should().NotContain("BuildCustomTintEditor");
         definitionMethods["BuildWeaponEditor"].ToString().Should().NotContain("BuildColours",
             "weapons have no colour channels");
         var colours = definitionMethods["BuildColours"].ToString();

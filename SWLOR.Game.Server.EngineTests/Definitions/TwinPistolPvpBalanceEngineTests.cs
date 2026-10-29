@@ -103,8 +103,8 @@ public static class TwinPistolPvpBalanceEngineTests
         }
     }
 
-    [EngineTest("The PvP HP healing cut preserves Final Salvo's Flow spend and full Follow Through stamina refund", Category = "TwinPistolPvpCombat", TimeoutSeconds = 60f)]
-    public static async Task HealingRampDoesNotReduceFlowStaminaRefund(EngineTestContext ctx)
+    [EngineTest("The PvP HP healing cut preserves Final Salvo's Cadence spend and full Follow Through stamina refund", Category = "TwinPistolPvpCombat", TimeoutSeconds = 60f)]
+    public static async Task HealingRampDoesNotReduceCadenceStaminaRefund(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx, -.5f);
         var actor = player.Creature;
@@ -126,20 +126,16 @@ public static class TwinPistolPvpBalanceEngineTests
                 var before = GetCurrentHitPoints(actor);
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(10), actor);
                 ctx.AssertEqual(before + 4, GetCurrentHitPoints(actor), "A native ten-HP heal restores four under the PvP cut");
-                for (var index = 0; index < 3; index++)
-                {
-                    var charge = PairedRangedTraits.BeginAbility(actor, true, false);
-                    PairedRangedTraits.CompleteAbility(actor, charge, true, 3f, true, 0, 0);
-                }
-                ctx.AssertEqual(3, StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0,
-                    "Three Flow charges were earned through the existing movement-completion adapter");
+                CadenceFixture.Grant(actor, 3);
+                ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
+                    "Three Cadence charges were earned through the production landed-hit adapter");
                 Ability.ClearLastCompletedAbilityImpactSummary(actor);
                 HostileAbilityDelay.EndForTesting(actor);
                 ctx.SeedRandom(1);
                 stamina = Stat.GetCurrentStamina(actor);
                 health = GetCurrentHitPoints(target);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
-                    $"The real Flow finisher begins in the same batch as its earned charges: {Ability.GetLastActivationDenialReason()}");
+                    $"The real Cadence finisher begins in the same batch as its earned charges: {Ability.GetLastActivationDenialReason()}");
             });
             await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
                 summary.Ability == ability && !Activity.IsBusy(actor), "Final Salvo's real paid impact", 5f);
@@ -147,9 +143,9 @@ public static class TwinPistolPvpBalanceEngineTests
             await WaitFrames(ctx, () => health - GetCurrentHitPoints(target) == impact.AttributedDamage,
                 "all actual finisher damage to arrive", 2f);
             ctx.AssertEqual(stamina - Cost(FeatType.FinalSalvo) + 3, Stat.GetCurrentStamina(actor),
-                "Three spent Flow charges restore the full three STM despite the 60% HP healing cut");
-            ctx.AssertEqual(0, StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0,
-                "The real paid finisher spends its captured Flow once");
+                "Three spent Cadence charges restore the full three STM despite the 60% HP healing cut");
+            ctx.AssertEqual(0, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
+                "The real paid finisher spends its captured Cadence once");
             ctx.AssertEqual(60, PvpCombat.GetHealingReductionPercent(actor), "The HP healing cut remains active through the resource refund");
         }
         finally
@@ -469,7 +465,7 @@ public static class TwinPistolPvpBalanceEngineTests
         {
             record.Skills[SkillType.TwinPistol].Rank = record.Skills[SkillType.Rifle].Rank = 50;
             foreach (var perk in new[] { PerkType.ControlledBurst, PerkType.Headshot, PerkType.FinalSalvo,
-                         PerkType.TwinPistolMomentum, PerkType.TwinPistolFollowThrough }) record.Perks[perk] = 1;
+                         PerkType.Cadence, PerkType.TwinPistolFollowThrough }) record.Perks[perk] = 1;
             foreach (var quest in Perk.GetPerkDetails(PerkType.FinalSalvo).PerkLevels.Values
                          .SelectMany(level => level.Requirements).OfType<PerkRequirementQuest>())
                 record.Quests[quest.QuestId] = new PlayerQuest { TimesCompleted = 1 };

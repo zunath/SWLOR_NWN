@@ -53,6 +53,24 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            ChatPlugin.SkipMessage();
+            RunCommand(sender, originalMessage);
+        }
+
+        /// <summary>
+        /// Runs a chat command as if the sender had typed it, including its targeting prompt.
+        /// </summary>
+        /// <param name="sender">The player or DM running the command.</param>
+        /// <param name="originalMessage">The command text, starting with a slash.</param>
+        public static void RunCommand(uint sender, string originalMessage)
+        {
+            originalMessage = originalMessage.Trim();
+            if (!CanHandleChat(sender, originalMessage))
+            {
+                SendMessageToPC(sender, ColorToken.Red("Invalid chat command. Use '/help' to get a list of available commands."));
+                return;
+            }
+
             var split = originalMessage.Split(' ').ToList();
 
             // Commands with no arguments won't be split, so if we didn't split anything then add the command to the split list manually.
@@ -62,8 +80,6 @@ namespace SWLOR.Game.Server.Service
             split[0] = split[0].ToLower();
             var command = split[0].Substring(1, split[0].Length - 1);
             split.RemoveAt(0);
-
-            ChatPlugin.SkipMessage();
 
             if (!_chatCommands.ContainsKey(command))
             {
@@ -91,8 +107,7 @@ namespace SWLOR.Game.Server.Service
 
                 var authorization = Authorization.GetAuthorizationLevel(sender);
 
-                if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && chatCommand.AvailableToAllOnTestEnvironment) ||
-                    chatCommand.Authorization.HasFlag(authorization))
+                if (CanUseCommand(chatCommand, authorization))
                 {
                     Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
                     target =>
@@ -112,6 +127,25 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Lists the commands the sender is allowed to run, by name, with their descriptions.
+        /// </summary>
+        public static List<(string Name, string Description)> GetAvailableCommands(uint sender)
+        {
+            var authorization = Authorization.GetAuthorizationLevel(sender);
+            return _chatCommands
+                .Where(command => CanUseCommand(command.Value, authorization))
+                .OrderBy(command => command.Key)
+                .Select(command => (command.Key, command.Value.Description))
+                .ToList();
+        }
+
+        private static bool CanUseCommand(ChatCommandDetail command, AuthorizationLevel authorization)
+        {
+            return _appSettings.ServerEnvironment == ServerEnvironmentType.Test && command.AvailableToAllOnTestEnvironment ||
+                   command.Authorization.HasFlag(authorization);
         }
 
         /// <summary>
@@ -146,8 +180,7 @@ namespace SWLOR.Game.Server.Service
 
             var authorization = Authorization.GetAuthorizationLevel(sender);
 
-            if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && command.AvailableToAllOnTestEnvironment) ||
-                command.Authorization.HasFlag(authorization))
+            if (CanUseCommand(command, authorization))
             {
                 var argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
                 var error = command.ValidateArguments?.Invoke(sender, argsArr);

@@ -225,6 +225,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool SpreadSunderFromTarget { get; init; }
             public int SpreadSunderDurationSeconds { get; init; }
             public int MaximumStatusSpreadsPerCast { get; init; }
+            // How many nearby enemies one affected source may spread to; 0 keeps the default of one.
+            public int MaximumStatusSpreadsPerSource { get; init; }
             public bool ClearTargetActionsOnHit { get; init; }
             public Type ConditionalStatusEffect { get; init; }
             public int ConditionalStatusDurationSeconds { get; init; }
@@ -1256,13 +1258,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (SpreadSunderFromTarget && sourceStatuses.Sundered)
                 {
+                    // Spread the source's own Sunder strength rather than the default one.
+                    var sourceSunder = StatusEffect.GetStatusEffect(target, typeof(SunderStatusEffect));
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
                         typeof(SunderStatusEffect),
                         SpreadSunderDurationSeconds > 0 ? SpreadSunderDurationSeconds : 30f,
                         damageType,
-                        spreadSnapshot);
+                        spreadSnapshot,
+                        MaximumStatusSpreadsPerSource,
+                        sourceSunder == null ? null : sourceSunder.Clone);
                 }
             }
 
@@ -1299,7 +1305,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 Type statusEffect,
                 float duration,
                 CombatDamageType damageType,
-                StatusSpreadSnapshot spreadSnapshot)
+                StatusSpreadSnapshot spreadSnapshot,
+                int maximumRecipients = 1,
+                Func<IStatusEffect> createStatus = null)
             {
                 if (duration <= 0f || !GetIsObjectValid(sourceTarget))
                     return;
@@ -1308,7 +1316,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                              activator,
                              GetLocation(sourceTarget),
                              5f,
-                             1,
+                             Math.Max(1, maximumRecipients),
                              predicate: nearby => nearby != sourceTarget && !StatusEffect.HasStatusEffect(nearby, statusEffect)))
                 {
                     spreadSnapshot.TrySpread(() =>
@@ -1316,9 +1324,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         // Remember the recipient's prerequisites before spreading, so an enemy
                         // hit later in this cast cannot chain a newly received status onward.
                         spreadSnapshot.Capture(nearby);
-                        return StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
+                        return createStatus == null
+                            ? StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType)
+                            : StatusEffect.ApplyStatusEffect(activator, nearby, createStatus(), duration, damageType);
                     });
-                    break;
                 }
             }
 

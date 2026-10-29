@@ -13,68 +13,68 @@ namespace SWLOR.Game.Server.Service
     public static class PairedRangedTraits
     {
         private static readonly Dictionary<uint, PairedRangedTraitState> States = new();
-        private static readonly Dictionary<uint, WeaponMovementWindow> MovementWindows = new();
 
-        public static void TrackMovement(uint actor)
+        /// <summary>Reports a weapon ability's first landed hit; its chain or own grant adds Cadence once.</summary>
+        public static void RecordWeaponAbilityHit(uint actor, WeaponAbilityTraitActivation activation)
         {
-            if (!CanReceiveTraitEvents(actor) || MovementWindows.ContainsKey(actor) ||
-                Read(actor, StatType.PairedRangedMomentumMaximum) <= 0 &&
-                Read(actor, StatType.PairedRangedMovementNextAbilityAccuracy) <= 0) return;
-            var window = new WeaponMovementWindow();
-            MovementWindows[actor] = window;
-            ObserveMovement(actor, window);
-            void Sample()
-            {
-                if (!CanReceiveTraitEvents(actor) || !MovementWindows.TryGetValue(actor, out var current) || current != window)
-                    return;
-                ObserveMovement(actor, window);
-                AssignCommand(GetModule(), () => DelayCommand(.25f, Sample));
-            }
-            AssignCommand(GetModule(), () => DelayCommand(.25f, Sample));
-        }
-
-        private static void ObserveMovement(uint actor, WeaponMovementWindow window) =>
-            window.Observe(DateTime.UtcNow, GetArea(actor), GetPosition(actor));
-
-        public static void RecordLandedWeaponHit(uint actor, uint target)
-        {
-            if (!CanReceiveTraitEvents(actor) || !GetIsObjectValid(target) || target == actor ||
-                !GetIsReactionTypeHostile(target, actor)) return;
-            TrackMovement(actor);
-            if (!MovementWindows.TryGetValue(actor, out var window)) return;
-            ObserveMovement(actor, window);
-            if (!window.TryConsumeForHit(GetArea(actor), GetPosition(actor))) return;
+            var now = DateTime.UtcNow;
+            if (activation?.IsCommitted != true || activation.Snapshot.StateGeneration == -1 ||
+                activation.CadenceEarnedOnHitAt(now) <= 0 || !CanReceiveTraitEvents(actor))
+                return;
             var state = GetState(actor);
-            state.RecordMovementHit(DateTime.UtcNow, GetConfiguration(actor));
+            state.RecordAbilityHit(now, GetConfiguration(actor), activation.Snapshot.ActivationId,
+                activation.CadenceEarnedOnHitAt(now));
             Sync(actor, state);
         }
 
         public static WeaponAbilityTraitActivation CaptureWeaponAbility(uint actor, AbilityDetail ability)
         {
-            TrackMovement(actor);
             if (!WeaponAbilityTraitPolicy.IsHostileWeaponAbility(ability) || !CanReceiveTraitEvents(actor)) return null;
-            if (Read(actor, StatType.PairedRangedMomentumMaximum) <= 0 &&
-                Read(actor, StatType.PairedRangedMovementNextAbilityAccuracy) <= 0)
+            if (Read(actor, StatType.CadenceMaximum) <= 0 &&
+                Read(actor, StatType.CadenceNextAbilityAccuracy) <= 0)
                 return new WeaponAbilityTraitActivation(
                     new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), false, false, 0, 0) { StateGeneration = -1 }, 0);
             var configuration = GetConfiguration(actor);
-            return new WeaponAbilityTraitActivation(CaptureAbility(actor, true, !ability.KeepsWeaponAbilityFlow),
-                ability.WeaponAbilityFlowDamagePerCharge ?? configuration.MomentumDamagePerCharge)
-                { PrimaryWeapon = Combat.GetAbilityAttackWeapon(actor, ability.SkillType) };
+            var damagePerCharge = (ability.WeaponAbilityCadenceDamagePerCharge ?? configuration.CadenceDamagePerCharge) +
+                                  configuration.CadenceBonusDamagePerCharge;
+            // Without the Cadence trait a foreign ability gains nothing per charge, so it leaves the charges alone.
+            var spendsCadence = !ability.KeepsWeaponAbilityCadence && damagePerCharge > 0;
+            return new WeaponAbilityTraitActivation(CaptureAbility(actor, true, spendsCadence), damagePerCharge)
+                {
+                    PrimaryWeapon = Combat.GetAbilityAttackWeapon(actor, ability.SkillType),
+                    CadenceOnHit = ability.WeaponAbilityCadenceOnHit
+                };
         }
 
         public static void CommitWeaponAbility(uint actor, AbilityDetail ability, WeaponAbilityTraitActivation activation)
         {
             if (activation == null || activation.IsCommitted) return;
             activation.SetPaidStamina(Combat.GetAbilityStaminaPaid(actor, ability));
-            activation.IsCommitted = activation.Snapshot.StateGeneration == -1 || CommitAbility(actor, activation.Snapshot);
+            if (activation.Snapshot.StateGeneration == -1)
+            {
+                activation.IsCommitted = true;
+                return;
+            }
+            activation.IsCommitted = CommitAbility(actor, activation.Snapshot);
+            if (activation.IsCommitted && States.TryGetValue(actor, out var state))
+            {
+                activation.ContinuesChain = state.RecordAbilityUse(DateTime.UtcNow, GetConfiguration(actor), ChainKey(ability),
+                    out var landsBy);
+                activation.ChainLandsBy = landsBy;
+            }
         }
+
+        /// <summary>Every rank of one ability shares a key, so a rank change is not a different ability.</summary>
+        private static int ChainKey(AbilityDetail ability) =>
+            ability.EffectiveLevelPerkType != PerkType.Invalid
+                ? (int)ability.EffectiveLevelPerkType
+                : StringComparer.Ordinal.GetHashCode(ability.Name ?? string.Empty) | int.MinValue;
 
         public static void CompleteWeaponAbilityHit(uint actor, WeaponAbilityTraitActivation activation)
         {
             if (activation?.IsCommitted != true || activation.RecoveryCompleted || activation.Snapshot.StateGeneration == -1) return;
             activation.RecoveryCompleted = true;
-            CompleteAbility(actor, activation.Snapshot, true, 0f, false, activation.PaidStamina, 0);
+            CompleteAbility(actor, activation.Snapshot, true, activation.PaidStamina, 0);
         }
 
         public static void CompleteIntrinsicAbility(uint actor, WeaponAbilityTraitActivation activation, bool anyHit,
@@ -95,7 +95,6 @@ namespace SWLOR.Game.Server.Service
 
         public static PairedRangedOrdinarySnapshot RecordOrdinaryAttempt(uint actor, uint target, long rollId)
         {
-            TrackMovement(actor);
             if (!CanReceiveTraitEvents(actor))
                 return new PairedRangedOrdinarySnapshot(0, 0);
             TwinPistolMastery.RecordTargetChange(actor, target);
@@ -117,9 +116,6 @@ namespace SWLOR.Game.Server.Service
             if (!CanReceiveTraitEvents(actor) || !GetIsObjectValid(target) || target == actor ||
                 !GetIsReactionTypeHostile(target, actor))
                 return;
-            TrackMovement(actor);
-            if (MovementWindows.TryGetValue(actor, out var movement) && !movement.TryRememberOrdinaryHit(rollId)) return;
-            RecordLandedWeaponHit(actor, target);
             if (!States.TryGetValue(actor, out var state)) return;
             var stamina = state.RecordOrdinaryHit(DateTime.UtcNow, GetConfiguration(actor), target, rollId);
             if (stamina > 0)
@@ -164,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             if (!CanReceiveTraitEvents(actor))
                 return;
             var configuration = GetConfiguration(actor);
-            if (configuration.MomentumMaximum <= 0 || configuration.EvasionMomentumCooldownSeconds <= 0) return;
+            if (configuration.CadenceMaximum <= 0 || configuration.EvasionCadenceCooldownSeconds <= 0) return;
             var state = GetState(actor);
             state.RecordAccuracyEvasionMiss(DateTime.UtcNow, configuration);
             Sync(actor, state);
@@ -186,20 +182,20 @@ namespace SWLOR.Game.Server.Service
             return adjustment;
         }
 
-        public static PairedRangedAbilityTraitsSnapshot BeginAbility(uint actor, bool crossfire, bool spendsMomentum)
+        public static PairedRangedAbilityTraitsSnapshot BeginAbility(uint actor, bool usesNextAbilityAccuracy, bool spendsCadence)
         {
-            var snapshot = CaptureAbility(actor, crossfire, spendsMomentum);
+            var snapshot = CaptureAbility(actor, usesNextAbilityAccuracy, spendsCadence);
             CommitAbility(actor, snapshot);
             return snapshot;
         }
 
-        public static PairedRangedAbilityTraitsSnapshot CaptureAbility(uint actor, bool crossfire, bool spendsMomentum)
+        public static PairedRangedAbilityTraitsSnapshot CaptureAbility(uint actor, bool usesNextAbilityAccuracy, bool spendsCadence)
         {
             if (!CanReceiveTraitEvents(actor))
-                return new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), crossfire, spendsMomentum, 0, 0)
+                return new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), usesNextAbilityAccuracy, spendsCadence, 0, 0)
                     { StateGeneration = -1 };
             var state = GetState(actor);
-            var snapshot = state.CaptureAbility(DateTime.UtcNow, GetConfiguration(actor), crossfire, spendsMomentum);
+            var snapshot = state.CaptureAbility(DateTime.UtcNow, GetConfiguration(actor), usesNextAbilityAccuracy, spendsCadence);
             Sync(actor, state);
             return snapshot;
         }
@@ -214,16 +210,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         public static void CompleteAbility(
-            uint actor, PairedRangedAbilityTraitsSnapshot snapshot, bool anyHit, float distanceTravelled,
-            bool generatesMomentum, int paidStamina, int restoreStaminaOnHit,
+            uint actor, PairedRangedAbilityTraitsSnapshot snapshot, bool anyHit, int paidStamina, int restoreStaminaOnHit,
             int ordinaryBonusAttempts = 0, int ordinaryBonusDamagePercent = 0, int ordinaryBonusSeconds = 0)
         {
             if (!CanReceiveTraitEvents(actor))
                 return;
             var state = GetState(actor);
             var restore = state.CompleteAbility(
-                DateTime.UtcNow, GetConfiguration(actor), snapshot, anyHit, distanceTravelled, generatesMomentum,
-                paidStamina, restoreStaminaOnHit, ordinaryBonusAttempts, ordinaryBonusDamagePercent, ordinaryBonusSeconds);
+                DateTime.UtcNow, GetConfiguration(actor), snapshot, anyHit, paidStamina, restoreStaminaOnHit, ordinaryBonusAttempts, ordinaryBonusDamagePercent, ordinaryBonusSeconds);
             if (restore > 0)
                 Combat.RestoreAbilityHitStamina(actor, Ability.GetActiveAbilityImpactSummary(actor)?.Ability, restore);
             Sync(actor, state);
@@ -231,35 +225,22 @@ namespace SWLOR.Game.Server.Service
 
         public static void Reconcile(uint actor)
         {
-            ReconcileMovementTracking(actor);
             if (!States.TryGetValue(actor, out var state))
                 return;
             state.Reconcile(DateTime.UtcNow, GetConfiguration(actor));
             Sync(actor, state);
         }
 
-        public static void ReconcileMovementTracking(uint actor)
-        {
-            if (MovementWindows.TryGetValue(actor, out var movement) &&
-                Read(actor, StatType.PairedRangedMomentumMaximum) <= 0 &&
-                Read(actor, StatType.PairedRangedMovementNextAbilityAccuracy) <= 0)
-            {
-                MovementWindows.Remove(actor);
-                movement.Clear();
-            }
-            TrackMovement(actor);
-        }
-
-        public static void ExitExtendedMomentum(uint actor)
+        public static void ExitExtendedCadence(uint actor)
         {
             if (!States.TryGetValue(actor, out var state))
                 return;
-            var duration = Read(actor, StatType.PairedRangedMomentumDurationSeconds);
-            state.ClampMomentumDuration(DateTime.UtcNow, duration);
+            var duration = Read(actor, StatType.CadenceDurationSeconds);
+            state.ClampCadenceDuration(DateTime.UtcNow, duration);
             Sync(actor, state);
         }
 
-        public static void ClearCombatState(uint actor, bool preserveMovement = false) => ClearTransientState(actor, preserveMovement);
+        public static void ClearCombatState(uint actor) => ClearTransientState(actor);
 
         public static void ClearEquipmentState(uint actor)
         {
@@ -275,14 +256,12 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Drops tracking for a destroyed object without refreshing its status effects.</summary>
         public static void ForgetDestroyed(uint actor)
         {
-            if (MovementWindows.Remove(actor, out var movement)) movement.Clear();
             States.Remove(actor);
             TwinPistolMastery.ClearTrialState(actor);
         }
 
-        private static void ClearTransientState(uint actor, bool preserveMovement = false)
+        private static void ClearTransientState(uint actor)
         {
-            if (!preserveMovement && MovementWindows.Remove(actor, out var movement)) movement.Clear();
             TwinPistolMastery.ClearTrialState(actor);
             if (!States.TryGetValue(actor, out var state))
                 return;
@@ -296,7 +275,7 @@ namespace SWLOR.Game.Server.Service
                 return new PairedRangedOrdinarySnapshot(0, 0);
             return States.TryGetValue(actor, out var state)
                 ? state.GetOrdinarySnapshot(DateTime.UtcNow, GetConfiguration(actor), target)
-                : new PairedRangedOrdinarySnapshot(ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), 0);
+                : new PairedRangedOrdinarySnapshot(0, 0);
         }
 
         private static bool NeedsOrdinaryState(PairedRangedTraitConfiguration configuration) =>
@@ -304,12 +283,11 @@ namespace SWLOR.Game.Server.Service
             configuration.RepeatedTargetRequiredHits > 0 && configuration.RepeatedTargetDamagePercent != 0;
 
         private static PairedRangedOrdinarySnapshot UntrackedSnapshot(PairedRangedTraitConfiguration configuration) =>
-            new(configuration.OrdinaryDamagePercentAdjustment, 0);
+            new(0, 0);
 
         /// <summary>The subset of <see cref="GetConfiguration"/> read by <see cref="NeedsOrdinaryState"/> and <see cref="UntrackedSnapshot"/>.</summary>
         private static PairedRangedTraitConfiguration GetOrdinaryConfiguration(uint actor) => new()
         {
-            OrdinaryDamagePercentAdjustment = ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
             OrdinaryHitRestoreCount = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
             OrdinaryHitStaminaRestore = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
             RepeatedTargetRequiredHits = Read(actor, StatType.PairedRangedRepeatedTargetRequiredHits),
@@ -325,7 +303,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int Read(uint actor, StatType stat) => Stat.GetStatAdjustment(actor, stat);
 
-        // Paired Handling and Alternating Fire offset the paired firing cycle, so they need two weapons.
+        // Paired ordinary-damage and Alternating Fire offset the paired firing cycle, so they need two weapons.
         private static int ReadDualWield(uint actor, StatType stat) =>
             EquipmentPredicates.HasDualWield(actor) ? Read(actor, stat) : 0;
 
@@ -338,7 +316,6 @@ namespace SWLOR.Game.Server.Service
                 return new PairedRangedTraitConfiguration();
             return new PairedRangedTraitConfiguration
             {
-                OrdinaryDamagePercentAdjustment = ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
                 OrdinaryHitRestoreCount = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
                 OrdinaryHitStaminaRestore = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
                 OrdinaryHitRestoreCooldownSeconds = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),
@@ -348,18 +325,20 @@ namespace SWLOR.Game.Server.Service
                 DirectDamageNextAbilityStaminaReduction = Read(actor, StatType.PairedRangedDirectDamageNextAbilityStaminaReduction),
                 DirectDamageCostWindowSeconds = Read(actor, StatType.PairedRangedDirectDamageCostWindowSeconds),
                 DirectDamageCostCooldownSeconds = Read(actor, StatType.PairedRangedDirectDamageCostCooldownSeconds),
-                MomentumMaximum = Read(actor, StatType.PairedRangedMomentumMaximum),
-                MomentumDurationSeconds = Read(actor, StatType.PairedRangedMomentumDurationSeconds),
-                MomentumAccuracyPerCharge = Read(actor, StatType.PairedRangedMomentumAccuracyPerCharge),
-                MomentumDamagePerCharge = Read(actor, StatType.MovementHitWeaponAbilityDamagePerCharge),
-                MomentumStaminaRestorePerCharge = Read(actor, StatType.PairedRangedMomentumStaminaRestorePerCharge),
-                MomentumStaminaRestoreMaximum = Read(actor, StatType.PairedRangedMomentumStaminaRestoreMaximum),
-                MomentumRestoreCooldownSeconds = Read(actor, StatType.PairedRangedMomentumRestoreCooldownSeconds),
-                EvasionMomentumCooldownSeconds = Read(actor, StatType.PairedRangedEvasionMomentumCooldownSeconds),
-                MovementNextAbilityAccuracy = Read(actor, StatType.PairedRangedMovementNextAbilityAccuracy),
-                MovementAccuracyDurationSeconds = Read(actor, StatType.PairedRangedMovementAccuracyDurationSeconds),
-                MovementAccuracyCooldownSeconds = Read(actor, StatType.PairedRangedMovementAccuracyCooldownSeconds),
-                MomentumExtendedDurationSeconds = Read(actor, StatType.PairedRangedMomentumExtendedDurationSeconds),
+                CadenceMaximum = Read(actor, StatType.CadenceMaximum),
+                CadenceDurationSeconds = Read(actor, StatType.CadenceDurationSeconds),
+                CadenceChainWindowSeconds = Read(actor, StatType.CadenceChainWindowSeconds),
+                CadenceAccuracyPerCharge = Read(actor, StatType.CadenceAccuracyPerCharge),
+                CadenceDamagePerCharge = Read(actor, StatType.CadenceDamagePerCharge),
+                CadenceBonusDamagePerCharge = Read(actor, StatType.CadenceBonusDamagePerCharge),
+                CadenceStaminaRestorePerCharge = Read(actor, StatType.CadenceStaminaRestorePerCharge),
+                CadenceStaminaRestoreMaximum = Read(actor, StatType.CadenceStaminaRestoreMaximum),
+                CadenceRestoreCooldownSeconds = Read(actor, StatType.CadenceRestoreCooldownSeconds),
+                EvasionCadenceCooldownSeconds = Read(actor, StatType.EvasionCadenceCooldownSeconds),
+                CadenceNextAbilityAccuracy = Read(actor, StatType.CadenceNextAbilityAccuracy),
+                CadenceAccuracyDurationSeconds = Read(actor, StatType.CadenceAccuracyDurationSeconds),
+                CadenceAccuracyCooldownSeconds = Read(actor, StatType.CadenceAccuracyCooldownSeconds),
+                CadenceExtendedDurationSeconds = Read(actor, StatType.CadenceExtendedDurationSeconds),
             };
         }
 
@@ -369,11 +348,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             var now = DateTime.UtcNow;
             var configuration = GetConfiguration(actor);
-            Refresh(actor, new MomentumStatusEffect(state.Momentum), Remaining(state.MomentumExpires, now), state.Momentum > 0);
+            Refresh(actor, new CadenceStatusEffect(state.Cadence), Remaining(state.CadenceExpires, now), state.Cadence > 0);
             Refresh(actor, new ConvergingFireStatusEffect(), Remaining(state.RepeatedTargetExpires, now),
                 state.HasRepeatedTargetBonus(now, configuration));
-            Refresh(actor, new ChangingAnglesStatusEffect(), Remaining(state.MovementAccuracyExpires, now),
-                state.MovementAccuracyExpires > now);
+            Refresh(actor, new ChangingAnglesStatusEffect(), Remaining(state.CadenceAccuracyExpires, now),
+                state.CadenceAccuracyExpires > now);
             Refresh(actor, new CoolUnderFireStatusEffect(), Remaining(state.DamageCostExpires, now),
                 state.DamageCostExpires > now);
             Refresh(actor, new TwinSunsStatusEffect(state.BonusAttempts), Remaining(state.BonusExpires, now),

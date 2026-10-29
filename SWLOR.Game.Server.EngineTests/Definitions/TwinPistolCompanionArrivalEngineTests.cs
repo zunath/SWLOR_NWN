@@ -414,7 +414,7 @@ public static class TwinPistolCompanionArrivalEngineTests
     private static void GrantOrdinaryAttempts(EngineTestContext ctx, uint actor)
     {
         var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
-        PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, 12);
+        PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, 12);
         ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0, "The fixture starts with six ordinary attempted-shot charges");
     }
 

@@ -80,6 +80,11 @@ namespace SWLOR.Game.Server.Service.GuiService
         DMSettings = 75,
         PlayerList = 76,
         DMBattleGrid = 77,
+        ExtraHotbar1 = 78,
+        ExtraHotbar2 = 79,
+        ExtraHotbar3 = 80,
+        ExtraHotbarSetup = 81,
+        ExtraHotbarSlotPicker = 82,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

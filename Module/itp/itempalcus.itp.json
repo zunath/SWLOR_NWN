@@ -69271,7 +69271,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Blaster Slide I"
+                      "value": "Instruction Disc: Lead Shot I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -69282,7 +69282,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Blaster Slide II"
+                      "value": "Instruction Disc: Lead Shot II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -69293,7 +69293,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Blaster Slide III"
+                      "value": "Instruction Disc: Lead Shot III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -69304,7 +69304,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Blaster Slide IV"
+                      "value": "Instruction Disc: Lead Shot IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -70008,7 +70008,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Grapple Shot I"
+                      "value": "Instruction Disc: Closing Shot I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -70019,7 +70019,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Grapple Shot II"
+                      "value": "Instruction Disc: Closing Shot II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -70030,7 +70030,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Grapple Shot III"
+                      "value": "Instruction Disc: Closing Shot III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -70767,7 +70767,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Pistol Rush I"
+                      "value": "Instruction Disc: Tempo Shot I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -70778,7 +70778,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Pistol Rush II"
+                      "value": "Instruction Disc: Tempo Shot II"
                     },
                     "RESREF": {
                       "type": "resref",

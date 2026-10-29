@@ -1608,7 +1608,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
 
         [KeyItem(KeyItemCategoryType.QuestItems, "Twin Suns Canyon Firing Trace", true, "A recording of sustained two-hand fire against one enemy at the Anchorhead Canyon Range, ready for Jek Talin's inspection.")]
         TwinSunsCanyonFiringTrace = 3644,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Final Salvo Canyon Route Trace", true, "A recording of two successful repositioning attacks and the Flow-powered follow-up at the Anchorhead Canyon Range, ready for Pavo Orrel's inspection.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Final Salvo Canyon Route Trace", true, "A recording of a Tempo Shot, Lead Shot and Cadence-spending Closing Shot at the Anchorhead Canyon Range, ready for Pavo Orrel's inspection.")]
         FinalSalvoCanyonRouteTrace = 3645,
 
 	}

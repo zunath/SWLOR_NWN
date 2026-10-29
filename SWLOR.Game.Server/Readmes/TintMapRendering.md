@@ -623,8 +623,10 @@ bind transforms) into the skeletons of the emote libraries `a_ba_non_combat` and
 `a_ba_non_combat2`, and gives each of their 145 custom emote clips one rest key (identity)
 on every flap joint; the engine only applies clip tracks for joints the animation model's
 skeleton carries (client-verified: tracks without the skeleton joints changed nothing). No
-other normal-phenotype part uses the flap joints, so only these skirts change, and only
-in the custom emotes; the dwarf and half-orc roots number their flaps apart and are
+other normal-phenotype part uses the flap joints: belt 226 and pelvis 198, back on their
+original leg weights, no longer do, and `TestFillEmoteFlapTracks.py` fails if any part
+but the skirts rebound above is skinned to them. So only those skirts change, and only in
+the custom emotes; the dwarf and half-orc roots number their flaps apart and are
 unaffected. The custom emotes in the other animation libraries (`a_ba_med_weap`, whose
 point-pistol clips another tool owns, `a_ba_int`, `a_fa_int`, `a_ba_dnc`, `a_ba_casts`,
 `jedi_anim`), the robe phenotypes' own banks, and stock clips without flap or cloak tracks

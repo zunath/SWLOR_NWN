@@ -14246,7 +14246,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "esh_scrap_smug_wp"
+                      "value": "esh_scrap_wp"
                     }
                   }
                 ]
@@ -20296,7 +20296,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "esh_scrap_smug_sk"
+                      "value": "esh_scrap_sk"
                     }
                   },
                   {

@@ -59,6 +59,7 @@ public sealed class EshanAuthoringReviewTests
                            name.StartsWith("es_", StringComparison.Ordinal) || name.StartsWith("hc_", StringComparison.Ordinal))
             .ToArray();
         expected.Should().NotBeEmpty();
+        expected.Should().OnlyContain(name => name.Length <= 16, "NWN archives omit resources with longer resrefs");
         var entries = Read($"Module/itp/{palette}.itp.json").Descendants().OfType<JProperty>()
             .Where(property => property.Name == "RESREF").Select(property => property.Value["value"]!.Value<string>()).ToHashSet();
         expected.Where(name => !entries.Contains(name)).Should().BeEmpty("builders must be able to find every Eshan blueprint");

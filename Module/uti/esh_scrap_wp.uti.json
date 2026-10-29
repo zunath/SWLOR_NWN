@@ -175,7 +175,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "esh_scrap_smug_wp"
+    "value": "esh_scrap_wp"
   },
   "VarTable": {
     "type": "list",

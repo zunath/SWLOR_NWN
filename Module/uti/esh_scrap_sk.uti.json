@@ -602,7 +602,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "esh_scrap_smug_sk"
+    "value": "esh_scrap_sk"
   },
   "xModelPart1": {
     "type": "word",

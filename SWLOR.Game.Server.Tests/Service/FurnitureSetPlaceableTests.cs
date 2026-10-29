@@ -32,4 +32,15 @@ public class FurnitureSetPlaceableTests
                 $"{setName} Trophy Stand and Display Plinth must not look identical");
         }
     }
+
+    [Test]
+    public void EveryFurnitureSet_HasItsOwnDisplayPlinthPlaceable()
+    {
+        var plinths = Enum.GetValues<StructureType>()
+            .Where(t => t.ToString().EndsWith(DisplayPlinthSuffix))
+            .ToList();
+
+        plinths.Select(ResrefOf).Should().OnlyHaveUniqueItems(
+            "each furniture set's Display Plinth should have its own look");
+    }
 }

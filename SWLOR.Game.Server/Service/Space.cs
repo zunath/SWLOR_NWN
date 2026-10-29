@@ -1162,13 +1162,17 @@ namespace SWLOR.Game.Server.Service
                 ClearAllActions();
             });
 
-            DelayCommand(1f, () =>
+            // Entering space can run from the launch check (a scheduler task), where DelayCommand never runs.
+            Scheduler.Schedule(() =>
             {
+                if (!GetIsObjectValid(copy) || !GetIsObjectValid(chair))
+                    return;
+
                 AssignCommand(copy, () =>
                 {
                     ActionSit(chair);
                 });
-            });
+            }, TimeSpan.FromSeconds(1));
 
             SetPlotFlag(copy, true);
             SetLocalObject(player, "SPACE_PILOT_CLONE", copy);

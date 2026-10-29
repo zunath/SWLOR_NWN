@@ -182,7 +182,12 @@ namespace SWLOR.Game.Server.Service
                 ClearAllActions();
                 JumpToLocation(location);
             });
-            DelayCommand(0.5f, () => ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), pilot));
+            // Runs from the run check (a scheduler task), where DelayCommand never runs.
+            Scheduler.Schedule(() =>
+            {
+                if (GetIsObjectValid(pilot))
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), pilot);
+            }, TimeSpan.FromSeconds(0.5));
         }
 
         private static void ProcessRiftRuns()

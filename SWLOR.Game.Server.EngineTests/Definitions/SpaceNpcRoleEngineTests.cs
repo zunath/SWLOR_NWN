@@ -53,24 +53,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("NPC carrier launches its tier's fighter", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
         public static async Task CarrierLaunchesAWave(EngineTestContext ctx)
         {
-            var (area, carrier, target) = await SpawnFightAsync(ctx, "t1carrier");
-            var seen = new System.Collections.Generic.HashSet<string>();
-            try
-            {
-                await ctx.WaitUntilAsync(() =>
-                {
-                    for (var o = GetFirstObjectInArea(area); GetIsObjectValid(o); o = GetNextObjectInArea(area))
-                        seen.Add($"{GetTag(o)}/{GetResRef(o)}/{GetObjectType(o)}/dead={GetIsDead(o)}");
-                    return CountInArea(area, "t1fighter") >= 1;
-                }, 10f, "a fighter to launch");
-            }
-            catch (EngineTestAssertionException ex)
-            {
-                var states = (System.Collections.IDictionary)typeof(Space).GetField("_npcRoleStates", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic).GetValue(null);
-                var state = states.Contains(carrier) ? (SWLOR.Game.Server.Service.SpaceService.ShipNpcRoleState)states[carrier] : null;
-                throw new EngineTestAssertionException($"{ex.Message} [tag={GetTag(carrier)} role={Space.GetNpcRole(carrier)} state={(state == null ? "none" : $"waves {state.WavesLaunched} last {state.LastWave:o} fighters {state.Fighters.Count}")} " +
-                    $"status={(Space.GetShipStatus(carrier) != null)} dist={GetDistanceBetween(carrier, target):0.0} enemy={GetIsEnemy(target, carrier)} dead={GetIsDead(carrier)} enmity={Enmity.GetEnmityTable(carrier).Count} fightersAny={CountInArea(area, "t1fighter")} seen={string.Join(";", seen)}]");
-            }
+            var (area, carrier, _) = await SpawnFightAsync(ctx, "t1carrier");
+            await ctx.WaitUntilAsync(() => CountInArea(area, "t1fighter") >= 1, 10f, "a fighter to launch");
 
             DestroyObject(carrier);
             await ctx.WaitUntilAsync(() => CountInArea(area, "t1fighter") == 0, 10f, "the fighter to leave with the carrier");
@@ -81,6 +65,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var (area, _, _) = await SpawnFightAsync(ctx, "t1minelayer");
             await ctx.WaitUntilAsync(() => CountInArea(area, "spacemine") >= 1, 10f, "a mine to appear");
+        }
+
+        [EngineTest("A mine detonates on a ship beside it and destroys it when it is left at 1 hull", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task MineDestroysAWeakenedShip(EngineTestContext ctx)
+        {
+            // The mine goes off from the mine check (a scheduler task), so its blast and the ship's destruction must not
+            // depend on a script context.
+            var (_, _, target) = await SpawnFightAsync(ctx, "t1minelayer", 62f);
+            var status = Space.GetShipStatus(target);
+            status.Shield = 0;
+            status.Hull = 1;
+            await ctx.WaitUntilAsync(() => GetIsDead(target), 15f, "the weakened ship beside the minelayer to be destroyed by its mine or fire");
         }
 
         private static int CountInArea(uint area, string tag)
@@ -95,11 +91,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return count;
         }
 
-        private static async Task<(uint Area, uint Ship, uint Target)> SpawnFightAsync(EngineTestContext ctx, string resref)
+        private static async Task<(uint Area, uint Ship, uint Target)> SpawnFightAsync(EngineTestContext ctx, string resref, float targetX = 80f)
         {
             var area = ctx.CreateInstancedArea(SpaceAreaResref);
             var ship = SpawnShip(ctx, area, resref, 60f, StandardFaction.Hostile);
-            var target = SpawnShip(ctx, area, TargetResref, 80f, StandardFaction.Defender);
+            var target = SpawnShip(ctx, area, TargetResref, targetX, StandardFaction.Defender);
             await ctx.WaitUntilAsync(() => Space.GetShipStatus(ship) != null && Space.GetShipStatus(target) != null, 5f,
                 "both ships to register as NPC ships");
 

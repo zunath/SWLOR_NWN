@@ -6,7 +6,9 @@ namespace SWLOR.Game.Server.Entity
 {
     /// <summary>
     /// A station-only building's own data (plan section 25): its settings, the droid assigned to it and the Asteroid
-    /// Drill's stored ore. The id is the building's structure property id. A new type, so no migration.
+    /// Drill's stored ore. The id is <see cref="KeyFor"/> of the building's structure property id, never the property id
+    /// itself: the DB's per-frame entity cache is keyed by id alone, so sharing the building's id made a Get of this state
+    /// in the frame that loaded the building return the WorldProperty and throw (W11r). A new type, so no migration.
     /// </summary>
     public class StationBuildingState : EntityBase
     {
@@ -21,6 +23,12 @@ namespace SWLOR.Game.Server.Entity
             DroidName = string.Empty;
             SerializedDroid = string.Empty;
         }
+
+        /// <summary>The state's key for a building's structure property id.</summary>
+        public static string KeyFor(string buildingId) => "station-building:" + buildingId;
+
+        /// <summary>The building's structure property id.</summary>
+        public string BuildingId { get; set; }
 
         /// <summary>The station (city) the building stands on.</summary>
         [Indexed]

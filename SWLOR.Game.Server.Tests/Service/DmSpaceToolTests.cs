@@ -69,7 +69,7 @@ public class DmSpaceToolTests
         DmSpaceToolRules.DescribePlaced(derelict, true).Should().Be("Placed a tier 1 boardable derelict where you pointed. Its site is open.");
 
         var data = SignatureSiteRules.Create("b", "space_dathomir", 5, SignatureType.DataSite, 10, 20, 0, Now);
-        DmSpaceToolRules.DescribePlaced(data, false).Should().Be("Placed a hidden tier 5 DataSite where you pointed. A Probe Launcher can find it.");
+        DmSpaceToolRules.DescribePlaced(data, false).Should().Be("Placed a hidden tier 5 data site where you pointed. A Probe Launcher can find it.");
 
         var wild = SignatureSiteRules.Create("c", "space_wspulsar", 5, SignatureType.CombatSite, 10, 20, 0, Now, wildSpace: true);
         DmSpaceToolRules.DescribePlaced(wild, false).Should().Contain("tier 5.5");

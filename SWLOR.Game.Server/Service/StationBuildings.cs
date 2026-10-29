@@ -33,9 +33,10 @@ namespace SWLOR.Game.Server.Service
         /// <summary>A building's saved state; a building without one gets the default settings, unsaved.</summary>
         public static StationBuildingState GetState(WorldProperty building)
         {
-            return DB.Get<StationBuildingState>(building.Id) ?? new StationBuildingState
+            return DB.Get<StationBuildingState>(StationBuildingState.KeyFor(building.Id)) ?? new StationBuildingState
             {
-                Id = building.Id,
+                Id = StationBuildingState.KeyFor(building.Id),
+                BuildingId = building.Id,
                 StationId = building.ParentPropertyId,
                 StructureType = building.StructureType,
             };
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.Service
             SetUseableFlag(model, false);
             SetLocalObject(console, ModelVariable, model);
 
-            if (!DB.Exists<StationBuildingState>(building.Id))
+            if (!DB.Exists<StationBuildingState>(StationBuildingState.KeyFor(building.Id)))
             {
                 // A new drill starts mining at once.
                 var state = GetState(building);
@@ -108,7 +109,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void OnDeleted(WorldProperty building)
         {
-            var state = DB.Get<StationBuildingState>(building.Id);
+            var state = DB.Get<StationBuildingState>(StationBuildingState.KeyFor(building.Id));
             if (state == null)
                 return;
 
@@ -490,7 +491,7 @@ namespace SWLOR.Game.Server.Service
             var destinations = new List<WorldProperty>();
             foreach (var beacon in beacons)
             {
-                if (beacon.StationId == origin.Id || !DB.Exists<WorldProperty>(beacon.Id))
+                if (beacon.StationId == origin.Id || !DB.Exists<WorldProperty>(beacon.BuildingId))
                     continue;
 
                 var station = DB.Get<WorldProperty>(beacon.StationId);

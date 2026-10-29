@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
                     case CapitalBattleStep.Destroyed:
                         var paid = PayCapitalBattle();
                         BroadcastIncursion(ColorToken.Green(
-                            $"CAPITAL BATTLE: the {name} battle group in {_capitalBattleArea.Name} is destroyed. {paid} pilots share the spoils."));
+                            $"CAPITAL BATTLE: the {name} battle group in {_capitalBattleArea.Name} is destroyed. {CapitalBattleRules.DescribeSpoilsShare(paid)}"));
                         EndCapitalBattle(now);
                         break;
                     case CapitalBattleStep.Withdraw:

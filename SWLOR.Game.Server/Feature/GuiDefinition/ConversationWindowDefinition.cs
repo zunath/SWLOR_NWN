@@ -9,9 +9,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<ConversationViewModel> _builder = new();
 
-        // The speaker name wraps inside the 150 px portrait column; three lines fit a name such as
-        // "Docking Point: CZ-220" or "Docking Point: Smuggler's Moon Station" without clipping its last line.
-        private const float SpeakerNameHeight = 66f;
+        // NUI labels draw a single line, so the speaker name is wrapped by the view model onto three label rows of the
+        // 150 px portrait column; "Docking Point: CZ-220" or "Docking Point: Smuggler's Moon Station" fits without clipping.
+        private const float SpeakerNameRowHeight = 18f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -31,10 +31,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             portrait.AddRow(row =>
                             {
                                 row.AddLabel()
-                                    .BindText(model => model.SpeakerName)
+                                    .BindText(model => model.SpeakerNameLine1)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(SpeakerNameHeight);
+                                    .SetHeight(SpeakerNameRowHeight);
+                            });
+                            portrait.AddRow(row =>
+                            {
+                                row.AddLabel()
+                                    .BindText(model => model.SpeakerNameLine2)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHeight(SpeakerNameRowHeight);
+                            });
+                            portrait.AddRow(row =>
+                            {
+                                row.AddLabel()
+                                    .BindText(model => model.SpeakerNameLine3)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHeight(SpeakerNameRowHeight);
                             });
                             portrait.AddRow(row =>
                             {

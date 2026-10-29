@@ -43,7 +43,7 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public string LoadNode(uint node) => Nodes.TryGetValue(node, out var content) ? content : null;
 
-    /// <summary>The node saves ("node") and XP awards ("xp"), in order.</summary>
+    /// <summary>The node saves ("node"), harvest deliveries ("harvest"), node removals ("destroy") and XP awards ("xp"), in order.</summary>
     public List<string> Order { get; } = new();
 
     public void SaveNode(uint node, string content)
@@ -64,7 +64,7 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public void DestroyNode(uint node)
     {
-        Order.Add("node");
+        Order.Add("destroy");
         DestroyedNodes.Add(node);
         LiveNodes.Remove(node);
         Nodes.Remove(node);
@@ -81,7 +81,15 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
         HasHarvester = false;
     }
 
-    public void GiveHarvest(uint player, uint node, string lootTable, HarvestDelivery delivery) => Harvests.Add(delivery);
+    /// <summary>Runs as a harvest is delivered, so a test can see what the node held at that moment.</summary>
+    public Action OnHarvest { get; set; }
+
+    public void GiveHarvest(uint player, uint node, string lootTable, HarvestDelivery delivery)
+    {
+        Order.Add("harvest");
+        OnHarvest?.Invoke();
+        Harvests.Add(delivery);
+    }
 
     public int GetGatheringRank(uint player) => GatheringRank;
 

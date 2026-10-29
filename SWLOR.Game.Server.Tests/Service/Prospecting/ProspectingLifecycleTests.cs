@@ -339,7 +339,7 @@ public class ProspectingLifecycleTests
     }
 
     [Test]
-    public void AStrikeSavesTheNodeBeforeItPaysTheXp_SoARestartCannotLeavePaidUnitsOnTheNode()
+    public void AStrikeSavesTheNodeBeforeItDeliversAndPaysTheXp_SoARestartCannotLeavePaidUnitsOnTheNode()
     {
         var lifecycle = Lifecycle(StrikeTwoUnits);
         var session = Open(lifecycle, Node(4, "r"), rank: 25, tier: 3);
@@ -347,7 +347,61 @@ public class ProspectingLifecycleTests
 
         Do(lifecycle, session, ProspectingActionIds.Strike);
 
-        _world.Order.Should().Equal("node", "xp");
+        _world.Order.Should().Equal("node", "harvest", "xp");
+    }
+
+    [Test]
+    public void TheLastUnitSavesTheNodeSpentBeforeItIsDelivered_ThenRemovesTheNode()
+    {
+        var lifecycle = Lifecycle();
+        var session = Open(lifecycle, Node(1, ""));
+        string savedAtDelivery = null;
+        _world.Order.Clear();
+        _world.OnHarvest = () => savedAtDelivery = _world.Nodes[NodeId];
+
+        Do(lifecycle, session, ProspectingActionIds.Strike);
+
+        _world.Order.Should().Equal("node", "harvest", "destroy", "xp");
+        ProspectingNode.TryParse(savedAtDelivery, out var saved).Should().BeTrue();
+        saved.IsSpent.Should().BeTrue("a restart after the delivery must find nothing left on the node");
+    }
+
+    [Test]
+    public void ACollapseSavesTheNodeSpentBeforeWhatWasGatheredIsDelivered()
+    {
+        var lifecycle = Lifecycle(StrikeOneUnit);
+        var session = Open(lifecycle, ProspectingTestData.Node(4, "r", stability: ProspectingRules.StrikeStability));
+        string savedAtDelivery = null;
+        _world.Order.Clear();
+        _world.OnHarvest = () => savedAtDelivery = _world.Nodes[NodeId];
+
+        Do(lifecycle, session, ProspectingActionIds.Strike);
+
+        _world.Order.Should().Equal("node", "harvest", "destroy", "xp");
+        ProspectingNode.TryParse(savedAtDelivery, out var saved).Should().BeTrue();
+        saved.IsSpent.Should().BeTrue("the rest of a collapsed node is lost, so nothing may be taken from it after a restart");
+    }
+
+    [Test]
+    public void QuickHarvestSavesEachUnitsDepletionBeforeTheUnitIsDelivered()
+    {
+        var lifecycle = Lifecycle();
+        _world.SaveNode(NodeId, Node(2, "").Serialize());
+        var session = lifecycle.Begin(Request(rank: 25, tier: 3)).Session;
+        var savedAtDelivery = new List<int>();
+        _world.Order.Clear();
+        _world.OnHarvest = () =>
+        {
+            ProspectingNode.TryParse(_world.Nodes[NodeId], out var saved).Should().BeTrue();
+            savedAtDelivery.Add(saved.Pool);
+        };
+
+        lifecycle.StartQuickHarvest(session, null).Started.Should().BeTrue();
+        _world.RunNextWork((float)ProspectingRules.HarvestSeconds);
+        _world.RunNextWork((float)ProspectingRules.HarvestSeconds);
+
+        savedAtDelivery.Should().Equal(1, 0);
+        _world.Order.Should().Equal("node", "harvest", "xp", "node", "harvest", "destroy", "xp");
     }
 
     [Test]

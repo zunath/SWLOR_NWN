@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static ShipDroidCrew EngineerDroid(int tier) => new()
         {
             Seat = ShipCrewSeat.Engineer, OwnerPlayerId = "engine-droid-owner", DroidItemId = "engine-droid-" + tier, Name = "R5", Tier = tier,
+            Industry = 20 * tier, // five all-industrial parts, 4 x tier each (plan section 27)
         };
 
         [EngineTest("A droid at the Engineer station runs the hull repairer at its tier's effectiveness", Category = "DroidCrew", TimeoutSeconds = 60f)]
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => Hull() > 10, 5f, "the droid switches the hull repairer on");
                 Space.TurnOffShipToggles(pilot.Creature);
                 SpaceCrew.ClearDroidCrew(pilot.Creature);
-                ctx.AssertEqual(16, Hull(), "hull after the droid's Hull Repairer cycle (8 at 75%)");
+                ctx.AssertEqual(10 + ShipCrewSeats.ScaleByEffectiveness(ShipShotBuilder.ScaleSupport(8, ShipSize.Large), 0.75), Hull(), "hull after the droid's Hull Repairer cycle (8 scaled to the hull, at 75%)");
                 ctx.Assert(!SpaceCrew.IsSeatWorked(pilot.Creature, ShipCrewSeat.Engineer), "the seat is free again");
             }
             finally

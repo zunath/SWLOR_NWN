@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
 
         private static string GetShipName(PlayerShip dbShip)
         {
-            var name = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId)?.CustomName;
+            var name = string.IsNullOrWhiteSpace(dbShip?.PropertyId) ? null : DB.Get<WorldProperty>(dbShip.PropertyId)?.CustomName;
             return string.IsNullOrWhiteSpace(name) ? "the ship" : name;
         }
 

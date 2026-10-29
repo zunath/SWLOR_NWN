@@ -1331,7 +1331,7 @@ Everything merges to one integration branch and releases together.
   - **Combat checks (`checks.py`, 150 runs):** all fifteen sections (A-O) reran identically before and after this pass and after merging master (W11e changes no combat input); every combat band holds.
 - **Bible sync:** run `tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` after every Bible edit. The Bible, C# descriptions, TLK and behavior must agree.
 - **Docs after release:**
-  - Move lasting rules into `ContentStandards.md` (hull, module and enemy standards; ship-access and docking rules) and `SkillPerkStandards.md` (space styles).
+  - Move lasting rules into `ContentStandards.md` (hull, module and enemy standards; ship-access and docking rules) and `SkillPerkStandards.md` (space styles). Done (W11n): "Space content" in `ContentStandards.md`, "Space skills and styles" in `SkillPerkStandards.md`.
   - Fix `Builders.md`.
   - Delete this file.
 

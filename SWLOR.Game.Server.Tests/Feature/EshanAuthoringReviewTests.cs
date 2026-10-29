@@ -21,7 +21,7 @@ public sealed class EshanAuthoringReviewTests
         var locals = Read("Module/utc/esh_gorakvesh.utc.json")["VarTable"]!["value"]!
             .Where(local => Value(local, "Name").StartsWith("LOOT_TABLE_", StringComparison.Ordinal))
             .Select(local => Value(local, "Value")).ToArray();
-        locals.Should().ContainSingle(value => value == "ESHAN_GORAK_VESH_GEMS,100,1");
+        locals.Should().ContainSingle(value => value == "ESHAN_GORAK_VESH_GEMS,10,1");
         locals.Should().NotContain(value => value.Contains("ESHAN_GORAK_VESH_SHARD") || value.Contains("ESHAN_GORAK_VESH_EMERALD"));
     }
 

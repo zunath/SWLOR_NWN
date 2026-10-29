@@ -36,8 +36,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Eight dire wolves are down. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(6500)
-                .AddGoldReward(5000);
+                .AddXPReward(4000)
+                .AddGoldReward(4800);
         }
 
         private void EshanFrostLine()
@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Six frost dire wolves have been defeated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(8000)
-                .AddGoldReward(6500);
+                .AddXPReward(3000)
+                .AddGoldReward(3600);
         }
 
         private void EshanAlphaHunt()
@@ -66,8 +66,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("The dire wolf alpha is dead. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(11000)
-                .AddGoldReward(9000);
+                .AddXPReward(8000)
+                .AddGoldReward(4500);
         }
 
         private void EshanIceboundHunt()
@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Gorak Vesh, the Icebound, is dead. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(25000)
-                .AddGoldReward(22000);
+                .AddXPReward(8000)
+                .AddGoldReward(4500);
         }
 
         private void EshanScoutScreen()
@@ -96,8 +96,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Seven Neo-Crusader scouts have been eliminated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(12000)
-                .AddGoldReward(10000);
+                .AddXPReward(3500)
+                .AddGoldReward(4200);
         }
 
         private void EshanHunterTrap()
@@ -111,8 +111,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Six Neo-Crusader hunters have been eliminated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(13500)
-                .AddGoldReward(11000);
+                .AddXPReward(3000)
+                .AddGoldReward(3600);
         }
 
         private void EshanVanguardBreak()
@@ -126,8 +126,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Eight Neo-Crusader vanguards have fallen. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(15000)
-                .AddGoldReward(12500);
+                .AddXPReward(4000)
+                .AddGoldReward(4800);
         }
 
         private void EshanHeavySilence()
@@ -139,10 +139,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKillObjective(NPCGroupType.Eshan_NeoCrusaderHeavy, 5)
 
                 .AddState()
-                .SetStateJournalText("Five Neo-Crusader heavy troopers have been eliminated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
+                .SetStateJournalText("Five Neo-Crusader Heavy Gunners have been eliminated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(17000)
-                .AddGoldReward(14000);
+                .AddXPReward(2500)
+                .AddGoldReward(3000);
         }
 
         private void EshanMedicCutoff()
@@ -156,8 +156,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Five Neo-Crusader medics have been eliminated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(18000)
-                .AddGoldReward(15000);
+                .AddXPReward(2500)
+                .AddGoldReward(3000);
         }
 
         private void EshanCaptainFall()
@@ -171,8 +171,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Three Neo-Crusader captains have fallen. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(21000)
-                .AddGoldReward(18000);
+                .AddXPReward(1500)
+                .AddGoldReward(1800);
         }
 
         private void EshanThyrsianExiles()
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Four Thyrsian exiles have been defeated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
-                .AddXPReward(25000)
-                .AddGoldReward(22000);
+                .AddXPReward(2000)
+                .AddGoldReward(2400);
         }
 
         private void EshanScrapyardSmugglers()
@@ -201,8 +201,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Eight Scrapyard Smugglers have been defeated. Return to Raalo Kes near the smuggler landing point in Eshan's Scraplands.")
 
-                .AddXPReward(15000)
-                .AddGoldReward(13000);
+                .AddXPReward(4000)
+                .AddGoldReward(4800);
         }
 
     }

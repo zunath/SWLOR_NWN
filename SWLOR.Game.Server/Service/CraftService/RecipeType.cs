@@ -739,6 +739,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         PatternTemplatePlates = 702,
         LoomTensionWeights = 703,
         PatternIndexTags = 704,
+        SilverpeltHideCuirass = 705,
+        FrostFangGauntlet = 706,
+        RidgedHideMantle = 707,
+        ReclaimedScopewrightCap = 708,
+        ReclaimedWarbandHelm = 709,
         SithPowerGlove = 6288,
         #endregion
 

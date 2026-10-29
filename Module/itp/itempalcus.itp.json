@@ -82479,6 +82479,61 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Blueprint: Sun-Cured Hide Cuirass - Silverpelt Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_silverpelt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Fang Gauntlet - Frost Fang Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_frostgaunt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Windcaller Mantle - Ridged Hide Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_ridgemantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Scopewright Cap - Reclaimed Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_rec_scope"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Warband Helm - Reclaimed Pattern"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_rec_warhelm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sun-Cured Hide Cuirass"
                           },
                           "RESREF": {

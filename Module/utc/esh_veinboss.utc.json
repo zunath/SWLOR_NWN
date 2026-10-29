@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 45
+          "value": 40
         }
       }
     ]
@@ -171,7 +171,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 3678
+    "value": 3713
   },
   "Int": {
     "type": "byte",
@@ -537,6 +537,21 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
+          "value": "IS_BOSS"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
           "value": "LOOT_TABLE_1"
         },
         "Type": {
@@ -545,7 +560,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ESHAN_DIRE_WOLF_ALPHA,100,1"
+          "value": "ESHAN_DIRE_WOLF_ALPHA,100,2"
         }
       },
       {
@@ -567,15 +582,45 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "IS_BOSS"
+          "value": "LOOT_TABLE_3"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 1
+          "type": "cexostring",
+          "value": "ESHAN_WARDEN_FIBERPLAST,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ESHAN_WARDEN_RARES,30,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS_BOSS,5,1"
         }
       }
     ]

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A slab of pale, frost-hardened hide taken from Gorak Vesh, the Icebound, an ancient chirodactyl of Eshan's Silverwood Expanse. Dense ridges and silver scars mark a lifetime of surviving the frozen wilds. Echani hunters prize this unmistakable trophy as proof that the Icebound has fallen."
+      "0": "A slab of pale, frost-hardened chirodactyl hide. Dense ridges and silver scars make it a resilient material for reinforced mantles. Used in the Windcaller Mantle - Ridged Hide Pattern Smithery pattern."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A slab of pale, frost-hardened hide taken from Gorak Vesh, the Icebound, an ancient chirodactyl of Eshan's Silverwood Expanse. Dense ridges and silver scars mark a lifetime of surviving the frozen wilds. Echani hunters prize this unmistakable trophy as proof that the Icebound has fallen."
+      "0": "A slab of pale, frost-hardened chirodactyl hide. Dense ridges and silver scars make it a resilient material for reinforced mantles. Used in the Windcaller Mantle - Ridged Hide Pattern Smithery pattern."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Icebound Chiro Hide"
+      "0": "Ridged Chiro Hide"
     }
   },
   "ModelPart1": {

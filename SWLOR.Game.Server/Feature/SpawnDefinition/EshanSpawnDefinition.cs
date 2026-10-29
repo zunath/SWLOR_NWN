@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "esh_gorakvesh")
-                .WithFrequency(5)
+                .WithFrequency(1)
                 .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
@@ -132,7 +132,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("ESHAN_SHATTERVEIN_WARDEN", "Eshan - Crystal Den Warden")
                 .AddSpawn(ObjectType.Creature, "esh_veinboss")
                 .WithFrequency(100)
-                .ReturnsHome();
+                .ReturnsHome()
+                .RespawnDelay(61, 160);
         }
 
         private void EshanScraplandCaves()

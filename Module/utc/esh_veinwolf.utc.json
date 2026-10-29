@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 45
+          "value": 40
         }
       }
     ]
@@ -143,7 +143,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 290
+    "value": 315
   },
   "Int": {
     "type": "byte",
@@ -509,6 +509,21 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
+          "value": "BEAST_TYPE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 34
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
           "value": "LOOT_TABLE_1"
         },
         "Type": {
@@ -539,15 +554,15 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "BEAST_TYPE"
+          "value": "LOOT_TABLE_3"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 34
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

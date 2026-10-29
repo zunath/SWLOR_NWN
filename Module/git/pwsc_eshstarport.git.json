@@ -1158,6 +1158,26 @@
     "type": "list",
     "value": [
       {
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "CONVERSATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MedicalRegistrationDialog"
+              }
+            }
+          ]
+        },
         "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
@@ -1242,7 +1262,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[SWTOR] Computer 1"
+            "0": "Medical Registration Terminal"
           }
         },
         "OnClick": {
@@ -1299,7 +1319,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1311,7 +1331,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -1323,11 +1343,11 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
-          "value": "SWTOR_COMPUTER001"
+          "value": "esh_med_reg"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -1363,7 +1383,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -22600,6 +22620,41 @@
         }
       },
       {
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "MARKET_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "CONVERSATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MarketDialog"
+              }
+            }
+          ]
+        },
         "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
@@ -22686,7 +22741,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[SWTOR] Terminal - Market Kiosk"
+            "0": "Eshan Market Terminal"
           }
         },
         "OnClick": {
@@ -22743,7 +22798,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -22755,7 +22810,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -22767,11 +22822,11 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
-          "value": "ASWTOR_154"
+          "value": "esh_market_1"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -22807,7 +22862,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -22827,6 +22882,41 @@
         }
       },
       {
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "MARKET_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "CONVERSATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MarketDialog"
+              }
+            }
+          ]
+        },
         "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
@@ -22913,7 +23003,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[SWTOR] Terminal - Market Kiosk"
+            "0": "Eshan Market Terminal"
           }
         },
         "OnClick": {
@@ -22970,7 +23060,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -22982,7 +23072,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -22994,11 +23084,11 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
-          "value": "ASWTOR_154"
+          "value": "esh_market_2"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -23034,7 +23124,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",

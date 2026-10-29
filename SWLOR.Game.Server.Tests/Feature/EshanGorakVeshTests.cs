@@ -16,10 +16,11 @@ public class EshanGorakVeshTests
     private const string QuestId = "eshan_icebound_hunt";
 
     [Test]
-    public void BossLoot_RollsOneWeightedGemAndGuaranteesTheUniqueHideWithoutWolfDrops()
+    public void RareLoot_UsesContiguousRollsAndGuaranteesTheCraftingHide()
     {
         using var creature = ReadJson("Module", "utc", "esh_gorakvesh.utc.json");
-        var tables = new EshanLootTableDefinition().BuildLootTables();
+        var tables = new EshanLootTableDefinition().BuildLootTables()
+            .Concat(new MusicLootTableDefinition().BuildLootTables()).ToDictionary(pair => pair.Key, pair => pair.Value);
         var rolls = creature.RootElement.GetProperty("VarTable").GetProperty("value")
             .EnumerateArray()
             .Where(variable => variable.GetProperty("Name").GetProperty("value").GetString()!
@@ -28,7 +29,12 @@ public class EshanGorakVeshTests
                 .Split(','))
             .ToArray();
 
-        rolls.Select(roll => roll[0]).Should().OnlyHaveUniqueItems();
+        var indices = creature.RootElement.GetProperty("VarTable").GetProperty("value")
+            .EnumerateArray()
+            .Select(variable => variable.GetProperty("Name").GetProperty("value").GetString()!)
+            .Where(name => name.StartsWith("LOOT_TABLE_", StringComparison.Ordinal))
+            .Select(name => int.Parse(name["LOOT_TABLE_".Length..])).Order().ToArray();
+        indices.Should().Equal(Enumerable.Range(1, rolls.Length), "the runtime stops at the first missing loot index");
         foreach (var resref in new[] { "esh_gorak_hide" })
         {
             var roll = rolls.Single(candidate => tables[candidate[0]].Any(item => item.Resref == resref));
@@ -38,7 +44,7 @@ public class EshanGorakVeshTests
             tables[roll[0]][0].MaxQuantity.Should().Be(1);
         }
 
-        rolls.Should().ContainSingle(roll => roll.SequenceEqual(new[] { "ESHAN_GORAK_VESH_GEMS", "100", "1" }));
+        rolls.Should().ContainSingle(roll => roll.SequenceEqual(new[] { "ESHAN_GORAK_VESH_GEMS", "10", "1" }));
         tables["ESHAN_GORAK_VESH_GEMS"].Select(item => item.Resref)
             .Should().BeEquivalentTo(new[] { "emerald", "chiro_shard" });
 
@@ -46,6 +52,9 @@ public class EshanGorakVeshTests
             item.Resref == "esh_wolf_meat" || item.Resref == "esh_wolf_pelt" ||
             item.Resref == "esh_frost_fang");
         rolls.Should().Contain(roll => roll.SequenceEqual(new[] { "ESHAN_MAP_RARES", "5", "1" }));
+        rolls.Should().Contain(roll => roll.SequenceEqual(new[] { "ESHAN_GORAK_VESH_RARES", "100", "1" }));
+        rolls.Should().Contain(roll => roll.SequenceEqual(new[] { "ESHAN_GORAK_VESH_RARES", "10", "1" }));
+        rolls.Should().Contain(roll => roll.SequenceEqual(new[] { "MUSIC_DISCS", "1", "1" }));
     }
 
     [Test]

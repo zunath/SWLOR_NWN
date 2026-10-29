@@ -759,7 +759,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Our couriers reached the groves without being shadowed. Report what happened to the hunters.",
+          "Text": "Our couriers reached the Winter Marches without being shadowed. Report what happened to the hunters.",
           "Style": 0,
           "Color": null
         }
@@ -1035,7 +1035,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Approach from broken ground and keep moving once they range you. Five heavy troopers are enough to collapse the firing plan.",
+          "Text": "Approach from broken ground and keep moving once they range you. Five Heavy Gunners are enough to collapse the firing plan.",
           "Style": 0,
           "Color": null
         }
@@ -1061,7 +1061,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Approach from broken ground and keep moving once they range you. Five heavy troopers are enough to collapse the firing plan.",
+          "Text": "Approach from broken ground and keep moving once they range you. Five Heavy Gunners are enough to collapse the firing plan.",
           "Style": 0,
           "Color": null
         }
@@ -1661,7 +1661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're at the Silver Gate security desk. I have ten separate postings, from predator control to the enemy command screen. Take whichever operation fits your ability; none depends on completing another.",
+          "Text": "You're at the Silver Gate security desk. I have eleven separate postings, from predator control to the enemy command screen. Take whichever operation fits your ability; none depends on completing another.",
           "Style": 0,
           "Color": null
         }
@@ -3698,7 +3698,7 @@
     "reply-turnin-05": {
       "Id": "reply-turnin-05",
       "Text": {
-        "Text": "The hunters in the groves are finished.",
+        "Text": "The hunters in the Winter Marches are finished.",
         "Style": 4,
         "Color": null
       },

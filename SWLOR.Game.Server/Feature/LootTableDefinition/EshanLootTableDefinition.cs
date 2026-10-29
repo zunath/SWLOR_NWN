@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_seeds", 5, 3)
                 .AddItem("esh_sun_insignia", 10, 1)
                 .AddItem("esh_mando_salv", 5, 2)
-                .AddGold(500, 10);
+                .AddGold(100, 5);
 
             _builder.Create("ESHAN_SCRAPYARD_SMUGGLER")
                 .AddItem("esh_fish", 5, 3)
@@ -61,7 +61,27 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_seeds", 3, 3)
                 .AddItem("elec_flawed", 5, 1)
                 .AddItem("elec_good", 5, 1)
-                .AddGold(250, 10);
+                .AddGold(100, 5);
+
+            _builder.Create("ESHAN_GORAK_VESH_RARES")
+                .IsRare()
+                .AddItem("bp_silverpelt", 1, 1, true)
+                .AddItem("bp_frostgaunt", 1, 1, true)
+                .AddItem("bp_ridgemantle", 1, 1, true);
+
+            _builder.Create("ESHAN_WARDEN_RARES")
+                .IsRare()
+                .AddItem("bp_silverpelt", 1, 1, true)
+                .AddItem("bp_frostgaunt", 1, 1, true)
+                .AddItem("bp_ridgemantle", 1, 1, true);
+
+            _builder.Create("ESHAN_WARDEN_FIBERPLAST")
+                .AddItem("fiberp_high", 1, 3);
+
+            _builder.Create("ESHAN_NEOCRUSADER_RARES")
+                .IsRare()
+                .AddItem("bp_rec_scope", 1, 1, true)
+                .AddItem("bp_rec_warhelm", 1, 1, true);
 
             _builder.Create("ESHAN_MAP_RARES")
                 .IsRare()

@@ -221,6 +221,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_OLD_SCAR_TROPHY")
                 .AddItem("oldscar_troph", 1);
+
+            _builder.Create("VISCARA_OLD_SCAR_WARDROBE")
+                .AddItem("wd_scar_ruff", 1);
         }
 
         private void MandalorianLeader()
@@ -571,6 +574,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_STORMPLUME_PLUME")
                 .AddItem("stormpl_plume", 1);
+
+            _builder.Create("VISCARA_STORMPLUME_WARDROBE")
+                .AddItem("wd_storm_down", 1);
         }
 
         private void Nashtah()
@@ -758,6 +764,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SILKSHADE_SILK")
                 .AddItem("ss_silk", 1);
+
+            _builder.Create("VISCARA_SILKSHADE_WARDROBE")
+                .AddItem("wd_silk_gland", 1);
         }
 
         private void Mossback()
@@ -838,6 +847,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_HARREK_VOSS_PLATE")
                 .AddItem("hv_plate", 1);
+
+            _builder.Create("VISCARA_HARREK_VOSS_WARDROBE")
+                .AddItem("wd_clan_pigment", 1);
         }
 
         private void Greyspine()
@@ -878,6 +890,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_MAW_SEER_GHAL_TOTEM")
                 .AddItem("mg_totem", 1);
+
+            _builder.Create("VISCARA_MAW_SEER_GHAL_WARDROBE")
+                .AddItem("wd_bone_needle", 1);
         }
 
         private void RedtailKor()
@@ -898,6 +913,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_REDTAIL_KOR_CLAW")
                 .AddItem("rk_claw", 1);
+
+            _builder.Create("VISCARA_REDTAIL_KOR_WARDROBE")
+                .AddItem("wd_redtail_scale", 1);
         }
 
         private void ShardEye()
@@ -918,6 +936,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SHARD_EYE")
                 .AddItem("se_eye", 1);
+
+            _builder.Create("VISCARA_SHARD_EYE_WARDROBE")
+                .AddItem("wd_prism_lens", 1);
         }
 
         private void Rootcoil()

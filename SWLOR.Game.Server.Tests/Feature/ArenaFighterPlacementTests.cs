@@ -23,8 +23,8 @@ public class ArenaFighterPlacementTests
                 locations.Add(Path.GetFileName(path));
         }
 
-        locations.Should().BeEquivalentTo(Enumerable.Repeat(ShippingDistrict + ".git.json", 3),
-            "all three former Fight Club spawn points must move without leaving duplicates");
+        locations.Should().BeEquivalentTo(Enumerable.Repeat(ShippingDistrict + ".git.json", 8),
+            "the three relocated spawn points and five additional fighters belong in the Shipping District");
     }
 
     [Test]
@@ -32,7 +32,7 @@ public class ArenaFighterPlacementTests
     {
         using var git = Read("git", ShippingDistrict);
         var points = List(git.RootElement, "WaypointList").Where(w => Text(w, "Tag") == SpawnTag).ToArray();
-        points.Should().HaveCount(3);
+        points.Should().HaveCount(8);
         points.Should().OnlyContain(w => Text(w, "TemplateResRef") == "nar_arenafight");
         points.Should().OnlyContain(w => Math.Abs(Number(w, "ZPosition")) < .01);
         points.Select(w => (Number(w, "XPosition"), Number(w, "YPosition")))
@@ -63,7 +63,7 @@ public class ArenaFighterPlacementTests
         using var git = Read("git", ShippingDistrict);
         var waypoints = List(git.RootElement, "WaypointList").ToArray();
         var fighters = waypoints.Where(w => Text(w, "Tag") == SpawnTag).ToArray();
-        fighters.Should().HaveCount(3);
+        fighters.Should().HaveCount(8);
         foreach (var fighter in fighters)
         {
             foreach (var creature in List(git.RootElement, "Creature List"))

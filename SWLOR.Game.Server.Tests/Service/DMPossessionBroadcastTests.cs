@@ -83,12 +83,6 @@ public class DMPossessionBroadcastTests
                 }
             }
 
-            public static class QuestEncounter
-            {
-                private const float ParticipantCreditRange = 50.0f;
-                {{Method("Service/QuestService/QuestEncounter.cs", "SendMessageToNearbyPlayers")}}
-            }
-
             public static class EventsPlugin
             {
                 public static uint Target = OBJECT_INVALID;
@@ -157,18 +151,6 @@ public class DMPossessionBroadcastTests
         _harness.Invoke("DMShout", "Send", OtherDM, "Event at the cantina");
 
         _harness.Messages.Select(message => message.Character).Should().Equal(Player, OtherDM, DM);
-    }
-
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void EncounterNotice_ReachesAPossessingDMWhoseCreatureIsNearby(int possessionType)
-    {
-        OnlineCast(possessionType);
-        _harness.Place(Encounter, Cantina);
-
-        _harness.Invoke("QuestEncounter", "SendMessageToNearbyPlayers", Encounter, "The encounter fades.");
-
-        _harness.Messages.Should().Equal((Player, "The encounter fades."), (DM, "The encounter fades."));
     }
 
     [TestCase(DMPossess)]

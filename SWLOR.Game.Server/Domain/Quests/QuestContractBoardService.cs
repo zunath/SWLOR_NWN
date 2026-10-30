@@ -39,10 +39,12 @@ namespace SWLOR.Game.Server.Domain.Quests
         private const string DeliveriesWaitingMessage = "Contract deliveries are waiting for you. Visit any Contract Board to claim your items and credits.";
 
         private readonly IDBService _db;
+        private readonly IQuestService _quests;
 
-        public QuestContractBoardService(IDBService db)
+        public QuestContractBoardService(IDBService db, IQuestService quests)
         {
             _db = db;
+            _quests = quests;
         }
 
         /// <summary>
@@ -68,7 +70,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                 }
 
                 var quest = QuestContractFactory.BuildQuest(contract);
-                Quest.RegisterRuntimeQuest(quest);
+                _quests.RegisterRuntimeQuest(quest);
                 registeredCount++;
             }
 
@@ -410,7 +412,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             _db.Set(draft);
 
             var quest = QuestContractFactory.BuildQuest(draft);
-            Quest.RegisterRuntimeQuest(quest);
+            _quests.RegisterRuntimeQuest(quest);
 
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] published contract '{draft.Id}' ('{draft.Title}') for {totalCost} credits ({fee} posting fee).");
 
@@ -456,7 +458,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             contract.DateClosed = DateTime.UtcNow;
             _db.Set(contract);
             ReleaseSubmissions(contract.Id);
-            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            _quests.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
             VoidActiveContractQuests(contract, isAuthor ? "cancelled by its author" : "taken down");
 
             Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') was {(isAuthor ? "cancelled by its author" : $"taken down by DM {GetName(requester)} [{requesterId}]")}.");
@@ -731,7 +733,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             contract.DateClosed = DateTime.UtcNow;
             contract.SettlementPending = 1;
             _db.Set(contract);
-            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            _quests.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
             SettleCompletedContract(contract);
         }
 
@@ -913,7 +915,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             contract.DateClosed = contract.DateExpires == default ? DateTime.UtcNow : contract.DateExpires;
             _db.Set(contract);
             ReleaseSubmissions(contract.Id);
-            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            _quests.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
             VoidActiveContractQuests(contract, "expired");
 
             Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') expired.");

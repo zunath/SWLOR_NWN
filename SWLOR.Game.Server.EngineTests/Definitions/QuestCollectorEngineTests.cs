@@ -64,8 +64,7 @@ public static class QuestCollectorEngineTests
     public static async Task RegisteredCollectionStages(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        var quests = (Dictionary<string, QuestDetail>)typeof(Quest)
-            .GetField("_quests", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var quests = QuestInternals.Quests;
         var stages = quests.Values.SelectMany(quest => quest.States
             .Where(state => state.Value.GetObjectives().OfType<CollectItemObjective>().Any())
             .Select(state => (Quest: quest, State: state.Key, Detail: state.Value))).ToArray();

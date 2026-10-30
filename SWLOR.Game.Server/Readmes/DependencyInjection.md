@@ -2,7 +2,7 @@
 
 How the server's services move from static classes to instances built by a dependency-injection container, and how to convert one. The decisions are in `MaintainabilityRefactorSpecs.md` (Phase 2); this guide is the working recipe, with the pilot (`Achievement`, `Faction`, `Taxi`) as the example. Read it before converting a service.
 
-Sections: The pattern · The container · Converting a service · Dependencies · Tests · Rules the architecture tests enforce · Pitfalls
+Sections: The pattern · The container · Converting a service · Dependencies · Tests · Rules the architecture tests enforce · Pitfalls · Extra facades
 
 ## The pattern
 
@@ -102,7 +102,7 @@ Never inject `IServiceProvider` or take the container in a constructor. Dependen
 
 - **The pieces exist.** A listed service has the static class `Service.<Name>`, the interface `Domain.<Domain>.I<Name>Service` and a class `Domain.<Domain>.<Name>Service` that implements it, and the domain agrees with `DomainMap.json`.
 - **No static state.** No type of a converted service (the facade, the interface, the instance class, the types in `Service/<Name>Service/`) holds a static field. Only `const` is allowed; `static readonly` is not, because it still shares the collection it holds.
-- **Handlers stay on the facade.** A `[NWNEventHandler]` on any other type of a converted service fails.
+- **Handlers stay on the facade.** A `[NWNEventHandler]` on any type of a converted service that is not one of its listed facades (the main one or an extra facade) fails.
 - **The instance never calls its own facade.**
 - **No service location.** Nothing outside `Composition/` uses `IServiceProvider` or any `Microsoft.Extensions.DependencyInjection` type, and nothing outside `Composition/` and the facades of converted services uses `FacadeAccessor`.
 - **Domain types name their service.** A type in `Domain.<Domain>` is classified as the service of that domain whose name starts its name (`IAchievementService`, `AchievementService` and `AchievementNotification` are all the service `Achievement`), so the cross-domain baseline (`CrossDomainEdges.txt`) is the same before and after a conversion. A type that names no service of its domain shows up as a new `Platform/Domain.<Domain>` edge.
@@ -121,8 +121,28 @@ The composition root (`Composition/`) names every service it registers, so its o
 - **Private constants and tests that read them.** A test that reflected on a private member of the old static class (`Bank.StorageId`) follows it to the instance class; a test that read the old file's text (`LeadershipCivicPerkRegressionTests` reading `Guild.cs`) follows the code to `Domain/<Domain>/`.
 - **Members the unit tests cannot reach.** A call into a not-yet-converted service that needs the native engine or the static database cannot run offline: `Gui.TogglePlayerWindow` (its window table), `Space.IsPlayerInSpaceMode` (`DB.Get`), the `NWNXLib` structures that `DMPresence.GetIsManifested` reads, and the player list `Area` fills in an event handler. The instance tests leave those lines to the in-engine tests, and the window logic around them stays covered by the harness tests of the code that shows the windows (the DM toolbar, the emotes window) through `InstanceMethod`.
 - **Out parameters and engine structures on a facade.** `RecordingProxy` writes a default into an `out` value-type parameter (an `out bool` otherwise fails the proxy's write-back) and suppresses the finalizer of an engine structure it returns (`Json`, `Location`), which would crash a process with no engine.
-- **A support type with handlers or static state in the service folder.** The architecture rules apply to every type that `UnitClassifier` puts in the service, and `Service/<Name>Service/*` is the service `<Name>` by namespace. A static class there that keeps `[NWNEventHandler]` methods or static fields (`Service/QuestService/QuestEncounter.cs`, a static class with five handlers and two static dictionaries) fails `Event_handlers_of_converted_services_stay_on_the_facade` and `Converted_services_hold_no_static_mutable_state` as soon as its service is listed, and its handler names are pinned by the manifest. Decide how such a type is converted before converting its service (the `Quest` conversion is blocked on this).
+- **A support type with handlers or static state in the service folder.** The architecture rules apply to every type that `UnitClassifier` puts in the service, and `Service/<Name>Service/*` is the service `<Name>` by namespace. A static class there that keeps `[NWNEventHandler]` methods or static fields (`Service/QuestService/QuestEncounter.cs`, a static class with five handlers and two static dictionaries) fails `Event_handlers_of_converted_services_stay_on_the_facade` and `Converted_services_hold_no_static_mutable_state` as soon as its service is listed, and its handler names are pinned by the manifest. Convert it as an extra facade (last section) in the same pull request as its service. A small static helper with no state and no handlers is not a service: leave it static, or make it an instance the service owns.
+
 - **One support folder for several services.** The eight DM services share `Service/DMToolService/` (the unit `DMTool` in `DomainMap.json`): its pure helpers (`DMSearchText`, `DMFavoriteList`, ...) are not services and stay static; the instance classes call them directly.
 - **A facade that was not a static class.** `Area` was a non-static class with only static members; the facade must be a static class (`ConvertedServiceRules`), which no caller notices. A `Dictionary` the old class handed out by reference (`Area.GetAreas()`) is still the instance's own dictionary.
 - **A nested public type or a static catalog in the old class.** `Music` was a class with a nested `Song`; the facade is a static class and the instance must not name it, so `Song` moved to `Service/MusicService/Song.cs` (nothing named `Music.Song`; callers only used `var`). `MusicSongCatalog.Songs` was a static auto-property, which the no-static-state rule counts (its backing field), so the catalog became a class that the service builds once (`new MusicSongCatalog().Songs`, kept in an instance field). Code outside the service asks the facade: `KeyItemIcon` calls `Music.TryGetCollectibleSong`, so `KeyItemIconTests` installs a `FacadeContainer`.
 - **Facade cost.** Every facade call resolves the instance from the container (one dictionary lookup). Fine for services that run per event; a hot-path service can cache the instance once the container's lifetime per reload generation is settled (Phase 4).
+- **A reflection search over every loaded assembly.** `QuestService.RegisterQuests` finds the quest definitions by searching all loaded assemblies, which needs the whole server in a unit test. The search is one `protected virtual` method (`GetQuestListTypes`) whose default body is the original search and is still lazy, so each definition is built when the loop reaches it; a test subclass answers it with its own definitions, and one test proves the default finds every definition of the server assembly.
+
+## Extra facades
+
+A service whose namespace holds more than one static class with state or handlers lists the others as extra facades on its `ConvertedServices.json` entry, relative to `SWLOR.Game.Server.Service`:
+
+```json
+{ "name": "Quest", "domain": "Quests", "facades": ["QuestService.QuestEncounter"] }
+```
+
+Each extra facade is converted exactly like a service of its own, so its handler names (`SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnModuleEnter`) never change:
+
+- The facade stays a static class in its own file with the same public members, constants and handlers, forwarding to `FacadeAccessor.Resolve<IQuestEncounterService>()`.
+- The interface and the instance class are named after the facade type, `I<Type>Service` and `<Type>Service`, in the domain namespace of the service (`Domain/Quests/IQuestEncounterService.cs`, `QuestEncounterService.cs`), and registered in `ServiceRegistrations`. The name must start with the service name (`QuestEncounter` starts with `Quest`) so the cross-domain guard counts the types as the same unit; the list test says so when it does not.
+- Every rule applies to every facade: the three pieces exist, no static state, handlers only on a listed facade, no use of its own facade, no service location. `FacadeForwardingTests` runs for each facade as a case of its own (named by the facade, `QuestService.QuestEncounter`).
+- Two instances of one service may need each other. They cannot both take the other by constructor; inject in one direction (`QuestService` takes `IQuestEncounterService`) and let the other call the static facade of the first (`QuestEncounterService` calls `Quest.GetQuestById`). The rule only forbids an instance calling its own facade.
+- The list test fails with a message for an unknown facade type, a facade outside `Service.<Name>Service`, a duplicate or unsorted name, and a missing interface or instance class.
+
+The pitfalls and test patterns are the same as for a service: the tests that read the facade's source read the instance class (`Domain/Quests/QuestService.cs`), and the engine tests reach the private members of an instance through the container (`EngineTests/Framework/QuestInternals`).

@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("sr_token", 1)
                 .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 27, frameQualityPercent: 16, shellQualityPercent: 24, wearRate: 4);
 
-            // Ashmark Display Plinth
-            _builder.Create(RecipeType.AshmarkDisplayPlinth, SkillType.Fabrication)
+            // Ashmark Altar
+            _builder.Create(RecipeType.AshmarkAltar, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0339")
                 .Level(14)

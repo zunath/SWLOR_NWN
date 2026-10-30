@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("mg_totem", 1)
                 .FabricatorParameters(frameSizePercent: 20, shellSizePercent: 28, frameQualityPercent: 20, shellQualityPercent: 30, wearRate: 4);
 
-            // Veilcarved Display Plinth
-            _builder.Create(RecipeType.VeilcarvedDisplayPlinth, SkillType.Fabrication)
+            // Veilcarved Rune Pillar
+            _builder.Create(RecipeType.VeilcarvedRunePillar, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0389")
                 .Level(36)

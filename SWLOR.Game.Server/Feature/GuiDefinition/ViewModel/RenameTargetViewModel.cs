@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class RenameTargetViewModel : GuiViewModelBase<RenameTargetViewModel, RenameItemPayload>
     {
         private uint _target;
-        private const string RenamedItemOriginalName = "RENAMED_ITEM_ORIGINAL_NAME";
+        public const string RenamedItemOriginalName = "RENAMED_ITEM_ORIGINAL_NAME";
         public const string EditorPartialId = "EDITOR_PARTIAL";
         public const string ItemEditorPartialName = "PARTIAL_ITEM";
         public const string PlayerEditorPartialName = "PARTIAL_PLAYER";

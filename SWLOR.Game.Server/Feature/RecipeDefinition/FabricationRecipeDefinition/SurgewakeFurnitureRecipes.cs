@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("vx_core", 1)
                 .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 22, frameQualityPercent: 17, shellQualityPercent: 22, wearRate: 7);
 
-            // Surgewake Display Plinth
-            _builder.Create(RecipeType.SurgewakeDisplayPlinth, SkillType.Fabrication)
+            // Surgewake Holo Projector
+            _builder.Create(RecipeType.SurgewakeHoloProjector, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0399")
                 .Level(50)

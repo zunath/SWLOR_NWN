@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ae_echo", 1)
                 .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 23, frameQualityPercent: 20, shellQualityPercent: 23, wearRate: 2);
 
-            // Resonant Display Plinth
-            _builder.Create(RecipeType.ResonantDisplayPlinth, SkillType.Fabrication)
+            // Resonant Crystal
+            _builder.Create(RecipeType.ResonantCrystal, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0409")
                 .Level(7)

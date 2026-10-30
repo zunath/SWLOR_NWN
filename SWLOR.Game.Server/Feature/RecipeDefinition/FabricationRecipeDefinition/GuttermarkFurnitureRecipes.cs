@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("nv_pin", 1)
                 .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 22, frameQualityPercent: 19, shellQualityPercent: 28, wearRate: 4);
 
-            // Guttermark Display Plinth
-            _builder.Create(RecipeType.GuttermarkDisplayPlinth, SkillType.Fabrication)
+            // Guttermark Easel
+            _builder.Create(RecipeType.GuttermarkEasel, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0349")
                 .Level(15)

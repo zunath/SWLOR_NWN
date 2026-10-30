@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("tk_badge", 1)
                 .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 26, frameQualityPercent: 15, shellQualityPercent: 26, wearRate: 5);
 
-            // Trailmark Display Plinth
-            _builder.Create(RecipeType.TrailmarkDisplayPlinth, SkillType.Fabrication)
+            // Trailmark Waystone
+            _builder.Create(RecipeType.TrailmarkWaystone, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0359")
                 .Level(29)

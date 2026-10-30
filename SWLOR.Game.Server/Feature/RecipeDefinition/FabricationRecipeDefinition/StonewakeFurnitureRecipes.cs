@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("vs_mask", 1)
                 .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 27, frameQualityPercent: 18, shellQualityPercent: 28, wearRate: 4);
 
-            // Stonewake Display Plinth
-            _builder.Create(RecipeType.StonewakeDisplayPlinth, SkillType.Fabrication)
+            // Stonewake Stone Altar
+            _builder.Create(RecipeType.StonewakeStoneAltar, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0369")
                 .Level(30)

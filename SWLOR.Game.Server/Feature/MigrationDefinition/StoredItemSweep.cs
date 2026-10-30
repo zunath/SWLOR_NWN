@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
-/// Updates item artwork, loot stats, droid weapon skills and legacy headgear slots across every stored item (banks, market,
+/// Updates item artwork, loot stats, droid weapon skills, renamed furniture and legacy headgear slots across every stored item (banks, market,
 /// property storage, research, outfits, saved creatures, ships, contracts) in one pass. Each stored object
 /// is loaded and saved once, with one item traversal. Server migrations that change stored items run it.
 /// The pass edits saved data directly instead of loading each item into the engine, and converts records on
@@ -58,7 +58,8 @@ internal static class StoredItemSweep
         var changed = 0;
         changed += pass.Process<InventoryItem>(item =>
         {
-            var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
+            var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
+                | RenameListing(item.Resref, item.Name, value => item.Name = value);
             return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId, $"{nameof(InventoryItem)}:{item.Id}",
                 (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref) = (blueprint.Name, resref, resref, blueprint.IconResref),
                 credits => space.QueueRemoval<InventoryItem>(item.Id, item.PlayerId, credits)) ?? false);
@@ -66,7 +67,7 @@ internal static class StoredItemSweep
         changed += pass.Process<MarketItem>(item =>
         {
             var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
-                listing => item.Category = listing.Category);
+                listing => item.Category = listing.Category) | RenameListing(item.Resref, item.Name, value => item.Name = value);
             return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId, $"{nameof(MarketItem)}:{item.Id}",
                 (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref, item.Category) =
                     (blueprint.Name, resref, resref, blueprint.IconResref, blueprint.Category),
@@ -78,7 +79,8 @@ internal static class StoredItemSweep
             if (category.Items != null)
                 foreach (var (key, item) in category.Items.ToList())
                 {
-                    categoryChanged |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
+                    categoryChanged |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
+                        | RenameListing(item.Resref, item.Name, value => item.Name = value);
                     if (space == null)
                         continue;
                     var removed = false;
@@ -96,6 +98,7 @@ internal static class StoredItemSweep
             return categoryChanged;
         }, space == null ? null : space.Flush);
         changed += pass.Process<WorldProperty>(property => MigrateData(converter, property.SerializedItem, value => property.SerializedItem = value) |
+            FurnitureRenameMigration.RenameStructure(property) |
             (space?.Migrate(property.SerializedItem, value => property.SerializedItem = value, null) ?? false));
         changed += pass.Process<ResearchJob>(job => MigrateData(converter, job.SerializedItem, value => job.SerializedItem = value) |
             (space?.Migrate(job.SerializedItem, value => job.SerializedItem = value, null) ?? false));
@@ -135,13 +138,24 @@ internal static class StoredItemSweep
         return true;
     }
 
+    /// <summary>Keeps a listing's saved name in step with its renamed item (<see cref="FurnitureRenameMigration"/>).</summary>
+    private static bool RenameListing(string resref, string name, Action<string> setName)
+    {
+        var renamed = FurnitureRenameMigration.GetRenamedItemText(resref, name);
+        if (renamed == name)
+            return false;
+        setName(renamed);
+        return true;
+    }
+
     private static bool MigrateContractItems(IStoredItemConverter converter, List<QuestContractItem> items, LegacySpaceItemSweep space)
     {
         var changed = false;
         if (items != null)
             foreach (var item in items)
             {
-                changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
+                changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
+                    | RenameListing(item.Resref, item.Name, value => item.Name = value);
                 changed |= space?.Migrate(item.Data, value => item.Data = value, null, null,
                     (blueprint, resref) => (item.Name, item.Resref, item.IconResref) = (blueprint.Name, resref, blueprint.IconResref)) ?? false;
             }

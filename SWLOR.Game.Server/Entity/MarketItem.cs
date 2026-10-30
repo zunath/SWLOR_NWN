@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Entity
@@ -34,5 +36,10 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         [Indexed]
         public string ShipId { get; set; } = string.Empty;
+
+        /// <summary>Shows the renamed default name of a former Display Plinth restored after the release migration.</summary>
+        [OnDeserialized]
+        internal void RenameFormerFurniture(StreamingContext context) =>
+            Name = FurnitureRenameMigration.GetRenamedItemText(Resref, Name);
     }
 }

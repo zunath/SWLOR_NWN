@@ -259,7 +259,9 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, DateTime> EncounterCooldowns { get; set; }
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
+        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
+        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
 
         /// <summary>

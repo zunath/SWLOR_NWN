@@ -4502,38 +4502,59 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 314,
+    "Line": 349,
     "Member": "ToggleActionMode",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You cannot use {GetActionModeName(mode)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 326,
+    "Line": 361,
     "Member": "UseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not know this ability.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 335,
+    "Line": 370,
     "Member": "UseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 380,
+    "Line": 415,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have that item.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
-    "Line": 387,
+    "Line": 422,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That item cannot be used.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
+    "Line": 467,
+    "Member": "EquipHands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"You do not have {equipItem.ItemName}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
+    "Line": 489,
+    "Member": "EquipHands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ExtraHotbars.cs",
+    "Line": 563,
+    "Member": "PutAwayHandItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"Free inventory space or make room in a carried bag before putting away {GetName(item)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Faction.cs",

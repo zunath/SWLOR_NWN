@@ -434,13 +434,7 @@ public static class TwinPistolCrossSkillEngineTests
                 await ctx.DelaySecondsAsync(.4f);
                 if (!killingShot)
                     ctx.AssertEqual(impacts, _damageEvents, $"{mainResref}/{offResref} contributes exactly one impact per equipped attack weapon");
-                var firingSources = 0;
-                for (var source = GetFirstObjectInArea(ctx.Arena, ObjectType.Placeable); GetIsObjectValid(source);
-                     source = GetNextObjectInArea(ctx.Arena, ObjectType.Placeable))
-                    if (GetTag(source) == PairedRangedPresentation.MuzzleTag &&
-                        GetResRef(source) == PairedRangedPresentation.MuzzleBlueprint &&
-                        GetPosition(source).Z - GetPosition(actor).Z > 1f)
-                        firingSources++;
+                var firingSources = PairedRangedPresentation.GetLaunchCount(actor);
                 ctx.AssertEqual(mainResref == "b_twinpistol" ? 2 : 0, firingSources,
                     "The real ability shows each fired pistol including a killing shot, while cross-skilled weapons create no paired muzzle effects");
                 if (killingShot)
@@ -456,7 +450,7 @@ public static class TwinPistolCrossSkillEngineTests
                     }
                 }
                 ctx.Log($"Ability presentation {mainResref}/{offResref}: lethal={killingShot}, damageCallbacks={_damageEvents}, " +
-                    $"attributedDamage={Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage}, raisedSources={firingSources}");
+                    $"attributedDamage={Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage}, launches={firingSources}");
                 ctx.AssertEqual(SkillType.TwinPistol, Ability.GetLastCompletedAbilityImpactSummary(actor).SkillType,
                     "Cross-trained equipment does not redirect the purchased ability's skill");
                 await ctx.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());

@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 // During the warm-up nothing is banked, but Inspired the watcher already holds does not run down while they watch.
                 if (hasEffect)
                 {
-                    PerformanceInspiredApplier.SetRemaining(watcher, frozenSeconds);
+                    PerformanceInspiredApplier.SetRemaining(watcher, PerformanceAudienceRules.HeldSeconds(frozenSeconds));
                     state.HasFrozenRemaining = true;
                     state.FrozenRemainingSeconds = frozenSeconds;
                 }

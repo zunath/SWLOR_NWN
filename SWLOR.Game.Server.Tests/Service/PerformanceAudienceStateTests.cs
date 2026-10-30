@@ -62,6 +62,19 @@ public class PerformanceAudienceStateTests
         PerformanceAudienceRules.WatchedMinutes(Start, Start.AddSeconds(seconds)).Should().Be(expected);
     }
 
+    [TestCase(30.0, 65.0)]
+    [TestCase(65.0, 65.0)]
+    [TestCase(600.0, 600.0)]
+    public void AFrozenInspiredOutlastsTheGapToTheNextTick(double frozen, double held)
+    {
+        PerformanceAudienceRules.HeldSeconds(frozen).Should().Be(held);
+
+        var nextTickActual = held - PerformanceAudienceRules.TickSeconds;
+        nextTickActual.Should().BeGreaterThan(0.0);
+        PerformanceAudienceRules.FrozenRemainingSeconds(nextTickActual, true, frozen).Should().Be(frozen,
+            "the next tick counts from the stored frozen value, not the padded duration");
+    }
+
     [Test]
     public void StoppingWatchingForgetsWhenWatchingStarted()
     {

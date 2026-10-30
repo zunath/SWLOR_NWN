@@ -160,6 +160,15 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         }
 
         /// <summary>
+        /// The duration to put on a frozen Inspired effect. It must outlast the gap to the next tick, or a short remainder
+        /// would expire while its holder is still watching; the stored frozen value stays what the next tick counts from.
+        /// </summary>
+        public static double HeldSeconds(double frozenSeconds)
+        {
+            return Math.Max(frozenSeconds, TickSeconds + TickToleranceSeconds);
+        }
+
+        /// <summary>
         /// The remaining seconds after banking minutes, held to the cap. A lower cap in a plainer venue never takes away
         /// time that was already banked.
         /// </summary>

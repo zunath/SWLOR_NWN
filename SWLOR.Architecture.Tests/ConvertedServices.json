@@ -16,6 +16,7 @@
     { "name": "DMPreference", "domain": "Administration" },
     { "name": "DMPresence", "domain": "Administration" },
     { "name": "Faction", "domain": "Quests" },
+    { "name": "Fishing", "domain": "World" },
     { "name": "Guild", "domain": "Economy" },
     { "name": "HoloCom", "domain": "World" },
     { "name": "Music", "domain": "World" },
@@ -26,6 +27,7 @@
     { "name": "PlayerMarket", "domain": "Economy" },
     { "name": "Quest", "domain": "Quests", "facades": ["QuestService.QuestEncounter"] },
     { "name": "QuestContractBoard", "domain": "Quests" },
+    { "name": "Shuttle", "domain": "World" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Traps", "domain": "World" },
     { "name": "Weather", "domain": "World" }

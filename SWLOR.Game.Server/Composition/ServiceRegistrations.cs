@@ -54,10 +54,12 @@ namespace SWLOR.Game.Server.Composition
 
             // World
             services.AddSingleton<IAreaService, AreaService>();
+            services.AddSingleton<IFishingService, FishingService>();
             services.AddSingleton<IHoloComService, HoloComService>();
             services.AddSingleton<IMusicService, MusicService>();
             services.AddSingleton<INotesService, NotesService>();
             services.AddSingleton<IPlanetService, PlanetService>();
+            services.AddSingleton<IShuttleService, ShuttleService>();
             services.AddSingleton<ITaxiService, TaxiService>();
             services.AddSingleton<ITrapsService, TrapsService>();
             services.AddSingleton<IWeatherService, WeatherService>();

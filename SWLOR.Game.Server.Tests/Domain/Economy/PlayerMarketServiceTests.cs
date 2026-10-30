@@ -23,7 +23,7 @@ public class PlayerMarketServiceTests
     private const uint PlayerObject = 1001;
     private const uint ItemObject = 2002;
 
-    // The music check of the item category goes through the Music facade, which resolves from a container.
+    // The item checks ask the Fishing and Music facades about the item; the facades resolve from a container.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
 

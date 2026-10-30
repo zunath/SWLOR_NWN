@@ -42,6 +42,9 @@ public sealed class LocalVariables
     /// <summary>The string variable <paramref name="name"/> of an object right now, empty when it is not set.</summary>
     public string String(uint target, string name) => (string?)Read("String", target, name) ?? string.Empty;
 
+    /// <summary>The float variable <paramref name="name"/> of an object right now, 0 when it is not set.</summary>
+    public float Float(uint target, string name) => (float?)Read("Float", target, name) ?? 0f;
+
     /// <summary>True when the object has an integer, boolean, string, float or object variable called <paramref name="name"/>.</summary>
     public bool Has(uint target, string name) =>
         new[] { "Int", "String", "Float", "Object" }.Any(kind => Read(kind, target, name) != null);

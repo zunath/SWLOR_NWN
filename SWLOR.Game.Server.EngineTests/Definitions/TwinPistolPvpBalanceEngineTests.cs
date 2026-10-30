@@ -29,6 +29,7 @@ public static class TwinPistolPvpBalanceEngineTests
     private static uint _protector = OBJECT_INVALID;
     private static uint _protectorAttacker = OBJECT_INVALID;
     private static int _protectorDamage;
+    private static readonly List<string> OtherProtectorDamage = new();
     private static readonly MethodInfo ResolveCompanion = typeof(PairedRangedAttackCycle)
         .GetMethod("ResolveCompanion", BindingFlags.NonPublic | BindingFlags.Static);
     private static readonly MethodInfo EnsureNativeLevels = typeof(PlayerInitialization)
@@ -188,8 +189,10 @@ public static class TwinPistolPvpBalanceEngineTests
     [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
     public static void ObserveProtectorDamage()
     {
-        if (OBJECT_SELF == _protector && GetLastDamager(OBJECT_SELF) == _protectorAttacker)
-            _protectorDamage += GetTotalDamageDealt();
+        if (OBJECT_SELF != _protector) return;
+        var damager = GetLastDamager(OBJECT_SELF);
+        if (damager == _protectorAttacker) _protectorDamage += GetTotalDamageDealt();
+        else OtherProtectorDamage.Add($"{GetTotalDamageDealt()} from {GetName(damager)} ({GetTag(damager)})");
     }
 
     [EngineTest("Discarded companion arrivals preserve PvP clocks fatal saves low-HP shields redirects and finite DR", Category = "TwinPistolPvpCombat", TimeoutSeconds = 100f)]
@@ -324,6 +327,7 @@ public static class TwinPistolPvpBalanceEngineTests
         _protector = protector;
         _protectorAttacker = actor;
         _protectorDamage = 0;
+        OtherProtectorDamage.Clear();
         try
         {
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -369,7 +373,8 @@ public static class TwinPistolPvpBalanceEngineTests
             ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(target), "Discarded damage consumes no protection trigger");
             ctx.AssertEqual(0, _protectorDamage, "Discarded damage leaves the protector untouched");
             if (GetCurrentHitPoints(protector) != protectorHP)
-                ctx.Log($"The protector lost {protectorHP - GetCurrentHitPoints(protector)} HP to something other than the attacker.");
+                ctx.Log($"The protector lost {protectorHP - GetCurrentHitPoints(protector)} HP to something other than the attacker: " +
+                        $"{string.Join(", ", OtherProtectorDamage)}.");
             if (channel == "redirect") ctx.Assert(StatusEffect.GetStatusEffect<ForceIntercept1StatusEffect>(target) != null,
                 "The discarded hit leaves the real one-use redirect available");
             RangedWeaponAttackContext.Roll arriving = null;

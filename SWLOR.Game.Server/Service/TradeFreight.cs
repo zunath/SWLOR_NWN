@@ -97,24 +97,25 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A courier mission is credited before its contract and load are cleared, so a restart in between leaves the
+            // load to deliver again, and an objective already credited is not credited twice.
+            if (contract.IsAgentCourier)
+            {
+                Log.Write(LogGroup.Space, $"AGENT COURIER DELIVER - {PlayerName.GetAuditName(player)} - {contract.Id}{(result.IsLate ? " (late)" : string.Empty)}");
+                FactionAgents.OnCourierDelivered(player, contract.Id, result.IsLate);
+                UnloadAgentCourier(GetObjectUUID(player), contract.Id);
+                return;
+            }
+
             // The proceeds are paid and saved with the character before the contract is cleared, so a restart in between
             // leaves the load to deliver again rather than losing the fee.
-            if (!contract.IsAgentCourier)
-            {
-                GiveGoldToCreature(player, result.Fee + result.DepositReturned);
-                ExportSingleCharacter(player);
-            }
+            GiveGoldToCreature(player, result.Fee + result.DepositReturned);
+            ExportSingleCharacter(player);
 
             ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id);
             dbPlayer.FreightContracts.Remove(contract);
             DB.Set(ship);
             DB.Set(dbPlayer);
-            if (contract.IsAgentCourier)
-            {
-                Log.Write(LogGroup.Space, $"AGENT COURIER DELIVER - {PlayerName.GetAuditName(player)} - {contract.Id}{(result.IsLate ? " (late)" : string.Empty)}");
-                FactionAgents.OnCourierDelivered(player, contract.Id, result.IsLate);
-                return;
-            }
 
             SendMessageToPC(player, result.IsLate
                 ? ColorToken.Red($"Freight delivered late: {result.Fee} credits paid, and the deposit of {contract.Deposit} credits is forfeit.")
@@ -208,7 +209,10 @@ namespace SWLOR.Game.Server.Service
             return ships.Any(x => GetFreeVolume(x) >= volume);
         }
 
-        /// <summary>Takes a faction agent's courier load off its ship and drops its contract, when the mission ends without delivery.</summary>
+        /// <summary>
+        /// Takes a faction agent's courier load off its ship and drops its contract, when the mission is delivered or ends
+        /// without delivery. The load is saved off the ship first, so a restart in between leaves the contract to clear again.
+        /// </summary>
         public static void UnloadAgentCourier(string playerId, string missionId)
         {
             var dbPlayer = DB.Get<Player>(playerId);
@@ -216,11 +220,11 @@ namespace SWLOR.Game.Server.Service
             if (contract == null)
                 return;
 
-            dbPlayer.FreightContracts.Remove(contract);
-            DB.Set(dbPlayer);
             var ship = string.IsNullOrWhiteSpace(contract.ShipId) ? null : DB.Get<PlayerShip>(contract.ShipId);
             if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
                 DB.Set(ship);
+            dbPlayer.FreightContracts.Remove(contract);
+            DB.Set(dbPlayer);
         }
 
         private static PlayerShip GetOwnShipDockedHere(uint player, string shipId, TradeExchangeType exchange, string dockId)

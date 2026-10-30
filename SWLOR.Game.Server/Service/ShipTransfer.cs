@@ -208,12 +208,13 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Deletes every permission on the property and gives the new owner full rights, when the property had any
-        /// (the ship and its storage categories do; furniture has none).
+        /// (furniture has none). The ship and its storage categories always get the new owner's rights, so a transfer
+        /// a restart interrupted after the old rows were deleted still restores them when it is finished.
         /// </summary>
         private static void ResetPermissions(string propertyId, PropertyType type, string newOwnerPlayerId)
         {
             var existing = GetPermissions(propertyId);
-            if (existing.Count == 0)
+            if (existing.Count == 0 && type != PropertyType.Starship && type != PropertyType.Category)
                 return;
 
             foreach (var permission in existing)

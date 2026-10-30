@@ -329,6 +329,32 @@ public class SpaceW11nReviewFixTests
         new PlanetaryHolding().LastDeliveryId.Should().BeEmpty();
     }
 
+    [Test]
+    public void AnInterruptedShipSale_StillGivesTheBuyerTheShipAndStoragePermissions()
+    {
+        var reset = Between(ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n"),
+            "private static void ResetPermissions(", "// Direct transfer (gifts)");
+        reset.Should().Contain("if (existing.Count == 0 && type != PropertyType.Starship && type != PropertyType.Category)",
+            "a ship or category whose old rows a restart already deleted still gets the new owner's rights");
+        reset.IndexOf("DB.Delete<WorldPropertyPermission>(permission.Id);", StringComparison.Ordinal)
+            .Should().BeLessThan(reset.IndexOf("DB.Set(ShipTransferRules.BuildFullPermission(", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void ACourierMission_IsCreditedBeforeItsContractAndLoadAreCleared()
+    {
+        var source = ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n");
+        var deliver = Between(source, "public static void DeliverFreight(", "public static void AbandonFreight(");
+        deliver.IndexOf("FactionAgents.OnCourierDelivered(player, contract.Id, result.IsLate);", StringComparison.Ordinal)
+            .Should().BeLessThan(deliver.IndexOf("UnloadAgentCourier(GetObjectUUID(player), contract.Id);", StringComparison.Ordinal),
+                "a restart before the mission is credited leaves the load to deliver again");
+
+        var unload = source[source.IndexOf("public static void UnloadAgentCourier(", StringComparison.Ordinal)..];
+        unload.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
+            .Should().BeLessThan(unload.IndexOf("dbPlayer.FreightContracts.Remove(contract);", StringComparison.Ordinal),
+                "the load leaves the ship before the contract that clears it goes");
+    }
+
     private static string Between(string source, string start, string end)
     {
         var from = source.IndexOf(start, StringComparison.Ordinal);

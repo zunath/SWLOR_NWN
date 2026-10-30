@@ -181,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Search()
         {
             var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
+            ShipTransfer.ExpireOldListings(marketDetail.MarketId);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true)
                 .AddFieldSearch(nameof(MarketItem.MarketId), marketDetail.MarketId, false);

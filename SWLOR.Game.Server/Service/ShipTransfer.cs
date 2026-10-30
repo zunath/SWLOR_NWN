@@ -394,6 +394,27 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Takes the market's ship listings past the market's 14 days off it, so a search does not show ships whose
+        /// listing ran out while the server stayed up.
+        /// </summary>
+        public static void ExpireOldListings(string marketId)
+        {
+            var query = new DBQuery<MarketItem>()
+                .AddFieldSearch(nameof(MarketItem.IsListed), true)
+                .AddFieldSearch(nameof(MarketItem.MarketId), marketId, false)
+                .AddFieldSearch(nameof(MarketItem.Category), (int)MarketCategoryType.Starship);
+            var count = (int)DB.SearchCount(query);
+            if (count <= 0)
+                return;
+
+            foreach (var listing in DB.Search(query.AddPaging(count, 0)))
+            {
+                if (!string.IsNullOrWhiteSpace(listing.ShipId))
+                    IsStillListed(listing);
+            }
+        }
+
+        /// <summary>
         /// Whether the listing is still on the market. One past the market's 14 days is taken off here, as
         /// <see cref="PlayerMarket.RemoveOldListings"/> does at module load, so a ship is not locked while the server stays up.
         /// </summary>

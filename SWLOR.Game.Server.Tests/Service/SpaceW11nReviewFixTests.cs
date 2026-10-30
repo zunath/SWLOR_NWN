@@ -334,6 +334,21 @@ public class SpaceW11nReviewFixTests
         Index(staff, "ExportSingleCharacter(player);").Should().BeLessThan(Index(staff, "DB.Set(holding);"));
     }
 
+    [Test]
+    public void AMarketSearch_ExpiresOldShipListingsFirst()
+    {
+        var search = ReadSource("Feature", "GuiDefinition", "ViewModel", "MarketBuyViewModel.cs").Replace("\r\n", "\n");
+        search = Between(search, "private void Search()", "var results = DB.Search(query);");
+        Index(search, "ShipTransfer.ExpireOldListings(marketDetail.MarketId);")
+            .Should().BeLessThan(Index(search, "var query = new DBQuery<MarketItem>()"),
+                "an expired ship is taken off before the search counts and pages its results");
+
+        var expire = Between(ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n"),
+            "public static void ExpireOldListings(", "private static bool IsStillListed(");
+        expire.Should().Contain("(int)MarketCategoryType.Starship");
+        expire.Should().Contain("IsStillListed(listing);");
+    }
+
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]

@@ -58,6 +58,14 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public DateTime? LastFlourishUtc { get; private set; }
         public IDisposable BeatSchedule { get; set; }
 
+        /// <summary>The performer's latest named clip, so a finished accent never replaces a newer one.</summary>
+        public string AnimationToken { get; set; }
+
+        /// <summary>When the beat loop restarts the routine clip: before its playback lapses, or if an accent never handed back.</summary>
+        public DateTime AnimationRenewUtc { get; set; }
+
+        public int FlourishesPlayed { get; set; }
+
         /// <summary>The performer's cue window while one is attached; the beat loop pushes to it instead of floating text.</summary>
         public IPerformanceView View { get; set; }
 

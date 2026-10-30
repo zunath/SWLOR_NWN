@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerformanceService;
@@ -19,7 +20,11 @@ namespace SWLOR.Game.Server.Service
     {
         private const string AllowNoInstrumentVariable = "PERFORMANCE_ALLOW_NO_INSTRUMENT";
         private const string InstrumentFamilyVariable = "PERFORMANCE_INSTRUMENT_FAMILY";
-        private const float LoopingAnimationSeconds = 9999.9f;
+        // One named playback lasts at most ten minutes; the beat loop restarts the routine a minute early.
+        private const float LoopPlaybackSeconds = 600f;
+        private const float LoopRenewSeconds = 540f;
+        // If an accent's hand-back is lost, the beat loop resumes the routine this long after the accent ends.
+        private const float AccentRecoverySeconds = 1f;
 
         private const int FirstBarSlotCount = 12;
         private const int FlourishSlot = 4;
@@ -291,7 +296,7 @@ namespace SWLOR.Game.Server.Service
                 if (reason != PerformanceEndReason.LoggedOut)
                 {
                     if (reason != PerformanceEndReason.Died)
-                        ReleaseAnimation(player, reason);
+                        ReleaseAnimation(session, reason);
 
                     var message = GetEndMessage(reason);
                     if (!string.IsNullOrEmpty(message))
@@ -447,7 +452,8 @@ namespace SWLOR.Game.Server.Service
             };
 
             _sessions[player] = session;
-            StartLoopingAnimation(session);
+            // The toggle has no cast window to play its clip in, so the performance opens with it.
+            PlayThenLoop(session, PerformanceAnimations.GetOpeningClip(kind));
             ScheduleBeats(session);
 
             SendMessageToPC(player, kind == PerformanceKind.Dance
@@ -498,6 +504,9 @@ namespace SWLOR.Game.Server.Service
                     EndPerformance(player, endReason.Value);
                     return;
                 }
+
+                if (DateTime.UtcNow >= session.AnimationRenewUtc)
+                    StartLoopingAnimation(session);
 
                 var outcome = session.AdvanceBeat();
                 PresentBeat(session, outcome);
@@ -570,8 +579,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Improve_Ability_Score), performer);
-            AssignCommand(performer, () => PlayAnimation(
-                session.Kind == PerformanceKind.Dance ? Animation.FireForgetVictory1 : Animation.FireForgetVictory2));
+            PlayThenLoop(session, PerformanceAnimations.GetFlourishClip(session.Kind, session.InstrumentFamily, session.FlourishesPlayed));
+            session.FlourishesPlayed++;
             SendMessageToPC(performer, "Flourish!");
             PerformanceAudience.OnFlourish(session);
         }
@@ -667,58 +676,40 @@ namespace SWLOR.Game.Server.Service
 
         private static void StartLoopingAnimation(PerformanceSession session)
         {
+            var clip = PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine);
+            session.AnimationToken = NamedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds);
+            session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(LoopRenewSeconds);
+        }
+
+        // A one-shot clip hands back to the routine when it ends, unless a newer clip has replaced it.
+        private static void PlayThenLoop(PerformanceSession session, AnimationClip clip)
+        {
             var player = session.Performer;
-            var animation = GetLoopingAnimation(session);
-            AssignCommand(player, () => ActionPlayAnimation(animation, 1f, LoopingAnimationSeconds));
+            var token = NamedAnimation.Play(player, clip);
+            session.AnimationToken = token;
+            session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(clip.Duration + AccentRecoverySeconds);
+            AssignCommand(GetModule(), () => DelayCommand(clip.Duration, () =>
+            {
+                if (_sessions.TryGetValue(player, out var live) && live == session && session.AnimationToken == token)
+                    StartLoopingAnimation(session);
+            }));
         }
 
-        // Walking away or attacking replaces the queue; only an idle or animating queue is safe to clear.
-        private static void ReleaseAnimation(uint player, PerformanceEndReason reason)
+        // Walking away or attacking has already replaced the clip; only a performer standing idle bows.
+        private static void ReleaseAnimation(PerformanceSession session, PerformanceEndReason reason)
         {
-            var action = GetCurrentAction(player);
-            if (action != ActionType.Invalid && action != ActionType.Wait)
-                return;
-
-            AssignCommand(player, () =>
-            {
-                ClearAllActions();
-                if (reason == PerformanceEndReason.Stopped)
-                    ActionPlayAnimation(Animation.FireForgetBow);
-            });
+            var player = session.Performer;
+            if (reason == PerformanceEndReason.Stopped && GetCurrentAction(player) == ActionType.Invalid)
+                NamedAnimation.Play(player, AuthoredAnimation.PerformanceBow);
+            else
+                NamedAnimation.StopIfCurrent(player, session.AnimationToken);
         }
 
-        private static Animation GetLoopingAnimation(PerformanceSession session)
-        {
-            if (session.Kind == PerformanceKind.Music)
-            {
-                return session.InstrumentFamily == PerformanceInstrumentFamily.Horns
-                    ? Animation.PlayFlute
-                    : Animation.PlayGuitar;
-            }
-
-            return session.Routine switch
-            {
-                PerformanceRoutineType.LightFeet => Animation.BootDance,
-                PerformanceRoutineType.PowerStep => Animation.BootDance,
-                PerformanceRoutineType.VigorReel => Animation.BootDance,
-                _ => Animation.DanceHandsUp
-            };
-        }
-
-        // Placeholder accents until authored step clips exist; notes leave the instrument loop undisturbed.
         private static void PlayHitAnimation(PerformanceSession session, PerformanceCue cue)
         {
-            if (session.Kind != PerformanceKind.Dance)
-                return;
-
-            var animation = cue switch
-            {
-                PerformanceCue.Left => Animation.FireForgetHeadTurnLeft,
-                PerformanceCue.Right => Animation.FireForgetHeadTurnRight,
-                PerformanceCue.Up => Animation.FireForgetVictory1,
-                _ => Animation.FireForgetDodgeDuck
-            };
-            AssignCommand(session.Performer, () => PlayAnimation(animation));
+            var clip = PerformanceAnimations.GetCueClip(session.Kind, session.InstrumentFamily, cue);
+            if (clip != null)
+                PlayThenLoop(session, clip);
         }
 
         private static string GetEndMessage(PerformanceEndReason reason)

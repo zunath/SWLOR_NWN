@@ -47,12 +47,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             AssignCommand(player, () => TakeGoldFromCreature(offer.Deposit, player, true));
+            // The contract is saved before the load, so a restart in between leaves a contract to abandon, never a sealed
+            // load no contract can clear.
             var contract = FreightContractRules.Accept(offer, ship.Id, now);
-            ship.SealedFreight.Add(FreightContractRules.GetSealedLot(contract));
             dbPlayer.FreightContracts.Add(contract);
             dbPlayer.FreightOffersTaken.Add(offer.Id);
-            DB.Set(ship);
             DB.Set(dbPlayer);
+            ship.SealedFreight.Add(FreightContractRules.GetSealedLot(contract));
+            DB.Set(ship);
 
             var destination = TradeLookup.GetExchange(offer.Destination)?.Name;
             SendMessageToPC(player, ColorToken.Green(
@@ -168,13 +170,18 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null)
                 return;
 
+            // A courier's mission fails before its contract goes, so a restart in between leaves a contract that
+            // abandoning clears, never an active mission whose load no contract can clear.
             var failed = dbPlayer.FreightContracts.Where(x => lost.Contains(x.Id)).ToList();
-            dbPlayer.FreightContracts.RemoveAll(x => lost.Contains(x.Id));
-            DB.Set(dbPlayer);
-
-            var owner = FindOnlinePlayer(ship.OwnerPlayerId);
             foreach (var contract in failed.Where(x => x.IsAgentCourier))
                 FactionAgents.OnCourierLost(ship.OwnerPlayerId, contract.Id);
+
+            // Reloaded: failing a courier saves the record.
+            dbPlayer = DB.Get<Player>(ship.OwnerPlayerId);
+            if (dbPlayer != null && dbPlayer.FreightContracts.RemoveAll(x => lost.Contains(x.Id)) > 0)
+                DB.Set(dbPlayer);
+
+            var owner = FindOnlinePlayer(ship.OwnerPlayerId);
             foreach (var contract in failed.Where(x => !x.IsAgentCourier))
             {
                 if (GetIsObjectValid(owner))

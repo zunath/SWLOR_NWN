@@ -438,6 +438,37 @@ public class SpaceW11nReviewFixTests
         keep.Should().Contain("CreateObject(ObjectType.Item, resref, location);", "without a hold the yield is left at the pilot");
     }
 
+    [Test]
+    public void AFreightContract_IsSavedBeforeItsSealedLoad()
+    {
+        var accept = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
+            "public static void AcceptFreight(", "private static bool IsFreightExchangeClosed(");
+        Index(accept, "DB.Set(dbPlayer);").Should().BeLessThan(Index(accept, "ship.SealedFreight.Add("),
+            "a restart in between leaves a contract to abandon, not a load no contract can clear");
+    }
+
+    [Test]
+    public void ALostCourier_FailsItsMissionBeforeItsContractGoes()
+    {
+        var fail = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
+            "private static void FailSealedFreight(", "public static string LoadAgentCourier(");
+        Index(fail, "FactionAgents.OnCourierLost(ship.OwnerPlayerId, contract.Id);")
+            .Should().BeLessThan(Index(fail, "dbPlayer.FreightContracts.RemoveAll(x => lost.Contains(x.Id))"));
+        Index(fail, "dbPlayer = DB.Get<Player>(ship.OwnerPlayerId);")
+            .Should().BeLessThan(Index(fail, "dbPlayer.FreightContracts.RemoveAll(x => lost.Contains(x.Id))"),
+                "the record is reloaded after the courier callbacks saved it");
+    }
+
+    [Test]
+    public void AStationJump_JoinsTheNewStarportBeforeLeavingTheOld()
+    {
+        var move = ReadSource("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        move = move[Index(move, "private static void MoveDock(")..];
+        Index(move, "DB.Set(starport);").Should().BeLessThan(Index(move, "DB.Set(ship);"));
+        Index(move, "DB.Set(ship);").Should().BeLessThan(Index(move, "DB.Set(oldStarport);"),
+            "a restart part-way through leaves the ship listed at both Starports, never at none");
+    }
+
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]

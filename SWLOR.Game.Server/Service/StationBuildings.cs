@@ -598,19 +598,17 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        /// <summary>Re-registers the ship from its old Starport to the destination's and moves its dock and launch point.</summary>
+        /// <summary>
+        /// Re-registers the ship from its old Starport to the destination's and moves its dock and launch point. The ship
+        /// joins the destination first, then moves, then leaves the old Starport, so a restart part-way through leaves it
+        /// listed at both, never at none.
+        /// </summary>
         private static void MoveDock(WorldProperty ship, ShipDockPoint dock, uint anchorWaypoint)
         {
             if (!ship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
                 ship.ChildPropertyIds[PropertyChildType.RegisteredStarport] = new List<string>();
 
-            foreach (var oldId in ship.ChildPropertyIds[PropertyChildType.RegisteredStarport])
-            {
-                var oldStarport = DB.Get<WorldProperty>(oldId);
-                if (oldStarport != null && oldStarport.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var oldShips) && oldShips.Remove(ship.Id))
-                    DB.Set(oldStarport);
-            }
-
+            var oldIds = ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Where(x => x != dock.PropertyId).ToList();
             ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
             ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Add(dock.PropertyId);
 
@@ -643,6 +641,13 @@ namespace SWLOR.Game.Server.Service
             };
 
             DB.Set(ship);
+
+            foreach (var oldId in oldIds)
+            {
+                var oldStarport = DB.Get<WorldProperty>(oldId);
+                if (oldStarport != null && oldStarport.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var oldShips) && oldShips.Remove(ship.Id))
+                    DB.Set(oldStarport);
+            }
         }
     }
 }

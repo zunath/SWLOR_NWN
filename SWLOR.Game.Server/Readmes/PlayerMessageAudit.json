@@ -7813,49 +7813,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 58,
+    "Line": 60,
     "Member": "AcceptFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Contract accepted: {offer.Volume} volume of sealed freight to {destination} within {offer.DeadlineMinutes} minutes \" +\n                $\"for {offer.Fee} credits. Your deposit of {offer.Deposit} credits comes back with an on-time delivery.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 74,
+    "Line": 76,
     "Member": "IsFreightExchangeClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 85,
+    "Line": 87,
     "Member": "DeliverFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FreightContractRules.GetRefusalMessage(FreightRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 96,
+    "Line": 98,
     "Member": "DeliverFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FreightContractRules.GetRefusalMessage(result.Refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 120,
+    "Line": 122,
     "Member": "DeliverFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, result.IsLate\n                ? ColorToken.Red($\"Freight delivered late: {result.Fee} credits paid, and the deposit of {contract.Deposit} credits is forfeit.\")\n                : ColorToken.Green($\"Freight delivered on time: {result.Fee} credits paid and your deposit of {result.DepositReturned} credits returned.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 154,
+    "Line": 156,
     "Member": "AbandonFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Contract abandoned. The deposit of {contract.Deposit} credits is forfeit.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeFreight.cs",
-    "Line": 181,
+    "Line": 188,
     "Member": "FailSealedFreight",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, ColorToken.Red(\n                        $\"Your freight for {TradeLookup.GetExchange(contract.Destination)?.Name} was lost with your ship. The contract failed and the deposit of {contract.Deposit} credits is forfeit.\"))"
@@ -8135,70 +8135,70 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 305,
+    "Line": 310,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, collected.Count > 0\n                ? ColorToken.Green($\"Collected from the Asteroid Drill: {string.Join(\", \", collected)}.\")\n                : ColorToken.Red(\"The Asteroid Drill has no ore to collect.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 330,
+    "Line": 335,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A droid is already assigned here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 336,
+    "Line": 341,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer carry that droid, or it is busy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 347,
+    "Line": 352,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} now works the {detail.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 366,
+    "Line": 371,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{state.DroidName} was sent back to its owner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 373,
+    "Line": 378,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 377,
+    "Line": 382,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} returns to you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 549,
+    "Line": 554,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(StationBuildingRules.DescribeJumpRefusal(refusal, request)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 575,
+    "Line": 580,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 591,
+    "Line": 596,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{ship.CustomName} jumped to {destination.CustomName}, burning {fuel} Station Fuel.\"))"

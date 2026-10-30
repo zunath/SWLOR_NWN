@@ -98,6 +98,17 @@ public class PerformanceAudienceStateTests
     }
 
     [Test]
+    public void LeavingRangeBetweenTicksInterruptsWatching()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+
+        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnPlayerHeartbeat\)\]\s+public static void StopWatchingWhenOutOfRange\(\)");
+        var check = Section(source, "public static void StopWatchingWhenOutOfRange(");
+        check.Should().Contain("!state.WatchingSinceUtc.HasValue", "players who are not watching return after one lookup");
+        check.Should().Contain("InterruptWatching(state);");
+    }
+
+    [Test]
     public void StartingAPerformanceInterruptsWatchingAtOnce()
     {
         var performance = File.ReadAllText(SourcePath("Service", "Performance.cs"));

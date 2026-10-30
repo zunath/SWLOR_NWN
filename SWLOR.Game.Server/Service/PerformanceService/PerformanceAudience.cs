@@ -684,6 +684,35 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         }
 
         /// <summary>
+        /// Stepping out of every performer's range, or into combat, interrupts watching. The minute tick would miss a gap
+        /// shorter than a minute, so each watcher's heartbeat checks; anyone else returns after one lookup.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
+        public static void StopWatchingWhenOutOfRange()
+        {
+            var player = OBJECT_SELF;
+            if (!_states.TryGetValue(player, out var state) || !state.WatchingSinceUtc.HasValue)
+                return;
+
+            if (!GetIsInCombat(player) && IsCoveredByAnyPerformer(player))
+                return;
+
+            InterruptWatching(state);
+        }
+
+        private static bool IsCoveredByAnyPerformer(uint watcher)
+        {
+            foreach (var session in Performance.GetSessions())
+            {
+                var performer = session.Performer;
+                if (performer != watcher && IsInRange(watcher, performer, GetPerformerRange(performer)))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Starting a performance interrupts watching at once, so starting and stopping between two ticks cannot keep
         /// the warm-up or the frozen Inspired.
         /// </summary>

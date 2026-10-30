@@ -48,6 +48,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, IncursionAreaPhase> _incursionAreaPhases = new();
         private static readonly Dictionary<string, DateTime> _incursionNextSpawn = new();
         private static readonly Dictionary<string, List<uint>> _incursionBlockadeShips = new();
+
+        /// <summary>Blockades none of whose ships could be created, by dock key, with how to spawn them again.</summary>
+        private static readonly Dictionary<string, Func<List<uint>>> _incursionBlockadeRetries = new();
         // Damage is keyed by the persistent player id of the pilot, not the temporary creature handle, so a pilot who
         // logs out before the kill is still credited.
         private static readonly Dictionary<uint, Dictionary<string, double>> _incursionDamage = new();
@@ -247,9 +250,9 @@ namespace SWLOR.Game.Server.Service
                     if (!IncursionRules.IsBlockadeHolding(incursion, key))
                         continue;
 
-                    var ships = SpawnIncursionGroup(incursion, GetArea(dock), GetPosition(dock), IncursionRules.BlockadeShips(area.Tier, incursion.Invader),
-                        IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, area.Tier);
-                    _incursionBlockadeShips[key] = ships;
+                    var tier = area.Tier;
+                    SpawnBlockade(key, () => SpawnIncursionGroup(incursion, GetArea(dock), GetPosition(dock),
+                        IncursionRules.BlockadeShips(tier, incursion.Invader), IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, tier));
                 }
             }
 
@@ -264,8 +267,9 @@ namespace SWLOR.Game.Server.Service
                     if (!IncursionRules.IsBlockadeHolding(incursion, key) || !GetIsObjectValid(waypoint))
                         continue;
 
-                    _incursionBlockadeShips[key] = SpawnIncursionGroup(incursion, GetArea(waypoint), GetPosition(waypoint),
-                        IncursionRules.BlockadeShips(area.Tier, incursion.Invader), IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, area.Tier);
+                    var tier = area.Tier;
+                    SpawnBlockade(key, () => SpawnIncursionGroup(incursion, GetArea(waypoint), GetPosition(waypoint),
+                        IncursionRules.BlockadeShips(tier, incursion.Invader), IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, tier));
                 }
             }
 
@@ -285,8 +289,20 @@ namespace SWLOR.Game.Server.Service
             var ships = command
                 ? IncursionRules.CommandShips(area.Tier, incursion.Invader)
                 : IncursionRules.WaveShips(area.Tier, incursion.Invader);
-            _incursionAreaShips[area.Resref] = SpawnIncursionGroup(incursion, areaObject, center, ships, IncursionTuning.WaveRingMeters,
+            var spawned = SpawnIncursionGroup(incursion, areaObject, center, ships, IncursionTuning.WaveRingMeters,
                 command ? IncursionRoleCommand : IncursionRoleWave, area.Tier);
+
+            // A group none of whose ships could be created would count as destroyed: it is tried again after the wave delay.
+            if (spawned.Count == 0)
+            {
+                _incursionAreaShips.Remove(area.Resref);
+                _incursionAreaPhases[area.Resref] = IncursionAreaPhase.Idle;
+                _incursionNextSpawn[area.Resref] = DateTime.UtcNow.AddSeconds(IncursionTuning.WaveDelaySeconds);
+                Log.Write(LogGroup.Error, $"Incursion: no ship of the {(command ? "command group" : "wave")} in {area.Resref} could be created; trying again.");
+                return;
+            }
+
+            _incursionAreaShips[area.Resref] = spawned;
             _incursionAreaPhases[area.Resref] = command ? IncursionAreaPhase.Command : IncursionAreaPhase.Wave;
 
             if (command)
@@ -294,6 +310,24 @@ namespace SWLOR.Game.Server.Service
                 var name = IncursionRules.GetInvader(incursion.Invader)?.Name;
                 BroadcastIncursion(ColorToken.Red($"INCURSION: the {name} command group has arrived in {area.Name}. Destroy it to liberate the system."));
             }
+        }
+
+        /// <summary>
+        /// Spawns a dock's blockade. One none of whose ships could be created is tried again on later updates, so an empty
+        /// blockade never counts as broken.
+        /// </summary>
+        private static void SpawnBlockade(string key, Func<List<uint>> spawn)
+        {
+            var ships = spawn();
+            if (ships.Count > 0)
+            {
+                _incursionBlockadeShips[key] = ships;
+                _incursionBlockadeRetries.Remove(key);
+                return;
+            }
+
+            if (_incursionBlockadeRetries.TryAdd(key, spawn))
+                Log.Write(LogGroup.Error, $"Incursion: no ship of the blockade at {key} could be created; trying again.");
         }
 
         private static List<uint> SpawnIncursionGroup(ActiveIncursion incursion, uint area, System.Numerics.Vector3 center,
@@ -366,6 +400,14 @@ namespace SWLOR.Game.Server.Service
 
             if (now - _incursionStationsCheckedAt >= TimeSpan.FromMinutes(1))
                 ReleaseLostStationBlockades(incursion);
+
+            foreach (var (key, spawn) in _incursionBlockadeRetries.ToList())
+            {
+                if (IncursionRules.IsBlockadeHolding(incursion, key))
+                    SpawnBlockade(key, spawn);
+                else
+                    _incursionBlockadeRetries.Remove(key);
+            }
 
             foreach (var key in _incursionBlockadeShips.Keys.ToList())
             {
@@ -497,6 +539,7 @@ namespace SWLOR.Game.Server.Service
             _incursionAreaPhases.Clear();
             _incursionNextSpawn.Clear();
             _incursionBlockadeShips.Clear();
+            _incursionBlockadeRetries.Clear();
             _incursionDamage.Clear();
             _incursionLastHit.Clear();
             _incursionPilotNames.Clear();

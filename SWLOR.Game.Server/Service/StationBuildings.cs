@@ -457,10 +457,22 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Sends the building's droid to its owner's overflow store. The overflow record's id comes from the assignment,
+        /// so a return repeated after a restart writes the same record, and the next module load clears a building whose
+        /// droid's record is already written.
+        /// </summary>
         private static void ReturnDroidToOverflow(StationBuildingState state)
         {
+            if (string.IsNullOrEmpty(state.DroidAssignmentId))
+            {
+                state.DroidAssignmentId = Guid.NewGuid().ToString();
+                DB.Set(state);
+            }
+
             DB.Set(new OverflowItem
             {
+                Id = OverflowDroidId(state.DroidAssignmentId),
                 PlayerId = state.DroidOwnerPlayerId,
                 Name = state.DroidName,
                 Resref = Droid.DroidControlItemResref,
@@ -470,6 +482,28 @@ namespace SWLOR.Game.Server.Service
             });
             Log.Write(LogGroup.Property, $"Droid '{state.DroidName}' from station building {state.Id} was returned to player {state.DroidOwnerPlayerId}'s overflow store.");
             ClearDroid(state);
+        }
+
+        private static string OverflowDroidId(string assignmentId) => "station-droid:" + assignmentId;
+
+        /// <summary>Clears any building whose droid a restart left both there and in its owner's overflow store.</summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void FinishDroidReturns()
+        {
+            var count = (int)DB.SearchCount(new DBQuery<StationBuildingState>());
+            if (count <= 0)
+                return;
+
+            foreach (var state in DB.Search(new DBQuery<StationBuildingState>().AddPaging(count, 0)))
+            {
+                if (string.IsNullOrWhiteSpace(state.SerializedDroid) || string.IsNullOrEmpty(state.DroidAssignmentId) ||
+                    DB.Get<OverflowItem>(OverflowDroidId(state.DroidAssignmentId)) == null)
+                    continue;
+
+                ClearDroid(state);
+                DB.Set(state);
+                Log.Write(LogGroup.Property, $"Cleared the droid of station building {state.BuildingId}, already in its owner's overflow store, after a restart.");
+            }
         }
 
         private static void ClearDroid(StationBuildingState state)

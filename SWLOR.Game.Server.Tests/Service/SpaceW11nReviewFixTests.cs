@@ -625,6 +625,36 @@ public class SpaceW11nReviewFixTests
         spawn.Should().NotContain("PayRiftRun(", "a run ended by failed spawns pays nothing");
     }
 
+    [Test]
+    public void IncursionGroupsThatFailToSpawn_AreRetriedNotCountedAsDestroyed()
+    {
+        var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
+        var area = Between(source, "private static void SpawnIncursionAreaGroup(", "private static void SpawnBlockade(");
+        Index(area, "if (spawned.Count == 0)").Should().BeLessThan(Index(area, "_incursionAreaPhases[area.Resref] = command ? IncursionAreaPhase.Command : IncursionAreaPhase.Wave;"));
+        var blockade = Between(source, "private static void SpawnBlockade(", "private static List<uint> SpawnIncursionGroup(");
+        Index(blockade, "if (ships.Count > 0)").Should().BeLessThan(Index(blockade, "_incursionBlockadeRetries.TryAdd(key, spawn)"));
+        source.Should().Contain("SpawnBlockade(key, spawn);").And.Contain("_incursionBlockadeRetries.Clear();");
+    }
+
+    [Test]
+    public void RaiderCargoThatDoesNotFit_IsPackedIntoTheKillersBay()
+    {
+        var load = Between(ReadSource("Service", "TradeCargoSpill.cs").Replace("\r\n", "\n"),
+            "public static int LoadUnspilledCargo(", "public static void ScoopPod(");
+        load.Should().NotContain("CargoSpillRules.Scoop(", "nothing is left behind for lack of room");
+        Index(load, "CargoHoldRules.AddUnits(").Should().BeLessThan(Index(load, "DB.Set(ship);"));
+    }
+
+    [Test]
+    public void ADroidReturnedToOverflow_HasAStableIdAndIsSettledAtBoot()
+    {
+        var source = ReadSource("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        var ret = Between(source, "private static void ReturnDroidToOverflow(", "private static string OverflowDroidId(");
+        ret.Should().Contain("Id = OverflowDroidId(state.DroidAssignmentId),");
+        Index(ret, "state.DroidAssignmentId = Guid.NewGuid().ToString();").Should().BeLessThan(Index(ret, "DB.Set(new OverflowItem"));
+        Index(source, "[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void FinishDroidReturns()").Should().BeGreaterThan(0);
+    }
+
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]

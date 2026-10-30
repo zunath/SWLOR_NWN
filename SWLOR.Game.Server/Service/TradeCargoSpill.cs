@@ -108,8 +108,9 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<CommodityType, int> GetPodContents(uint pod) => ReadPod(pod);
 
         /// <summary>
-        /// Loads units no pod could be created for straight into the pilot's cargo bay, as scooping does, and returns
-        /// the units loaded. What does not fit stays in <paramref name="units"/>.
+        /// Loads units no pod could be created for straight into the pilot's cargo bay, packed past its capacity when
+        /// they do not fit, so they are never lost: selling makes room as usual, and loading more waits for it. Returns
+        /// the units loaded; none are when the pilot has no cargo bay.
         /// </summary>
         public static int LoadUnspilledCargo(uint pilot, Dictionary<CommodityType, int> units)
         {
@@ -120,20 +121,24 @@ namespace SWLOR.Game.Server.Service
             if (ship == null || GetCargoCapacity(ship) <= 0)
                 return 0;
 
-            var taken = CargoSpillRules.Scoop(units, GetFreeVolume(ship));
-            if (taken.Count == 0)
+            var loaded = units.Where(x => x.Value > 0).ToDictionary(x => x.Key, x => x.Value);
+            units.Clear();
+            if (loaded.Count == 0)
                 return 0;
 
-            foreach (var (commodity, count) in taken)
+            var overCapacity = loaded.Values.Sum() > GetFreeVolume(ship);
+            foreach (var (commodity, count) in loaded)
             {
                 var basePrice = TradeLookup.GetCommodity(commodity)?.BasePrice ?? 0;
                 CargoHoldRules.AddUnits(ship.Cargo, commodity, count, basePrice * count);
             }
 
             DB.Set(ship);
-            var text = string.Join(", ", taken.Select(x => $"{x.Value} {TradeLookup.GetCommodity(x.Key)?.Name}"));
+            var text = string.Join(", ", loaded.Select(x => $"{x.Value} {TradeLookup.GetCommodity(x.Key)?.Name}"));
             SendMessageToPC(pilot, ColorToken.Green($"Recovered into the cargo bay: {text}."));
-            return taken.Values.Sum();
+            if (overCapacity)
+                SendMessageToPC(pilot, ColorToken.Red("Your cargo bay is packed past capacity. Sell cargo to make room before loading more."));
+            return loaded.Values.Sum();
         }
 
         /// <summary>What fits goes into the user's ship's cargo bay, and the pod keeps the rest.</summary>

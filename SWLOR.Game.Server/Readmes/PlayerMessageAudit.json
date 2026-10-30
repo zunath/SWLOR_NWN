@@ -7155,28 +7155,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 546,
+    "Line": 589,
     "Member": "DeliverPayout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                    $\"{string.Format(heading, payout.RegionName)}: {credits} credits and {given.Count(x => !string.IsNullOrWhiteSpace(x))} item(s){points}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 551,
+    "Line": 594,
     "Member": "DeliverPayout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Your inventory is full. {left} more item(s) from these spoils wait for you: make room, and they are given at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 850,
+    "Line": 893,
     "Member": "BroadcastIncursion",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 858,
+    "Line": 901,
     "Member": "MessageIncursionArea",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
@@ -7701,42 +7701,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 135,
+    "Line": 138,
     "Member": "LoadUnspilledCargo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Green($\"Recovered into the cargo bay: {text}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 147,
+    "Line": 140,
+    "Member": "LoadUnspilledCargo",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Red(\"Your cargo bay is packed past capacity. Sell cargo to make room before loading more.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 152,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can scoop a cargo pod.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 155,
+    "Line": 160,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoCargoBay)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 163,
+    "Line": 168,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.CargoBayFull)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 176,
+    "Line": 181,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Scooped into the cargo bay: {text}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 185,
+    "Line": 190,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cargo bay is full. The rest stays in the pod.\"))"
@@ -8212,21 +8219,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 628,
+    "Line": 662,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(StationBuildingRules.DescribeJumpRefusal(refusal, request)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 654,
+    "Line": 688,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 690,
+    "Line": 724,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{ship.CustomName} jumped to {destination.CustomName}, burning {fuel} Station Fuel.\"))"

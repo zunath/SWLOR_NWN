@@ -126,7 +126,8 @@ namespace SWLOR.Game.Server.Service
             var kept = new Dictionary<CommodityType, int>();
             var spilled = Trade.SpillUnits(cargo, GetLocation(creature), kept);
 
-            // Units no pod could be created for go straight into the bay of the ship that killed the raider.
+            // Units no pod could be created for go straight into the bay of the ship that killed the raider, past its
+            // capacity if need be.
             var recovered = 0;
             if (kept.Count > 0)
             {
@@ -138,7 +139,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Space, $"STOLEN CARGO - {GetTag(creature)} in {GetResRef(GetArea(creature))} spilled {spilled} units ({string.Join(", ", cargo.Select(x => $"{x.Value} {x.Key}"))})" +
                                       (recovered > 0 ? $", {recovered} units loaded into the killer's bay" : string.Empty) +
-                                      (kept.Count > 0 ? $", {kept.Values.Sum()} units had no pod or bay room" : string.Empty));
+                                      (kept.Count > 0 ? $", {kept.Values.Sum()} units had no pod and no player ship to take them" : string.Empty));
         }
     }
 }

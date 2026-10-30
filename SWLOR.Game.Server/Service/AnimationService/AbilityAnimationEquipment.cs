@@ -18,6 +18,20 @@ public static class AbilityAnimationEquipment
             ReadGrip(GetItemInSlot(InventorySlot.LeftHand, creature), size));
     }
 
+    public static AnimationWeaponHold ReadHold(uint creature)
+    {
+        var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
+        if (!GetIsObjectValid(weapon)) return AnimationWeaponHold.None;
+        return ResolveHold(GetBaseItemType(weapon), ReadGrip(weapon, (int)GetCreatureSize(creature)));
+    }
+
+    public static AnimationWeaponHold ResolveHold(BaseItem type, AnimationWeaponGrip grip)
+    {
+        if (type is BaseItem.Rifle or BaseItem.Cannon) return AnimationWeaponHold.Rifle;
+        return grip is AnimationWeaponGrip.TwoHanded or AnimationWeaponGrip.Polearm
+            ? AnimationWeaponHold.Shoulder : AnimationWeaponHold.None;
+    }
+
     private static AnimationWeaponGrip ReadGrip(uint item, int creatureSize)
     {
         if (!GetIsObjectValid(item)) return AnimationWeaponGrip.Empty;

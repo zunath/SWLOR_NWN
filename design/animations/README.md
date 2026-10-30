@@ -221,6 +221,14 @@ maps to literal `xbowr` so that removal reaches the previously active layer;
 refreshes from overwriting the pose. All mappings share playback ownership and
 are restored on completion, interruption cleanup, death, or native handoff.
 
+Two-handed, polearm, and double weapons (greatswords, staffs, saberstaffs, halberds,
+twin electro blades: the `TwoHanded` and `Polearm` grips) keep the equivalent
+`plpause1` holding layer, which held the weapon upright over the shoulder through
+the clip. They use the same Dodge Side carrier with the mirrored mappings:
+`xbowr` maps to literal `plpause1` so that removal reaches the existing layer, and
+`plpause1` maps to `sw_nohold`. The rifle mappings do not clear this layer.
+Offline client captures (ticket 1565512326117986450) verified both genders.
+
 `sw_nohold` is a single shared support clip, not an ability or tester entry.
 Run `python tools/EnsureWeaponCarryOverlay.py --apply` in the HAK repository after
 replacing `a_ba_casts.mdl`. The installer compiles only the tiny support clip and

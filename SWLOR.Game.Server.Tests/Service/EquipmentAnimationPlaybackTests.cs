@@ -75,6 +75,34 @@ public class EquipmentAnimationPlaybackTests
         playback.CanStartEquipmentPlayback(1, request).Should().BeFalse();
     }
 
+    [TestCase(AnimationWeaponHold.Rifle, false)] [TestCase(AnimationWeaponHold.Rifle, true)]
+    [TestCase(AnimationWeaponHold.Shoulder, false)] [TestCase(AnimationWeaponHold.Shoulder, true)]
+    public void EquipmentChangesReleaseUnrestrictedHoldMappingsForTheOldWeapon(AnimationWeaponHold hold, bool alreadyEnding)
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        var token = playback.Begin(1, AuthoredAnimation.ConduitStance, 2, true, weaponHold: hold);
+        if (alreadyEnding) playback.Complete(1, token);
+
+        playback.InvalidateEquipmentPlayback(1).Should().BeTrue("the hold aliases would rewrite the new weapon's hold layer");
+        runtime.Maps.Values.Should().OnlyContain(value => value == "");
+        playback.IsCurrent(1, token).Should().BeFalse();
+        playback.InvalidateEquipmentPlayback(1).Should().BeFalse();
+    }
+
+    [Test]
+    public void EquipmentChangesKeepAnUnheldClipThatReplacedAHeldOne()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, AuthoredAnimation.ConduitStance, 2, true, weaponHold: AnimationWeaponHold.Shoulder);
+        var unheld = playback.Begin(1, AuthoredAnimation.Provoke, 1);
+
+        playback.InvalidateEquipmentPlayback(1).Should().BeFalse();
+        playback.IsCurrent(1, unheld).Should().BeTrue();
+        runtime.Maps[NamedAnimationPlayback.LoopSource].Should().Be(AuthoredAnimation.Provoke.Name);
+    }
+
     [Test]
     public void NativePlaybackAndDeathInvalidatePendingRequests()
     {
@@ -107,6 +135,22 @@ public class EquipmentAnimationPlaybackTests
         var handler = playback.DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.Text == "OnEquipmentChanging");
         handler.AttributeLists.ToString().Should().Contain("OnSWLORItemEquipValidBefore").And.Contain("OnItemUnequipBefore");
         handler.Body!.ToString().Should().Contain("InvalidateEquipmentPlayback").And.Contain("PlayNativePreview");
+    }
+
+    [Test]
+    public void QueuedPlaybackChoosesTheHoldAndCarrierWhenItStarts()
+    {
+        var queue = Read("SWLOR.Game.Server/Service/NamedAnimation.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.Text == "Queue");
+        var started = queue.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "ActionDoCommand" && call.ToString().Contains("Playback.Begin"));
+        var startedCalls = started.DescendantNodes().OfType<InvocationExpressionSyntax>().Select(call => call.Expression.ToString()).ToArray();
+        startedCalls.Should().Contain("AbilityAnimationEquipment.ReadHold",
+            "equipment can change while the clip waits behind earlier actions");
+        startedCalls.Should().Contain("PlayAnimation", "the carrier must match the mappings installed at start");
+        queue.DescendantNodes().OfType<InvocationExpressionSyntax>().Select(call => call.Expression.ToString())
+            .Should().NotContain("ActionPlayAnimation", "a carrier queued at selection cannot follow a later weapon change")
+            .And.Contain("ActionWait");
     }
 
     private static void AssertCreatureBinding(IEnumerable<InvocationExpressionSyntax> calls, string method)

@@ -479,16 +479,34 @@ namespace SWLOR.Game.Server.Service
             if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.RightHand, player) == offHand)
                 ActionUnequipItem(offHand);
 
-            // The main hand goes first so a two-handed weapon being replaced does not push the off-hand item out.
+            // The main hand usually goes first so a two-handed weapon being replaced does not push the off-hand item
+            // out. When the new main hand cannot be held beside the current off-hand item (a pistol beside a sword),
+            // the equip checks would refuse it, so the off hand changes first: the set's item, or an empty hand.
+            var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
+            var offHandFirst = GetIsObjectValid(mainHand) &&
+                               GetIsObjectValid(currentOffHand) &&
+                               currentOffHand != mainHand &&
+                               currentOffHand != offHand &&
+                               !CanPairHands(mainHand, currentOffHand);
+            if (offHandFirst && !GetIsObjectValid(offHand))
+                ActionUnequipItem(currentOffHand);
+            if (offHandFirst)
+                EquipOffHand(player, offHand);
             if (GetIsObjectValid(mainHand) && GetItemInSlot(InventorySlot.RightHand, player) != mainHand)
                 ActionEquipItem(mainHand, InventorySlot.RightHand);
-            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) != offHand)
-                ActionEquipItem(offHand, InventorySlot.LeftHand);
+            if (!offHandFirst)
+                EquipOffHand(player, offHand);
 
             if (GetIsObjectValid(attackTarget) && !GetIsDead(attackTarget))
                 ActionAttack(attackTarget);
 
             RefreshStatusSoon(player);
+        }
+
+        private static void EquipOffHand(uint player, uint offHand)
+        {
+            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) != offHand)
+                ActionEquipItem(offHand, InventorySlot.LeftHand);
         }
 
         /// <summary>

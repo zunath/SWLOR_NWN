@@ -850,7 +850,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOptions(model => model.QuickOutfitOptions)
                     .BindSelectedIndex(model => model.QuickOutfitValue)
                     .BindIsEnabled(model => model.IsQuickWearEnabled)
-                    .SetTooltip("Saved outfits")
                     .SetHeight(32f);
             });
             // Wear and Undo sit under the picker, which takes the map's full width.

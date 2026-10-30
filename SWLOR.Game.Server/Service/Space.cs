@@ -2169,6 +2169,7 @@ namespace SWLOR.Game.Server.Service
                 ChanceToHit = chanceToHit,
                 CreditedPlayer = SpaceCrew.GetCreditedPlayer(activator),
                 CreditedSkill = SpaceCrew.GetCreditedSkill(activator, SkillType.Piloting),
+                StatSource = source,
             };
 
             var per = GetPilotScore(source, activatorStatus, AbilityType.Perception);
@@ -2207,7 +2208,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Consecutive energy weapon hits against one target add their stacks' DMG to this same shot.
-            var shotDmg = shot.Dmg + SpaceSustainedFire.RegisterHit(activator, target, shot.Family);
+            var shotDmg = shot.Dmg + SpaceSustainedFire.RegisterHit(activator, target, shot.Family, source);
 
             var (minimum, maximum) = SpaceCombatMath.DamageRange(
                 attack, shotDmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);

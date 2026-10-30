@@ -238,7 +238,10 @@ public class PilotingAceTests
         var space = ReadServerSource("Service", "Space.cs");
         space.Should().Contain("if (!shot.IsAbility)\n                criticalRate += Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment);",
             "weapon cycles, not ability shots, take the weapon critical rate");
-        space.Should().Contain("SpaceSustainedFire.RegisterHit(activator, target, shot.Family)");
+        space.Should().Contain("SpaceSustainedFire.RegisterHit(activator, target, shot.Family, source)",
+            "a crew member's station shot reads their own Sustained Fire perk");
+        space.Should().Contain("StatSource = source,", "a missile's proc reads the perks of the crew member who fired it");
+        ReadServerSource("Service", "SpaceOrdnance.cs").Should().Contain("Stat.GetStatAdjustment(e.StatSource, StatType.SpaceLauncherSplashChance)");
         space.Should().Contain("SpaceHostileAbilityRewards.Clear(player);");
         space.Should().Contain("SpaceSustainedFire.Clear(player);");
 

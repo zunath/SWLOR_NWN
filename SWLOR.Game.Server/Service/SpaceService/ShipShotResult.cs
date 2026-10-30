@@ -35,6 +35,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public uint CreditedPlayer { get; set; } = OBJECT_INVALID;
 
+        /// <summary>
+        /// The creature whose stats and perks the shot used: the crew member who fired a station module, or the attacker.
+        /// It travels with the result, so a proc on a missile that lands later reads the same perks.
+        /// </summary>
+        public uint StatSource { get; set; } = OBJECT_INVALID;
+
         /// <summary>The skill the combat point goes to: a crew member's seat skill, or Invalid for Piloting.</summary>
         public SkillType CreditedSkill { get; set; } = SkillType.Invalid;
 

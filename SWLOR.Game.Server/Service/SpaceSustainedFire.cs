@@ -20,8 +20,12 @@ namespace SWLOR.Game.Server.Service
         /// Counts a landed shot and returns the DMG its stacks add, this hit included. Zero for other weapon
         /// families and for a pilot with no stacks to build.
         /// </summary>
-        public static int RegisterHit(uint attacker, uint target, SpaceWeaponFamily family)
+        public static int RegisterHit(uint attacker, uint target, SpaceWeaponFamily family, uint statSource = OBJECT_INVALID)
         {
+            // A crew member's station shot reads their own Sustained Fire perk; the run stays on the ship.
+            if (!GetIsObjectValid(statSource))
+                statSource = attacker;
+
             if (family != SpaceWeaponFamily.Energy ||
                 !GetIsObjectValid(attacker) ||
                 !GetIsObjectValid(target) ||
@@ -30,9 +34,9 @@ namespace SWLOR.Game.Server.Service
                 return 0;
             }
 
-            var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.SpaceEnergyRepeatedTargetDamageBonusPerHit);
-            var maximumBonus = Stat.GetStatAdjustment(attacker, StatType.SpaceEnergyRepeatedTargetDamageBonusMax);
-            var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.SpaceEnergyRepeatedTargetDamageDurationSeconds);
+            var bonusPerHit = Stat.GetStatAdjustment(statSource, StatType.SpaceEnergyRepeatedTargetDamageBonusPerHit);
+            var maximumBonus = Stat.GetStatAdjustment(statSource, StatType.SpaceEnergyRepeatedTargetDamageBonusMax);
+            var durationSeconds = Stat.GetStatAdjustment(statSource, StatType.SpaceEnergyRepeatedTargetDamageDurationSeconds);
             if (bonusPerHit <= 0 || maximumBonus <= 0 || durationSeconds <= 0)
             {
                 Clear(attacker);

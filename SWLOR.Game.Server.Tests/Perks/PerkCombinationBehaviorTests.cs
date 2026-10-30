@@ -56,6 +56,53 @@ public class PerkCombinationBehaviorTests
     }
 
     [Test]
+    public void DeadeyeReload_BuildsFromEveryRangedWeaponAbilityOnly()
+    {
+        var deadeye = PerkSource<PistolPerkDefinition>("DeadeyeReload", PerkType.DeadeyeReload);
+        deadeye[StatType.NonCriticalAbilityNextSkillAbilityCriticalRateRangedOnly].Should().Be(1);
+        deadeye[StatType.NonCriticalAbilityNextSkillAbilityCriticalRateSkillType].Should().Be(0);
+        var requiredSkill = (SkillType)deadeye[StatType.NonCriticalAbilityNextSkillAbilityCriticalRateSkillType];
+
+        foreach (var skill in Enum.GetValues<SkillType>())
+            Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true)
+                .Should().Be(Combat.IsRangedWeaponSkill(skill), skill.ToString());
+        foreach (var skill in new[] { SkillType.Pistol, SkillType.TwinPistol, SkillType.Rifle, SkillType.Throwing })
+            Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeTrue(skill.ToString());
+        foreach (var skill in new[] { SkillType.Vibroblade, SkillType.Force, SkillType.Devices, SkillType.Invalid })
+            Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeFalse(skill.ToString());
+    }
+
+    [Test]
+    public void DeadeyeReload_StoredCriticalRateAppliesToTheNextAbilityOfAnyRangedSkill()
+    {
+        const string group = nameof(StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+        AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRateSkillType, (int)SkillType.Invalid);
+        AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRateRangedOnly, 1);
+        AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment, 10);
+
+        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Rifle).Should().Be(10);
+        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Throwing).Should().Be(10);
+        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Pistol).Should().Be(10);
+        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Vibroblade).Should().Be(0);
+        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Force).Should().Be(0);
+    }
+
+    [Test]
+    public void NoncriticalAbilityCriticalRate_WithoutRangedFlag_KeepsExactSkillMatching()
+    {
+        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Pistol, false).Should().BeTrue();
+        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Rifle, SkillType.Pistol, false).Should().BeFalse();
+        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Invalid, false).Should().BeFalse();
+        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Rifle, true).Should().BeFalse();
+
+        const string group = nameof(StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+        AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRateSkillType, (int)SkillType.Rifle);
+        AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment, 5);
+        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Rifle).Should().Be(5);
+        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Pistol).Should().Be(0);
+    }
+
+    [Test]
     public void SplashChance_IsBeneficialAndUsesMaximumAggregation()
     {
         Stat.IsBeneficialStatAdjustment(StatType.AutoAttackSplashChance, 15).Should().BeTrue();

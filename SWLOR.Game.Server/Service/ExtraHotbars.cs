@@ -499,27 +499,22 @@ namespace SWLOR.Game.Server.Service
             ClearAllActions();
 
             // The equip checks silently refuse an item whose hand is still occupied, so everything leaving a hand
-            // is put away before anything goes on. The off hand goes first, because the engine moves an off-hand
-            // weapon into an emptied main hand. A companion stays to leave with its main-hand item.
-            var offHandLeaves = offHandChanges && GetIsObjectValid(currentOffHand) && !IsHandCompanion(currentOffHand);
-            if (offHandLeaves && !PutAwayHandItem(player, currentOffHand, InventorySlot.LeftHand))
-                return;
+            // is put away before anything goes on.
             if (mainHandChanges && GetIsObjectValid(currentMainHand) &&
                 !PutAwayHandItem(player, currentMainHand, InventorySlot.RightHand))
+                return;
+
+            // The engine moves an off-hand weapon into an emptied main hand. A kept weapon that moved is put away
+            // too and goes back to the off hand after the new main-hand item.
+            var offHandSlot = GetHandSlot(player, currentOffHand);
+            if (offHandSlot == InventorySlot.RightHand)
+                offHandChanges = true;
+            if (offHandChanges && offHandSlot != InventorySlot.Invalid &&
+                !PutAwayHandItem(player, currentOffHand, offHandSlot))
             {
-                // The off hand was already put away, so it goes back rather than leaving that hand empty.
-                mainHandChanges = false;
-                offHandChanges = offHandLeaves;
-                newOffHand = offHandLeaves ? currentOffHand : OBJECT_INVALID;
-            }
-            else if (mainHandChanges && !offHandChanges && GetIsObjectValid(currentOffHand) &&
-                     GetItemInSlot(InventorySlot.RightHand, player) == currentOffHand)
-            {
-                // The kept off-hand weapon moved into the emptied main hand, so it goes back after the new main hand.
-                if (PutAwayHandItem(player, currentOffHand, InventorySlot.RightHand))
-                    offHandChanges = true;
-                else
-                    mainHandChanges = false;
+                // The main hand was already put away, so it goes back rather than leaving that hand empty.
+                newMainHand = mainHandChanges ? currentMainHand : OBJECT_INVALID;
+                newOffHand = OBJECT_INVALID;
             }
 
             if (mainHandChanges && GetIsObjectValid(newMainHand))
@@ -534,19 +529,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Puts a worn set's items away. The off hand goes first, because the engine moves an off-hand weapon into
-        /// an emptied main hand; a Twin Pistols or Power Glove companion is never part of a set and leaves with its
-        /// main-hand item. An item with no room to go stays held, and the player is told to make room.
+        /// Puts a worn set's items away. The main hand goes first so a Twin Pistols or Power Glove companion leaves
+        /// with it; the off-hand item is then found in whichever hand the engine left it. An item with no room to go
+        /// stays held, and the player is told to make room. If the main hand cannot go, the set stays as it is.
         /// </summary>
         private static void UnequipHands(uint player, uint mainHand, uint offHand)
         {
-            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) == offHand &&
-                !PutAwayHandItem(player, offHand, InventorySlot.LeftHand))
+            if (GetIsObjectValid(mainHand) && !PutAwayHandItem(player, mainHand, InventorySlot.RightHand))
                 return;
-            if (GetIsObjectValid(mainHand))
-                PutAwayHandItem(player, mainHand, InventorySlot.RightHand);
+
+            var offHandSlot = GetHandSlot(player, offHand);
+            if (offHandSlot != InventorySlot.Invalid)
+                PutAwayHandItem(player, offHand, offHandSlot);
 
             RefreshStatusSoon(player);
+        }
+
+        /// <summary>
+        /// The hand holding an item, or Invalid. The engine moves an off-hand weapon into an emptied main hand,
+        /// so an off-hand item can turn up in either.
+        /// </summary>
+        private static InventorySlot GetHandSlot(uint player, uint item)
+        {
+            if (!GetIsObjectValid(item))
+                return InventorySlot.Invalid;
+            if (GetItemInSlot(InventorySlot.LeftHand, player) == item)
+                return InventorySlot.LeftHand;
+            return GetItemInSlot(InventorySlot.RightHand, player) == item ? InventorySlot.RightHand : InventorySlot.Invalid;
         }
 
         private static bool IsHandCompanion(uint item) =>

@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var kind = tabId == InstrumentTabId ? PerformanceKind.Music : PerformanceKind.Dance;
             var bonus = PerformanceWindows.GetAudienceBonus(Player, kind);
-            AudienceText = $"Your audience: +{bonus.XpPercent + _venueTotal}% skill XP, {bonus.DebtPercent}% debt per minute";
+            AudienceText = $"Audience: +{bonus.XpPercent + _venueTotal}% skill XP, {bonus.DebtPercent}% debt/min";
         }
 
         private static string BuildCapstoneText(string capstone, PerkType perk)

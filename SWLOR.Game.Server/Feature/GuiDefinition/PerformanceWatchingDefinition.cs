@@ -80,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 })
                 .BindRowCount(model => model.RowTexts)
                 .SetRowHeight(RowHeight)
-                .SetWidth(ContentPanelWidth)
+                // Narrower than the panel: a child as wide as the panel is clipped by its padding, and drags the bar with it.
+                .SetWidth(ContentPanelWidth - 20f)
                 .SetHeight(RowHeight * VisibleRows + 6f));
         }
 

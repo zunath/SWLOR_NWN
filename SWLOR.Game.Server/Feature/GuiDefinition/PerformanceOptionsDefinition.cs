@@ -15,15 +15,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
-        private const float ContentPanelWidth = 420f;
-        private const float ListRowHeight = 34f;
-        private const float NoteWidth = 190f;
+        private const float ContentPanelWidth = 460f;
+        private const float ListRowHeight = 30f;
+        // A list row takes its height plus the list's row spacing.
+        private const float ListRowPitch = ListRowHeight + 4f;
+        private const float NoteWidth = 240f;
         private const float ApplyWidth = 100f;
+        private const float PairWidth = (ContentPanelWidth - 28f) / 2f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceOptions)
-                .SetInitialGeometry(620f, 30f, 470f, 650f)
+                .SetInitialGeometry(620f, 20f, 510f, 660f)
                 .SetTitle("Perform")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -76,13 +79,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     model => model.SetSelected, model => model.SetEnabled, model => model.OnSelectSet(),
                     "Locked until you unlock the set's perk.", 6);
 
-                AddCaption(content, "SECOND SET");
-                AddSecondPick(content, model => model.SecondSetOptions, model => model.SecondSetIndex,
-                    model => model.SecondSetEnabled, "A second set needs the Virtuoso perk.");
-
-                AddCaption(content, "SONG");
-                AddSecondPick(content, model => model.SongOptions, model => model.SongIndex,
-                    model => model.SongEnabled, "Collect a Cantina song to choose one.");
+                // Second set and song share a row so the tab fits a 720 px screen without scrolling.
+                content.AddRow(row =>
+                {
+                    AddPairCaption(row, "SECOND SET");
+                    AddPairCaption(row, "SONG");
+                });
+                content.AddRow(row =>
+                {
+                    AddPick(row, model => model.SecondSetOptions, model => model.SecondSetIndex,
+                        model => model.SecondSetEnabled, "A second set needs the Virtuoso perk.").SetWidth(PairWidth);
+                    AddPick(row, model => model.SongOptions, model => model.SongIndex,
+                        model => model.SongEnabled, "Collect a Cantina song to choose one.").SetWidth(PairWidth);
+                });
 
                 AddSharedSections(content);
             });
@@ -97,6 +106,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 panel.SetScrollbars(NuiScrollbars.None);
                 panel.AddColumn(body);
             }).SetWidth(ContentPanelWidth)));
+        }
+
+        private static void AddPairCaption(GuiRow<PerformanceOptionsViewModel> row, string text)
+        {
+            row.AddLabel()
+                .SetText(text)
+                .SetColor(PerformanceWindowColors.Dim)
+                .SetWidth(PairWidth)
+                .SetHeight(22f)
+                .SetHorizontalAlign(NuiHorizontalAlign.Left);
         }
 
         private static void AddCaption(GuiColumn<PerformanceOptionsViewModel> content, string text)
@@ -141,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindRowCount(names)
                 .SetRowHeight(ListRowHeight)
                 .SetScrollbars(NuiScrollbars.None)
-                .SetHeight(ListRowHeight * rowCount + 6f));
+                .SetHeight(ListRowPitch * rowCount + 6f));
         }
 
         // A combo box that stays disabled, showing what is needed, until the player has the perk (or a song) it needs.
@@ -153,12 +172,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             string disabledTooltip)
         {
             // No row height: a row holding a combo box derives its height from the combo (layout rule R2c).
-            content.AddRow(row => row.AddComboBox()
+            content.AddRow(row => AddPick(row, options, selectedIndex, enabled, disabledTooltip));
+        }
+
+        private static GuiComboBox<PerformanceOptionsViewModel> AddPick(
+            GuiRow<PerformanceOptionsViewModel> row,
+            Expression<Func<PerformanceOptionsViewModel, GuiBindingList<GuiComboEntry>>> options,
+            Expression<Func<PerformanceOptionsViewModel, int>> selectedIndex,
+            Expression<Func<PerformanceOptionsViewModel, bool>> enabled,
+            string disabledTooltip)
+        {
+            return row.AddComboBox()
                 .BindOptions(options)
                 .BindSelectedIndex(selectedIndex)
                 .BindIsEnabled(enabled)
                 .SetDisabledTooltip(disabledTooltip)
-                .SetHeight(32f));
+                .SetHeight(32f);
         }
 
         private static void AddSharedSections(GuiColumn<PerformanceOptionsViewModel> content)
@@ -172,11 +201,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindSelectedValue(model => model.TempoValue)
                 .SetWidth(ContentPanelWidth - 20f)
                 .SetHeight(30f));
-            content.AddRow(row => row.AddText()
-                .SetText("Faster tempo: more Performance XP for you. Same reward for your audience.")
-                .SetShowBorder(false)
-                .SetScrollbars(NuiScrollbars.None)
-                .SetHeight(40f));
+            content.AddRow(row => row.AddLabel()
+                .SetText("Faster: more XP for you, same for your audience.")
+                .SetHeight(22f)
+                .SetHorizontalAlign(NuiHorizontalAlign.Left));
 
             content.AddRow(row => row.AddLabel()
                 .BindText(model => model.VenueHeaderText)
@@ -192,14 +220,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetHeight(22f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
 
-            // The audience line gets its own row: beside the button it was cut off at the window's width.
-            content.AddRow(row => row.AddLabel()
-                .BindText(model => model.AudienceText)
-                .SetHeight(22f)
-                .SetHorizontalAlign(NuiHorizontalAlign.Left));
+            // The audience line is kept short enough to sit beside the button.
             content.AddRow(row =>
             {
-                row.AddSpacer();
+                row.AddLabel()
+                    .BindText(model => model.AudienceText)
+                    .SetHeight(32f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
                 row.AddButton()
                     .SetText("Apply")
                     .SetWidth(ApplyWidth)

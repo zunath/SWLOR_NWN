@@ -84,6 +84,27 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbPlayer);
             }
 
+            // A courier run a restart kept from loading when it was accepted has no load to deliver: the acceptance is
+            // undone, giving back the offer and any intel it spent.
+            var unloaded = dbPlayer.AgentMissions
+                .Where(x => x.Type == AgentMissionType.SealedCourier && !unpaid.Contains(x.Id) && dbPlayer.FreightContracts.All(c => c.Id != x.Id))
+                .ToList();
+            if (unloaded.Count > 0)
+            {
+                foreach (var mission in unloaded)
+                {
+                    dbPlayer.AgentMissions.Remove(mission);
+                    dbPlayer.AgentOffersTaken.Remove(mission.Id);
+                    dbPlayer.Quests.Remove(mission.Id);
+                    if (mission.Slot == AgentMissionSlot.Intel)
+                        dbPlayer.AgentIntel++;
+                }
+
+                DB.Set(dbPlayer);
+                DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
+                    "A courier run you took was cancelled because the server restarted before its sealed load was aboard. You may take it again.")));
+            }
+
             foreach (var missionId in unpaid)
             {
                 DelayCommand(6f, () =>

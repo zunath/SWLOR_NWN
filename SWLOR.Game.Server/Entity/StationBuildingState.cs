@@ -60,5 +60,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The assigned droid's Efficiency Protocol percent, read when it was assigned.</summary>
         public int DroidEfficiencyPercent { get; set; }
+
+        /// <summary>
+        /// The assignment of the droid, matching the mark on its controller while a restart could leave the controller in
+        /// the owner's character file too. Older records load empty.
+        /// </summary>
+        public string DroidAssignmentId { get; set; }
     }
 }

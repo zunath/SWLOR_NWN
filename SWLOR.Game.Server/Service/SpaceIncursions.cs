@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -516,27 +517,41 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Gives a payout's credits and items; <paramref name="heading"/> names the event with the area in {0}.</summary>
-        private static void DeliverPayout(uint player, IncursionPayout payout, string heading, string logLabel)
+        /// <summary>
+        /// Gives what of the payout the character does not hold yet: the credits, then the items in order until the
+        /// inventory is full. They are saved in one character save with a mark of what was given, and the number of items
+        /// the character now holds is returned.
+        /// </summary>
+        private static int DeliverPayout(uint player, IncursionPayout payout, int creditsGiven, int itemsGiven, string variable, string heading, string logLabel)
         {
-            if (payout.Credits > 0)
-                GiveGoldToCreature(player, payout.Credits);
+            var credits = Math.Max(0, payout.Credits - creditsGiven);
+            if (credits > 0)
+                GiveGoldToCreature(player, credits);
 
-            var items = new List<string>(payout.Items);
-            foreach (var (table, pulls) in payout.Pulls)
+            var given = new List<string>();
+            foreach (var resref in payout.Items.Skip(itemsGiven))
             {
-                var lootTable = Loot.GetLootTableByName(table);
-                for (var pull = 0; pull < pulls; pull++)
-                    items.Add(lootTable.GetRandomItem().Resref);
+                if (!string.IsNullOrWhiteSpace(resref) && !GetIsObjectValid(CreateItemOnObject(resref, player)))
+                    break;
+
+                given.Add(resref);
             }
 
-            ShipHold.DeliverYield(player, items.Where(x => !string.IsNullOrWhiteSpace(x)).ToList());
-
-            // Saved with the character at once, so the window before the payout is cleared is as short as it can be.
+            itemsGiven += given.Count;
+            ObjectPlugin.SetString(player, variable, $"{Math.Max(payout.Credits, creditsGiven)}|{itemsGiven}", true);
             ExportSingleCharacter(player);
+
             var points = payout.Points > 0 ? $" for {payout.Points:0.#} contribution points" : string.Empty;
-            SendMessageToPC(player, ColorToken.Green(
-                $"{string.Format(heading, payout.RegionName)}: {payout.Credits} credits and {items.Count} item(s){points}."));
-            Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Credits} credits, {string.Join(", ", items)}");
+            if (credits > 0 || given.Count > 0)
+                SendMessageToPC(player, ColorToken.Green(
+                    $"{string.Format(heading, payout.RegionName)}: {credits} credits and {given.Count(x => !string.IsNullOrWhiteSpace(x))} item(s){points}."));
+
+            var left = payout.Items.Count - itemsGiven;
+            if (left > 0)
+                SendMessageToPC(player, ColorToken.Red($"Your inventory is full. {left} more item(s) from these spoils wait for you: make room, and they are given at your next login."));
+            Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Id} - {credits} credits, {string.Join(", ", given)}" +
+                                      (left > 0 ? $" ({left} item(s) still pending)" : string.Empty));
+            return itemsGiven;
         }
 
         /// <summary>A player who was offline when a region was cleared collects the spoils at login.</summary>
@@ -576,17 +591,41 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Gives a player online their pending payout and saves the character, then clears the payout and saves: a
-        /// restart before the character is saved leaves it to collect at the next login.
+        /// The character-file local prefix, before a payout's id, recording what of that payout the character holds:
+        /// "credits|items". It is saved with them, so a payout a restart left pending gives only what is still owed.
+        /// </summary>
+        private const string CollectedPayoutPrefix = "SPACE_PAYOUT_";
+
+        /// <summary>
+        /// Gives a player online what their pending payout still owes and saves the character, then clears the payout
+        /// once every item is given. A restart at any point gives only what the character file does not hold yet, and
+        /// items that did not fit wait in the payout for the next login.
         /// </summary>
         private static void CollectPendingPayout(uint player, Dictionary<string, IncursionPayout> pending, string playerId, string heading, string logLabel)
         {
             if (pending == null || !GetIsObjectValid(player) || !pending.TryGetValue(playerId, out var payout))
                 return;
 
-            DeliverPayout(player, payout, heading, logLabel);
+            // The id is set, and an older record's pulls rolled, and saved before anything is given, so a retry gives the same.
+            if (string.IsNullOrEmpty(payout.Id) || payout.Pulls.Count > 0)
+            {
+                if (string.IsNullOrEmpty(payout.Id))
+                    payout.Id = Guid.NewGuid().ToString();
+                RollPulls(payout);
+                SaveIncursions();
+            }
+
+            var variable = CollectedPayoutPrefix + payout.Id;
+            var given = ObjectPlugin.GetString(player, variable).Split('|');
+            var creditsGiven = given.Length == 2 && int.TryParse(given[0], out var credits) ? credits : 0;
+            var itemsGiven = given.Length == 2 && int.TryParse(given[1], out var items) ? items : 0;
+            itemsGiven = DeliverPayout(player, payout, creditsGiven, itemsGiven, variable, heading, logLabel);
+            if (itemsGiven < payout.Items.Count)
+                return;
+
             IncursionRules.ClaimPending(pending, playerId, true);
             SaveIncursions();
+            ObjectPlugin.DeleteString(player, variable);
         }
 
         // Contribution

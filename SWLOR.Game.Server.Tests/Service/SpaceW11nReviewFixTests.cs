@@ -228,10 +228,10 @@ public class SpaceW11nReviewFixTests
     {
         var source = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
         var collect = source[source.IndexOf("private static void CollectPendingPayout(", StringComparison.Ordinal)..];
-        collect.IndexOf("DeliverPayout(player, payout, heading, logLabel);", StringComparison.Ordinal)
+        collect.IndexOf("itemsGiven = DeliverPayout(player, payout, creditsGiven, itemsGiven, variable, heading, logLabel);", StringComparison.Ordinal)
             .Should().BeLessThan(collect.IndexOf("IncursionRules.ClaimPending(pending, playerId, true);", StringComparison.Ordinal));
         collect.IndexOf("IncursionRules.ClaimPending(pending, playerId, true);", StringComparison.Ordinal)
-            .Should().BeLessThan(collect.IndexOf("SaveIncursions();", StringComparison.Ordinal));
+            .Should().BeLessThan(collect.LastIndexOf("SaveIncursions();", collect.IndexOf("// Contribution", StringComparison.Ordinal), StringComparison.Ordinal));
         ReadSource("Service", "SpaceCapitalBattles.cs").Should().Contain("CollectPendingPayout(player, IncursionRecord.PendingBattlePayouts, playerId,");
     }
 
@@ -249,9 +249,60 @@ public class SpaceW11nReviewFixTests
         incursions.Should().Contain("CapitalBattleRules.AddPending(state.PendingPayouts, playerId, RollPulls(payout));");
         ReadSource("Service", "SpaceCapitalBattles.cs").Should().Contain("CapitalBattleRules.AddPending(state.PendingBattlePayouts, playerId, RollPulls(payout));");
 
-        var deliver = Between(incursions, "private static void DeliverPayout(", "/// <summary>A player who was offline");
-        deliver.IndexOf("ShipHold.DeliverYield(", StringComparison.Ordinal)
+        var deliver = Between(incursions, "private static int DeliverPayout(", "/// <summary>A player who was offline");
+        deliver.IndexOf("CreateItemOnObject(resref, player)", StringComparison.Ordinal)
             .Should().BeLessThan(deliver.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void PendingSpoils_AreMarkedInTheCharacterFileSoARetryGivesOnlyWhatIsOwed()
+    {
+        var incursions = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
+        var deliver = Between(incursions, "private static int DeliverPayout(", "/// <summary>A player who was offline");
+        deliver.Should().Contain("var credits = Math.Max(0, payout.Credits - creditsGiven);");
+        deliver.Should().Contain("payout.Items.Skip(itemsGiven)");
+        Index(deliver, "ObjectPlugin.SetString(player, variable,").Should().BeLessThan(Index(deliver, "ExportSingleCharacter(player);"),
+            "the mark is saved in the same character save as the credits and items");
+
+        var collect = Between(incursions, "private static void CollectPendingPayout(", "// Contribution");
+        Index(collect, "payout.Id = Guid.NewGuid().ToString();").Should().BeLessThan(Index(collect, "ObjectPlugin.GetString(player, variable)"));
+        Index(collect, "SaveIncursions();").Should().BeLessThan(Index(collect, "ObjectPlugin.GetString(player, variable)"),
+            "the id and rolled items are saved before anything is given");
+        Index(collect, "if (itemsGiven < payout.Items.Count)").Should().BeLessThan(Index(collect, "IncursionRules.ClaimPending(pending, playerId, true);"),
+            "items that did not fit wait in the payout");
+    }
+
+    [Test]
+    public void NpcCargoSpills_KeepWhatNoPodCouldHold()
+    {
+        var convoy = ReadSource("Service", "TradeConvoys.cs").Replace("\r\n", "\n");
+        Index(convoy, "var spilled = SpillUnits(units, GetLocation(hauler), kept);").Should().BeLessThan(Index(convoy, "WriteUnits(hauler, kept);"));
+        ReadSource("Service", "SpaceWildSpace.cs").Should().Contain("Trade.SpillUnits(cargo, GetLocation(creature), kept);");
+    }
+
+    [Test]
+    public void ACourierRunThatNeverLoaded_IsUndoneAtLogin()
+    {
+        var login = Between(ReadSource("Service", "FactionAgents.cs").Replace("\r\n", "\n"),
+            "public static void RegisterHeldMissions()", "// The board");
+        login.Should().Contain("x.Type == AgentMissionType.SealedCourier && !unpaid.Contains(x.Id) && dbPlayer.FreightContracts.All(c => c.Id != x.Id)");
+        Index(login, "dbPlayer.AgentOffersTaken.Remove(mission.Id);").Should().BeLessThan(Index(login, "Quest.RegisterRuntimeQuest("));
+    }
+
+    [Test]
+    public void AStationDroidMove_IsMarkedInTheCharacterFileAndSettledAtLogin()
+    {
+        var source = ReadSource("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        var assign = Between(source, "public static bool AssignDroid(", "public static void RecallDroid(");
+        Index(assign, "SetLocalString(controller, AssigningVariable,").Should().BeLessThan(Index(assign, "ExportSingleCharacter(player);"));
+        Index(assign, "ExportSingleCharacter(player);").Should().BeLessThan(Index(assign, "DB.Set(state);"));
+        Index(assign, "DB.Set(state);").Should().BeLessThan(Index(assign, "DestroyObject(controller);"));
+
+        var recall = Between(source, "public static void RecallDroid(", "public static void SettleDroidMoves()");
+        Index(recall, "SetLocalString(item, RecalledVariable,").Should().BeLessThan(Index(recall, "ExportSingleCharacter(player);"));
+        Index(recall, "ExportSingleCharacter(player);").Should().BeLessThan(Index(recall, "ClearDroid(state);"));
+
+        Index(source, "[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDroidMoves()").Should().BeGreaterThan(0);
     }
 
     [Test]

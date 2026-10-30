@@ -401,7 +401,7 @@ public class WildSpaceTests
         spills.Should().BeInRange(300, 500, "about a fifth of kills");
         WildSpaceRules.IsRiftRaider("rrgunship").Should().BeTrue();
         WildSpaceRules.IsRiftRaider("t5gunship").Should().BeFalse();
-        ReadServerSource("Service", "SpaceWildSpace.cs").Should().Contain("Trade.SpillUnits(cargo, GetLocation(creature))");
+        ReadServerSource("Service", "SpaceWildSpace.cs").Should().Contain("Trade.SpillUnits(cargo, GetLocation(creature), kept)");
     }
 
     // Loot

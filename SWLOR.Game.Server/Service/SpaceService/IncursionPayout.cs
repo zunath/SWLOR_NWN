@@ -8,6 +8,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
     /// </summary>
     public class IncursionPayout
     {
+        /// <summary>
+        /// Set when collection starts, and saved before anything is given; the character file tracks what of this payout
+        /// it holds under this id. Older records load empty.
+        /// </summary>
+        public string Id { get; set; } = string.Empty;
+
         public int Credits { get; set; }
 
         /// <summary>

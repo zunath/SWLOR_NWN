@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -121,8 +123,10 @@ namespace SWLOR.Game.Server.Service
             if (cargo.Count == 0)
                 return;
 
-            var spilled = Trade.SpillUnits(cargo, GetLocation(creature));
-            Log.Write(LogGroup.Space, $"STOLEN CARGO - {GetTag(creature)} in {GetResRef(GetArea(creature))} spilled {spilled} units ({string.Join(", ", cargo.Select(x => $"{x.Value} {x.Key}"))})");
+            var kept = new Dictionary<CommodityType, int>();
+            var spilled = Trade.SpillUnits(cargo, GetLocation(creature), kept);
+            Log.Write(LogGroup.Space, $"STOLEN CARGO - {GetTag(creature)} in {GetResRef(GetArea(creature))} spilled {spilled} units ({string.Join(", ", cargo.Select(x => $"{x.Value} {x.Key}"))})" +
+                                      (kept.Count > 0 ? $", {kept.Values.Sum()} units had no pod" : string.Empty));
         }
     }
 }

@@ -28,6 +28,13 @@ namespace SWLOR.Game.Server.Service
 
         private const string ModelVariable = "STATION_BUILDING_MODEL";
 
+        /// <summary>
+        /// A droid controller's marks, saved in its owner's character file while it moves to or from a building:
+        /// "building id|assignment id". The next login settles a move a restart interrupted.
+        /// </summary>
+        private const string AssigningVariable = "STATION_DROID_ASSIGNING";
+        private const string RecalledVariable = "STATION_DROID_RECALLED";
+
         // State
 
         /// <summary>A building's saved state; a building without one gets the default settings, unsaved.</summary>
@@ -342,12 +349,21 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // The controller is marked and saved with the character before the building takes it, so a restart in between
+            // leaves a marked controller the next login settles: it stays if the building never saved the droid, and goes
+            // if the building did.
+            var serialized = ObjectPlugin.Serialize(controller);
+            var assignmentId = Guid.NewGuid().ToString();
+            SetLocalString(controller, AssigningVariable, $"{building.Id}|{assignmentId}");
+            ExportSingleCharacter(player);
+
             state.DroidName = Droid.GetDroidName(controller);
             (state.DroidIndustry, state.DroidEfficiencyPercent) = GetDroidIndustry(controller);
             state.DroidOwnerPlayerId = GetObjectUUID(player);
-            state.SerializedDroid = ObjectPlugin.Serialize(controller);
-            DestroyObject(controller);
+            state.SerializedDroid = serialized;
+            state.DroidAssignmentId = assignmentId;
             DB.Set(state);
+            DestroyObject(controller);
 
             SendMessageToPC(player, ColorToken.Green($"{state.DroidName} now works the {detail.Name}."));
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} assigned droid '{state.DroidName}' to building {building.Id} on station {building.ParentPropertyId}.");
@@ -379,9 +395,66 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // The returned controller is marked and saved with the character before the building lets the droid go, so
+            // a restart in between leaves a marked controller the next login settles by clearing the building.
+            if (!string.IsNullOrEmpty(state.DroidAssignmentId))
+                SetLocalString(item, RecalledVariable, $"{building.Id}|{state.DroidAssignmentId}");
+            ExportSingleCharacter(player);
+
             SendMessageToPC(player, ColorToken.Green($"{state.DroidName} returns to you."));
             ClearDroid(state);
             DB.Set(state);
+            DeleteLocalString(item, RecalledVariable);
+        }
+
+        /// <summary>
+        /// Settles a droid move a restart interrupted, from the marks on the player's controllers: a controller being
+        /// assigned goes if its building saved the droid and stays otherwise; a recalled controller's building lets the
+        /// droid go if it still holds it.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void SettleDroidMoves()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            foreach (var controller in Droid.GetControllers(player))
+            {
+                if (TryReadMark(controller, AssigningVariable, out var state, out var assignmentId))
+                {
+                    DeleteLocalString(controller, AssigningVariable);
+                    if (state != null && state.DroidAssignmentId == assignmentId && !string.IsNullOrWhiteSpace(state.SerializedDroid))
+                    {
+                        DestroyObject(controller);
+                        Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - removed droid controller already assigned to building {state.BuildingId} after a restart.");
+                    }
+                }
+
+                if (TryReadMark(controller, RecalledVariable, out state, out assignmentId))
+                {
+                    DeleteLocalString(controller, RecalledVariable);
+                    if (state != null && state.DroidAssignmentId == assignmentId && !string.IsNullOrWhiteSpace(state.SerializedDroid))
+                    {
+                        ClearDroid(state);
+                        DB.Set(state);
+                        Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - cleared recalled droid from building {state.BuildingId} after a restart.");
+                    }
+                }
+            }
+        }
+
+        private static bool TryReadMark(uint controller, string variable, out StationBuildingState state, out string assignmentId)
+        {
+            state = null;
+            assignmentId = string.Empty;
+            var mark = GetLocalString(controller, variable).Split('|');
+            if (mark.Length != 2)
+                return false;
+
+            state = DB.Get<StationBuildingState>(StationBuildingState.KeyFor(mark[0]));
+            assignmentId = mark[1];
+            return true;
         }
 
         private static void ReturnDroidToOverflow(StationBuildingState state)
@@ -406,6 +479,7 @@ namespace SWLOR.Game.Server.Service
             state.DroidName = string.Empty;
             state.DroidIndustry = 0;
             state.DroidEfficiencyPercent = 0;
+            state.DroidAssignmentId = string.Empty;
         }
 
         // The Jump Beacon

@@ -246,10 +246,13 @@ namespace SWLOR.Game.Server.Service
             if (ConvoyRules.GetHaulerTier(GetTag(hauler)) <= 0)
                 return;
 
+            // Units no pod could be created for stay aboard the hauler rather than being counted as spilled.
             var units = ReadUnits(hauler);
-            WriteUnits(hauler, new Dictionary<CommodityType, int>());
-            var spilled = SpillUnits(units, GetLocation(hauler));
-            Log.Write(LogGroup.Space, $"CONVOY RAIDED - hauler in {GetResRef(GetArea(hauler))} spilled {spilled} units ({CustomsRules.Describe(units)})");
+            var kept = new Dictionary<CommodityType, int>();
+            var spilled = SpillUnits(units, GetLocation(hauler), kept);
+            WriteUnits(hauler, kept);
+            Log.Write(LogGroup.Space, $"CONVOY RAIDED - hauler in {GetResRef(GetArea(hauler))} spilled {spilled} units ({CustomsRules.Describe(units)})" +
+                                      (kept.Count > 0 ? $", kept {kept.Values.Sum()} units no pod could hold" : string.Empty));
         }
     }
 }

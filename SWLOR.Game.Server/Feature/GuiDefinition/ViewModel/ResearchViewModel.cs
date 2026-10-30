@@ -298,6 +298,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return "Finish your current research experiment first.";
             }
 
+            // A craft in another window holds the player's gear and session, so the experiment cannot start beside it.
+            if (CraftMinigameRouting.IsAnyCraftWindowOpen(Player))
+            {
+                return "Finish your current craft first.";
+            }
+
             var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
 
             if (researchJob.CurrentLevel > 0 && !GetIsObjectValid(_blueprintItem))

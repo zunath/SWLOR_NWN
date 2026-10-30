@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service;
 
@@ -23,8 +22,9 @@ public static class NamedAnimation
         var duration = Validate(clip, durationSeconds);
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
-        var rifle = UsesRifleGrip(creature);
-        var speed = rifle ? clip.PlaybackSpeed(duration) : 1f;
+        var hold = AbilityAnimationEquipment.ReadHold(creature);
+        var held = hold != AnimationWeaponHold.None;
+        var speed = held ? clip.PlaybackSpeed(duration) : 1f;
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
         AssignCommand(creature, () =>
@@ -34,9 +34,9 @@ public static class NamedAnimation
             {
                 // A queued request may begin well after selection. Invalidated requests leave the carrier native.
                 if (Playback.CanStartEquipmentPlayback(creature, request) && AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature))
-                    token = Playback.Begin(creature, clip, duration, suppressRifleHold: rifle, equipmentRequest: request);
+                    token = Playback.Begin(creature, clip, duration, weaponHold: hold, equipmentRequest: request);
             });
-            ActionPlayAnimation(rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed, duration);
+            ActionPlayAnimation(held ? Animation.FireForgetDodgeSide : Animation.PointForward, speed, duration);
             ActionDoCommand(() => Playback.Complete(creature, token));
         });
     }
@@ -48,14 +48,15 @@ public static class NamedAnimation
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
-        var rifle = UsesRifleGrip(creature);
-        var speed = rifle || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
+        var hold = AbilityAnimationEquipment.ReadHold(creature);
+        var held = hold != AnimationWeaponHold.None;
+        var speed = held || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
-        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, suppressRifleHold: rifle, equipmentRequest: request);
+        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, weaponHold: hold, equipmentRequest: request);
         return PlayMapped(creature, token, duration,
-            rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
+            held ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
     }
 
     private static string PlayMapped(uint creature, string token, float duration,
@@ -146,12 +147,6 @@ public static class NamedAnimation
         var value = duration ?? clip.Duration;
         if (!float.IsFinite(value) || value <= 0 || value > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         return value;
-    }
-
-    private static bool UsesRifleGrip(uint creature)
-    {
-        var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
-        return GetIsObjectValid(weapon) && GetBaseItemType(weapon) is BaseItem.Rifle or BaseItem.Cannon;
     }
 
     private sealed class NativeRuntime : INamedAnimationRuntime

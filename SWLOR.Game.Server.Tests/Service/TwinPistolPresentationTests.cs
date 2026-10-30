@@ -97,6 +97,15 @@ public class TwinPistolPresentationTests
         PairedRangedPresentation.FlightSeconds(25f).Should().Be(.5f);
     }
 
+    [TestCase(1000, .45f)]
+    [TestCase(1750, .45f)]
+    [TestCase(3500, .9f)]
+    [TestCase(4833, 1.24277f)]
+    public void CompanionKeepsItsPlaceInTheStretchedSwingClip(int swingMilliseconds, float expectedSeconds)
+    {
+        PairedRangedAttackCycle.CompanionDelaySeconds(swingMilliseconds).Should().BeApproximately(expectedSeconds, .0001f);
+    }
+
     [TestCase(true, 11u, true)]
     [TestCase(true, 12u, true)]
     [TestCase(true, 13u, false)]

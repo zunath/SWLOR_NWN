@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Native
                     Finish(actor, pending);
                     return;
                 }
-                AssignCommand(GetModule(), () => DelayCommand(.45f, () => Finish(actor, pending)));
+                AssignCommand(GetModule(), () => DelayCommand(CompanionDelaySeconds(duration), () => Finish(actor, pending)));
             }
             catch
             {
@@ -67,6 +67,15 @@ namespace SWLOR.Game.Server.Native
                 throw;
             }
         }
+
+        /// <summary>
+        /// The client stretches the paired clip across the whole swing, so the companion keeps the
+        /// clip position it has at the 1,750 ms floor instead of firing while slower arms still rise.
+        /// </summary>
+        public static float CompanionDelaySeconds(int swingMilliseconds) =>
+            .45f * Math.Max(Combat.BaseAttackDelayMilliseconds, swingMilliseconds) / Combat.BaseAttackDelayMilliseconds;
+
+        public static bool HasPendingCompanion(uint actor) => PendingHands.ContainsKey(actor);
 
         public static void Cancel(uint actor)
         {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Surgewake Display Plinth."
+      "0": "A rare schematic for crafting Surgewake Holo Projector."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Surgewake Display Plinth."
+      "0": "A rare schematic for crafting Surgewake Holo Projector."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Surgewake Display Plinth"
+      "0": "Blueprint: Surgewake Holo Projector"
     }
   },
   "ModelPart1": {

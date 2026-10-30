@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Ashmark Display Plinth."
+      "0": "A rare schematic for crafting Ashmark Altar."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Ashmark Display Plinth."
+      "0": "A rare schematic for crafting Ashmark Altar."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Ashmark Display Plinth"
+      "0": "Blueprint: Ashmark Altar"
     }
   },
   "ModelPart1": {

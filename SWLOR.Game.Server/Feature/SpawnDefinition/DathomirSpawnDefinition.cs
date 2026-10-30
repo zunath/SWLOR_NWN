@@ -273,11 +273,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_apexbite_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_unbrbeast_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -285,11 +280,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_unbrbeast_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_unbrbeast_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -301,11 +291,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_alpharhy_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_APEXBITE_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Apex Bite Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_apexbite_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_UNBRBEAST_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Unbreakable Beast Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_unbrbeast_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_ALPHARHY_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_alpharhy_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
 
@@ -322,11 +324,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_primover_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_untinst_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -334,11 +331,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_untinst_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_untinst_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -350,11 +342,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_forcebeast_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_PRIMOVER_IC_SPAWN", "Dathomir Grotto Apex Den - Primal Overrun Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_primover_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_UNTINST_IC_SPAWN", "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_untinst_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_FORCEBEAST_IC_SPAWN", "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_forcebeast_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }

@@ -278,11 +278,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_absdef_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_soulasc_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -290,11 +285,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_soulasc_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_soulasc_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -306,11 +296,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_forcebane_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_ABSDEF_IC_SPAWN", "Korriban Forge Caverns - Absolute Defense Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_absdef_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_SOULASC_IC_SPAWN", "Korriban Forge Caverns - Soul Ascension Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_soulasc_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_FORCEBANE_IC_SPAWN", "Korriban Forge Caverns - Forcebane Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_forcebane_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
 
@@ -327,11 +329,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_lightstand_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_darkhung_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -339,11 +336,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_darkhung_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_darkhung_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -355,11 +347,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_eclipse_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_LIGHTSTAND_IC_SPAWN", "Korriban Sith Crypt Depths - Last Stand of the Light Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_lightstand_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DARKHUNG_IC_SPAWN", "Korriban Sith Crypt Depths - Hunger of the Dark Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_darkhung_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_ECLIPSE_IC_SPAWN", "Korriban Sith Crypt Depths - Eclipse of Resolve Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_eclipse_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }

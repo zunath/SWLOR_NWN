@@ -277,25 +277,64 @@ public class SpaceW11nReviewFixTests
     }
 
     [Test]
-    public void AShipSale_IsSavedBeforeTheShipChangesHands_AndARestartFinishesIt()
+    public void AShipTransfer_IsSavedBeforeTheShipChangesHands_AndARestartFinishesIt()
     {
         var source = ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n");
         var buy = Between(source, "public static bool Buy(", "private static void PaySaleProceeds(");
-        buy.IndexOf("if (!listing.IsListed)", StringComparison.Ordinal)
-            .Should().BeLessThan(buy.IndexOf("TakeGoldFromCreature(", StringComparison.Ordinal),
-                "a listing the seller took off the market is refused before the buyer pays");
-        buy.IndexOf("ship.SaleBuyerPlayerId = buyerId;", StringComparison.Ordinal)
-            .Should().BeLessThan(buy.IndexOf("DB.Set(ship);", StringComparison.Ordinal));
-        buy.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
-            .Should().BeLessThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\");", StringComparison.Ordinal),
-                "the sale is saved before any listing or property changes");
+        Index(buy, "if (!IsStillListed(listing))")
+            .Should().BeLessThan(Index(buy, "TakeGoldFromCreature("),
+                "a listing the seller took off the market, or that expired, is refused before the buyer pays");
+        Index(buy, "ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);")
+            .Should().BeLessThan(Index(buy, "Complete(ship, buyerId, \"was sold\");"),
+                "the proceeds owed are saved with the transfer");
 
-        var recover = source[source.IndexOf("public static void PayOwedSaleProceeds()", StringComparison.Ordinal)..];
-        recover.IndexOf("Complete(ship, ship.SaleBuyerPlayerId, \"was sold\");", StringComparison.Ordinal)
-            .Should().BeLessThan(recover.IndexOf("PaySaleProceeds(ship);", StringComparison.Ordinal),
+        var complete = Between(source, "public static void Complete(", "private static void ResetPermissions(");
+        Index(complete, "ship.TransferFromPlayerId = ship.OwnerPlayerId;")
+            .Should().BeLessThan(Index(complete, "DB.Set(ship);"));
+        Index(complete, "DB.Set(ship);")
+            .Should().BeLessThan(Index(complete, "RemoveListings(ship.Id);"),
+                "the transfer, a gift or a sale, is saved before any listing or property changes");
+        Index(complete, "var oldOwnerPlayerId = ship.TransferFromPlayerId;").Should().BeGreaterThan(0,
+            "a finished-after-restart transfer clears the active ship of the owner it is leaving, not the new one");
+        Index(complete, "dbOldOwner.ActiveShipId = Guid.Empty.ToString();")
+            .Should().BeLessThan(Index(complete, "ship.TransferToPlayerId = string.Empty;"),
+                "the transfer is cleared only after every step is saved");
+
+        var recover = source[Index(source, "public static void FinishInterruptedTransfers()")..];
+        Index(recover, "Complete(ship, ship.TransferToPlayerId, ship.TransferReason);")
+            .Should().BeLessThan(Index(recover, "PaySaleProceeds(ship);"),
                 "an interrupted transfer is finished before the seller is paid");
-        new PlayerShip().SaleBuyerPlayerId.Should().BeEmpty("older ship records have no sale under way");
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void FinishInterruptedTransfers()");
+        new PlayerShip().TransferToPlayerId.Should().BeEmpty("older ship records have no transfer under way");
     }
+
+    [Test]
+    public void AShipListing_ExpiresWhileTheServerStaysUp()
+    {
+        var source = ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n");
+        source.Should().Contain("return IsStillListed(GetListing(shipId));");
+        var still = Between(source, "private static bool IsStillListed(", "/// <summary>Whether the property is a ship listed for sale");
+        Index(still, "< ListingDays)").Should().BeGreaterThan(0);
+        Index(still, "listing.IsListed = false;").Should().BeLessThan(Index(still, "DB.Set(listing);"));
+    }
+
+    [Test]
+    public void DroidPostings_SaveTheControllerMarkerBeforeThePosting()
+    {
+        var post = Between(ReadSource("Service", "SpaceDroidCrew.cs").Replace("\r\n", "\n"),
+            "public static bool PostDroid(", "var postName = ShipCrewSeats.GetPostName(seat);");
+        Index(post, "Droid.MarkPosted(controller, dbShip.Id);").Should().BeLessThan(Index(post, "ExportSingleCharacter(player);"));
+        Index(post, "ExportSingleCharacter(player);").Should().BeLessThan(Index(post, "DB.Set(dbShip);"),
+            "a restart in between leaves a marker the login check clears, not a posting with a free droid");
+
+        var staff = ReadSource("Service", "PlanetaryHoldings.cs").Replace("\r\n", "\n");
+        staff = staff[Index(staff, "joined the staff.\");")..];
+        Index(staff, "Droid.MarkPosted(controller, HoldingRules.GetDroidPostingId(holding.Id));")
+            .Should().BeLessThan(Index(staff, "ExportSingleCharacter(player);"));
+        Index(staff, "ExportSingleCharacter(player);").Should().BeLessThan(Index(staff, "DB.Set(holding);"));
+    }
+
+    private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]
     public void AbandonedFreight_UnloadsTheSealedLotBeforeTheContractGoes()
@@ -353,16 +392,6 @@ public class SpaceW11nReviewFixTests
         unload.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
             .Should().BeLessThan(unload.IndexOf("dbPlayer.FreightContracts.Remove(contract);", StringComparison.Ordinal),
                 "the load leaves the ship before the contract that clears it goes");
-    }
-
-    [Test]
-    public void ARecoveredShipSale_ClearsTheSellersActiveShip()
-    {
-        var source = ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n");
-        source.Should().Contain("public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason, string oldOwnerPlayerId = null)");
-        source.Should().Contain("oldOwnerPlayerId ??= ship.OwnerPlayerId;");
-        source.Should().Contain("Complete(ship, ship.SaleBuyerPlayerId, \"was sold\", ship.SaleSellerPlayerId);",
-            "the ship may already be saved with its buyer, so recovery names the seller whose active ship is cleared");
     }
 
     [Test]

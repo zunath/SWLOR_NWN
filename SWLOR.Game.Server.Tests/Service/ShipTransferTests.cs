@@ -182,7 +182,7 @@ public class ShipTransferTests
         pay.IndexOf("dbSeller.PaidShipSaleIds.Add(ship.SaleId);", StringComparison.Ordinal)
             .Should().BeLessThan(pay.IndexOf("ship.SaleId = string.Empty;", StringComparison.Ordinal),
                 "the till is paid before the ship stops owing");
-        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void PayOwedSaleProceeds()");
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void FinishInterruptedTransfers()");
 
         new PlayerShip().SaleId.Should().BeEmpty("older ship records owe nothing");
         new Player().PaidShipSaleIds.Should().BeEmpty();

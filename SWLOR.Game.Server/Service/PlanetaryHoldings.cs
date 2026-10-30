@@ -497,8 +497,12 @@ namespace SWLOR.Game.Server.Service
             holding.DroidIndustry = System.Math.Max(0, details.Industry);
             holding.DroidEfficiencyPercent = DroidIndustryRules.GetProtocolValue(protocols, PerkType.EfficiencyProtocol);
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"{holding.DroidName} joined the staff.");
-            DB.Set(holding);
+
+            // The controller is marked and saved with the character before the holding is: a restart in between leaves
+            // a marker the login check clears, never a staff droid that is still free to use.
             Droid.MarkPosted(controller, HoldingRules.GetDroidPostingId(holding.Id));
+            ExportSingleCharacter(player);
+            DB.Set(holding);
 
             SendMessageToPC(player, ColorToken.Green(
                 $"{holding.DroidName} now works your {GetHoldingName(holding)}. With Industry {holding.DroidIndustry} it adds " +

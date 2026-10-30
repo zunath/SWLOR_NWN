@@ -5391,84 +5391,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 503,
+    "Line": 507,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"{holding.DroidName} now works your {GetHoldingName(holding)}. With Industry {holding.DroidIndustry} it adds \" +\n                $\"{HoldingRules.GetDroidPercent(holding)}% to the output. It stays at its post until recalled.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 532,
+    "Line": 536,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NoDroid)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 540,
+    "Line": 544,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{name} leaves your {GetHoldingName(holding)} and is back with you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 576,
+    "Line": 580,
     "Member": "VisitSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NotAtDock)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 584,
+    "Line": 588,
     "Member": "VisitSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The holding's site cannot be reached right now.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 635,
+    "Line": 639,
     "Member": "JoinSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(guest, ColorToken.Red(\"Only members of the owner's party can join a holding site, and only while the owner has it open at this dock.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 641,
+    "Line": 645,
     "Member": "JoinSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{GetName(guest)} joins you at your {GetHoldingName(holding)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 725,
+    "Line": 729,
     "Member": "CheckRaidRepelled",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(obj, ColorToken.Green($\"{GetHoldingName(holding)}: {result.Events.LastOrDefault()}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 751,
+    "Line": 755,
     "Member": "RehomeStrandedHoldings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your {GetHoldingName(holding)} lost its starport and now ships from this dock.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 868,
+    "Line": 872,
     "Member": "CheckHoldingsAtLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{Droid.GetDroidName(controller)} no longer works a holding and is back with you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 874,
+    "Line": 878,
     "Member": "CheckHoldingsAtLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your holdings have goods waiting: \" +\n                                        string.Join(\", \", waiting.Select(x => $\"{GetHoldingName(x)} {x.Warehouse.Values.Sum()} units\")) + \".\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 910,
+    "Line": 914,
     "Member": "EndStaffPostingOnControllerLoss",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{name} no longer works your {GetHoldingName(holding)}: its controller is gone.\")"
@@ -6126,161 +6126,161 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 238,
+    "Line": 252,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only another player can receive a ship.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 244,
+    "Line": 258,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You already own this ship.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 251,
+    "Line": 265,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You and the recipient must both be at the starport where the ship is docked.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 259,
+    "Line": 273,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ShipTransferRules.GetRefusalMessage(refusal), giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 266,
+    "Line": 280,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"A ship transfer costs {fee} credits.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 279,
+    "Line": 293,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(giver, $\"You offer {GetShipName(ship)} to {GetName(recipient)}. The transfer fee of {fee} credits is paid when they accept.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 307,
+    "Line": 321,
     "Member": "Decline",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(giver, $\"{GetName(recipient)} declined the ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 316,
+    "Line": 330,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The offer has expired.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 325,
+    "Line": 339,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The offer is no longer valid.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 332,
+    "Line": 346,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You and the giver must both be at the starport where the ship is docked.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 340,
+    "Line": 354,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(message, recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 341,
+    "Line": 355,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(message, giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 347,
+    "Line": 361,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"The giver cannot pay the {offer.Fee} credit transfer fee.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 348,
+    "Line": 362,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"A ship transfer costs {offer.Fee} credits.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 356,
+    "Line": 370,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"{shipName} is now yours!\"), recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 357,
+    "Line": 371,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"{shipName} now belongs to {GetName(recipient)}.\"), giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 415,
+    "Line": 446,
     "Member": "List",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Enter an asking price above zero.\", seller, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 422,
+    "Line": 453,
     "Member": "List",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ShipTransferRules.GetRefusalMessage(refusal), seller, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 472,
+    "Line": 503,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is no longer available.\", buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 479,
+    "Line": 510,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is no longer for sale.\", buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 487,
+    "Line": 518,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship can't be sold right now: \" + ShipTransferRules.GetRefusalMessage(refusal), buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 507,
+    "Line": 536,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(seller, $\"{shipName} sold on the market for {listing.Price} credits. The proceeds are in your market till.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 509,
+    "Line": 538,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"{shipName} is now yours! It is docked at {dockName}.\"), buyer, false)"
@@ -7015,70 +7015,70 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 213,
+    "Line": 216,
     "Member": "PostDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, $\"{posting.Name} takes {postName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 216,
+    "Line": 219,
     "Member": "PostDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player,\n                $\"{posting.Name} takes {postName} aboard {GetShipName(dbShip)}. {DescribeDroidWork(seat, posting, dbShip.Status)} \" +\n                \"It stays at its post until recalled.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 256,
+    "Line": 259,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"No droid works {ShipCrewSeats.GetPostName(seat)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 262,
+    "Line": 265,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to crew this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 269,
+    "Line": 272,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{posting.Name} leaves {ShipCrewSeats.GetPostName(seat)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 284,
+    "Line": 287,
     "Member": "BumpDroidCrew",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{droid.Name} steps aside and goes back to its owner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 305,
+    "Line": 308,
     "Member": "EndDroidPosting",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, $\"{posting.Name} leaves {ShipCrewSeats.GetPostName(posting.Seat)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 323,
+    "Line": 326,
     "Member": "ReturnDroidToOwner",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner,\n                $\"{posting.Name} is no longer posted at {ShipCrewSeats.GetPostName(posting.Seat)} aboard {GetShipName(dbShip)}\" +\n                (string.IsNullOrWhiteSpace(reason) ? \".\" : $\": {reason}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 400,
+    "Line": 403,
     "Member": "AnnounceDroidCrew",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, $\"Your droid crew takes their posts: {names}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDroidCrew.cs",
-    "Line": 689,
+    "Line": 692,
     "Member": "ReturnEndedDroidPostings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{Droid.GetDroidName(controller)} is no longer posted aboard a ship and is back with you.\")"

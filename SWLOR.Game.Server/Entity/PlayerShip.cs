@@ -17,7 +17,9 @@ namespace SWLOR.Game.Server.Entity
             SealedFreight = new List<SealedFreightLot>();
             SaleId = string.Empty;
             SaleSellerPlayerId = string.Empty;
-            SaleBuyerPlayerId = string.Empty;
+            TransferToPlayerId = string.Empty;
+            TransferFromPlayerId = string.Empty;
+            TransferReason = string.Empty;
             LastHoldingCollectionId = string.Empty;
             PendingHoldingDeliveryId = string.Empty;
             PendingHoldingDeliveryHoldingId = string.Empty;
@@ -85,10 +87,16 @@ namespace SWLOR.Game.Server.Entity
         public int SaleProceeds { get; set; }
 
         /// <summary>
-        /// The buyer of <see cref="SaleId"/>. Saved before the ship changes hands, so a restart part-way through the
-        /// transfer finishes it at the next module load. Older records load empty.
+        /// The new owner of a transfer under way (a gift or a sale), or empty. Saved before the ship changes hands, so a
+        /// restart part-way through the transfer finishes it at the next module load. Older records load empty.
         /// </summary>
-        public string SaleBuyerPlayerId { get; set; }
+        public string TransferToPlayerId { get; set; }
+
+        /// <summary>The owner the ship is leaving in the transfer to <see cref="TransferToPlayerId"/>.</summary>
+        public string TransferFromPlayerId { get; set; }
+
+        /// <summary>Why the ship is changing owner, for the messages and log of the transfer to <see cref="TransferToPlayerId"/>.</summary>
+        public string TransferReason { get; set; }
 
         /// <summary>
         /// The last Planetary Holding collection loaded into the cargo bay, saved with the cargo, so a collection a

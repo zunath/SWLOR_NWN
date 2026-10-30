@@ -23,6 +23,9 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<string, ShipTransferOffer> _offersByRecipient = new();
 
+        /// <summary>How long a market listing lasts, as <see cref="PlayerMarket.RemoveOldListings"/> applies at module load.</summary>
+        private const int ListingDays = 14;
+
         // Facts
 
         /// <summary>Reads everything the transfer rules check, from the ship's records and the live game.</summary>
@@ -171,13 +174,21 @@ namespace SWLOR.Game.Server.Service
         /// Hands the ship to its new owner. Ships docked aboard go to the starport first, droids posted aboard go back
         /// to their owners, any market listing ends, and the ship, its interior and every structure inside are
         /// re-owned. Every permission on them resets: the old owner and their guests lose access and the new owner
-        /// gets full rights. The caller has already checked <see cref="ShipTransferRules.GetRefusal"/>. A sale finished
-        /// after a restart names the seller as <paramref name="oldOwnerPlayerId"/>, as the ship may already be saved
-        /// with its new owner.
+        /// gets full rights. The caller has already checked <see cref="ShipTransferRules.GetRefusal"/>. The transfer is
+        /// saved on the ship before anything changes hands (with a sale's proceeds, when the caller set them), and every
+        /// step is safe to repeat, so a restart part-way through finishes it at the next module load.
         /// </summary>
-        public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason, string oldOwnerPlayerId = null)
+        public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason)
         {
-            oldOwnerPlayerId ??= ship.OwnerPlayerId;
+            if (string.IsNullOrWhiteSpace(ship.TransferToPlayerId))
+            {
+                ship.TransferToPlayerId = newOwnerPlayerId;
+                ship.TransferFromPlayerId = ship.OwnerPlayerId;
+                ship.TransferReason = reason;
+                DB.Set(ship);
+            }
+
+            var oldOwnerPlayerId = ship.TransferFromPlayerId;
             var shipName = GetShipName(ship);
 
             Space.UndockAllToStarport(ship, reason);
@@ -196,14 +207,17 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(property);
             }
 
-            DB.Set(ship);
-
             var dbOldOwner = DB.Get<Player>(oldOwnerPlayerId);
             if (dbOldOwner != null && dbOldOwner.ActiveShipId == ship.Id)
             {
                 dbOldOwner.ActiveShipId = Guid.Empty.ToString();
                 DB.Set(dbOldOwner);
             }
+
+            ship.TransferToPlayerId = string.Empty;
+            ship.TransferFromPlayerId = string.Empty;
+            ship.TransferReason = string.Empty;
+            DB.Set(ship);
 
             Log.Write(LogGroup.Property, $"Ship {ship.Id} ({shipName}) changed owner from {oldOwnerPlayerId} to {newOwnerPlayerId}: {reason}.");
         }
@@ -376,7 +390,24 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsListedForSale(string shipId)
         {
-            return GetListing(shipId)?.IsListed == true;
+            return IsStillListed(GetListing(shipId));
+        }
+
+        /// <summary>
+        /// Whether the listing is still on the market. One past the market's 14 days is taken off here, as
+        /// <see cref="PlayerMarket.RemoveOldListings"/> does at module load, so a ship is not locked while the server stays up.
+        /// </summary>
+        private static bool IsStillListed(MarketItem listing)
+        {
+            if (listing == null || !listing.IsListed)
+                return false;
+
+            if (listing.DateListed == null || Math.Abs(DateTime.UtcNow.Subtract((DateTime)listing.DateListed).Days) < ListingDays)
+                return true;
+
+            listing.IsListed = false;
+            DB.Set(listing);
+            return false;
         }
 
         /// <summary>Whether the property is a ship listed for sale, or the ship whose interior it is.</summary>
@@ -473,8 +504,8 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            // The seller can take the listing off the market while the buyer's confirmation is open.
-            if (!listing.IsListed)
+            // The seller can take the listing off the market, or it can expire, while the buyer's confirmation is open.
+            if (!IsStillListed(listing))
             {
                 FloatingTextStringOnCreature("This ship is no longer for sale.", buyer, false);
                 return false;
@@ -492,13 +523,11 @@ namespace SWLOR.Game.Server.Service
             var dockName = GetDockName(ship);
             AssignCommand(buyer, () => TakeGoldFromCreature(listing.Price, buyer, true));
 
-            // The sale is saved before anything changes hands, and the proceeds owed are saved with the new owner, then
-            // paid: a restart part-way through finishes the transfer and the payout at the next module load.
+            // The proceeds owed are saved with the transfer, before anything changes hands, then paid: a restart
+            // part-way through finishes the transfer and the payout at the next module load.
             ship.SaleId = Guid.NewGuid().ToString();
             ship.SaleSellerPlayerId = listing.PlayerId;
-            ship.SaleBuyerPlayerId = buyerId;
             ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);
-            DB.Set(ship);
             Complete(ship, buyerId, "was sold");
             PaySaleProceeds(ship);
 
@@ -531,7 +560,6 @@ namespace SWLOR.Game.Server.Service
             var saleId = ship.SaleId;
             ship.SaleId = string.Empty;
             ship.SaleSellerPlayerId = string.Empty;
-            ship.SaleBuyerPlayerId = string.Empty;
             ship.SaleProceeds = 0;
             DB.Set(ship);
 
@@ -539,9 +567,9 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbSeller);
         }
 
-        /// <summary>Finishes any ship sale a restart interrupted: the transfer, whose steps are safe to repeat, then the payout.</summary>
+        /// <summary>Finishes any ship transfer or sale a restart interrupted: the transfer, whose steps are safe to repeat, then the payout.</summary>
         [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void PayOwedSaleProceeds()
+        public static void FinishInterruptedTransfers()
         {
             var count = (int)DB.SearchCount(new DBQuery<PlayerShip>());
             if (count <= 0)
@@ -549,13 +577,17 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var ship in DB.Search(new DBQuery<PlayerShip>().AddPaging(count, 0)))
             {
-                if (string.IsNullOrWhiteSpace(ship.SaleId))
-                    continue;
+                if (!string.IsNullOrWhiteSpace(ship.TransferToPlayerId))
+                {
+                    Complete(ship, ship.TransferToPlayerId, ship.TransferReason);
+                    Log.Write(LogGroup.Property, $"Finished the transfer of ship {ship.Id} after a restart.");
+                }
 
-                if (!string.IsNullOrWhiteSpace(ship.SaleBuyerPlayerId))
-                    Complete(ship, ship.SaleBuyerPlayerId, "was sold", ship.SaleSellerPlayerId);
-                PaySaleProceeds(ship);
-                Log.Write(LogGroup.PlayerMarket, $"Paid owed proceeds for ship {ship.Id} after a restart.");
+                if (!string.IsNullOrWhiteSpace(ship.SaleId))
+                {
+                    PaySaleProceeds(ship);
+                    Log.Write(LogGroup.PlayerMarket, $"Paid owed proceeds for ship {ship.Id} after a restart.");
+                }
             }
         }
 

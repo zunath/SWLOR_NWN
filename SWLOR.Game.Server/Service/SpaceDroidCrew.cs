@@ -199,10 +199,13 @@ namespace SWLOR.Game.Server.Service
                 PostedAt = DateTime.UtcNow,
             };
 
+            // The controller is marked and saved with the character before the posting is: a restart in between leaves a
+            // marker the login check clears, never a posting whose droid is still free to use.
+            Droid.MarkPosted(controller, dbShip.Id);
+            ExportSingleCharacter(player);
             dbShip.DroidCrew ??= new List<ShipDroidCrew>();
             dbShip.DroidCrew.Add(posting);
             DB.Set(dbShip);
-            Droid.MarkPosted(controller, dbShip.Id);
 
             var postName = ShipCrewSeats.GetPostName(seat);
             var pilot = GetShipPilot(dbShip.Id);

@@ -94,7 +94,7 @@ public class PerformanceAudienceStateTests
 
         source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleDeath\)\]\s+public static void StopWatchingOnDeath\(\)");
         source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public static void StopWatchingOnAreaEnter\(\)");
-        Section(source, "public static void StopWatchingOnAreaEnter(").Should().Contain("state.StopWatching();");
+        Section(source, "public static void StopWatchingOnAreaEnter(").Should().Contain("StopWatching(state);");
     }
 
     [Test]
@@ -138,6 +138,19 @@ public class PerformanceAudienceStateTests
 
         ended.Should().Contain("entry.Candidates.RemoveAll(candidate => candidate.Performer == performer);");
         ended.Should().Contain("entry.Musician = null;");
+    }
+
+    [Test]
+    public void StoppingWatchingRestoresTheFrozenInspiredFirst()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+
+        System.Text.RegularExpressions.Regex.Matches(source, @"state\.StopWatching\(\);").Count
+            .Should().Be(1, "every stop goes through the helper that restores the frozen remainder");
+        var helper = Section(source, "private static void StopWatching(PerformanceAudienceState state)");
+        helper.Should().Contain("PerformanceInspiredApplier.SetRemaining(state.Creature, state.FrozenRemainingSeconds);");
+        helper.IndexOf("SetRemaining", StringComparison.Ordinal)
+            .Should().BeLessThan(helper.IndexOf("state.StopWatching();", StringComparison.Ordinal));
     }
 
     [Test]

@@ -98,17 +98,28 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             }
         }
 
-        /// <summary>A dancer's partner is the strongest other dancer in mutual range; a musician's is the strongest other member of their band.</summary>
+        /// <summary>
+        /// Partners pair off, so Partner Dance and Duet always share both ways. Strongest first, each performer still free
+        /// pairs with the strongest free performer of their kind: a dancer in mutual range, or a musician in the same band.
+        /// </summary>
         private static void AssignPartners(IReadOnlyList<PerformerSnapshot> performers, int[] bandRoots)
         {
+            var order = new List<int>(performers.Count);
             for (var index = 0; index < performers.Count; index++)
+                order.Add(index);
+            order.Sort((a, b) => a == b ? 0 : PerformanceFollow.IsStronger(performers[a], performers[b]) ? -1 : 1);
+
+            foreach (var index in order)
             {
                 var performer = performers[index];
+                if (performer.Partner != null)
+                    continue;
+
                 PerformerSnapshot best = null;
                 for (var other = 0; other < performers.Count; other++)
                 {
                     var candidate = performers[other];
-                    if (other == index || candidate.Kind != performer.Kind)
+                    if (other == index || candidate.Kind != performer.Kind || candidate.Partner != null)
                         continue;
 
                     var isPartner = performer.Kind == PerformanceKind.Dance
@@ -118,7 +129,11 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                         best = candidate;
                 }
 
+                if (best == null)
+                    continue;
+
                 performer.Partner = best;
+                best.Partner = performer;
             }
         }
 

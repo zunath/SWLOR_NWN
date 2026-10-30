@@ -81,6 +81,21 @@ public class PerformanceShowTests
     }
 
     [Test]
+    public void Prepare_PartnersPairOffSoSharingGoesBothWays()
+    {
+        // A and B are in each other's range, and so are B and C; A and C are not.
+        var a = Dancer(1, xpScaled: 10);
+        var b = Dancer(2, xpScaled: 20, x: 15f);
+        var c = Dancer(3, xpScaled: 30, x: 30f);
+
+        PerformanceShow.Prepare(new[] { a, b, c });
+
+        c.Partner.Should().BeSameAs(b);
+        b.Partner.Should().BeSameAs(c);
+        a.Partner.Should().BeNull("B already pairs with the stronger C");
+    }
+
+    [Test]
     public void Prepare_AMusiciansPartnerIsAnotherMemberOfTheirBand()
     {
         var musician = Musician(1, xpScaled: 8);

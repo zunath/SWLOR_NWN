@@ -694,7 +694,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             var player = GetEnteringObject();
             ForgetBandSong(player);
             if (_states.TryGetValue(player, out var state))
-                state.StopWatching();
+                StopWatching(state);
         }
 
         /// <summary>
@@ -751,7 +751,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 return;
 
             RestoreMusic(state);
-            state.StopWatching();
+            StopWatching(state);
             // After StopWatching, so the window closing is not taken for the watcher choosing to hide it.
             if (GetIsObjectValid(state.Creature))
                 PerformanceWindows.CloseWatching(state.Creature);
@@ -775,7 +775,22 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public static void StopWatchingOnDeath()
         {
             if (_states.TryGetValue(GetLastPlayerDied(), out var state))
-                state.StopWatching();
+                StopWatching(state);
+        }
+
+        /// <summary>
+        /// Clears a player's watching state. While they watched, each tick held their Inspired at a stored remainder (with
+        /// padding so it outlasts the gap to the next tick); that stored remainder is what they leave with.
+        /// </summary>
+        private static void StopWatching(PerformanceAudienceState state)
+        {
+            if (state.HasFrozenRemaining && GetIsObjectValid(state.Creature) &&
+                StatusEffect.GetStatusEffect<InspiredStatusEffect>(state.Creature) != null)
+            {
+                PerformanceInspiredApplier.SetRemaining(state.Creature, state.FrozenRemainingSeconds);
+            }
+
+            state.StopWatching();
         }
 
         private static void RestoreMusic(PerformanceAudienceState state)
@@ -816,7 +831,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                     continue;
 
                 RestoreMusic(state);
-                state.StopWatching();
+                StopWatching(state);
 
                 // After StopWatching, so the window closing is not taken for the watcher choosing to hide it.
                 if (GetIsObjectValid(state.Creature))

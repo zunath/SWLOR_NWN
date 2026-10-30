@@ -116,7 +116,7 @@ public static class ActiveAbilityAnimationCatalog
         new("FieldRecovery", "Field Recovery", "Leadership", AuthoredAnimation.FieldRecovery, new FeatType[] { FeatType.FieldRecovery1, FeatType.FieldRecovery2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
         new("HoldTheLine", "Hold the Line", "Leadership", AuthoredAnimation.HoldTheLine, new FeatType[] { FeatType.HoldTheLine1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
         new("PressTheAttack", "Press the Attack", "Leadership", AuthoredAnimation.PressTheAttack, new FeatType[] { FeatType.PressTheAttack1, FeatType.PressTheAttack2, FeatType.PressTheAttack3 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
-        new("RallyingStandard", "Rallying Standard", "Leadership", AuthoredAnimation.RallyingStandard, new FeatType[] { FeatType.RallyingStandard1, FeatType.RallyingStandard2, FeatType.Dance1, FeatType.Dance2, FeatType.Dance3, FeatType.Dance4, FeatType.PlayInstrument1, FeatType.PlayInstrument2, FeatType.PlayInstrument3, FeatType.PlayInstrument4 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
+        new("RallyingStandard", "Rallying Standard", "Leadership", AuthoredAnimation.RallyingStandard, new FeatType[] { FeatType.RallyingStandard1, FeatType.RallyingStandard2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
         new("RousingShout", "Rousing Shout", "Leadership", AuthoredAnimation.RousingShout, new FeatType[] { FeatType.RousingShout1, FeatType.RousingShout2, FeatType.RousingShout3 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
         new("SteadyFormation", "Steady Formation", "Leadership", AuthoredAnimation.SteadyFormation, new FeatType[] { FeatType.SteadyFormation1, FeatType.SteadyFormation2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
         new("WatchfulPresence", "Watchful Presence", "Leadership", AuthoredAnimation.WatchfulPresence, new FeatType[] { FeatType.WatchfulPresence1, FeatType.WatchfulPresence2, FeatType.WatchfulPresence3 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
@@ -309,5 +309,7 @@ public static class ActiveAbilityAnimationCatalog
         new("LowKick", "Low Kick", "Unarmed", AuthoredAnimation.LowKick, new FeatType[] { FeatType.LowKick1, FeatType.LowKick2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
         new("BruiserStance", "Bruiser Stance", "Unarmed", AuthoredAnimation.BruiserStance, new FeatType[] { FeatType.BruiserStance1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
         new("Haymaker", "Haymaker", "Unarmed", AuthoredAnimation.Haymaker, new FeatType[] { FeatType.Haymaker1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("Dance", "Dance", "Performance", AuthoredAnimation.Dance, new FeatType[] { FeatType.Dance1, FeatType.Dance2, FeatType.Dance3, FeatType.Dance4 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
+        new("PlayInstrument", "Play Instrument", "Performance", AuthoredAnimation.PlayInstrument, new FeatType[] { FeatType.PlayInstrument1, FeatType.PlayInstrument2, FeatType.PlayInstrument3, FeatType.PlayInstrument4 }, EquipmentRequirement: AnimationEquipmentRequirement.Unrestricted),
     };
 }

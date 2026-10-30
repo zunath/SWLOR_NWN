@@ -1,0 +1,1859 @@
+{
+  "Version": 1,
+  "Workbook": "",
+  "Sheet": "Animations",
+  "Model": "a_ba",
+  "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
+  "RecipeSha256": "0abb96e1813856bb9b983c9be4666c2a636faa1739ccde7a29ec603cf5975746",
+  "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
+  "Animations": [
+    {
+      "Id": "CantinaShuffle",
+      "Name": "Cantina Shuffle",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Relaxed side-steps with a loose hand sway, the easy groove of a cantina floor.",
+      "Interpretation": "Four beats step left and close, four beats step right and close. The weight rolls over the leading foot, the shoulders counter-turn a few degrees and both hands drift with the sway. The clip starts and ends in the dance stance so it loops without a seam.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "CantinaShuffle.swlanim",
+      "Duration": 4.8,
+      "Keyframes": 97,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.8115454E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Step left"
+        },
+        {
+          "Time": 0.15,
+          "Label": "Step left"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Step left"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Step left"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Close"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Close"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Close"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Close"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Step back"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Step back"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Step back"
+        },
+        {
+          "Time": 1.65,
+          "Label": "Step back"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Close"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Close"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Close"
+        },
+        {
+          "Time": 2.25,
+          "Label": "Close"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Step right"
+        },
+        {
+          "Time": 2.55,
+          "Label": "Step right"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Step right"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Step right"
+        },
+        {
+          "Time": 3,
+          "Label": "Close"
+        },
+        {
+          "Time": 3.15,
+          "Label": "Close"
+        },
+        {
+          "Time": 3.3,
+          "Label": "Close"
+        },
+        {
+          "Time": 3.45,
+          "Label": "Close"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Step back"
+        },
+        {
+          "Time": 3.75,
+          "Label": "Step back"
+        },
+        {
+          "Time": 3.9,
+          "Label": "Step back"
+        },
+        {
+          "Time": 4.05,
+          "Label": "Step back"
+        },
+        {
+          "Time": 4.2,
+          "Label": "Close"
+        },
+        {
+          "Time": 4.35,
+          "Label": "Close"
+        },
+        {
+          "Time": 4.5,
+          "Label": "Close"
+        },
+        {
+          "Time": 4.65,
+          "Label": "Close"
+        },
+        {
+          "Time": 4.8,
+          "Label": "Close"
+        }
+      ],
+      "ProjectSha256": "42cee21f7ffd18aa6f5c5a518167df7900bc996ea18cf81a014a0acb2c8004c2"
+    },
+    {
+      "Id": "LightFeet",
+      "Name": "Light Feet",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Quick, light footwork on the balls of the feet with the hands carried high and loose.",
+      "Interpretation": "The body rides up on the toes and the feet trade fast small taps and scuffs, a pair of forward taps then a pair that cut inward. The torso barely moves, the shoulders twist a few degrees and the hands circle at chest height in time with the feet.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "LightFeet.swlanim",
+      "Duration": 4.8,
+      "Keyframes": 97,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.5288108E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 0.15,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 1.65,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 2.25,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 2.55,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 3,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 3.15,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 3.3,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 3.45,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 3.75,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 3.9,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 4.05,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 4.2,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 4.35,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 4.5,
+          "Label": "Tap right"
+        },
+        {
+          "Time": 4.65,
+          "Label": "Tap left"
+        },
+        {
+          "Time": 4.8,
+          "Label": "Tap left"
+        }
+      ],
+      "ProjectSha256": "a89d2f621d6f54aa7eb9bfbc8f1b8f41a70bf158022c0763bfc7936727281ea8"
+    },
+    {
+      "Id": "PowerStep",
+      "Name": "Power Step",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Strong stomps with driving arm pumps, planted low in the hips.",
+      "Interpretation": "A low wide stance. Each four-count lifts one foot high, slams it down on the beat while the chest dips into the impact, and pumps the opposite fist up to the chest. The closing two beats raise and drop both feet together with both fists pumping.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "PowerStep.swlanim",
+      "Duration": 4.8,
+      "Keyframes": 97,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.6530645E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 0.15,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 1.65,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 2.25,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 2.55,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 3,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 3.15,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 3.3,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 3.45,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 3.75,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 3.9,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 4.05,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 4.2,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 4.35,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 4.5,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 4.65,
+          "Label": "Stomp"
+        },
+        {
+          "Time": 4.8,
+          "Label": "Stomp"
+        }
+      ],
+      "ProjectSha256": "0633b227226bfc0f3083347440e5591093b4c6d31dad90fe7c55e004389dcb03"
+    },
+    {
+      "Id": "Quickstep",
+      "Name": "Quickstep",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Fast crossing steps with the shoulders turning against the hips.",
+      "Interpretation": "Each foot in turn crosses in front of the other and uncrosses on a three-tenths-of-a-second count. The chest turns up to twenty degrees toward the crossing foot against a smaller hip turn and the arms counter-swing, so the pattern reads as fast without leaving the spot.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "Quickstep.swlanim",
+      "Duration": 4.8,
+      "Keyframes": 97,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 1.8189185E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Cross"
+        },
+        {
+          "Time": 0.15,
+          "Label": "Cross"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Cross"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Cross"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Cross"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Cross"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Cross"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 1.65,
+          "Label": "Cross"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Cross"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Cross"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 2.25,
+          "Label": "Cross"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Cross"
+        },
+        {
+          "Time": 2.55,
+          "Label": "Cross"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Cross"
+        },
+        {
+          "Time": 3,
+          "Label": "Cross"
+        },
+        {
+          "Time": 3.15,
+          "Label": "Cross"
+        },
+        {
+          "Time": 3.3,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 3.45,
+          "Label": "Cross"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Cross"
+        },
+        {
+          "Time": 3.75,
+          "Label": "Cross"
+        },
+        {
+          "Time": 3.9,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 4.05,
+          "Label": "Cross"
+        },
+        {
+          "Time": 4.2,
+          "Label": "Cross"
+        },
+        {
+          "Time": 4.35,
+          "Label": "Cross"
+        },
+        {
+          "Time": 4.5,
+          "Label": "Uncross"
+        },
+        {
+          "Time": 4.65,
+          "Label": "Cross"
+        },
+        {
+          "Time": 4.8,
+          "Label": "Cross"
+        }
+      ],
+      "ProjectSha256": "031c07eed791da2ea45a9251aabb51a46c082ef487b3f434f4ce6ae0ce430e26"
+    },
+    {
+      "Id": "VigorReel",
+      "Name": "Vigor Reel",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A bouncy reel with high knees and arms pumping in opposition.",
+      "Interpretation": "The performer hops lightly and lifts alternate knees to hip height every three-tenths of a second. The arm opposite the raised knee drives up as the other drops, the body rides a small bounce, and the shoulders rock a few degrees with each lift.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "VigorReel.swlanim",
+      "Duration": 4.8,
+      "Keyframes": 97,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.40274E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 0.15,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 1.65,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 2.25,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 2.55,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 3,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 3.15,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 3.3,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 3.45,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 3.75,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 3.9,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 4.05,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 4.2,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 4.35,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 4.5,
+          "Label": "Knee right"
+        },
+        {
+          "Time": 4.65,
+          "Label": "Knee left"
+        },
+        {
+          "Time": 4.8,
+          "Label": "Knee left"
+        }
+      ],
+      "ProjectSha256": "309ff409e6d7cb73e29fffd39c03c69cd739a2874bb5b19759dd7650520952fa"
+    },
+    {
+      "Id": "DanceStepLeft",
+      "Name": "Dance Step Left",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A clear step to the left from the dance stance, with a hand accent.",
+      "Interpretation": "The weight rolls left, the left foot slides out a short step and plants on the half beat, the shoulders lean toward it, then the foot draws back into the stance by the end of the six-tenths-of-a-second clip.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepLeft.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.2745635E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7"
+    },
+    {
+      "Id": "DanceStepUp",
+      "Name": "Dance Step Up",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A forward hop-step with the hands lifting in front, from the dance stance.",
+      "Interpretation": "Both feet hop a hand-span forward, the hands lift in front of the chest and the shoulders lean in, then everything returns to the dance stance in six-tenths of a second.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepUp.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 1.8189185E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Hop forward"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "d5c51fc0a69ff01e92ce064b3947ab6c97fec660669a24caffeea8e301ffb0df"
+    },
+    {
+      "Id": "DanceStepDown",
+      "Name": "Dance Step Down",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A dip back from the dance stance: the knees bend, the weight sits back and the hands sweep low.",
+      "Interpretation": "The hips sink and slide back, the chest leans away and both feet step back a short way while the hands sweep down and out, then the stance recovers in six-tenths of a second.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepDown.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 1.2287812E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Dip back"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "2c6b19ce8860ce8ab8c1c7a30d85ccb4ff9b1be9b93b8c82254f94fc5b644e47"
+    },
+    {
+      "Id": "DanceStepRight",
+      "Name": "Dance Step Right",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A clear step to the right from the dance stance, with a hand accent.",
+      "Interpretation": "The weight rolls right, the right foot slides out a short step and plants on the half beat, the shoulders lean toward it, then the foot draws back into the stance by the end of the six-tenths-of-a-second clip.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceStepRight.swlanim",
+      "Duration": 0.6,
+      "Keyframes": 13,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Step out"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "b478a2206aef0bdec4405fbfef6229f3729144061cdb888e04fd48b7afbf4f8c"
+    },
+    {
+      "Id": "DanceDip",
+      "Name": "Dance Dip",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A low, dramatic dip and a sweeping rise.",
+      "Interpretation": "The hips sink about twenty centimetres with the chest folding forward and the arms spread low, the pose holds a moment, then the body rises through a long upward arm sweep with a slight lean back before settling in the dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceDip.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.625609E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Dip"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Rise"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Rise"
+        }
+      ],
+      "ProjectSha256": "1e8ea25a0b1eb6c5cf7aa2292dc9c9419884e8f3fc3fcecbb19124b86200e66f"
+    },
+    {
+      "Id": "DanceSpin",
+      "Name": "Dance Spin",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A full turn on one foot with both arms held out.",
+      "Interpretation": "The performer shifts onto the left foot, throws both arms out to the sides and turns a full revolution with the right knee drawn up, then lowers the arms and steps back into the dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "DanceSpin.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.0392525E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Turn"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Turn"
+        },
+        {
+          "Time": 1,
+          "Label": "Turn"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Turn"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Settle"
+        }
+      ],
+      "ProjectSha256": "edf9a160575d611183fd395ada3d4395a455997f5a4eb6479449fe21094e89c0"
+    },
+    {
+      "Id": "StringsLoop",
+      "Name": "Strings Loop",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A steady strumming loop with a guitar held in the right hand.",
+      "Interpretation": "The instrument rides across the chest with the neck angled up and left, the right hand strums down and up on the eighth notes, the left hand slides slowly along the neck for chord changes and the body sways with a small foot tap.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsLoop.swlanim",
+      "Duration": 3.6,
+      "Keyframes": 73,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4038948E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 0.15,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 1.65,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 2.25,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 2.55,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 3,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 3.15,
+          "Label": "Strum up"
+        },
+        {
+          "Time": 3.3,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 3.45,
+          "Label": "Strum down"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Strum up"
+        }
+      ],
+      "ProjectSha256": "d58ca407dbda54d7fb5e4d19930b5576f6c760d97fc6494282defe4d627793f2"
+    },
+    {
+      "Id": "StringsLow",
+      "Name": "Strings Low",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A single accent strum with the fretting hand low on the neck, close to the body.",
+      "Interpretation": "The right hand lifts and drives one strong down-stroke while the left hand slides low on the neck, close to the body and the chest nods into the accent, then everything returns to the playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsLow.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.494554E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "65b9318a3cca62c185b9c4e66e9dc27b82494e0c46362ab45034ef1eb9b68de3"
+    },
+    {
+      "Id": "StringsMid",
+      "Name": "Strings Mid",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A single accent strum with the fretting hand at the middle of the neck.",
+      "Interpretation": "The right hand lifts and drives one strong down-stroke while the left hand slides at the middle of the neck and the chest nods into the accent, then everything returns to the playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsMid.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.7677677E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "213110e51b1ab72e5bb15411b1b0015c4f844e59b6ca2c39f23e49995d9ff477"
+    },
+    {
+      "Id": "StringsHigh",
+      "Name": "Strings High",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A single accent strum with the fretting hand high on the neck, reaching toward the headstock.",
+      "Interpretation": "The right hand lifts and drives one strong down-stroke while the left hand slides high on the neck, reaching toward the headstock and the chest nods into the accent, then everything returns to the playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsHigh.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.3513635E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Lift"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "fcd7ff32f0646aa524de8c6884b1fab1aeb1269d2790ceeb3b2553d31d3a8407"
+    },
+    {
+      "Id": "StringsFlourish",
+      "Name": "Strings Flourish",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "The guitar is thrown up and swept down in a big strum.",
+      "Interpretation": "The instrument lifts high on the left with the chest opening back, holds for a beat, then the right arm drives a large downward strum as the knees sink and the chest folds into it, before settling back into the playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsFlourish.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Strum"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Strum"
+        },
+        {
+          "Time": 1,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Settle"
+        }
+      ],
+      "ProjectSha256": "1d2956cb6684afb915afa5d53ce58324e373e3d25548189a540d102656c459ad"
+    },
+    {
+      "Id": "HornLoop",
+      "Name": "Horn Loop",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A held-note loop with the horn raised to the mouth.",
+      "Interpretation": "Two breaths and two phrases: the chest eases back and the bell dips on each breath, then the horn lifts as the phrase swells while the shoulders sway slowly. The right hand stays at the mouthpiece and the left hand steadies the body of the horn.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornLoop.swlanim",
+      "Duration": 4,
+      "Keyframes": 81,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.6286698E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Breath"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Breath"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 1,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 1.6,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 2,
+          "Label": "Breath"
+        },
+        {
+          "Time": 2.2,
+          "Label": "Breath"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Breath"
+        },
+        {
+          "Time": 2.6,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 2.8,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 3,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 3.2,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 3.4,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 3.6,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 3.8,
+          "Label": "Phrase"
+        },
+        {
+          "Time": 4,
+          "Label": "Breath"
+        }
+      ],
+      "ProjectSha256": "03d08f9c7013564ce956a29ad8ec18df027aec28ae8a3b54c57f44c57af0a530"
+    },
+    {
+      "Id": "HornLow",
+      "Name": "Horn Low",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "The chest leans back and the bell dips into a low note. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "The chest leans back and the bell dips into a low note. The right hand stays at the mouthpiece and the clip returns to the playing hold in half a second.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornLow.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.6043025E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "3b9ddd29f4692c26358c68023450c512be6a6d347a74a0316e8b19440d328101"
+    },
+    {
+      "Id": "HornMid",
+      "Name": "Horn Mid",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A neutral accent: a small nod into a note held level. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "A neutral accent: a small nod into a note held level. The right hand stays at the mouthpiece and the clip returns to the playing hold in half a second.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornMid.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4510598E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "60333fb817c6e028bb6f700e5605eb0d9626009968f3069812a7e906936d8673"
+    },
+    {
+      "Id": "HornHigh",
+      "Name": "Horn High",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "The bell lifts high into a bright note with the chest opening slightly. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "The bell lifts high into a bright note with the chest opening slightly. The right hand stays at the mouthpiece and the clip returns to the playing hold in half a second.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornHigh.swlanim",
+      "Duration": 0.5,
+      "Keyframes": 17,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4314477E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.062,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.125,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.188,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.312,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.375,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.438,
+          "Label": "Return"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Return"
+        }
+      ],
+      "ProjectSha256": "6880f776a72d5181d0d8b3fc18dfed46862059f55bc2a0074b71cf0e7c4cb168"
+    },
+    {
+      "Id": "HornFlourish",
+      "Name": "Horn Flourish",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "The horn swings up toward the ceiling for a long, ringing note.",
+      "Interpretation": "The bell sweeps up and out while the chest opens back, holding the note at the top, then the horn lowers to the playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornFlourish.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.40274E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.1,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.3,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.6,
+          "Label": "Raise"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Hold"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Hold"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Hold"
+        },
+        {
+          "Time": 1,
+          "Label": "Hold"
+        },
+        {
+          "Time": 1.1,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Lower"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Lower"
+        }
+      ],
+      "ProjectSha256": "e74e916bf57acce16bfebcafbf4172913c86f34a2e23f780ba5b3f7db3dd4446"
+    },
+    {
+      "Id": "PerformanceBow",
+      "Name": "Performance Bow",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A courteous finale bow with one hand across the chest.",
+      "Interpretation": "The performer gathers a hand to the chest, sweeps the other arm out and folds forward from the waist, holds the bow for a beat, then rises and releases to the dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "PerformanceBow.swlanim",
+      "Duration": 1.5,
+      "Keyframes": 31,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Dance stance"
+        },
+        {
+          "Time": 0.35,
+          "Label": "Gather"
+        },
+        {
+          "Time": 0.75,
+          "Label": "Bow"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Hold the bow"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Rise"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Dance stance"
+        }
+      ],
+      "ProjectSha256": "a64780eebf95f96e4991408a2bcd59a8bf120c65f97287f9d91b14d180b446a7"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Tests.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -111,13 +112,14 @@ public class AuthoredCombatAnimationTests
         runtime.Token.Should().BeEmpty();
     }
 
-    /// <summary>Checks that the preview catalog retains installed ability, ordinary attack, travel, and fishing clips.</summary>
+    /// <summary>Checks that the preview catalog retains installed ability, ordinary attack, travel, fishing, and performance clips.</summary>
     [Test]
     public void PreviewIncludesAllCatalogMovesWithCurrentAbilities()
     {
         AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(
             ActiveAbilityAnimationCatalog.Entries.Select(entry => entry.Id)
-                .Concat(new[] { "TwinPistolCycle", "BlasterSlideTravel", "PistolRushTravel", "GrappleShotTravel", "Fishing6", "Fishing7", "Fishing8" }));
+                .Concat(new[] { "TwinPistolCycle", "BlasterSlideTravel", "PistolRushTravel", "GrappleShotTravel", "Fishing6", "Fishing7", "Fishing8" })
+                .Concat(AnimationPlanningTests.PerformanceActivityClips.Keys));
     }
 
     [Test]

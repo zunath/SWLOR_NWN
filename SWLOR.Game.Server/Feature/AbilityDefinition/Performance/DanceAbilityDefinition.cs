@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Performance
 {
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Performance
                 .UsesNativeAnimationPreview(Animation.DanceHandsUp, 3f)
                 .SkillType(SkillType.Performance)
                 .HasImpactAction(DanceImpactAction)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Imp_Improve_Ability_Score)
                 .IsCastedAbility();
         }
 

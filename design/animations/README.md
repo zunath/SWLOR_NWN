@@ -329,6 +329,45 @@ The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, 
 bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
 playback. After installing, compile the banks and regenerate the clothing bridges as below.
 
+### Performance clips
+
+`performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
+(`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
+recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
+they end in native idle like every inventory clip. The other 22 clips are activity clips like
+Fishing's (`activity: "Performing"`, empty `abilityDefinition`) and live in `performance/recipe.json`:
+
+| Group | Clips (project Id = internal name) | Length |
+|---|---|---|
+| Routine loops | CantinaShuffle `sw_dn_shufl`, LightFeet `sw_dn_light`, PowerStep `sw_dn_power`, Quickstep `sw_dn_quick`, VigorReel `sw_dn_vigor` | 4.8 s |
+| Dance steps | DanceStepLeft/Up/Down/Right `sw_dn_stepl/u/d/r` | 0.6 s |
+| Dance flourishes | DanceSpin `sw_dn_spin`, DanceDip `sw_dn_dip` | 1.5 s |
+| Strings | StringsLoop `sw_str_loop` (3.6 s), StringsLow/Mid/High `sw_str_low/mid/high` (0.5 s), StringsFlourish `sw_str_flour` (1.5 s) | |
+| Horns | HornLoop `sw_hrn_loop` (4.0 s), HornLow/Mid/High `sw_hrn_low/mid/high` (0.5 s), HornFlourish `sw_hrn_flour` (1.5 s) | |
+| Finale | PerformanceBow `sw_pf_bow` | 1.5 s |
+
+Every dance clip starts and ends in one relaxed dance stance (`readyBlade` in the recipe), and the
+strings and horns clips start and end in their playing hold, so loops, steps and flourishes chain
+without a seam; the installer's `_in` and `_out` phases blend to and from native idle. Strings hold
+a right-hand instrument across the chest (the neck runs up and to the left, the left hand fretting
+along it); horns hold the instrument at the mouth with the bell forward and down. Both use the item
+attachment at `rhand` like the fishing rod, so check them with real instruments equipped.
+
+Generate the activity clips with the Fishing command, and install the whole group with
+`install-active` so each clip keeps its assigned internal name. The batch file only needs `Id`,
+`InternalName`, `Category` (`Performance`), `Type` and `Description`, and stays in the ignored
+`artifacts/animations/` folder:
+
+```powershell
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/performance/recipe.json design/animations/performance --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install-active . artifacts/animations/performance-batch.json a_ba a_fa
+```
+
+A recipe pose may add `rootYaw` (degrees): the root and every hand, foot and blade target turn together
+about the vertical axis through the root, so `DanceSpin` is authored unturned and rotated by one field.
+Poses without it generate byte-identical projects. `DanceSpin` pivots on the left foot, which sits
+under the root, and turns a full revolution.
+
 ### Library layout
 
 ```text

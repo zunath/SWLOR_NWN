@@ -3078,5 +3078,245 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/twin-pistol/TempoShot.swlanim"
+  },
+  {
+    "Name": "Dance",
+    "AnimationName": "sw_pf_dance",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/Dance.swlanim"
+  },
+  {
+    "Name": "PlayInstrument",
+    "AnimationName": "sw_pf_play",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PlayInstrument.swlanim"
+  },
+  {
+    "Name": "CantinaShuffle",
+    "AnimationName": "sw_dn_shufl",
+    "Duration": 4.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/CantinaShuffle.swlanim"
+  },
+  {
+    "Name": "LightFeet",
+    "AnimationName": "sw_dn_light",
+    "Duration": 4.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/LightFeet.swlanim"
+  },
+  {
+    "Name": "PowerStep",
+    "AnimationName": "sw_dn_power",
+    "Duration": 4.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PowerStep.swlanim"
+  },
+  {
+    "Name": "Quickstep",
+    "AnimationName": "sw_dn_quick",
+    "Duration": 4.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/Quickstep.swlanim"
+  },
+  {
+    "Name": "VigorReel",
+    "AnimationName": "sw_dn_vigor",
+    "Duration": 4.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VigorReel.swlanim"
+  },
+  {
+    "Name": "DanceStepLeft",
+    "AnimationName": "sw_dn_stepl",
+    "Duration": 0.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/DanceStepLeft.swlanim"
+  },
+  {
+    "Name": "DanceStepUp",
+    "AnimationName": "sw_dn_stepu",
+    "Duration": 0.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/DanceStepUp.swlanim"
+  },
+  {
+    "Name": "DanceStepDown",
+    "AnimationName": "sw_dn_stepd",
+    "Duration": 0.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/DanceStepDown.swlanim"
+  },
+  {
+    "Name": "DanceStepRight",
+    "AnimationName": "sw_dn_stepr",
+    "Duration": 0.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/DanceStepRight.swlanim"
+  },
+  {
+    "Name": "DanceSpin",
+    "AnimationName": "sw_dn_spin",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/DanceSpin.swlanim"
+  },
+  {
+    "Name": "DanceDip",
+    "AnimationName": "sw_dn_dip",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/DanceDip.swlanim"
+  },
+  {
+    "Name": "StringsLoop",
+    "AnimationName": "sw_str_loop",
+    "Duration": 3.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/StringsLoop.swlanim"
+  },
+  {
+    "Name": "StringsLow",
+    "AnimationName": "sw_str_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/StringsLow.swlanim"
+  },
+  {
+    "Name": "StringsMid",
+    "AnimationName": "sw_str_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/StringsMid.swlanim"
+  },
+  {
+    "Name": "StringsHigh",
+    "AnimationName": "sw_str_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/StringsHigh.swlanim"
+  },
+  {
+    "Name": "StringsFlourish",
+    "AnimationName": "sw_str_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/StringsFlourish.swlanim"
+  },
+  {
+    "Name": "HornLoop",
+    "AnimationName": "sw_hrn_loop",
+    "Duration": 4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/HornLoop.swlanim"
+  },
+  {
+    "Name": "HornLow",
+    "AnimationName": "sw_hrn_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/HornLow.swlanim"
+  },
+  {
+    "Name": "HornMid",
+    "AnimationName": "sw_hrn_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/HornMid.swlanim"
+  },
+  {
+    "Name": "HornHigh",
+    "AnimationName": "sw_hrn_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/HornHigh.swlanim"
+  },
+  {
+    "Name": "HornFlourish",
+    "AnimationName": "sw_hrn_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/HornFlourish.swlanim"
+  },
+  {
+    "Name": "PerformanceBow",
+    "AnimationName": "sw_pf_bow",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PerformanceBow.swlanim"
   }
 ]

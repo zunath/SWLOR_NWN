@@ -97,32 +97,40 @@ internal static class MotionAuthor
         }
         var blade = V("blade");
         if (blade.LengthSquared() < .01f) throw new InvalidDataException("Blade direction is zero.");
+        // Optional whole-body turn about the vertical axis through the root, in degrees. Existing recipes omit it.
+        var yawNode = patch["rootYaw"] ?? ready["rootYaw"];
+        var yaw = yawNode == null ? 0f : yawNode.GetValue<float>();
+        if (!float.IsFinite(yaw) || Math.Abs(yaw) > 720) throw new InvalidDataException("rootYaw must be within 720 degrees.");
         return new(V("root"), V("chest"), V("hips"), V("leftHand"), V("rightHand"), blade,
-            V("leftFoot"), V("rightFoot"), V("shield"));
+            V("leftFoot"), V("rightFoot"), V("shield"), yaw);
     }
 
     private static PosedNode[] PoseRig(AnimationProject rig, Pose p, string name, float time, bool naturalGrip)
     {
         var pose = rig.Joints.Select(j => j.Rest).ToArray();
         var root = Index(rig, "rootdummy");
-        pose[root] = pose[root] with { Position = p.Root, Orientation = Quaternion.Identity };
-        SetLocal("torso_g", Rotation(p.Chest)); SetLocal("pelvis_g", Rotation(p.Hips));
-        SetWorld("head_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(p.Chest.Y * .2f)));
+        // A turn rotates the root and every authored target together about the vertical axis through
+        // the root, so a spin is authored in the unturned frame. Without a turn nothing changes.
+        var turn = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(p.RootYaw));
         var centre = new Vector3(p.Root.X, p.Root.Y, 0);
-        Solve("lfoot_g", p.LeftFoot, new Vector3(-.42f, 1.1f, .4f) + centre);
-        Solve("rfoot_g", p.RightFoot, new Vector3(.42f, 1.1f, .4f) + centre);
-        SetWorld("lfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(8)));
-        SetWorld("rfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(-12)));
+        Vector3 Turned(Vector3 v) => p.RootYaw == 0 ? v : centre + Vector3.Transform(v - centre, turn);
+        pose[root] = pose[root] with { Position = p.Root, Orientation = p.RootYaw == 0 ? Quaternion.Identity : turn };
+        SetLocal("torso_g", Rotation(p.Chest)); SetLocal("pelvis_g", Rotation(p.Hips));
+        SetWorld("head_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(p.RootYaw + p.Chest.Y * .2f)));
+        Solve("lfoot_g", Turned(p.LeftFoot), Turned(new Vector3(-.42f, 1.1f, .4f) + centre));
+        Solve("rfoot_g", Turned(p.RightFoot), Turned(new Vector3(.42f, 1.1f, .4f) + centre));
+        SetWorld("lfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(p.RootYaw + 8)));
+        SetWorld("rfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(p.RootYaw - 12)));
         // Keep bent elbows below the hands and near the ribs. Wide, shoulder-height poles
         // produce an outward elbow flare even when the hand is in a low guard.
-        Solve("lhand_g", p.LeftHand, new Vector3(-.60f, .35f, p.Root.Z + .12f) + centre);
-        Solve("rhand_g", p.RightHand, (naturalGrip
+        Solve("lhand_g", Turned(p.LeftHand), Turned(new Vector3(-.60f, .35f, p.Root.Z + .12f) + centre));
+        Solve("rhand_g", Turned(p.RightHand), Turned((naturalGrip
             ? new Vector3(.52f, -.16f, p.RightHand.Z - .15f)
-            : new Vector3(.36f, -.12f, p.Root.Z - .18f)) + centre);
+            : new Vector3(.36f, -.12f, p.Root.Z - .18f)) + centre));
         // Preserve the native hand's roll around the blade, rather than arbitrarily twisting
         // the wrist when the sword changes direction. Native +Z points toward the wrist/elbow.
         var world = AnimationRig.World(rig.Joints, pose);
-        var blade = Vector3.Normalize(p.Blade);
+        var blade = Vector3.Normalize(p.RootYaw == 0 ? p.Blade : Vector3.Transform(p.Blade, turn));
         if (naturalGrip)
         {
             // Let forearm roll carry the grip, then use the smallest wrist swing to aim.
@@ -144,7 +152,7 @@ internal static class MotionAuthor
         }
         else
         {
-            var towardElbow = world[Index(rig, "rforearm_g")].Translation - p.RightHand;
+            var towardElbow = world[Index(rig, "rforearm_g")].Translation - Turned(p.RightHand);
             var wrist = towardElbow - blade * Vector3.Dot(towardElbow, blade);
             if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitZ - blade * blade.Z;
             if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitX - blade * blade.X;
@@ -206,7 +214,7 @@ internal static class MotionAuthor
         Quaternion.CreateFromAxisAngle(Vector3.UnitX, Radians(-degrees.X));
 
     private sealed record Pose(Vector3 Root, Vector3 Chest, Vector3 Hips, Vector3 LeftHand, Vector3 RightHand,
-        Vector3 Blade, Vector3 LeftFoot, Vector3 RightFoot, Vector3 Shield)
+        Vector3 Blade, Vector3 LeftFoot, Vector3 RightFoot, Vector3 Shield, float RootYaw = 0)
     {
         // A strike passes through contact poses without stopping. Shape-preserving
         // Hermite tangents keep that velocity continuous without overshooting limb
@@ -239,7 +247,7 @@ internal static class MotionAuthor
                     (-2 * t3 + 3 * t2) * b + (t3 - t2) * duration * Tangent(segment + 1);
             }
             return new(V(p => p.Root), V(p => p.Chest), V(p => p.Hips), V(p => p.LeftHand), V(p => p.RightHand),
-                V(p => p.Blade), V(p => p.LeftFoot), V(p => p.RightFoot), V(p => p.Shield));
+                V(p => p.Blade), V(p => p.LeftFoot), V(p => p.RightFoot), V(p => p.Shield), V(p => new Vector3(p.RootYaw, 0, 0)).X);
         }
     }
 }

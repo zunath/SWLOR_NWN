@@ -96,7 +96,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
             foreach (var state in _states.Values)
             {
-                if (!state.IsWarmedUp)
+                // The same rules as the tick's watcher pass: a Flourish pays now, not after the next check.
+                if (!state.IsWarmedUp || !CanWatchNow(state.Creature))
                     continue;
 
                 var watcherBase = 0;
@@ -698,6 +699,14 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 return;
 
             InterruptWatching(state);
+        }
+
+        private static bool CanWatchNow(uint player)
+        {
+            return GetIsObjectValid(player) &&
+                   !GetIsDead(player) &&
+                   !GetIsInCombat(player) &&
+                   !Performance.TryGetSession(player, out _);
         }
 
         private static bool IsCoveredByAnyPerformer(uint watcher)

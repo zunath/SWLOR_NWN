@@ -109,6 +109,17 @@ public class PerformanceAudienceStateTests
     }
 
     [Test]
+    public void AFlourishPaysOnlyWatchersWhoCanWatchRightNow()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+
+        Section(source, "public static void OnFlourish(").Should().Contain("!state.IsWarmedUp || !CanWatchNow(state.Creature)");
+        var rule = Section(source, "private static bool CanWatchNow(");
+        rule.Should().Contain("!GetIsInCombat(player)");
+        rule.Should().Contain("!GetIsDead(player)");
+    }
+
+    [Test]
     public void StartingAPerformanceInterruptsWatchingAtOnce()
     {
         var performance = File.ReadAllText(SourcePath("Service", "Performance.cs"));

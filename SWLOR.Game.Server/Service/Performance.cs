@@ -455,6 +455,7 @@ namespace SWLOR.Game.Server.Service
             };
 
             _sessions[player] = session;
+            PerformanceAudience.OnPerformanceStarted(player);
             // The toggle has no cast window to play its clip in, so the performance opens with it.
             PlayThenLoop(session, PerformanceAnimations.GetOpeningClip(kind));
             ScheduleBeats(session);

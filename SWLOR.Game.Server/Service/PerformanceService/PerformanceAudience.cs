@@ -558,13 +558,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             var state = GetState(performer.Performer);
             state.LastSeenTick = _tickNumber;
 
-            // Performing interrupts watching, as leaving range does: the warm-up starts over. Picked performers are kept.
-            if (state.IsWatching)
-            {
-                RestoreMusic(state);
-                state.StopWatching();
-                PerformanceWindows.CloseWatching(performer.Performer);
-            }
+            // Performing interrupts watching, as leaving range does. OnPerformanceStarted already did this; a performer
+            // whose start was missed (a reload) is caught here.
+            InterruptWatching(state);
 
             // Practice, with no watcher in range, earns no Inspired.
             if (PerformanceAudienceRules.IsLiveShow(performer.WatcherCount))
@@ -662,11 +658,40 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             state.BandArea = desired.HasValue ? show.Area : 0;
         }
 
-        /// <summary>Entering an area replaces the client's music, so the band song is sent again at the next tick.</summary>
+        /// <summary>
+        /// Changing area interrupts watching even when the next tick finds the player at another show, and it replaces
+        /// the client's music, so the band song is sent again at the next tick.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
-        public static void ForgetBandSongOnAreaEnter()
+        public static void StopWatchingOnAreaEnter()
         {
-            ForgetBandSong(GetEnteringObject());
+            var player = GetEnteringObject();
+            ForgetBandSong(player);
+            if (_states.TryGetValue(player, out var state))
+                state.StopWatching();
+        }
+
+        /// <summary>
+        /// Starting a performance interrupts watching at once, so starting and stopping between two ticks cannot keep
+        /// the warm-up or the frozen Inspired.
+        /// </summary>
+        public static void OnPerformanceStarted(uint performer)
+        {
+            if (_states.TryGetValue(performer, out var state))
+                InterruptWatching(state);
+        }
+
+        // The warm-up starts over and the player's own music comes back. Picked performers are kept.
+        private static void InterruptWatching(PerformanceAudienceState state)
+        {
+            if (!state.IsWatching)
+                return;
+
+            RestoreMusic(state);
+            state.StopWatching();
+            // After StopWatching, so the window closing is not taken for the watcher choosing to hide it.
+            if (GetIsObjectValid(state.Creature))
+                PerformanceWindows.CloseWatching(state.Creature);
         }
 
         /// <summary>

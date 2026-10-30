@@ -93,7 +93,18 @@ public class PerformanceAudienceStateTests
         var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
 
         source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleDeath\)\]\s+public static void StopWatchingOnDeath\(\)");
-        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public static void ForgetBandSongOnAreaEnter\(\)");
+        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public static void StopWatchingOnAreaEnter\(\)");
+        Section(source, "public static void StopWatchingOnAreaEnter(").Should().Contain("state.StopWatching();");
+    }
+
+    [Test]
+    public void StartingAPerformanceInterruptsWatchingAtOnce()
+    {
+        var performance = File.ReadAllText(SourcePath("Service", "Performance.cs"));
+        var audience = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+
+        Section(performance, "private static void StartPerformance(").Should().Contain("PerformanceAudience.OnPerformanceStarted(player);");
+        Section(audience, "public static void OnPerformanceStarted(").Should().Contain("InterruptWatching(state);");
     }
 
     [Test]
@@ -127,7 +138,7 @@ public class PerformanceAudienceStateTests
         var serve = source.Substring(source.IndexOf("private static void ServePerformer(", StringComparison.Ordinal));
         serve = serve.Substring(0, serve.IndexOf("PayPerformerXp(", StringComparison.Ordinal));
 
-        serve.Should().Contain("state.StopWatching();");
+        serve.Should().Contain("InterruptWatching(state);");
     }
 
     [Test]

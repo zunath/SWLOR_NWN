@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_good", 2)
                 .Component("field_chip", 1);
 
-            // Fieldline Display Plinth
-            _builder.Create(RecipeType.FieldlineDisplayPlinth, SkillType.Fabrication)
+            // Fieldline Display Case
+            _builder.Create(RecipeType.FieldlineDisplayCase, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0419")
                 .Level(31)

@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -198,76 +199,6 @@ public class AppearancePreviewTests
 
     // ---------------------------------------------------------------- view model helpers
 
-    [TestCase(0, false, "A1")]
-    [TestCase(7, false, "H1")]
-    [TestCase(175, false, "P11")]
-    [TestCase(42, true, "RGB")]
-    [TestCase(255, false, "Outfit")]
-    [TestCase(255, true, "RGB")]
-    public void SwatchCodeShowsPaletteCodeRgbOrOutfit(int colorId, bool custom, string expected) =>
-        SwatchCode(BuildPaletteRegion(colorId), custom).Should().Be(expected);
-
-    [Test]
-    public void SwatchCodeOfAMissingRegionIsOutfit()
-    {
-        SwatchCode(null, false).Should().Be("Outfit");
-        SwatchCode(null, true).Should().Be("RGB");
-        SwatchCode(null, false, isPart: false).Should().Be("None",
-            "an unset helmet, cloak or outfit colour does not come from the outfit");
-    }
-
-    [TestCase(4000f, true, 10)]
-    [TestCase(1844f, true, 10)]
-    [TestCase(1843f, true, 9)]
-    [TestCase(1240f, true, 4)]
-    [TestCase(1184f, true, 4)]
-    [TestCase(1183f, true, 3)]
-    [TestCase(1074f, true, 3)]
-    [TestCase(1073f, true, 2)]
-    [TestCase(970f, true, 2)]
-    [TestCase(964f, true, 2)]
-    [TestCase(963f, true, 1)]
-    [TestCase(0f, true, 1)]
-    [TestCase(2000f, false, 10)]
-    [TestCase(1394f, false, 10)]
-    [TestCase(1393f, false, 9)]
-    [TestCase(1240f, false, 8)]
-    [TestCase(734f, false, 4)]
-    [TestCase(733f, false, 3)]
-    [TestCase(624f, false, 3)]
-    [TestCase(623f, false, 2)]
-    [TestCase(514f, false, 2)]
-    [TestCase(513f, false, 1)]
-    public void BrowserColumnsFollowTheWindowWidth(float width, bool hasSideColumns, int expected) =>
-        BrowserColumnsForWidth(width, hasSideColumns).Should().Be(expected);
-
-    [Test]
-    public void BrowserColumnsNeverDecreaseAsTheWindowWidens([Values(true, false)] bool hasSideColumns)
-    {
-        var columns = Enumerable.Range(0, 2500).Select(width => BrowserColumnsForWidth(width, hasSideColumns)).ToArray();
-        columns.Should().BeInAscendingOrder();
-        columns.Should().OnlyContain(count => count >= 1 &&
-            count * AppearanceEditorViewModel.MaxBrowserRows <= AppearanceEditorViewModel.BrowserTileCount);
-    }
-
-    [TestCase(720f, 4, 3)]
-    [TestCase(674f, 4, 3)]
-    [TestCase(673f, 4, 2)]
-    [TestCase(536f, 4, 2)]
-    [TestCase(535f, 4, 1)]
-    [TestCase(812f, 4, 4)]
-    [TestCase(811f, 4, 3)]
-    [TestCase(714f, 2, 3)]
-    [TestCase(713f, 2, 2)]
-    [TestCase(100f, 1, 1)]
-    [TestCase(640f, 1, 1)]
-    [TestCase(686f, 1, 2)]
-    [TestCase(4000f, 4, 4)]
-    public void BrowserRowsFollowTheWindowHeight(float height, int columns, int expected) =>
-        ((int)typeof(AppearanceEditorViewModel)
-            .GetMethod("BrowserRowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { height, columns })!).Should().Be(expected);
-
     // width, height, x, y, screen width, screen height, scale -> width, height
     [TestCase(600f, 400f, 40f, 30f, 0f, 0f, 1f, 600f, 400f)]
     [TestCase(600f, 400f, 40f, 30f, 1920f, 1080f, 1f, 600f, 400f)]
@@ -307,64 +238,38 @@ public class AppearancePreviewTests
             .GetMethod("PartColorsTitle", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { slot })!).Should().Be(expected);
 
-    [TestCase(0, "Outfit")]
-    [TestCase(1, "Helmet")]
-    [TestCase(2, "Cloak")]
-    public void ItemColourRowsNameTheItem(int itemTypeIndex, string expected) =>
-        ((string)typeof(AppearanceEditorViewModel)
-            .GetMethod("ItemColorsTitle", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { itemTypeIndex })!).Should().Be(expected);
-
-    // width, height, has side columns -> compact
-    [TestCase(1240f, 720f, true, false)]
-    [TestCase(854f, 720f, true, false)]
-    [TestCase(853f, 720f, true, true)]
-    [TestCase(760f, 720f, true, true)]
-    [TestCase(1240f, 548f, true, false)]
-    [TestCase(1240f, 547f, true, true)]
-    [TestCase(404f, 720f, false, false)]
-    [TestCase(403f, 720f, false, true)]
-    [TestCase(0f, 0f, true, false)]
-    public void SmallWindowsUseTheFixedSizeEditor(float width, float height, bool hasSideColumns, bool expected)
+    // editor x, screen width, scale -> browser x
+    [TestCase(100f, 1920f, 1f, 810f)]
+    [TestCase(1200f, 1920f, 1f, 580f)]
+    [TestCase(100f, 1280f, 1f, 660f)]
+    [TestCase(0f, 1280f, 1f, 660f)]
+    [TestCase(600f, 1280f, 1f, 0f)]
+    [TestCase(100f, 0f, 1f, 810f)]
+    [TestCase(100f, 1920f, 1.5f, 990f)]
+    [TestCase(1000f, 1920f, 1.5f, 70f)]
+    public void ThePartBrowserOpensBesideTheEditor(float editorX, float screenWidth, float scale, float expectedX)
     {
-        ((bool)typeof(AppearanceEditorViewModel)
-            .GetMethod("IsCompactWindow", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { width, height, hasSideColumns })!).Should().Be(expected);
-        if (!expected && width > 0f)
-            BrowserColumnsForWidth(width, hasSideColumns).Should().BeGreaterThanOrEqualTo(1,
-                "a window that is not compact fits at least one column of pictures");
+        var editor = new GuiRectangle(editorX, 50f, AppearanceEditorDefinition.EditorWidth, AppearanceEditorDefinition.EditorHeight);
+        var placed = PlaceBeside(editor, AppearancePartBrowserDefinition.WindowWidth,
+            AppearancePartBrowserDefinition.WindowHeight, screenWidth, 1080f, scale);
+        placed.X.Should().BeApproximately(expectedX, 0.01f,
+            "right of the editor when it fits, else left, else against the edge that covers less of the editor");
+        placed.Y.Should().Be(50f, "the browser lines up with the editor's top");
+        placed.Width.Should().Be(AppearancePartBrowserDefinition.WindowWidth);
+        placed.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
+        PlaceBeside(null, 620f, 590f, 1920f, 1080f, 1f).Should().BeNull();
     }
+
+    private static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,
+        float screenWidth, float screenHeight, float scale) =>
+        (GuiRectangle)typeof(AppearanceEditorViewModel)
+            .GetMethod("PlaceBeside", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { editor, width, height, screenWidth, screenHeight, scale });
 
     private static GuiRectangle FitWindowToScreen(GuiRectangle geometry, float screenWidth, float screenHeight, float scale) =>
         (GuiRectangle)typeof(AppearanceEditorViewModel)
             .GetMethod("FitWindowToScreen", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { geometry, screenWidth, screenHeight, scale })!;
-
-    [Test]
-    public void BrowserGridNamesAreDistinctPerSize()
-    {
-        var names = Enumerable.Range(1, AppearanceEditorViewModel.MaxBrowserColumns)
-            .SelectMany(columns => Enumerable.Range(1, AppearanceEditorViewModel.MaxBrowserRows)
-                .Select(rows => AppearanceEditorViewModel.BrowserGrid(columns, rows)))
-            .ToArray();
-        names.Should().OnlyHaveUniqueItems();
-        AppearanceEditorViewModel.BrowserGrid(4, 3).Should().Be("AE_BROWSER_GRID_4X3");
-    }
-
-    private static string SwatchCode(GuiRectangle region, bool custom, bool isPart = true) =>
-        (string)typeof(AppearanceEditorViewModel)
-            .GetMethod("SwatchCode", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { region, custom, isPart })!;
-
-    private static int BrowserColumnsForWidth(float width, bool hasSideColumns) =>
-        (int)typeof(AppearanceEditorViewModel)
-            .GetMethod("BrowserColumnsForWidth", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { width, hasSideColumns })!;
-
-    private static GuiRectangle BuildPaletteRegion(int colorId) =>
-        (GuiRectangle)typeof(AppearanceEditorViewModel)
-            .GetMethod("BuildPaletteRegion", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { colorId })!;
 
     [TestCase("pme0_chest148", "pmh0_chest148")]
     [TestCase("pfd0_clk012", "pfh0_clk012")]

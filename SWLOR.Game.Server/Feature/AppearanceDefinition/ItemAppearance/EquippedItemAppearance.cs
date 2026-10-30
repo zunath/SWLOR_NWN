@@ -277,6 +277,25 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             Refresh(creature, item);
         }
 
+        public static void ApplyHelmet(uint creature, uint item, uint template)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(item) || !GetIsObjectValid(template) ||
+                GetItemInSlot(InventorySlot.Head, creature) != item ||
+                GetBaseItemType(item) != BaseItem.Helmet || GetBaseItemType(template) != BaseItem.Helmet)
+                return;
+
+            Set(item, ItemAppearanceType.SimpleModel, -1,
+                GetItemAppearance(template, ItemAppearanceType.SimpleModel, -1));
+
+            // A helmet has only the six global channels.
+            for (var color = 0; color < 6; color++)
+                Set(item, ItemAppearanceType.ArmorColor, color,
+                    GetItemAppearance(template, ItemAppearanceType.ArmorColor, color));
+
+            TintMapService.ReplaceItemTintOverrides(template, item);
+            Refresh(creature, item);
+        }
+
         private static void RestoreQuickbarReferences(uint creature, uint item)
         {
             if (!GetIsObjectValid(creature) || !GetIsPC(creature) || !GetIsObjectValid(item))

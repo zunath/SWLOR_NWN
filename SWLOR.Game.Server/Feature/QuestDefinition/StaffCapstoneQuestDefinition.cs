@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Four members of the Worldbreaker inner circle hold the crane deck above the drill pit in the CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip.")
+                    "Four members of the Worldbreaker inner circle hold the crane deck above the drill pit, on the north side of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerForemansOverrideChip)
 

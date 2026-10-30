@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     wildernessAreas++;
                 }
             }
-            ctx.AssertEqual(27, protectedAreas, "All authored outdoor settlement markers survive module packing");
+            ctx.AssertEqual(31, protectedAreas, "All authored outdoor settlement and faction base markers survive module packing");
             ctx.AssertEqual(2, wildernessAreas, "Both wilderness controls were loaded");
 
             var city = ctx.CreateInstancedArea("tat_tocheemain");

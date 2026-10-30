@@ -119,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.Fnf_Fireball,
+                damagePercentAdjustment: DeviceAbilityEffects.GetBlastDamageAdjustment(activator),
                 afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, blastRadius),
                 alwaysApplyAreaVisualEffect: true);
         }

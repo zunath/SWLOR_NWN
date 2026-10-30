@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Guttermark Display Plinth."
+      "0": "A rare schematic for crafting Guttermark Easel."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Guttermark Display Plinth."
+      "0": "A rare schematic for crafting Guttermark Easel."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Guttermark Display Plinth"
+      "0": "Blueprint: Guttermark Easel"
     }
   },
   "ModelPart1": {

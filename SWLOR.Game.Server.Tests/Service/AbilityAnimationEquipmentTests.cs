@@ -38,6 +38,26 @@ public class AbilityAnimationEquipmentTests
         int? weaponType, int creatureSize, Grip expected) =>
         AbilityAnimationEquipment.ResolveGrip(item, wield, size, weaponType, creatureSize).Should().Be(expected);
 
+    // Every weapon whose idle grip keeps a native holding layer, read from the shipped baseitems rows.
+    [TestCase(BaseItem.Rifle, AnimationWeaponHold.Rifle)]
+    [TestCase(BaseItem.Cannon, AnimationWeaponHold.Rifle)]
+    [TestCase(BaseItem.GreatSword, AnimationWeaponHold.Shoulder)]
+    [TestCase(BaseItem.QuarterStaff, AnimationWeaponHold.Shoulder)]
+    [TestCase(BaseItem.Saberstaff, AnimationWeaponHold.Shoulder)]
+    [TestCase(BaseItem.Halberd, AnimationWeaponHold.Shoulder)]
+    [TestCase(BaseItem.TwinElectroBlade, AnimationWeaponHold.Shoulder)]
+    [TestCase(BaseItem.Longsword, AnimationWeaponHold.None)]
+    [TestCase(BaseItem.Pistol, AnimationWeaponHold.None)]
+    [TestCase(BaseItem.Katar, AnimationWeaponHold.None)]
+    public void MainHandWeaponDeterminesTheNativeHoldLayer(BaseItem item, AnimationWeaponHold expected)
+    {
+        var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(RepositoryRoot(), "SWLOR_Haks/sw_2da/baseitems.2da")));
+        var row = rows[(int)item];
+        int? Read(string column) => int.TryParse(row[column], out var value) ? value : null;
+        var grip = AbilityAnimationEquipment.ResolveGrip(item, Read("WeaponWield"), Read("WeaponSize"), Read("WeaponType"), 3);
+        AbilityAnimationEquipment.ResolveHold(item, grip).Should().Be(expected);
+    }
+
     [TestCase(Requirement.OneHanded, Grip.OneHanded, Grip.Empty, true)]
     [TestCase(Requirement.OneHanded, Grip.OneHanded, Grip.OneHanded, false)]
     [TestCase(Requirement.OneHanded, Grip.OneHanded, Grip.Shield, false)]

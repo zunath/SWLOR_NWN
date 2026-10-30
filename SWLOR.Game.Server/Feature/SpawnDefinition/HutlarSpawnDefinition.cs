@@ -286,11 +286,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_thermdet_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_overbarr_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -298,11 +293,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_overbarr_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_overbarr_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -314,11 +304,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_perflurry_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_THERMDET_IC_SPAWN", "Hutlar Qion Test Site - Thermal Detonator Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_thermdet_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_OVERBARR_IC_SPAWN", "Hutlar Qion Test Site - Overload Barrage Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_overbarr_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_PERFLURRY_IC_SPAWN", "Hutlar Qion Test Site - Perfect Flurry Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_perflurry_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }

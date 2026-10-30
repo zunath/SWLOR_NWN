@@ -535,7 +535,7 @@ public class CapstoneQuestDefinitionTests
                 GetLocalizedString(skinJson.RootElement, "LocalizedName").Should().NotContain(line.DisplayName);
                 GetLocalizedString(weaponJson.RootElement, "LocalizedName").Should().NotContain(line.DisplayName);
 
-                var expectedLootTable = CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Contains(step)
+                var expectedLootTable = !CapstoneQuestDefinitionTestData.OnDemandEncounterSteps.Contains(step)
                     ? line.AreaGroup.LessonLootTableId
                     : line.AreaGroup.BossLootTableId;
                 GetLocalString(rootElement, "LOOT_TABLE_1").Should().Be($"{expectedLootTable},100,1");
@@ -757,6 +757,101 @@ public class CapstoneQuestDefinitionTests
         }
     }
 
+    [Test]
+    public void FixedSpawnTables_HoldOnlyTheirLinesEnemy()
+    {
+        var spawnTables = BuildSpawnTables();
+
+        foreach (var line in CapstoneQuestDefinitionTestData.Lines)
+        {
+            foreach (var step in CapstoneQuestDefinitionTestData.FixedSpawnSteps)
+            {
+                var tableId = line.EncounterSpawnWaypointTags[step];
+                spawnTables.Should().ContainKey(tableId, $"{line.DisplayName} step {step} needs its own spawn table");
+
+                var spawn = spawnTables[tableId].Spawns.Should().ContainSingle().Subject;
+                spawn.Resref.Should().Be(line.EnemyResrefs[step]);
+                spawn.IsRare.Should().BeFalse();
+            }
+        }
+    }
+
+    [Test]
+    public void KillObjectives_HaveEnoughSpawnsInTheirDungeon()
+    {
+        var quests = BuildCapstoneQuests();
+        var spawnTables = BuildSpawnTables();
+        var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
+        var lineSteps = CapstoneQuestDefinitionTestData.Lines
+            .SelectMany(line => line.NpcGroups.Select((group, step) => (group, line, step)))
+            .ToDictionary(entry => entry.group, entry => (entry.line, entry.step));
+
+        foreach (var quest in quests.Values)
+        {
+            foreach (var objective in quest.States.Values.SelectMany(state => state.GetObjectives()).OfType<KillTargetObjective>())
+            {
+                lineSteps.Should().ContainKey(objective.Group, $"{quest.QuestId} kills a group this spawn audit does not cover");
+                var (line, step) = lineSteps[objective.Group];
+                var areaResref = line.AreaGroup.DungeonAreaResref;
+                using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "git", $"{areaResref}.git.json")));
+                var waypointTags = git.RootElement.GetProperty("WaypointList").GetProperty("value")
+                    .EnumerateArray()
+                    .Select(waypoint => GetTypedValue(waypoint, "Tag"))
+                    .ToArray();
+
+                if (CapstoneQuestDefinitionTestData.FixedSpawnSteps.Contains(step))
+                {
+                    // Fixed spawns guarantee the whole kill count is standing in the dungeon at once.
+                    waypointTags.Count(tag => tag == line.EncounterSpawnWaypointTags[step])
+                        .Should()
+                        .BeGreaterThanOrEqualTo(objective.Amount, $"{quest.QuestId} needs {objective.Amount} fixed spawns in {areaResref}");
+                }
+                else if (CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Contains(step))
+                {
+                    // General steps roll from the shared table; at least one of the group is expected at any time
+                    // and later kills come from respawns.
+                    var tableId = line.AreaGroup.SpawnTableId;
+                    var spawnPoints = waypointTags.Count(tag => tag == tableId);
+                    if (HasLocal(git.RootElement, "CREATURE_SPAWN_TABLE_ID") &&
+                        GetLocalString(git.RootElement, "CREATURE_SPAWN_TABLE_ID") == tableId)
+                    {
+                        spawnPoints += GetAreaCreatureSpawnCount(modulePath, areaResref, git.RootElement);
+                    }
+
+                    var spawns = spawnTables[tableId].Spawns;
+                    var weight = spawns.Where(spawn => spawn.Resref == line.EnemyResrefs[step]).Sum(spawn => spawn.Weight);
+                    var expected = spawnPoints * weight / (double)spawns.Sum(spawn => spawn.Weight);
+                    expected.Should().BeGreaterThanOrEqualTo(1, $"{quest.QuestId} needs its enemies to be present in {areaResref}");
+                }
+                else
+                {
+                    objective.Amount.Should().Be(1, $"{quest.QuestId} is an on-demand encounter that spawns a single boss");
+                }
+            }
+        }
+    }
+
+    // Mirrors Spawn.CalculateCreatureSpawnCount for areas that register their table as an area local.
+    private static int GetAreaCreatureSpawnCount(string modulePath, string areaResref, JsonElement git)
+    {
+        if (HasLocal(git, "CREATURE_SPAWN_COUNT") && GetLocalInt(git, "CREATURE_SPAWN_COUNT") > 0)
+            return GetLocalInt(git, "CREATURE_SPAWN_COUNT");
+
+        using var are = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "are", $"{areaResref}.are.json")));
+        var size = are.RootElement.GetProperty("Width").GetProperty("value").GetInt32() *
+                   are.RootElement.GetProperty("Height").GetProperty("value").GetInt32();
+        return size switch
+        {
+            <= 12 => 3,
+            <= 32 => 6,
+            <= 64 => 14,
+            <= 256 => 20,
+            <= 512 => 35,
+            <= 1024 => 45,
+            _ => 0,
+        };
+    }
+
     private static Dictionary<string, SpawnTable> BuildSpawnTables()
     {
         var spawnTables = new Dictionary<string, SpawnTable>();
@@ -819,12 +914,12 @@ public class CapstoneQuestDefinitionTests
 
         foreach (var line in CapstoneQuestDefinitionTestData.Lines)
         {
-            foreach (var step in CapstoneQuestDefinitionTestData.OnDemandEncounterSteps)
+            foreach (var step in CapstoneQuestDefinitionTestData.OnDemandEncounterSteps.Concat(CapstoneQuestDefinitionTestData.FixedSpawnSteps))
             {
                 var waypointResref = line.EncounterSpawnWaypointResrefs[step];
                 var waypointPath = Path.Combine(modulePath, "utw", $"{waypointResref}.utw.json");
 
-                File.Exists(waypointPath).Should().BeTrue($"{line.DisplayName} needs an on-demand boss spawn waypoint blueprint");
+                File.Exists(waypointPath).Should().BeTrue($"{line.DisplayName} needs a step {step} spawn waypoint blueprint");
                 paletteResrefs.Should().Contain(waypointResref);
 
                 using var waypointJson = JsonDocument.Parse(File.ReadAllText(waypointPath));

@@ -24,4 +24,14 @@ public sealed class ExtraHotbarSlot
     public string Command { get; set; } = string.Empty;
 
     public ActionMode ActionMode { get; set; }
+
+    /// <summary>
+    /// The item an equipment slot puts in the main hand, or null to leave it alone.
+    /// </summary>
+    public ExtraHotbarEquipItem MainHand { get; set; }
+
+    /// <summary>
+    /// The item an equipment slot puts in the off hand, or null to leave it alone.
+    /// </summary>
+    public ExtraHotbarEquipItem OffHand { get; set; }
 }

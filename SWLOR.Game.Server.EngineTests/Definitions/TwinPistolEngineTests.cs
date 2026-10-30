@@ -631,7 +631,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var initial = native.m_pcCombatRound.m_nCurrentAttack;
                     AssignCommand(actor, () => ActionAttack(target));
                     await ctx.WaitUntilAsync(() => native.m_pcCombatRound.m_nCurrentAttack != initial, 6f, "the independently mitigated main roll");
-                    await ctx.DelaySecondsAsync(1.1f);
+                    // The companion fires at its place in the stretched swing clip, then travels.
+                    await ctx.WaitUntilAsync(() => !PairedRangedAttackCycle.HasPendingCompanion(actor), 4f, "the companion roll");
+                    await ctx.DelaySecondsAsync(PairedRangedPresentation.FlightSeconds(GetDistanceBetween(actor, target)) + .2f);
                     ctx.AssertEqual(penetration ? 1 : 0, Hits.Count(x => x.Weapon == main),
                         "The real launcher preserves its native Piercing flag and main-hand penetration");
                     ctx.AssertEqual(penetration ? 0 : 1, Hits.Count(x => x.Weapon == companion),

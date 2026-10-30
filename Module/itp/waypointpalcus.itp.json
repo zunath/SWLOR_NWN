@@ -43,6 +43,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Dead Man's Hand Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_deadhand_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Anchorhead Canyon Range - General Capstone Spawn"
                     },
                     "RESREF": {
@@ -76,6 +87,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Last Word Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_lastword_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Anchorhead Canyon Range - Unmoving Center Master Spawn"
                     },
                     "RESREF": {
@@ -92,6 +114,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_unmovctr_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_unmovctr_ic"
                     }
                   },
                   {
@@ -153,6 +186,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_adamguard_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "CZ-220 Breaker Yard - General Capstone Spawn"
                     },
                     "RESREF": {
@@ -186,6 +230,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_scraplock_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "CZ-220 Breaker Yard - Worldbreaker Master Spawn"
                     },
                     "RESREF": {
@@ -202,6 +257,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_worldbrk_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_worldbrk_ic"
                     }
                   },
                   {
@@ -241,6 +307,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Kill Box Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_killbox_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Czerka Arms Test Range - One Shot Master Spawn"
                     },
                     "RESREF": {
@@ -263,6 +340,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Czerka Arms Test Range - One Shot Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_oneshot_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Czerka Arms Test Range - Rain of Steel Master Spawn"
                     },
                     "RESREF": {
@@ -279,6 +367,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_rainsteel_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Rain of Steel Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_rainsteel_ic"
                     }
                   },
                   {
@@ -384,6 +483,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Jedi Trial Halls - Guardian Master Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_guardmst_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar Jedi Trial Halls - Vortex Training Engine Spawn"
                     },
                     "RESREF": {
@@ -400,6 +510,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_sabcycl_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sabcycl_ic"
                     }
                   },
                   {
@@ -428,6 +549,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Jedi Trial Halls - Saber Storm Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sabstorm_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mon Cala Medical Sublevel - Emergency Cocktail Master Spawn"
                     },
                     "RESREF": {
@@ -444,6 +576,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_emcocktail_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Medical Sublevel - Emergency Cocktail Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_emcocktail_ic"
                     }
                   },
                   {
@@ -483,6 +626,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mon Cala Medical Sublevel - Hold the Line Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_holdline_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mon Cala Medical Sublevel - Infinite Conduit Master Spawn"
                     },
                     "RESREF": {
@@ -499,6 +653,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_infconduit_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Medical Sublevel - Infinite Conduit Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_infconduit_ic"
                     }
                   },
                   {
@@ -692,6 +857,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_forcebeast_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dathomir Grotto Apex Den - General Capstone Spawn"
                     },
                     "RESREF": {
@@ -725,6 +901,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Primal Overrun Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_primover_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dathomir Grotto Apex Den - Untouchable Instinct Master Spawn"
                     },
                     "RESREF": {
@@ -741,6 +928,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_untinst_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_untinst_ic"
                     }
                   },
                   {
@@ -769,6 +967,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_alpharhy_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dathomir Tarn Jungle Preserve - Apex Bite Master Spawn"
                     },
                     "RESREF": {
@@ -785,6 +994,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_apexbite_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Apex Bite Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_apexbite_ic"
                     }
                   },
                   {
@@ -818,6 +1038,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_unbrbeast_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_unbrbeast_ic"
                     }
                   },
                   {
@@ -890,6 +1121,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Overload Barrage Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_overbarr_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar Qion Test Site - Perfect Flurry Master Spawn"
                     },
                     "RESREF": {
@@ -912,6 +1154,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Perfect Flurry Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_perflurry_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar Qion Test Site - Thermal Detonator Master Spawn"
                     },
                     "RESREF": {
@@ -928,6 +1181,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_thermdet_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_thermdet_ic"
                     }
                   },
                   {
@@ -1066,6 +1330,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tatooine Forge Caverns - Absolute Defense Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_absdef_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tatooine Forge Caverns - Forcebane Master Spawn"
                     },
                     "RESREF": {
@@ -1082,6 +1357,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_forcebane_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine Forge Caverns - Forcebane Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_forcebane_ic"
                     }
                   },
                   {
@@ -1121,6 +1407,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tatooine Forge Caverns - Soul Ascension Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_soulasc_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mon Cala Sith Crypt Depths - Umbral Raider Commander Spawn"
                     },
                     "RESREF": {
@@ -1137,6 +1434,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_eclipse_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Sith Crypt Depths - Eclipse of Resolve Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_eclipse_ic"
                     }
                   },
                   {
@@ -1176,6 +1484,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mon Cala Sith Crypt Depths - Hunger of the Dark Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_darkhung_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mon Cala Sith Crypt Depths - Crypt Expedition Leader Spawn"
                     },
                     "RESREF": {
@@ -1192,6 +1511,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_lightstand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Sith Crypt Depths - Last Stand of the Light Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_lightstand_ic"
                     }
                   },
                   {
@@ -1407,6 +1737,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cripdef_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
                     },
                     "RESREF": {
@@ -1440,6 +1781,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_redbloom_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Master Spawn"
                     },
                     "RESREF": {
@@ -1456,6 +1808,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_tempbloom_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_tempbloom_ic"
                     }
                   },
                   {
@@ -1605,6 +1968,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Veles Militia Annex - Invincible Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_invinc_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Veles Militia Annex - Systemic Shutdown Master Spawn"
                     },
                     "RESREF": {
@@ -1627,6 +2001,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Veles Militia Annex - Systemic Shutdown Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sysshut_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Veles Militia Annex - Viral Cascade Master Spawn"
                     },
                     "RESREF": {
@@ -1643,6 +2028,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_vitrupt_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Viral Cascade Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_vitrupt_ic"
                     }
                   },
                   {
@@ -1836,6 +2232,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Decisive Command Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_deccommand_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara Republic Engineering Bunker - Emergency Bunker Master Spawn"
                     },
                     "RESREF": {
@@ -1852,6 +2259,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_embunker_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_embunker_ic"
                     }
                   },
                   {
@@ -1885,6 +2303,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_killbeacon_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_killbeacon_ic"
                     }
                   },
                   {

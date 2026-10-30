@@ -86,6 +86,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             // A plain button with the icon drawn over it, so an empty slot shows only its frame.
             const float inset = 2f;
+            const float fullWidth = ExtraHotbarViewModel.SlotSize - inset * 2f;
+            const float halfWidth = fullWidth / 2f;
+            const float height = ExtraHotbarViewModel.SlotSize - inset * 2f;
+
+            // Item icons are often tall (a sword is one cell wide and three or four high), so they keep their shape.
+            void AddIcon(GuiDrawList<ExtraHotbarViewModel> drawList, string resref, string isEnabled, float x, float width) =>
+                drawList.AddImage(image => image
+                    .BindResref(Bind<string>(resref))
+                    .BindIsEnabled(Bind<bool>(isEnabled))
+                    .SetPosition(x, inset, width, height)
+                    .SetAspect(NuiAspect.Fit));
+
+            // A three-part weapon such as a lightsaber draws its middle and top icons over the bottom one.
+            void AddUpperLayers(GuiDrawList<ExtraHotbarViewModel> drawList, string stack, float x, float width)
+            {
+                var hasLayers = ExtraHotbarViewModel.HasLayersProperty(slot, stack);
+                AddIcon(drawList, ExtraHotbarViewModel.MiddleLayerProperty(slot, stack), hasLayers, x, width);
+                AddIcon(drawList, ExtraHotbarViewModel.TopLayerProperty(slot, stack), hasLayers, x, width);
+            }
+
             row.AddButton()
                 .SetId($"ehb_slot_{slot}")
                 .SetText(string.Empty)
@@ -96,16 +116,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetMargin(ExtraHotbarViewModel.SlotMargin)
                 .BindOnClicked(model => model.OnClickSlot(slot))
                 .BindOnMouseDown(model => model.OnMouseDownSlot(slot))
-                .AddDrawList(drawList => drawList
-                    .AddImage(image => image
-                        .BindResref(Bind<string>(ExtraHotbarViewModel.IconProperty(slot)))
-                        .BindIsEnabled(Bind<bool>(ExtraHotbarViewModel.HasIconProperty(slot)))
-                        .SetPosition(inset, inset, ExtraHotbarViewModel.SlotSize - inset * 2f, ExtraHotbarViewModel.SlotSize - inset * 2f)
-                        .SetAspect(NuiAspect.Stretch))
-                    .AddText(text => text
+                .AddDrawList(drawList =>
+                {
+                    AddIcon(drawList, ExtraHotbarViewModel.IconProperty(slot), ExtraHotbarViewModel.HasIconProperty(slot), inset, fullWidth);
+                    AddUpperLayers(drawList, ExtraHotbarViewModel.FullStack, inset, fullWidth);
+                    AddIcon(drawList, ExtraHotbarViewModel.PairMainIconProperty(slot), ExtraHotbarViewModel.IsPairProperty(slot), inset, halfWidth);
+                    AddUpperLayers(drawList, ExtraHotbarViewModel.PairMainStack, inset, halfWidth);
+                    AddIcon(drawList, ExtraHotbarViewModel.PairOffIconProperty(slot), ExtraHotbarViewModel.IsPairProperty(slot), inset + halfWidth, halfWidth);
+                    AddUpperLayers(drawList, ExtraHotbarViewModel.PairOffStack, inset + halfWidth, halfWidth);
+                    drawList.AddText(text => text
                         .BindText(Bind<string>(ExtraHotbarViewModel.CountProperty(slot)))
-                        .SetBounds(inset, ExtraHotbarViewModel.SlotSize - 18f, ExtraHotbarViewModel.SlotSize - inset * 2f, 16f)
-                        .SetColor(255, 255, 255)));
+                        .SetBounds(inset, ExtraHotbarViewModel.SlotSize - 18f, fullWidth, 16f)
+                        .SetColor(255, 255, 255));
+                });
         }
 
         private static Expression<Func<ExtraHotbarViewModel, TValue>> Bind<TValue>(string propertyName)

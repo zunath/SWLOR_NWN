@@ -455,6 +455,10 @@ public sealed class WeatherSettlementTests
     [TestCase("pw_ar_nsshipyard")]
     [TestCase("tat_anc_southent")]
     [TestCase("tat_anc_astropor")]
+    [TestCase("v_jeditemple_v2")]
+    [TestCase("v_repubbase_ext")]
+    [TestCase("dan_repgarrison")]
+    [TestCase("dath_cz_baseok")]
     public void CoreSettlementAreas_AuthorWEATHERHAZARDSAFE(string resref)
     {
         var path = Path.Combine(FindRoot(), "Module", "git", $"{resref}.git.json");

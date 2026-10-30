@@ -137,7 +137,7 @@ public class DathomirGrottoApexDenPlacementTests
     private static void AssertActivators(System.Text.Json.JsonDocument area, (string Resref, string Quest, string Encounter, string Enemy, string Waypoint)[] expected)
     {
         var waypoints = area.RootElement.GetProperty("WaypointList").GetProperty("value")
-            .EnumerateArray().ToDictionary(w => GetString(w, "Tag"), w => GetString(w, "TemplateResRef"));
+            .EnumerateArray().DistinctBy(w => GetString(w, "Tag")).ToDictionary(w => GetString(w, "Tag"), w => GetString(w, "TemplateResRef"));
 
         foreach (var (resref, questId, encounterId, creatureResref, spawnWaypoint) in expected)
         {

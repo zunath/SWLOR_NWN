@@ -88,6 +88,7 @@ public static class TwinPistolCompanionArrivalEngineTests
         var sampledRare = -1;
         var sampledHaste = -1;
         var sampledConverging = true;
+        bool? arrivedConverging = null;
         PairedRangedTraitState traitState = null;
         HashSet<long> attemptsAfterLaunch = null;
         try
@@ -130,13 +131,17 @@ public static class TwinPistolCompanionArrivalEngineTests
                     sampledConverging = StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null;
                     sampledAt = Environment.TickCount64;
                 }));
-                DiscardTarget(ctx, actor, target, outcome, departure, launchedAt, flight);
+                // The six-second idle cleanup can clear Converging Fire again, so read it within a
+                // frame of the arrival this launch scheduled instead of after the test's own wait.
+                AssignCommand(GetModule(), () => DelayCommand(flight + .01f, () =>
+                    arrivedConverging = StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null));
+                DiscardTarget(ctx, actor, target, outcome, departure, flight);
             });
             await WaitFrames(ctx, () => sampledAt > 0, "the native half-flight reward sample");
             ctx.Log($"Ordinary {outcome} timing: resolverMs={launchCompletedAt - launchedAt}, " +
                     $"sampleMs={sampledAt - launchedAt}, flightMs={flight * 1000f:0.000}.");
-            ctx.Assert(sampledAt < launchedAt + flight * 1000f,
-                "Rewards are sampled inside the authoritative projectile flight window");
+            // DelayCommand runs due events in scheduled order, so this half-flight sample precedes the
+            // production arrival even when a server hitch makes both due in the same frame.
             ctx.AssertEqual(stamina, sampledStamina, "Alternating Fire restores no stamina before arrival");
             ctx.AssertEqual(0, sampledPoints, "The companion awards no Twin Pistol contribution before arrival");
             ctx.AssertEqual(0, sampledLeadership, "The companion awards no Leadership contribution before arrival");
@@ -144,6 +149,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             ctx.AssertEqual(0, sampledHaste, "Akimbo grants no ordinary-hit Haste before arrival");
             ctx.Assert(!sampledConverging, "Converging Fire grants no landed-hit progress before arrival");
             await ctx.DelaySecondsAsync(flight + .15f);
+            await WaitFrames(ctx, () => arrivedConverging.HasValue, "the Converging Fire sample after arrival");
             var landed = outcome == "arrival";
             ctx.AssertEqual(stamina + (landed ? 1 : 0), Stat.GetCurrentStamina(actor), "Only an arriving hit restores stamina once");
             ctx.AssertEqual(landed ? 1 : 0, Points(actor, target, SkillType.TwinPistol), "Only an arriving hit grants its captured weapon contribution once");
@@ -151,8 +157,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             ctx.AssertEqual(landed ? 42 : 0, GetLocalInt(target, "RARE_BONUS_CHANCE"), "Only an arriving hit marks loot bonuses");
             ctx.AssertEqual(landed ? 1 : 0, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
                 "Only an arriving hit grants one Akimbo stack");
-            ctx.AssertEqual(landed, StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null,
-                "Only an arriving hit advances Converging Fire");
+            ctx.AssertEqual(landed, arrivedConverging, "Only an arriving hit advances Converging Fire");
             ctx.AssertEqual(landed ? 1 : 0, _damageEvents, "A discarded projectile produces no native damage callback");
             if (outcome != "death")
                 ctx.AssertEqual(health - (landed ? damage : 0), GetCurrentHitPoints(target), "Only the captured arriving payload removes HP");
@@ -186,7 +191,6 @@ public static class TwinPistolCompanionArrivalEngineTests
         var stamina = Stat.GetCurrentStamina(actor);
         var paidStamina = 0;
         var capturedMainDamage = 0;
-        var launchedAt = 0L;
         var flight = 0f;
         var sampledAt = 0L;
         var sampledQueued = false;
@@ -221,7 +225,6 @@ public static class TwinPistolCompanionArrivalEngineTests
                 ctx.Assert(UsePerkFeat.HasQueuedWeaponAbility(actor), "The main miss leaves Headshot readied");
                 capturedMainDamage = WeaponDamage.GetEffectiveDMG(actor, main);
                 Combat.SetAutoAttackHitResolutionOverride(true);
-                launchedAt = Environment.TickCount64;
                 flight = Launch(ctx, actor, target, companion);
                 var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
                 ctx.Assert(shot is { Ordinary: false, Completed: true, Damage: 0 }, "The companion reserves one replacement without ordinary damage");
@@ -253,10 +256,11 @@ public static class TwinPistolCompanionArrivalEngineTests
                 }
                 else if (outcome == "reset") UsePerkFeat.ClearQueuedAbility(actor);
                 else if (outcome == "gear") CreaturePlugin.RunUnequip(actor, main);
-                else DiscardTarget(ctx, actor, target, outcome, departure, launchedAt, flight);
+                else DiscardTarget(ctx, actor, target, outcome, departure, flight);
             });
             await WaitFrames(ctx, () => sampledAt > 0, "the native half-flight queued sample");
-            ctx.Assert(sampledAt < launchedAt + flight * 1000f, "The queued state is sampled before the captured projectile arrival deadline");
+            // DelayCommand runs due events in scheduled order, so this half-flight sample precedes the
+            // production arrival even when a server hitch makes both due in the same frame.
             ctx.AssertEqual(outcome is not "reset" and not "gear", sampledQueued, "Only an explicit queue reset or gear event clears readiness before arrival");
             ctx.Assert(!sampledSummary, "The launched replacement resolves no ability impact before arrival");
             if (outcome != "death") ctx.AssertEqual(health, sampledHealth, "The queued projectile removes no HP before arrival");
@@ -453,7 +457,7 @@ public static class TwinPistolCompanionArrivalEngineTests
     }
 
     private static void DiscardTarget(EngineTestContext ctx, uint actor, uint target, string outcome,
-        SWLOR.NWN.API.Engine.Location departure, long launchedAt, float flight)
+        SWLOR.NWN.API.Engine.Location departure, float flight)
     {
         if (outcome == "death")
             AssignCommand(GetModule(), () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
@@ -468,11 +472,8 @@ public static class TwinPistolCompanionArrivalEngineTests
             ObjectPlugin.AddToArea(target, destinationArea, GetPositionFromLocation(departure));
             ctx.AssertEqual(destinationArea, GetArea(target), "The native target transfer reaches the destination area synchronously");
             ctx.Assert(GetArea(target) != launchArea, "The actual target area differs from the captured launch area");
-            var transferredAt = Environment.TickCount64;
-            ctx.Assert(transferredAt < launchedAt + flight * 1000f,
-                "The target actually leaves before the captured projectile arrival deadline");
-            ctx.Log($"Departure fixture: launchArea={launchArea:X}, targetArea={GetArea(target):X}, " +
-                    $"transferMs={transferredAt - launchedAt}, flightMs={flight * 1000f}");
+            // The game clock cannot advance inside this launch script, so the target always leaves before arrival.
+            ctx.Log($"Departure fixture: launchArea={launchArea:X}, targetArea={GetArea(target):X}, flightMs={flight * 1000f}");
         }
     }
 

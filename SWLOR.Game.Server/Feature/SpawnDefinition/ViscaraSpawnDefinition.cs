@@ -535,11 +535,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_invinc_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_vitrupt_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -547,11 +542,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_vitrupt_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_vitrupt_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -563,11 +553,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_sysshut_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_INVINC_IC_SPAWN", "Veles Militia Annex - Invincible Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_invinc_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_VITRUPT_IC_SPAWN", "Veles Militia Annex - Viral Cascade Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_SYSSHUT_IC_SPAWN", "Veles Militia Annex - Systemic Shutdown Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_sysshut_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
 
@@ -584,11 +586,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_killbeacon_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_embunker_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -596,11 +593,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_embunker_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_embunker_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -612,11 +604,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_deccommand_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_KILLBEACON_IC_SPAWN", "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_EMBUNKER_IC_SPAWN", "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_embunker_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DECCOMMAND_IC_SPAWN", "Viscara Republic Engineering Bunker - Decisive Command Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_deccommand_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }

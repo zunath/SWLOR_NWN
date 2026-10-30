@@ -5,10 +5,12 @@ using System.Text.Json;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// Random wildlife spawns use the baked 2m walkmesh lattice, which only checks surface material.
-/// Water cut off below steep banks along the map edges, an enclosed pond, and the Deep Mountains
-/// plateau overlooking the entrance passed that check, so creatures spawned where players could
-/// see or shoot them but never reach them. No Spawn Zones keep those points out of the bake.
+/// Random spawns use the baked 2m walkmesh lattice, which only checks surface material.
+/// Water cut off below steep banks along the map edges, an enclosed pond, the Deep Mountains
+/// plateau overlooking the entrance, and a street-level walkmesh tile in the middle of the
+/// open Veles Sewers Sewage Holding Area tank passed that check, so creatures spawned where
+/// players could see or shoot them but never reach them (Outlaws floated over the tank).
+/// No Spawn Zones keep those points out of the bake.
 /// </summary>
 public class ViscaraWildlifeSpawnZoneTests
 {
@@ -22,6 +24,8 @@ public class ViscaraWildlifeSpawnZoneTests
     [TestCase("viscaradeepmount", 250f, 150f, TestName = "Deep Mountains plateau lip above the entrance passage")]
     [TestCase("viscaradeepmount", 250f, 240f, TestName = "Deep Mountains basin enclosed by the plateau")]
     [TestCase("viscaradeepmount", 112f, 246f, TestName = "Deep Mountains isolated rock top")]
+    [TestCase("veles_sewers", 140f, 50f, TestName = "Veles Sewers Holding Area tank (south-west corner)")]
+    [TestCase("veles_sewers", 148f, 58f, TestName = "Veles Sewers Holding Area tank (north-east corner)")]
     public void UnreachableSpawnPoints_AreNoSpawnZones(string area, float x, float y)
     {
         LoadNoSpawnZones(area).Should().Contain(zone => IsInside(x, y, zone),
@@ -34,6 +38,8 @@ public class ViscaraWildlifeSpawnZoneTests
     [TestCase("viscaralake", 32f, 94f, TestName = "Lake shore east of the pond")]
     [TestCase("viscaradeepmount", 300f, 146f, TestName = "Deep Mountains entrance passage")]
     [TestCase("viscaradeepmount", 170f, 200f, TestName = "Deep Mountains valley floor below the plateau")]
+    [TestCase("veles_sewers", 144f, 70f, TestName = "Veles Sewers walkway north of the Holding Area")]
+    [TestCase("veles_sewers", 158f, 60f, TestName = "Veles Sewers walkway east of the Holding Area")]
     public void ReachableSpawnPoints_StaySpawnable(string area, float x, float y)
     {
         LoadNoSpawnZones(area).Should().NotContain(zone => IsInside(x, y, zone),

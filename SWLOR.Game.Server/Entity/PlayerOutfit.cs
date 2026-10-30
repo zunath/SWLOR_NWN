@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Entity
         public string Name { get; set; }
         public string Data { get; set; }
 
+        /// <summary>The helmet worn when the outfit was saved; empty when none was worn.</summary>
+        public string HelmetData { get; set; }
+        public int HelmetId { get; set; }
+
         public int NeckId { get; set; }
         public int TorsoId { get; set; }
         public int BeltId { get; set; }

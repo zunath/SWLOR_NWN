@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         AppearanceEditor = 10,
         Bank = 11,
         CharacterMigration = 12,
-        Outfits = 13,
+        Outfits = 13, // Retired: outfits are the Appearance Editor's Outfits tab. Kept for saved window geometries.
         MarketListing = 14,
         MarketBuying = 15,
         PriceSelection = 16,
@@ -85,6 +85,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         ExtraHotbar3 = 80,
         ExtraHotbarSetup = 81,
         ExtraHotbarSlotPicker = 82,
+        AppearancePartBrowser = 83,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

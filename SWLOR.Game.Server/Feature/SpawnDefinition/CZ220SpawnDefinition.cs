@@ -71,11 +71,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_adamguard_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_scraplock_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -83,11 +78,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_scraplock_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_scraplock_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -99,11 +89,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_worldbrk_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            builder.Create("CAPSTONE_ADAMGUARD_IC_SPAWN", "CZ-220 Breaker Yard - Adamantine Guard Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_adamguard_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            builder.Create("CAPSTONE_SCRAPLOCK_IC_SPAWN", "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_scraplock_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            builder.Create("CAPSTONE_WORLDBRK_IC_SPAWN", "CZ-220 Breaker Yard - Worldbreaker Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_worldbrk_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
 
             // Named rare elite droids live in a dedicated rare table (tagged waypoint in the

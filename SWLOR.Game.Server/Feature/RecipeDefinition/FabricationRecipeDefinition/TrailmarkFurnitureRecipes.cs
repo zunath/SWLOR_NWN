@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_flawed", 2)
                 .Component("tk_badge", 1);
 
-            // Trailmark Display Plinth
-            _builder.Create(RecipeType.TrailmarkDisplayPlinth, SkillType.Fabrication)
+            // Trailmark Waystone
+            _builder.Create(RecipeType.TrailmarkWaystone, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0359")
                 .Level(29)

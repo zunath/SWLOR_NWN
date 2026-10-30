@@ -499,22 +499,22 @@ namespace SWLOR.Game.Server.Service
             ClearAllActions();
 
             // The equip checks silently refuse an item whose hand is still occupied, so everything leaving a hand
-            // is put away before anything goes on.
+            // is put away before anything goes on. The off hand goes first: the engine moves an off-hand weapon into
+            // an emptied main hand, so a kept weapon is put away too and goes back after the new main-hand item.
+            // A companion stays to leave with its main-hand item.
+            var offHandLeaves = GetIsObjectValid(currentOffHand) && !IsHandCompanion(currentOffHand) &&
+                                (offHandChanges || (mainHandChanges && GetIsObjectValid(currentMainHand) &&
+                                                    CanHoldInMainHand(currentOffHand)));
+            if (offHandLeaves && !PutAwayHandItem(player, currentOffHand, InventorySlot.LeftHand))
+                return;
+            offHandChanges |= offHandLeaves;
+
             if (mainHandChanges && GetIsObjectValid(currentMainHand) &&
                 !PutAwayHandItem(player, currentMainHand, InventorySlot.RightHand))
-                return;
-
-            // The engine moves an off-hand weapon into an emptied main hand. A kept weapon that moved is put away
-            // too and goes back to the off hand after the new main-hand item.
-            var offHandSlot = GetHandSlot(player, currentOffHand);
-            if (offHandSlot == InventorySlot.RightHand)
-                offHandChanges = true;
-            if (offHandChanges && offHandSlot != InventorySlot.Invalid &&
-                !PutAwayHandItem(player, currentOffHand, offHandSlot))
             {
-                // The main hand was already put away, so it goes back rather than leaving that hand empty.
-                newMainHand = mainHandChanges ? currentMainHand : OBJECT_INVALID;
-                newOffHand = OBJECT_INVALID;
+                // The off hand was already put away, so it goes back into its free hand rather than staying empty.
+                mainHandChanges = false;
+                newOffHand = offHandLeaves ? currentOffHand : OBJECT_INVALID;
             }
 
             if (mainHandChanges && GetIsObjectValid(newMainHand))

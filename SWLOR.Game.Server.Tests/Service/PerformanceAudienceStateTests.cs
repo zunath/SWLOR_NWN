@@ -120,6 +120,17 @@ public class PerformanceAudienceStateTests
     }
 
     [Test]
+    public void AFollowClickUpdatesTheCapBeforeTheWindowCheck()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var refresh = Section(source, "public static void RefreshWatching(");
+
+        refresh.IndexOf("state.CapMinutes = plan.CapMinutes;", StringComparison.Ordinal)
+            .Should().BeLessThan(refresh.IndexOf("IsWatchingOpen(watcher)", StringComparison.Ordinal))
+            .And.BeGreaterThan(0);
+    }
+
+    [Test]
     public void StartingAPerformanceInterruptsWatchingAtOnce()
     {
         var performance = File.ReadAllText(SourcePath("Service", "Performance.cs"));

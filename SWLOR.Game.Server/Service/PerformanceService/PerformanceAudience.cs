@@ -503,15 +503,17 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 state.LastReport == null)
                 return;
 
-            // The follow changes now, not at the next tick, so a Flourish before then reaches the performer just picked.
+            // The follow and its cap change now, not at the next tick, so a Flourish before then reaches the performer
+            // just picked and banks against that performer's cap.
             var entry = state.LastEntry;
             PerformanceFollow.Apply(entry, state);
+            var plan = PerformanceWatchPlan.Create(
+                state.ContinuousMinutes, entry.Dancer, entry.Musician, PerformanceAudienceRules.TroupeCount(entry.Candidates));
+            state.CapMinutes = plan.CapMinutes;
 
             if (!PerformanceWindows.IsWatchingOpen(watcher))
                 return;
 
-            var plan = PerformanceWatchPlan.Create(
-                state.ContinuousMinutes, entry.Dancer, entry.Musician, PerformanceAudienceRules.TroupeCount(entry.Candidates));
             var composition = PerformanceInspiredComposer.Compose(entry.Dancer, entry.Musician, plan.Venue);
             PerformanceWindows.ShowWatching(watcher, BuildWatchView(state, entry, state.LastReport, plan, composition));
         }

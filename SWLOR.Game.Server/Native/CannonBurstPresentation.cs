@@ -12,8 +12,10 @@ using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 namespace SWLOR.Game.Server.Native;
 
 /// <summary>
-/// Presents each cannon shot as a three-bolt burst by replaying its native weapon projectile.
-/// The replays are cosmetic: the attack, its damage and its ammunition resolve once, natively.
+/// Presents each cannon shot as a three-bolt burst. Bolts are drawn from the cannon's muzzle anchors
+/// in place of the native projectile, which clients draw from the hands; until the anchors are ready
+/// the native projectile is replayed instead. The bolts are cosmetic: the attack, its damage and its
+/// ammunition resolve once, natively.
 /// </summary>
 public static unsafe class CannonBurstPresentation
 {
@@ -64,17 +66,39 @@ public static unsafe class CannonBurstPresentation
         uint delta, byte type, uint spell, byte result, byte path)
     {
         var shot = new Shot(origin, target, from, to, delta, type, spell, result, path, OBJECT_INVALID);
-        Send(self, shot);
+        var weapon = OBJECT_INVALID;
+        var drawnFromMuzzle = false;
         try
         {
-            if (!IsWeaponProjectile(type) || GetObjectType(origin) != ObjectType.Creature) return;
-            var weapon = GetItemInSlot(InventorySlot.RightHand, origin);
-            if (!GetIsObjectValid(weapon) || !IsBurstWeapon(GetBaseItemType(weapon))) return;
-            var followUp = shot with { Weapon = weapon };
-            foreach (var delay in FollowUpDelays)
-                Scheduler.Schedule(() => Replay(followUp), delay);
+            if (IsWeaponProjectile(type) && GetObjectType(origin) == ObjectType.Creature)
+            {
+                var rightHand = GetItemInSlot(InventorySlot.RightHand, origin);
+                if (GetIsObjectValid(rightHand) && IsBurstWeapon(GetBaseItemType(rightHand)))
+                {
+                    weapon = rightHand;
+                    var hit = CannonMuzzleAnchors.IsHitResult(result);
+                    drawnFromMuzzle = CannonMuzzleAnchors.Launch(origin, target, hit);
+                    if (drawnFromMuzzle)
+                        foreach (var delay in FollowUpDelays)
+                            Scheduler.Schedule(() => FollowUp(origin, target, hit, rightHand), delay);
+                }
+            }
         }
-        catch (Exception ex) { Log.WriteError(ex, "Could not schedule a cannon burst"); }
+        catch (Exception ex) { Log.WriteError(ex, "Could not draw a cannon burst"); }
+        if (drawnFromMuzzle) return;
+
+        Send(self, shot);
+        if (weapon == OBJECT_INVALID) return;
+        var followUp = shot with { Weapon = weapon };
+        foreach (var delay in FollowUpDelays)
+            Scheduler.Schedule(() => Replay(followUp), delay);
+    }
+
+    private static void FollowUp(uint origin, uint target, bool hit, uint weapon)
+    {
+        if (!GetIsObjectValid(origin) || GetIsDead(origin) ||
+            GetItemInSlot(InventorySlot.RightHand, origin) != weapon) return;
+        CannonMuzzleAnchors.Launch(origin, target, hit);
     }
 
     private static void Replay(Shot shot)

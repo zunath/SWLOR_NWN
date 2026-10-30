@@ -36,9 +36,12 @@ public static class PairedRangedPresentation
     public static NumericsVector3 ResolveMuzzle(NumericsVector3 origin, float facingDegrees, float scale = 1f) =>
         ResolveMuzzle(origin, facingDegrees, true, scale);
 
-    public static NumericsVector3 ResolveMuzzle(NumericsVector3 origin, float facingDegrees, bool companion, float scale = 1f)
+    public static NumericsVector3 ResolveMuzzle(NumericsVector3 origin, float facingDegrees, bool companion, float scale = 1f) =>
+        ResolveMuzzle(origin, facingDegrees, companion ? CompanionMuzzleOffset : MainMuzzleOffset, scale);
+
+    /// <summary>Places a body-relative offset (right, forward, up) at the actor's position and facing.</summary>
+    public static NumericsVector3 ResolveMuzzle(NumericsVector3 origin, float facingDegrees, NumericsVector3 offset, float scale)
     {
-        var offset = companion ? CompanionMuzzleOffset : MainMuzzleOffset;
         var radians = facingDegrees * MathF.PI / 180f;
         var forward = new NumericsVector3(MathF.Cos(radians), MathF.Sin(radians), 0f);
         var right = new NumericsVector3(MathF.Sin(radians), -MathF.Cos(radians), 0f);
@@ -127,7 +130,7 @@ public static class PairedRangedPresentation
             ObjectPlugin.SetPosition(anchor, point);
     }
 
-    private static float VisualScale(uint actor)
+    public static float VisualScale(uint actor)
     {
         var scale = GetObjectVisualTransform(actor, ScriptVisualTransform.Scale);
         if (!float.IsFinite(scale) || scale <= 0f) scale = 1f;

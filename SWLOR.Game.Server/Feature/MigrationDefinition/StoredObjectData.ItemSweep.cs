@@ -70,7 +70,7 @@ internal sealed partial class StoredObjectData
         return true;
     }
 
-    /// <summary>Saved-data counterpart of <see cref="ItemIconMigration.MigrateSerializedObject"/>: artwork only.</summary>
+    /// <summary>Saved-data counterpart of <see cref="ItemIconMigration.MigrateSerializedObject"/>: artwork and renamed furniture only.</summary>
     internal static bool MigrateSavedArtwork(string original, out string migrated)
     {
         migrated = original;
@@ -85,6 +85,7 @@ internal sealed partial class StoredObjectData
             if (isItem)
             {
                 changed |= UpdateArtwork(node);
+                changed |= RenameFurnitureItem(node);
                 var droid = FindLocal(node, ConstructedDroidVariable, 3);
                 var saved = droid == null ? null : ReadText(droid);
                 if (ItemIconMigration.MigrateDroidArtwork(saved, MigrateSavedArtwork, out var updated))

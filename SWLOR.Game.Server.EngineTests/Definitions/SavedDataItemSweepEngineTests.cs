@@ -144,6 +144,27 @@ public static partial class MigrationEngineTests
             });
         }
 
+        // A DM-renamed former plinth keeps its custom name; the name its Reset action restores is renamed.
+        var dmRenamed = await CreateItemAsync(ctx, owner, "structure_0389", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            SetName(dmRenamed, "Grandmother's Pillar");
+            SetLocalString(dmRenamed, "RENAMED_ITEM_ORIGINAL_NAME", "Veilcarved Display Plinth");
+            fixtures.Add(("former Veilcarved Display Plinth renamed by a DM",
+                StampFormerName(ObjectPlugin.Serialize(dmRenamed), "Veilcarved Rune Pillar", "Veilcarved Display Plinth"), true));
+            DestroyObject(dmRenamed);
+        });
+
+        // A saved creature carrying a former plinth.
+        var plinthCarrier = ctx.SpawnCreature("civilian", 3f);
+        await ctx.WaitFrameAsync();
+        await CreateItemAsync(ctx, plinthCarrier, "structure_0429", plinthCarrier);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            fixtures.Add(("saved creature carrying a former Commandline Display Plinth",
+                StampFormerName(ObjectPlugin.Serialize(plinthCarrier), "Commandline Bust", "Commandline Display Plinth"), true));
+        });
+
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var buffedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var artwork = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
@@ -242,13 +263,21 @@ public static partial class MigrationEngineTests
         var document = SavedDataSweepAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData");
         var flags = BindingFlags.Public | BindingFlags.NonPublic;
         var saved = Activator.CreateInstance(document, flags | BindingFlags.Instance, null, new object[] { Convert.FromBase64String(data) }, null);
-        var root = document.GetField("_root", flags | BindingFlags.Instance).GetValue(saved);
-        var fields = (System.Collections.IEnumerable)root.GetType().GetField("Fields").GetValue(root);
         var replace = document.GetMethod("ReplaceLocalizedText", flags | BindingFlags.Static);
         Func<string, string> toOld = text => text.Replace(newName, oldName, StringComparison.Ordinal);
-        foreach (var field in fields)
-            if (new[] { "LocalizedName", "DescIdentified", "Description" }.Contains((string)field.GetType().GetProperty("Name").GetValue(field)))
-                replace.Invoke(null, new[] { field, toOld });
+        // Every saved item, including those a saved creature carries.
+        void Stamp(object node)
+        {
+            foreach (var field in (System.Collections.IEnumerable)node.GetType().GetField("Fields").GetValue(node))
+            {
+                if (new[] { "LocalizedName", "DescIdentified", "Description" }.Contains((string)field.GetType().GetProperty("Name").GetValue(field)))
+                    replace.Invoke(null, new[] { field, toOld });
+                if (field.GetType().GetField("Children").GetValue(field) is System.Collections.IEnumerable children)
+                    foreach (var child in children)
+                        Stamp(child);
+            }
+        }
+        Stamp(document.GetField("_root", flags | BindingFlags.Instance).GetValue(saved));
         return (string)document.GetMethod("Serialize", flags | BindingFlags.Instance).Invoke(saved, null);
     }
 

@@ -3,6 +3,7 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
@@ -10,7 +11,10 @@ internal sealed partial class StoredObjectData
 {
     private static readonly string[] RenamedTextFields = { "LocalizedName", "DescIdentified", "Description" };
 
-    /// <summary>Mirrors <see cref="FurnitureRenameMigration.RenameItem"/>: the saved name and both descriptions.</summary>
+    /// <summary>
+    /// Mirrors <see cref="FurnitureRenameMigration.RenameItem"/>: the saved name, both descriptions, and the original
+    /// name a DM rename keeps for its Reset action.
+    /// </summary>
     internal static bool RenameFurnitureItem(Node item)
     {
         var resref = ReadResRef(item);
@@ -19,6 +23,17 @@ internal sealed partial class StoredObjectData
         {
             var field = item.Fields.SingleOrDefault(x => x.Name == label && x.Type == 12);
             changed |= ReplaceLocalizedText(field, text => FurnitureRenameMigration.GetRenamedItemText(resref, text));
+        }
+        var originalName = FindLocal(item, RenameTargetViewModel.RenamedItemOriginalName, 3);
+        if (originalName != null)
+        {
+            var text = ReadText(originalName);
+            var renamed = FurnitureRenameMigration.GetRenamedItemText(resref, text);
+            if (renamed != text)
+            {
+                WriteText(originalName, renamed);
+                changed = true;
+            }
         }
         return changed;
     }

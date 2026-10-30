@@ -461,6 +461,31 @@ public class SavedDataItemSweepTests
         Migrate(custom, out _, true, out _).Should().BeFalse();
     }
 
+    [Test]
+    public void FurnitureRenames_RenameTheNameADmRenameRestores()
+    {
+        var original = Encode(Item("structure_0389", (BaseItem)24, 1,
+            LocString("LocalizedName", "Veilcarved Display Plinth"),
+            List("VarTable", Node(0, Text("Name", "RENAMED_ITEM_ORIGINAL_NAME"), Scalar(4, "Type", 3), Text("Value", "Veilcarved Display Plinth")))));
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        Value(Children(Read(migrated), "VarTable").Single(), "Value").Should().Be("Veilcarved Rune Pillar");
+        Migrate(migrated, out _, true, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void FurnitureRenames_ReachItemsSavedCreaturesCarry()
+    {
+        var original = Encode(Node(0,
+            Text("Tag", "dm_creature"),
+            List("ItemList", Item("structure_0429", (BaseItem)24, 1, LocString("LocalizedName", "Commandline Display Plinth")))), "UTC ");
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        Text(Children(Read(migrated), "ItemList").Single(), "LocalizedName").Should().Be("Commandline Bust");
+    }
+
     private static object LocString(string name, string text)
     {
         var bytes = Encoding.UTF8.GetBytes(text);

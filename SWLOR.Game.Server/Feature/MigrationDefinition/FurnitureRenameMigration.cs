@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -100,7 +101,10 @@ public static class FurnitureRenameMigration
         return true;
     }
 
-    /// <summary>Live counterpart of the saved-data item rename: the item's name and both descriptions.</summary>
+    /// <summary>
+    /// Live counterpart of the saved-data item rename: the item's name, both descriptions, and the original name a
+    /// DM rename keeps for its Reset action.
+    /// </summary>
     public static bool RenameItem(uint item)
     {
         var resref = GetResRef(item);
@@ -112,6 +116,13 @@ public static class FurnitureRenameMigration
         if (renamed != name)
         {
             SetName(item, renamed);
+            changed = true;
+        }
+        var originalName = GetLocalString(item, RenameTargetViewModel.RenamedItemOriginalName);
+        var renamedOriginal = GetRenamedItemText(resref, originalName);
+        if (renamedOriginal != originalName)
+        {
+            SetLocalString(item, RenameTargetViewModel.RenamedItemOriginalName, renamedOriginal);
             changed = true;
         }
         foreach (var identified in new[] { true, false })

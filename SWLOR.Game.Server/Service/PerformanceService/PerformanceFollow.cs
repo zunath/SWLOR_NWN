@@ -33,6 +33,15 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             return best;
         }
 
+        /// <summary>Picks the dancer and musician the watcher follows and records them on their state, which a Flourish reads.</summary>
+        public static void Apply(PerformanceWatcherEntry entry, PerformanceAudienceState state)
+        {
+            entry.Dancer = Choose(entry.Candidates, PerformanceKind.Dance, state.DancerChoice, state.FollowedDancer);
+            entry.Musician = Choose(entry.Candidates, PerformanceKind.Music, state.MusicianChoice, state.FollowedMusician);
+            state.FollowedDancer = entry.Dancer?.Performer ?? 0;
+            state.FollowedMusician = entry.Musician?.Performer ?? 0;
+        }
+
         /// <summary>Whether a is a stronger default follow than b: the same ordering partners are picked by, plus the followed tiebreak.</summary>
         private static bool IsPreferred(PerformerSnapshot a, PerformerSnapshot b, uint previouslyFollowed)
         {

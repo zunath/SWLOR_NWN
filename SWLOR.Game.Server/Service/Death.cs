@@ -51,14 +51,17 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
-            RecordDeathDebtWaiver(player);
+            var isSubdual = IsSubdualDeath(hostile);
+            // A subdual charges no XP debt, so Requiem is claimed only by a death that can.
+            if (isSubdual)
+                DeleteLocalInt(player, DebtWaivedVariable);
+            else
+                RecordDeathDebtWaiver(player);
             StatusEffect.ClearStatusEffectsOnDeath(player);
 
             if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
             {
-                var hostilePlayerId = GetObjectUUID(hostile);
-                var dbHostilePlayer = DB.Get<Player>(hostilePlayerId);
-                if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
+                if (isSubdual)
                 {
                     if (CombatRecorder.IsRecording)
                         CombatRecorder.RecordSubdual(player, hostile);
@@ -80,6 +83,15 @@ namespace SWLOR.Game.Server.Service
 
                 WriteAudit(player);
             }
+        }
+
+        private static bool IsSubdualDeath(uint hostile)
+        {
+            if (!GetIsPC(hostile) || GetIsDM(hostile) || GetIsDMPossessed(hostile))
+                return false;
+
+            var dbHostilePlayer = DB.Get<Player>(GetObjectUUID(hostile));
+            return dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled;
         }
 
         /// <summary>

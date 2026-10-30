@@ -265,12 +265,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 var state = GetState(entry.Player);
                 state.LastSeenTick = _tickNumber;
                 entry.State = state;
-                entry.Dancer = PerformanceFollow.Choose(
-                    entry.Candidates, PerformanceKind.Dance, state.DancerChoice, state.FollowedDancer);
-                entry.Musician = PerformanceFollow.Choose(
-                    entry.Candidates, PerformanceKind.Music, state.MusicianChoice, state.FollowedMusician);
-                state.FollowedDancer = entry.Dancer?.Performer ?? 0;
-                state.FollowedMusician = entry.Musician?.Performer ?? 0;
+                PerformanceFollow.Apply(entry, state);
 
                 foreach (var candidate in entry.Candidates)
                     candidate.WatcherCount++;
@@ -490,15 +485,15 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         {
             if (!_states.TryGetValue(watcher, out var state) ||
                 state.LastEntry == null ||
-                state.LastReport == null ||
-                !PerformanceWindows.IsWatchingOpen(watcher))
+                state.LastReport == null)
                 return;
 
+            // The follow changes now, not at the next tick, so a Flourish before then reaches the performer just picked.
             var entry = state.LastEntry;
-            entry.Dancer = PerformanceFollow.Choose(
-                entry.Candidates, PerformanceKind.Dance, state.DancerChoice, state.FollowedDancer);
-            entry.Musician = PerformanceFollow.Choose(
-                entry.Candidates, PerformanceKind.Music, state.MusicianChoice, state.FollowedMusician);
+            PerformanceFollow.Apply(entry, state);
+
+            if (!PerformanceWindows.IsWatchingOpen(watcher))
+                return;
 
             var plan = PerformanceWatchPlan.Create(
                 state.ContinuousMinutes, entry.Dancer, entry.Musician, PerformanceAudienceRules.TroupeCount(entry.Candidates));
@@ -560,6 +555,14 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         {
             var state = GetState(performer.Performer);
             state.LastSeenTick = _tickNumber;
+
+            // Performing interrupts watching, as leaving range does: the warm-up starts over. Picked performers are kept.
+            if (state.IsWatching)
+            {
+                RestoreMusic(state);
+                state.StopWatching();
+                PerformanceWindows.CloseWatching(performer.Performer);
+            }
 
             // Practice, with no watcher in range, earns no Inspired.
             if (PerformanceAudienceRules.IsLiveShow(performer.WatcherCount))

@@ -57,6 +57,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public PerformanceWatcherReport LastReport { get; set; }
 
         public bool IsWarmedUp => ContinuousMinutes >= PerformanceMath.WarmupMinutes;
+
+        /// <summary>True while the player has watching progress or a Watching window that <see cref="StopWatching"/> would clear.</summary>
+        public bool IsWatching => ContinuousMinutes > 0 || WatchingArea != 0 || LastEntry != null || BandTrackId.HasValue;
         public bool HasChoice => DancerChoice != 0 || MusicianChoice != 0;
 
         public bool Follows(uint performer)

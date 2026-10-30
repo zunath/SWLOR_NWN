@@ -41,10 +41,13 @@ public static class NamedAnimation
         });
     }
 
-    /// <summary>Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.</summary>
+    /// <summary>
+    /// Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.
+    /// Pass suppressPolearmHold for a clip that authors the right arm around a held polearm-wield item.
+    /// </summary>
     public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
         AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,
-        bool fitToDuration = false)
+        bool fitToDuration = false, bool suppressPolearmHold = false)
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
@@ -53,7 +56,8 @@ public static class NamedAnimation
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
-        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, suppressRifleHold: rifle, equipmentRequest: request);
+        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, suppressRifleHold: rifle,
+            equipmentRequest: request, suppressPolearmHold: suppressPolearmHold);
         return PlayMapped(creature, token, duration,
             rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
     }

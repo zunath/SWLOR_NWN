@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "0abb96e1813856bb9b983c9be4666c2a636faa1739ccde7a29ec603cf5975746",
+  "RecipeSha256": "e5c670cf6f04c70296495aa83ede4a996401825044eac20664f88cdb64656fc3",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -1473,14 +1473,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "A held-note loop with the horn raised to the mouth.",
-      "Interpretation": "Two breaths and two phrases: the chest eases back and the bell dips on each breath, then the horn lifts as the phrase swells while the shoulders sway slowly. The right hand stays at the mouthpiece and the left hand steadies the body of the horn.",
+      "Interpretation": "Two breaths and two phrases: the chest eases back and the bell dips on each breath, then the bell lifts as the phrase swells while the shoulders sway slowly. The mouthpiece stays at the lips, the right hand holds the horn below the mouth and the left hand steadies it above, so the loop starts and ends in the playing hold.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "HornLoop.swlanim",
       "Duration": 4,
       "Keyframes": 81,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.6286698E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6151432E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1492,7 +1492,7 @@
         },
         {
           "Time": 0.4,
-          "Label": "Phrase"
+          "Label": "Breath"
         },
         {
           "Time": 0.6,
@@ -1516,11 +1516,11 @@
         },
         {
           "Time": 1.6,
-          "Label": "Phrase"
+          "Label": "Breath"
         },
         {
           "Time": 1.8,
-          "Label": "Phrase"
+          "Label": "Breath"
         },
         {
           "Time": 2,
@@ -1556,40 +1556,40 @@
         },
         {
           "Time": 3.6,
-          "Label": "Phrase"
+          "Label": "Breath"
         },
         {
           "Time": 3.8,
-          "Label": "Phrase"
+          "Label": "Breath"
         },
         {
           "Time": 4,
           "Label": "Breath"
         }
       ],
-      "ProjectSha256": "03d08f9c7013564ce956a29ad8ec18df027aec28ae8a3b54c57f44c57af0a530"
+      "ProjectSha256": "5775a08ec0c18552ba9fd24879c551e412d5d4ed3b25295523ea40f9a91487d7"
     },
     {
       "Id": "HornLow",
       "Name": "Horn Low",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "The chest leans back and the bell dips into a low note. Starts and ends at the held-to-the-mouth hold.",
-      "Interpretation": "The chest leans back and the bell dips into a low note. The right hand stays at the mouthpiece and the clip returns to the playing hold in half a second.",
+      "Observation": "The chest sinks and the bell dips into a low note. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "The chest sinks forward, the knees ease down, the bell dips and the left hand slides down the horn for a low note, then everything returns to the playing hold in half a second. The mouthpiece stays at the lips.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "HornLow.swlanim",
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.6043025E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.40274E-07,
       "Beats": [
         {
           "Time": 0,
           "Label": "Accent"
         },
         {
-          "Time": 0.062,
+          "Time": 0.0625,
           "Label": "Accent"
         },
         {
@@ -1597,15 +1597,15 @@
           "Label": "Accent"
         },
         {
-          "Time": 0.188,
+          "Time": 0.1875,
           "Label": "Accent"
         },
         {
           "Time": 0.25,
-          "Label": "Accent"
+          "Label": "Return"
         },
         {
-          "Time": 0.312,
+          "Time": 0.3125,
           "Label": "Return"
         },
         {
@@ -1613,7 +1613,7 @@
           "Label": "Return"
         },
         {
-          "Time": 0.438,
+          "Time": 0.4375,
           "Label": "Return"
         },
         {
@@ -1621,29 +1621,29 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "3b9ddd29f4692c26358c68023450c512be6a6d347a74a0316e8b19440d328101"
+      "ProjectSha256": "a06d778d2f0900e7a05cc719daec9496471a846c07b598954d60878d337cf4f1"
     },
     {
       "Id": "HornMid",
       "Name": "Horn Mid",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "A neutral accent: a small nod into a note held level. Starts and ends at the held-to-the-mouth hold.",
-      "Interpretation": "A neutral accent: a small nod into a note held level. The right hand stays at the mouthpiece and the clip returns to the playing hold in half a second.",
+      "Observation": "A neutral accent: a small sway into a note held level. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "A neutral accent: a small sway of the shoulders as the bell swings slightly to the side and the left hand shifts a touch up the horn, then back to the playing hold in half a second. The mouthpiece stays at the lips.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "HornMid.swlanim",
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4510598E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4405628E-07,
       "Beats": [
         {
           "Time": 0,
           "Label": "Accent"
         },
         {
-          "Time": 0.062,
+          "Time": 0.0625,
           "Label": "Accent"
         },
         {
@@ -1651,15 +1651,15 @@
           "Label": "Accent"
         },
         {
-          "Time": 0.188,
+          "Time": 0.1875,
           "Label": "Accent"
         },
         {
           "Time": 0.25,
-          "Label": "Accent"
+          "Label": "Return"
         },
         {
-          "Time": 0.312,
+          "Time": 0.3125,
           "Label": "Return"
         },
         {
@@ -1667,7 +1667,7 @@
           "Label": "Return"
         },
         {
-          "Time": 0.438,
+          "Time": 0.4375,
           "Label": "Return"
         },
         {
@@ -1675,29 +1675,29 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "60333fb817c6e028bb6f700e5605eb0d9626009968f3069812a7e906936d8673"
+      "ProjectSha256": "b71fd6d685df4a7df56302e54235395dc4d3fd2b8b4d07fa644d46b4a984fa50"
     },
     {
       "Id": "HornHigh",
       "Name": "Horn High",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "The bell lifts high into a bright note with the chest opening slightly. Starts and ends at the held-to-the-mouth hold.",
-      "Interpretation": "The bell lifts high into a bright note with the chest opening slightly. The right hand stays at the mouthpiece and the clip returns to the playing hold in half a second.",
+      "Observation": "The bell lifts high into a bright note with the chest opening. Starts and ends at the held-to-the-mouth hold.",
+      "Interpretation": "The chest opens back, the knees straighten, the bell lifts and the left hand slides up the horn for a bright note, then everything returns to the playing hold in half a second. The mouthpiece stays at the lips.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "HornHigh.swlanim",
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4314477E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6541224E-07,
       "Beats": [
         {
           "Time": 0,
           "Label": "Accent"
         },
         {
-          "Time": 0.062,
+          "Time": 0.0625,
           "Label": "Accent"
         },
         {
@@ -1705,15 +1705,15 @@
           "Label": "Accent"
         },
         {
-          "Time": 0.188,
+          "Time": 0.1875,
           "Label": "Accent"
         },
         {
           "Time": 0.25,
-          "Label": "Accent"
+          "Label": "Return"
         },
         {
-          "Time": 0.312,
+          "Time": 0.3125,
           "Label": "Return"
         },
         {
@@ -1721,7 +1721,7 @@
           "Label": "Return"
         },
         {
-          "Time": 0.438,
+          "Time": 0.4375,
           "Label": "Return"
         },
         {
@@ -1729,7 +1729,7 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "6880f776a72d5181d0d8b3fc18dfed46862059f55bc2a0074b71cf0e7c4cb168"
+      "ProjectSha256": "815e40b80babb148a771e648a1f8ddd0dd1186a971e80e3c1130553c7c2b176e"
     },
     {
       "Id": "HornFlourish",
@@ -1737,14 +1737,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "The horn swings up toward the ceiling for a long, ringing note.",
-      "Interpretation": "The bell sweeps up and out while the chest opens back, holding the note at the top, then the horn lowers to the playing hold.",
+      "Interpretation": "The bell sweeps up and out while the chest opens back, the mouthpiece stays at the lips and the note holds at the top, then the horn lowers to the playing hold.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "HornFlourish.swlanim",
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.40274E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4575624E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1772,7 +1772,7 @@
         },
         {
           "Time": 0.6,
-          "Label": "Raise"
+          "Label": "Hold"
         },
         {
           "Time": 0.7,
@@ -1784,11 +1784,11 @@
         },
         {
           "Time": 0.9,
-          "Label": "Hold"
+          "Label": "Lower"
         },
         {
           "Time": 1,
-          "Label": "Hold"
+          "Label": "Lower"
         },
         {
           "Time": 1.1,
@@ -1811,7 +1811,7 @@
           "Label": "Lower"
         }
       ],
-      "ProjectSha256": "e74e916bf57acce16bfebcafbf4172913c86f34a2e23f780ba5b3f7db3dd4446"
+      "ProjectSha256": "21b3daf870df5f5f403eed9670615abc50db808791a010761aa441eb95eff05e"
     },
     {
       "Id": "PerformanceBow",

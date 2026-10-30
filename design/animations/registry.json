@@ -3260,6 +3260,16 @@
     "ProjectPath": "design/animations/performance/StringsFlourish.swlanim"
   },
   {
+    "Name": "PerformanceBow",
+    "AnimationName": "sw_pf_bow",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PerformanceBow.swlanim"
+  },
+  {
     "Name": "HornLoop",
     "AnimationName": "sw_hrn_loop",
     "Duration": 4,
@@ -3308,15 +3318,5 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/HornFlourish.swlanim"
-  },
-  {
-    "Name": "PerformanceBow",
-    "AnimationName": "sw_pf_bow",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/PerformanceBow.swlanim"
   }
 ]

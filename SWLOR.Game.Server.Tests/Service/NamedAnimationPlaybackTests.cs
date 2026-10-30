@@ -29,6 +29,42 @@ public class NamedAnimationPlaybackTests
     }
 
     [Test]
+    public void PolearmHoldSuppressionHoldsOffTheCarryLayerUntilTheClipEnds()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        var token = playback.Begin(1, new AnimationClip("sw_hrn_loop", 4f), 4f, suppressPolearmHold: true);
+
+        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Replacements[NamedAnimationPlayback.RifleCarrySource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.RifleCarrierSource].Should().BeEmpty();
+        playback.Complete(1, token);
+        runtime.Callbacks[^1]();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+    }
+
+    [Test]
+    public void ARegularClipAfterAPolearmClipRestoresTheCarryLayer()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_hrn_loop", 4f), 4f, suppressPolearmHold: true);
+        playback.Begin(1, new AnimationClip("sw_pf_bow", 1.5f), 1.5f);
+
+        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().BeEmpty();
+    }
+
+    [Test]
+    public void RifleHoldSuppressionTakesPrecedenceOverPolearmHoldSuppression()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true, suppressPolearmHold: true);
+
+        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().Be(NamedAnimationPlayback.RifleCarrySource);
+    }
+
+    [Test]
     public void ANewRifleClipKeepsItsMappingsWhenAnOlderExitAndTimeoutRun()
     {
         var runtime = new Runtime();

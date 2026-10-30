@@ -71,8 +71,12 @@ public sealed class NamedAnimationPlayback
         _releasePose = releasePose;
     }
 
+    /// <param name="suppressPolearmHold">
+    /// For clips that author the right arm around a held polearm-wield item (the horns): the engine's
+    /// polearm carry layer would otherwise hold that arm for the whole clip.
+    /// </param>
     public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false,
-        bool suppressRifleHold = false, EquipmentRequest equipmentRequest = null)
+        bool suppressRifleHold = false, EquipmentRequest equipmentRequest = null, bool suppressPolearmHold = false)
     {
         ArgumentNullException.ThrowIfNull(clip);
         if (!CanStartEquipmentPlayback(creature, equipmentRequest)) return null;
@@ -82,7 +86,8 @@ public sealed class NamedAnimationPlayback
             _restrictedPlaybackTokens.Remove(creature);
         }
         var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration,
-            rifleCarry: suppressRifleHold ? NoHoldName : "", rifleClip: suppressRifleHold ? clip.Name : "");
+            rifleCarry: suppressRifleHold ? NoHoldName : "", rifleClip: suppressRifleHold ? clip.Name : "",
+            polearmCarry: suppressPolearmHold && !suppressRifleHold ? NoHoldName : "");
         if (equipmentRequest != null)
         {
             equipmentRequest.PlaybackToken = token;
@@ -92,7 +97,7 @@ public sealed class NamedAnimationPlayback
     }
 
     private string BeginMapped(uint creature, string start, string loop, string end, float duration, bool completeAtDuration,
-        string rifleCarry = "", string rifleClip = "")
+        string rifleCarry = "", string rifleClip = "", string polearmCarry = "")
     {
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
@@ -109,7 +114,7 @@ public sealed class NamedAnimationPlayback
             // Install all mappings in this script callback before issuing playback.
             _runtime.Replace(creature, RifleCarrierSource, rifleClip);
             _runtime.Replace(creature, RifleCarrySource, rifleCarry);
-            _runtime.Replace(creature, RifleCarryResetSource, string.IsNullOrEmpty(rifleClip) ? "" : RifleCarrySource);
+            _runtime.Replace(creature, RifleCarryResetSource, string.IsNullOrEmpty(rifleClip) ? polearmCarry : RifleCarrySource);
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.
             _runtime.Schedule(duration + 1f, () => Complete(creature, token));

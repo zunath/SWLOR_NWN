@@ -74,6 +74,27 @@ public class PerformanceAnimationsTests
     }
 
     [Test]
+    public void OnlyHornClipsHoldOffTheEngineCarryPose()
+    {
+        foreach (var cue in new[] { PerformanceCue.Low, PerformanceCue.Mid, PerformanceCue.High })
+        {
+            PerformanceAnimations.PosesHeldInstrument(
+                PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, cue)).Should().BeTrue();
+            PerformanceAnimations.PosesHeldInstrument(
+                PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Strings, cue)).Should().BeFalse();
+        }
+
+        PerformanceAnimations.PosesHeldInstrument(AuthoredAnimation.HornLoop).Should().BeTrue();
+        PerformanceAnimations.PosesHeldInstrument(AuthoredAnimation.HornFlourish).Should().BeTrue();
+        PerformanceAnimations.PosesHeldInstrument(AuthoredAnimation.StringsLoop).Should().BeFalse();
+        PerformanceAnimations.PosesHeldInstrument(AuthoredAnimation.StringsFlourish).Should().BeFalse();
+        PerformanceAnimations.PosesHeldInstrument(AuthoredAnimation.PlayInstrument).Should().BeFalse();
+        PerformanceAnimations.PosesHeldInstrument(AuthoredAnimation.CantinaShuffle).Should().BeFalse();
+        PerformanceAnimations.PosesHeldInstrument(AuthoredAnimation.PerformanceBow).Should().BeFalse();
+        PerformanceAnimations.PosesHeldInstrument(null).Should().BeFalse();
+    }
+
+    [Test]
     public void OpeningClipsAreTheToggleAbilityClips()
     {
         PerformanceAnimations.GetOpeningClip(PerformanceKind.Dance).Should().BeSameAs(AuthoredAnimation.Dance);

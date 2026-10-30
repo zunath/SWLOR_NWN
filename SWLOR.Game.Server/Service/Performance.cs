@@ -681,7 +681,8 @@ namespace SWLOR.Game.Server.Service
         private static void StartLoopingAnimation(PerformanceSession session)
         {
             var clip = PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine);
-            session.AnimationToken = NamedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds);
+            session.AnimationToken = NamedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds,
+                suppressPolearmHold: PerformanceAnimations.PosesHeldInstrument(clip));
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(LoopRenewSeconds);
         }
 
@@ -689,7 +690,7 @@ namespace SWLOR.Game.Server.Service
         private static void PlayThenLoop(PerformanceSession session, AnimationClip clip)
         {
             var player = session.Performer;
-            var token = NamedAnimation.Play(player, clip);
+            var token = NamedAnimation.Play(player, clip, suppressPolearmHold: PerformanceAnimations.PosesHeldInstrument(clip));
             session.AnimationToken = token;
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(clip.Duration + AccentRecoverySeconds);
             AssignCommand(GetModule(), () => DelayCommand(clip.Duration, () =>

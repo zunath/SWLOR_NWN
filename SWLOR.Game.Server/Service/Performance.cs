@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Service
             {
                 session.Routine = routine;
                 StartLoopingAnimation(session);
+                PerformanceWindows.RefreshSetup(session);
             }
 
             return true;
@@ -125,7 +126,10 @@ namespace SWLOR.Game.Server.Service
 
             GetPreference(player).Set = set;
             if (_sessions.TryGetValue(player, out var session) && session.Kind == PerformanceKind.Music)
+            {
                 session.Set = set;
+                PerformanceWindows.RefreshSetup(session);
+            }
 
             return true;
         }
@@ -137,6 +141,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             GetPreference(player).SecondRoutine = routine;
+            if (_sessions.TryGetValue(player, out var session) && session.Kind == PerformanceKind.Dance)
+                PerformanceWindows.RefreshSetup(session);
+
             return true;
         }
 
@@ -147,6 +154,28 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             GetPreference(player).SecondSet = set;
+            if (_sessions.TryGetValue(player, out var session) && session.Kind == PerformanceKind.Music)
+                PerformanceWindows.RefreshSetup(session);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Picks the Cantina song a musician plays. The song must be one they own (or the starter song). A band's audience
+        /// hears the new song at the next audience tick when the musician leads the band.
+        /// </summary>
+        public static bool SetSong(uint player, int trackId)
+        {
+            if (PerformanceSongs.ChooseSong(GetObjectUUID(player), trackId) != trackId)
+                return false;
+
+            GetPreference(player).SongTrackId = trackId;
+            if (_sessions.TryGetValue(player, out var session) && session.Kind == PerformanceKind.Music)
+            {
+                PerformanceAudience.SetPerformerSong(player, trackId);
+                PerformanceWindows.RefreshSetup(session);
+            }
+
             return true;
         }
 
@@ -233,8 +262,7 @@ namespace SWLOR.Game.Server.Service
 
             if (feat == FeatType.PerformanceOptions)
             {
-                ApplyTempo(session, session.Tempo.Next());
-                GetPreference(activator).Tempo = session.Tempo;
+                PerformanceWindows.ToggleOptions(session);
                 return;
             }
 
@@ -252,6 +280,7 @@ namespace SWLOR.Game.Server.Service
 
             session.BeatSchedule?.Dispose();
             session.BeatSchedule = null;
+            PerformanceWindows.CloseCueWindow(session, reason);
 
             if (GetIsObjectValid(player))
             {
@@ -424,15 +453,19 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, kind == PerformanceKind.Dance
                 ? "You begin to dance. Use the step buttons on your hot bar to match the cues."
                 : "You begin to play. Use the note buttons on your hot bar to match the cues.");
-            PresentBeat(session);
+
+            // The cue window shows the strip; floating text stands in only when it could not be opened.
+            if (!PerformanceWindows.OpenCueWindow(session))
+                ShowFallbackBeat(session);
         }
 
         private static void ScheduleBeats(PerformanceSession session)
         {
             session.BeatSchedule?.Dispose();
+            session.BeatStep = 0;
             session.BeatSchedule = Scheduler.ScheduleRepeating(
                 () => OnBeat(session),
-                TimeSpan.FromSeconds(session.Tempo.GetBeatSeconds()));
+                TimeSpan.FromSeconds(session.Tempo.GetBeatSeconds() / session.StepsPerBeat));
         }
 
         private static void OnBeat(PerformanceSession session)
@@ -447,6 +480,18 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
+                // A dance splits each beat into steps so its window can show the time left on the beat; a step
+                // before the last pushes the bar and nothing else.
+                session.BeatStep++;
+                if (session.BeatStep < session.StepsPerBeat)
+                {
+                    if (session.View is { IsOpen: true, WantsBeatProgress: true } view)
+                        view.ShowBeatProgress(1f - session.BeatStep / (float)session.StepsPerBeat);
+
+                    return;
+                }
+
+                session.BeatStep = 0;
                 var endReason = GetEndTrigger(session);
                 if (endReason.HasValue)
                 {
@@ -454,8 +499,8 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
-                session.AdvanceBeat();
-                PresentBeat(session);
+                var outcome = session.AdvanceBeat();
+                PresentBeat(session, outcome);
             }
             catch (Exception ex)
             {
@@ -509,6 +554,7 @@ namespace SWLOR.Game.Server.Service
         {
             session.Tempo = tempo;
             ScheduleBeats(session);
+            PerformanceWindows.RefreshSetup(session);
             SendMessageToPC(
                 session.Performer,
                 $"Tempo: {tempo} ({tempo.GetBeatSeconds():0.0}s beats, x{tempo.GetXPMultiplier():0.##} XP).");
@@ -530,7 +576,19 @@ namespace SWLOR.Game.Server.Service
             PerformanceAudience.OnFlourish(session);
         }
 
-        private static void PresentBeat(PerformanceSession session)
+        // The cue window takes only what changed; with it closed, one line of floating text keeps the performance playable.
+        private static void PresentBeat(PerformanceSession session, PerformanceBeatOutcome outcome)
+        {
+            if (session.View is { IsOpen: true } view)
+            {
+                view.ShowBeat(session, outcome);
+                return;
+            }
+
+            ShowFallbackBeat(session);
+        }
+
+        private static void ShowFallbackBeat(PerformanceSession session)
         {
             var strip = string.Join(" | ", new[] { session.Current }.Concat(session.Upcoming)
                 .Select((beat, index) => DescribeBeat(beat, index == 0)));

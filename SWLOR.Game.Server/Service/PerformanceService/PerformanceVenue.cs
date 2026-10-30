@@ -34,6 +34,26 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             return Combine(GetAreaRating(GetArea(performer)), HasDanceFloorNearby(performer));
         }
 
+        /// <summary>The rating and where it comes from, for the Perform window. Reads the Dance Floor once, so call it when a window opens.</summary>
+        public static PerformanceVenueBreakdown GetBreakdown(uint performer)
+        {
+            var area = GetArea(performer);
+            var areaRating = GetAreaRating(area);
+            var danceFloor = HasDanceFloorNearby(performer);
+            return new PerformanceVenueBreakdown(
+                Combine(areaRating, danceFloor), areaRating, DescribeArea(area, areaRating), danceFloor);
+        }
+
+        private static string DescribeArea(uint area, int rating)
+        {
+            if (rating <= 0)
+                return "Open area, no venue rating";
+
+            return GetLocalInt(area, AreaRatingVariable) > 0
+                ? "Cantina"
+                : $"Player cantina, city Cantina Lvl {rating}";
+        }
+
         public static int GetAreaRating(uint area)
         {
             if (!GetIsObjectValid(area))

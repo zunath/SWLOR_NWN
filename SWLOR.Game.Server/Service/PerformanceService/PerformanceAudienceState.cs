@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SWLOR.Game.Server.Service.PerformanceService
 {
     /// <summary>
@@ -6,6 +8,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// </summary>
     public sealed class PerformanceAudienceState
     {
+        /// <summary>How many ticks a performer's name is reused before the name lookup runs again.</summary>
+        public const int NameLifetimeTicks = 5;
+
+        private readonly Dictionary<uint, string> _names = new();
+        private int _namesTick;
+
         public PerformanceAudienceState(uint creature)
         {
             Creature = creature;
@@ -38,12 +46,43 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public DateTime? LastFlourishBankUtc { get; set; }
         public double LastFlourishBankedMinutes { get; set; }
 
+        /// <summary>The player closed the Watching window; it stays closed until they start watching a new show.</summary>
+        public bool WatchingDismissed { get; set; }
+
+        /// <summary>The area of the show the Watching window last reported, so a window closed by changing area is not a dismissal.</summary>
+        public uint WatchingArea { get; set; }
+
+        /// <summary>The last tick's entry and report, kept so a Follow click can redraw the window without waiting for the next tick.</summary>
+        public PerformanceWatcherEntry LastEntry { get; set; }
+        public PerformanceWatcherReport LastReport { get; set; }
+
         public bool IsWarmedUp => ContinuousMinutes >= PerformanceMath.WarmupMinutes;
         public bool HasChoice => DancerChoice != 0 || MusicianChoice != 0;
 
         public bool Follows(uint performer)
         {
             return performer != 0 && (FollowedDancer == performer || FollowedMusician == performer);
+        }
+
+        /// <summary>
+        /// The name this watcher knows a performer by. Looked up when first needed and then reused for a few ticks, so a
+        /// tick does not run a name lookup per performer per watcher every minute.
+        /// </summary>
+        public string GetName(uint performer, int tick, Func<string> lookup)
+        {
+            if (tick - _namesTick >= NameLifetimeTicks)
+            {
+                _names.Clear();
+                _namesTick = tick;
+            }
+
+            if (!_names.TryGetValue(performer, out var name))
+            {
+                name = lookup();
+                _names[performer] = name;
+            }
+
+            return name;
         }
 
         /// <summary>The player left every performer's range: the warm-up starts over and Inspired counts down again.</summary>
@@ -53,6 +92,11 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             FollowedDancer = 0;
             FollowedMusician = 0;
             HasFrozenRemaining = false;
+            WatchingDismissed = false;
+            WatchingArea = 0;
+            LastEntry = null;
+            LastReport = null;
+            _names.Clear();
         }
     }
 }

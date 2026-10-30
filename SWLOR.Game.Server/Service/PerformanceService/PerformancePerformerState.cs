@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         /// <summary>When Performance XP was last paid; a first tick shorter than a minute pays only the time performed.</summary>
         public DateTime LastPaidUtc { get; set; }
 
-        /// <summary>The musician's song, chosen once when the session first appears so the band does not change tracks.</summary>
-        public int SongTrackId { get; }
+        /// <summary>The musician's song: chosen when the session first appears, and changed only when the musician picks another in the Perform window.</summary>
+        public int SongTrackId { get; set; }
     }
 }

@@ -56,6 +56,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
         // Worked out for the whole show by PerformanceShow.Prepare.
         public PerformerSnapshot Partner { get; set; }
+
+        /// <summary>The musician whose song the band plays: whoever in the band started first. A musician alone leads their own band.</summary>
+        public PerformerSnapshot BandLeader { get; set; }
         public bool HarmonyActive { get; set; }
         public int? BandTrackId { get; set; }
 

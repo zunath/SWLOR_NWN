@@ -58,6 +58,20 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public DateTime? LastFlourishUtc { get; private set; }
         public IDisposable BeatSchedule { get; set; }
 
+        /// <summary>The performer's cue window while one is attached; the beat loop pushes to it instead of floating text.</summary>
+        public IPerformanceView View { get; set; }
+
+        /// <summary>How many of the beat's steps have passed. The loop steps inside a beat so the window can show the time left.</summary>
+        public int BeatStep { get; set; }
+
+        /// <summary>
+        /// How many equal steps the loop divides a beat into. Only a dancer's window has a beat bar, so only dances step;
+        /// a musician's loop runs once per beat.
+        /// </summary>
+        public int StepsPerBeat => Kind == PerformanceKind.Dance ? DanceStepsPerBeat : 1;
+
+        public const int DanceStepsPerBeat = 3;
+
         public PerformanceBeat Current { get; private set; }
         public IReadOnlyCollection<PerformanceBeat> Upcoming => _upcoming;
         public int BeatNumber { get; private set; }
@@ -68,6 +82,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public int RecentHits => _recentHits;
         public double Accuracy => _recent.Count == 0 ? 1.0 : (double)_recentHits / _recent.Count;
         public PerformanceQuality Quality => PerformanceMath.QualityFromRecord(_recentHits, _recent.Count);
+
+        /// <summary>Copies the upcoming beats, next first, into a caller-owned array so a window can read them without allocating.</summary>
+        public void CopyUpcomingTo(PerformanceBeat[] destination)
+        {
+            _upcoming.CopyTo(destination, 0);
+        }
 
         public void MarkInput(DateTime nowUtc)
         {

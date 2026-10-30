@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace SWLOR.Game.Server.Service.PerformanceService
 {
     public static class PerformanceTempoExtensions
@@ -30,6 +32,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 PerformanceTempo.Lively => PerformanceTempo.Upbeat,
                 _ => PerformanceTempo.Relaxed
             };
+        }
+
+        /// <summary>The tempo as the windows show it, such as "Relaxed 1.5s".</summary>
+        public static string GetLabel(this PerformanceTempo tempo)
+        {
+            return $"{tempo} {tempo.GetBeatSeconds().ToString("0.0", CultureInfo.InvariantCulture)}s";
         }
     }
 }

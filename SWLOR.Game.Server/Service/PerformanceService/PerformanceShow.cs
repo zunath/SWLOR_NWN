@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             {
                 var performer = performers[index];
                 performer.Partner = null;
+                performer.BandLeader = null;
                 performer.HarmonyActive = false;
                 performer.BandTrackId = performer.Kind == PerformanceKind.Music ? performer.SongTrackId : null;
             }
@@ -93,6 +94,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 }
 
                 member.BandTrackId = leader.SongTrackId;
+                member.BandLeader = leader;
             }
         }
 

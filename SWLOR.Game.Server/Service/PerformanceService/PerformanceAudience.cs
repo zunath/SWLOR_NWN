@@ -201,7 +201,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
             if (!_performerStates.TryGetValue(performer, out var performerState))
             {
-                var song = session.Kind == PerformanceKind.Music ? PerformanceSongs.ChooseSong(session.PlayerId) : -1;
+                var song = session.Kind == PerformanceKind.Music
+                    ? PerformanceSongs.ChooseSong(session.PlayerId, Performance.GetPreference(performer).SongTrackId)
+                    : -1;
                 performerState = new PerformancePerformerState(session.StartedUtc, song);
                 _performerStates[performer] = performerState;
             }
@@ -309,6 +311,25 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             Dictionary<(uint, uint, int), InspiredEffectData> compositions,
             DateTime now)
         {
+            var report = new PerformanceWatcherReport();
+            try
+            {
+                PayWatcher(show, entry, compositions, now, report);
+                UpdateWatchingWindow(show, entry, compositions, report);
+            }
+            finally
+            {
+                report.DbPlayer = null;
+            }
+        }
+
+        private static void PayWatcher(
+            PerformanceAreaShow show,
+            PerformanceWatcherEntry entry,
+            Dictionary<(uint, uint, int), InspiredEffectData> compositions,
+            DateTime now,
+            PerformanceWatcherReport report)
+        {
             var watcher = entry.Player;
             var state = entry.State;
             state.ContinuousMinutes++;
@@ -316,6 +337,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             var plan = PerformanceWatchPlan.Create(
                 state.ContinuousMinutes, entry.Dancer, entry.Musician, PerformanceAudienceRules.TroupeCount(entry.Candidates));
             state.CapMinutes = plan.CapMinutes;
+            report.Plan = plan;
             UpdateBandMusic(show, entry);
 
             var existing = StatusEffect.GetStatusEffect<InspiredStatusEffect>(watcher);
@@ -324,6 +346,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 hasEffect ? existing.GetRemainingDurationSeconds(now) : 0.0,
                 hasEffect && state.HasFrozenRemaining,
                 state.FrozenRemainingSeconds);
+            report.RemainingSeconds = frozenSeconds;
 
             if (!plan.IsPaying)
             {
@@ -341,6 +364,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             var composition = Compose(compositions, entry.Dancer, entry.Musician, plan.Venue);
             var remainingSeconds = PerformanceAudienceRules.BankedRemainingSeconds(
                 frozenSeconds, plan.BankedMinutes, plan.CapMinutes);
+            report.RemainingSeconds = remainingSeconds;
             PerformanceInspiredApplier.Apply(watcher, composition, remainingSeconds, plan.BankedMinutes > 0);
             state.HasFrozenRemaining = true;
             state.FrozenRemainingSeconds = remainingSeconds;
@@ -348,26 +372,184 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             if (!hasEffect)
                 SendMessageToPC(watcher, $"The performance inspires you. (+{composition.XPBonusPercent}% skill XP while Inspired)");
 
-            ClearDebt(watcher, plan.DebtClearPercent);
+            ClearDebt(watcher, plan.DebtClearPercent, report);
         }
 
         // At most one player read and one write per watcher per tick, and only when some debt was cleared.
-        private static void ClearDebt(uint watcher, int percent)
+        private static void ClearDebt(uint watcher, int percent, PerformanceWatcherReport report)
         {
             if (percent <= 0)
                 return;
 
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(watcher));
+            var dbPlayer = LoadPlayer(watcher, report);
             if (dbPlayer == null)
                 return;
 
+            report.XpDebt = dbPlayer.XPDebt;
             var cleared = PerformanceMath.DebtCleared(dbPlayer.XPDebt, percent);
             if (cleared <= 0)
                 return;
 
             dbPlayer.XPDebt -= cleared;
             DB.Set(dbPlayer);
+            report.XpDebt = dbPlayer.XPDebt;
+            report.DebtCleared = cleared;
             SendMessageToPC(watcher, $"The performance clears {cleared} XP of your debt. (Remaining: {dbPlayer.XPDebt})");
+        }
+
+        // The one place the tick reads a watcher's player record, so the debt and the Watching window share a single read.
+        private static Player LoadPlayer(uint watcher, PerformanceWatcherReport report)
+        {
+            return report.DbPlayer ??= DB.Get<Player>(GetObjectUUID(watcher));
+        }
+
+        /// <summary>
+        /// Opens the Watching window for a watcher after their first counted minute, unless they closed it for this show, and
+        /// shows this tick's numbers in it. A window that is closed costs nothing beyond the open check.
+        /// </summary>
+        private static void UpdateWatchingWindow(
+            PerformanceAreaShow show,
+            PerformanceWatcherEntry entry,
+            Dictionary<(uint, uint, int), InspiredEffectData> compositions,
+            PerformanceWatcherReport report)
+        {
+            var watcher = entry.Player;
+            var state = entry.State;
+
+            // A different show is a fresh start: a window the player closed for the last one may open again.
+            if (state.WatchingArea != show.Area)
+            {
+                state.WatchingArea = show.Area;
+                state.WatchingDismissed = false;
+            }
+
+            var isOpen = PerformanceWindows.IsWatchingOpen(watcher);
+            if (!isOpen && !state.WatchingDismissed)
+                isOpen = PerformanceWindows.OpenWatching(watcher);
+
+            if (!isOpen)
+            {
+                state.LastEntry = null;
+                state.LastReport = null;
+                return;
+            }
+
+            if (report.XpDebt < 0)
+                report.XpDebt = LoadPlayer(watcher, report)?.XPDebt ?? -1;
+
+            // Kept so a Follow click can redraw the window from this tick's numbers without waiting for the next tick.
+            report.DbPlayer = null;
+            state.LastEntry = entry;
+            state.LastReport = report;
+
+            var composition = Compose(compositions, entry.Dancer, entry.Musician, report.Plan.Venue);
+            PerformanceWindows.ShowWatching(watcher, BuildWatchView(state, entry, report, report.Plan, composition));
+        }
+
+        private static PerformanceWatchView BuildWatchView(
+            PerformanceAudienceState state,
+            PerformanceWatcherEntry entry,
+            PerformanceWatcherReport report,
+            PerformanceWatchPlan plan,
+            InspiredEffectData composition)
+        {
+            var watcher = entry.Player;
+            return PerformanceWatchViewBuilder.Build(
+                entry.Candidates,
+                entry.Dancer,
+                entry.Musician,
+                plan,
+                state.ContinuousMinutes,
+                report.RemainingSeconds,
+                report.XpDebt,
+                report.DebtCleared,
+                composition,
+                performer => state.GetName(performer, _tickNumber, () => PlayerName.GetDisplayName(watcher, performer)));
+        }
+
+        /// <summary>
+        /// The Watching window's content from the last audience tick, or null when the watcher is not being served.
+        /// A window that opens between ticks starts from it.
+        /// </summary>
+        public static PerformanceWatchView BuildWatchingView(uint watcher)
+        {
+            if (!_states.TryGetValue(watcher, out var state) || state.LastEntry == null || state.LastReport == null)
+                return null;
+
+            var entry = state.LastEntry;
+            var report = state.LastReport;
+            var composition = PerformanceInspiredComposer.Compose(entry.Dancer, entry.Musician, report.Plan.Venue);
+            return BuildWatchView(state, entry, report, report.Plan, composition);
+        }
+
+        /// <summary>
+        /// Redraws the Watching window after a Follow click. The followed performers and the banking rate change at once;
+        /// the Inspired and debt numbers stay as the last tick left them.
+        /// </summary>
+        public static void RefreshWatching(uint watcher)
+        {
+            if (!_states.TryGetValue(watcher, out var state) ||
+                state.LastEntry == null ||
+                state.LastReport == null ||
+                !PerformanceWindows.IsWatchingOpen(watcher))
+                return;
+
+            var entry = state.LastEntry;
+            entry.Dancer = PerformanceFollow.Choose(
+                entry.Candidates, PerformanceKind.Dance, state.DancerChoice, state.FollowedDancer);
+            entry.Musician = PerformanceFollow.Choose(
+                entry.Candidates, PerformanceKind.Music, state.MusicianChoice, state.FollowedMusician);
+
+            var plan = PerformanceWatchPlan.Create(
+                state.ContinuousMinutes, entry.Dancer, entry.Musician, PerformanceAudienceRules.TroupeCount(entry.Candidates));
+            var composition = PerformanceInspiredComposer.Compose(entry.Dancer, entry.Musician, plan.Venue);
+            PerformanceWindows.ShowWatching(watcher, BuildWatchView(state, entry, state.LastReport, plan, composition));
+        }
+
+        /// <summary>
+        /// A watcher who closes the Watching window keeps it closed until they start watching a new show. A window closed
+        /// because they changed area, or stopped watching, is not their choice and does not count.
+        /// </summary>
+        public static void OnWatchingWindowClosed(uint watcher)
+        {
+            if (_states.TryGetValue(watcher, out var state) &&
+                state.WatchingArea != 0 &&
+                GetArea(watcher) == state.WatchingArea)
+            {
+                state.WatchingDismissed = true;
+            }
+        }
+
+        /// <summary>
+        /// The Watching window's "Play the performer's song" box. Clearing it hands the watcher their own music back at once;
+        /// checking it brings the band they follow back without waiting for the next tick.
+        /// </summary>
+        public static void SetPlayPerformerSong(uint watcher, bool play)
+        {
+            Performance.GetPreference(watcher).PlayPerformerSong = play;
+            if (!_states.TryGetValue(watcher, out var state))
+                return;
+
+            if (!play)
+            {
+                RestoreMusic(state);
+                return;
+            }
+
+            int? desired = state.LastEntry?.Musician?.BandTrackId;
+            if (!desired.HasValue || desired.Value < 0 || state.BandTrackId == desired || state.WatchingArea == 0)
+                return;
+
+            Music.PlayTemporaryTrack(watcher, desired.Value);
+            state.BandTrackId = desired;
+            state.BandArea = state.WatchingArea;
+        }
+
+        /// <summary>A musician picked another song in the Perform window; the band's audience hears it at the next tick.</summary>
+        public static void SetPerformerSong(uint performer, int trackId)
+        {
+            if (_performerStates.TryGetValue(performer, out var performerState))
+                performerState.SongTrackId = trackId;
         }
 
         private static void ServePerformer(
@@ -384,6 +566,14 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 InspirePerformer(show, performer, state, compositions, now);
 
             PayPerformerXp(performer, now);
+            ShowAudienceInCueWindow(show, performer);
+        }
+
+        // The performer's cue window learns who is watching once a minute, here, and never from the beat loop.
+        private static void ShowAudienceInCueWindow(PerformanceAreaShow show, PerformerSnapshot performer)
+        {
+            if (performer.Session?.View is { IsOpen: true } view)
+                view.ShowAudience(PerformanceWindows.BuildAudienceInfo(show, performer));
         }
 
         // A performer in a live show is Inspired by their own part and by the other kind of performer they follow.
@@ -451,6 +641,10 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             if (desired.HasValue && desired.Value < 0)
                 desired = null;
 
+            // A watcher who cleared "Play the performer's song" in the Watching window keeps their own music.
+            if (desired.HasValue && !Performance.GetPreference(entry.Player).PlayPerformerSong)
+                desired = null;
+
             if (desired == state.BandTrackId && (!desired.HasValue || state.BandArea == show.Area))
                 return;
 
@@ -502,6 +696,11 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
                 RestoreMusic(state);
                 state.StopWatching();
+
+                // After StopWatching, so the window closing is not taken for the watcher choosing to hide it.
+                if (GetIsObjectValid(state.Creature))
+                    PerformanceWindows.CloseWatching(state.Creature);
+
                 if (!state.HasChoice || !GetIsObjectValid(state.Creature))
                 {
                     forgotten ??= new List<uint>();

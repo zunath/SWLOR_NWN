@@ -113,14 +113,44 @@ public class ExtraHotbarsTests
     private const uint Rifle = 4;
     private const uint Pistol = 5;
 
+    private static bool CanPair(uint main, uint off) =>
+        main == NoItem || off == NoItem || (main == Pistol ? off == Shield : main != Rifle);
+
     private static (uint MainHand, uint OffHand) Pick(uint mainHand, uint offHand, uint item)
     {
         bool CanMain(uint candidate) => candidate != Shield;
         bool CanOff(uint candidate) => candidate is not (Rifle or Pistol);
-        bool CanPair(uint main, uint off) =>
-            main == NoItem || off == NoItem || (main == Pistol ? off == Shield : main != Rifle);
 
         return ExtraHotbars.PickHandItem(mainHand, offHand, item, CanMain(item), CanOff(item), CanPair);
+    }
+
+    [Test]
+    public void PlanHands_ReplacesBothHandsOfASet()
+    {
+        ExtraHotbars.PlanHands(Saber, SecondSaber, Saber, Shield, CanPair).Should().Be((Saber, Shield));
+        ExtraHotbars.PlanHands(Rifle, NoItem, Saber, SecondSaber, CanPair).Should().Be((Saber, SecondSaber));
+    }
+
+    [Test]
+    public void PlanHands_LeavesAnUnsetHandAloneWhenItStillFits()
+    {
+        ExtraHotbars.PlanHands(Saber, Shield, SecondSaber, NoItem, CanPair).Should().Be((SecondSaber, Shield));
+        ExtraHotbars.PlanHands(Saber, SecondSaber, NoItem, Shield, CanPair).Should().Be((Saber, Shield));
+    }
+
+    [Test]
+    public void PlanHands_EmptiesAnUnsetHandThatNoLongerFits()
+    {
+        ExtraHotbars.PlanHands(Saber, SecondSaber, Rifle, NoItem, CanPair).Should().Be((Rifle, NoItem));
+        ExtraHotbars.PlanHands(Saber, SecondSaber, Pistol, NoItem, CanPair).Should().Be((Pistol, NoItem));
+        ExtraHotbars.PlanHands(Rifle, NoItem, NoItem, Shield, CanPair).Should().Be((NoItem, Shield));
+    }
+
+    [Test]
+    public void PlanHands_ItemMovingToTheOtherHandLeavesItsOldHand()
+    {
+        ExtraHotbars.PlanHands(Saber, SecondSaber, SecondSaber, NoItem, CanPair).Should().Be((SecondSaber, NoItem));
+        ExtraHotbars.PlanHands(Saber, SecondSaber, NoItem, Saber, CanPair).Should().Be((NoItem, Saber));
     }
 
     [Test]

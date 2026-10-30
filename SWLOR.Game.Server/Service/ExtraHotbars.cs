@@ -473,29 +473,19 @@ namespace SWLOR.Game.Server.Service
             var attackTarget = GetAttackTarget(player);
             ClearAllActions();
 
-            // A worn item cannot move straight to the other hand, so it comes off first.
-            if (GetIsObjectValid(mainHand) && GetItemInSlot(InventorySlot.LeftHand, player) == mainHand)
-                ActionUnequipItem(mainHand);
-            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.RightHand, player) == offHand)
-                ActionUnequipItem(offHand);
-
-            // The main hand usually goes first so a two-handed weapon being replaced does not push the off-hand item
-            // out. When the new main hand cannot be held beside the current off-hand item (a pistol beside a sword),
-            // the equip checks would refuse it, so the off hand changes first: the set's item, or an empty hand.
+            // The equip checks silently refuse an item whose hand is still occupied, so everything leaving a hand
+            // comes off before anything goes on.
+            var currentMainHand = GetItemInSlot(InventorySlot.RightHand, player);
             var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
-            var offHandFirst = GetIsObjectValid(mainHand) &&
-                               GetIsObjectValid(currentOffHand) &&
-                               currentOffHand != mainHand &&
-                               currentOffHand != offHand &&
-                               !CanPairHands(mainHand, currentOffHand);
-            if (offHandFirst && !GetIsObjectValid(offHand))
+            var (newMainHand, newOffHand) = PlanHands(currentMainHand, currentOffHand, mainHand, offHand, CanPairHands);
+            if (GetIsObjectValid(currentMainHand) && currentMainHand != newMainHand)
+                ActionUnequipItem(currentMainHand);
+            if (GetIsObjectValid(currentOffHand) && currentOffHand != newOffHand)
                 ActionUnequipItem(currentOffHand);
-            if (offHandFirst)
-                EquipOffHand(player, offHand);
-            if (GetIsObjectValid(mainHand) && GetItemInSlot(InventorySlot.RightHand, player) != mainHand)
-                ActionEquipItem(mainHand, InventorySlot.RightHand);
-            if (!offHandFirst)
-                EquipOffHand(player, offHand);
+            if (GetIsObjectValid(newMainHand) && newMainHand != currentMainHand)
+                ActionEquipItem(newMainHand, InventorySlot.RightHand);
+            if (GetIsObjectValid(newOffHand) && newOffHand != currentOffHand)
+                ActionEquipItem(newOffHand, InventorySlot.LeftHand);
 
             if (GetIsObjectValid(attackTarget) && !GetIsDead(attackTarget))
                 ActionAttack(attackTarget);
@@ -503,10 +493,22 @@ namespace SWLOR.Game.Server.Service
             RefreshStatusSoon(player);
         }
 
-        private static void EquipOffHand(uint player, uint offHand)
+        /// <summary>
+        /// What each hand holds after an equipment slot is used. A hand the slot leaves out keeps its item unless
+        /// that item is moving to the other hand or cannot be held beside the new one.
+        /// </summary>
+        public static (uint MainHand, uint OffHand) PlanHands(uint currentMainHand, uint currentOffHand,
+            uint mainHand, uint offHand, Func<uint, uint, bool> canPairHands)
         {
-            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) != offHand)
-                ActionEquipItem(offHand, InventorySlot.LeftHand);
+            var newMainHand = mainHand != OBJECT_INVALID ? mainHand : currentMainHand;
+            var newOffHand = offHand != OBJECT_INVALID ? offHand : currentOffHand;
+
+            if (mainHand == OBJECT_INVALID && (newMainHand == newOffHand || !canPairHands(newMainHand, newOffHand)))
+                newMainHand = OBJECT_INVALID;
+            if (offHand == OBJECT_INVALID && (newOffHand == newMainHand || !canPairHands(newMainHand, newOffHand)))
+                newOffHand = OBJECT_INVALID;
+
+            return (newMainHand, newOffHand);
         }
 
         /// <summary>

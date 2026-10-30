@@ -5006,59 +5006,52 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 298,
+    "Line": 306,
     "Member": "EndPerformance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 390,
+    "Line": 398,
     "Member": "Toggle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 413,
+    "Line": 421,
     "Member": "StartPerformance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You cannot perform right now.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 453,
+    "Line": 462,
     "Member": "StartPerformance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, kind == PerformanceKind.Dance\n                ? \"You begin to dance. Use the step buttons on your hot bar to match the cues.\"\n                : \"You begin to play. Use the note buttons on your hot bar to match the cues.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 558,
+    "Line": 570,
     "Member": "ApplyTempo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(\n                session.Performer,\n                $\"Tempo: {tempo} ({tempo.GetBeatSeconds():0.0}s beats, x{tempo.GetXPMultiplier():0.##} XP).\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 568,
+    "Line": 580,
     "Member": "TryFlourish",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(performer, $\"Flourish is not ready ({session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}).\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 575,
+    "Line": 587,
     "Member": "TryFlourish",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(performer, \"Flourish!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Performance.cs",
-    "Line": 595,
-    "Member": "ShowFallbackBeat",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                $\"{strip}  [{session.Quality}] Streak {session.Streak} Flourish {session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}\",\n                session.Performer,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceAudience.cs",
@@ -5080,6 +5073,20 @@
     "Member": "BankFlourish",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(watcher, $\"The flourish thrills you. (+{addedMinutes:0.#} min of Inspired)\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceWindows.cs",
+    "Line": 37,
+    "Member": "ShowFallbackStrip",
+    "Delivery": "Retained",
+    "Call": "PostString(performer, text, -text.Length / 2, FallbackStripRow, ScreenAnchor.Center,\n                beatSeconds + FallbackStripOverlapSeconds, Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PerformanceService/PerformanceWindows.cs",
+    "Line": 43,
+    "Member": "ClearFallbackStrip",
+    "Delivery": "Retained",
+    "Call": "PostString(performer, string.Empty, 0, FallbackStripRow, ScreenAnchor.Center, 0.1f,\n                Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Perk.cs",

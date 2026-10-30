@@ -258,7 +258,7 @@ public class PerformanceWindowViewTests
         var model = new PerformanceSessionViewModel();
         var setup = new PerformerSetup
         {
-            InstrumentText = "Mandoviol",
+            InstrumentText = "Guitar",
             SongText = "Cantina Pazaak",
             SetText = "Steady Hands I",
             TempoText = "Lively 1.2s"

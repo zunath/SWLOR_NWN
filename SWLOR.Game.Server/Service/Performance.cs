@@ -193,8 +193,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Whether the player may play music right now and which instrument family they are using.
-        /// Until instruments exist, the module or player local int PERFORMANCE_ALLOW_NO_INSTRUMENT lets anyone play;
-        /// a local string PERFORMANCE_INSTRUMENT_FAMILY on the player or module then picks the family (Strings by default).
+        /// An equipped instrument from <see cref="PerformanceInstrumentCatalog"/> sets the family. For tests, the module or player
+        /// local int PERFORMANCE_ALLOW_NO_INSTRUMENT lets anyone play; a local string PERFORMANCE_INSTRUMENT_FAMILY on the player or
+        /// module then picks the family (Strings by default).
         /// </summary>
         public static bool HasInstrumentEquipped(uint player, out PerformanceInstrumentFamily family)
         {

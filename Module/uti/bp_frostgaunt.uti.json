@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Smithery pattern for Fang Gauntlet - Frost Fang Pattern. Uses recovered Eshan materials to craft the established equipment design."
+      "0": "A Smithery pattern for Alpha-Fang Gauntlet - Frost Fang Pattern. Uses recovered Eshan materials to craft the established equipment design."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Smithery pattern for Fang Gauntlet - Frost Fang Pattern. Uses recovered Eshan materials to craft the established equipment design."
+      "0": "A Smithery pattern for Alpha-Fang Gauntlet - Frost Fang Pattern. Uses recovered Eshan materials to craft the established equipment design."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Fang Gauntlet - Frost Fang Pattern"
+      "0": "Blueprint: Alpha-Fang Gauntlet - Frost Fang Pattern"
     }
   },
   "ModelPart1": {

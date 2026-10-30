@@ -78,7 +78,7 @@ public class EshanGorakVeshTests
         quests["eshan_alpha_hunt"].States[1].GetObjectives().OfType<KillTargetObjective>()
             .Should().NotContain(kill => kill.Group == objective.Group);
 
-        new EshanSpawnDefinition().BuildSpawnTables()["ESHAN_SILVERWOOD_EXPANSE"].Spawns
+        new EshanSpawnDefinition().BuildSpawnTables()["ESHAN_GORAK_VESH"].Spawns
             .Should().ContainSingle(spawn => spawn.Resref == "esh_gorakvesh");
     }
 

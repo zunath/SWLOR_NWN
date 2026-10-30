@@ -37,13 +37,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "esh_wolfalpha")
                 .WithFrequency(10)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            _builder.Create("ESHAN_GORAK_VESH", "Eshan - Gorak Vesh")
                 .AddSpawn(ObjectType.Creature, "esh_gorakvesh")
                 .WithFrequency(1)
-                .AsRare()
-                .RandomlyWalks()
-                .ReturnsHome();
+                .ReturnsHome()
+                .RespawnDelay(61, 160);
         }
 
         private void EshanWinterMarches()

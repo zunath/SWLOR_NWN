@@ -74,14 +74,36 @@ public class EshanBalanceReviewTests
     }
 
     [Test]
-    public void Gorak_RareWeightMatchesTheExistingEliteBaseline()
+    public void Gorak_UsesTheWarlordRespawnOnItsOwnSilverwoodSpawnPoint()
     {
-        var spawn = new EshanSpawnDefinition().BuildSpawnTables()["ESHAN_SILVERWOOD_EXPANSE"].Spawns
-            .Single(spawn => spawn.Resref == "esh_gorakvesh");
-        var peer = new DathomirSpawnDefinition().BuildSpawnTables().Values.SelectMany(table => table.Spawns)
-            .Single(spawn => spawn.Resref == "grottoalpha");
-        spawn.Weight.Should().Be(peer.Weight);
-        spawn.IsRare.Should().BeTrue();
+        var tables = new EshanSpawnDefinition().BuildSpawnTables();
+        var gorak = tables["ESHAN_GORAK_VESH"];
+        var peer = new TatooineSpawnDefinition().BuildSpawnTables()["TATOOINE_TUSKEN_WARLORD"];
+        gorak.Spawns.Should().ContainSingle(spawn => spawn.Resref == "esh_gorakvesh" && !spawn.IsRare);
+        gorak.RespawnDelayMinutes.Should().Be(peer.RespawnDelayMinutes);
+        gorak.RespawnDelayMaximumMinutes.Should().Be(peer.RespawnDelayMaximumMinutes);
+        tables["ESHAN_SILVERWOOD_EXPANSE"].Spawns.Should().NotContain(spawn => spawn.Resref == "esh_gorakvesh");
+        Read("Module/git/pw_sc_eshanwilds.git.json")["WaypointList"]!["value"]!
+            .Should().ContainSingle(waypoint => Value(waypoint, "Tag") == "ESHAN_GORAK_VESH");
+    }
+
+    [TestCase("esh_wolf_pelt", "esh_wolfalpha:ESHAN_DIRE_WOLF_ALPHA_COMP,20,1", "esh_veinboss:ESHAN_DIRE_WOLF_ALPHA_COMP,100,1")]
+    [TestCase("esh_frost_fang", "esh_wolfalpha:ESHAN_DIRE_WOLF_ALPHA_COMP,20,1", "esh_veinboss:ESHAN_DIRE_WOLF_ALPHA_COMP,100,1")]
+    [TestCase("esh_mando_salv", "esh_nc_captain:ESHAN_NEOCRUSADER_CAPTAIN_COMP,10,1")]
+    [TestCase("esh_sun_insignia", "esh_nc_captain:ESHAN_NEOCRUSADER_CAPTAIN_COMP,10,1")]
+    [TestCase("bp_rec_scope", "esh_nc_captain:ESHAN_NEOCRUSADER_CAPTAIN_RARES,10,1")]
+    [TestCase("bp_rec_warhelm", "esh_nc_captain:ESHAN_NEOCRUSADER_CAPTAIN_RARES,10,1")]
+    public void PatternMaterialsAndBooks_DropOnlyFromElitesAndTheWarden(string item, params string[] expectedRolls)
+    {
+        var tables = new EshanLootTableDefinition().BuildLootTables();
+        var rolls = Hostiles.SelectMany(resref => Read($"Module/utc/{resref}.utc.json")["VarTable"]!["value"]!
+                .Where(local => Value(local, "Name").StartsWith("LOOT_TABLE_", StringComparison.Ordinal))
+                .Select(local => Value(local, "Value"))
+                .Where(roll => tables.TryGetValue(roll.Split(',')[0], out var table) &&
+                               table.Any(entry => entry.Resref == item))
+                .Select(roll => $"{resref}:{roll}"))
+            .ToArray();
+        rolls.Should().BeEquivalentTo(expectedRolls);
     }
 
     [Test]

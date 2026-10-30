@@ -575,7 +575,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ESHAN_MAP_RARES,5,1"
+          "value": "ESHAN_DIRE_WOLF_ALPHA_COMP,100,1"
         }
       },
       {
@@ -590,7 +590,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ESHAN_WARDEN_FIBERPLAST,100,1"
+          "value": "ESHAN_MAP_RARES,5,1"
         }
       },
       {
@@ -605,7 +605,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ESHAN_WARDEN_RARES,30,1"
+          "value": "ESHAN_WARDEN_FIBERPLAST,100,1"
         }
       },
       {
@@ -613,6 +613,21 @@
         "Name": {
           "type": "cexostring",
           "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ESHAN_WARDEN_RARES,30,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_6"
         },
         "Type": {
           "type": "dword",

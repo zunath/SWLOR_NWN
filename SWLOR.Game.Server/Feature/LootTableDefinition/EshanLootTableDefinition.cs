@@ -21,22 +21,20 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_greens", 5, 3)
                 .AddItem("esh_scallion", 5, 3)
                 .AddItem("esh_egg", 5, 3)
-                .AddItem("esh_mando_salv", 10, 2)
                 .AddGold(150, 5);
 
             _builder.Create("ESHAN_DIRE_WOLF")
-                .AddItem("esh_wolf_meat", 10, 3)
-                .AddItem("esh_wolf_pelt", 10, 2);
+                .AddItem("esh_wolf_meat", 10, 3);
 
             _builder.Create("ESHAN_FROST_WOLF")
-                .AddItem("esh_wolf_meat", 10, 3)
-                .AddItem("esh_wolf_pelt", 10, 2)
-                .AddItem("esh_frost_fang", 4, 1);
+                .AddItem("esh_wolf_meat", 10, 3);
 
             _builder.Create("ESHAN_DIRE_WOLF_ALPHA")
-                .AddItem("esh_wolf_meat", 10, 4)
-                .AddItem("esh_wolf_pelt", 10, 3)
-                .AddItem("esh_frost_fang", 10, 2);
+                .AddItem("esh_wolf_meat", 10, 4);
+
+            _builder.Create("ESHAN_DIRE_WOLF_ALPHA_COMP")
+                .AddItem("esh_wolf_pelt", 1)
+                .AddItem("esh_frost_fang", 1);
 
             _builder.Create("ESHAN_GORAK_VESH_GEMS")
                 .AddItem("emerald", 100, 1, true)
@@ -49,8 +47,6 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_chili_oil", 5, 2)
                 .AddItem("esh_pickles", 5, 2)
                 .AddItem("esh_seeds", 5, 3)
-                .AddItem("esh_sun_insignia", 10, 1)
-                .AddItem("esh_mando_salv", 5, 2)
                 .AddGold(100, 5);
 
             _builder.Create("ESHAN_SCRAPYARD_SMUGGLER")
@@ -78,10 +74,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ESHAN_WARDEN_FIBERPLAST")
                 .AddItem("fiberp_high", 1, 3);
 
-            _builder.Create("ESHAN_NEOCRUSADER_RARES")
+            _builder.Create("ESHAN_NEOCRUSADER_CAPTAIN_RARES")
                 .IsRare()
                 .AddItem("bp_rec_scope", 1, 1, true)
                 .AddItem("bp_rec_warhelm", 1, 1, true);
+
+            _builder.Create("ESHAN_NEOCRUSADER_CAPTAIN_COMP")
+                .AddItem("esh_mando_salv", 1)
+                .AddItem("esh_sun_insignia", 1);
 
             _builder.Create("ESHAN_MAP_RARES")
                 .IsRare()

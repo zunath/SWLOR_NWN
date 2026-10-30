@@ -1351,7 +1351,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "swd_compu001"
+          "value": "cloning_reg"
         },
         "TrapDetectable": {
           "type": "byte",

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Aegisline Display Plinth."
+      "0": "A rare schematic for crafting Aegisline Sword Pedestal."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Aegisline Display Plinth."
+      "0": "A rare schematic for crafting Aegisline Sword Pedestal."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Aegisline Display Plinth"
+      "0": "Blueprint: Aegisline Sword Pedestal"
     }
   },
   "ModelPart1": {

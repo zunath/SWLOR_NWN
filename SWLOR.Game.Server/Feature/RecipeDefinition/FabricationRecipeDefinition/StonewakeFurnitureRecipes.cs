@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_flawed", 2)
                 .Component("vs_mask", 1);
 
-            // Stonewake Display Plinth
-            _builder.Create(RecipeType.StonewakeDisplayPlinth, SkillType.Fabrication)
+            // Stonewake Stone Altar
+            _builder.Create(RecipeType.StonewakeStoneAltar, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0369")
                 .Level(30)

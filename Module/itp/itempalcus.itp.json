@@ -21113,7 +21113,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Aegisline Display Plinth"
+                "value": "Aegisline Sword Pedestal"
               },
               "RESREF": {
                 "type": "resref",
@@ -21267,7 +21267,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Ashmark Display Plinth"
+                "value": "Ashmark Altar"
               },
               "RESREF": {
                 "type": "resref",
@@ -22301,7 +22301,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Commandline Display Plinth"
+                "value": "Commandline Bust"
               },
               "RESREF": {
                 "type": "resref",
@@ -22873,7 +22873,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Fieldline Display Plinth"
+                "value": "Fieldline Display Case"
               },
               "RESREF": {
                 "type": "resref",
@@ -23148,7 +23148,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Guttermark Display Plinth"
+                "value": "Guttermark Easel"
               },
               "RESREF": {
                 "type": "resref",
@@ -24457,7 +24457,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Resonant Display Plinth"
+                "value": "Resonant Crystal"
               },
               "RESREF": {
                 "type": "resref",
@@ -24974,7 +24974,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Stonewake Display Plinth"
+                "value": "Stonewake Stone Altar"
               },
               "RESREF": {
                 "type": "resref",
@@ -25150,7 +25150,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Surgewake Display Plinth"
+                "value": "Surgewake Holo Projector"
               },
               "RESREF": {
                 "type": "resref",
@@ -25623,7 +25623,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Trailmark Display Plinth"
+                "value": "Trailmark Waystone"
               },
               "RESREF": {
                 "type": "resref",
@@ -25799,7 +25799,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Veilcarved Display Plinth"
+                "value": "Veilcarved Rune Pillar"
               },
               "RESREF": {
                 "type": "resref",
@@ -63496,7 +63496,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Aegisline Display Plinth"
+                      "value": "Blueprint: Aegisline Sword Pedestal"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -63628,7 +63628,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Ashmark Display Plinth"
+                      "value": "Blueprint: Ashmark Altar"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -64277,7 +64277,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Commandline Display Plinth"
+                      "value": "Blueprint: Commandline Bust"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -64882,7 +64882,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Fieldline Display Plinth"
+                      "value": "Blueprint: Fieldline Display Case"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -65179,7 +65179,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Guttermark Display Plinth"
+                      "value": "Blueprint: Guttermark Easel"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -66169,7 +66169,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Resonant Display Plinth"
+                      "value": "Blueprint: Resonant Crystal"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -67060,7 +67060,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Stonewake Display Plinth"
+                      "value": "Blueprint: Stonewake Stone Altar"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -67236,7 +67236,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Surgewake Display Plinth"
+                      "value": "Blueprint: Surgewake Holo Projector"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -67500,7 +67500,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Trailmark Display Plinth"
+                      "value": "Blueprint: Trailmark Waystone"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -67709,7 +67709,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Veilcarved Display Plinth"
+                      "value": "Blueprint: Veilcarved Rune Pillar"
                     },
                     "RESREF": {
                       "type": "resref",

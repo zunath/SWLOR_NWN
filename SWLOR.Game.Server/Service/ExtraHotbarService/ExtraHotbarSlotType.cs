@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Service.ExtraHotbarService
         Ability = 1,
         Item = 2,
         Command = 3,
-        ActionMode = 4
+        ActionMode = 4,
+        Equipment = 5
     }
 }

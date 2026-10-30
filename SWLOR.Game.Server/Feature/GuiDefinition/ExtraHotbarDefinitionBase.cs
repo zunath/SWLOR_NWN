@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             // A plain button with the icon drawn over it, so an empty slot shows only its frame.
             const float inset = 2f;
+            const float halfWidth = (ExtraHotbarViewModel.SlotSize - inset * 2f) / 2f;
             row.AddButton()
                 .SetId($"ehb_slot_{slot}")
                 .SetText(string.Empty)
@@ -101,6 +102,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindResref(Bind<string>(ExtraHotbarViewModel.IconProperty(slot)))
                         .BindIsEnabled(Bind<bool>(ExtraHotbarViewModel.HasIconProperty(slot)))
                         .SetPosition(inset, inset, ExtraHotbarViewModel.SlotSize - inset * 2f, ExtraHotbarViewModel.SlotSize - inset * 2f)
+                        .SetAspect(NuiAspect.Stretch))
+                    .AddImage(image => image
+                        .BindResref(Bind<string>(ExtraHotbarViewModel.PairMainIconProperty(slot)))
+                        .BindIsEnabled(Bind<bool>(ExtraHotbarViewModel.IsPairProperty(slot)))
+                        .SetPosition(inset, inset, halfWidth, ExtraHotbarViewModel.SlotSize - inset * 2f)
+                        .SetAspect(NuiAspect.Stretch))
+                    .AddImage(image => image
+                        .BindResref(Bind<string>(ExtraHotbarViewModel.PairOffIconProperty(slot)))
+                        .BindIsEnabled(Bind<bool>(ExtraHotbarViewModel.IsPairProperty(slot)))
+                        .SetPosition(inset + halfWidth, inset, halfWidth, ExtraHotbarViewModel.SlotSize - inset * 2f)
                         .SetAspect(NuiAspect.Stretch))
                     .AddText(text => text
                         .BindText(Bind<string>(ExtraHotbarViewModel.CountProperty(slot)))

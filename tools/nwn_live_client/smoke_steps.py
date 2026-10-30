@@ -1,0 +1,432 @@
+"""The in-game steps of the smoke scenario (combat to area transfer).
+
+Each step drives the client of a running stack the way a player would (chat commands, clicks,
+drags) and judges the outcome only from evidence: the client's chat log, the server's own logs
+and Redis. Test setup (teleports, item creation) uses the server's built-in chat commands,
+which the smoke stack makes available to everyone by running as a test environment; no module
+content or server code is changed.
+
+Screen coordinates were measured on the profile's fixed 1280x720 screen at UI scale 1.0 and are
+stable for one client build and one character. Every action that may silently fail is verified
+by its log line and retried a bounded number of times.
+"""
+from __future__ import annotations
+
+import json
+import re
+import time
+
+from .smoke_client import (EMPTY_GRID_CELL, MAIN_HAND_SLOT, NEAR_SCAN, SELF_POINT, WIDE_SCAN, GameClient, bright_pixels,
+                           green_text_present, new_hotbar_slot, window_left)
+from .stack import LiveStackError
+
+BANK_TERMINAL_POINTS = [(600, 395), (598, 360)]
+COOKPOT_POINTS = [(740, 366), (555, 368)]
+SELAN_POINTS = [(584, 376), (580, 370), (590, 382)]
+
+# Windows: the perks window, bank window (before and after it is dragged right) and crafting windows.
+PERKS_FIRST_ROW = (158, 375)
+PERKS_BUY = (302, 594)
+PERKS_YES = (302, 584)
+PERKS_CLOSE = (743, 17)
+PERKS_TITLE = (4, 8, 220, 26)
+# Bank window controls, as offsets from the window's left edge.
+BANK_DEPOSIT = (237, 494)
+BANK_FIRST_WITHDRAW = (395, 140)
+BANK_CLOSE = (456, 17)
+RECIPE_FIRST = (153, 202)
+RECIPE_CRAFT = (456, 560)
+CRAFT_WINDOW_CORNER = ((538, 287), (1100, 640))
+CRAFT_START = (317, 530)
+CRAFT_BASIC_SYNTHESIS = (706, 362)
+# The recipe's detail line and the item window's title bar, where bright text shows once they are up.
+RECIPE_DETAIL_BOX = (316, 182, 540, 204)
+CRAFT_TITLE_BOX = (4, 8, 120, 26)
+CONVERSATION_FIRST_REPLY = (316, 357)
+
+# The three areas of the start of the game, as the server's chat log names them.
+AREA_HANGAR = 'CZ-220 - Hangar'
+AREA_OFFICES = 'CZ-220 - Offices & Labs'
+
+
+# The CZ220_MYNOCKS spawn table holds two creatures: the mynock and the rarer coolant-scarred one.
+MYNOCK = r'(?:Coolant-Scarred )?Mynock'
+
+
+def character_name(run) -> str:
+    """The test character's in-game name, read once from its player record.
+
+    Chat-log lines carry the character's name, so no check hard-codes one.
+    """
+    if not getattr(run, 'character_name', ''):
+        run.character_name = player_record(run).get('Name') or ''
+    if not run.character_name:
+        raise LiveStackError('The player record has no name yet.')
+    return run.character_name
+
+
+def expect(step, name: str, evidence: str | None, detail: str = '') -> bool:
+    """Record a check that passes when evidence (a matched log line) was found."""
+    return step.check(name, bool(evidence), (evidence or detail)[:160])
+
+
+def stop_actions(client: GameClient) -> None:
+    """Cancel whatever the character is doing (an attack, a walk) with a click on the floor."""
+    client.click(900, 480)
+    time.sleep(2)
+
+
+def teleport(client: GameClient, tag: str) -> bool:
+    """Jump to a waypoint with /tpwp; True when the server accepted the tag and the area is loaded."""
+    stop_actions(client)
+    client.ensure_alive()
+    tips = client.loading_screens()
+    mark = client.mark()
+    client.say(f'/tpwp {tag}')
+    if client.wait_for('Invalid waypoint tag', mark, 3, 1):
+        return False
+    if client.wait_area_change(tips, timeout=14):
+        return client.wait_loaded()
+    time.sleep(4)
+    return True
+
+
+def click_expect(client: GameClient, x: int, y: int, pattern: str, attempts: int = 3, wait: float = 8) -> str | None:
+    """Click a window control until the chat log shows its effect; the matching line, or None.
+
+    The client drops a click on a control now and then (a tooltip is up, the window is busy), and
+    the server cannot tell it was missed, so only a repeated click that is harmless when the first
+    one landed may be used here.
+    """
+    for _ in range(attempts):
+        mark = client.mark()
+        client.nui_click(x, y)
+        found = client.wait_for(pattern, mark, wait, 1.5)
+        if found:
+            return found
+    return None
+
+
+def reset_windows(client: GameClient) -> None:
+    """Close every window and restore the default window positions (/resetwindows).
+
+    The server remembers where each window was last dragged, so a step that clicks inside one
+    starts from the defaults to find its controls where its coordinates expect them.
+    """
+    client.say('/resetwindows')
+    time.sleep(3)
+
+
+def spawn(client: GameClient, resref: str, quantity: int, item_name: str) -> str | None:
+    """Create items with /spawnitem; the matching "Acquired Item" chat line, or None."""
+    mark = client.mark()
+    client.say(f'/spawnitem {resref} {quantity}')
+    return client.wait_for(rf'Acquired Item: {re.escape(item_name)}', mark, 20)
+
+
+def attack_target(client: GameClient, name: str, victim: str, attempts: int = 6) -> tuple[int, int] | None:
+    """Find a hostile next to the character, click it and wait until the character attacks it.
+
+    name is the character's name and victim a regular expression for the target's name. Each
+    attempt is a quick pass over the points beside the character; every third one also covers the
+    wider surroundings.
+    """
+    for attempt in range(attempts):
+        client.ensure_alive()
+        point = client.find_hostile(NEAR_SCAN)
+        if point is None and attempt % 3 == 2:
+            point = client.find_hostile(WIDE_SCAN)
+        if point is None:
+            continue
+        mark = client.mark()
+        client.click_object(*point)
+        if client.wait_for(rf'{re.escape(name)} attacks {victim}', mark, 12, 1.5):
+            return point
+    return None
+
+
+def player_record(run) -> dict:
+    uuid = run.stack.state['character']['uuid']
+    return json.loads(run.redis('JSON.GET', f'Player:{uuid}', '.'))
+
+
+def attack_log_has(client: GameClient, mark: int, attack_type: int, weapon: str) -> str | None:
+    pattern = re.compile(rf'PC\?: 1, Defender .*Attack type: {attack_type}, weapon {re.escape(weapon)}')
+    for line in client.attack_lines()[mark:]:
+        if pattern.search(line):
+            return line.split('[INF] ', 1)[-1]
+    return None
+
+
+# ---------------------------------------------------------------- steps
+
+def fight(run, step, label: str, weapon: str, attack_type: int) -> None:
+    """Go to the mynocks, wait for one to engage, attack it and check the damage and the weapon used.
+
+    Evidence: the character's attack and damage lines in the client chat log, and the server's own
+    combat-resolution log naming the weapon and the attack type (1 melee, 2 ranged).
+    """
+    client: GameClient = run.client
+    name = character_name(run)
+    attack_mark = len(client.attack_lines())
+    # The mark comes first: a mynock can strike while the area is still settling after the jump.
+    mark = client.mark()
+    step.check(f'{label}: teleport to the mynock spawn point', teleport(client, 'CZ220_MYNOCKS'))
+    # The spawn timer can take a few minutes after the area gets its first visitor.
+    expect(step, f'{label}: a mynock engages', client.wait_for(rf'{MYNOCK} (attacks|uses|readies)', mark, 300, 3))
+    clicked = attack_target(client, name, MYNOCK)
+    detail = f'clicked {clicked}' if clicked else 'no hostile label found'
+    expect(step, f'{label}: the character attacks the mynock',
+           client.wait_for(rf'{re.escape(name)} attacks {MYNOCK}', mark, 40, 2), detail)
+    expect(step, f'{label}: a damage number appears in the combat log',
+           client.wait_for(rf'{re.escape(name)} .*damages {MYNOCK}: \d+ \(', mark, 60, 2))
+    expect(step, f'{label}: the server resolved the attack with the {weapon}',
+           attack_log_has(client, attack_mark, attack_type, weapon))
+    run.capture(step, label)
+    stop_actions(client)
+
+
+def combat(run, step) -> None:
+    """A rifle (ranged) attack, then a knife (melee) attack, on mynocks that come to the character.
+
+    Weapons are created, found and equipped in the quiet hangar: an inventory icon is found by
+    comparing two screenshots, which only works while the scene behind the panel holds still, and
+    each drag is checked by the icon leaving its cell, because the client drops drags now and then.
+    """
+    client: GameClient = run.client
+    client.ensure_alive()
+    step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
+    step.check('inventory panel opens', client.ensure_inventory_open())
+    unequip_main_hand(client)
+    rifle = client.locate_new_item(lambda: client.say('/spawnitem b_rifle 1'))
+    knife = client.locate_new_item(lambda: client.say('/spawnitem b_knife 1'))
+    step.check('the rifle appears in the inventory', rifle is not None, str(rifle))
+    step.check('the knife appears in the inventory', knife is not None, str(knife))
+    if rifle is None or knife is None:
+        return
+
+    step.check('the rifle is equipped', client.move_item(rifle, MAIN_HAND_SLOT))
+    fight(run, step, 'ranged', 'Basic Rifle', 2)
+
+    client.ensure_alive()
+    step.check('back in the hangar', teleport(client, 'ENTRY_STARTING_WP'))
+    step.check('the rifle is put away', client.move_item(MAIN_HAND_SLOT, rifle))
+    step.check('the knife is equipped', client.move_item(knife, MAIN_HAND_SLOT))
+    fight(run, step, 'melee', 'Basic Knife', 1)
+    step.detail = 'Ranged rifle and melee knife attacks landed and their damage was logged.'
+
+
+def unequip_main_hand(client: GameClient) -> None:
+    """Drag whatever is in the main hand into the inventory grid."""
+    client.drag(*MAIN_HAND_SLOT, *EMPTY_GRID_CELL)
+    time.sleep(3)
+
+
+def ability(run, step) -> None:
+    """Buy Adrenal Stim in the perks window, use it, then use it again inside its cooldown."""
+    client: GameClient = run.client
+    name = character_name(run)
+    reset_windows(client)
+    step.check('the inventory panel is closed', client.ensure_inventory_closed())
+    step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
+    mark = client.mark()
+    hotbar_before = client.snapshot()
+    client.say('/perks')
+    time.sleep(5)
+    client.nui_click(*PERKS_FIRST_ROW)
+    time.sleep(2)
+    client.nui_click(*PERKS_BUY)
+    time.sleep(2)
+    client.nui_click(*PERKS_YES)
+    expect(step, 'the perk is bought', client.wait_for(r"You purchase 'Adrenal Stim' rank 1\.", mark, 20))
+    perks = player_record(run).get('Perks', {})
+    step.check('the purchase is saved on the player record', perks.get('AdrenalStim') == 1, json.dumps(perks))
+    run.capture(step, 'perk-bought')
+    step.check('the perks window closes', client.close_window(*PERKS_CLOSE, PERKS_TITLE))
+    slot = new_hotbar_slot(hotbar_before, client.snapshot())
+    step.check('the ability appears on the hotbar', slot is not None, str(slot))
+    if slot is None:
+        return
+
+    expect(step, 'stim packs are created', spawn(client, 'stim_pack', 3, 'Stim Pack'))
+    mark = client.mark()
+    client.nui_click(*slot)
+    time.sleep(2)
+    client.click(*SELF_POINT)
+    expect(step, 'the ability is used', client.wait_for(rf'{re.escape(name)} readies Adrenal Stim I\.', mark, 20))
+    expect(step, 'the stim pack is consumed', client.wait_for(r'Lost Item: Stim Pack', mark, 10))
+    expect(step, 'the effect lands', client.wait_for(rf'{re.escape(name)} receives the effect of Adrenal Stim', mark, 10))
+    run.capture(step, 'used')
+
+    refusal = None
+    for _ in range(3):
+        mark = client.mark()
+        client.nui_click(*slot)
+        time.sleep(2)
+        client.click(*SELF_POINT)
+        refusal = client.wait_for(r'This ability can be used in \d+ seconds?\.', mark, 8)
+        if refusal:
+            break
+    expect(step, 'a second use is refused while on cooldown', refusal)
+    run.capture(step, 'cooldown')
+    step.detail = 'Adrenal Stim was bought, used once and refused with a cooldown message on the second use.'
+
+
+def storage(run, step) -> None:
+    """Deposit an item in a bank terminal and withdraw it again."""
+    client: GameClient = run.client
+    reset_windows(client)
+    step.check('inventory panel is open', client.ensure_inventory_open())
+    center = client.locate_new_item(lambda: client.say('/spawnitem b_pistol 1'))
+    step.check('an item to deposit appears in the inventory', center is not None, str(center))
+    if center is None:
+        return
+    step.check('teleport to the bank', teleport(client, 'MN_Bank'))
+    before = len(run.redis('KEYS', 'InventoryItem:*').split())
+
+    opened = None
+    for point in BANK_TERMINAL_POINTS:
+        client.click_object(*point)
+        time.sleep(7)
+        if bank_window_open(client):
+            opened = point
+            break
+    step.check('the bank window opens', opened is not None, str(opened))
+    if opened is None:
+        return
+    left = window_left(client.snapshot())
+    step.check('the bank window is located', left is not None, f'left edge {left}')
+    if left is None:
+        return
+    if left < 380:
+        # The bank covers the inventory panel: move it to the right so the items stay clickable.
+        client.drag(left + 200, 17, left + 200 + (640 - left), 17)
+        time.sleep(2)
+        left = window_left(client.snapshot()) or left
+    mark = client.mark()
+    expect(step, 'the deposit asks for an item',
+           click_expect(client, left + BANK_DEPOSIT[0], BANK_DEPOSIT[1], r'Please click on an item within your inventory\.'))
+    client.click(*center)
+    expect(step, 'the item leaves the inventory', client.wait_for(r'Lost Item: Basic Pistol', mark, 15))
+    after = len(run.redis('KEYS', 'InventoryItem:*').split())
+    step.check('the bank record exists', after == before + 1, f'{before} -> {after}')
+    run.capture(step, 'deposited')
+
+    expect(step, 'the item returns to the inventory',
+           click_expect(client, left + BANK_FIRST_WITHDRAW[0], BANK_FIRST_WITHDRAW[1], r'Acquired Item: Basic Pistol'))
+    final = len(run.redis('KEYS', 'InventoryItem:*').split())
+    step.check('the bank record is gone', final == before, f'{after} -> {final}')
+    run.capture(step, 'withdrawn')
+    client.nui_click(left + BANK_CLOSE[0], BANK_CLOSE[1])
+    time.sleep(2)
+    step.detail = 'An item was deposited in the bank and withdrawn again.'
+
+
+def bank_window_open(client: GameClient) -> bool:
+    """True when a bank window's Deposit button is on screen (below the inventory panel's bottom edge)."""
+    return bright_pixels(client.snapshot(), (0, 484, 1280, 506)) >= 60
+
+
+def craft(run, step) -> None:
+    """Cook one Mynock Meat Ball at a cookpot."""
+    client: GameClient = run.client
+    reset_windows(client)
+    step.check('teleport to the cookpots', teleport(client, 'MN_Cookpots'))
+    expect(step, 'mynock meat is created', spawn(client, 'mynock_meat', 3, 'Mynock Meat'))
+    expect(step, 'mynock wings are created', spawn(client, 'mynock_wing', 2, 'Mynock Wing'))
+    expect(step, 'distilled water is created', spawn(client, 'distilled_water', 1, 'Distilled Water'))
+
+    opened = None
+    for point in COOKPOT_POINTS:
+        client.click_object(*point)
+        time.sleep(7)
+        if green_text_present(client.snapshot(), (30, 190, 280, 300)):
+            opened = point
+            break
+    step.check('the crafting window opens', opened is not None, str(opened))
+    if opened is None:
+        return
+    selected = False
+    for _ in range(4):
+        client.nui_click(*RECIPE_FIRST)
+        time.sleep(3)
+        if bright_pixels(client.snapshot(), RECIPE_DETAIL_BOX) >= 60:
+            selected = True
+            break
+    step.check('the first recipe is selected and its details show', selected)
+    if not selected:
+        return
+    started = False
+    for _ in range(4):
+        client.nui_click(*RECIPE_CRAFT)
+        time.sleep(5)
+        if bright_pixels(client.snapshot(), CRAFT_TITLE_BOX) >= 40:
+            started = True
+            break
+    step.check('the item window opens', started)
+    if not started:
+        return
+    client.drag(*CRAFT_WINDOW_CORNER[0], *CRAFT_WINDOW_CORNER[1])
+    time.sleep(2)
+    expect(step, 'the components are consumed',
+           click_expect(client, *CRAFT_START, r'Lost Item: Distilled Water', attempts=3, wait=10))
+    mark = client.mark()
+    made = None
+    for _ in range(6):
+        client.nui_click(*CRAFT_BASIC_SYNTHESIS)
+        made = client.wait_for(r'Acquired Item: Mynock Meat Ball', mark, 7, 1.5)
+        if made:
+            break
+    expect(step, 'the item is crafted', made)
+    expect(step, 'crafting skill experience is awarded', client.wait_for(r'You earned Agriculture skill experience', mark, 10))
+    run.capture(step, 'crafted')
+    reset_windows(client)
+    step.detail = 'A Mynock Meat Ball was crafted at a cookpot.'
+
+
+def quest(run, step) -> None:
+    """Accept Selan's Request from the reception desk."""
+    client: GameClient = run.client
+    reset_windows(client)
+    step.check('teleport to the reception desk', teleport(client, 'Reception'))
+    accepted = None
+    mark = client.mark()
+    for point in SELAN_POINTS:
+        client.click_object(*point)
+        time.sleep(6)
+        for _ in range(3):
+            client.nui_click(*CONVERSATION_FIRST_REPLY)
+            time.sleep(4)
+        accepted = client.wait_for(r"Quest 'Selan's Request' accepted\.", mark, 8, 2)
+        if accepted:
+            break
+    expect(step, 'the quest is accepted in conversation', accepted)
+    quests = player_record(run).get('Quests', {})
+    step.check('the quest is on the player record at its first state',
+               quests.get('selan_request', {}).get('CurrentState') == 1, json.dumps(quests)[:120])
+    run.capture(step, 'accepted')
+    step.detail = "Selan's Request was accepted through her conversation."
+
+
+def transfer(run, step) -> None:
+    """Go to the hangar and back to the offices, proving each area from the server's chat log."""
+    client: GameClient = run.client
+    name = character_name(run)
+    reset_windows(client)
+    # Start in the offices whatever the earlier steps left, so each command below is sent from a known area.
+    step.check('teleport to the offices to start', teleport(client, 'Reception'))
+    step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
+    run.capture(step, 'hangar')
+    step.check('teleport back to the offices', teleport(client, 'Reception'))
+    client.say('/help')
+    time.sleep(4)
+    lines = client.server_chat_lines()
+    # Each chat line is logged with the area its speaker stood in when sending it.
+    wanted = [(f'{AREA_OFFICES} {name}: /tpwp ENTRY_STARTING_WP', 'sent from the offices'),
+              (f'{AREA_HANGAR} {name}: /tpwp Reception', 'sent from the hangar'),
+              (f'{AREA_OFFICES} {name}: /help', 'sent from the offices again')]
+    for text, name in wanted:
+        found = [line for line in lines if text in line]
+        step.check(f'the server logged the command {name}', bool(found), found[-1][:120] if found else text)
+    run.capture(step, 'offices')
+    step.detail = 'The character moved offices -> hangar -> offices and the server logged each area.'

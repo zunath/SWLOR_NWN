@@ -24,8 +24,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
+from . import smoke_steps
 from . import stack as live
 from .__main__ import parser as live_parser
+from .smoke_client import GameClient
 from .stack import LiveStackError, Stack
 
 RESULTS_SCHEMA = 1
@@ -47,6 +49,10 @@ PLACEHOLDER_CDKEY_TEXT = 'Placeholder for a server-only smoke run; this is not a
 PLACEHOLDER_CLIENT_FOLDER = 'placeholder-client-install'
 
 DEFAULT_RESULTS_FOLDER = 'swlor-smoke'
+# The server environment of the smoke stack. A test environment makes the staff chat commands
+# the in-game steps use (/tpwp, /spawnitem) available to every player, while player commands
+# such as /perks keep working; no staff record has to be seeded into the database.
+SMOKE_ENVIRONMENT = 'test'
 
 
 @dataclass
@@ -87,23 +93,17 @@ class StepDefinition:
 
 
 # The scenario of MaintainabilityRefactorSpecs.md "P0-6", in order. A step with a manual_reason
-# is recorded as manual with that reason and is not attempted.
+# is recorded as manual with that reason and is not attempted; every step today is automated.
 SCENARIO = (
     StepDefinition('boot', 'Server boots from this build; the client reaches the module'),
     StepDefinition('login', 'An existing test character logs in', needs_client=True),
-    StepDefinition('combat', 'Melee and ranged attacks against a spawned training target; damage numbers appear',
-                   'Not automated yet: needs a hostile target, which only a client-side click on it or a '
-                   'test driver provides'),
-    StepDefinition('ability', 'Use one active ability with a cooldown',
-                   'Not automated yet: needs the character to own an active ability and a hotbar click'),
-    StepDefinition('storage', 'Open the bank or another storage container and move an item in and out',
-                   'Not automated yet: drag and drop in a NUI window'),
-    StepDefinition('craft', 'Craft one item at a crafting station',
-                   'Not automated yet: needs the crafting window and its materials'),
-    StepDefinition('quest', 'Advance one quest step (accept a simple quest)',
-                   'Not automated yet: needs a quest-giver conversation'),
-    StepDefinition('transfer', 'Transfer to another area and back',
-                   'Not automated yet: needs a door click or a teleport command'),
+    StepDefinition('combat', 'Ranged and melee attacks against spawned targets; damage numbers appear',
+                   needs_client=True),
+    StepDefinition('ability', 'Use one active ability with a cooldown', needs_client=True),
+    StepDefinition('storage', 'Open the bank and move an item in and out', needs_client=True),
+    StepDefinition('craft', 'Craft one item at a crafting station', needs_client=True),
+    StepDefinition('quest', 'Advance one quest step (accept a simple quest)', needs_client=True),
+    StepDefinition('transfer', 'Transfer to another area and back', needs_client=True),
     StepDefinition('logout', 'Log out cleanly', needs_client=True),
 )
 
@@ -284,6 +284,23 @@ def stale_build_inputs(repo: Path, assembly: Path) -> list[str]:
     return sorted(stale)
 
 
+def relative_or_absolute(path: Path, base: Path) -> str:
+    """A path relative to base with forward slashes, or the absolute path when it lies elsewhere."""
+    try:
+        return path.relative_to(base).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def require_pillow() -> None:
+    """Fail early, with the install command, when the screenshot analysis cannot import Pillow."""
+    try:
+        __import__('PIL')
+    except ImportError:
+        raise LiveStackError('The smoke run reads screenshots with Pillow, which is not installed. Install it '
+                             'with: python -m pip install -r tools/nwn_visual_check/requirements.txt') from None
+
+
 def head_commit(repo: Path) -> str:
     try:
         return subprocess.run(['git', '-C', str(repo), 'rev-parse', 'HEAD'], capture_output=True, text=True,
@@ -314,6 +331,9 @@ class SmokeRun:
         self.results = RunResults(label=label, mode='server-only' if self.server_only else 'full',
                                   started_utc=utc_now(), steps=[], commit=head_commit(live.REPO_ROOT))
         self.stack: Stack | None = None
+        self.client: GameClient | None = None
+        # Appended to screenshot labels; attach mode sets it so a rerun never reuses a label.
+        self.label_suffix = ''
         # True when the stack could not be prepared, so no scenario step ran (exit code 2).
         self.setup_failed = False
         self._clock = time.monotonic()
@@ -325,7 +345,8 @@ class SmokeRun:
         options = self.options
         arguments = ['up', '--name', self.results.label, '--run-dir', str(self.results_dir / 'run'),
                      '--configuration', options.configuration, '--server-timeout', str(options.server_timeout),
-                     '--max-minutes', str(options.max_minutes), '--settle', str(options.settle)]
+                     '--max-minutes', str(options.max_minutes), '--settle', str(options.settle),
+                     '--server-env', f'SWLOR_ENVIRONMENT={SMOKE_ENVIRONMENT}']
         for flag, value in (('--character', options.character), ('--public-cdkey', options.public_cdkey),
                             ('--cdkey', options.cdkey), ('--dotnet', options.dotnet), ('--module', options.module),
                             ('--hak-dir', options.hak_dir), ('--tlk-dir', options.tlk_dir),
@@ -350,6 +371,7 @@ class SmokeRun:
                 up.client_install = str(binary.parents[2])
         stack = live.create(up)
         self.stack = stack
+        self.client = GameClient(stack)
         state = stack.state
         self.results.build_revision = state['inputs'].get('build_source_revision', '')
         self.results.module_sha256 = state['inputs'].get('module_sha256', '')
@@ -408,8 +430,8 @@ class SmokeRun:
 
     def capture(self, step: StepResult, name: str) -> None:
         assert self.stack is not None
-        path = live.capture(self.stack, screenshot_label(step.id, name))
-        step.screenshots.append(path.relative_to(self.results_dir).as_posix())
+        path = live.capture(self.stack, screenshot_label(step.id, name) + self.label_suffix)
+        step.screenshots.append(relative_or_absolute(path, self.results_dir))
 
     def step_boot(self, step: StepResult) -> None:
         self.bring_up(step)
@@ -434,6 +456,24 @@ class SmokeRun:
                    f'Version {record.get("Version")}')
         self.capture(step, 'in-area')
         step.detail = 'Character entered the module and its record was initialized.'
+
+    def step_combat(self, step: StepResult) -> None:
+        smoke_steps.combat(self, step)
+
+    def step_ability(self, step: StepResult) -> None:
+        smoke_steps.ability(self, step)
+
+    def step_storage(self, step: StepResult) -> None:
+        smoke_steps.storage(self, step)
+
+    def step_craft(self, step: StepResult) -> None:
+        smoke_steps.craft(self, step)
+
+    def step_quest(self, step: StepResult) -> None:
+        smoke_steps.quest(self, step)
+
+    def step_transfer(self, step: StepResult) -> None:
+        smoke_steps.transfer(self, step)
 
     def step_logout(self, step: StepResult) -> None:
         stack = self.stack
@@ -467,14 +507,16 @@ class SmokeRun:
                     step.detail = 'Failed checks: ' + ', '.join(check.name for check in step.checks if not check.passed)
                 elif step.status == BLOCKED and not step.checks_passed:
                     step.status = FAIL
-        except (LiveStackError, subprocess.SubprocessError, OSError, ValueError, AssertionError) as error:
-            step.status, step.detail = FAIL, str(error)
+        except Exception as error:
+            # Any failure of a step, including one in the screenshot analysis, is that step's result.
+            step.status = FAIL
+            step.detail = str(error) if isinstance(error, LiveStackError) else f'{type(error).__name__}: {error}'
         step.seconds = time.monotonic() - started
         live.log(f'Step {definition.id}: {step.status}' + (f' - {step.detail}' if step.detail else ''))
         return step
 
     def execute(self) -> RunResults:
-        actions = {'boot': self.step_boot, 'login': self.step_login, 'logout': self.step_logout}
+        actions = self.actions()
         try:
             self.create_stack()
         except Exception as error:
@@ -508,6 +550,9 @@ class SmokeRun:
             self.results.teardown = {key: report.get(key) for key in (
                 'clean', 'player_booted', 'remaining_containers', 'remaining_volumes', 'remaining_networks',
                 'profile_removed', 'home_removed', 'key_and_character_copies_remaining', 'errors')}
+        self.write_results()
+
+    def write_results(self) -> None:
         self.results.finished_utc = utc_now()
         self.results.seconds = round(time.monotonic() - self._clock, 1)
         self.results_dir.mkdir(parents=True, exist_ok=True)
@@ -515,6 +560,31 @@ class SmokeRun:
                                                        'utf-8')
         (self.results_dir / 'results.md').write_text(results_to_markdown(self.results), 'utf-8')
         live.log(f'Results: {self.results_dir / "results.md"}')
+
+    def attach(self, stack: Stack, only: list[str]) -> RunResults:
+        """Run chosen steps against a stack that is already up, and leave it running.
+
+        For developing and diagnosing steps: start a stack with NwnLiveClient.py up (and the
+        smoke server environment), then run steps one at a time. No teardown happens here.
+        """
+        self.stack = stack
+        self.client = GameClient(stack)
+        self.label_suffix = f'-a{int(time.time())}'
+        self.results.build_revision = stack.state['inputs'].get('build_source_revision', '')
+        actions = self.actions()
+        unknown = [name for name in only if name not in actions]
+        if unknown:
+            raise LiveStackError(f'Unknown step(s): {", ".join(unknown)}. Steps: {", ".join(actions)}.')
+        for definition in SCENARIO:
+            if definition.id in only:
+                self.run_step(definition, actions[definition.id])
+        self.write_results()
+        return self.results
+
+    def actions(self) -> dict:
+        return {'boot': self.step_boot, 'login': self.step_login, 'combat': self.step_combat,
+                'ability': self.step_ability, 'storage': self.step_storage, 'craft': self.step_craft,
+                'quest': self.step_quest, 'transfer': self.step_transfer, 'logout': self.step_logout}
 
 
 # ---------------------------------------------------------------- command line
@@ -553,6 +623,11 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument('--settle', type=float, default=45, help='Seconds without an area transition before the '
                                                               'character counts as settled.')
 
+    attach = commands.add_parser('attach', help='Run chosen steps against a stack that is already up (development).')
+    attach.add_argument('run_dir', type=Path, help='Run directory printed by NwnLiveClient.py up.')
+    attach.add_argument('--only', required=True, help='Comma-separated step ids, for example combat,ability.')
+    attach.add_argument('--results-dir', type=Path, help='Where to write results (default: <run dir>/attach).')
+
     compare = commands.add_parser('compare', help='Compare two results.json files.')
     compare.add_argument('first', type=Path)
     compare.add_argument('second', type=Path)
@@ -562,6 +637,8 @@ def parser() -> argparse.ArgumentParser:
 def run_command(options: argparse.Namespace) -> int:
     if options.repeat < 1:
         raise LiveStackError('--repeat must be at least 1.')
+    if not options.server_only:
+        require_pillow()
     root = (options.results_root or default_results_root()).resolve()
     for repository in live.repository_roots():
         if live.is_within(root, repository):
@@ -607,6 +684,34 @@ def run_command(options: argparse.Namespace) -> int:
     return exit_code
 
 
+def attach_steps(selection: str) -> list[str]:
+    """The step ids named by --only; empty, unknown and boot (which starts the stack) are refused."""
+    names = [name.strip() for name in selection.split(',') if name.strip()]
+    if not names:
+        raise LiveStackError('--only names no step. Steps: ' + ', '.join(
+            definition.id for definition in SCENARIO if definition.id != 'boot') + '.')
+    if 'boot' in names:
+        raise LiveStackError('The boot step starts the stack, so it cannot run against one that is already up; '
+                             'use NwnLiveClient.py up to start it.')
+    return names
+
+
+def attach_command(options: argparse.Namespace) -> int:
+    names = attach_steps(options.only)
+    require_pillow()
+    stack = Stack(options.run_dir)
+    stack.ensure_owner()
+    values = dict(server_only=False, settle=45.0, character=None)
+    results_dir = options.results_dir or stack.run_dir / 'attach'
+    run = SmokeRun(argparse.Namespace(**values), f'{stack.project}-attach', results_dir)
+    results = run.attach(stack, names)
+    for step in results.steps:
+        live.log(f'{step.id}: {step.status} {step.detail}')
+        for check in step.checks:
+            live.log(f'    {"pass" if check.passed else "FAIL"}: {check.name} {check.detail}')
+    return 1 if any(step.status == FAIL for step in results.steps) else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     options = parser().parse_args(argv)
     try:
@@ -615,6 +720,8 @@ def main(argv: list[str] | None = None) -> int:
                                           json.loads(options.second.read_text('utf-8')))
             print('\n'.join(differences) if differences else 'The runs agree.')
             return 1 if differences else 0
+        if options.command == 'attach':
+            return attach_command(options)
         return run_command(options)
     except LiveStackError as error:
         print(f'[nwn-live] ERROR: {error}', file=sys.stderr)

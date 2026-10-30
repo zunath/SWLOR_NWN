@@ -209,6 +209,10 @@ namespace SWLOR.Game.Server.Service
             foreach (var contract in failed.Where(x => x.IsAgentCourier))
                 FactionAgents.OnCourierLost(ship.OwnerPlayerId, contract.Id);
 
+            // The emptied loads are saved before the contracts go, so a restart in between never leaves a load no
+            // contract can clear.
+            DB.Set(ship);
+
             // Reloaded: failing a courier saves the record.
             dbPlayer = DB.Get<Player>(ship.OwnerPlayerId);
             if (dbPlayer != null && dbPlayer.FreightContracts.RemoveAll(x => lost.Contains(x.Id)) > 0)

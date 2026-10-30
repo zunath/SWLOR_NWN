@@ -519,6 +519,29 @@ public class SpaceW11nReviewFixTests
             "a restart part-way through leaves the ship listed at both Starports, never at none");
     }
 
+    [Test]
+    public void AgentMissionCleanup_RunsBeforeTheMissionIsDropped()
+    {
+        var source = ReadSource("Service", "FactionAgents.cs").Replace("\r\n", "\n");
+        var login = Between(source, "public static void RegisterHeldMissions()", "// The board");
+        Index(login, "EndMission(playerId, mission);").Should().BeLessThan(Index(login, "dbPlayer.AgentMissions.RemoveAll("),
+            "a paid mission a restart left behind still clears its courier load, lead or convoy");
+
+        var abandoned = Between(source, "public static void OnMissionAbandoned(", "public static void OnMissionCompleted(");
+        Index(abandoned, "EndMission(playerId, mission);").Should().BeLessThan(Index(abandoned, "DB.Set(dbPlayer);"));
+        var completed = Between(source, "public static void OnMissionCompleted(", "public static void PayMission(");
+        Index(completed, "EndMission(playerId, mission);").Should().BeLessThan(Index(completed, "DB.Set(dbPlayer);"));
+    }
+
+    [Test]
+    public void ALostShip_SavesItsEmptiedLoadsBeforeItsContractsGo()
+    {
+        var fail = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
+            "private static void FailSealedFreight(", "public static string LoadAgentCourier(");
+        Index(fail, "DB.Set(ship);").Should().BeLessThan(Index(fail, "dbPlayer.FreightContracts.RemoveAll(x => lost.Contains(x.Id))"),
+            "a restart in between never leaves a load no contract can clear");
+    }
+
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]

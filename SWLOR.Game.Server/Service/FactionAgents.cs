@@ -50,8 +50,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// A held mission's quest is registered at login, before the quest service checks the journal, so the player keeps
-        /// it over a restart. A mission whose quest record is gone is dropped; one whose quest completed but was not paid
-        /// (a restart in between) is paid now, then dropped.
+        /// it over a restart. A mission whose quest record is gone, or whose quest completed and was paid, is cleaned up
+        /// (its courier load, lead or convoy) and dropped; one whose quest completed but was not paid (a restart in
+        /// between) is paid now, then dropped.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void RegisterHeldMissions()
@@ -71,10 +72,17 @@ namespace SWLOR.Game.Server.Service
             var stale = dbPlayer.AgentMissions
                 .Where(x => !unpaid.Contains(x.Id) && (!dbPlayer.Quests.TryGetValue(x.Id, out var quest) || quest.DateLastCompleted != null))
                 .ToList();
-            foreach (var mission in stale)
-                dbPlayer.AgentMissions.Remove(mission);
             if (stale.Count > 0)
+            {
+                var playerId = GetObjectUUID(player);
+                foreach (var mission in stale)
+                    EndMission(playerId, mission);
+
+                // Reloaded: ending a courier saves the record.
+                dbPlayer = DB.Get<Player>(playerId);
+                dbPlayer.AgentMissions.RemoveAll(x => stale.Any(s => s.Id == x.Id));
                 DB.Set(dbPlayer);
+            }
 
             foreach (var missionId in unpaid)
             {
@@ -208,9 +216,12 @@ namespace SWLOR.Game.Server.Service
             if (mission == null)
                 return;
 
-            dbPlayer.AgentMissions.Remove(mission);
-            DB.Set(dbPlayer);
+            // What the mission set up is cleared before the mission goes, so a restart in between leaves a mission the
+            // next login cleans up, never a courier load with no mission.
             EndMission(playerId, mission);
+            dbPlayer = DB.Get<Player>(playerId);
+            dbPlayer.AgentMissions.RemoveAll(x => x.Id == missionId);
+            DB.Set(dbPlayer);
             Log.Write(LogGroup.Space, $"AGENT ABANDON - {PlayerName.GetAuditName(player)} - {mission.Id} {mission.Type}");
         }
 
@@ -222,13 +233,19 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null)
                 return;
 
+            // What the mission set up is cleared before the mission goes, so a restart in between leaves a mission the
+            // next login cleans up, never a courier load with no mission.
             var mission = dbPlayer.AgentMissions.FirstOrDefault(x => x.Id == missionId);
+            if (mission != null)
+            {
+                EndMission(playerId, mission);
+                dbPlayer = DB.Get<Player>(playerId);
+            }
+
             dbPlayer.AgentMissions.RemoveAll(x => x.Id == missionId);
             // A board offer can be taken once (AgentOffersTaken); its finished quest record would only pile up.
             dbPlayer.Quests.Remove(missionId);
             DB.Set(dbPlayer);
-            if (mission != null)
-                EndMission(playerId, mission);
         }
 
         /// <summary>Pays a completed mission's terms: credits, standing with the agent's faction and its tokens.</summary>

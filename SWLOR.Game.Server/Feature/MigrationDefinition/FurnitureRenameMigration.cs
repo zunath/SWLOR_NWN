@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
 /// Renames each furniture set's former Display Plinth after the placeable it now shows. Players store recipe
-/// knowledge in dictionaries keyed by enum name, so stale recipe names are rewritten before a Player deserializes.
+/// knowledge in dictionaries keyed by enum name, so stale recipe names are mapped when a Player deserializes
+/// (<see cref="RenamedRecipesJsonConverter"/>) and rewritten in the saved records by server migration 29.
 /// Crafted structures and their blueprints keep the old name in saved item data, listings and placed structures.
 /// </summary>
 public static class FurnitureRenameMigration

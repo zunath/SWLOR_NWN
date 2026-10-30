@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     {
         public const float BaseRangeMeters = 20f;
         public const double TickSeconds = 60.0;
+
+        /// <summary>How early a tick may run and still count its full minute of watching.</summary>
+        public const double TickToleranceSeconds = 5.0;
         public const int MaxRoutineRiders = 2;
         public const int MaxSetRiders = 2;
 
@@ -25,6 +28,16 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public const int StandingOvationHealPercent = 10;
         public const int StandingOvationLowHealthPercent = 25;
         public const double StandingOvationCooldownSeconds = 600.0;
+
+        /// <summary>
+        /// Whole minutes watched since the first tick that saw the watcher, so a watcher who arrives just before a tick is
+        /// credited nothing until a full minute has passed.
+        /// </summary>
+        public static int WatchedMinutes(DateTime sinceUtc, DateTime nowUtc)
+        {
+            var seconds = Math.Max(0.0, (nowUtc - sinceUtc).TotalSeconds);
+            return (int)Math.Floor((seconds + TickToleranceSeconds) / TickSeconds);
+        }
 
         public static float GetRange(int rangeBonusMeters)
         {

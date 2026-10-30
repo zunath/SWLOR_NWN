@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public uint FollowedDancer { get; set; }
         public uint FollowedMusician { get; set; }
 
+        /// <summary>When the first tick of this stretch of watching saw the player; minutes are counted from it.</summary>
+        public DateTime? WatchingSinceUtc { get; set; }
         public int ContinuousMinutes { get; set; }
         public int LastSeenTick { get; set; }
 
@@ -59,7 +61,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public bool IsWarmedUp => ContinuousMinutes >= PerformanceMath.WarmupMinutes;
 
         /// <summary>True while the player has watching progress or a Watching window that <see cref="StopWatching"/> would clear.</summary>
-        public bool IsWatching => ContinuousMinutes > 0 || WatchingArea != 0 || LastEntry != null || BandTrackId.HasValue;
+        public bool IsWatching => WatchingSinceUtc.HasValue || ContinuousMinutes > 0 || WatchingArea != 0 || LastEntry != null ||
+                                  BandTrackId.HasValue;
         public bool HasChoice => DancerChoice != 0 || MusicianChoice != 0;
 
         public bool Follows(uint performer)
@@ -91,6 +94,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         /// <summary>The player left every performer's range: the warm-up starts over and Inspired counts down again.</summary>
         public void StopWatching()
         {
+            WatchingSinceUtc = null;
             ContinuousMinutes = 0;
             FollowedDancer = 0;
             FollowedMusician = 0;

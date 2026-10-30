@@ -327,7 +327,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         {
             var watcher = entry.Player;
             var state = entry.State;
-            state.ContinuousMinutes++;
+            state.WatchingSinceUtc ??= now;
+            state.ContinuousMinutes = PerformanceAudienceRules.WatchedMinutes(state.WatchingSinceUtc.Value, now);
 
             var plan = PerformanceWatchPlan.Create(
                 state.ContinuousMinutes, entry.Dancer, entry.Musician, PerformanceAudienceRules.TroupeCount(entry.Candidates));
@@ -658,6 +659,25 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
             state.BandTrackId = desired;
             state.BandArea = desired.HasValue ? show.Area : 0;
+        }
+
+        /// <summary>Entering an area replaces the client's music, so the band song is sent again at the next tick.</summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void ForgetBandSongOnAreaEnter()
+        {
+            if (_states.TryGetValue(GetEnteringObject(), out var state))
+            {
+                state.BandTrackId = null;
+                state.BandArea = 0;
+            }
+        }
+
+        /// <summary>Death clears Inspired, so a watcher revived in range starts the warm-up over instead of resuming it.</summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        public static void StopWatchingOnDeath()
+        {
+            if (_states.TryGetValue(GetLastPlayerDied(), out var state))
+                state.StopWatching();
         }
 
         private static void RestoreMusic(PerformanceAudienceState state)

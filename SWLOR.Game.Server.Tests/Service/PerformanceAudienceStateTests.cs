@@ -51,6 +51,38 @@ public class PerformanceAudienceStateTests
         state.MusicianChoice.Should().Be(20u);
     }
 
+    [TestCase(0, 0)]
+    [TestCase(30, 0)]
+    [TestCase(56, 1)]
+    [TestCase(60, 1)]
+    [TestCase(119, 2)]
+    [TestCase(180, 3)]
+    public void WatchedMinutesCountOnlyElapsedTime(int seconds, int expected)
+    {
+        PerformanceAudienceRules.WatchedMinutes(Start, Start.AddSeconds(seconds)).Should().Be(expected);
+    }
+
+    [Test]
+    public void StoppingWatchingForgetsWhenWatchingStarted()
+    {
+        var state = new PerformanceAudienceState(1u) { WatchingSinceUtc = Start };
+        state.IsWatching.Should().BeTrue();
+
+        state.StopWatching();
+
+        state.WatchingSinceUtc.Should().BeNull();
+        state.IsWatching.Should().BeFalse();
+    }
+
+    [Test]
+    public void DeathAndAreaEntryResetTheCachedWatchingState()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+
+        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleDeath\)\]\s+public static void StopWatchingOnDeath\(\)");
+        source.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnAreaEnter\)\]\s+public static void ForgetBandSongOnAreaEnter\(\)");
+    }
+
     [Test]
     public void APerformerWhoWasWatchingStopsWatching()
     {

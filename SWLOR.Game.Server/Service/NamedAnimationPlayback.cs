@@ -35,6 +35,8 @@ public sealed class NamedAnimationPlayback
     private readonly Action<uint, Func<bool>> _releasePose;
     private readonly Dictionary<uint, EquipmentRequest> _equipmentRequests = new();
     private readonly Dictionary<uint, string> _restrictedPlaybackTokens = new();
+    // Hold mappings match the weapon equipped at start, so any equipment change releases them.
+    private readonly Dictionary<uint, string> _heldPlaybackTokens = new();
 
     /// <summary>Ownership of a restricted request, including time spent waiting in the native queue.</summary>
     public sealed class EquipmentRequest
@@ -54,13 +56,19 @@ public sealed class NamedAnimationPlayback
     public bool CanStartEquipmentPlayback(uint creature, EquipmentRequest request) => request == null ||
         _equipmentRequests.TryGetValue(creature, out var current) && ReferenceEquals(current, request);
 
-    /// <summary>Invalidates pending requests and immediately releases an owned restricted pose without cancelling gameplay actions.</summary>
+    /// <summary>
+    /// Invalidates pending requests and immediately releases an owned restricted or weapon-held pose
+    /// without cancelling gameplay actions.
+    /// </summary>
     public bool InvalidateEquipmentPlayback(uint creature)
     {
         _equipmentRequests.Remove(creature);
-        if (!_restrictedPlaybackTokens.Remove(creature, out var activeToken) || !_runtime.IsValid(creature)) return false;
+        _restrictedPlaybackTokens.Remove(creature, out var restrictedToken);
+        _heldPlaybackTokens.Remove(creature, out var heldToken);
+        if (!_runtime.IsValid(creature)) return false;
         var token = _runtime.GetToken(creature);
-        if (token != activeToken && token != EndingPrefix + activeToken) return false;
+        bool Owns(string active) => active != null && (token == active || token == EndingPrefix + active);
+        if (!Owns(restrictedToken) && !Owns(heldToken)) return false;
         ReleaseForNativePlayback(creature);
         return true;
     }
@@ -87,6 +95,8 @@ public sealed class NamedAnimationPlayback
             equipmentRequest.PlaybackToken = token;
             _restrictedPlaybackTokens[creature] = token;
         }
+        if (weaponHold != AnimationWeaponHold.None) _heldPlaybackTokens[creature] = token;
+        else _heldPlaybackTokens.Remove(creature);
         return token;
     }
 
@@ -139,6 +149,7 @@ public sealed class NamedAnimationPlayback
     {
         _equipmentRequests.Remove(creature);
         _restrictedPlaybackTokens.Remove(creature);
+        _heldPlaybackTokens.Remove(creature);
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         ReleaseForNativePlayback(creature);
         var token = Guid.NewGuid().ToString("N");
@@ -186,6 +197,9 @@ public sealed class NamedAnimationPlayback
         if (_restrictedPlaybackTokens.TryGetValue(creature, out var activeToken) &&
             (activeToken == endingToken || EndingPrefix + activeToken == endingToken))
             _restrictedPlaybackTokens.Remove(creature);
+        if (_heldPlaybackTokens.TryGetValue(creature, out var heldToken) &&
+            (heldToken == endingToken || EndingPrefix + heldToken == endingToken))
+            _heldPlaybackTokens.Remove(creature);
         if (_equipmentRequests.TryGetValue(creature, out var request) &&
             (request.PlaybackToken == endingToken || EndingPrefix + request.PlaybackToken == endingToken))
             _equipmentRequests.Remove(creature);
@@ -215,6 +229,7 @@ public sealed class NamedAnimationPlayback
     {
         _equipmentRequests.Remove(creature);
         _restrictedPlaybackTokens.Remove(creature);
+        _heldPlaybackTokens.Remove(creature);
         ReleaseForNativePlayback(creature);
     }
 

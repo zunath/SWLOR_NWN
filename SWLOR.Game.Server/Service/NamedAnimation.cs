@@ -114,7 +114,7 @@ public static class NamedAnimation
 
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
-    /// <summary>Stops restricted poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
+    /// <summary>Stops restricted and weapon-held poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
     [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
     [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
     public static void OnEquipmentChanging()

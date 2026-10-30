@@ -75,6 +75,34 @@ public class EquipmentAnimationPlaybackTests
         playback.CanStartEquipmentPlayback(1, request).Should().BeFalse();
     }
 
+    [TestCase(AnimationWeaponHold.Rifle, false)] [TestCase(AnimationWeaponHold.Rifle, true)]
+    [TestCase(AnimationWeaponHold.Shoulder, false)] [TestCase(AnimationWeaponHold.Shoulder, true)]
+    public void EquipmentChangesReleaseUnrestrictedHoldMappingsForTheOldWeapon(AnimationWeaponHold hold, bool alreadyEnding)
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        var token = playback.Begin(1, AuthoredAnimation.ConduitStance, 2, true, weaponHold: hold);
+        if (alreadyEnding) playback.Complete(1, token);
+
+        playback.InvalidateEquipmentPlayback(1).Should().BeTrue("the hold aliases would rewrite the new weapon's hold layer");
+        runtime.Maps.Values.Should().OnlyContain(value => value == "");
+        playback.IsCurrent(1, token).Should().BeFalse();
+        playback.InvalidateEquipmentPlayback(1).Should().BeFalse();
+    }
+
+    [Test]
+    public void EquipmentChangesKeepAnUnheldClipThatReplacedAHeldOne()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, AuthoredAnimation.ConduitStance, 2, true, weaponHold: AnimationWeaponHold.Shoulder);
+        var unheld = playback.Begin(1, AuthoredAnimation.Provoke, 1);
+
+        playback.InvalidateEquipmentPlayback(1).Should().BeFalse();
+        playback.IsCurrent(1, unheld).Should().BeTrue();
+        runtime.Maps[NamedAnimationPlayback.LoopSource].Should().Be(AuthoredAnimation.Provoke.Name);
+    }
+
     [Test]
     public void NativePlaybackAndDeathInvalidatePendingRequests()
     {

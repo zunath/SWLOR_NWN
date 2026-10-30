@@ -131,6 +131,16 @@ public class PerformanceAudienceStateTests
     }
 
     [Test]
+    public void AnEndedPerformerLeavesTheCachedWatchingView()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var ended = Section(source, "public static void OnSessionEnded(");
+
+        ended.Should().Contain("entry.Candidates.RemoveAll(candidate => candidate.Performer == performer);");
+        ended.Should().Contain("entry.Musician = null;");
+    }
+
+    [Test]
     public void StartingAPerformanceInterruptsWatchingAtOnce()
     {
         var performance = File.ReadAllText(SourcePath("Service", "Performance.cs"));

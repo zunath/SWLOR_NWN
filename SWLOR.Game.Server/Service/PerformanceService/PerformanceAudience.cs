@@ -122,6 +122,17 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
             foreach (var state in _states.Values)
             {
+                // The cached view must not offer the ended performer until the next tick rebuilds it, or a Follow click or
+                // the song box could bring back their band.
+                if (state.LastEntry is { } entry)
+                {
+                    entry.Candidates.RemoveAll(candidate => candidate.Performer == performer);
+                    if (entry.Dancer?.Performer == performer)
+                        entry.Dancer = null;
+                    if (entry.Musician?.Performer == performer)
+                        entry.Musician = null;
+                }
+
                 if (state.DancerChoice == performer)
                     state.DancerChoice = 0;
                 if (state.MusicianChoice == performer)

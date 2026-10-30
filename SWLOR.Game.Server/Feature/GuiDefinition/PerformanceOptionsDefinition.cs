@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddOption(PerformanceTempo.Lively.GetLabel())
                 .AddOption(PerformanceTempo.Upbeat.GetLabel())
                 .BindSelectedValue(model => model.TempoValue)
-                .SetTooltip("Faster tempo: more Performance XP for you. Same reward for your audience.")
+                .SetTooltip("More XP for you; same for your audience.")
                 .SetWidth(ContentPanelWidth - 20f)
                 .SetHeight(30f));
 

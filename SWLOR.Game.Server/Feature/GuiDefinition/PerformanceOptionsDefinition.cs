@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
         private const float ContentPanelWidth = 460f;
-        private const float ListRowHeight = 30f;
+        private const float ListRowHeight = 28f;
         // A list row takes its height plus the list's row spacing.
         private const float ListRowPitch = ListRowHeight + 4f;
         private const float NoteWidth = 240f;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceOptions)
-                .SetInitialGeometry(620f, 20f, 510f, 660f)
+                .SetInitialGeometry(620f, 20f, 510f, 666f)
                 .SetTitle("Perform")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -192,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddSharedSections(GuiColumn<PerformanceOptionsViewModel> content)
         {
+            // The note is a tooltip rather than a row, so the Instrument tab fits a 720 px screen.
             AddCaption(content, "TEMPO");
             content.AddRow(row => row.AddOptions()
                 .SetDirection(NuiDirection.Horizontal)
@@ -199,12 +200,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddOption(PerformanceTempo.Lively.GetLabel())
                 .AddOption(PerformanceTempo.Upbeat.GetLabel())
                 .BindSelectedValue(model => model.TempoValue)
+                .SetTooltip("Faster tempo: more Performance XP for you. Same reward for your audience.")
                 .SetWidth(ContentPanelWidth - 20f)
                 .SetHeight(30f));
-            content.AddRow(row => row.AddLabel()
-                .SetText("Faster: more XP for you, same for your audience.")
-                .SetHeight(22f)
-                .SetHorizontalAlign(NuiHorizontalAlign.Left));
 
             content.AddRow(row => row.AddLabel()
                 .BindText(model => model.VenueHeaderText)

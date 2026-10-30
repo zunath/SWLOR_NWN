@@ -58,6 +58,12 @@ public sealed class InMemoryDBService : IDBService
         Deleted.Add(id);
     }
 
+    public bool Exists<T>(string id)
+        where T : EntityBase
+    {
+        return _entities.TryGetValue(id, out var entity) && entity is T;
+    }
+
     public IEnumerable<T> Search<T>(DBQuery<T> query)
         where T : EntityBase
     {

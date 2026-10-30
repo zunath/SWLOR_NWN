@@ -1,13 +1,17 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class QuestContractRepostTests
 {
+    // These rules touch neither the engine nor the database.
+    private static readonly QuestContractBoardService Board = new(new InMemoryDBService());
+
     /// <summary>
     /// Checks reusable statuses produce a fresh draft whose editable values are independent of the
     /// source, with no duplicated escrow or lifecycle state.
@@ -28,8 +32,8 @@ public class QuestContractRepostTests
             RewardItems = new() { new() { Data = "never duplicate this escrow" } }
         };
 
-        QuestContractBoard.ValidateRepost(source, "author", false).Should().BeEmpty();
-        var draft = QuestContractBoard.CreateRepostDraft(source);
+        Board.ValidateRepost(source, "author", false).Should().BeEmpty();
+        var draft = Board.CreateRepostDraft(source);
         draft.Id.Should().NotBe(source.Id);
         draft.Status.Should().Be(QuestContractStatus.Draft);
         draft.AuthorPlayerId.Should().Be(source.AuthorPlayerId);
@@ -55,7 +59,7 @@ public class QuestContractRepostTests
         source.RewardCredits.Should().Be(1000);
         source.Objectives[0].Quantity.Should().Be(20);
         source.RewardItems.Should().ContainSingle();
-        QuestContractBoard.ValidateDraft(draft, draft.Title, draft.Description, _ => "Ore").Should().BeEmpty();
+        Board.ValidateDraft(draft, draft.Title, draft.Description, _ => "Ore").Should().BeEmpty();
     }
 
     /// <summary>Rejects missing or foreign sources, existing drafts, active contracts, and moderated takedowns.</summary>
@@ -63,13 +67,13 @@ public class QuestContractRepostTests
     public void PostAgainRejectsOtherAuthorsExistingDraftsAndModeratedOrActiveContracts()
     {
         var source = new QuestContract { AuthorPlayerId = "author", Status = QuestContractStatus.Fulfilled };
-        QuestContractBoard.ValidateRepost(null, "author", false).Should().NotBeEmpty();
-        QuestContractBoard.ValidateRepost(source, "other", false).Should().NotBeEmpty();
-        QuestContractBoard.ValidateRepost(source, "author", true).Should().Contain("existing draft");
+        Board.ValidateRepost(null, "author", false).Should().NotBeEmpty();
+        Board.ValidateRepost(source, "other", false).Should().NotBeEmpty();
+        Board.ValidateRepost(source, "author", true).Should().Contain("existing draft");
         foreach (var status in new[] { QuestContractStatus.Draft, QuestContractStatus.Published, QuestContractStatus.TakenDown })
         {
             source.Status = status;
-            QuestContractBoard.ValidateRepost(source, "author", false).Should().NotBeEmpty();
+            Board.ValidateRepost(source, "author", false).Should().NotBeEmpty();
         }
     }
 }

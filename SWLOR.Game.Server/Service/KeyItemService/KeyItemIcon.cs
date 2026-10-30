@@ -97,8 +97,8 @@ namespace SWLOR.Game.Server.Service.KeyItemService
 
         private static string GetMusicIconResref(KeyItemType keyItem)
         {
-            var song = MusicSongCatalog.Songs.FirstOrDefault(x => x.KeyItem == keyItem)
-                       ?? throw new InvalidOperationException($"Music key item '{keyItem}' is not in the song catalog.");
+            if (!Music.TryGetCollectibleSong(keyItem, out var song))
+                throw new InvalidOperationException($"Music key item '{keyItem}' is not in the song catalog.");
 
             return song.Category switch
             {

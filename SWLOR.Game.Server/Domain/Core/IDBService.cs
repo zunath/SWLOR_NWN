@@ -25,6 +25,10 @@ namespace SWLOR.Game.Server.Domain.Core
         void Delete<T>(string id)
             where T : EntityBase;
 
+        /// <summary>True when an entity with the Id is stored, without reading it. Same as <c>DB.Exists&lt;T&gt;</c>.</summary>
+        bool Exists<T>(string id)
+            where T : EntityBase;
+
         /// <summary>Searches for the entities matching a query. Same as <c>DB.Search&lt;T&gt;</c> (the result is lazy).</summary>
         IEnumerable<T> Search<T>(DBQuery<T> query)
             where T : EntityBase;

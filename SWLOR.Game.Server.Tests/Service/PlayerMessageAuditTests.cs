@@ -51,7 +51,7 @@ public class PlayerMessageAuditTests
         var files = new[] { "Service/Space.cs", "Service/Ability.cs", "Service/StatusEffect.cs",
             "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Service/Skill.cs", "Service/BeastMastery.cs",
             "Service/QuestService/QuestObjectives.cs", "Feature/RoleplayXP.cs", "Service/Mimicry.cs",
-            "Service/Fishing.cs", "Service/Weather.cs", "Feature/ScavengePoint.cs",
+            "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
         files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs"));

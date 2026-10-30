@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
     /// Proves, on a booted server, that the service container was built before the handlers ran and that the converted
-    /// services (Achievement, Faction, Taxi, Bank, Currency, Guild, PlayerMarket) work through their static facades
+    /// services (Achievement, Faction, Taxi, Bank, Currency, Guild, PlayerMarket, Music, Weather, QuestContractBoard) work through their static facades
     /// against the real database.
     /// </summary>
     public static class ServiceContainerEngineTests
@@ -56,6 +56,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(Planet.GetAllPlanets().ContainsKey(PlanetType.Viscara), "Planets cached by the module-cache handler should include Viscara.");
             ctx.AssertEqual("3 / 25 Categories", Notes.GetCategoryUsageText(3), "Notes answer through the container");
             ctx.Assert(!HoloCom.IsHologram(OBJECT_INVALID), "HoloCom answers through the container");
+            ctx.Assert(Music.GetAllSongs().Count > 0, "Songs cached by the module-cache handler");
+            ctx.Assert(SWLOR.Game.Server.Service.Weather.GetWeather(OBJECT_INVALID) == SWLOR.NWN.API.NWScript.Enum.Weather.Invalid,
+                "Weather answers through the container");
+            ctx.AssertEqual(QuestContractBoard.MinimumPostingFee, QuestContractBoard.CalculatePostingFee(0), "The quest contract board answers through the container");
         }
 
         /// <summary>

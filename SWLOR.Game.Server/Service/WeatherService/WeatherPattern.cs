@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
     /// </summary>
     public sealed class WeatherPattern
     {
-        public static readonly TimeSpan UpdateInterval = TimeSpan.FromHours(1);
+        public static TimeSpan UpdateInterval => TimeSpan.FromHours(1);
 
         public int Heat { get; private set; }
         public int Humidity { get; private set; }

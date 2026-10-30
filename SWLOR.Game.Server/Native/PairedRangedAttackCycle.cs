@@ -58,6 +58,8 @@ namespace SWLOR.Game.Server.Native
                     Finish(actor, pending);
                     return;
                 }
+                // The companion fires later in this swing, so its source moves while clients have time to see it.
+                PairedRangedPresentation.Park(actor);
                 AssignCommand(GetModule(), () => DelayCommand(CompanionDelaySeconds(duration), () => Finish(actor, pending)));
             }
             catch

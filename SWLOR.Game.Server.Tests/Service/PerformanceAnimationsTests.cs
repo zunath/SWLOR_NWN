@@ -73,12 +73,13 @@ public class PerformanceAnimationsTests
         PerformanceAnimations.GetFlourishClip(PerformanceKind.Music, family, 1).Name.Should().Be(expected);
     }
 
-    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Strings, true)]
-    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, false)]
-    [TestCase(PerformanceKind.Dance, PerformanceInstrumentFamily.None, false)]
-    public void OnlyStringsKeepTheInstrumentsNativeHold(PerformanceKind kind, PerformanceInstrumentFamily family, bool expected)
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Strings, NamedAnimationHold.Keep)]
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, NamedAnimationHold.LiftInPlace)]
+    [TestCase(PerformanceKind.Dance, PerformanceInstrumentFamily.None, NamedAnimationHold.Keep)]
+    public void PerformanceClipsNeverUseTheOneShotCarrier(
+        PerformanceKind kind, PerformanceInstrumentFamily family, NamedAnimationHold expected)
     {
-        PerformanceAnimations.KeepsInstrumentHold(kind, family).Should().Be(expected);
+        PerformanceAnimations.GetHoldMode(kind, family).Should().Be(expected);
     }
 
     [Test]

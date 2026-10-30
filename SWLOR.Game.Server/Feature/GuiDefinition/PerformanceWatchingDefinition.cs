@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<PerformanceWatchingViewModel> _builder = new();
 
-        private const float ContentPanelWidth = 400f;
+        private const float ContentPanelWidth = 460f;
         private const float RowHeight = 34f;
         private const float FollowButtonWidth = 96f;
         private const int VisibleRows = 5;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceWatching)
-                .SetInitialGeometry(20f, 40f, 450f, 640f)
+                .SetInitialGeometry(20f, 40f, 540f, 640f)
                 .SetTitle("Watching")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

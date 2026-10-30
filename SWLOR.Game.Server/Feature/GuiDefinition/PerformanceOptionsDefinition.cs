@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceOptions)
-                .SetInitialGeometry(620f, 30f, 470f, 670f)
+                .SetInitialGeometry(620f, 30f, 470f, 650f)
                 .SetTitle("Perform")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -192,13 +192,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetHeight(22f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
 
+            // The audience line gets its own row: beside the button it was cut off at the window's width.
+            content.AddRow(row => row.AddLabel()
+                .BindText(model => model.AudienceText)
+                .SetHeight(22f)
+                .SetHorizontalAlign(NuiHorizontalAlign.Left));
             content.AddRow(row =>
             {
-                row.AddLabel()
-                    .BindText(model => model.AudienceText)
-                    .SetHeight(32f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddSpacer();
                 row.AddButton()
                     .SetText("Apply")
                     .SetWidth(ApplyWidth)

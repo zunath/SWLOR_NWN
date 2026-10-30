@@ -9,11 +9,14 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     public static class PerformanceAnimations
     {
         /// <summary>
-        /// The instruments' base item is wielded like a polearm, and named clips normally lift that native hold so the
-        /// clip poses the arm itself. The horn clips do; the strings clips were authored around the hold, so it stays.
+        /// Performance clips loop for minutes, so they stay on the looping carrier. The instruments' base item is wielded
+        /// like a polearm: the horn clips pose the arm around the horn themselves, so that hold is lifted for them, while
+        /// the strings clips were authored around it. Dancers keep whatever their weapon holds.
         /// </summary>
-        public static bool KeepsInstrumentHold(PerformanceKind kind, PerformanceInstrumentFamily family) =>
-            kind == PerformanceKind.Music && family == PerformanceInstrumentFamily.Strings;
+        public static NamedAnimationHold GetHoldMode(PerformanceKind kind, PerformanceInstrumentFamily family) =>
+            kind == PerformanceKind.Music && family == PerformanceInstrumentFamily.Horns
+                ? NamedAnimationHold.LiftInPlace
+                : NamedAnimationHold.Keep;
 
         public static AnimationClip GetOpeningClip(PerformanceKind kind)
         {

@@ -47,31 +47,27 @@ public static class NamedAnimation
 
     /// <summary>
     /// Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.
-    /// keepWeaponHold leaves the main-hand item's native holding layer in place, for a clip authored around it.
+    /// holdMode chooses how the main-hand item's native holding layer is treated (see <see cref="NamedAnimationHold"/>).
     /// </summary>
     public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
         AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,
-        bool fitToDuration = false, bool keepWeaponHold = false)
+        bool fitToDuration = false, NamedAnimationHold holdMode = NamedAnimationHold.Auto)
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
-        var hold = keepWeaponHold ? AnimationWeaponHold.None : AbilityAnimationEquipment.ReadHold(creature);
+        var nativeHold = holdMode == NamedAnimationHold.Keep ? AnimationWeaponHold.None : AbilityAnimationEquipment.ReadHold(creature);
+        var liftInPlace = holdMode == NamedAnimationHold.LiftInPlace && nativeHold == AnimationWeaponHold.Shoulder;
+        var hold = holdMode == NamedAnimationHold.Auto ? nativeHold : AnimationWeaponHold.None;
         var held = hold != AnimationWeaponHold.None;
         var speed = held || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
-        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, weaponHold: hold, equipmentRequest: request);
+        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, weaponHold: hold, equipmentRequest: request,
+            liftShoulderHoldInPlace: liftInPlace);
         return PlayMapped(creature, token, duration,
             held ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
     }
-
-    /// <summary>
-    /// True when Play uses the looping carrier, so a duration longer than the clip repeats it in place. A held
-    /// weapon plays through a one-shot carrier instead, stretched to the duration.
-    /// </summary>
-    public static bool LoopsInPlace(uint creature, bool keepWeaponHold = false) =>
-        keepWeaponHold || AbilityAnimationEquipment.ReadHold(creature) == AnimationWeaponHold.None;
 
     private static string PlayMapped(uint creature, string token, float duration,
         Animation carrier = Animation.PointForward, float speed = 1f)

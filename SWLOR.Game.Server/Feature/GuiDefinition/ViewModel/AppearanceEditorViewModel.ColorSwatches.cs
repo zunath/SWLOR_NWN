@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(new GuiColor(color.Red, color.Green, color.Blue), name + "Tint");
             if (previous == null || Get<bool>(name + "Custom") != hasCustom)
                 Set(hasCustom, name + "Custom");
-            OnSwatchUpdated(target, channel, name);
+            OnSwatchUpdated(target, channel);
         }
 
         public GuiColor GlobalLeather1Tint => Get<GuiColor>();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TradeService;
 
@@ -119,5 +120,14 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The units taken for <see cref="PendingHoldingDeliveryId"/>.</summary>
         public int PendingHoldingDeliveryUnits { get; set; }
+
+        /// <summary>
+        /// The dock of a station jump under way, or null. It is saved with the Station Fuel the jump burned, so a restart
+        /// before the ship moves finishes the jump at the next module load. Older records load null.
+        /// </summary>
+        public PropertyLocation PendingJumpDock { get; set; }
+
+        /// <summary>The launch point in space of the jump to <see cref="PendingJumpDock"/>.</summary>
+        public PropertyLocation PendingJumpSpace { get; set; }
     }
 }

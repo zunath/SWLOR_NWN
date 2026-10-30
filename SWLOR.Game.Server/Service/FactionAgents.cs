@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FactionAgentService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -18,6 +19,12 @@ namespace SWLOR.Game.Server.Service
     {
         /// <summary>The creature local that makes an NPC a faction agent: a <see cref="FactionAgentType"/> value.</summary>
         public const string AgentVariable = "FACTION_AGENT_ID";
+
+        /// <summary>
+        /// The character-file local naming the last mission whose credits were paid. It is saved with the credits, so a
+        /// pay retried after a restart knows whether they reached the character.
+        /// </summary>
+        private const string PaidCreditsVariable = "AGENT_MISSION_CREDITS_PAID";
 
         /// <summary>The agent an NPC is, or null.</summary>
         public static FactionAgentDetail GetAgent(uint npc)
@@ -231,26 +238,35 @@ namespace SWLOR.Game.Server.Service
             if (mission == null || mission.Paid)
                 return;
 
-            // Each part is marked paid right after it is saved, so a pay retried after a restart (at the next login)
-            // gives only the parts not yet marked.
+            // Each part is saved with its mark in one write, so a pay retried after a restart (at the next login) gives
+            // only the parts not yet saved. Standing and tokens are marked in the player record they are saved in; the
+            // credits are marked in the character file they are saved in.
             if (!mission.PaidStanding)
             {
-                Faction.AdjustPlayerFactionStanding(player, mission.Faction, mission.Standing);
-                MarkPaid(player, missionId, x => x.PaidStanding = true);
+                if (mission.Standing != 0)
+                    Faction.AdjustPlayerFactionStanding(player, mission.Faction, mission.Standing, MarkHeld(missionId, x => x.PaidStanding = true));
+                else
+                    MarkPaid(player, missionId, x => x.PaidStanding = true);
             }
 
             var currency = FactionAgentRules.GetTokenCurrency(mission.Faction);
             if (!mission.PaidTokens)
             {
                 if (currency != CurrencyService.CurrencyType.Invalid && mission.Tokens > 0)
-                    Currency.GiveCurrency(player, currency, mission.Tokens);
-                MarkPaid(player, missionId, x => x.PaidTokens = true);
+                    Currency.GiveCurrency(player, currency, mission.Tokens, MarkHeld(missionId, x => x.PaidTokens = true));
+                else
+                    MarkPaid(player, missionId, x => x.PaidTokens = true);
             }
 
             if (!mission.PaidCredits)
             {
-                GiveGoldToCreature(player, mission.Credits);
-                ExportSingleCharacter(player);
+                if (ObjectPlugin.GetString(player, PaidCreditsVariable) != missionId)
+                {
+                    GiveGoldToCreature(player, mission.Credits);
+                    ObjectPlugin.SetString(player, PaidCreditsVariable, missionId, true);
+                    ExportSingleCharacter(player);
+                }
+
                 MarkPaid(player, missionId, x => x.PaidCredits = true);
             }
 
@@ -266,13 +282,20 @@ namespace SWLOR.Game.Server.Service
         private static void MarkPaid(uint player, string missionId, Action<AgentMission> mark)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            var held = dbPlayer?.AgentMissions.FirstOrDefault(x => x.Id == missionId);
-            if (held == null)
+            if (dbPlayer == null)
                 return;
 
-            mark(held);
+            MarkHeld(missionId, mark)(dbPlayer);
             DB.Set(dbPlayer);
         }
+
+        /// <summary>Marks the player's held mission in a record about to be saved.</summary>
+        private static Action<Player> MarkHeld(string missionId, Action<AgentMission> mark) => dbPlayer =>
+        {
+            var held = dbPlayer.AgentMissions.FirstOrDefault(x => x.Id == missionId);
+            if (held != null)
+                mark(held);
+        };
 
         /// <summary>Ends a mission the player could not finish: it is abandoned with the reason.</summary>
         private static void FailMission(uint player, string missionId, string reason)

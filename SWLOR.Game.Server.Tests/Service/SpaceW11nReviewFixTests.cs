@@ -261,9 +261,59 @@ public class SpaceW11nReviewFixTests
             "public static void DeliverFreight(", "public static void AbandonFreight(");
         var paid = deliver.IndexOf("GiveGoldToCreature(player, result.Fee + result.DepositReturned);", StringComparison.Ordinal);
         paid.Should().BeGreaterThan(0);
-        paid.Should().BeLessThan(deliver.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal));
-        deliver.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal)
-            .Should().BeLessThan(deliver.IndexOf("dbPlayer.FreightContracts.Remove(contract);", StringComparison.Ordinal));
+        paid.Should().BeLessThan(Index(deliver, "ObjectPlugin.SetString(player, PaidContractVariable, contract.Id, true);"));
+        Index(deliver, "ObjectPlugin.SetString(player, PaidContractVariable, contract.Id, true);")
+            .Should().BeLessThan(Index(deliver, "ExportSingleCharacter(player);"), "the mark is saved in the same character save as the proceeds");
+        Index(deliver, "ExportSingleCharacter(player);").Should().BeLessThan(Index(deliver, "ClearContract(ship, dbPlayer, contract);"));
+    }
+
+    [Test]
+    public void APaidFreightContract_IsClearedAtLoginWithoutPayingAgain()
+    {
+        var source = ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n");
+        var login = Between(source, "public static void ClearPaidContract()", "private static void ClearContract(");
+        login.Should().Contain("ObjectPlugin.GetString(player, PaidContractVariable)");
+        login.Should().Contain("ClearContract(DB.Get<PlayerShip>(contract.ShipId), dbPlayer, contract);").And.NotContain("GiveGoldToCreature");
+        Index(source, "[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ClearPaidContract()").Should().BeGreaterThan(0);
+
+        var clear = Between(source, "private static void ClearContract(", "public static void DeliverFreight(");
+        Index(clear, "DB.Set(ship);").Should().BeLessThan(Index(clear, "DB.Set(dbPlayer);"),
+            "the load goes before its contract, so a restart never leaves a load no contract can clear");
+    }
+
+    [Test]
+    public void AgentMissionPay_SavesEachPartWithItsMark()
+    {
+        var source = ReadSource("Service", "FactionAgents.cs").Replace("\r\n", "\n");
+        var pay = Between(source, "public static void PayMission(", "private static void FailMission(");
+        pay.Should().Contain("Faction.AdjustPlayerFactionStanding(player, mission.Faction, mission.Standing, MarkHeld(missionId, x => x.PaidStanding = true));");
+        pay.Should().Contain("Currency.GiveCurrency(player, currency, mission.Tokens, MarkHeld(missionId, x => x.PaidTokens = true));");
+        Index(pay, "if (ObjectPlugin.GetString(player, PaidCreditsVariable) != missionId)")
+            .Should().BeLessThan(Index(pay, "GiveGoldToCreature(player, mission.Credits);"), "credits already in the character file are not paid again");
+        Index(pay, "ObjectPlugin.SetString(player, PaidCreditsVariable, missionId, true);")
+            .Should().BeLessThan(Index(pay, "ExportSingleCharacter(player);"), "the mark is saved in the same character save as the credits");
+
+        var faction = ReadSource("Service", "Faction.cs").Replace("\r\n", "\n");
+        faction = Between(faction, "public static void AdjustPlayerFactionStanding(", "public static void AdjustPlayerFactionPoints(");
+        Index(faction, "beforeSave?.Invoke(dbPlayer);").Should().BeLessThan(Index(faction, "DB.Set(dbPlayer);"));
+        var currency = ReadSource("Service", "Currency.cs").Replace("\r\n", "\n");
+        currency = currency[Index(currency, "public static void GiveCurrency(")..];
+        Index(currency, "beforeSave?.Invoke(dbPlayer);").Should().BeLessThan(Index(currency, "DB.Set(dbPlayer);"));
+    }
+
+    [Test]
+    public void AStationJump_SavesItsDestinationWithTheFuelAndFinishesAtBoot()
+    {
+        var source = ReadSource("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        var jump = Between(source, "public static bool Jump(", "public static void FinishInterruptedJumps()");
+        Index(jump, "record.PendingJumpDock = new PropertyLocation").Should().BeLessThan(Index(jump, "DB.Set(record);"));
+        Index(jump, "CargoHoldRules.RemoveUnits(record.Cargo, CommodityType.StationFuel, fuel);").Should().BeLessThan(Index(jump, "DB.Set(record);"));
+        Index(jump, "DB.Set(record);").Should().BeLessThan(Index(jump, "FinishJump(ship, record);"));
+
+        Index(source, "[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void FinishInterruptedJumps()").Should().BeGreaterThan(0);
+        var finish = Between(source, "private static void FinishJump(", "private static void MoveDock(");
+        Index(finish, "MoveDock(ship, record.PendingJumpDock, record.PendingJumpSpace);").Should().BeLessThan(Index(finish, "record.PendingJumpDock = null;"));
+        Index(finish, "record.PendingJumpDock = null;").Should().BeLessThan(Index(finish, "DB.Set(record);"));
     }
 
     [Test]

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -77,6 +79,40 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// The character-file local naming the last freight contract whose proceeds were paid. It is saved with the
+        /// proceeds, so a contract a restart left behind is cleared at the next login without paying again.
+        /// </summary>
+        private const string PaidContractVariable = "FREIGHT_CONTRACT_PAID";
+
+        /// <summary>Clears a contract whose proceeds the character file holds but whose clearing a restart interrupted.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ClearPaidContract()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var paidId = ObjectPlugin.GetString(player, PaidContractVariable);
+            var dbPlayer = string.IsNullOrEmpty(paidId) ? null : DB.Get<Player>(GetObjectUUID(player));
+            var contract = dbPlayer?.FreightContracts.FirstOrDefault(x => x.Id == paidId);
+            if (contract == null)
+                return;
+
+            ClearContract(DB.Get<PlayerShip>(contract.ShipId), dbPlayer, contract);
+            Log.Write(LogGroup.Space, $"FREIGHT DELIVER - {PlayerName.GetAuditName(player)} - cleared paid contract {contract.Id} after a restart.");
+        }
+
+        /// <summary>Clears a delivered contract: its sealed load first, so a restart in between never leaves a load without a contract.</summary>
+        private static void ClearContract(PlayerShip ship, Player dbPlayer, FreightContract contract)
+        {
+            if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
+                DB.Set(ship);
+
+            dbPlayer.FreightContracts.Remove(contract);
+            DB.Set(dbPlayer);
+        }
+
         /// <summary>Delivers a contract's sealed load from the player's ship docked at its destination.</summary>
         public static void DeliverFreight(uint player, string shipId, TradeExchangeType exchange, string dockId, string contractId)
         {
@@ -109,15 +145,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // The proceeds are paid and saved with the character before the contract is cleared, so a restart in between
-            // leaves the load to deliver again rather than losing the fee.
+            // The proceeds are saved in the character file with a mark naming the contract, then the contract is cleared:
+            // a restart in between leaves a contract that the next login clears without paying again.
             GiveGoldToCreature(player, result.Fee + result.DepositReturned);
+            ObjectPlugin.SetString(player, PaidContractVariable, contract.Id, true);
             ExportSingleCharacter(player);
-
-            ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id);
-            dbPlayer.FreightContracts.Remove(contract);
-            DB.Set(ship);
-            DB.Set(dbPlayer);
+            ClearContract(ship, dbPlayer, contract);
 
             SendMessageToPC(player, result.IsLate
                 ? ColorToken.Red($"Freight delivered late: {result.Fee} credits paid, and the deposit of {contract.Deposit} credits is forfeit.")

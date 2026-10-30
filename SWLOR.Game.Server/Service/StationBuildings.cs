@@ -581,11 +581,31 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // The jump's destination is saved with the fuel it burns, so a restart before the ship moves finishes the jump
+            // at the next module load rather than losing the fuel.
             var fuel = StationBuildingRules.GetJumpFuel(request.ShipSize, request.HullTag);
+            var dockPosition = GetPositionFromLocation(dock.Location);
+            var spacePosition = GetPosition(anchorWaypoint);
+            record.PendingJumpDock = new PropertyLocation
+            {
+                InstancePropertyId = dock.PropertyId,
+                X = dockPosition.X,
+                Y = dockPosition.Y,
+                Z = dockPosition.Z,
+                Orientation = GetFacingFromLocation(dock.Location),
+            };
+            record.PendingJumpSpace = new PropertyLocation
+            {
+                AreaResref = GetResRef(GetArea(anchorWaypoint)),
+                X = spacePosition.X,
+                Y = spacePosition.Y,
+                Z = spacePosition.Z,
+                Orientation = GetFacing(anchorWaypoint),
+            };
             CargoHoldRules.RemoveUnits(record.Cargo, CommodityType.StationFuel, fuel);
             DB.Set(record);
 
-            MoveDock(ship, dock, anchorWaypoint);
+            FinishJump(ship, record);
 
             var landing = dock.Location;
             AssignCommand(player, () =>
@@ -598,48 +618,57 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>Finishes any station jump a restart interrupted after its fuel was burned.</summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void FinishInterruptedJumps()
+        {
+            var count = (int)DB.SearchCount(new DBQuery<PlayerShip>());
+            if (count <= 0)
+                return;
+
+            foreach (var record in DB.Search(new DBQuery<PlayerShip>().AddPaging(count, 0)).Where(x => x.PendingJumpDock != null))
+            {
+                var starportId = record.PendingJumpDock.InstancePropertyId;
+                FinishJump(DB.Get<WorldProperty>(record.PropertyId), record);
+                Log.Write(LogGroup.Space, $"JUMP BEACON - finished the jump of ship {record.PropertyId} to starport {starportId} after a restart.");
+            }
+        }
+
+        /// <summary>Moves the ship to its pending jump's dock, then clears the jump. Each step is safe to repeat.</summary>
+        private static void FinishJump(WorldProperty ship, PlayerShip record)
+        {
+            if (ship != null && DB.Get<WorldProperty>(record.PendingJumpDock.InstancePropertyId) != null)
+                MoveDock(ship, record.PendingJumpDock, record.PendingJumpSpace);
+
+            record.PendingJumpDock = null;
+            record.PendingJumpSpace = null;
+            DB.Set(record);
+        }
+
         /// <summary>
         /// Re-registers the ship from its old Starport to the destination's and moves its dock and launch point. The ship
         /// joins the destination first, then moves, then leaves the old Starport, so a restart part-way through leaves it
         /// listed at both, never at none.
         /// </summary>
-        private static void MoveDock(WorldProperty ship, ShipDockPoint dock, uint anchorWaypoint)
+        private static void MoveDock(WorldProperty ship, PropertyLocation dock, PropertyLocation space)
         {
+            var starportId = dock.InstancePropertyId;
             if (!ship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
                 ship.ChildPropertyIds[PropertyChildType.RegisteredStarport] = new List<string>();
 
-            var oldIds = ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Where(x => x != dock.PropertyId).ToList();
+            var oldIds = ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Where(x => x != starportId).ToList();
             ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
-            ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Add(dock.PropertyId);
+            ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Add(starportId);
 
-            var starport = DB.Get<WorldProperty>(dock.PropertyId);
+            var starport = DB.Get<WorldProperty>(starportId);
             if (!starport.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
                 starport.ChildPropertyIds[PropertyChildType.Starship] = new List<string>();
             if (!starport.ChildPropertyIds[PropertyChildType.Starship].Contains(ship.Id))
                 starport.ChildPropertyIds[PropertyChildType.Starship].Add(ship.Id);
             DB.Set(starport);
 
-            var landing = GetPositionFromLocation(dock.Location);
-            ship.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
-            {
-                AreaResref = string.Empty,
-                InstancePropertyId = dock.PropertyId,
-                X = landing.X,
-                Y = landing.Y,
-                Z = landing.Z,
-                Orientation = GetFacingFromLocation(dock.Location),
-            };
-
-            var space = GetPosition(anchorWaypoint);
-            ship.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
-            {
-                AreaResref = GetResRef(GetArea(anchorWaypoint)),
-                X = space.X,
-                Y = space.Y,
-                Z = space.Z,
-                Orientation = GetFacing(anchorWaypoint),
-            };
-
+            ship.Positions[PropertyLocationType.DockPosition] = dock;
+            ship.Positions[PropertyLocationType.SpacePosition] = space;
             DB.Set(ship);
 
             foreach (var oldId in oldIds)

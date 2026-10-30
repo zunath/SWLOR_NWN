@@ -469,12 +469,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (IsEquipped(player, mainHand, offHand))
-                return;
-
             var currentMainHand = GetItemInSlot(InventorySlot.RightHand, player);
             var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
             var (newMainHand, newOffHand) = PlanHands(currentMainHand, currentOffHand, mainHand, offHand, CanPairHands);
+            if (currentMainHand == newMainHand && currentOffHand == newOffHand)
+                return;
 
             // A Twin Pistols or Power Glove companion only leaves with its main-hand item, so that item is put away
             // and, if the set keeps it, equipped again.
@@ -503,7 +502,11 @@ namespace SWLOR.Game.Server.Service
             if (offHandChanges && GetItemInSlot(InventorySlot.LeftHand, player) == currentOffHand &&
                 GetIsObjectValid(currentOffHand) &&
                 !PutAwayHandItem(player, currentOffHand, InventorySlot.LeftHand))
-                return;
+            {
+                // The main hand was already put away, so it goes back rather than leaving that hand empty.
+                newMainHand = mainHandChanges ? currentMainHand : OBJECT_INVALID;
+                newOffHand = OBJECT_INVALID;
+            }
 
             if (mainHandChanges && GetIsObjectValid(newMainHand))
                 ActionEquipItem(newMainHand, InventorySlot.RightHand);

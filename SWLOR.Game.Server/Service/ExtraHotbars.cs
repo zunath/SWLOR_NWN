@@ -598,9 +598,14 @@ namespace SWLOR.Game.Server.Service
         /// Finds an equipment slot's items on the player. The exact items come first, so two identical weapons
         /// stay apart; an item whose original is gone falls back to one with the same resref and name.
         /// </summary>
-        public static (uint MainHand, uint OffHand) FindEquipItems(uint player, ExtraHotbarSlot slot)
+        public static (uint MainHand, uint OffHand) FindEquipItems(uint player, ExtraHotbarSlot slot) =>
+            FindEquipItems(slot, GetHandItems(player));
+
+        /// <summary>
+        /// Same as above with a hand-item list already built, so several slots can share one inventory scan.
+        /// </summary>
+        public static (uint MainHand, uint OffHand) FindEquipItems(ExtraHotbarSlot slot, List<uint> items)
         {
-            var items = GetHandItems(player);
             var mainHand = FindExactItem(items, slot.MainHand);
             var offHand = FindExactItem(items, slot.OffHand);
             if (!GetIsObjectValid(mainHand))

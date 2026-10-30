@@ -39,6 +39,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _useDefaultSpot;
         private bool _hasTitleBar;
 
+        // One inventory scan shared by every equipment slot during a single refresh.
+        private List<uint> _handItems;
+
         public static string IconProperty(int slot) => $"Slot{slot}Icon";
         public static string TooltipProperty(int slot) => $"Slot{slot}Tooltip";
         public static string CountProperty(int slot) => $"Slot{slot}Count";
@@ -212,6 +215,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_bar == null)
                 return;
 
+            _handItems = null;
             for (var slot = 0; slot < _bar.SlotCount; slot++)
             {
                 if (_bar.Slots[slot].Type is ExtraHotbarSlotType.Item or ExtraHotbarSlotType.ActionMode or ExtraHotbarSlotType.Equipment)
@@ -236,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ChangePartialView(SlotsElement, slotsPartial);
             }
 
+            _handItems = null;
             for (var slot = 0; slot < ExtraHotbars.MaxSlots; slot++)
                 RefreshSlot(slot, _bar.Slots[slot]);
 
@@ -344,7 +349,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     tooltip = $"{ExtraHotbars.GetActionModeName(slot.ActionMode)} ({(isActive ? "on" : "off")})";
                     break;
                 case ExtraHotbarSlotType.Equipment:
-                    var (mainHand, offHand) = ExtraHotbars.FindEquipItems(Player, slot);
+                    _handItems ??= ExtraHotbars.GetHandItems(Player);
+                    var (mainHand, offHand) = ExtraHotbars.FindEquipItems(slot, _handItems);
                     var mainIcon = GetEquipIcon(slot.MainHand, mainHand);
                     var offIcon = GetEquipIcon(slot.OffHand, offHand);
                     isActive = ExtraHotbars.IsEquipped(Player, mainHand, offHand);

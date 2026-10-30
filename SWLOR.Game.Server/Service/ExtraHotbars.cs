@@ -529,6 +529,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void UnequipHands(uint player, uint mainHand, uint offHand)
         {
+            // Crafting refuses equips, so the main hand could not go back on and the set would end up split.
+            if (Gui.IsWindowOpen(player, GuiWindowType.Craft))
+            {
+                SendMessageToPC(player, ColorToken.Red("Items cannot be put away from the hotbar while crafting."));
+                return;
+            }
+
             if (GetIsObjectValid(mainHand) && !PutAwayHandItem(player, mainHand, InventorySlot.RightHand))
                 return;
 

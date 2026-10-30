@@ -16,7 +16,7 @@ namespace SWLOR.CraftSim.Tests.Progression
         private static GuildTaskCatalog Guilds => ProgressionFixture.Guilds;
 
         // Other: tasks for an item only a recipe that must be learned makes, which a new crafter cannot hand in.
-        [TestCase(GuildType.SmitheryGuild, 175, 175, 0, 0)]
+        [TestCase(GuildType.SmitheryGuild, 185, 185, 0, 0)]
         [TestCase(GuildType.EngineeringGuild, 80, 80, 0, 0)]
         [TestCase(GuildType.FabricationGuild, 211, 211, 0, 0)]
         [TestCase(GuildType.AgricultureGuild, 185, 132, 51, 2)]

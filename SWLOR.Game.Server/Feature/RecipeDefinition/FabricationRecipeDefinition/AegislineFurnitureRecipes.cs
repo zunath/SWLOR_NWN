@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
                 .Component("hv_plate", 1)
-                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 56, frameQualityPercent: 22, shellQualityPercent: 57, wearRate: 5);
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 50, frameQualityPercent: 20, shellQualityPercent: 63, wearRate: 4);
 
             // Aegisline Work Stool
             _builder.Create(RecipeType.AegislineWorkStool, SkillType.Fabrication)

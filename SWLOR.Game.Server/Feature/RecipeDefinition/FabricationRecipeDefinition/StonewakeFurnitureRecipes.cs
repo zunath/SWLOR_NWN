@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
                 .Component("vs_mask", 1)
-                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 57, frameQualityPercent: 22, shellQualityPercent: 57, wearRate: 5);
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 51, frameQualityPercent: 20, shellQualityPercent: 64, wearRate: 5);
 
             // Stonewake Work Stool
             _builder.Create(RecipeType.StonewakeWorkStool, SkillType.Fabrication)

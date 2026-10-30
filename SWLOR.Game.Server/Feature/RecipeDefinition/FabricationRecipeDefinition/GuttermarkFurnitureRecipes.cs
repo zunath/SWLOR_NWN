@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
                 .Component("nv_pin", 1)
-                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 55, frameQualityPercent: 24, shellQualityPercent: 59, wearRate: 3);
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 53, frameQualityPercent: 24, shellQualityPercent: 56, wearRate: 5);
 
             // Guttermark Work Stool
             _builder.Create(RecipeType.GuttermarkWorkStool, SkillType.Fabrication)

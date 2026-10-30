@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 4)
                 .Component("ref_veldite", 2)
                 .Component("field_chip", 1)
-                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 54, frameQualityPercent: 25, shellQualityPercent: 55, wearRate: 4);
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 52, frameQualityPercent: 22, shellQualityPercent: 61, wearRate: 5);
 
             // Fieldline Work Stool
             _builder.Create(RecipeType.FieldlineWorkStool, SkillType.Fabrication)

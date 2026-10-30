@@ -27,7 +27,7 @@ public class LineWindowTests
     [Test]
     public void TheWindowHasItsOwnId_AndNoOtherWindowSharesIt()
     {
-        ((int)GuiWindowType.Line).Should().Be(89);
+        ((int)GuiWindowType.Line).Should().Be(90);
         Enum.GetValues<GuiWindowType>().Count(window => window == GuiWindowType.Line).Should().Be(1);
         Enum.GetValues<GuiWindowType>().Select(window => (int)window).Should().OnlyHaveUniqueItems();
     }

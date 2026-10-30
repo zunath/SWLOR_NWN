@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
                 .Component("tk_badge", 1)
-                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 51, frameQualityPercent: 25, shellQualityPercent: 58, wearRate: 4);
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 55, frameQualityPercent: 25, shellQualityPercent: 60, wearRate: 5);
 
             // Trailmark Work Stool
             _builder.Create(RecipeType.TrailmarkWorkStool, SkillType.Fabrication)

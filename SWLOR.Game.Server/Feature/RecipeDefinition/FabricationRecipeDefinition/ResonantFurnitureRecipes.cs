@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
                 .Component("ae_echo", 1)
-                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 52, frameQualityPercent: 21, shellQualityPercent: 58, wearRate: 3);
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 52, frameQualityPercent: 26, shellQualityPercent: 56, wearRate: 5);
 
             // Resonant Work Stool
             _builder.Create(RecipeType.ResonantWorkStool, SkillType.Fabrication)

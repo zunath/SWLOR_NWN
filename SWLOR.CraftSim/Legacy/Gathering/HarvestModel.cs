@@ -15,7 +15,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
         public const int FirstNodeLevel = 1;
         public const int LastNodeLevel = 5;
 
-        /// <summary>Harvests per node: the first harvest rolls a d4 and the node lasts that many (ProspectingNode.cs:62 rolls the pool now).</summary>
+        /// <summary>Harvests per node: the first harvest rolls a d4 and the node lasts that many (ProspectingNode.cs:67 rolls the pool now).</summary>
         public static double ExpectedHarvestsPerNode => (HarvestsDie + 1) / 2.0;
 
         /// <summary>The chance of the free second item: d100 &lt;= 5 x Might modifier x 5 (the removed bonus item of <c>HarvesterItemDefinition.cs</c>).</summary>

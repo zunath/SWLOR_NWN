@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
                 .Component("mg_totem", 1)
-                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 51, frameQualityPercent: 20, shellQualityPercent: 64, wearRate: 4);
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 55, frameQualityPercent: 21, shellQualityPercent: 61, wearRate: 4);
 
             // Veilcarved Work Stool
             _builder.Create(RecipeType.VeilcarvedWorkStool, SkillType.Fabrication)

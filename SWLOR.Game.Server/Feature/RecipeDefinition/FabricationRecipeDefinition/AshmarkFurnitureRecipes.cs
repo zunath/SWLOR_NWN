@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
                 .Component("sr_token", 1)
-                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 54, frameQualityPercent: 22, shellQualityPercent: 60, wearRate: 5);
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 54, frameQualityPercent: 25, shellQualityPercent: 58, wearRate: 4);
 
             // Ashmark Work Stool
             _builder.Create(RecipeType.AshmarkWorkStool, SkillType.Fabrication)

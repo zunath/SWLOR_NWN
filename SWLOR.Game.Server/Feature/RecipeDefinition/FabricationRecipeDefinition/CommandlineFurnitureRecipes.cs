@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 5)
                 .Component("ref_arkoxit", 2)
                 .Component("command_key", 1)
-                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 50, frameQualityPercent: 25, shellQualityPercent: 60, wearRate: 5);
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 54, frameQualityPercent: 21, shellQualityPercent: 55, wearRate: 4);
 
             // Commandline Work Stool
             _builder.Create(RecipeType.CommandlineWorkStool, SkillType.Fabrication)

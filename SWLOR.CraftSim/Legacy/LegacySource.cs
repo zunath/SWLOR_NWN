@@ -92,8 +92,8 @@ namespace SWLOR.CraftSim.Legacy
         // chance (d100 <= 5 x Might modifier x 5) was removed with the attribute dependency, and is ported from HarvesterItemDefinition.cs
         // at commit 64b712fc8 without being checked against the source (HarvestModel.BonusItemChance).
         public static readonly SourceReference HarvestNodeCount = new(
-            "Harvests per node", ProspectingNode, 62, 62,
-            "var pool = random.Next(1, ProspectingRules.PoolDie + 1);");
+            "Harvests per node", ProspectingNode, 67, 67,
+            "random.Next(1, ProspectingRules.PoolDie + 1)");
 
         public static readonly SourceReference HarvestXp = new(
             "Harvest XP", GatheringLevels, 20, 23,

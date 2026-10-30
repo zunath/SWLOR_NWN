@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_arkoxit", 8)
                 .Component("fiberp_high", 4)
                 .Component("vx_core", 1)
-                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 57, frameQualityPercent: 22, shellQualityPercent: 60, wearRate: 7);
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 52, frameQualityPercent: 24, shellQualityPercent: 59, wearRate: 8);
 
             // Surgewake Work Stool
             _builder.Create(RecipeType.SurgewakeWorkStool, SkillType.Fabrication)

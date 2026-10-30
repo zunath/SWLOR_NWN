@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -79,15 +82,26 @@ public static class FurnitureRenameMigration
         return changed;
     }
 
+    /// <summary>The default texts the former blueprints gave a structure or blueprint item, and their renamed texts.</summary>
+    private static IEnumerable<(string Old, string New)> DefaultTexts(Rename rename)
+    {
+        yield return (rename.OldName, rename.NewName);
+        yield return ($"Blueprint: {rename.OldName}", $"Blueprint: {rename.NewName}");
+        yield return ($"A rare schematic for crafting {rename.OldName}.", $"A rare schematic for crafting {rename.NewName}.");
+    }
+
     /// <summary>
     /// The text a renamed structure or blueprint item now shows for <paramref name="text"/>, its saved name or
-    /// description. Other items, and text a player changed, keep their text.
+    /// description. Other items, and any text other than the former defaults (such as a custom name), keep their text.
     /// </summary>
     public static string GetRenamedItemText(string resref, string text)
     {
         if (string.IsNullOrEmpty(text) || resref == null || !ByItemResref.TryGetValue(resref, out var rename))
             return text;
-        return text.Replace(rename.OldName, rename.NewName, StringComparison.Ordinal);
+        foreach (var (oldText, newText) in DefaultTexts(rename))
+            if (text == oldText)
+                return newText;
+        return text;
     }
 
     /// <summary>Renames a placed structure that still shows its former default name.</summary>
@@ -103,6 +117,38 @@ public static class FurnitureRenameMigration
     }
 
     /// <summary>
+    /// Renames a player's equipped and carried copies at login, including characters whose saved file the release's
+    /// player migration already passed (such as a character file restored afterwards).
+    /// </summary>
+    [NWNEventHandler(ScriptName.OnModuleEnter)]
+    public static void OnEnter()
+    {
+        var player = GetEnteringObject();
+        if (GetIsPC(player) && !GetIsDM(player))
+            RenameInventory(player);
+    }
+
+    /// <summary>Renames an item, or every item a creature or container holds.</summary>
+    public static bool RenameInventory(uint obj)
+    {
+        var visited = new HashSet<uint>();
+        bool Visit(uint current)
+        {
+            if (!GetIsObjectValid(current) || !visited.Add(current)) return false;
+            var changed = false;
+            if (GetObjectType(current) == ObjectType.Item) changed |= RenameItem(current);
+            if (GetObjectType(current) == ObjectType.Creature)
+                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+                    changed |= Visit(GetItemInSlot((InventorySlot)slot, current));
+            if (GetHasInventory(current))
+                for (var item = GetFirstItemInInventory(current); GetIsObjectValid(item); item = GetNextItemInInventory(current))
+                    changed |= Visit(item);
+            return changed;
+        }
+        return Visit(obj);
+    }
+
+    /// <summary>
     /// Live counterpart of the saved-data item rename: the item's name, both descriptions, and the original name a
     /// DM rename keeps for its Reset action.
     /// </summary>
@@ -112,9 +158,10 @@ public static class FurnitureRenameMigration
         if (!ByItemResref.ContainsKey(resref))
             return false;
         var changed = false;
+        // A DM's custom name is kept; only the default name changes.
         var name = GetName(item);
         var renamed = GetRenamedItemText(resref, name);
-        if (renamed != name)
+        if (renamed != name && name == GetName(item, true))
         {
             SetName(item, renamed);
             changed = true;

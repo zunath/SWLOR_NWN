@@ -117,7 +117,7 @@ internal sealed partial class StoredObjectData
         if (updateArtwork) changed |= UpdateArtwork(item);
         changed |= ReviseStats(item);
         if (updateArtwork) changed |= AddDroidWeaponSkills(item);
-        if (updateArtwork) changed |= RenameFurnitureItem(item);
+        changed |= RenameFurnitureItem(item);
         changed |= MigrateSavedDroid(item, repairHeadgear, updateArtwork);
 
         foreach (var list in item.Fields.Where(IsInventoryList))

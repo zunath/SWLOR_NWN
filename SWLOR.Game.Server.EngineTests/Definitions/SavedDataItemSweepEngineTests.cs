@@ -246,6 +246,40 @@ public static partial class MigrationEngineTests
         ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
     }
 
+    /// <summary>
+    /// A former plinth that no release migration reached (a character file or record restored afterwards) is renamed
+    /// when its owner logs in or acquires it; a DM's custom name is kept.
+    /// </summary>
+    [EngineTest("Former Display Plinths missed by the release migrations are renamed live", Category = SavedDataSweepCategory)]
+    public static async Task FormerDisplayPlinthsAreRenamedLive(EngineTestContext ctx)
+    {
+        var owner = ctx.SpawnCreature("civilian");
+        await ctx.WaitFrameAsync();
+        var plinth = await CreateItemAsync(ctx, owner, "bpstructure0389", owner);
+        var custom = await CreateItemAsync(ctx, owner, "structure_0389", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var legacy = Deserialize(ctx, StampFormerName(ObjectPlugin.Serialize(plinth), "Veilcarved Rune Pillar", "Veilcarved Display Plinth"));
+            SetName(custom, "Veilcarved Display Plinth Replica");
+            try
+            {
+                ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Display Plinth", $"legacy fixture name '{GetName(legacy)}'");
+                ctx.Assert(FurnitureRenameMigration.RenameInventory(legacy), "the legacy blueprint is renamed");
+                ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Rune Pillar", $"renamed to '{GetName(legacy)}'");
+                ctx.Assert(GetDescription(legacy) == "A rare schematic for crafting Veilcarved Rune Pillar.", $"description '{GetDescription(legacy)}'");
+                ctx.Assert(!FurnitureRenameMigration.RenameInventory(legacy), "the live rename is idempotent");
+                ctx.Assert(!FurnitureRenameMigration.RenameInventory(custom), "a custom name is kept");
+                ctx.Assert(GetName(custom) == "Veilcarved Display Plinth Replica", $"custom name '{GetName(custom)}'");
+            }
+            finally
+            {
+                Invoke("MigrationObject", "DestroyTemporaryObject", legacy);
+                DestroyObject(plinth);
+                DestroyObject(custom);
+            }
+        });
+    }
+
     private static readonly (string Resref, string NewName, string OldName)[] FormerDisplayPlinths =
     {
         ("structure_0389", "Veilcarved Rune Pillar", "Veilcarved Display Plinth"),

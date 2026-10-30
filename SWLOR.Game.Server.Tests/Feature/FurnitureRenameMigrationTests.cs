@@ -109,5 +109,9 @@ public class FurnitureRenameMigrationTests
             .Should().Be("Blueprint: Commandline Bust");
         FurnitureRenameMigration.GetRenamedItemText("structure_0423", "Commandline Display Plinth").Should().Be("Commandline Display Plinth");
         FurnitureRenameMigration.GetRenamedItemText("structure_0429", "My Bust").Should().Be("My Bust");
+        FurnitureRenameMigration.GetRenamedItemText("structure_0339", "Ashmark Display Plinth Replica")
+            .Should().Be("Ashmark Display Plinth Replica", "a custom name that quotes the old title is kept");
+        FurnitureRenameMigration.GetRenamedItemText("bpstructure0339", "A rare schematic for crafting Ashmark Display Plinth.")
+            .Should().Be("A rare schematic for crafting Ashmark Altar.");
     }
 }

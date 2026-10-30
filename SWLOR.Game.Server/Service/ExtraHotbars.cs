@@ -6,10 +6,12 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -470,27 +472,92 @@ namespace SWLOR.Game.Server.Service
             if (IsEquipped(player, mainHand, offHand))
                 return;
 
+            var currentMainHand = GetItemInSlot(InventorySlot.RightHand, player);
+            var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
+            var (newMainHand, newOffHand) = PlanHands(currentMainHand, currentOffHand, mainHand, offHand, CanPairHands);
+
+            // A Twin Pistols or Power Glove companion only leaves with its main-hand item, so that item is put away
+            // and, if the set keeps it, equipped again.
+            var offHandChanges = currentOffHand != newOffHand;
+            var mainHandChanges = currentMainHand != newMainHand || (offHandChanges && IsHandCompanion(currentOffHand));
+
+            // Nothing comes off until everything going on is known to be usable.
+            foreach (var (changes, item) in new[] { (mainHandChanges, newMainHand), (offHandChanges, newOffHand) })
+            {
+                var error = changes && GetIsObjectValid(item) ? GetEquipError(player, item) : string.Empty;
+                if (!string.IsNullOrEmpty(error))
+                {
+                    SendMessageToPC(player, ColorToken.Red(error));
+                    return;
+                }
+            }
+
             var attackTarget = GetAttackTarget(player);
             ClearAllActions();
 
             // The equip checks silently refuse an item whose hand is still occupied, so everything leaving a hand
-            // comes off before anything goes on.
-            var currentMainHand = GetItemInSlot(InventorySlot.RightHand, player);
-            var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
-            var (newMainHand, newOffHand) = PlanHands(currentMainHand, currentOffHand, mainHand, offHand, CanPairHands);
-            if (GetIsObjectValid(currentMainHand) && currentMainHand != newMainHand)
-                ActionUnequipItem(currentMainHand);
-            if (GetIsObjectValid(currentOffHand) && currentOffHand != newOffHand)
-                ActionUnequipItem(currentOffHand);
-            if (GetIsObjectValid(newMainHand) && newMainHand != currentMainHand)
+            // is put away before anything goes on.
+            if (mainHandChanges && GetIsObjectValid(currentMainHand) &&
+                !PutAwayHandItem(player, currentMainHand, InventorySlot.RightHand))
+                return;
+            if (offHandChanges && GetItemInSlot(InventorySlot.LeftHand, player) == currentOffHand &&
+                GetIsObjectValid(currentOffHand) &&
+                !PutAwayHandItem(player, currentOffHand, InventorySlot.LeftHand))
+                return;
+
+            if (mainHandChanges && GetIsObjectValid(newMainHand))
                 ActionEquipItem(newMainHand, InventorySlot.RightHand);
-            if (GetIsObjectValid(newOffHand) && newOffHand != currentOffHand)
+            if (offHandChanges && GetIsObjectValid(newOffHand))
                 ActionEquipItem(newOffHand, InventorySlot.LeftHand);
 
             if (GetIsObjectValid(attackTarget) && !GetIsDead(attackTarget))
                 ActionAttack(attackTarget);
 
             RefreshStatusSoon(player);
+        }
+
+        private static bool IsHandCompanion(uint item) =>
+            GetIsObjectValid(item) &&
+            GetBaseItemType(item) is BaseItem.CompanionPistol or BaseItem.CompanionPowerGlove;
+
+        /// <summary>
+        /// The equip checks that do not depend on the other hand, which the set is about to change.
+        /// </summary>
+        private static string GetEquipError(uint player, uint item)
+        {
+            if (Gui.IsWindowOpen(player, GuiWindowType.Craft))
+                return "Items cannot be equipped while crafting.";
+
+            if (Item.ForceSensitiveWeaponBaseItemTypes.Contains(GetBaseItemType(item)) &&
+                !Item.CanEquipForceSensitiveWeapon(player))
+                return "Only Force Sensitive characters may equip that item.";
+
+            return Item.GetCreatureItemUseError(player, item,
+                TwinPistolEquipment.IsPairItem(item) ? SkillType.TwinPistol : SkillType.Invalid);
+        }
+
+        /// <summary>
+        /// Moves a held item into the inventory or a carried bag. Unlike a plain unequip, it never drops the item
+        /// on the ground when the inventory is full; the item stays held and the player is told to make room.
+        /// </summary>
+        private static bool PutAwayHandItem(uint player, uint item, InventorySlot slot)
+        {
+            try
+            {
+                if (PlayerEquipmentStorage.TryUnequip(player, item, slot, allowRecoveryBag: false))
+                    return true;
+            }
+            catch (InvalidOperationException) when (GetItemInSlot(slot, player) != item && GetItemPossessor(item) == player)
+            {
+                // Another equipment rule put the item away itself.
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            SendMessageToPC(player, ColorToken.Red($"Free inventory space or make room in a carried bag before putting away {GetName(item)}."));
+            return false;
         }
 
         /// <summary>
@@ -592,13 +659,17 @@ namespace SWLOR.Game.Server.Service
             !FillsBothHands(item);
 
         /// <summary>
-        /// Whether two items can be held together. Pistols take a shield in the off hand; other ranged weapons,
-        /// Power Gloves and weapons too large for the off hand leave no room for an off-hand item.
+        /// Whether two items can be held together. Pistols take a shield in the off hand; Twin Pistols, other ranged
+        /// weapons, Power Gloves and weapons too large for the off hand leave no room for an off-hand item.
+        /// A generated companion belongs to its main-hand item, which keeps or removes it.
         /// </summary>
         public static bool CanPairHands(uint mainHand, uint offHand)
         {
-            if (!GetIsObjectValid(mainHand) || !GetIsObjectValid(offHand))
+            if (!GetIsObjectValid(mainHand) || !GetIsObjectValid(offHand) || IsHandCompanion(offHand))
                 return true;
+
+            if (TwinPistolEquipment.IsPairItem(mainHand))
+                return false;
 
             if (Item.PistolBaseItemTypes.Contains(GetBaseItemType(mainHand)))
                 return Item.ShieldBaseItemTypes.Contains(GetBaseItemType(offHand));

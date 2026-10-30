@@ -603,7 +603,7 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
-        private static bool CanEquipForceSensitiveWeapon(uint creature)
+        public static bool CanEquipForceSensitiveWeapon(uint creature)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return true;

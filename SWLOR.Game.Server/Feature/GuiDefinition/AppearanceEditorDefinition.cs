@@ -57,6 +57,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// <summary>New and Delete share the list's width; unsized buttons take about 150 each and overflow it.</summary>
         public const float OutfitListButtonWidth = (OutfitListWidth - 32f) / 2;
         private const float OutfitStoreButtonWidth = 170f;
+        /// <summary>The quick-wear outfit combo spans the body map; unsized, NUI draws it about 150 wide.</summary>
+        public const float QuickOutfitWidth = MapWidth - 12f;
 
         private const float SideColumnWidth = 58f;
         private const float PairColumnWidth = 58f;
@@ -850,6 +852,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOptions(model => model.QuickOutfitOptions)
                     .BindSelectedIndex(model => model.QuickOutfitValue)
                     .BindIsEnabled(model => model.IsQuickWearEnabled)
+                    .SetWidth(QuickOutfitWidth)
                     .SetHeight(32f);
             });
             // Wear and Undo sit under the picker, which takes the map's full width.

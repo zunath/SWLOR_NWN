@@ -344,6 +344,7 @@ public class AppearanceEditorLayoutTests
         PathTo(armor, combo).OfType<GuiGroup<AppearanceEditorViewModel>>()
             .Should().OnlyContain(group => ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
                 "a combo box inside a scrolled group does not open in the client");
+        Width(combo).Should().Be(AppearanceEditorDefinition.QuickOutfitWidth, "the outfit combo spans the body map");
         ReadProperty<string>(combo, "Tooltip").Should().BeNullOrEmpty(
             "its tooltip pops up on the click instead of the list, so the combo never opens");
         foreach (var (id, method, enabled) in new[]

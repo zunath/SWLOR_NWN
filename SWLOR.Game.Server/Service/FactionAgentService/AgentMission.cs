@@ -67,6 +67,15 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
         /// </summary>
         public bool Paid { get; set; }
 
+        /// <summary>Whether the standing part of the pay was saved; a pay retried after a restart skips it.</summary>
+        public bool PaidStanding { get; set; }
+
+        /// <summary>Whether the token part of the pay was saved; a pay retried after a restart skips it.</summary>
+        public bool PaidTokens { get; set; }
+
+        /// <summary>Whether the credit part of the pay was saved with the character; a pay retried after a restart skips it.</summary>
+        public bool PaidCredits { get; set; }
+
         public AgentMission Copy()
         {
             return (AgentMission)MemberwiseClone();

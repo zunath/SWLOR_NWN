@@ -4670,35 +4670,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 251,
+    "Line": 260,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent?.Name ?? \"The agent\"} pays you {FactionAgentRules.DescribeReward(mission)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 259,
+    "Line": 280,
     "Member": "FailMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(reason))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 298,
+    "Line": 319,
     "Member": "GrantIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 317,
+    "Line": 338,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 327,
+    "Line": 346,
+    "Member": "Buy",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
+    "Line": 355,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"

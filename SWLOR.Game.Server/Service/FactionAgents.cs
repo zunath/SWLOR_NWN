@@ -231,26 +231,47 @@ namespace SWLOR.Game.Server.Service
             if (mission == null || mission.Paid)
                 return;
 
-            GiveGoldToCreature(player, mission.Credits);
-            Faction.AdjustPlayerFactionStanding(player, mission.Faction, mission.Standing);
-            var currency = FactionAgentRules.GetTokenCurrency(mission.Faction);
-            if (currency != CurrencyService.CurrencyType.Invalid && mission.Tokens > 0)
-                Currency.GiveCurrency(player, currency, mission.Tokens);
-
-            // Saved with the character, then marked paid: a restart before the mark leaves the pay to make at the next login.
-            ExportSingleCharacter(player);
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            var held = dbPlayer?.AgentMissions.FirstOrDefault(x => x.Id == missionId);
-            if (held != null)
+            // Each part is marked paid right after it is saved, so a pay retried after a restart (at the next login)
+            // gives only the parts not yet marked.
+            if (!mission.PaidStanding)
             {
-                held.Paid = true;
-                DB.Set(dbPlayer);
+                Faction.AdjustPlayerFactionStanding(player, mission.Faction, mission.Standing);
+                MarkPaid(player, missionId, x => x.PaidStanding = true);
             }
+
+            var currency = FactionAgentRules.GetTokenCurrency(mission.Faction);
+            if (!mission.PaidTokens)
+            {
+                if (currency != CurrencyService.CurrencyType.Invalid && mission.Tokens > 0)
+                    Currency.GiveCurrency(player, currency, mission.Tokens);
+                MarkPaid(player, missionId, x => x.PaidTokens = true);
+            }
+
+            if (!mission.PaidCredits)
+            {
+                GiveGoldToCreature(player, mission.Credits);
+                ExportSingleCharacter(player);
+                MarkPaid(player, missionId, x => x.PaidCredits = true);
+            }
+
+            MarkPaid(player, missionId, x => x.Paid = true);
 
             var agent = FactionAgentRules.GetAgent(mission.Agent);
             SendMessageToPC(player, ColorToken.Green($"{agent?.Name ?? "The agent"} pays you {FactionAgentRules.DescribeReward(mission)}."));
             Log.Write(LogGroup.Space, $"AGENT PAY - {PlayerName.GetAuditName(player)} - {mission.Id} {mission.Type} T{mission.Tier} - " +
                                       $"{mission.Credits} credits, {mission.Standing} standing, {mission.Tokens} {currency}");
+        }
+
+        /// <summary>Saves a mark of payment on the player's held mission.</summary>
+        private static void MarkPaid(uint player, string missionId, Action<AgentMission> mark)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var held = dbPlayer?.AgentMissions.FirstOrDefault(x => x.Id == missionId);
+            if (held == null)
+                return;
+
+            mark(held);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>Ends a mission the player could not finish: it is abandoned with the reason.</summary>
@@ -318,10 +339,17 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Currency.TakeCurrency(player, currency, item.Tokens);
+            // The item is created before the tokens are taken: a full inventory refuses the purchase without spending them.
             var created = CreateItemOnObject(item.Resref, player, item.Quantity);
-            if (item.Trait != SpaceService.ShipComponentTraitType.None && GetIsObjectValid(created))
+            if (!GetIsObjectValid(created))
+            {
+                SendMessageToPC(player, ColorToken.Red(Item.InventoryFullMessage));
+                return;
+            }
+
+            if (item.Trait != SpaceService.ShipComponentTraitType.None)
                 ShipComponents.SetTraits(created, new[] { item.Trait });
+            Currency.TakeCurrency(player, currency, item.Tokens);
 
             var name = GetStoreItemName(item);
             SendMessageToPC(player, ColorToken.Green($"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}."));

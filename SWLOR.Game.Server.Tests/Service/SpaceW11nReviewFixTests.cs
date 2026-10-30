@@ -376,12 +376,25 @@ public class SpaceW11nReviewFixTests
         var source = ReadSource("Service", "FactionAgents.cs").Replace("\r\n", "\n");
         var pay = Between(source, "public static void PayMission(", "private static void FailMission(");
         pay.Should().Contain("if (mission == null || mission.Paid)", "a mission already paid is not paid twice");
+        Index(pay, "Faction.AdjustPlayerFactionStanding(").Should().BeLessThan(Index(pay, "x => x.PaidStanding = true"));
+        Index(pay, "Currency.GiveCurrency(").Should().BeLessThan(Index(pay, "x => x.PaidTokens = true"));
         Index(pay, "GiveGoldToCreature(player, mission.Credits);").Should().BeLessThan(Index(pay, "ExportSingleCharacter(player);"));
-        Index(pay, "ExportSingleCharacter(player);").Should().BeLessThan(Index(pay, "held.Paid = true;"));
+        Index(pay, "ExportSingleCharacter(player);").Should().BeLessThan(Index(pay, "x => x.PaidCredits = true"));
+        pay.Should().Contain("if (!mission.PaidStanding)").And.Contain("if (!mission.PaidTokens)").And.Contain("if (!mission.PaidCredits)",
+            "a retried pay gives only the parts not yet saved");
 
         var login = Between(source, "public static void RegisterHeldMissions()", "// The board");
         login.Should().Contain("!x.Paid && dbPlayer.Quests.TryGetValue(x.Id, out var quest) && quest.DateLastCompleted != null");
         Index(login, "PayMission(player, missionId);").Should().BeLessThan(Index(login, "OnMissionCompleted(player, missionId);"));
+    }
+
+    [Test]
+    public void TheTokenStore_CreatesTheItemBeforeTakingTokens()
+    {
+        var buy = Between(ReadSource("Service", "FactionAgents.cs").Replace("\r\n", "\n"),
+            "public static void Buy(uint player, uint agentNpc, int itemIndex)", "public static string GetStoreItemName(");
+        Index(buy, "if (!GetIsObjectValid(created))").Should().BeLessThan(Index(buy, "Currency.TakeCurrency(player, currency, item.Tokens);"),
+            "a full inventory refuses the purchase before any tokens are spent");
     }
 
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);

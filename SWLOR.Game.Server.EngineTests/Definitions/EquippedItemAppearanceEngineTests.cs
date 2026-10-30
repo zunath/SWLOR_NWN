@@ -697,13 +697,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("Head accessories inherit armor dyes without changing creature colors", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        [EngineTest("Head accessories inherit armor dyes without changing creature colors", Category = "AppearanceEditor.HeadTint", TimeoutSeconds = 60f)]
         public static async Task HeadAccessoriesInheritArmorDyes(EngineTestContext ctx)
         {
             var creature = await SpawnCivilianAsync(ctx);
+            var expected = new Dictionary<TintMapLayerType, TintMapColor>();
+            var originalArmor = OBJECT_INVALID;
+            var replacementArmor = OBJECT_INVALID;
             await AssignedAsync(ctx, creature, () =>
             {
                 var armor = GetItemInSlot(InventorySlot.Chest, creature);
+                originalArmor = armor;
                 var standardColor = typeof(TintMapService).GetMethod("GetStandardColor",
                     BindingFlags.NonPublic | BindingFlags.Static);
                 foreach (var dye in new[] { 37, 82 })
@@ -727,8 +731,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         foreach (var layer in head.Material.Layers)
                         {
                             var creatureLayer = TintMapVariable.IsCreatureColorLayer(layer);
-                            ctx.AssertEqual(creatureLayer ? creature : armor, head.GetPaletteSource(layer),
-                                "Head layer palette ownership: " + layer);
+                            ctx.AssertEqual(creature, head.GetPaletteSource(layer),
+                                "Head override storage belongs to the creature: " + layer);
                             if (creatureLayer)
                                 continue;
 
@@ -740,6 +744,89 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                     ctx.Assert(dyeLayers > 0, "Head 139 exercises armor-colored accessory pixels");
                 }
+
+                foreach (var head in TintMapModelResolver.GetCurrentSelections(creature)
+                             .Where(HeadTintChannels.IsHead))
+                foreach (var layer in head.Material.Layers.Where(layer => !TintMapVariable.IsCreatureColorLayer(layer)))
+                {
+                    if (expected.ContainsKey(layer))
+                        continue;
+                    if (expected.Count == 0)
+                    {
+                        var rgb = new TintMapColor(17, 83, 209);
+                        TintMapService.SetColor(creature, head, layer, rgb);
+                        expected[layer] = rgb;
+                    }
+                    else
+                    {
+                        TintMapService.SetPaletteColor(creature, head, layer, 0);
+                        expected[layer] = TintMapPaletteColors.GetColor(layer, 0);
+                    }
+                    ctx.AssertEqual(0, GetLocalInt(armor, TintMapVariable.GetHeadColorStateName(layer)),
+                        "A head edit must not save its override on the armor");
+                }
+
+                replacementArmor = CopyItem(armor, creature, true);
+                ctx.Track(replacementArmor);
+                SetItemCursedFlag(replacementArmor, false);
+                SetPlotFlag(replacementArmor, false);
+                for (var channel = 0; channel < 6; channel++)
+                    EquippedItemAppearance.Set(replacementArmor, ItemAppearanceType.ArmorColor, channel, 21 + channel);
+                ClearAllActions();
+                ActionUnequipItem(originalArmor);
+            });
+            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Chest, creature) != originalArmor,
+                10f, "the original outfit unequip");
+            await AssignedAsync(ctx, creature, () => ActionEquipItem(replacementArmor, InventorySlot.Chest));
+            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Chest, creature) == replacementArmor,
+                10f, "the replacement outfit equip");
+            await AssignedAsync(ctx, creature, () =>
+            {
+                foreach (var head in TintMapModelResolver.GetCurrentSelections(creature).Where(HeadTintChannels.IsHead))
+                foreach (var layer in head.Material.Layers.Where(expected.ContainsKey))
+                    ctx.AssertEqual(expected[layer], TintMapService.GetEffectiveDisplayColor(creature, head, layer),
+                        "Saved head palette/RGB color survives replacing the outfit: " + layer);
+            });
+        }
+
+        [EngineTest("Authored head lip defaults stay natural until edited", Category = "AppearanceEditor.HeadTint", TimeoutSeconds = 45f)]
+        public static async Task AuthoredHeadLipDefaults(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            await AssignedAsync(ctx, creature, () =>
+            {
+                SetGender(creature, Gender.Female);
+                SetCreatureAppearanceType(creature, AppearanceType.Human);
+                SetCreatureBodyPart(SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.Head, 258, creature);
+                var armor = GetItemInSlot(InventorySlot.Chest, creature);
+                var lips = TintMapModelResolver.GetCurrentSelections(creature)
+                    .Where(HeadTintChannels.IsHead)
+                    .Where(selection => HeadTintDefaults.TryGetPaletteColor(selection, TintMapLayerType.Leather2, out _))
+                    .ToArray();
+                ctx.Assert(lips.Length > 0, "Female Human 258 has an authored natural lip default");
+                foreach (var dye in new[] { 37, 82 })
+                {
+                    EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Leather2, dye);
+                    EquippedItemAppearance.Refresh(creature, armor);
+                    foreach (var lip in lips)
+                        ctx.AssertEqual(TintMapPaletteColors.GetColor(TintMapLayerType.Leather2, 0),
+                            TintMapService.GetEffectiveDisplayColor(creature, lip, TintMapLayerType.Leather2),
+                            "Unset lips retain their natural default when the outfit dye changes");
+                }
+                foreach (var lip in lips)
+                    TintMapService.SetPaletteColor(creature, lip, TintMapLayerType.Leather2, 31);
+                foreach (var lip in lips)
+                    ctx.AssertEqual(TintMapPaletteColors.GetColor(TintMapLayerType.Leather2, 31),
+                        TintMapService.GetEffectiveDisplayColor(creature, lip, TintMapLayerType.Leather2),
+                        "An explicit lip palette overrides the natural default");
+                var rgb = new TintMapColor(17, 83, 209);
+                foreach (var lip in lips)
+                    TintMapService.SetColor(creature, lip, TintMapLayerType.Leather2, rgb);
+                EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Leather2, 99);
+                EquippedItemAppearance.Refresh(creature, armor);
+                foreach (var lip in lips)
+                    ctx.AssertEqual(rgb, TintMapService.GetEffectiveDisplayColor(creature, lip, TintMapLayerType.Leather2),
+                        "A saved lip RGB overrides later outfit changes");
             });
         }
 

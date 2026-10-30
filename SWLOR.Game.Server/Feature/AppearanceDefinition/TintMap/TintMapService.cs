@@ -1654,13 +1654,30 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
-            if (selection.UsesItemColor(layer))
+            var paletteSource = selection.PaletteSource;
+            var usesItemColor = selection.UsesItemColor(layer);
+            // Keep head overrides on the creature, but preserve NWN's outfit-dye
+            // fallback until the player explicitly chooses a head color.
+            if (HeadTintChannels.IsHead(selection) && !TintMapVariable.IsCreatureColorLayer(layer))
+            {
+                if (HeadTintDefaults.TryGetPaletteColor(selection, layer, out var authoredColor))
+                    return authoredColor;
+
+                var armor = GetItemInSlot(InventorySlot.Chest, creature);
+                if (GetIsObjectValid(armor))
+                {
+                    paletteSource = armor;
+                    usesItemColor = true;
+                }
+            }
+
+            if (usesItemColor)
             {
                 if (selection.WeaponPart != AppearanceWeapon.Invalid)
                 {
                     return Math.Clamp(
                         GetItemAppearance(
-                            selection.PaletteSource,
+                            paletteSource,
                             ItemAppearanceType.WeaponColor,
                             (int)selection.WeaponPart),
                         0,
@@ -1687,13 +1704,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             selection.ArmorPart,
                             itemColor);
                         var perPartColor = GetItemAppearance(
-                            selection.PaletteSource,
+                            paletteSource,
                             ItemAppearanceType.ArmorColor,
                             perPartIndex);
                         if (selection.ArmorPart == AppearanceArmor.Robe)
-                            perPartColor = GetNativePaletteBaseline(selection.PaletteSource, perPartIndex, perPartColor);
+                            perPartColor = GetNativePaletteBaseline(paletteSource, perPartIndex, perPartColor);
                         var hasExplicitOverride = GetLocalInt(
-                            selection.PaletteSource,
+                            paletteSource,
                             ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
                                 selection.ArmorPart,
                                 itemColor)) > 0;
@@ -1707,7 +1724,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     }
 
                     return Math.Clamp(
-                        GetItemAppearance(selection.PaletteSource, ItemAppearanceType.ArmorColor, colorIndex),
+                        GetItemAppearance(paletteSource, ItemAppearanceType.ArmorColor, colorIndex),
                         0,
                         TintMapMaterialRegistry.PaletteColorCount - 1);
                 }

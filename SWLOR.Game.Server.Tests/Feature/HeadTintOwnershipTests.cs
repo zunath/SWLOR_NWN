@@ -15,7 +15,7 @@ public class HeadTintOwnershipTests
     [TestCase("pfh0_", false)]
     [TestCase("pmh0_", true)]
     [TestCase("pmh0_", false)]
-    public void WearingArmorKeepsHeadChannelsCreatureOwned(string prefix, bool hasArmor)
+    public void HeadOverrideStorageRemainsCreatureOwnedWithOrWithoutArmor(string prefix, bool hasArmor)
     {
         var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))

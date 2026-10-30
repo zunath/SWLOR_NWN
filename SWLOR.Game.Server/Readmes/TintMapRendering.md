@@ -1,9 +1,49 @@
 # Tint-map material lighting
 
-The generated tint materials share three fragment shaders in
+Generated equipment tint materials share three fragment shaders in
 `SWLOR_Haks/sw_shader`: `fs_plt_tinter`, `fs_plt_tinter_nm`, and
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
 materials shared by multiple models through `tintmap.2da`.
+
+Authored CU head materials use five profiles: `fs_head_legacy`,
+`fs_head_plain`, `fs_head_mapped`, `fs_head_hair` and `fs_head_full`.
+Each includes `inc_hd_tint`; the wrappers select lighting features while MTR
+parameters select cutoffs, hair filtering, eye limits, lip coverage and glow.
+`fs_head_plain` still receives lighting; it omits mapped textures and environment
+reflection. The three equipment shaders retain their existing behavior.
+
+`tools/HeadTintAssets.json` owns the head MTR declarations, texture policies,
+compiled-model checksums and model/material/channel rows. Committed textures
+are authoritative. `HeadTintAssets.py --apply` regenerates the shared wrappers,
+MTRs and TXIs; it does not recover textures or shaders from historical commits.
+`GenerateTintMapAssets.py` preserves these declared head resources and rows
+instead of inferring or overwriting them.
+
+Head accessory overrides remain on the creature in `TMH_` state. Until an
+override is saved, Cloth, Leather and Metal use the equipped chest armor's
+global dyes, matching native NWN. With no armor, they use the creature default.
+Changing the outfit does not replace an explicit head palette or RGB choice.
+Authored lip surfaces use their declared natural palette default until edited.
+`headtintdefs.2da`, generated from the head manifest, records these defaults by
+model, material and layer; other head accessories keep the outfit fallback.
+
+Head color maps use BC1, normals use BC5, scalar masks/specularity use BC4 and
+two-channel masks use BC5. Ordinary maps retain full mip chains. Packed shade
+and categorical-layer maps retain a single BC5 level with `mipmap 0`, preventing
+interpolation of category IDs. Dimensions are powers of two. Texture exceptions,
+roles and codecs are recorded and checked in the head manifest. Changed playable
+head models are checked against the per-model budgets in the manifest. The owner
+approved a 30,000-triangle exception for the 60 CU heads restored from the initial
+10,000-triangle reduction; the other changed heads retain their 10,000 budget.
+
+Run `python -B tools/HeadTintAssets.py --check` and
+`python -B tools/GenerateTintMapAssets.py --check` from the HAK checkout.
+With the installed game data, run `python -B tools/TestHeadTintMaterials.py
+--game-data "<NWN install>/data"` and `python -B tools/TestTintShaderMaterials.py
+--game-data "<NWN install>/data"`. These compile the current profiles, validate
+material-state resets and compare native palette/RGB values against the installed
+original palettes, including the folded head palette. No pre-squash Git history
+is required. Native client evidence is also required for visual changes.
 
 The current item catalog includes helmet and cloak materials; weapons
 continue to use their native model/color choices. Hand-slot resolver support
@@ -110,7 +150,7 @@ selection, which could overwrite a newer edit or miss a replacement head/robe.
 
 `TintMapShaderColor.Encode` carries all 24 RGB bits through the existing scalar
 row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),
-using the two float exponent ranges' 2^24 distinct values. All three shaders
+using the two float exponent ranges' 2^24 distinct values. Equipment and head shaders
 decode this value before lighting. They multiply RGB by a neutral reference
 row's luminance curve, normalized at shade128, preserving shading without
 importing a preset's hue. Metal1 and Metal2 retain that neutral metal row's

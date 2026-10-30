@@ -198,7 +198,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             foreach (var (part, partName) in BodyPartNames)
             {
-                // Head colors belong to the creature independently of equipped armor dyes.
+                // Head overrides belong to the creature. GetStandardColor separately
+                // resolves the outfit's native dyes when no override is saved.
                 var usesArmorModel = part != CreaturePart.Head && hasArmor;
                 var armorPart = usesArmorModel
                     ? (AppearanceArmor)(int)part

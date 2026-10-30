@@ -2758,8 +2758,32 @@ public class TintMapReviewTests
     [TestCase("fs_plt_tinter_nm")]
     [TestCase("fs_plt_hair_nm")]
     [TestCase("fs_hav_emit")]
+    [TestCase("fs_head_legacy")]
+    [TestCase("fs_head_plain")]
+    [TestCase("fs_head_mapped")]
+    [TestCase("fs_head_hair")]
+    [TestCase("fs_head_full")]
     public void TintShadersRebuildSpecularityFromFinalPaletteInputs(string shaderName)
     {
+        if (shaderName.StartsWith("fs_head_", StringComparison.Ordinal))
+        {
+            ReadSource("SWLOR_Haks", "sw_shader", $"{shaderName}.shd")
+                .Should().Contain("#include \"inc_hd_tint\"");
+            var common = Regex.Replace(ReadSource("SWLOR_Haks", "sw_shader", "inc_hd_tint.shd"),
+                @"/\*[\s\S]*?\*/|//[^\r\n]*|\s+", string.Empty);
+            var setupHead = common.IndexOf("SetupStandardShaderInputs();", StringComparison.Ordinal);
+            var environmentHead = common.IndexOf("fEnvMapLevel=", setupHead, StringComparison.Ordinal);
+            var diffuseHead = common.IndexOf("FragmentColor=vec4(surfaceColor,1.0);", StringComparison.Ordinal);
+            var specularityHead = common.IndexOf("SetupSpecularity(FragmentColor.rgb*materialFrontDiffuse.rgb);",
+                StringComparison.Ordinal);
+            setupHead.Should().BeGreaterThanOrEqualTo(0);
+            environmentHead.Should().BeGreaterThan(setupHead);
+            diffuseHead.Should().BeGreaterThan(environmentHead);
+            specularityHead.Should().BeGreaterThan(diffuseHead);
+            common.IndexOf("ApplyStandardShader();", StringComparison.Ordinal).Should().BeGreaterThan(specularityHead);
+            return;
+        }
+
         // The Havoc armor shaders finish with the same lighting as ApplyStandardShader plus an emissive term.
         var finalLighting = shaderName.StartsWith("fs_hav_", StringComparison.Ordinal)
             ? "ApplyHavocShader("
@@ -2818,15 +2842,16 @@ public class TintMapReviewTests
         }
     }
 
-    [TestCase("pme0_head056", "pme0_head056", "0,1,4")]
-    [TestCase("pfh0_head121", "pfh0_head121", "0,1,8,9")]
-    [TestCase("pfh0_robe187", "pfh0_robe187", "0,4,5,6,7")]
-    [TestCase("pme0_legl104", "pmh0_legl104", "4")]
-    [TestCase("pme0_pelvis102", "pmh0_pelvis102", "4,6")]
+    [TestCase("pme0_head056", "pme0_head056", "0,1,4", "fs_plt_tinter")]
+    [TestCase("pfh0_head121", "pfh0_head121", "0,1,7,8", "fs_head_legacy")]
+    [TestCase("pfh0_robe187", "pfh0_robe187", "0,4,5,6,7", "fs_plt_tinter")]
+    [TestCase("pme0_legl104", "pmh0_legl104", "4", "fs_plt_tinter")]
+    [TestCase("pme0_pelvis102", "pmh0_pelvis102", "4,6", "fs_plt_tinter")]
     public void ReportedNpcSkinHairHatDressAndPantsUseTheRepairedTintShader(
         string model,
         string material,
-        string layers)
+        string layers,
+        string shaderName)
     {
         var row = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
@@ -2837,8 +2862,8 @@ public class TintMapReviewTests
             "these reported surfaces use skin, hair, cloth, leather or tattoo palettes rather than metal palettes");
 
         ReadSource("SWLOR_Haks", "sw_tint_mtr", $"{material}.mtr")
-            .Should().MatchRegex(@"(?m)^customshaderFS\s+fs_plt_tinter\s*$");
-        TintShadersRebuildSpecularityFromFinalPaletteInputs("fs_plt_tinter");
+            .Should().MatchRegex($@"(?m)^customshaderFS\s+{Regex.Escape(shaderName)}\s*$");
+        TintShadersRebuildSpecularityFromFinalPaletteInputs(shaderName);
     }
 
     [Test]
@@ -2847,7 +2872,8 @@ public class TintMapReviewTests
         var materialRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_tint_mtr");
         var shaderNames = new HashSet<string>(StringComparer.Ordinal)
         {
-            "fs_plt_tinter", "fs_plt_tinter_nm", "fs_plt_hair_nm", "fs_hav_emit"
+            "fs_plt_tinter", "fs_plt_tinter_nm", "fs_plt_hair_nm", "fs_hav_emit",
+            "fs_head_legacy", "fs_head_plain", "fs_head_mapped", "fs_head_hair", "fs_head_full"
         };
         var materialPaths = Directory.GetFiles(materialRoot, "*.mtr");
         materialPaths.Should().NotBeEmpty();
@@ -2872,7 +2898,10 @@ public class TintMapReviewTests
 
         failures.Should().BeEmpty(
             "every generated body, clothing, helmet, weapon and appendage material needs the shared lighting fix");
-        coveredShaders.Should().BeEquivalentTo(shaderNames);
+        // Head materials formerly using fs_plt_hair_nm now use fs_head_hair.
+        // Keep validating the older shader if another generated material uses it.
+        coveredShaders.Should().BeSubsetOf(shaderNames);
+        coveredShaders.Should().Contain(shaderNames.Where(name => name != "fs_plt_hair_nm"));
         foreach (var shaderName in coveredShaders)
             TintShadersRebuildSpecularityFromFinalPaletteInputs(shaderName);
     }
@@ -2882,6 +2911,12 @@ public class TintMapReviewTests
     {
         var hakRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
         var failures = new List<string>();
+        var headTextures = JObject.Parse(File.ReadAllText(Path.Combine(hakRoot, "tools", "HeadTintAssets.json")))["textures"]!;
+        var ordinaryHeadMaps = ((JObject)headTextures).Properties()
+            .Where(property => property.Value["role"] != null &&
+                               (string)property.Value["role"] is not ("tint" or "categoryMask"))
+            .Select(property => property.Name.Replace('/', Path.DirectorySeparatorChar))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         foreach (var directory in new[] { "sw_tint0", "sw_tint1", "sw_tint2" })
         {
@@ -2890,6 +2925,8 @@ public class TintMapReviewTests
 
             foreach (var path in paths)
             {
+                if (ordinaryHeadMaps.Contains(Path.GetRelativePath(hakRoot, path)))
+                    continue;
                 var label = $"{directory}/{Path.GetFileName(path)}";
                 using var texture = File.OpenRead(path);
                 if (texture.Length < 128)

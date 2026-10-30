@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class TintMapSavedColorTests
 {
     private Type _harness;
+    private string[][] _authoredHeadDefaults;
 
     [OneTimeSetUp]
     public void CompileProductionColorStorage()
@@ -22,12 +23,18 @@ public class TintMapSavedColorTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
             root = root.Parent;
         root.Should().NotBeNull();
+        _authoredHeadDefaults = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "headtintdefs.2da"))
+            .Skip(3).Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(line => line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray()).ToArray();
+        var defaultClass = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
+                "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "HeadTintDefaults.cs")))
+            .GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Single();
         var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
                 "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "TintMapService.cs")))
             .GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(node => new[] { "GetSavedColor", "GetEffectiveColor", "SetStoredColor", "SetPaletteColor",
                     "CaptureCurrentHeadColors", "GetCreatureTintSnapshotVariables", "SavePlayerOverrides",
-                    "RestorePlayerOverrides", "UpdatePlayerTintOverrides" }.Contains(node.Identifier.ValueText))
+                    "RestorePlayerOverrides", "UpdatePlayerTintOverrides", "GetStandardColor" }.Contains(node.Identifier.ValueText))
             .Select(method => method.WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                 SyntaxFactory.Token(SyntaxKind.StaticKeyword))).NormalizeWhitespace());
 
@@ -36,7 +43,10 @@ public class TintMapSavedColorTests
             using System;
             using System.Collections.Generic;
             using System.Linq;
+            using System.Text.RegularExpressions;
+            using SWLOR.Game.Server.Core;
             using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+            using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
             using Entity = SWLOR.Game.Server.Entity;
@@ -46,7 +56,14 @@ public class TintMapSavedColorTests
                 public static readonly List<TintMapMaterialSelection> Selections = new();
                 public static Entity.Player Player = new("test-player");
                 public static bool ExplicitPreset;
+                public static bool HasArmor;
+                public static int ArmorDye;
+                public static readonly List<string[]> HeadDefaults = new();
+                {{defaultClass}}
                 {{string.Join(Environment.NewLine, methods)}}
+                private static int Get2DARowCount(string table) => HeadDefaults.Count;
+                private static string Get2DAString(string table, string column, int row) =>
+                    HeadDefaults[row][column switch { "MODEL" => 0, "MATERIAL" => 1, "LAYER" => 2, "COLOR" => 3, _ => throw new Exception(column) }];
                 private static int GetLocalInt(uint item, string name) => Locals.GetValueOrDefault(name);
                 private static void SetLocalInt(uint item, string name, int value) => Locals[name] = value;
                 private static void DeleteLocalInt(uint item, string name) => Locals.Remove(name);
@@ -59,8 +76,10 @@ public class TintMapSavedColorTests
                 private static bool HasExplicitItemPresetColor(TintMapMaterialSelection selection,
                     TintMapLayerType layer, int savedColor) => ExplicitPreset;
                 private static Dictionary<string, int> GetItemTintOverrides(uint item) => Locals;
-                private static int GetStandardColor(uint creature, TintMapMaterialSelection selection,
-                    TintMapLayerType layer) => 0;
+                private static uint GetItemInSlot(InventorySlot slot, uint creature) => HasArmor ? 200u : 0u;
+                private static int GetItemAppearance(uint item, ItemAppearanceType type, int channel) => ArmorDye + channel;
+                private static int GetNativePaletteBaseline(uint item, int channel, int color) => color;
+                private static int GetCreatureStandardColor(uint creature, TintMapLayerType layer) => 0;
                 private static TintMapColorSelection GetEffectiveCreatureColor(uint creature, TintMapLayerType layer)
                     => new(0, null);
                 private static IEnumerable<string> GetCreatureCustomColorVariables(uint creature) => Locals.Keys
@@ -106,6 +125,12 @@ public class TintMapSavedColorTests
         Selections.Clear();
         _harness.GetField("Player")!.SetValue(null, new SWLOR.Game.Server.Entity.Player("test-player"));
         _harness.GetField("ExplicitPreset")!.SetValue(null, false);
+        _harness.GetField("HasArmor")!.SetValue(null, false);
+        _harness.GetField("ArmorDye")!.SetValue(null, 0);
+        var defaults = (List<string[]>)_harness.GetField("HeadDefaults")!.GetValue(null)!;
+        defaults.Clear();
+        defaults.AddRange(_authoredHeadDefaults);
+        _harness.GetNestedType("HeadTintDefaults")!.GetMethod("Load")!.Invoke(null, null);
     }
 
     [TestCaseSource(nameof(Layers))]
@@ -222,6 +247,95 @@ public class TintMapSavedColorTests
         Selections.Add(Head("pfh0_head327", "bandanna", layer));
         Invoke("CaptureCurrentHeadColors", 1u);
         Locals[TintMapVariable.GetHeadColorStateName(layer)].Should().Be(1);
+    }
+
+    [TestCaseSource(nameof(AdditionalHeadLayers))]
+    public void UnsetHeadAccessoriesFollowOutfitDyesAndSavedColorsSurviveOutfitChanges(TintMapLayerType layer)
+    {
+        var head = Head("pmh0_head139", "head_accessory", layer);
+        var channel = (int)Enum.Parse<AppearanceArmorColor>(layer.ToString());
+        _harness.GetField("HasArmor")!.SetValue(null, true);
+        foreach (var dye in new[] { 37, 82 })
+        {
+            _harness.GetField("ArmorDye")!.SetValue(null, dye);
+            var effective = (TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer);
+            effective.Should().Be(new TintMapColorSelection(dye + channel, null));
+            Locals.Should().NotContainKey(TintMapVariable.GetHeadColorStateName(layer));
+        }
+
+        Invoke("SetPaletteColor", 1u, head, layer, 0);
+        _harness.GetField("ArmorDye")!.SetValue(null, 21);
+        ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
+            .Should().Be(new TintMapColorSelection(0, null), "an explicit palette zero must override the outfit");
+
+        foreach (var color in new[] { new TintMapColor(17, 83, 209), new TintMapColor(0, 0, 0) })
+        {
+            Invoke("SetStoredColor", 1u, head, layer, color.ToStoredValue(), true);
+            _harness.GetField("ArmorDye")!.SetValue(null, 92);
+            ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer)).CustomColor.Should().Be(color);
+        }
+
+        Locals.Clear();
+        _harness.GetField("HasArmor")!.SetValue(null, false);
+        ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
+            .Should().Be(new TintMapColorSelection(0, null), "an unarmored, unset head uses the creature default");
+    }
+
+    [TestCaseSource(nameof(AdditionalHeadLayers))]
+    public void ChangingHeadsCapturesTheInheritedOutfitColor(TintMapLayerType layer)
+    {
+        Selections.Add(Head("pmh0_head139", "head_accessory", layer));
+        _harness.GetField("HasArmor")!.SetValue(null, true);
+        _harness.GetField("ArmorDye")!.SetValue(null, 37);
+        Invoke("CaptureCurrentHeadColors", 1u);
+        var expected = 38 + (int)Enum.Parse<AppearanceArmorColor>(layer.ToString());
+        Locals[TintMapVariable.GetHeadColorStateName(layer)].Should().Be(expected);
+    }
+
+    [Test]
+    public void AuthoredLipDefaultsIgnoreOutfitDyesUntilThePlayerChoosesAColor()
+    {
+        _authoredHeadDefaults.Should().NotBeEmpty();
+        _harness.GetField("HasArmor")!.SetValue(null, true);
+        foreach (var row in _authoredHeadDefaults)
+        {
+            Locals.Clear();
+            var layer = (TintMapLayerType)int.Parse(row[2]);
+            var head = Head(row[0], row[1], layer);
+            foreach (var dye in new[] { 37, 82 })
+            {
+                _harness.GetField("ArmorDye")!.SetValue(null, dye);
+                ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
+                    .Should().Be(new TintMapColorSelection(int.Parse(row[3]), null), row[0] + "/" + row[1]);
+            }
+            Invoke("SetPaletteColor", 1u, head, layer, 31);
+            ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
+                .Should().Be(new TintMapColorSelection(31, null));
+            var rgb = new TintMapColor(17, 83, 209);
+            Invoke("SetStoredColor", 1u, head, layer, rgb.ToStoredValue(), true);
+            _harness.GetField("ArmorDye")!.SetValue(null, 99);
+            ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer)).CustomColor.Should().Be(rgb);
+        }
+    }
+
+    [Test]
+    public void InvalidAuthoredDefaultsCannotReplaceCreatureColorsOrUnrelatedHeadAccessories()
+    {
+        var defaults = (List<string[]>)_harness.GetField("HeadDefaults")!.GetValue(null)!;
+        defaults.Clear();
+        defaults.AddRange(new[]
+        {
+            new[] { "pmh0_head139", "head_accessory", "0", "31" },
+            new[] { "pmh0_head139", "head_accessory", "7", "176" },
+            new[] { "pmh0_head139", "head_accessory", "7", "-1" },
+            new[] { "pmh2_head139", "head_accessory", "7", "0" }
+        });
+        _harness.GetNestedType("HeadTintDefaults")!.GetMethod("Load")!.Invoke(null, null);
+        _harness.GetField("HasArmor")!.SetValue(null, true);
+        _harness.GetField("ArmorDye")!.SetValue(null, 37);
+        var head = Head("pmh0_head139", "head_accessory", TintMapLayerType.Leather2);
+        ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, TintMapLayerType.Leather2)).PaletteColorId
+            .Should().Be(37 + (int)AppearanceArmorColor.Leather2);
     }
 
     private Dictionary<string, int> Locals => (Dictionary<string, int>)_harness.GetField("Locals")!.GetValue(null)!;

@@ -1059,6 +1059,29 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the icon layers to draw on top of each other, bottom first. Three-part weapons such as
+        /// lightsabers have one icon per model part, and their base icon shows only the bottom part; every other
+        /// item has a single layer, the same as <see cref="GetIconResref"/>.
+        /// </summary>
+        /// <param name="item">The item to retrieve the icon layers for.</param>
+        /// <returns>The bottom, middle and top icons of a three-part weapon, otherwise the single icon.</returns>
+        public static string[] GetIconLayers(uint item)
+        {
+            var baseItem = GetBaseItemType(item);
+            if (Get2DAString("baseitems", "ModelType", (int)baseItem) == "2")
+            {
+                var prefix = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+                var layers = new[] { "b", "m", "t" }
+                    .Select((part, index) => $"{prefix}_{part}_{GetItemAppearance(item, ItemAppearanceType.WeaponModel, index):000}".ToLower())
+                    .ToArray();
+                if (!string.IsNullOrEmpty(prefix) && layers.All(IconResourceExists))
+                    return layers;
+            }
+
+            return new[] { GetIconResref(item) };
+        }
+
+        /// <summary>
         /// Determines whether an item has a real inventory icon, as opposed to falling back to the
         /// generic placeholder icon. Items with no real icon are almost always internal, prop, or
         /// creature items that should not appear on player-facing economy surfaces.

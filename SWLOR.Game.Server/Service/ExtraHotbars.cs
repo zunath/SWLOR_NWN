@@ -525,25 +525,14 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Puts a worn set's items away. The main hand goes first so a Twin Pistols or Power Glove companion leaves
-        /// with it; if the off-hand item then cannot be put away, the main-hand item goes back on so the set stays whole.
+        /// with it. An item with no room to go stays held, and the player is told to make room.
         /// </summary>
         private static void UnequipHands(uint player, uint mainHand, uint offHand)
         {
-            // Crafting refuses equips, so the main hand could not go back on and the set would end up split.
-            if (Gui.IsWindowOpen(player, GuiWindowType.Craft))
-            {
-                SendMessageToPC(player, ColorToken.Red("Items cannot be put away from the hotbar while crafting."));
-                return;
-            }
-
-            if (GetIsObjectValid(mainHand) && !PutAwayHandItem(player, mainHand, InventorySlot.RightHand))
-                return;
-
-            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) == offHand &&
-                !PutAwayHandItem(player, offHand, InventorySlot.LeftHand) && GetIsObjectValid(mainHand))
-            {
-                ActionEquipItem(mainHand, InventorySlot.RightHand);
-            }
+            if (GetIsObjectValid(mainHand))
+                PutAwayHandItem(player, mainHand, InventorySlot.RightHand);
+            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) == offHand)
+                PutAwayHandItem(player, offHand, InventorySlot.LeftHand);
 
             RefreshStatusSoon(player);
         }

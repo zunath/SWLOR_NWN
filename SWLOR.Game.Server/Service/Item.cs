@@ -1070,8 +1070,10 @@ namespace SWLOR.Game.Server.Service
             var baseItem = GetBaseItemType(item);
             if (Get2DAString("baseitems", "ModelType", (int)baseItem) == "2")
             {
-                // A part's icon number is its model followed by its color digit, e.g. model 2 color 1 is _021.
-                var prefix = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+                // Part icons follow the engine's i<ItemClass>_<part>_<number> convention, which can differ from
+                // DefaultIcon. A part's number is its model followed by its color digit, e.g. model 2 color 1 is _021.
+                var itemClass = Get2DAString("baseitems", "ItemClass", (int)baseItem);
+                var prefix = string.IsNullOrEmpty(itemClass) ? string.Empty : "i" + itemClass;
                 var layers = new[] { "b", "m", "t" }
                     .Select((part, index) =>
                     {

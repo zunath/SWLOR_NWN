@@ -41,10 +41,13 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         }
 
         /// <summary>Extends the creature's existing Inspired to a longer remaining time without changing what it grants.</summary>
-        public static void SetRemaining(uint creature, double remainingSeconds)
+        /// <param name="bankedAgain">True when this adds banked time, which gives the holder a fresh Requiem.</param>
+        public static void SetRemaining(uint creature, double remainingSeconds, bool bankedAgain = false)
         {
             StatusEffect.RefreshStatusEffectDuration(
                 creature, typeof(InspiredStatusEffect), creature, (float)Math.Max(1.0, remainingSeconds));
+            if (bankedAgain)
+                StatusEffect.GetStatusEffect<InspiredStatusEffect>(creature)?.ResetRequiem();
         }
     }
 }

@@ -137,7 +137,17 @@ public class PerformanceSessionTests
         session.IsIdle(Start.AddSeconds(59.9)).Should().BeFalse();
         session.IsIdle(Start.AddSeconds(60)).Should().BeTrue();
 
-        session.MarkInput(Start.AddSeconds(50));
+        session.RegisterCue(session.Current.Primary, Start.AddSeconds(50));
         session.IsIdle(Start.AddSeconds(100)).Should().BeFalse();
+    }
+
+    [Test]
+    public void AFlourishPressedBeforeTheMeterIsFullDoesNotCountAsInput()
+    {
+        var session = CreateDance();
+
+        session.TryConsumeFlourish(Start.AddSeconds(50)).Should().BeFalse();
+
+        session.IsIdle(Start.AddSeconds(60)).Should().BeTrue();
     }
 }

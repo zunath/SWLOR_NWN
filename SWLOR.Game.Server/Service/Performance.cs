@@ -257,9 +257,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Only cue presses and a Flourish that fires count as input for the idle timeout; Options does not.
             var now = DateTime.UtcNow;
-            session.MarkInput(now);
-
             if (feat == FeatType.PerformanceFlourish)
             {
                 TryFlourish(session, now);

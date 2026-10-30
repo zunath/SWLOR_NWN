@@ -799,7 +799,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 state.HasFrozenRemaining,
                 state.FrozenRemainingSeconds);
             var remainingSeconds = PerformanceAudienceRules.BankedRemainingSeconds(frozenSeconds, minutes, state.CapMinutes);
-            PerformanceInspiredApplier.SetRemaining(watcher, remainingSeconds);
+            PerformanceInspiredApplier.SetRemaining(watcher, remainingSeconds, bankedAgain: remainingSeconds > frozenSeconds);
 
             state.HasFrozenRemaining = true;
             state.FrozenRemainingSeconds = remainingSeconds;

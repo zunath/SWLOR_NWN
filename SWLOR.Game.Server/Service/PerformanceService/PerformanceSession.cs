@@ -97,11 +97,6 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             _upcoming.CopyTo(destination, 0);
         }
 
-        public void MarkInput(DateTime nowUtc)
-        {
-            LastInputUtc = nowUtc;
-        }
-
         public bool IsIdle(DateTime nowUtc)
         {
             return (nowUtc - LastInputUtc).TotalSeconds >= PerformanceMath.IdleTimeoutSeconds;

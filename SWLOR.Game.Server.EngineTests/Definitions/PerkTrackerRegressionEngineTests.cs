@@ -1,7 +1,8 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -414,6 +415,52 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 finally { Ability.EndAbilityImpact(caster); }
             });
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(first) == firstHP - 16, 8f, "a new cast to receive its own bonus pulse");
+        }
+
+        [EngineTest("Deadeye Reload builds from non-critical abilities of every ranged weapon skill only", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task DeadeyeReloadBuildsFromEveryRangedSkill(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001", -1f);
+            var target = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            PrepareStationaryCreature(ctx, caster);
+            PrepareStationaryCreature(ctx, target);
+            ctx.MakeHostile(target);
+            SetLocalInt(caster, $"PERK_LEVEL_{(int)PerkType.DeadeyeReload}", 1);
+
+            AbilityImpactSummary Cast(SkillType skill)
+            {
+                Ability.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsSingleTargetAbility = true, SkillType = skill });
+                Ability.ApplyHostileCombatImpact(caster, target, skill, 0, CombatDamageType.Physical, awardsCombatPoints: false);
+                return Ability.EndAbilityImpact(caster);
+            }
+
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                foreach (var skill in new[] { SkillType.Vibroblade, SkillType.Force, SkillType.Devices })
+                {
+                    var summary = Cast(skill);
+                    ctx.AssertEqual(0, summary.CriticalHitCount, $"{skill} impact is non-critical");
+                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Rifle), $"{skill} does not build Deadeye stacks");
+                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, skill), $"{skill} receives no Deadeye bonus");
+                    ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(CriticalRateStackTrackerStatusEffect)), $"{skill} shows no Deadeye tracker");
+                }
+
+                var expected = 0;
+                foreach (var skill in new[] { SkillType.Rifle, SkillType.Throwing, SkillType.TwinPistol, SkillType.Pistol })
+                {
+                    var summary = Cast(skill);
+                    ctx.AssertEqual(0, summary.CriticalHitCount, $"{skill} impact is non-critical");
+                    expected = System.Math.Min(expected + 5, 15);
+                    foreach (var ranged in new[] { SkillType.Rifle, SkillType.Throwing, SkillType.TwinPistol, SkillType.Pistol })
+                        ctx.AssertEqual(expected, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, ranged), $"{skill} builds a bonus {ranged} can use");
+                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Vibroblade), "melee abilities cannot use the bonus");
+                    ctx.AssertEqual(0, Combat.GetPersistentNextSkillAbilityCriticalRateBonus(caster, SkillType.Force), "Force abilities cannot use the bonus");
+                    ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(CriticalRateStackTrackerStatusEffect)), $"{skill} shows the Deadeye tracker");
+                }
+            }
+            finally { Combat.SetAbilityHitResolutionOverride(null); }
         }
 
         [EngineTest("Resource damage bonuses retain independent strict thresholds", Category = "PerkTracker", TimeoutSeconds = 30f)]

@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Puts the slot's items in their hands, then goes back to attacking whatever the player was fighting.
-        /// The usual equip checks still apply and explain any item that cannot be held.
+        /// The usual equip checks still apply and explain any item that cannot be held. A set already in hand is put away.
         /// </summary>
         private static void EquipHands(uint player, ExtraHotbarSlot slot)
         {
@@ -473,7 +473,11 @@ namespace SWLOR.Game.Server.Service
             var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
             var (newMainHand, newOffHand) = PlanHands(currentMainHand, currentOffHand, mainHand, offHand, CanPairHands);
             if (currentMainHand == newMainHand && currentOffHand == newOffHand)
+            {
+                // The set is already in hand, so a second click takes it off, like the native quickbar.
+                UnequipHands(player, mainHand, offHand);
                 return;
+            }
 
             // A Twin Pistols or Power Glove companion only leaves with its main-hand item, so that item is put away
             // and, if the set keeps it, equipped again.
@@ -515,6 +519,24 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsObjectValid(attackTarget) && !GetIsDead(attackTarget))
                 ActionAttack(attackTarget);
+
+            RefreshStatusSoon(player);
+        }
+
+        /// <summary>
+        /// Puts a worn set's items away. The main hand goes first so a Twin Pistols or Power Glove companion leaves
+        /// with it; if the off-hand item then cannot be put away, the main-hand item goes back on so the set stays whole.
+        /// </summary>
+        private static void UnequipHands(uint player, uint mainHand, uint offHand)
+        {
+            if (GetIsObjectValid(mainHand) && !PutAwayHandItem(player, mainHand, InventorySlot.RightHand))
+                return;
+
+            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) == offHand &&
+                !PutAwayHandItem(player, offHand, InventorySlot.LeftHand) && GetIsObjectValid(mainHand))
+            {
+                ActionEquipItem(mainHand, InventorySlot.RightHand);
+            }
 
             RefreshStatusSoon(player);
         }

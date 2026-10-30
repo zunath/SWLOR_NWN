@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var mainIcon = GetEquipIcon(slot.MainHand, mainHand);
                     var offIcon = GetEquipIcon(slot.OffHand, offHand);
                     isActive = ExtraHotbars.IsEquipped(Player, mainHand, offHand);
-                    tooltip = $"Equip {GetEquipNames(slot)}{(isActive ? " (equipped)" : string.Empty)}";
+                    tooltip = $"{(isActive ? "Unequip" : "Equip")} {GetEquipNames(slot)}";
 
                     // Two items sit side by side; weapon icons are tall, so each half still reads clearly.
                     if (slot.MainHand != null && slot.OffHand != null)

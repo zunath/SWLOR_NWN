@@ -483,8 +483,10 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Twin Suns", "Completed Jek Talin's sustained Twin Pistol firing trial.", true)]
         TwinSuns = 185,
-        [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol movement and Flow trial.", true)]
+        [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol Cadence trial.", true)]
         FinalSalvo = 186,
+        [Achievement("Master Wardrobe", "Expanded your wardrobe to its full fifty outfits with Vessa Thrane on Nar Shaddaa.", true)]
+        MasterWardrobe = 187,
 	}
 
     public class AchievementAttribute: Attribute

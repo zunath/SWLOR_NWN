@@ -1566,7 +1566,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedAutoAttackCycleCriticalRatePercentAdjustment", parse_percent(r"gains \+(\d+)% Critical Rate", description))
         add_stat(stats, "RangedAutoAttackCycleCriticalRateTrackerEffectIconType", "(int)EffectIconType.LuckyChamberStatusEffect")
     if base == "Deadeye Reload":
-        add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateSkillType", skill_expr)
+        add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateRangedOnly", 1)
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment", parse_percent(r"gain \+(\d+)% Critical Rate", description))
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateMax", parse_percent(r"stacking up to \+(\d+)%", description))
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateWindowSeconds", 30)

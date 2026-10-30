@@ -40,7 +40,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 Read the guide before working in its area. `Readmes/README.md` lists every guide.
 
 - Coding style (one type per file, one enum per file), renames (an enum rename needs a data migration), Module JSON, StatType design, TLK and 2DA data: `Readmes/CodingStandards.md`
-- Items, enemies, loot, balance, dungeons, ship access, phenotypes: `Readmes/ContentStandards.md`
+- Items, enemies, loot, balance, dungeons, ship access, phenotypes, head triangle caps per LOD: `Readmes/ContentStandards.md`
 - Skills, perk lines, cross-skill design, progression, descriptions, and balance evidence: `Readmes/SkillPerkStandards.md`
 - Migrations, persistence, and enum renames: `Readmes/Migrations.md`
 - Pull requests and code review: `Readmes/PullRequests.md`

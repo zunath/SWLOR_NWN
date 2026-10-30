@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Resonant Display Plinth."
+      "0": "A rare schematic for crafting Resonant Crystal."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Resonant Display Plinth."
+      "0": "A rare schematic for crafting Resonant Crystal."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Resonant Display Plinth"
+      "0": "Blueprint: Resonant Crystal"
     }
   },
   "ModelPart1": {

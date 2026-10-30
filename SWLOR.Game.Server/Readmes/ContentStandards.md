@@ -1,6 +1,6 @@
 # Content Standards
 
-Read before adding or changing items, enemies, loot, balance values, or locations players reach by ship.
+Read before adding or changing items, enemies, loot, balance values, player head models, or locations players reach by ship.
 
 Sections: Balance · Item generation · Loot · Characters · Ship-access locations
 
@@ -29,6 +29,7 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 ## Characters
 
 - Player characters use only the normal phenotype. The large phenotype is not available to players, so do not build, fix, or verify player assets or code paths for it. Leave the existing large-body fallbacks in the tint renderers alone. `ruleset.2da`'s `CHARGEN_ENABLED_PHENOTYPES` still lists the large phenotype, but the native character-creation controls are moved off screen; players set up their body in game, where no phenotype choice exists. Do not change that setting.
+- A head model players can select (`p??0_headNNN`) has a triangle cap per level of detail, counted across every mesh node in the compiled model: LOD 0 (the full model, seen up close) 30,000, LOD 1 10,000, and LOD 2 3,000. A head above 10,000 triangles must ship LOD 1 and LOD 2 models; a head with no LOD models stays within 10,000. Heads render on every character on screen, so the distant levels keep crowds within the range of the existing heads: of the 1,109 `p??0_headNNN` models on haks `master` in October 2026, the median is 840 triangles and the 90th percentile 5,078, and the 199 numbered 200 and up have a median of 4,058 and a 90th percentile of 9,405. A head above a cap needs the user's approval. The 23 existing heads above 10,000 triangles have no LOD models; they stay as they are unless a request covers them, but a replacement of one of them must meet these caps.
 - Only the playable species matter: the appearances registered in `RacialAppearanceRegistry` (Human, Bothan, Chiss, Zabrak, Twi'lek, Mirialan, Echani, Kel Dor, Cyborg, Cathar, Rodian, Trandoshan, Togruta, Wookiee, Mon Calamari, Ugnaught, Droid, Nautolan, Ewok). Their bodies use the human (`p?h`), elf (`p?e`: Bothan, Rodian, Wookiee), half-orc (`p?o`: Cathar), dwarf (`p?d`: Ugnaught, Ewok) and droid (`p?z`) model families. The base NWN race appearances other than Human (elf, half-elf, half-orc, dwarf, gnome, halfling) are not playable, and no species uses the gnome (`p?g`) or halfling (`p?a`) models. Scope fixes, imports, generators, audits, guards and client evidence to playable species on the normal phenotype; do not spend work on anything else.
 
 ## Ship-access locations

@@ -134,14 +134,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShatteringStrike1)
-                .Description("Deals weapon DMG + 18 and inflicts Sunder, reducing Defense and Force Defense by 10% for 30 seconds.")
+                .Description("Deals weapon DMG + 18 and inflicts Sunder, reducing Defense and Force Defense by 12% for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShatteringStrike2)
-                .Description("Deals weapon DMG + 28 and inflicts Sunder, reducing Defense and Force Defense by 12% for 30 seconds.")
+                .Description("Deals weapon DMG + 28 and inflicts Sunder, reducing Defense and Force Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -161,14 +161,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SunderingSweep2)
-                .Description("Deals weapon DMG + 12 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to one other enemy in melee range for 30 seconds.")
+                .Description("Deals weapon DMG + 12 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to up to two other enemies in melee range for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SunderingSweep3)
-                .Description("Deals weapon DMG + 16 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to one other enemy in melee range for 30 seconds.")
+                .Description("Deals weapon DMG + 16 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to up to three other enemies in melee range for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImbuementStance1)
-                .Description("While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and cost 2 FP each.")
+                .Description("While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage. Each one that lands costs 2 FP. You also gain +10% Force Attack, which applies to Force abilities as well. Converted attacks use your Force Attack bonuses instead of Attack bonuses, but still use your weapon skill and the weapon's damage attribute. Targets defend against them with Force Defense and Willpower.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -389,7 +389,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImmovableStance1)
-                .Description("While active, generate + 30% Enmity and gain + 8 Mobility Resistance, but your Attack and Force Attack are reduced by 25%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
+                .Description("While active, generate + 30% Enmity and gain + 20 Mobility Resistance, but your Attack and Force Attack are reduced by 15%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

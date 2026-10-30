@@ -17,9 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 {
                     FlatPower = 20,
                     StaminaCost = 15,
-                    MomentumPowerPerCharge = 4,
-                    IsCrossfire = true,
-                    SpendsMomentum = true,
+                    CadencePowerPerCharge = 4,
+                    SpendsCadence = true,
                 }, activationDelay: 2f);
             return builder.Build();
         }

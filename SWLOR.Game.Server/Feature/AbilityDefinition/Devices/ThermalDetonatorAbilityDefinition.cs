@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class ThermalDetonatorAbilityDefinition : IAbilityListDefinition
     {
+        private const int BaseDamage = 60;
+        private const int BleedingOrBurningTargetBonusDamage = 40;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -66,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 impactLocation,
                 SkillType.Devices,
-                60,
+                BaseDamage,
                 45,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -76,7 +79,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                damagePercentAdjustment: DeviceAbilityEffects.GetBlastDamageAdjustment(activator),
+                baseDamageAdjustment: GetBaseDamageAdjustment(activator));
+        }
+
+        /// <summary>
+        /// Gadget DMG for every target, plus a bonus against targets already Bleeding or Burning.
+        /// Each target is checked before this blast applies its own Burn.
+        /// </summary>
+        private static Func<uint, int> GetBaseDamageAdjustment(uint activator)
+        {
+            var gadgetDamage = DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(activator);
+            return target => gadgetDamage + (IsBleedingOrBurning(target) ? BleedingOrBurningTargetBonusDamage : 0);
+        }
+
+        private static bool IsBleedingOrBurning(uint target)
+        {
+            return StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding) ||
+                   StatusEffect.HasStatusEffect<BurnStatusEffect>(target);
         }
 
     }

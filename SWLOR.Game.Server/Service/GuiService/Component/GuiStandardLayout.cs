@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         internal float? TabPanelHeightValue { get; private set; }
         internal string ContentElementId { get; private set; }
+        internal bool CompactContentValue { get; private set; }
         internal IReadOnlyList<Action<GuiRow<T>>> TabRows => _tabRows;
         internal IReadOnlyList<(Action<GuiColumn<T>> BuildColumn, float? FixedWidth)> LeadingColumns => _leadingColumns;
         internal IReadOnlyList<(Action<GuiColumn<T>> BuildColumn, float? FixedWidth)> SideColumns => _sideColumns;
@@ -58,6 +59,17 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public GuiStandardLayoutConfig<T> SetTabPanelHeight(float height)
         {
             TabPanelHeightValue = height;
+            return this;
+        }
+
+        /// <summary>
+        /// Drops the default margins around the tab panel and the content
+        /// partial so the content starts right under the tabs. Opt-in: other
+        /// windows keep the default spacing.
+        /// </summary>
+        public GuiStandardLayoutConfig<T> SetCompactContent()
+        {
+            CompactContentValue = true;
             return this;
         }
 
@@ -176,6 +188,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
                                 tabPanelRow.AddGroup(tabPanel =>
                                 {
                                     tabPanel.SetShowBorder(false);
+                                    if (config.CompactContentValue)
+                                        tabPanel.SetMargin(0f);
                                     tabPanel.SetScrollbars(NuiScrollbars.Auto);
                                     tabPanel.AddColumn(tabCol =>
                                     {
@@ -194,12 +208,16 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
                             contentRow.AddGroup(host =>
                             {
                                 host.SetShowBorder(false);
+                                if (config.CompactContentValue)
+                                    host.SetMargin(0f);
                                 host.SetScrollbars(NuiScrollbars.Auto);
                                 host.AddColumn(hostCol =>
                                 {
                                     hostCol.AddRow(hostRow =>
                                     {
-                                        hostRow.AddPartialView(config.ContentElementId);
+                                        var partial = hostRow.AddPartialView(config.ContentElementId);
+                                        if (config.CompactContentValue)
+                                            partial.SetMargin(0f);
                                     });
                                 });
                             });

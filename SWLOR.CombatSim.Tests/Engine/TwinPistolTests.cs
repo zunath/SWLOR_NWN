@@ -24,28 +24,44 @@ public class TwinPistolTests
         var twin = _catalog.Abilities.Values.Where(info => info.TwinPistol != null).ToArray();
         twin.Should().HaveCount(20);
         _catalog.Get(FeatType.ControlledBurst2).TwinPistol.WeaponPowerPercent.Should().Be(75);
-        _catalog.Get(FeatType.FinalSalvo).TwinPistol.MomentumPowerPerCharge.Should().Be(4);
+        _catalog.Get(FeatType.FinalSalvo).TwinPistol.CadencePowerPerCharge.Should().Be(4);
+        _catalog.Get(FeatType.FinalSalvo).WeaponAbilityCadenceDamagePerCharge.Should().Be(4);
+        _catalog.Get(FeatType.ClosingShot3).WeaponAbilityCadenceDamagePerCharge.Should().Be(2);
+        _catalog.Get(FeatType.LeadShot4).WeaponAbilityCadenceOnHit.Should().Be(1);
+        _catalog.Get(FeatType.TempoShot2).WeaponAbilityCadenceOnHit.Should().Be(2);
+        _catalog.Get(FeatType.LeadShot1).KeepsWeaponAbilityCadence.Should().BeTrue();
+        _catalog.Get(FeatType.ClosingShot1).KeepsWeaponAbilityCadence.Should().BeFalse();
+        _catalog.Get(FeatType.LeadShot1).CadenceChainKey.Should().Be(_catalog.Get(FeatType.LeadShot4).CadenceChainKey,
+            "ranks of one ability share a chain key");
+        _catalog.Get(FeatType.LeadShot1).CadenceChainKey.Should().NotBe(_catalog.Get(FeatType.TempoShot1).CadenceChainKey);
         _catalog.Get(FeatType.AkimboStance).CastSeconds.Should().Be(2);
         _catalog.Get(FeatType.CrossfireStance).CastSeconds.Should().Be(2);
     }
 
-    [TestCase(false, false)] [TestCase(false, true)] [TestCase(true, false)] [TestCase(true, true)]
+    [TestCase(false, true)] [TestCase(true, false)] [TestCase(true, true)]
     public void CompleteLine_HasTenPerksSixtyPointsAndOnlyOneHandling(bool crossfire, bool rhythm)
     {
         var spec = TwinPistolScenarios.Create(crossfire, rhythm).Teams[0].Members[0];
         spec.Perks.Should().HaveCount(10);
         _catalog.Perks.GetPurchaseCost(spec.Perks).Should().Be(60);
-        spec.Perks.Count(perk => perk.StartsWith("MatchedRhythm") || perk.StartsWith("PairedHandling")).Should().Be(1);
+        spec.Perks.Count(perk => perk.StartsWith("MatchedRhythm") || perk.StartsWith("SteadyCadence")).Should().Be(1);
         new Simulation(TwinPistolScenarios.Create(crossfire, rhythm), RuleSets.Current(), _catalog, 1).Spawn();
     }
 
     [Test]
-    public void MutuallyExclusiveHandling_IsRejectedBeforeSimulation()
+    public void BarrageWithoutMatchedRhythm_IsRefused_BecauseSteadyCadenceNeedsTheCadenceTrait()
     {
-        var scenario = TwinPistolScenarios.Create(false, true);
-        scenario.Teams[0].Members[0].Perks.Add("PairedHandling:3");
+        Action create = () => TwinPistolScenarios.Create(false, false);
+        create.Should().Throw<ArgumentException>().WithMessage("*Cadence trait*");
+    }
+
+    [Test]
+    public void MatchedRhythmAndSteadyCadence_AreNoLongerMutuallyExclusive()
+    {
+        var scenario = TwinPistolScenarios.Create(true, false);
+        scenario.Teams[0].Members[0].Perks.Add("MatchedRhythm:3");
         Action spawn = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
-        spawn.Should().Throw<InvalidDataException>().WithMessage("*mutually exclusive*");
+        spawn.Should().NotThrow();
     }
 
     [TestCase(false)] [TestCase(true)]
@@ -60,17 +76,22 @@ public class TwinPistolTests
         actor.Stats.StmSpent.Should().BeGreaterThan(actor.Stats.StmRefunded);
         actor.Stm.Should().BeInRange(0, 61);
         actor.Stats.DamageDealt.Should().Be(actor.Stats.AbilityDamage + actor.Stats.OrdinaryDamage);
-        if (crossfire) actor.Stats.FlowSpent.Should().BeGreaterThan(0);
+        if (crossfire)
+        {
+            actor.Stats.CadenceSpent.Should().BeGreaterThan(0);
+            actor.Stats.CadenceChains.Should().BeGreaterThan(0, "the Crossfire rotation chains Tempo Shot into Lead Shot");
+        }
     }
 
     [Test]
-    public void NoMovementOpportunity_DoesNotFabricateFlowOrMovementDamage()
+    public void OrdinaryAttacksAlone_NeverGrantCadence()
     {
-        var scenario = TwinPistolScenarios.Create(true, true, movementAvailable: false);
+        var scenario = TwinPistolScenarios.Create(true, false, duration: 30);
+        scenario.Teams[0].Members[0].Abilities.Clear();
         var actor = new Simulation(scenario, RuleSets.Current(), _catalog, 47).Run().Combatants[0];
-        actor.Stats.AbilityUses.Keys.Should().Equal("CrossfireStance");
-        actor.Stats.FlowSpent.Should().Be(0);
-        actor.Stats.AbilityDamage.Should().Be(0);
+        actor.Stats.OrdinaryHits.Should().BeGreaterThan(0);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(0);
+        actor.Stats.CadenceSpent.Should().Be(0);
     }
 
     [Test]
@@ -89,57 +110,134 @@ public class TwinPistolTests
     }
 
     [Test]
-    public void Rush_StopsAtThreeTargetsAndGrantsOneFlowPerActivation()
+    public void TempoShot_HitsOnlyItsSelectedEnemy_AndGrantsTwoCadenceOncePerActivation()
     {
-        var scenario = TwinPistolScenarios.Create(true, false, targets: 5);
+        var scenario = TwinPistolScenarios.Create(true, false, targets: 3);
         var spec = scenario.Teams[0].Members[0];
-        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = "PistolRush2", MovementMeters = 3, MovementSeconds = 0.7f, LineTargets = 5, MinIntervalSeconds = 600 } };
-        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 1);
+        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = "TempoShot2", MinIntervalSeconds = 600 } };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
         var actor = sim.Combatants[0];
+        actor.Spec.WeaponLoadout.Accuracy = 10000;
         actor.NextAttackAt = double.PositiveInfinity;
-        SimulationClock.RunUntil(sim, () => actor.Stats.AbilityImpacts > 0, 10, "Rush impacts");
-        actor.Stats.AbilityImpacts.Should().Be(6);
-        actor.WeaponTraits.Paired.Momentum.Should().Be(1);
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilityImpacts > 0, 10, "Tempo Shot impacts");
+        actor.Stats.AbilityImpacts.Should().Be(2, "one shot per gun at the selected enemy");
+        actor.Stats.AbilityHits.Should().Be(2);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(2, "both guns landing still grant the activation's two Cadence once");
+        sim.Combatants.Skip(1).Count(target => target.Hp < target.Spec.MaxHp).Should().Be(1);
     }
 
-    [TestCase(1, false)] [TestCase(2, false)] [TestCase(2, true)]
-    public void Rush_CapturesTargetsBeforeTravel_WithoutReplacingCasualtiesOrAddingLateEntrants(int casualtyIndex, bool lateEntrant)
+    [Test]
+    public void CrossfireChain_TempoLeadClosing_BuildsThreeThenSpendsAndChainsAgain()
     {
-        var scenario = TwinPistolScenarios.Create(true, false, targets: 4);
-        scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
-        scenario.Teams[0].FocusTarget = "Target 1";
-        scenario.Teams[1].Members[3].JoinAtSeconds = lateEntrant ? .5f : 0;
+        var scenario = TwinPistolScenarios.Create(true, false);
         var spec = scenario.Teams[0].Members[0];
         spec.StmRegenPer30Seconds = 0;
         spec.Abilities = new List<AbilityUseSpec>
         {
-            new() { Feat = "PistolRush2", MovementMeters = 3, MovementSeconds = 1, LineTargets = 3, MinIntervalSeconds = 600 }
+            new() { Feat = "TempoShot2", MinIntervalSeconds = 600 },
+            new() { Feat = "LeadShot4", MinIntervalSeconds = 600 },
+            new() { Feat = "ClosingShot3", MinimumCadence = 3, MinIntervalSeconds = 600 }
         };
         var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
         var actor = sim.Combatants[0];
+        actor.Spec.WeaponLoadout.Accuracy = 10000;
         actor.NextActionAt = 0;
         actor.NextAttackAt = double.PositiveInfinity;
-        sim.Step(.1);
-        actor.Casting.Should().NotBeNull();
-        actor.Casting.Activated.Should().BeTrue();
-        actor.Casting.WeaponTargets.Select(target => target.Name).Should().Equal("Target 1", "Target 2", "Target 3");
-        var paid = actor.Stats.StmSpent;
-        sim.ApplyDamage(actor, sim.Combatants[casualtyIndex], sim.Combatants[casualtyIndex].Hp);
-        actor.NextActionAt = double.PositiveInfinity;
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1 && actor.Casting == null, 6, "Tempo Shot");
+        actor.WeaponTraits.Paired.Cadence.Should().Be(2, "Tempo Shot grants two without a chain");
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 2 && actor.Casting == null, 6, "Lead Shot");
+        actor.WeaponTraits.Paired.Cadence.Should().Be(3, "Lead Shot's chain and own grant do not stack; it adds one");
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 3 && actor.Casting == null, 6, "Closing Shot");
+        actor.Stats.CadenceSpent.Should().Be(3);
+        actor.Stats.CadenceChains.Should().Be(2);
+        // Steady Cadence III adds +3 to the generic +2 per charge, once per gun.
+        actor.Stats.CadenceDamagePowerApplied.Should().Be(3 * (2 + 3) * 2);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(1, "Closing Shot spends at payment, then its chained hit grants one");
+    }
 
-        SimulationClock.Set(sim, 1.1);
-        sim.Step(.1);
+    [Test]
+    public void WithoutTheCadenceTrait_ClosingShotSpendsLeadShotsCadenceAtItsOwnRate()
+    {
+        var scenario = TwinPistolScenarios.Create(true, false);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Perks = new() { "LeadShot:4", "ClosingShot:3" };
+        spec.StmRegenPer30Seconds = 0;
+        spec.Abilities = new List<AbilityUseSpec>
+        {
+            new() { Feat = "LeadShot4", MinIntervalSeconds = 600 },
+            new() { Feat = "ClosingShot3", MinimumCadence = 1, MinIntervalSeconds = 600 }
+        };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.Spec.WeaponLoadout.Accuracy = 10000;
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 2 && actor.Casting == null, 12, "Lead then Closing Shot");
+        actor.Stats.CadenceSpent.Should().Be(1, "Lead Shot's pool exists before the Cadence trait is bought");
+        actor.Stats.CadenceDamagePowerApplied.Should().Be(1 * 2 * 2, "Closing Shot's own +2 per charge, once per gun");
+        actor.Stats.CadenceChains.Should().Be(0, "chaining belongs to the Cadence trait");
+        actor.WeaponTraits.Paired.Cadence.Should().Be(0);
+    }
 
-        actor.Casting.Should().BeNull();
-        actor.Stats.AbilityImpacts.Should().Be(4, "only the two surviving captured targets receive paired impacts");
-        actor.Stats.AbilityUses["PistolRush2"].Should().Be(1);
-        actor.Stats.StmSpent.Should().Be(paid);
-        sim.Combatants[4].Hp.Should().Be(sim.Combatants[4].Spec.MaxHp,
-            lateEntrant ? "a late entrant was absent at activation" : "an uncaptured target cannot replace a casualty");
+    [Test]
+    public void RepeatingOneAbility_DoesNotContinueTheChain()
+    {
+        var scenario = TwinPistolScenarios.Create(true, false);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = "LeadShot4" } };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.Spec.WeaponLoadout.Accuracy = 10000;
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1 && actor.Casting == null, 6, "first Lead Shot");
+        actor.RecastReadyAt.Clear();
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 2 && actor.Casting == null, 6, "repeated Lead Shot");
+        actor.Stats.CadenceChains.Should().Be(0);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(2, "each Lead Shot only adds its own single charge");
+    }
+
+    [Test]
+    public void ASpenderAfterTheWindowExpires_DoesNotChain()
+    {
+        var scenario = TwinPistolScenarios.Create(true, false);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Abilities = new List<AbilityUseSpec>
+        {
+            new() { Feat = "TempoShot2", MinIntervalSeconds = 600 },
+            new() { Feat = "ClosingShot3", MinIntervalSeconds = 600 }
+        };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.Spec.WeaponLoadout.Accuracy = 10000;
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1 && actor.Casting == null, 6, "Tempo Shot");
+        actor.NextActionAt = sim.Now + 6.5;
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 2 && actor.Casting == null, 10, "late Closing Shot");
+        actor.Stats.CadenceSpent.Should().Be(2);
+        actor.Stats.CadenceChains.Should().Be(0);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(0);
+    }
+
+    [TestCase(false, 3 * 4 * 2)] [TestCase(true, 3 * (4 + 3) * 2)]
+    public void SteadyCadence_AddsToFinalSalvosOwnPerChargeDamage(bool steadyCadence, int expected)
+    {
+        var scenario = TwinPistolScenarios.Create(true, !steadyCadence);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = "FinalSalvo", MinIntervalSeconds = 600 } };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.NextAttackAt = double.PositiveInfinity;
+        actor.Spec.WeaponLoadout.Accuracy = 10000;
+        GrantThreeCadence(actor);
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilityImpacts > 0, 10, "Final Salvo");
+        actor.Stats.CadenceSpent.Should().Be(3);
+        actor.Stats.CadenceDamagePowerApplied.Should().Be(expected);
     }
 
     [TestCase("TwinSuns")] [TestCase("FinalSalvo")]
-    public void TargetDiesDuringCast_CancelsBeforeCostsFlowDiscountRecastAndActivation(string feat)
+    public void TargetDiesDuringCast_CancelsBeforeCostsCadenceDiscountRecastAndActivation(string feat)
     {
         var scenario = TwinPistolScenarios.Create(true, false);
         var spec = scenario.Teams[0].Members[0];
@@ -151,7 +249,7 @@ public class TwinPistolTests
         var actor = sim.Combatants[0];
         actor.NextActionAt = 0;
         actor.NextAttackAt = double.PositiveInfinity;
-        GrantThreeFlow(actor);
+        GrantThreeCadence(actor);
         sim.ApplyDamage(sim.Combatants[1], actor, 1);
         var stamina = actor.Stm;
         sim.Step(.1);
@@ -171,56 +269,13 @@ public class TwinPistolTests
         actor.Stats.AbilitiesUsed.Should().Be(0);
         actor.Stats.AbilityUses.Should().BeEmpty();
         actor.Stats.AbilityImpacts.Should().Be(0);
-        actor.Stats.FlowSpent.Should().Be(0);
-        actor.WeaponTraits.Paired.Momentum.Should().Be(3);
+        actor.Stats.CadenceSpent.Should().Be(0);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(3);
         actor.WeaponTraits.Paired.BonusAttempts.Should().Be(0);
         actor.WeaponTraits.Paired.GetAbilityStaminaCostAdjustment(DateTime.UnixEpoch.AddSeconds(sim.Now),
             WeaponTraitState.Configuration(actor)).Should().Be(-2);
         actor.RecastReadyAt.Should().NotContainKey(recast);
         actor.LastUsedAt.Should().NotContainKey(feat);
-    }
-
-    [Test]
-    public void TargetDiesDuringPaidGrappleTravel_CostsFlowDiscountAndRecastStayCommitted()
-    {
-        var scenario = TwinPistolScenarios.Create(true, false);
-        var spec = scenario.Teams[0].Members[0];
-        spec.Perks.Add("CoolUnderFire");
-        spec.StmRegenPer30Seconds = 0;
-        spec.Abilities = new List<AbilityUseSpec>
-        {
-            new() { Feat = "GrappleShot3", MovementMeters = 3, MovementSeconds = 1, MinIntervalSeconds = 600 }
-        };
-        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
-        var actor = sim.Combatants[0];
-        actor.NextActionAt = 0;
-        actor.NextAttackAt = double.PositiveInfinity;
-        GrantThreeFlow(actor);
-        sim.ApplyDamage(sim.Combatants[1], actor, 1);
-        var stamina = actor.Stm;
-        sim.Step(.1);
-        actor.Casting.Activated.Should().BeTrue();
-        var recast = actor.Casting.Ability.RecastGroup;
-        actor.Stats.StmSpent.Should().Be(8);
-        actor.Stats.FlowSpent.Should().Be(3, "Flow is spent before travel, not at impact");
-        sim.ApplyDamage(actor, actor.Casting.Target, actor.Casting.Target.Hp);
-        actor.NextActionAt = double.PositiveInfinity;
-
-        SimulationClock.Set(sim, 1.1);
-        sim.Step(.1);
-
-        actor.Casting.Should().BeNull();
-        actor.Stm.Should().Be(stamina - 8);
-        actor.Stats.StmSpent.Should().Be(8);
-        actor.Stats.StmRefunded.Should().Be(0);
-        actor.Stats.AbilityUses["GrappleShot3"].Should().Be(1);
-        actor.Stats.AbilityImpacts.Should().Be(0);
-        actor.Stats.FlowSpent.Should().Be(3);
-        actor.WeaponTraits.Paired.Momentum.Should().Be(0);
-        actor.WeaponTraits.Paired.GetAbilityStaminaCostAdjustment(DateTime.UnixEpoch.AddSeconds(sim.Now),
-            WeaponTraitState.Configuration(actor)).Should().Be(0);
-        actor.RecastReadyAt[recast].Should().BeGreaterThan(sim.Now);
-        actor.LastUsedAt.Should().ContainKey("GrappleShot3");
     }
 
     [Test]
@@ -337,7 +392,7 @@ public class TwinPistolTests
     }
 
     [Test]
-    public void IncomingAccuracyMisses_ProduceCappedFlowAndSecondWindCooldown()
+    public void IncomingAccuracyMisses_ProduceCappedCadenceAndSecondWindCooldown()
     {
         var scenario = TwinPistolScenarios.Create(true, false, incomingPressure: true);
         var spec = scenario.Teams[0].Members[0];
@@ -348,17 +403,17 @@ public class TwinPistolTests
         actor.NextAttackAt = double.PositiveInfinity;
         var enemy = sim.Combatants[1];
         enemy.Spec.WeaponLoadout.MainDelay = 110;
-        SimulationClock.RunUntil(sim, () => actor.WeaponTraits.Paired.Momentum == 1, 8, "the first evaded attack");
+        SimulationClock.RunUntil(sim, () => actor.WeaponTraits.Paired.Cadence == 1, 8, "the first evaded attack");
         var firstGrantAt = sim.Now;
         SimulationClock.RunUntil(sim, firstGrantAt + 9);
-        actor.WeaponTraits.Paired.Momentum.Should().Be(1);
-        SimulationClock.RunUntil(sim, () => actor.WeaponTraits.Paired.Momentum == 3, 40, "three separately gated evasion grants");
-        actor.WeaponTraits.Paired.Momentum.Should().Be(3);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(1);
+        SimulationClock.RunUntil(sim, () => actor.WeaponTraits.Paired.Cadence == 3, 40, "three separately gated evasion grants");
+        actor.WeaponTraits.Paired.Cadence.Should().Be(3);
         sim.Now.Should().BeGreaterThanOrEqualTo(firstGrantAt + 19.8, "three grants require two ten-second cooldowns, allowing one clock step of tolerance");
     }
 
     [Test]
-    public void FollowThrough_SpendsCapturedFlowAndRefundsOnceDespiteTwoHits()
+    public void FollowThrough_SpendsCapturedCadenceAndRefundsOnceDespiteTwoHits()
     {
         var scenario = TwinPistolScenarios.Create(true, false);
         var spec = scenario.Teams[0].Members[0];
@@ -372,24 +427,24 @@ public class TwinPistolTests
         actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch.AddSeconds(-10), config);
         actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch, config);
         SimulationClock.RunUntil(sim, () => actor.Stats.AbilityImpacts > 0, 10, "Final Salvo");
-        actor.Stats.FlowSpent.Should().Be(3);
+        actor.Stats.CadenceSpent.Should().Be(3);
         actor.Stats.StmRefunded.Should().Be(3);
-        actor.WeaponTraits.Paired.Momentum.Should().Be(0);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(0);
     }
 
     [Test]
-    public void MovementBuff_IsCapturedByTheNextCrossfireAbility()
+    public void ChangingAngles_ArmedByLeadShotsCadence_IsCapturedByTheNextAbility()
     {
         var scenario = TwinPistolScenarios.Create(true, false);
         var spec = scenario.Teams[0].Members[0];
-        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = "BlasterSlide4", MovementMeters = 4, MovementSeconds = .5f, MinIntervalSeconds = 600 } };
+        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = "LeadShot4", MinIntervalSeconds = 600 } };
         var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
         var actor = sim.Combatants[0];
         actor.NextAttackAt = double.PositiveInfinity;
         actor.Spec.WeaponLoadout.Accuracy = 10000;
-        SimulationClock.RunUntil(sim, () => actor.Stats.AbilityImpacts > 0, 10, "Slide");
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilityImpacts > 0, 10, "Lead Shot");
         var next = actor.WeaponTraits.Paired.CaptureAbility(DateTime.UnixEpoch.AddSeconds(sim.Now), WeaponTraitState.Configuration(actor), true, true);
-        next.MomentumSpent.Should().Be(1);
+        next.CadenceSpent.Should().Be(1);
         next.AccuracyAdjustment.Should().Be(5);
     }
 
@@ -438,13 +493,13 @@ public class TwinPistolTests
         actor.WeaponTraits.Haste.Stacks.Should().Be(1, "death resets both the two-second grant gate and old roll identities");
     }
 
-    private static void GrantThreeFlow(Combatant actor)
+    private static void GrantThreeCadence(Combatant actor)
     {
         var config = WeaponTraitState.Configuration(actor);
         actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch.AddSeconds(-20), config);
         actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch.AddSeconds(-10), config);
         actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch, config);
-        actor.WeaponTraits.Paired.Momentum.Should().Be(3);
+        actor.WeaponTraits.Paired.Cadence.Should().Be(3);
     }
 
     private (Simulation Sim, Combatant Actor) SpawnOne(string perk, string feat, bool pvp = false)
@@ -466,23 +521,5 @@ public class TwinPistolTests
         Enumerable.Range(0, 1000).Select(_ => Simulation.SampleWeaponDamage(random, 1, 2)).Should().OnlyContain(damage => damage == 1);
         Enumerable.Range(0, 1000).Select(_ => Simulation.SampleWeaponDamage(random, 10, 15)).Should().OnlyContain(damage => damage >= 10 && damage < 15);
         Simulation.SampleWeaponDamage(random, 10, 10).Should().Be(10);
-    }
-
-    [TestCase(0f)] [TestCase(.005f)]
-    public void GrappleAlreadyInsideStoppingRange_DoesNotWaitForMovementLockout(float distance)
-    {
-        var scenario = TwinPistolScenarios.Create(true, false);
-        scenario.Teams[0].Members[0].Abilities = new List<AbilityUseSpec>
-        {
-            new() { Feat = "GrappleShot3", MovementMeters = distance, MovementSeconds = 1, MinIntervalSeconds = 600 }
-        };
-        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
-        var actor = sim.Combatants[0];
-        actor.WeaponTraits.MovementReadyAt = 2;
-        actor.NextActionAt = 0;
-        actor.NextAttackAt = double.PositiveInfinity;
-        sim.Step(.1);
-        actor.Stats.AbilitiesUsed.Should().Be(1);
-        actor.Stats.AbilityImpacts.Should().Be(2);
     }
 }

@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadeyeReloadTrait)
                 .Description("When a hostile ranged ability does not critically hit, gain +5% Critical Rate for your next ranged ability, stacking up to +15%.")
-                .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRateSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRateRangedOnly, 1)
                 .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment, 5)
                 .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRateMax, 15)
                 .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRateWindowSeconds, 30)

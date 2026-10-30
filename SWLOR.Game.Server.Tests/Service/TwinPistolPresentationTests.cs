@@ -112,40 +112,43 @@ public class TwinPistolPresentationTests
     public void SimultaneousBothHandRushAndOtherLegalLaunchesKeepIndependentAnchorsUntilArrival()
     {
         var leases = new long[PairedRangedPresentation.SourceAnchorCount];
-        PairedRangedPresentation.MissAnchorCount.Should().Be(leases.Length);
         var slots = Enumerable.Range(0, 15)
             .Select(_ => PairedRangedPresentation.LeaseProjectileAnchor(leases, 1000, 25f)).ToArray();
         slots.Should().OnlyContain(slot => slot >= 0);
         slots.Distinct().Should().HaveCount(15, "each overlapping hand and target retains its own source");
-        leases.Take(15).Should().OnlyContain(until => until == 1600);
+        leases.Count(until => until == 1600).Should().Be(15);
         PairedRangedPresentation.LeaseProjectileAnchor(leases, 1000, 25f).Should().BeGreaterThanOrEqualTo(0);
         PairedRangedPresentation.LeaseProjectileAnchor(leases, 1000, 25f).Should().Be(-1,
             "cosmetic overload cannot reposition an in-flight source or grow the object pool");
         PairedRangedPresentation.LeaseProjectileAnchor(leases, 1599, 25f).Should().Be(-1);
-        PairedRangedPresentation.LeaseProjectileAnchor(leases, 1600, 25f).Should().Be(0);
-    }
-
-    [TestCase(false)]
-    [TestCase(true)]
-    public void MissesUseAnIndependentEndpointBesideTheIntendedTarget(bool companion)
-    {
-        var muzzle = PairedRangedPresentation.ResolveMuzzle(new Vector3(20f, 30f, 2f), 90f, companion);
-        var target = new Vector3(22f, 40f, 2f);
-        var endpoint = PairedRangedPresentation.ResolveMissDestination(muzzle, target);
-        var hitPoint = target + Vector3.UnitZ;
-        var horizontalDirection = new Vector3(hitPoint.X - muzzle.X, hitPoint.Y - muzzle.Y, 0);
-
-        Vector3.Distance(endpoint, hitPoint).Should().BeApproximately(1.5f, .00001f);
-        Vector3.Dot(endpoint - hitPoint, horizontalDirection).Should().BeApproximately(0f, .0001f);
-        endpoint.Z.Should().Be(hitPoint.Z);
+        PairedRangedPresentation.LeaseProjectileAnchor(leases, 1600, 25f).Should().Be(1,
+            "the companion takes the first slot waiting at the left barrel");
     }
 
     [Test]
-    public void AVerticalMissStillAvoidsTheTargetWithoutInvalidCoordinates()
+    public void EachHandFiresFromTheSlotsWaitingAtItsBarrelBeforeBorrowingAnother()
     {
-        var target = new Vector3(20f, 30f, 2f);
-        var endpoint = PairedRangedPresentation.ResolveMissDestination(target + Vector3.UnitZ * 2f, target);
-        Vector3.Distance(endpoint, target + Vector3.UnitZ).Should().BeApproximately(1.5f, .00001f);
+        var leases = new long[PairedRangedPresentation.SourceAnchorCount];
+        var companionSlots = Enumerable.Range(0, 8)
+            .Select(_ => PairedRangedPresentation.LeaseProjectileAnchor(leases, 1000, 25f, true)).ToArray();
+        companionSlots.Should().OnlyContain(slot => PairedRangedPresentation.IsCompanionSlot(slot),
+            "the eight companion slots are parked at the left barrel");
+        var mainSlot = PairedRangedPresentation.LeaseProjectileAnchor(leases, 1000, 25f, false);
+        PairedRangedPresentation.IsCompanionSlot(mainSlot).Should().BeFalse("the right hand keeps its own parked slots");
+        var borrowed = PairedRangedPresentation.LeaseProjectileAnchor(leases, 1000, 25f, true);
+        borrowed.Should().BeGreaterThanOrEqualTo(0, "a busy hand borrows a free slot from the other barrel");
+        PairedRangedPresentation.IsCompanionSlot(borrowed).Should().BeFalse();
+    }
+
+    [TestCase(0, false)]
+    [TestCase(1, true)]
+    [TestCase(14, false)]
+    [TestCase(15, true)]
+    public void SlotsAlternateBetweenTheRightAndLeftBarrels(int slot, bool companion)
+    {
+        var origin = new Vector3(20f, 30f, 2f);
+        PairedRangedPresentation.ResolveSlotMuzzle(origin, 45f, slot)
+            .Should().Be(PairedRangedPresentation.ResolveMuzzle(origin, 45f, companion));
     }
 
     [Test]

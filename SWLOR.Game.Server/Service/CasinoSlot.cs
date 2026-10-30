@@ -89,10 +89,13 @@ namespace SWLOR.Game.Server.Service
             CasinoDailyLimit.RecordSpin(play, now, payout);
             // Reserve the account allowance before settling credits so a failed save cannot allow free retries.
             DB.Set(play);
-            TakeGoldFromCreature(SpinCost, player, true);
-            if (payout > 0)
-                GiveGoldToCreature(player, payout);
-            ExportSingleCharacter(player);
+            AssignCommand(player, () =>
+            {
+                TakeGoldFromCreature(SpinCost, player, true);
+                if (payout > 0)
+                    GiveGoldToCreature(player, payout);
+                ExportSingleCharacter(player);
+            });
 
             Log.WriteStructured(LogGroup.Server,
                 "Casino spin: PlayerId={PlayerId} MachineId={MachineId} Stake={Stake} Payout={Payout} DailySpins={DailySpins} DailyWins={DailyWins}",

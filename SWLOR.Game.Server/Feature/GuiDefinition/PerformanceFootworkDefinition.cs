@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceFootwork)
-                .SetInitialGeometry(20f, 60f, 580f, 580f)
+                .SetInitialGeometry(20f, 40f, 580f, 630f)
                 .SetTitle("Footwork")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddHeaderCell(row, "ROUTINE", model => model.RoutineText);
                 AddHeaderCell(row, "TEMPO", model => model.TempoText);
                 AddHeaderCell(row, "VENUE", model => model.VenueText);
-                AddHeaderCell(row, "FOLLOWING YOU", model => model.FollowingText);
+                AddHeaderCell(row, "FOLLOWERS", model => model.FollowingText);
             });
         }
 

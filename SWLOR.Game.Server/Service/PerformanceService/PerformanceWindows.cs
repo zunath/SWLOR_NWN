@@ -16,6 +16,34 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// </summary>
     public static class PerformanceWindows
     {
+        // The window-less cue strip sits above the performer's head, centered on the screen.
+        private const int FallbackStripRow = -8;
+        private const float FallbackStripOverlapSeconds = 0.5f;
+
+        private static Gui.IdReservation _fallbackStrip;
+
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void ReserveGuiIds()
+        {
+            _fallbackStrip = Gui.ReserveIds(nameof(PerformanceWindows), 1);
+        }
+
+        /// <summary>
+        /// Shows one beat of the cue strip when no cue window is open. Screen text, not floating text: floating text is
+        /// also written to the chat log, once per beat. Each line replaces the last and lasts just past the next beat.
+        /// </summary>
+        public static void ShowFallbackStrip(uint performer, string text, float beatSeconds)
+        {
+            PostString(performer, text, -text.Length / 2, FallbackStripRow, ScreenAnchor.Center,
+                beatSeconds + FallbackStripOverlapSeconds, Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName);
+        }
+
+        public static void ClearFallbackStrip(uint performer)
+        {
+            PostString(performer, string.Empty, 0, FallbackStripRow, ScreenAnchor.Center, 0.1f,
+                Gui.ColorWhite, Gui.ColorWhite, _fallbackStrip.StartId, Gui.TextName);
+        }
+
         public static GuiWindowType GetCueWindowType(PerformanceKind kind)
         {
             return kind == PerformanceKind.Dance ? GuiWindowType.PerformanceFootwork : GuiWindowType.PerformanceSession;

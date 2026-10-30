@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceWatching)
-                .SetInitialGeometry(20f, 60f, 450f, 700f)
+                .SetInitialGeometry(20f, 40f, 450f, 640f)
                 .SetTitle("Watching")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 })
                 .BindRowCount(model => model.RowTexts)
                 .SetRowHeight(RowHeight)
+                .SetWidth(ContentPanelWidth)
                 .SetHeight(RowHeight * VisibleRows + 6f));
         }
 
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindText(model => model.BankedText)
                 .SetShowBorder(false)
                 .SetScrollbars(NuiScrollbars.None)
-                .SetHeight(64f));
+                .SetHeight(88f));
         }
 
         private static void AddDebt(GuiColumn<PerformanceWatchingViewModel> content)

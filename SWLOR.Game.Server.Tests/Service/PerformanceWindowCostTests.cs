@@ -47,11 +47,14 @@ public class PerformanceWindowCostTests
     }
 
     [Test]
-    public void BeatLoop_PushesToTheWindowAndFallsBackToOneLineOfFloatingText()
+    public void BeatLoop_PushesToTheWindowAndFallsBackToOneLineOfScreenText()
     {
         var source = File.ReadAllText(SourcePath("Service", "Performance.cs"));
+        var windows = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceWindows.cs"));
 
-        CountOf(source, "FloatingTextStringOnCreature(").Should().Be(1, "only the closed-window fallback uses it");
+        source.Should().NotContain("FloatingTextStringOnCreature(", "floating text also lands in the chat log on every beat");
+        CountOf(source, "PerformanceWindows.ShowFallbackStrip(").Should().Be(1, "only the closed-window fallback uses it");
+        CountOf(windows, "PostString(").Should().Be(2, "the strip is drawn and cleared under one reserved id");
         source.Should().Contain("view.ShowBeat(session, outcome);");
         source.Should().Contain("ShowBeatProgress(");
         source.Should().NotContain("Tempo.Next()", "the Options button opens the Perform window");

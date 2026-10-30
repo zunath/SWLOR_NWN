@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PerformanceService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -13,7 +14,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private readonly GuiWindowBuilder<PerformanceSessionViewModel> _builder = new();
 
         private const float ContentPanelWidth = 560f;
-        private const float HeaderCellWidth = 130f;
+        // The set cell is widest so set names such as "Cantina Standards" fit; the four cells keep their combined width.
+        private const float NarrowHeaderCellWidth = 116f;
+        private const float SongCellWidth = 136f;
+        private const float SetCellWidth = 152f;
         private const float HeaderCellHeight = 54f;
         private const float LaneWidth = 88f;
         private const float LaneRowHeight = 30f;
@@ -59,16 +63,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             content.AddRow(row =>
             {
-                AddHeaderCell(row, "INSTRUMENT", model => model.InstrumentText);
-                AddHeaderCell(row, "SONG", model => model.SongText);
-                AddHeaderCell(row, "SET", model => model.SetText);
-                AddHeaderCell(row, "TEMPO", model => model.TempoText);
+                AddHeaderCell(row, "INSTRUMENT", NarrowHeaderCellWidth, model => model.InstrumentText);
+                AddHeaderCell(row, "SONG", SongCellWidth, model => model.SongText);
+                AddHeaderCell(row, "SET", SetCellWidth, model => model.SetText);
+                AddHeaderCell(row, "TEMPO", NarrowHeaderCellWidth, model => model.TempoText);
             });
         }
 
         private static void AddHeaderCell(
             GuiRow<PerformanceSessionViewModel> row,
             string caption,
+            float width,
             Expression<Func<PerformanceSessionViewModel, string>> value)
         {
             row.AddGroup(cell =>
@@ -88,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHorizontalAlign(NuiHorizontalAlign.Left));
                 });
             })
-                .SetWidth(HeaderCellWidth)
+                .SetWidth(width)
                 .SetHeight(HeaderCellHeight);
         }
 
@@ -115,16 +120,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             lanes.AddRow(row =>
             {
-                AddLane(row, model => model.LowLane);
-                AddLane(row, model => model.MidLane);
-                AddLane(row, model => model.HighLane);
+                AddLane(row, PerformanceCue.Low, model => model.LowLane);
+                AddLane(row, PerformanceCue.Mid, model => model.MidLane);
+                AddLane(row, PerformanceCue.High, model => model.HighLane);
             });
 
             lanes.AddRow(row =>
             {
-                AddStrike(row, model => model.LowStrike);
-                AddStrike(row, model => model.MidStrike);
-                AddStrike(row, model => model.HighStrike);
+                AddStrike(row, PerformanceCue.Low, model => model.LowStrike);
+                AddStrike(row, PerformanceCue.Mid, model => model.MidStrike);
+                AddStrike(row, PerformanceCue.High, model => model.HighStrike);
             });
 
             lanes.AddRow(row =>
@@ -135,15 +140,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
+        // An image placed directly in a list cell draws nothing in the client, so each note sits in a borderless group.
         private static void AddLane(
             GuiRow<PerformanceSessionViewModel> row,
-            Expression<Func<PerformanceSessionViewModel, GuiBindingList<string>>> notes)
+            PerformanceCue cue,
+            Expression<Func<PerformanceSessionViewModel, GuiBindingList<bool>>> notes)
         {
-            row.AddList(template => template.AddCell(cell => cell.AddImage()
-                    .BindResref(notes)
-                    .SetAspect(NuiAspect.Fit)
-                    .SetWidth(NoteSize)
-                    .SetHeight(NoteSize)))
+            row.AddList(template => template.AddCell(cell => cell.AddGroup(group => group.AddImage()
+                        .SetResref(PerformanceCueIcons.GetIcon(cue))
+                        .BindIsVisible(notes)
+                        .SetAspect(NuiAspect.Fit)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                        .SetWidth(NoteSize)
+                        .SetHeight(NoteSize))
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None)))
                 .BindRowCount(notes)
                 .SetRowHeight(LaneRowHeight)
                 .SetScrollbars(NuiScrollbars.None)
@@ -153,7 +165,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddStrike(
             GuiRow<PerformanceSessionViewModel> row,
-            Expression<Func<PerformanceSessionViewModel, string>> note)
+            PerformanceCue cue,
+            Expression<Func<PerformanceSessionViewModel, bool>> note)
         {
             row.AddGroup(strike =>
             {
@@ -163,7 +176,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     r.AddSpacer();
                     r.AddImage()
-                        .BindResref(note)
+                        .SetResref(PerformanceCueIcons.GetIcon(cue))
+                        .BindIsVisible(note)
                         .SetAspect(NuiAspect.Fit)
                         .SetWidth(StrikeSize)
                         .SetHeight(StrikeSize);

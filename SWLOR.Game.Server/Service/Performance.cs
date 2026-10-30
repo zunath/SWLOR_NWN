@@ -289,6 +289,9 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsObjectValid(player))
             {
+                if (reason != PerformanceEndReason.LoggedOut)
+                    PerformanceWindows.ClearFallbackStrip(player);
+
                 RestorePlayer(player);
                 if (Activity.GetBusyType(player) == ActivityStatusType.Performing)
                     Activity.ClearBusy(player);
@@ -585,7 +588,7 @@ namespace SWLOR.Game.Server.Service
             PerformanceAudience.OnFlourish(session);
         }
 
-        // The cue window takes only what changed; with it closed, one line of floating text keeps the performance playable.
+        // The cue window takes only what changed; with it closed, one line of screen text keeps the performance playable.
         private static void PresentBeat(PerformanceSession session, PerformanceBeatOutcome outcome)
         {
             if (session.View is { IsOpen: true } view)
@@ -601,10 +604,10 @@ namespace SWLOR.Game.Server.Service
         {
             var strip = string.Join(" | ", new[] { session.Current }.Concat(session.Upcoming)
                 .Select((beat, index) => DescribeBeat(beat, index == 0)));
-            FloatingTextStringOnCreature(
-                $"{strip}  [{session.Quality}] Streak {session.Streak} Flourish {session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}",
+            PerformanceWindows.ShowFallbackStrip(
                 session.Performer,
-                false);
+                $"{strip}  [{session.Quality}] Streak {session.Streak} Flourish {session.FlourishMeter}/{PerformanceMath.FlourishMeterMax}",
+                (float)session.Tempo.GetBeatSeconds());
         }
 
         private static string DescribeBeat(PerformanceBeat beat, bool isCurrent)

@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -82,7 +83,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 VenueText = PerformanceAudienceText.Venue(isLive ? PerformanceVenue.GetRating(Player) : 0),
                 FollowingText = PerformanceAudienceText.Following(0, 0),
-                InspiringText = PerformanceAudienceText.Inspiring(0, 0)
+                InspiringText = PerformanceAudienceText.Inspiring(0, 0),
+                // The first audience tick replaces this; until then a musician is on their own.
+                BandText = Kind == PerformanceKind.Music
+                    ? PerformanceAudienceText.Band(true, false, string.Empty, Array.Empty<string>(), 0, 1)
+                    : string.Empty
             });
 
             _isOpen = true;

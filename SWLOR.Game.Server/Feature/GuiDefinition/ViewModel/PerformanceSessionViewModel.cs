@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly PerformanceCue[] Lanes = { PerformanceCue.Low, PerformanceCue.Mid, PerformanceCue.High };
 
         private readonly PerformanceBeat[] _upcoming = new PerformanceBeat[UpcomingRows];
-        private readonly string[][] _shownLanes = new string[LaneCount][];
-        private readonly string[] _freshLane = new string[UpcomingRows];
-        private readonly string[] _shownStrikes = new string[LaneCount];
+        private readonly bool[][] _shownLanes = new bool[LaneCount][];
+        private readonly bool[] _freshLane = new bool[UpcomingRows];
+        private readonly bool?[] _shownStrikes = new bool?[LaneCount];
         private string _shownInstrument;
         private string _shownSong;
         private string _shownSet;
@@ -33,13 +33,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string BandText { get => Get<string>(); set => Set(value); }
         public string AudienceHearsText { get => Get<string>(); set => Set(value); }
 
-        // Each lane lists its upcoming notes top to bottom, the furthest note first; the note due now sits in the strike row.
-        public GuiBindingList<string> LowLane { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> MidLane { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> HighLane { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public string LowStrike { get => Get<string>(); set => Set(value); }
-        public string MidStrike { get => Get<string>(); set => Set(value); }
-        public string HighStrike { get => Get<string>(); set => Set(value); }
+        // Each lane shows its note icon on the rows that need it, the furthest note first; the note due now sits in the
+        // strike row. The icon is fixed per lane and only its visibility is bound: an empty resref draws a missing-texture box.
+        public GuiBindingList<bool> LowLane { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> MidLane { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> HighLane { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public bool LowStrike { get => Get<bool>(); set => Set(value); }
+        public bool MidStrike { get => Get<bool>(); set => Set(value); }
+        public bool HighStrike { get => Get<bool>(); set => Set(value); }
 
         public override bool WantsBeatProgress => false;
 
@@ -97,9 +98,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private static string GetNote(PerformanceBeat beat, PerformanceCue lane)
+        private static bool GetNote(PerformanceBeat beat, PerformanceCue lane)
         {
-            return !beat.IsRest && beat.Requires(lane) ? PerformanceCueIcons.GetIcon(lane) : string.Empty;
+            return !beat.IsRest && beat.Requires(lane);
         }
 
         // A lane's list is replaced as a whole, and only when one of its rows is different.
@@ -109,8 +110,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (shown != null && IsSame(shown, _freshLane))
                 return;
 
-            _shownLanes[lane] = (string[])_freshLane.Clone();
-            var list = new GuiBindingList<string>();
+            _shownLanes[lane] = (bool[])_freshLane.Clone();
+            var list = new GuiBindingList<bool>();
             foreach (var note in _freshLane)
                 list.Add(note);
 
@@ -122,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private static bool IsSame(string[] shown, string[] fresh)
+        private static bool IsSame(bool[] shown, bool[] fresh)
         {
             for (var row = 0; row < fresh.Length; row++)
             {
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
-        private void ShowStrike(int lane, string note)
+        private void ShowStrike(int lane, bool note)
         {
             if (!PerformanceBindCache.Changed(ref _shownStrikes[lane], note))
                 return;

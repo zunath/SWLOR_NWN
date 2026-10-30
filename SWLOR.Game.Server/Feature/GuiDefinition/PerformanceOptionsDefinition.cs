@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceOptions)
-                .SetInitialGeometry(620f, 60f, 470f, 760f)
+                .SetInitialGeometry(620f, 30f, 470f, 670f)
                 .SetTitle("Perform")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

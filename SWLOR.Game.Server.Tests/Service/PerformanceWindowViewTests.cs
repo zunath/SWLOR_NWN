@@ -213,12 +213,11 @@ public class PerformanceWindowViewTests
         var strikes = new[] { model.LowStrike, model.MidStrike, model.HighStrike };
         for (var lane = 0; lane < 3; lane++)
         {
-            var icon = PerformanceCueIcons.GetIcon(cues[lane]);
-            strikes[lane].Should().Be(session.Current.Requires(cues[lane]) ? icon : string.Empty);
+            strikes[lane].Should().Be(!session.Current.IsRest && session.Current.Requires(cues[lane]));
             for (var row = 0; row < upcoming.Length; row++)
             {
                 var beat = upcoming[upcoming.Length - 1 - row];
-                lanes[lane][row].Should().Be(beat.Requires(cues[lane]) ? icon : string.Empty);
+                lanes[lane][row].Should().Be(!beat.IsRest && beat.Requires(cues[lane]));
             }
         }
     }

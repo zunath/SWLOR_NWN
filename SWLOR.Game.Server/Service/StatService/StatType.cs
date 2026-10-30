@@ -5853,6 +5853,18 @@ namespace SWLOR.Game.Server.Service.StatService
         NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType = 1022,
 
         /// <summary>
+        /// Lets any hostile ranged weapon ability build, and spend, the noncritical-ability Critical Rate stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        NonCriticalAbilityNextSkillAbilityCriticalRateRangedOnly = 1320,
+
+        /// <summary>
+        /// Lets the stored persistent next-ability Critical Rate apply to any ranged weapon ability.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PersistentNextSkillAbilityCriticalRateRangedOnly = 1321,
+
+        /// <summary>
         /// Effect icon used by the generic auto-attack critical-rate cycle tracker.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]

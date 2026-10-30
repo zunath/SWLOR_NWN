@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -109,11 +110,13 @@ namespace SWLOR.Game.Server.Service
                 overflowComponents.AddRange(components);
             }
 
+            var unplaced = new List<(string Resref, ShipComponentTraitType? Trait)>();
             foreach (var (resref, quantity) in overflow)
             {
                 for (var count = 0; count < quantity; count++)
                 {
-                    CreateItemOnObject(resref, pilot);
+                    if (!GetIsObjectValid(CreateItemOnObject(resref, pilot)))
+                        unplaced.Add((resref, null));
                 }
             }
 
@@ -122,7 +125,12 @@ namespace SWLOR.Game.Server.Service
                 var item = CreateItemOnObject(resref, pilot);
                 if (GetIsObjectValid(item))
                     ShipComponents.SetTraits(item, new[] { trait });
+                else
+                    unplaced.Add((resref, trait));
             }
+
+            if (unplaced.Count > 0)
+                KeepUnplacedYield(pilot, unplaced);
 
             if (stored.Count > 0 || storedComponents.Count > 0)
             {
@@ -204,6 +212,46 @@ namespace SWLOR.Game.Server.Service
                    access;
         }
 
+        /// <summary>
+        /// Yield that fit neither the hold nor the pilot's inventory is packed into the hold past its entry limit, so it is
+        /// never lost: taking items out works as usual, and storing more waits for room. Without a hold the pilot may use,
+        /// it is left at the pilot's location.
+        /// </summary>
+        private static void KeepUnplacedYield(uint pilot, List<(string Resref, ShipComponentTraitType? Trait)> unplaced)
+        {
+            var names = string.Join(", ", unplaced.GroupBy(x => x.Resref).Select(x => $"{x.Count()}x {Cache.GetItemNameByResref(x.Key)}"));
+            if (TryGetHold(pilot, out var property, out _, out var hold, out var holdIsNew))
+            {
+                foreach (var (resref, quantity) in unplaced.Where(x => x.Trait == null).GroupBy(x => x.Resref).Select(x => (x.Key, x.Count())))
+                {
+                    var maxStack = GetMaxStack(resref);
+                    for (var left = quantity; left > 0; left -= maxStack)
+                        AddNewStack(hold, resref, Math.Min(left, maxStack));
+                }
+
+                foreach (var (resref, trait) in unplaced.Where(x => x.Trait != null))
+                    StoreComponent(hold, (resref, trait.Value));
+
+                if (holdIsNew)
+                    SaveNewHold(pilot, property, hold);
+                else
+                    DB.Set(hold);
+
+                SendMessageToPC(pilot, ColorToken.Red($"Your ship hold and inventory are full. {names} was packed into the hold past its limit; take items out to make room."));
+                return;
+            }
+
+            var location = GetLocation(pilot);
+            foreach (var (resref, trait) in unplaced)
+            {
+                var item = CreateObject(ObjectType.Item, resref, location);
+                if (trait != null && GetIsObjectValid(item))
+                    ShipComponents.SetTraits(item, new[] { trait.Value });
+            }
+
+            SendMessageToPC(pilot, ColorToken.Red($"Your inventory is full. {names} was left at your location."));
+        }
+
         /// <summary>Saves a new hold with every category permission for the owner, as adding a category by hand does.</summary>
         private static void SaveNewHold(uint pilot, WorldProperty property, WorldPropertyCategory hold)
         {
@@ -245,30 +293,41 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(item);
             }
 
-            var storage = GetObjectByTag(TemporaryStorageTag);
             foreach (var quantity in plan.NewStacks)
             {
-                if (!GetIsObjectValid(storage))
+                var added = AddNewStack(hold, resref, quantity);
+                if (added == 0)
                     break;
 
-                var item = CreateItemOnObject(resref, storage, quantity);
-                if (!GetIsObjectValid(item))
-                    break;
-
-                hold.Items[Guid.NewGuid().ToString()] = new WorldPropertyItem
-                {
-                    Name = GetName(item),
-                    Tag = GetTag(item),
-                    Resref = resref,
-                    IconResref = Item.GetIconResref(item),
-                    Quantity = GetItemStackSize(item),
-                    Data = ObjectPlugin.Serialize(item)
-                };
-                kept += GetItemStackSize(item);
-                DestroyObject(item);
+                kept += added;
             }
 
             return kept;
+        }
+
+        /// <summary>Adds a new hold entry of the item and returns how many it holds, or 0 when it could not be made.</summary>
+        private static int AddNewStack(WorldPropertyCategory hold, string resref, int quantity)
+        {
+            var storage = GetObjectByTag(TemporaryStorageTag);
+            if (!GetIsObjectValid(storage))
+                return 0;
+
+            var item = CreateItemOnObject(resref, storage, quantity);
+            if (!GetIsObjectValid(item))
+                return 0;
+
+            var stackSize = GetItemStackSize(item);
+            hold.Items[Guid.NewGuid().ToString()] = new WorldPropertyItem
+            {
+                Name = GetName(item),
+                Tag = GetTag(item),
+                Resref = resref,
+                IconResref = Item.GetIconResref(item),
+                Quantity = stackSize,
+                Data = ObjectPlugin.Serialize(item)
+            };
+            DestroyObject(item);
+            return stackSize;
         }
 
         /// <summary>Stores one salvaged component with its trait in a new hold entry and returns its name, or null.</summary>

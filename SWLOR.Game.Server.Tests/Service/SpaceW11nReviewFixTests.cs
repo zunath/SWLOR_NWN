@@ -397,6 +397,47 @@ public class SpaceW11nReviewFixTests
             "a full inventory refuses the purchase before any tokens are spent");
     }
 
+    [Test]
+    public void UnregisteringAShip_ReturnsItsPostedDroids()
+    {
+        var unregister = Between(ReadSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs").Replace("\r\n", "\n"),
+            "public Action OnClickUnregisterShip()", "_myShips.RemoveAll(ship => ship.Id == shipId);");
+        Index(unregister, "Space.ReturnShipDroidCrew(dbShip, \"was unregistered\");")
+            .Should().BeLessThan(Index(unregister, "DB.Delete<PlayerShip>(shipId);"),
+                "posted droids go back to their owners before the ship record is gone");
+    }
+
+    [Test]
+    public void ListingAShip_RechecksItsOwner()
+    {
+        var list = Between(ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n"),
+            "public static bool List(uint seller, PlayerShip ship, int price)", "RemoveListings(ship.Id);");
+        Index(list, "if (ship.OwnerPlayerId != GetObjectUUID(seller))").Should().BeGreaterThan(0,
+            "a ship given away while the confirmation was open cannot be listed by its former owner");
+    }
+
+    [Test]
+    public void LeavingSpace_ClearsTheSensorSweepCooldown()
+    {
+        var clear = ReadSource("Service", "SpaceSignatureJump.cs").Replace("\r\n", "\n");
+        clear = clear[Index(clear, "private static void ClearScanningState(")..];
+        clear.Should().Contain("_lastSensorSweep.Remove(player);");
+    }
+
+    [Test]
+    public void YieldThatFitsNowhere_IsKeptInTheHoldOrAtThePilot()
+    {
+        var source = ReadSource("Service", "ShipHold.cs").Replace("\r\n", "\n");
+        var deliver = Between(source, "public static void DeliverYield(", "private static bool TryGetHold(");
+        deliver.Should().Contain("if (!GetIsObjectValid(CreateItemOnObject(resref, pilot)))");
+        Index(deliver, "unplaced.Add((resref, trait));").Should().BeLessThan(Index(deliver, "KeepUnplacedYield(pilot, unplaced);"));
+
+        var keep = Between(source, "private static void KeepUnplacedYield(", "private static void SaveNewHold(");
+        keep.Should().Contain("AddNewStack(hold, resref, Math.Min(left, maxStack));");
+        keep.Should().Contain("DB.Set(hold);");
+        keep.Should().Contain("CreateObject(ObjectType.Item, resref, location);", "without a hold the yield is left at the pilot");
+    }
+
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]

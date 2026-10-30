@@ -312,6 +312,7 @@ namespace SWLOR.Game.Server.Service
         {
             _signatureJumps.Remove(player);
             _sensorSweeps.Remove(player);
+            _lastSensorSweep.Remove(player);
         }
     }
 }

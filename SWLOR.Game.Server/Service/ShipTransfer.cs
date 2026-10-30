@@ -462,6 +462,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool List(uint seller, PlayerShip ship, int price)
         {
+            // The ship can change owner while the seller's confirmation is open.
+            if (ship.OwnerPlayerId != GetObjectUUID(seller))
+            {
+                FloatingTextStringOnCreature("You no longer own this ship.", seller, false);
+                return false;
+            }
+
             if (price <= 0)
             {
                 FloatingTextStringOnCreature("Enter an asking price above zero.", seller, false);

@@ -1863,6 +1863,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
                     Space.UndockAllToStarport(dbShip, "was unregistered");
+                    Space.ReturnShipDroidCrew(dbShip, "was unregistered");
                     ShipTransfer.RemoveListings(shipId);
                     dbProperty.IsQueuedForDeletion = true;
 

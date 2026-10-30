@@ -1240,8 +1240,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(false, outline["fill"]?.Value<bool>(), $"{stage}/{name}: outline is not filled");
             ctx.AssertEqual(10, (outline["points"] as JArray)?.Count, $"{stage}/{name}: closed rectangle outline");
 
-            ctx.Assert(!swatch.Parent.Children<JObject>().Any(node => (node["value"] as JObject)?["bind"]?.Value<string>() == name + "Code"),
-                $"{stage}/{name}: no palette code label beside the swatch; the palette outline shows the colour.");
+            var row = swatch.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "row");
+            var rows = row.Parent.Children<JObject>().ToList();
+            var codeRow = rows[rows.IndexOf(row) - 1];
+            ctx.Assert(codeRow.Descendants().OfType<JObject>().Any(node => (node["value"] as JObject)?["bind"]?.Value<string>() == name + "Code"),
+                $"{stage}/{name}: the palette code or RGB label sits over the swatch.");
         }
 
         private static void AssertAppearancePaletteJson(EngineTestContext ctx, JObject palette, string stage)

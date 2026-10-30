@@ -41,6 +41,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float SwatchWidth = 52f;
         private const float SwatchHeight = 24f;
         private const float SwatchRowLabelWidth = 20f;
+        private const float SwatchCodeHeight = 16f;
+        /// <summary>
+        /// The item swatches with their codes and the selected part's rows: heading, four code
+        /// and swatch rows, and the gap, measured in the client.
+        /// </summary>
+        public const float ItemSwatchesHeight = 262f;
         /// <summary>A body colour's name ("Tattoo 1") is wider than its swatch.</summary>
         private const float BodySwatchColumnWidth = 72f;
         private const float PickerWidth = 196f;
@@ -201,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         left.AddRow(mapRow => mapRow.AddGroup(map => BuildBodyMap(map, equipment: true)));
                         AddQuickOutfitRows(left);
                     }).SetWidth(MapWidth);
-                    row.AddGroup(colours => BuildColours(colours, BuildItemSwatches));
+                    row.AddGroup(colours => BuildColours(colours, BuildItemSwatches, ItemSwatchesHeight));
                 });
             });
         }
@@ -412,8 +418,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// <summary>
         /// The swatches beside the selected part's picture, then the palette and RGB picker.
         /// </summary>
+        /// <param name="swatchesHeight">Height of the swatches and picture row; 0 lets the picture set it.</param>
         private void BuildColours(GuiGroup<AppearanceEditorViewModel> group,
-            System.Action<GuiColumn<AppearanceEditorViewModel>> buildSwatches)
+            System.Action<GuiColumn<AppearanceEditorViewModel>> buildSwatches, float swatchesHeight = 0f)
         {
             group.SetShowBorder(true).SetScrollbars(NuiScrollbars.Y);
             group.AddColumn(col =>
@@ -428,6 +435,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     }).SetWidth(SwatchesColumnWidth);
                     row.AddColumn(AddPartPreview).SetWidth(PreviewColumnWidth);
                     row.AddSpacer();
+                    // NUI does not grow the row to a column taller than the picture beside it.
+                    if (swatchesHeight > 0f)
+                        row.SetHeight(swatchesHeight);
                 });
                 col.AddRow(row =>
                 {
@@ -519,14 +529,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AppearanceArmorColor.Metal1, partRow: false);
             AddItemSwatchRow(col, null, "Global", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
                 AppearanceArmorColor.Metal2, partRow: false);
+            // A gap sets the selected part's rows apart from the item's; the body map names the part.
             col.AddRow(row =>
             {
                 row.BindIsVisible(model => model.IsPartColorsVisible);
-                row.AddLabel()
-                    .BindText(model => model.SelectedPartColorsTitle)
-                    .SetTooltip("Colours for this part only. An empty swatch uses the outfit colour; right-click a swatch to empty it.")
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetHeight(SwatchHeight);
+                row.AddSpacer().SetHeight(8f);
             });
             AddItemSwatchRow(col, "1", "SelectedPart", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
                 AppearanceArmorColor.Metal1, partRow: true);
@@ -538,6 +545,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void AddItemSwatchRow(GuiColumn<AppearanceEditorViewModel> col, string label, string prefix,
             AppearanceArmorColor leather, AppearanceArmorColor cloth, AppearanceArmorColor metal, bool partRow)
         {
+            // Each swatch's palette code (P4) or "RGB", over the swatch.
+            col.AddRow(row =>
+            {
+                if (partRow)
+                    row.BindIsVisible(model => model.IsPartColorsVisible);
+                row.AddSpacer().SetWidth(SwatchRowLabelWidth);
+                foreach (var channel in new[] { leather, cloth, metal })
+                {
+                    row.AddLabel()
+                        .BindText(Bind<string>($"{prefix}{channel}Code"))
+                        .SetWidth(SwatchWidth + 4f)
+                        .SetHeight(SwatchCodeHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                        .SetVerticalAlign(NuiVerticalAlign.Bottom);
+                }
+                row.AddSpacer();
+            });
             col.AddRow(row =>
             {
                 if (partRow)
@@ -560,7 +584,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         button.SetId($"ae_part_swatch_{channel}")
                             .BindOnClicked(model => model.OnClickPartSwatch(copy))
                             .BindOnMouseDown(model => model.OnMouseDownPartSwatch(copy))
-                            .SetTooltip("Colours only this part. Right-click to go back to the outfit colour.");
+                            .SetTooltip("Colours only this part. Empty uses the outfit colour; right-click to empty it.");
                     }
                     else
                     {

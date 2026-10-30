@@ -86,10 +86,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
             var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
             var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
-            var placed = PlaceBeside(Geometry, AppearancePartBrowserDefinition.WindowWidth,
-                AppearancePartBrowserDefinition.WindowHeight, screenWidth, screenHeight, scale);
+            // Keep the size the player last gave the browser; only its position follows the editor.
+            var size = browser.Geometry;
+            var placed = PlaceBeside(Geometry,
+                size?.Width > 0f ? size.Width : AppearancePartBrowserDefinition.WindowWidth,
+                size?.Height > 0f ? size.Height : AppearancePartBrowserDefinition.WindowHeight,
+                screenWidth, screenHeight, scale);
             if (placed != null)
                 browser.Geometry = placed;
+            browser.FitGrid();
             SyncPartBrowser();
         };
 
@@ -242,8 +247,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool SelectedPartCloth2Selected { get => Get<bool>(); set => Set(value); }
         public bool SelectedPartMetal1Selected { get => Get<bool>(); set => Set(value); }
         public bool SelectedPartMetal2Selected { get => Get<bool>(); set => Set(value); }
+
+        // Palette code ("P4") or "RGB" over each item and part swatch.
+        public string GlobalLeather1Code { get => Get<string>(); set => Set(value); }
+        public string GlobalLeather2Code { get => Get<string>(); set => Set(value); }
+        public string GlobalCloth1Code { get => Get<string>(); set => Set(value); }
+        public string GlobalCloth2Code { get => Get<string>(); set => Set(value); }
+        public string GlobalMetal1Code { get => Get<string>(); set => Set(value); }
+        public string GlobalMetal2Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartLeather1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartLeather2Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartCloth1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartCloth2Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartMetal1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartMetal2Code { get => Get<string>(); set => Set(value); }
         public bool IsPartColorsVisible { get => Get<bool>(); set => Set(value); }
-        public string SelectedPartColorsTitle { get => Get<string>(); set => Set(value); }
 
         public GuiRectangle BodySkinRegion { get => Get<GuiRectangle>(); set => Set(value); }
         public GuiRectangle BodyHairRegion { get => Get<GuiRectangle>(); set => Set(value); }
@@ -285,6 +303,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(new GuiColor(0, 0, 0), $"SelectedPart{channel}Tint");
                 Set(false, $"SelectedPart{channel}Custom");
                 Set(false, $"SelectedPart{channel}Selected");
+                Set(string.Empty, $"SelectedPart{channel}Code");
+                Set(string.Empty, $"Global{channel}Code");
             }
             foreach (var (name, _, _) in BodyColorSwatches)
             {
@@ -630,8 +650,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         // ---------------- colour indicators ----------------
         /// <summary>Called after a swatch's region, tint or custom flag changes.</summary>
+        /// <summary>
+        /// The code over a swatch: its palette code (P4), "RGB" for a custom colour, or nothing when
+        /// it has no colour of its own (a part using the outfit colour).
+        /// </summary>
+        internal static string SwatchCode(GuiRectangle region, bool custom)
+        {
+            if (custom)
+                return "RGB";
+            if (region == null || region.Width < ColorSize)
+                return string.Empty;
+            return AppearancePreview.PaletteCode((int)(region.Y / ColorSize) * TextureColorsPerRow + (int)(region.X / ColorSize));
+        }
+
         private void OnSwatchUpdated(ColorTarget target, AppearanceArmorColor channel)
         {
+            if (target == ColorTarget.Global)
+            {
+                var name = $"Global{channel}";
+                SetIfChanged(name + "Code", SwatchCode(Get<GuiRectangle>(name + "Region"), Get<bool>(name + "Custom")));
+            }
             if (target != ColorTarget.Global && target == ToColorTarget(_selectedSlot))
                 MirrorPartSwatch(channel);
             RefreshPaletteSelection();
@@ -643,16 +681,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetIfChanged(nameof(IsPartColorsVisible), visible);
             if (!visible)
                 return;
-            SetIfChanged(nameof(SelectedPartColorsTitle), PartColorsTitle(_selectedSlot));
             foreach (var channel in SwatchChannels)
                 MirrorPartSwatch(channel);
             SyncSelectedPartSelection();
         }
-
-        /// <summary>Heads the part colour rows with the selected part's name, e.g. "Left Shoulder".</summary>
-        internal static string PartColorsTitle(AppearanceEditorSlot slot) =>
-            string.Concat(slot.ToString().Select((letter, index) =>
-                index > 0 && char.IsUpper(letter) ? " " + letter : letter.ToString()));
 
         private void MirrorPartSwatch(AppearanceArmorColor channel)
         {
@@ -662,6 +694,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Set(region, $"SelectedPart{channel}Region");
             Set(Get<GuiColor>(source + "Tint") ?? new GuiColor(0, 0, 0), $"SelectedPart{channel}Tint");
             SetIfChanged($"SelectedPart{channel}Custom", custom);
+            SetIfChanged($"SelectedPart{channel}Code", SwatchCode(region, custom));
         }
 
         private void SyncSelectedPartSelection()

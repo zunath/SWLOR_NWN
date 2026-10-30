@@ -634,10 +634,20 @@ public class AppearanceEditorLayoutTests
 
     // ------------------------------------------------------------------ part browser window
 
+    private static IEnumerable<(int Columns, int Rows)> BrowserGrids() =>
+        Enumerable.Range(AppearancePartBrowserViewModel.MinColumns,
+                AppearancePartBrowserViewModel.MaxColumns - AppearancePartBrowserViewModel.MinColumns + 1)
+            .SelectMany(columns => Enumerable.Range(1, AppearancePartBrowserViewModel.MaxRows)
+                .Select(rows => (columns, rows)));
+
+    private static IEnumerable<string> BrowserGridNames() =>
+        BrowserGrids().Select(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows));
+
     [Test]
-    public void ThePartBrowserOffersViewsPagerAndPartNumber()
+    public void EveryBrowserGridOffersViewsPagerAndPartNumber([ValueSource(nameof(BrowserGridNames))] string gridName)
     {
-        var browser = AppearancePartBrowserDefinition.BuildBrowserColumn();
+        var (columns, rows) = BrowserGrids().Single(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows) == gridName);
+        var browser = AppearancePartBrowserDefinition.BuildGridPanel(columns, rows);
         var views = Walk(browser).Where(widget => widget.Id?.StartsWith("ae_view_") == true).ToArray();
         views.Select(view => view.Id).Should().Equal(
             Enum.GetValues<AppearancePreviewView>().Select(view => $"ae_view_{view}"));
@@ -665,17 +675,18 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void ThePartBrowserHasFiveByThreeBoundTiles()
+    public void EveryBrowserGridHasItsRowsOfBoundTiles([ValueSource(nameof(BrowserGridNames))] string gridName)
     {
-        var browser = AppearancePartBrowserDefinition.BuildBrowserColumn();
+        var (columns, rows) = BrowserGrids().Single(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows) == gridName);
+        var browser = AppearancePartBrowserDefinition.BuildGridPanel(columns, rows);
+        ReadProperty<NuiScrollbars>(browser, "Scrollbars").Should().Be(NuiScrollbars.None);
         var tiles = Walk(browser).Where(widget => widget.Id?.StartsWith("ae_tile_") == true).ToArray();
-        tiles.Should().HaveCount(AppearancePartBrowserViewModel.PageSize);
-        AppearancePartBrowserViewModel.Columns.Should().Be(5);
-        AppearancePartBrowserViewModel.Rows.Should().Be(3);
-        var tileRows = browser.Elements.Where(row => Walk(row).Any(widget => widget.Id?.StartsWith("ae_tile_") == true)).ToArray();
-        tileRows.Should().HaveCount(AppearancePartBrowserViewModel.Rows);
+        tiles.Should().HaveCount(columns * rows);
+        var tileRows = browser.Elements.Single().Elements
+            .Where(row => Walk(row).Any(widget => widget.Id?.StartsWith("ae_tile_") == true)).ToArray();
+        tileRows.Should().HaveCount(rows);
         foreach (var row in tileRows)
-            Walk(row).Count(widget => widget.Id?.StartsWith("ae_tile_") == true).Should().Be(AppearancePartBrowserViewModel.Columns);
+            Walk(row).Count(widget => widget.Id?.StartsWith("ae_tile_") == true).Should().Be(columns);
 
         for (var tile = 0; tile < tiles.Length; tile++)
         {
@@ -695,13 +706,31 @@ public class AppearanceEditorLayoutTests
             button.DeclaredHeight.Should().Be(AppearanceEditorDefinition.TileSize);
             AssertBrowserHandler(button, nameof(AppearancePartBrowserViewModel.OnClickTile), (typeof(int), tile));
         }
-        typeof(AppearancePartBrowserViewModel).GetProperty($"Tile{AppearancePartBrowserViewModel.PageSize}Image")
-            .Should().BeNull("the browser binds exactly one page of tiles");
+        typeof(AppearancePartBrowserViewModel).GetProperty($"Tile{AppearancePartBrowserViewModel.TileCount}Image")
+            .Should().BeNull("the largest grid binds every tile");
+    }
 
-        NaturalWidth(browser).Should().BeLessThanOrEqualTo(AppearancePartBrowserDefinition.WindowWidth - 40f,
-            "five pictures fit the browser window");
-        NaturalHeight(browser).Should().BeLessThanOrEqualTo(AppearancePartBrowserDefinition.WindowHeight - 60f,
-            "three rows and the pager fit below the title bar");
+    [Test]
+    public void EachBrowserGridFitsTheSmallestWindowThatChoosesIt([ValueSource(nameof(BrowserGridNames))] string gridName)
+    {
+        var (columns, rows) = BrowserGrids().Single(grid => AppearancePartBrowserViewModel.Grid(grid.Columns, grid.Rows) == gridName);
+        var grid = AppearancePartBrowserDefinition.BuildGridPanel(columns, rows);
+        var width = Enumerable.Range(1, 4000).Select(value => (float)value)
+            .First(value => BrowserColumns(value) == columns);
+        var height = Enumerable.Range(1, 4000).Select(value => (float)value)
+            .First(value => BrowserRows(value, columns) == rows);
+        if (columns > AppearancePartBrowserViewModel.MinColumns)
+            NaturalWidth(grid).Should().BeLessThanOrEqualTo(width - 40f, $"{columns} columns are chosen from {width}px");
+        if (rows > 1)
+            NaturalHeight(grid).Should().BeLessThanOrEqualTo(height - 60f, $"{rows} rows are chosen from {height}px");
+    }
+
+    [Test]
+    public void TheDefaultBrowserWindowHoldsFiveByThree()
+    {
+        var columns = BrowserColumns(AppearancePartBrowserDefinition.WindowWidth);
+        columns.Should().Be(5);
+        BrowserRows(AppearancePartBrowserDefinition.WindowHeight, columns).Should().Be(3);
     }
 
     [Test]
@@ -714,15 +743,26 @@ public class AppearanceEditorLayoutTests
         window.InitialGeometry.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
         IsResizable(new AppearancePartBrowserDefinition()).Should().BeTrue();
 
-        // A window resized smaller than the pictures, or capped by a small or high-scale screen,
-        // scrolls its content.
+        // The grid partial sits in a group that scrolls when the window is smaller than the smallest grid.
         var authored = AuthoredWindow(new AppearancePartBrowserDefinition());
-        var content = ((IReadOnlyDictionary<string, IGuiWidget>)authored.GetType().GetProperty("PartialViews")!
-            .GetValue(authored)!)[WindowMain];
-        var tile = Walk(content).Single(widget => widget.Id == "ae_tile_0");
-        PathTo(content, tile).Should().Contain(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal) &&
+        var partials = (IReadOnlyDictionary<string, IGuiWidget>)authored.GetType().GetProperty("PartialViews")!
+            .GetValue(authored)!;
+        var content = partials[WindowMain];
+        var slot = Walk(content).Single(widget => widget.Id == AppearancePartBrowserViewModel.GridElement);
+        PathTo(content, slot).Should().Contain(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal) &&
             ReadProperty<NuiScrollbars>(widget, "Scrollbars") == NuiScrollbars.Auto);
+        partials.Keys.Should().Contain(BrowserGridNames());
     }
+
+    private static int BrowserColumns(float width) =>
+        (int)typeof(AppearancePartBrowserViewModel)
+            .GetMethod("ColumnsForWidth", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { width })!;
+
+    private static int BrowserRows(float height, int columns) =>
+        (int)typeof(AppearancePartBrowserViewModel)
+            .GetMethod("RowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { height, columns })!;
 
     // ------------------------------------------------------------------ settings
 
@@ -778,8 +818,6 @@ public class AppearanceEditorLayoutTests
                      ("Selected", typeof(bool))
                  })
             typeof(AppearanceEditorViewModel).GetProperty(name + suffix)!.PropertyType.Should().Be(type, name + suffix);
-        typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull(
-            "the palette outline shows the selected colour, so swatches have no code labels");
 
         swatch.Should().BeOfType<GuiButton<AppearanceEditorViewModel>>();
         ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
@@ -801,7 +839,23 @@ public class AppearanceEditorLayoutTests
 
         var row = PathTo(root, swatch).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
         row.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>()
-            .Should().NotContain(label => ReadProperty<string>(label, "TextBindName") != null, "swatch rows carry no palette code labels");
+            .Should().NotContain(label => ReadProperty<string>(label, "TextBindName") != null, "codes sit over the swatches, not beside them");
+        if (name.StartsWith("Body", StringComparison.Ordinal))
+        {
+            typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull("body colours show no codes");
+            return;
+        }
+
+        // The palette code (P4) or "RGB" is in the row over the swatch, in the swatch's column.
+        typeof(AppearanceEditorViewModel).GetProperty(name + "Code")!.PropertyType.Should().Be(typeof(string));
+        var column = PathTo(root, row).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
+        var codeRow = column.Elements[column.Elements.IndexOf(row) - 1];
+        var codes = codeRow.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>().ToArray();
+        var position = row.Elements.OfType<GuiButton<AppearanceEditorViewModel>>().ToList().IndexOf((GuiButton<AppearanceEditorViewModel>)swatch);
+        ReadProperty<string>(codes[position], "TextBindName").Should().Be(name + "Code");
+        Width(codes[position]).Should().Be(Width(swatch) + 4f, "the code is centred over its swatch");
+        ReadProperty<string>(codeRow, "IsVisibleBindName").Should().Be(ReadProperty<string>(row, "IsVisibleBindName"),
+            "a code row shows and hides with its swatch row");
     }
 
     private static string[] OutlineBindings(IGuiWidget widget) => DrawItems(widget)

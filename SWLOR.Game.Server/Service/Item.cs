@@ -1070,9 +1070,15 @@ namespace SWLOR.Game.Server.Service
             var baseItem = GetBaseItemType(item);
             if (Get2DAString("baseitems", "ModelType", (int)baseItem) == "2")
             {
+                // A part's icon number is its model followed by its color digit, e.g. model 2 color 1 is _021.
                 var prefix = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
                 var layers = new[] { "b", "m", "t" }
-                    .Select((part, index) => $"{prefix}_{part}_{GetItemAppearance(item, ItemAppearanceType.WeaponModel, index):000}".ToLower())
+                    .Select((part, index) =>
+                    {
+                        var number = GetItemAppearance(item, ItemAppearanceType.WeaponModel, index) * 10 +
+                                     GetItemAppearance(item, ItemAppearanceType.WeaponColor, index);
+                        return $"{prefix}_{part}_{number:000}".ToLower();
+                    })
                     .ToArray();
                 if (!string.IsNullOrEmpty(prefix) && layers.All(IconResourceExists))
                     return layers;

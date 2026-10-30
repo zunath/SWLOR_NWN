@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "e5c670cf6f04c70296495aa83ede4a996401825044eac20664f88cdb64656fc3",
+  "RecipeSha256": "29601d7c1d3820205d820733ef78b43818cc74238fbb307ca30111c6f4194c9c",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -1103,7 +1103,7 @@
           "Label": "Settle"
         }
       ],
-      "ProjectSha256": "edf9a160575d611183fd395ada3d4395a455997f5a4eb6479449fe21094e89c0"
+      "ProjectSha256": "4055e5baee6796230f9bb0a8d5cd0a0661d372383de7d99960289357941b0ce7"
     },
     {
       "Id": "StringsLoop",

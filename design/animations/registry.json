@@ -3190,16 +3190,6 @@
     "ProjectPath": "design/animations/performance/DanceStepRight.swlanim"
   },
   {
-    "Name": "DanceSpin",
-    "AnimationName": "sw_dn_spin",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/DanceSpin.swlanim"
-  },
-  {
     "Name": "DanceDip",
     "AnimationName": "sw_dn_dip",
     "Duration": 1.5,
@@ -3318,5 +3308,15 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/HornFlourish.swlanim"
+  },
+  {
+    "Name": "DanceSpin",
+    "AnimationName": "sw_dn_spin",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/DanceSpin.swlanim"
   }
 ]

@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public partial class AppearanceEditorViewModel
     {
         // Palette cell geometry shared with the definition; the outline overlay is drawn in these units.
+        public const float PaletteHeaderWidth = 20f;
+        public const float PaletteHeaderHeight = 16f;
         public const float PaletteCellWidth = 20f;
         public const float PaletteCellHeight = 16f;
 
@@ -262,7 +264,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public GuiBindingList<float> PaletteSelectionPoints { get => Get<GuiBindingList<float>>(); set => Set(value); }
         public bool IsPaletteSelectionVisible { get => Get<bool>(); set => Set(value); }
-        public bool IsUseBaseEnabled { get => Get<bool>(); set => Set(value); }
 
         private void InitializePartBrowser()
         {
@@ -295,7 +296,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPartColorsVisible = false;
             PaletteSelectionPoints = new GuiBindingList<float>();
             IsPaletteSelectionVisible = false;
-            IsUseBaseEnabled = false;
         }
 
         // ---------------- browser ----------------
@@ -669,7 +669,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var partTarget = ToColorTarget(_selectedSlot);
             foreach (var channel in SwatchChannels)
                 SetIfChanged($"SelectedPart{channel}Selected", _colorTarget == partTarget && _selectedColorChannel == channel);
-            SetIfChanged(nameof(IsUseBaseEnabled), IsEquipmentSelected && SelectedItemTypeIndex == 0 && _colorTarget != ColorTarget.Global);
             RefreshPaletteSelection();
         }
 
@@ -753,13 +752,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshBodySwatches();
         };
 
-        public Action OnClickUseBase() => () =>
-        {
-            if (!IsEquipmentSelected || SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global)
-                return;
-            ResetArmorColorToInheritance(_colorTarget, _selectedColorChannel);
-        };
-
         private void UpdatePaletteSheetForChannel()
         {
             if (!IsEquipmentSelected || SelectedItemTypeIndex != 0)
@@ -785,8 +777,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var column = (int)(region.X / ColorSize);
                 var row = (int)(region.Y / ColorSize);
-                var left = column * PaletteCellWidth + 1f;
-                var top = row * PaletteCellHeight + 1f;
+                var left = PaletteHeaderWidth + column * PaletteCellWidth + 1f;
+                var top = PaletteHeaderHeight + row * PaletteCellHeight + 1f;
                 var right = left + PaletteCellWidth - 2f;
                 var bottom = top + PaletteCellHeight - 2f;
                 points = new[] { left, top, right, top, right, bottom, left, bottom, left, top };

@@ -186,16 +186,17 @@ public class AppearanceEditorLayoutTests
         var content = rows.Last();
         ReadProperty<string>(content, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
 
-        var groups = content.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().ToArray();
+        var columns = content.Elements.ToArray();
         var expectedWidths = partialName == AppearanceEditorViewModel.EditorWeaponPartial
-            ? new[] { AppearanceEditorDefinition.WeaponCategoryWidth, AppearanceEditorDefinition.PreviewColumnWidth + 32f }
-            : new[] { AppearanceEditorDefinition.MapWidth, AppearanceEditorDefinition.ColoursWidth };
-        groups.Select(group => Width(group)).Should().Equal(expectedWidths, "the editor's columns have fixed widths");
+            ? new[] { AppearanceEditorDefinition.WeaponCategoryWidth, 0f }
+            : new[] { AppearanceEditorDefinition.MapWidth, 0f };
+        columns.Select(column => Width(column)).Should().Equal(expectedWidths,
+            "the first column is fixed and the last takes the width a resized window gives it");
         Slots(partial).Should().BeEmpty("the part pictures are browsed in their own window");
         Walk(partial).Should().NotContain(widget => widget.Id != null && widget.Id.StartsWith("ae_tile_"));
 
         var preview = Walk(partial).Single(widget => widget.Id == "ae_part_preview");
-        PathTo(partial, preview).Should().Contain(groups.Last(), "the part picture sits in the last column");
+        PathTo(partial, preview).Should().Contain(columns.Last(), "the part picture sits in the last column");
     }
 
     [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
@@ -271,7 +272,7 @@ public class AppearanceEditorLayoutTests
     [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
     [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
     [TestCase(AppearanceEditorViewModel.EditorWeaponPartial)]
-    public void EditorsFitTheFixedSizeWindow(string partialName)
+    public void EditorsFitTheDefaultWindow(string partialName)
     {
         var initial = _window.InitialGeometry;
         initial.Width.Should().Be(AppearanceEditorDefinition.EditorWidth);
@@ -285,10 +286,9 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void TheEditorIsNotResizable()
+    public void TheEditorIsResizable()
     {
-        IsResizable(new AppearanceEditorDefinition()).Should().BeFalse(
-            "a fixed size means a large saved size from the old layout never applies");
+        IsResizable(new AppearanceEditorDefinition()).Should().BeTrue("players size the editor to suit their screen");
     }
 
     // ------------------------------------------------------------------ body map
@@ -341,6 +341,9 @@ public class AppearanceEditorLayoutTests
         var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
         var combo = Walk(armor).Single(widget => widget.Id == "ae_quick_outfit");
         ReadProperty<string>(combo, "SelectedIndexBindName").Should().Be(nameof(AppearanceEditorViewModel.QuickOutfitValue));
+        PathTo(armor, combo).OfType<GuiGroup<AppearanceEditorViewModel>>()
+            .Should().OnlyContain(group => ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
+                "a combo box inside a scrolled group does not open in the client");
         foreach (var (id, method, enabled) in new[]
                  {
                      ("ae_quick_wear", nameof(AppearanceEditorViewModel.OnClickQuickWear), nameof(AppearanceEditorViewModel.IsQuickWearEnabled)),
@@ -413,7 +416,7 @@ public class AppearanceEditorLayoutTests
 
     [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
     [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
-    public void PaletteHas176CroppedButtonsWithoutHeaders(string partialName)
+    public void PaletteHas176CroppedButtonsUnderLetteredAndNumberedHeaders(string partialName)
     {
         var palette = Walk(_partials[partialName]).Single(widget => widget.Id == "ae_color_palette");
         palette.Should().BeOfType<GuiGroup<AppearanceEditorViewModel>>();
@@ -421,10 +424,12 @@ public class AppearanceEditorLayoutTests
         ReadProperty<NuiScrollbars>(palette, "Scrollbars").Should().Be(NuiScrollbars.None);
         palette.Events.Should().BeEmpty("each palette button supplies its own preset index");
 
+        const float headerWidth = AppearanceEditorViewModel.PaletteHeaderWidth;
+        const float headerHeight = AppearanceEditorViewModel.PaletteHeaderHeight;
         const float cellWidth = AppearanceEditorViewModel.PaletteCellWidth;
         const float cellHeight = AppearanceEditorViewModel.PaletteCellHeight;
-        Width(palette).Should().Be(16 * cellWidth);
-        palette.DeclaredHeight.Should().Be(11 * cellHeight);
+        Width(palette).Should().Be(headerWidth + 16 * cellWidth);
+        palette.DeclaredHeight.Should().Be(headerHeight + 11 * cellHeight);
 
         // The selection outline is one bound polyline drawn over the whole palette.
         var outline = DrawItems(palette).Should().ContainSingle().Which
@@ -434,16 +439,31 @@ public class AppearanceEditorLayoutTests
         ReadProperty<bool>(outline, "IsFilled").Should().BeFalse();
 
         var rows = palette.Elements.Should().ContainSingle().Which.Elements;
-        rows.Should().HaveCount(11, "eleven palette rows with no letter or number headers");
+        rows.Should().HaveCount(12, "one letter header and eleven palette rows");
         rows.Should().OnlyContain(row => row.DeclaredMargin == 0f);
+
+        // Header: a spacer the width of the row numbers, then letters A-P over the cells.
+        var header = rows[0];
+        header.DeclaredHeight.Should().Be(headerHeight);
+        header.Elements[0].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+        Width(header.Elements[0]).Should().Be(headerWidth);
+        var letters = header.Elements.Skip(1).ToArray();
+        letters.Should().AllBeOfType<GuiLabel<AppearanceEditorViewModel>>();
+        letters.Select(label => ReadProperty<string>(label, "Text"))
+            .Should().Equal(Enumerable.Range(0, 16).Select(column => ((char)('A' + column)).ToString()));
+        letters.Should().OnlyContain(label => Width(label) == cellWidth && label.DeclaredMargin == 0f);
 
         var buttons = new List<GuiButton<AppearanceEditorViewModel>>();
         for (var y = 0; y < 11; y++)
         {
-            var row = rows[y];
+            var row = rows[y + 1];
             row.DeclaredHeight.Should().Be(cellHeight);
-            row.Elements.Should().HaveCount(16);
-            buttons.AddRange(row.Elements.Cast<GuiButton<AppearanceEditorViewModel>>());
+            row.Elements.Should().HaveCount(17);
+            var number = row.Elements[0].Should().BeOfType<GuiLabel<AppearanceEditorViewModel>>().Which;
+            ReadProperty<string>(number, "Text").Should().Be((y + 1).ToString());
+            Width(number).Should().Be(headerWidth, "row numbers fill the header column the outline offsets by");
+            number.DeclaredMargin.Should().Be(0f);
+            buttons.AddRange(row.Elements.Skip(1).Cast<GuiButton<AppearanceEditorViewModel>>());
         }
 
         buttons.Should().HaveCount(176);
@@ -550,16 +570,18 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void UseBaseSitsOnThePartColourRowAndClearsOnlyPartColours()
+    public void PartColoursClearWithRightClickInsteadOfAButton()
     {
         var partial = _partials[AppearanceEditorViewModel.EditorArmorPartial];
-        var useBase = Walk(partial).Single(widget => widget.Id == "ae_use_base");
-        PathTo(partial, useBase).Should().Contain(ancestor =>
-            ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPartColorsVisible));
-        ReadProperty<string>(useBase, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsUseBaseEnabled));
-        AssertSingleHandler(useBase, "click", nameof(AppearanceEditorViewModel.OnClickUseBase));
-        Walk(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().NotContain(widget => widget.Id == "ae_use_base",
-            "body colours have no part colours to clear");
+        Walk(partial).Should().NotContain(widget => widget.Id == "ae_use_base",
+            "right-clicking a part swatch already puts it back to the outfit colour");
+        typeof(AppearanceEditorViewModel).GetMethod("OnClickUseBase").Should().BeNull();
+        foreach (var channel in Channels)
+        {
+            var part = Walk(partial).Single(widget => widget.Id == $"ae_part_swatch_{channel}");
+            AssertHandler(part.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownPartSwatch),
+                (typeof(AppearanceArmorColor), channel));
+        }
     }
 
     // ------------------------------------------------------------------ RGB picker
@@ -680,16 +702,17 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void ThePartBrowserWindowIsAFixedSizeWithNoLayoutFindings()
+    public void ThePartBrowserWindowIsResizableWithNoLayoutFindings()
     {
         using var validation = GuiLayoutValidator.BeginValidationOnlyBuild();
         var window = new AppearancePartBrowserDefinition().BuildWindow();
         window.LayoutFindings.Should().BeEmpty();
         window.InitialGeometry.Width.Should().Be(AppearancePartBrowserDefinition.WindowWidth);
         window.InitialGeometry.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
-        IsResizable(new AppearancePartBrowserDefinition()).Should().BeFalse();
+        IsResizable(new AppearancePartBrowserDefinition()).Should().BeTrue();
 
-        // A screen smaller than the window (low resolution, high GUI scale) scrolls the content.
+        // A window resized smaller than the pictures, or capped by a small or high-scale screen,
+        // scrolls its content.
         var authored = AuthoredWindow(new AppearancePartBrowserDefinition());
         var content = ((IReadOnlyDictionary<string, IGuiWidget>)authored.GetType().GetProperty("PartialViews")!
             .GetValue(authored)!)[WindowMain];

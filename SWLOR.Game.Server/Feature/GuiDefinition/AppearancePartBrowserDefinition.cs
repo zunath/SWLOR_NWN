@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.AppearancePartBrowser)
-                .SetIsResizable(false)
+                .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Part Browser")

@@ -39,6 +39,10 @@ namespace SWLOR.Game.Server.Service
         private const int TargetDoor = 0x10;
         private const int TargetPlaceable = 0x20;
 
+        // baseitems.2da EquipableSlots bits.
+        private const int RightHandSlotBit = 0x10;
+        private const int LeftHandSlotBit = 0x20;
+
         // Bars can only be moved while the Hotbars window is open, so a bar never stays unlocked by accident.
         private static readonly HashSet<uint> _unlockedPlayers = new();
 
@@ -203,6 +207,32 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        /// <summary>
+        /// Puts a set of hand items on a slot. Either hand may be left out, which leaves that hand alone when used.
+        /// </summary>
+        public static void AssignEquipment(uint player, int barIndex, int slotIndex, uint mainHand, uint offHand)
+        {
+            SetSlot(player, barIndex, slotIndex, new ExtraHotbarSlot
+            {
+                Type = ExtraHotbarSlotType.Equipment,
+                MainHand = ToEquipItem(mainHand),
+                OffHand = ToEquipItem(offHand)
+            });
+        }
+
+        private static ExtraHotbarEquipItem ToEquipItem(uint item)
+        {
+            if (!GetIsObjectValid(item))
+                return null;
+
+            return new ExtraHotbarEquipItem
+            {
+                ItemId = GetObjectUUID(item),
+                ItemResref = GetResRef(item),
+                ItemName = GetName(item)
+            };
+        }
+
         public static void AssignChatCommand(uint player, int barIndex, int slotIndex, string command)
         {
             SetSlot(player, barIndex, slotIndex, new ExtraHotbarSlot
@@ -261,6 +291,9 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case ExtraHotbarSlotType.ActionMode:
                     ToggleActionMode(player, slot.ActionMode);
+                    break;
+                case ExtraHotbarSlotType.Equipment:
+                    EquipHands(player, slot);
                     break;
             }
         }
@@ -419,6 +452,165 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Puts the slot's items in their hands, then goes back to attacking whatever the player was fighting.
+        /// The usual equip checks still apply and explain any item that cannot be held.
+        /// </summary>
+        private static void EquipHands(uint player, ExtraHotbarSlot slot)
+        {
+            var (mainHand, offHand) = FindEquipItems(player, slot);
+            foreach (var (equipItem, item) in new[] { (slot.MainHand, mainHand), (slot.OffHand, offHand) })
+            {
+                if (equipItem != null && !GetIsObjectValid(item))
+                {
+                    SendMessageToPC(player, ColorToken.Red($"You do not have {equipItem.ItemName}."));
+                    return;
+                }
+            }
+
+            if (IsEquipped(player, mainHand, offHand))
+                return;
+
+            var attackTarget = GetAttackTarget(player);
+            ClearAllActions();
+
+            // A worn item cannot move straight to the other hand, so it comes off first.
+            if (GetIsObjectValid(mainHand) && GetItemInSlot(InventorySlot.LeftHand, player) == mainHand)
+                ActionUnequipItem(mainHand);
+            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.RightHand, player) == offHand)
+                ActionUnequipItem(offHand);
+
+            // The main hand goes first so a two-handed weapon being replaced does not push the off-hand item out.
+            if (GetIsObjectValid(mainHand) && GetItemInSlot(InventorySlot.RightHand, player) != mainHand)
+                ActionEquipItem(mainHand, InventorySlot.RightHand);
+            if (GetIsObjectValid(offHand) && GetItemInSlot(InventorySlot.LeftHand, player) != offHand)
+                ActionEquipItem(offHand, InventorySlot.LeftHand);
+
+            if (GetIsObjectValid(attackTarget) && !GetIsDead(attackTarget))
+                ActionAttack(attackTarget);
+
+            RefreshStatusSoon(player);
+        }
+
+        /// <summary>
+        /// Whether every item of an equipment slot is already in its hand.
+        /// </summary>
+        public static bool IsEquipped(uint player, uint mainHand, uint offHand)
+        {
+            if (!GetIsObjectValid(mainHand) && !GetIsObjectValid(offHand))
+                return false;
+
+            return (!GetIsObjectValid(mainHand) || GetItemInSlot(InventorySlot.RightHand, player) == mainHand) &&
+                   (!GetIsObjectValid(offHand) || GetItemInSlot(InventorySlot.LeftHand, player) == offHand);
+        }
+
+        /// <summary>
+        /// Finds an equipment slot's items on the player. The exact items come first, so two identical weapons
+        /// stay apart; an item whose original is gone falls back to one with the same resref and name.
+        /// </summary>
+        public static (uint MainHand, uint OffHand) FindEquipItems(uint player, ExtraHotbarSlot slot)
+        {
+            var items = GetHandItems(player);
+            var mainHand = FindExactItem(items, slot.MainHand);
+            var offHand = FindExactItem(items, slot.OffHand);
+            if (!GetIsObjectValid(mainHand))
+                mainHand = FindSimilarItem(items, slot.MainHand, offHand);
+            if (!GetIsObjectValid(offHand))
+                offHand = FindSimilarItem(items, slot.OffHand, mainHand);
+
+            return (mainHand, offHand);
+        }
+
+        private static uint FindExactItem(List<uint> items, ExtraHotbarEquipItem equipItem)
+        {
+            if (equipItem == null || string.IsNullOrEmpty(equipItem.ItemId))
+                return OBJECT_INVALID;
+
+            return items.FirstOrDefault(item => GetObjectUUID(item) == equipItem.ItemId, OBJECT_INVALID);
+        }
+
+        private static uint FindSimilarItem(List<uint> items, ExtraHotbarEquipItem equipItem, uint exclude)
+        {
+            if (equipItem == null)
+                return OBJECT_INVALID;
+
+            return items.FirstOrDefault(item => item != exclude &&
+                                                GetResRef(item) == equipItem.ItemResref &&
+                                                GetName(item) == equipItem.ItemName, OBJECT_INVALID);
+        }
+
+        /// <summary>
+        /// Items the player can hold in a hand: what they are holding now, then their inventory.
+        /// </summary>
+        public static List<uint> GetHandItems(uint player)
+        {
+            var items = new List<uint>();
+            foreach (var slot in new[] { InventorySlot.RightHand, InventorySlot.LeftHand })
+            {
+                var held = GetItemInSlot(slot, player);
+                if (GetIsObjectValid(held) && (CanHoldInMainHand(held) || CanHoldInOffHand(held)))
+                    items.Add(held);
+            }
+
+            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            {
+                if (CanHoldInMainHand(item) || CanHoldInOffHand(item))
+                    items.Add(item);
+            }
+
+            return items;
+        }
+
+        public static bool CanHoldInMainHand(uint item) =>
+            (GetEquipableSlots(GetBaseItemType(item)) & RightHandSlotBit) != 0;
+
+        /// <summary>
+        /// Companion pistols and gloves come with their main-hand item, so they are never picked on their own.
+        /// </summary>
+        public static bool CanHoldInOffHand(uint item) =>
+            GetBaseItemType(item) is not (BaseItem.CompanionPistol or BaseItem.CompanionPowerGlove or BaseItem.OffHandPistol) &&
+            (GetEquipableSlots(GetBaseItemType(item)) & LeftHandSlotBit) != 0 &&
+            !FillsBothHands(item);
+
+        /// <summary>
+        /// Ranged weapons, Power Gloves and weapons too large for the off hand leave no room for an off-hand item.
+        /// </summary>
+        public static bool FillsBothHands(uint item) =>
+            GetWeaponRanged(item) ||
+            GetBaseItemType(item) == BaseItem.PowerGlove ||
+            (GetEquipableSlots(GetBaseItemType(item)) & (RightHandSlotBit | LeftHandSlotBit)) == RightHandSlotBit;
+
+        private static int GetEquipableSlots(BaseItem baseItem)
+        {
+            var text = Get2DAString("baseitems", "EquipableSlots", (int)baseItem);
+            return text.StartsWith("0x") &&
+                   int.TryParse(text[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var slots)
+                ? slots
+                : 0;
+        }
+
+        /// <summary>
+        /// The picker's hand choices after the player clicks an item. Clicking a chosen item takes it back out;
+        /// an off-hand-only item such as a shield goes to the off hand; a one-handed item goes to the off hand
+        /// when a one-handed main hand is already chosen; anything else becomes the main hand.
+        /// </summary>
+        public static (uint MainHand, uint OffHand) PickHandItem(uint mainHand, uint offHand, uint item,
+            bool canMainHand, bool canOffHand, bool fillsBothHands, bool mainFillsBothHands)
+        {
+            if (item == mainHand)
+                return (OBJECT_INVALID, offHand);
+            if (item == offHand)
+                return (mainHand, OBJECT_INVALID);
+
+            if (!canMainHand)
+                return canOffHand ? (mainFillsBothHands ? OBJECT_INVALID : mainHand, item) : (mainHand, offHand);
+
+            if (mainHand != OBJECT_INVALID && canOffHand && !mainFillsBothHands)
+                return (mainHand, item);
+
+            return (item, fillsBothHands ? OBJECT_INVALID : offHand);
+        }
+
+        /// <summary>
         /// Usable items in the player's inventory, one per resref.
         /// </summary>
         public static List<uint> GetUsableItems(uint player)
@@ -480,6 +672,18 @@ namespace SWLOR.Game.Server.Service
         public static void RefreshOnUnacquire()
         {
             RefreshStatus(GetModuleItemLostBy());
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleEquip)]
+        public static void RefreshOnEquip()
+        {
+            RefreshStatus(GetPCItemLastEquippedBy());
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
+        public static void RefreshOnUnequip()
+        {
+            RefreshStatus(GetPCItemLastUnequippedBy());
         }
 
         // Scripted item uses lower stack sizes and attacks drop stealth without an event, so slots also catch up each heartbeat.

@@ -44,6 +44,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string CountProperty(int slot) => $"Slot{slot}Count";
         public static string HasIconProperty(int slot) => $"Slot{slot}HasIcon";
         public static string IsActiveProperty(int slot) => $"Slot{slot}IsActive";
+        public static string PairMainIconProperty(int slot) => $"Slot{slot}PairMainIcon";
+        public static string PairOffIconProperty(int slot) => $"Slot{slot}PairOffIcon";
+        public static string IsPairProperty(int slot) => $"Slot{slot}IsPair";
         public static string SlotsPartial(ExtraHotbarLayout layout, int slotCount) =>
             $"EXTRA_HOTBAR_{layout.ToString().ToUpperInvariant()}_{slotCount}";
 
@@ -135,6 +138,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool Slot10IsActive { get => Get<bool>(); set => Set(value); }
         public bool Slot11IsActive { get => Get<bool>(); set => Set(value); }
 
+        public string Slot0PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot1PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot2PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot3PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot4PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot5PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot6PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot7PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot8PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot9PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot10PairMainIcon { get => Get<string>(); set => Set(value); }
+        public string Slot11PairMainIcon { get => Get<string>(); set => Set(value); }
+
+        public string Slot0PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot1PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot2PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot3PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot4PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot5PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot6PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot7PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot8PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot9PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot10PairOffIcon { get => Get<string>(); set => Set(value); }
+        public string Slot11PairOffIcon { get => Get<string>(); set => Set(value); }
+
+        public bool Slot0IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot1IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot2IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot3IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot4IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot5IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot6IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot7IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot8IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot9IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot10IsPair { get => Get<bool>(); set => Set(value); }
+        public bool Slot11IsPair { get => Get<bool>(); set => Set(value); }
+
         private int BarIndex => ExtraHotbars.GetBarIndex(WindowType);
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -150,6 +192,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(string.Empty, IconProperty(slot));
                 Set(false, HasIconProperty(slot));
                 Set(false, IsActiveProperty(slot));
+                Set(string.Empty, PairMainIconProperty(slot));
+                Set(string.Empty, PairOffIconProperty(slot));
+                Set(false, IsPairProperty(slot));
                 Set(string.Empty, TooltipProperty(slot));
                 Set(string.Empty, CountProperty(slot));
             }
@@ -169,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             for (var slot = 0; slot < _bar.SlotCount; slot++)
             {
-                if (_bar.Slots[slot].Type is ExtraHotbarSlotType.Item or ExtraHotbarSlotType.ActionMode)
+                if (_bar.Slots[slot].Type is ExtraHotbarSlotType.Item or ExtraHotbarSlotType.ActionMode or ExtraHotbarSlotType.Equipment)
                     RefreshSlot(slot, _bar.Slots[slot]);
             }
         }
@@ -268,6 +313,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var tooltip = "Right-click to choose what this slot does.";
             var count = string.Empty;
             var isActive = false;
+            var isPair = false;
+            var pairMainIcon = string.Empty;
+            var pairOffIcon = string.Empty;
 
             switch (slot.Type)
             {
@@ -295,6 +343,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     icon = ExtraHotbars.GetActionModeIcon(slot.ActionMode);
                     tooltip = $"{ExtraHotbars.GetActionModeName(slot.ActionMode)} ({(isActive ? "on" : "off")})";
                     break;
+                case ExtraHotbarSlotType.Equipment:
+                    var (mainHand, offHand) = ExtraHotbars.FindEquipItems(Player, slot);
+                    var mainIcon = GetEquipIcon(slot.MainHand, mainHand);
+                    var offIcon = GetEquipIcon(slot.OffHand, offHand);
+                    isActive = ExtraHotbars.IsEquipped(Player, mainHand, offHand);
+                    tooltip = $"Equip {GetEquipNames(slot)}{(isActive ? " (equipped)" : string.Empty)}";
+
+                    // Two items sit side by side; weapon icons are tall, so each half still reads clearly.
+                    if (slot.MainHand != null && slot.OffHand != null)
+                    {
+                        isPair = true;
+                        pairMainIcon = mainIcon;
+                        pairOffIcon = offIcon;
+                    }
+                    else
+                    {
+                        icon = slot.MainHand != null ? mainIcon : offIcon;
+                    }
+                    break;
             }
 
             // An empty resref draws a missing-texture box, so the icon is hidden instead.
@@ -306,6 +373,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(isActive, IsActiveProperty(slotIndex));
             SetIfChanged(TooltipProperty(slotIndex), tooltip);
             SetIfChanged(CountProperty(slotIndex), count);
+            if (isPair)
+            {
+                SetIfChanged(PairMainIconProperty(slotIndex), pairMainIcon);
+                SetIfChanged(PairOffIconProperty(slotIndex), pairOffIcon);
+            }
+            if (Get<bool>(IsPairProperty(slotIndex)) != isPair)
+                Set(isPair, IsPairProperty(slotIndex));
+        }
+
+        private static string GetEquipIcon(ExtraHotbarEquipItem equipItem, uint item)
+        {
+            if (equipItem == null)
+                return string.Empty;
+
+            return GetIsObjectValid(item) ? Item.GetIconResref(item) : Cache.GetItemIconByResref(equipItem.ItemResref);
+        }
+
+        private static string GetEquipNames(ExtraHotbarSlot slot)
+        {
+            if (slot.MainHand != null && slot.OffHand != null)
+                return $"{slot.MainHand.ItemName} and {slot.OffHand.ItemName}";
+
+            return slot.MainHand != null
+                ? slot.MainHand.ItemName
+                : $"{slot.OffHand?.ItemName} (off hand)";
         }
 
         private void SetIfChanged(string propertyName, string value)

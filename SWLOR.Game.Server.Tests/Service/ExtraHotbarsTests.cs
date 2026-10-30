@@ -81,6 +81,81 @@ public class ExtraHotbarsTests
         loaded.ExtraHotbars[0].Slots[5].ActionMode.Should().Be(ActionMode.Stealth);
     }
 
+    [Test]
+    public void EquipmentSlot_RoundTripsBothHandsThroughJson()
+    {
+        var player = new Player();
+        ExtraHotbars.GetBars(player)[2].Slots[0] = new ExtraHotbarSlot
+        {
+            Type = ExtraHotbarSlotType.Equipment,
+            MainHand = new ExtraHotbarEquipItem { ItemId = "saber-1", ItemResref = "lightsaber", ItemName = "Lightsaber" },
+            OffHand = new ExtraHotbarEquipItem { ItemId = "saber-2", ItemResref = "lightsaber", ItemName = "Lightsaber" }
+        };
+        ExtraHotbars.GetBars(player)[2].Slots[1] = new ExtraHotbarSlot
+        {
+            Type = ExtraHotbarSlotType.Equipment,
+            MainHand = new ExtraHotbarEquipItem { ItemId = "rifle-1", ItemResref = "rifle", ItemName = "Rifle" }
+        };
+
+        var loaded = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))!;
+
+        var pair = loaded.ExtraHotbars[2].Slots[0];
+        pair.Type.Should().Be(ExtraHotbarSlotType.Equipment);
+        pair.MainHand.ItemId.Should().Be("saber-1");
+        pair.OffHand.ItemId.Should().Be("saber-2");
+        loaded.ExtraHotbars[2].Slots[1].OffHand.Should().BeNull();
+    }
+
+    private const uint NoItem = SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID;
+    private const uint Saber = 1;
+    private const uint SecondSaber = 2;
+    private const uint Shield = 3;
+    private const uint Rifle = 4;
+
+    private static (uint MainHand, uint OffHand) Pick(uint mainHand, uint offHand, uint item)
+    {
+        bool CanMain(uint candidate) => candidate != Shield;
+        bool CanOff(uint candidate) => candidate != Rifle;
+        bool FillsBoth(uint candidate) => candidate == Rifle;
+
+        return ExtraHotbars.PickHandItem(mainHand, offHand, item,
+            CanMain(item), CanOff(item), FillsBoth(item), mainHand != NoItem && FillsBoth(mainHand));
+    }
+
+    [Test]
+    public void PickHandItem_FirstWeaponIsTheMainHand()
+    {
+        Pick(NoItem, NoItem, Saber).Should().Be((Saber, NoItem));
+    }
+
+    [Test]
+    public void PickHandItem_SecondOneHandedWeaponIsTheOffHand()
+    {
+        Pick(Saber, NoItem, SecondSaber).Should().Be((Saber, SecondSaber));
+    }
+
+    [Test]
+    public void PickHandItem_ShieldAlwaysGoesToTheOffHand()
+    {
+        Pick(NoItem, NoItem, Shield).Should().Be((NoItem, Shield));
+        Pick(Saber, NoItem, Shield).Should().Be((Saber, Shield));
+    }
+
+    [Test]
+    public void PickHandItem_TwoHandedWeaponDropsTheOffHand()
+    {
+        Pick(NoItem, Shield, Rifle).Should().Be((Rifle, NoItem));
+        Pick(Rifle, NoItem, Shield).Should().Be((NoItem, Shield));
+        Pick(Rifle, NoItem, Saber).Should().Be((Saber, NoItem));
+    }
+
+    [Test]
+    public void PickHandItem_ClickingAChosenItemTakesItOut()
+    {
+        Pick(Saber, SecondSaber, Saber).Should().Be((NoItem, SecondSaber));
+        Pick(Saber, SecondSaber, SecondSaber).Should().Be((Saber, NoItem));
+    }
+
     [TestCase(ActionMode.Detect)]
     [TestCase(ActionMode.Stealth)]
     public void OfferedActionModes_HaveANameAndIcon(ActionMode mode)

@@ -2,10 +2,8 @@ using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class CasinoDailyLimit
+    public static class CasinoPlayTracker
     {
-        public const int MaximumSpins = 20;
-        public const int MaximumProfitableWins = 3;
         private const int ResetHourUtc = 10;
 
         public static string GetAccountId(string publicCdKey)
@@ -28,21 +26,9 @@ namespace SWLOR.Game.Server.Service
             play.ProfitableWins = 0;
         }
 
-        public static string GetDailyFailure(CasinoDailyPlay play)
-        {
-            if (play.Spins >= MaximumSpins)
-                return "You have used all 20 account spins for today. Come back after the daily reset.";
-            if (play.ProfitableWins >= MaximumProfitableWins)
-                return "You have reached 3 profitable wins on this account today. Come back after the daily reset.";
-            return string.Empty;
-        }
-
         public static string GetFailure(CasinoDailyPlay play, DateTime utcNow)
         {
             ResetIfNeeded(play, utcNow);
-            var failure = GetDailyFailure(play);
-            if (!string.IsNullOrEmpty(failure))
-                return failure;
             return utcNow < play.NextSpinUtc ? "Please wait three seconds between spins." : string.Empty;
         }
 

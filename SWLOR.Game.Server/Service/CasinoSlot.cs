@@ -49,11 +49,11 @@ namespace SWLOR.Game.Server.Service
             var publicCdKey = GetPCPublicCDKey(player);
             if (string.IsNullOrWhiteSpace(publicCdKey))
                 return null;
-            var id = CasinoDailyLimit.GetAccountId(publicCdKey);
+            var id = CasinoPlayTracker.GetAccountId(publicCdKey);
             return DB.Get<CasinoDailyPlay>(id) ?? new CasinoDailyPlay { Id = id };
         }
 
-        public static string GetDailyStatus(uint player, out bool canPlay)
+        public static string GetPlayStatus(uint player, out bool canPlay)
         {
             var play = GetDailyPlay(player);
             if (play == null)
@@ -61,13 +61,11 @@ namespace SWLOR.Game.Server.Service
                 canPlay = false;
                 return "Your casino account could not be loaded. Please try again later.";
             }
-            CasinoDailyLimit.ResetIfNeeded(play, DateTime.UtcNow);
-            var failure = CasinoDailyLimit.GetDailyFailure(play);
-            canPlay = string.IsNullOrEmpty(failure);
-            return $"Account spins remaining: {Math.Max(0, CasinoDailyLimit.MaximumSpins - play.Spins)} / 20\n" +
-                   $"Profitable wins remaining: {Math.Max(0, CasinoDailyLimit.MaximumProfitableWins - play.ProfitableWins)} / 3\n" +
-                   "Break-even results use a spin but do not count as a profitable win.\n" +
-                   "Resets daily at 10:00 UTC. Changing characters does not reset your allowance.\n" + failure;
+            canPlay = true;
+            return "Unlimited spins. Wins do not end your session.\n" +
+                   "Each spin is independent and costs 100 credits.\n" +
+                   "Average return: 89%. House edge: 11%.\n" +
+                   "Please wait three seconds between spins.";
         }
 
         public static CasinoSpinResult Spin(uint player, uint machine)
@@ -79,15 +77,15 @@ namespace SWLOR.Game.Server.Service
             var play = GetDailyPlay(player);
             if (play == null)
                 return new CasinoSpinResult(false, 0, "Your casino account could not be loaded. No credits were taken.");
-            var failure = CasinoDailyLimit.GetFailure(play, now);
+            var failure = CasinoPlayTracker.GetFailure(play, now);
             if (!string.IsNullOrEmpty(failure))
                 return new CasinoSpinResult(false, 0, failure);
             if (GetGold(player) < SpinCost)
                 return new CasinoSpinResult(false, 0, "You need 100 credits to spin.");
 
             var payout = Math.Min(GetPayout(Random.Next(10000)), MaximumPayout);
-            CasinoDailyLimit.RecordSpin(play, now, payout);
-            // Reserve the account allowance before settling credits so a failed save cannot allow free retries.
+            CasinoPlayTracker.RecordSpin(play, now, payout);
+            // Save the cooldown before settling credits so a failed save cannot allow free retries.
             DB.Set(play);
             AssignCommand(player, () =>
             {

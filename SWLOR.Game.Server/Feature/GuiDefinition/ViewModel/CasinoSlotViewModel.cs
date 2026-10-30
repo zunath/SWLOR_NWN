@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Headline { get => Get<string>(); set => Set(value); }
         public string ResultText { get => Get<string>(); set => Set(value); }
         public string CreditsText { get => Get<string>(); set => Set(value); }
-        public string DailyText { get => Get<string>(); set => Set(value); }
+        public string PlayText { get => Get<string>(); set => Set(value); }
         public bool CanSpin { get => Get<bool>(); set => Set(value); }
         public GuiColor ResultColor { get => Get<GuiColor>(); set => Set(value); }
 
@@ -42,9 +42,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshStatus()
         {
-            DailyText = CasinoSlot.GetDailyStatus(Player, out var hasAllowance);
+            PlayText = CasinoSlot.GetPlayStatus(Player, out var canPlay);
             CreditsText = $"CREDITS: {GetGold(Player):N0}     STAKE: 100     MAX PAYOUT: 10,000";
-            CanSpin = hasAllowance && !_isAnimating && GetIsObjectValid(_machine);
+            CanSpin = canPlay && !_isAnimating && GetIsObjectValid(_machine);
         }
 
         public Action OnClickRefresh() => () => RefreshStatus();

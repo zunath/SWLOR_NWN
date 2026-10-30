@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     content.AddRow(details =>
                     {
                         details.AddImage().BindResref(m => m.HostImage).SetAspect(NuiAspect.Fit).SetWidth(160f).SetHeight(160f);
-                        details.AddText().BindText(m => m.DailyText).SetShowBorder(false).SetWidth(376f).SetHeight(160f);
+                        details.AddText().BindText(m => m.PlayText).SetShowBorder(false).SetWidth(376f).SetHeight(160f);
                     });
                     content.AddRow(buttons =>
                     {

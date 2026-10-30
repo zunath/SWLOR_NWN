@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -90,8 +91,9 @@ public class DevicesGrenadierTests
             3,
             5,
             FeatType.BlastRadiusTrait,
-            "Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius.",
-            (StatType.BlastRadiusBonusTenths, 10));
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius and +4% blast damage.",
+            (StatType.BlastRadiusBonusTenths, 10),
+            (StatType.BlastDamagePercentAdjustment, 4));
         AssertPerkLevel(
             perks[PerkType.BlastRadius],
             "Blast Radius",
@@ -99,8 +101,9 @@ public class DevicesGrenadierTests
             4,
             22,
             null,
-            "Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius.",
-            (StatType.BlastRadiusBonusTenths, 20));
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius and +8% blast damage.",
+            (StatType.BlastRadiusBonusTenths, 20),
+            (StatType.BlastDamagePercentAdjustment, 8));
         AssertPerkLevel(
             perks[PerkType.BlastRadius],
             "Blast Radius",
@@ -108,8 +111,9 @@ public class DevicesGrenadierTests
             5,
             45,
             null,
-            "Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius and +12% blast damage, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
             (StatType.BlastRadiusBonusTenths, 30),
+            (StatType.BlastDamagePercentAdjustment, 12),
             (StatType.GrenadeControlPotencyBonus, 5));
 
         AssertPerkLevel(
@@ -243,7 +247,7 @@ public class DevicesGrenadierTests
         ionGrenade.Should().Contain("foreach (var creature in ObjectSnapshot.InShape(");
         ionGrenade.Should().Contain("Ability.ApplyCombatImpact(");
         ionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
-        ionGrenade.Should().Contain("damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0");
+        ionGrenade.Should().Contain("impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0)");
         ionGrenade.Should().Contain("racialType == RacialType.Droid");
         ionGrenade.Should().Contain("racialType == RacialType.Construct");
         ionGrenade.Should().Contain("racialType == RacialType.Robot");
@@ -271,8 +275,31 @@ public class DevicesGrenadierTests
         disruptionPulse.Should().Contain("afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, radius)");
         disruptionPulse.Should().NotContain("centerOnActivator: !GetIsObjectValid(target)");
 
-        thermalDetonator.Should().Contain("SkillType.Devices,\n                60,");
+        thermalDetonator.Should().Contain("private const int BaseDamage = 60;");
+        thermalDetonator.Should().Contain("private const int BleedingOrBurningTargetBonusDamage = 40;");
+        thermalDetonator.Should().Contain("SkillType.Devices,\n                BaseDamage,");
         thermalDetonator.Should().Contain("typeof(BurnStatusEffect)");
+        thermalDetonator.Should().Contain("DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(activator)");
+        thermalDetonator.Should().Contain("baseDamageAdjustment: GetBaseDamageAdjustment(activator)");
+        thermalDetonator.Should().Contain("StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding)");
+        thermalDetonator.Should().Contain("StatusEffect.HasStatusEffect<BurnStatusEffect>(target)");
+
+        var blastDamageSources = new[]
+        {
+            ReadDeviceSource("FragGrenadeAbilityDefinition.cs"),
+            concussionGrenade,
+            ionGrenade,
+            clusterGrenade,
+            ReadDeviceSource("RemoteChargeAbilityDefinition.cs"),
+            thermalDetonator,
+        };
+        blastDamageSources.Should().OnlyContain(source => source.Contains("DeviceAbilityEffects.GetBlastDamageAdjustment("));
+        disruptionPulse.Should().NotContain("GetBlastDamageAdjustment", "Blast Radius damage covers grenades, Remote Charge, and Overload Barrage only");
+
+        var overloadBarrage = ReadDeviceSource("OverloadBarrageAbilityDefinition.cs");
+        overloadBarrage.Should().Contain("var blastDamageAdjustment = DeviceAbilityEffects.GetBlastDamageAdjustment(activator, damageAdjustment);");
+        Regex.Matches(overloadBarrage, "damagePercentAdjustment: blastDamageAdjustment,").Should().HaveCount(2,
+            "both Overload Barrage area bursts are blasts; the single-target strike is not");
     }
 
     private static void AssertPerkLevel(

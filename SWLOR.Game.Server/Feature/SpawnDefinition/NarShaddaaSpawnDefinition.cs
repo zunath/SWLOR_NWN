@@ -207,11 +207,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_cripdef_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_tempbloom_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -219,11 +214,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_tempbloom_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_tempbloom_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -235,11 +225,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_redbloom_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_CRIPDEF_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_cripdef_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_TEMPBLOOM_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_tempbloom_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_REDBLOOM_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_redbloom_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
 
@@ -256,11 +258,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_killbox_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_oneshot_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -268,11 +265,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_oneshot_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_oneshot_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -284,11 +276,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_rainsteel_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_KILLBOX_IC_SPAWN", "Czerka Arms Test Range - Kill Box Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_killbox_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_ONESHOT_IC_SPAWN", "Czerka Arms Test Range - One Shot Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_oneshot_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_RAINSTEEL_IC_SPAWN", "Czerka Arms Test Range - Rain of Steel Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_rainsteel_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }

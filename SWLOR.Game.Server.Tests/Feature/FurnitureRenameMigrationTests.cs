@@ -79,6 +79,21 @@ public class FurnitureRenameMigrationTests
     }
 
     [Test]
+    public void RestoredListings_LoadUnderTheirRenamedNames()
+    {
+        T Load<T>(string resref, string name) =>
+            JsonConvert.DeserializeObject<T>($"{{\"Resref\":\"{resref}\",\"Name\":\"{name}\"}}")!;
+
+        Load<InventoryItem>("structure_0389", "Veilcarved Display Plinth").Name.Should().Be("Veilcarved Rune Pillar");
+        Load<MarketItem>("bpstructure0389", "Blueprint: Veilcarved Display Plinth").Name.Should().Be("Blueprint: Veilcarved Rune Pillar");
+        Load<WorldPropertyItem>("structure_0429", "Commandline Display Plinth").Name.Should().Be("Commandline Bust");
+        Load<SWLOR.Game.Server.Service.QuestContractService.QuestContractItem>("structure_0339", "Ashmark Display Plinth")
+            .Name.Should().Be("Ashmark Altar");
+        Load<InventoryItem>("structure_0389", "Veilcarved Display Plinth Replica").Name.Should().Be("Veilcarved Display Plinth Replica");
+        Load<InventoryItem>("structure_0383", "Veilcarved Display Plinth").Name.Should().Be("Veilcarved Display Plinth");
+    }
+
+    [Test]
     public void PlacedStructures_LoseOnlyTheirFormerDefaultName()
     {
         WorldProperty Structure(StructureType type, string name) => new()

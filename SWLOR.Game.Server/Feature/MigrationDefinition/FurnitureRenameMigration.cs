@@ -5,6 +5,8 @@ using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service.CraftService;
@@ -114,6 +116,32 @@ public static class FurnitureRenameMigration
             return false;
         property.CustomName = rename.NewName;
         return true;
+    }
+
+    /// <summary>
+    /// Saves bank and market listings restored or imported after the release migration under their renamed names, so
+    /// name searches find them. Loading a listing already renames it (its OnDeserialized callback).
+    /// </summary>
+    [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+    public static void SaveRestoredListings()
+    {
+        SaveRestoredListings<InventoryItem>(nameof(InventoryItem.Name), item => item.Name);
+        SaveRestoredListings<MarketItem>(nameof(MarketItem.Name), item => item.Name);
+    }
+
+    private const string FormerTitle = "Display Plinth";
+
+    private static void SaveRestoredListings<T>(string nameField, Func<T, string> getName)
+        where T : EntityBase
+    {
+        var count = (int)DB.SearchCount(new DBQuery<T>().AddFieldSearch(nameField, FormerTitle, true));
+        if (count <= 0)
+            return;
+        foreach (var listing in DB.Search(new DBQuery<T>().AddFieldSearch(nameField, FormerTitle, true).AddPaging(count, 0)))
+        {
+            if (!getName(listing).Contains(FormerTitle, StringComparison.Ordinal))
+                DB.Set(listing);
+        }
     }
 
     /// <summary>

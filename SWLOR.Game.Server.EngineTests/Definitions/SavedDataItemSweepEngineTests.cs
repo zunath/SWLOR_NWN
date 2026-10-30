@@ -280,6 +280,43 @@ public static partial class MigrationEngineTests
         });
     }
 
+    /// <summary>A bank listing restored after the release migration is saved under its new name, so name searches find it.</summary>
+    [EngineTest("Restored bank listings of former Display Plinths are found by their new name", Category = SavedDataSweepCategory)]
+    public static async Task RestoredFormerPlinthListingsAreSearchable(EngineTestContext ctx)
+    {
+        var storageId = "furniture-rename-" + Guid.NewGuid().ToString("N");
+        var listing = new SWLOR.Game.Server.Entity.InventoryItem
+        {
+            StorageId = storageId,
+            PlayerId = storageId,
+            Name = "Veilcarved Display Plinth",
+            Tag = "structure_0389",
+            Resref = "structure_0389",
+            Quantity = 1,
+            Data = string.Empty,
+            IconResref = string.Empty,
+        };
+        DB.Set(listing);
+        try
+        {
+            SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem> ByName(string name) =>
+                new SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem>()
+                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.StorageId), storageId, false)
+                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.Name), name, true);
+            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 0, "the restored listing is still indexed under its old name");
+
+            FurnitureRenameMigration.SaveRestoredListings();
+            await ctx.WaitFrameAsync();
+
+            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 1, "the listing is found by its new name");
+            ctx.Assert(DB.Get<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id).Name == "Veilcarved Rune Pillar", "the listing loads renamed");
+        }
+        finally
+        {
+            DB.Delete<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id);
+        }
+    }
+
     private static readonly (string Resref, string NewName, string OldName)[] FormerDisplayPlinths =
     {
         ("structure_0389", "Veilcarved Rune Pillar", "Veilcarved Display Plinth"),

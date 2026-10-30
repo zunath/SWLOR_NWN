@@ -1,3 +1,6 @@
+using System.Runtime.Serialization;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
+
 namespace SWLOR.Game.Server.Entity
 {
     public class InventoryItem : EntityBase
@@ -21,5 +24,10 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         [Indexed]
         public long DepositedTicks { get; set; }
+
+        /// <summary>Shows the renamed default name of a former Display Plinth restored after the release migration.</summary>
+        [OnDeserialized]
+        internal void RenameFormerFurniture(StreamingContext context) =>
+            Name = FurnitureRenameMigration.GetRenamedItemText(Resref, Name);
     }
 }

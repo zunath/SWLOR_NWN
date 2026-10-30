@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service
             {Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220},
             {Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270},
             {Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300},
+            {Item.CannonBaseItemTypes, ItemPropertyAttackDelay.Delay300},
             {Item.HeavyVibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay300},
             {Item.PistolBaseItemTypes, ItemPropertyAttackDelay.Delay250},
             {Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240},

@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Service
                 return MarketCategoryType.Pistol;
             if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Throwing;
-            if (Item.RifleBaseItemTypes.Contains(baseItemType))
+            if (Item.RifleBaseItemTypes.Contains(baseItemType) || Item.CannonBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Rifle;
             if (Item.TwinBladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.TwinBlade;

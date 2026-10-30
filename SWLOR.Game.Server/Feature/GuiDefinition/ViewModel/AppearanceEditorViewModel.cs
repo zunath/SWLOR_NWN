@@ -174,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.LegacyPistol] = pistolAppearance;
             _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Rifle] = new RifleAppearanceDefinition();
+            _weaponAppearances[BaseItem.Cannon] = new CannonAppearanceDefinition();
             _weaponAppearances[BaseItem.Shuriken] = new ShurikenAppearanceDefinition();
             _weaponAppearances[BaseItem.ShortSpear] = new SpearAppearanceDefinition();
             _weaponAppearances[BaseItem.TwoBladedSword] = new TwinBladeAppearanceDefinition();

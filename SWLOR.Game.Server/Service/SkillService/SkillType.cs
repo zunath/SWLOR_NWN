@@ -518,6 +518,17 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             CombatPointCategoryType.Weapon)]
         TwinPistol = 52,
+
+        [Skill(SkillCategoryType.Combat,
+            "Cannon",
+            50,
+            true,
+            "Ability to use heavy blaster cannons in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Cannon = 53,
     }
 
     public class SkillAttribute : Attribute

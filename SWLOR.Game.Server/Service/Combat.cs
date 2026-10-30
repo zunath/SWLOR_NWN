@@ -5329,6 +5329,7 @@ namespace SWLOR.Game.Server.Service
             return skillType == SkillType.Pistol ||
                    skillType == SkillType.TwinPistol ||
                    skillType == SkillType.Rifle ||
+                   skillType == SkillType.Cannon ||
                    skillType == SkillType.Throwing ||
                    skillType == SkillType.Devices;
         }
@@ -5338,6 +5339,7 @@ namespace SWLOR.Game.Server.Service
             return skillType == SkillType.Pistol ||
                    skillType == SkillType.TwinPistol ||
                    skillType == SkillType.Rifle ||
+                   skillType == SkillType.Cannon ||
                    skillType == SkillType.Throwing;
         }
 

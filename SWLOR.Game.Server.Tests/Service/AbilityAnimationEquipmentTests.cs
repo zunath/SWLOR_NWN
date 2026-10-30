@@ -40,6 +40,7 @@ public class AbilityAnimationEquipmentTests
 
     // Every weapon whose idle grip keeps a native holding layer, read from the shipped baseitems rows.
     [TestCase(BaseItem.Rifle, AnimationWeaponHold.Rifle)]
+    [TestCase(BaseItem.HeavyRifle, AnimationWeaponHold.Rifle)]
     [TestCase(BaseItem.Cannon, AnimationWeaponHold.Rifle)]
     [TestCase(BaseItem.GreatSword, AnimationWeaponHold.Shoulder)]
     [TestCase(BaseItem.QuarterStaff, AnimationWeaponHold.Shoulder)]

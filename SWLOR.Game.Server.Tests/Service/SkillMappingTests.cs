@@ -30,9 +30,15 @@ public class SkillMappingTests
     public void GetSkillTypeByBaseItem_MapsRifleProjectileBaseItemsToRifle()
     {
         Skill.GetSkillTypeByBaseItem(BaseItem.Rifle).Should().Be(SkillType.Rifle);
-        Skill.GetSkillTypeByBaseItem(BaseItem.Cannon).Should().Be(SkillType.Rifle);
+        Skill.GetSkillTypeByBaseItem(BaseItem.HeavyRifle).Should().Be(SkillType.Rifle);
         Skill.GetSkillTypeByBaseItem(BaseItem.Longbow).Should().Be(SkillType.Rifle);
         Skill.GetSkillTypeByBaseItem(BaseItem.Bolt).Should().Be(SkillType.Rifle);
+    }
+
+    [Test]
+    public void GetSkillTypeByBaseItem_MapsCannonToCannon()
+    {
+        Skill.GetSkillTypeByBaseItem(BaseItem.Cannon).Should().Be(SkillType.Cannon);
     }
 
     [Test]

@@ -228,7 +228,8 @@ namespace SWLOR.Game.Server.Feature
             if (Item.TwoHandedMeleeItemTypes.Contains(itemType) ||
                 Item.TwinBladeBaseItemTypes.Contains(itemType) ||
                 Item.SaberstaffBaseItemTypes.Contains(itemType) ||
-                Item.RifleBaseItemTypes.Contains(itemType))
+                Item.RifleBaseItemTypes.Contains(itemType) ||
+                Item.CannonBaseItemTypes.Contains(itemType))
             {
                 if (GetIsObjectValid(rightHand) ||
                     GetIsObjectValid(leftHand))
@@ -244,7 +245,8 @@ namespace SWLOR.Game.Server.Feature
                 if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) ||
                     Item.TwinBladeBaseItemTypes.Contains(rightHandType) ||
                     Item.SaberstaffBaseItemTypes.Contains(rightHandType) ||
-                    Item.RifleBaseItemTypes.Contains(rightHandType))
+                    Item.RifleBaseItemTypes.Contains(rightHandType) ||
+                    Item.CannonBaseItemTypes.Contains(rightHandType))
                 {
                     return true;
                 }

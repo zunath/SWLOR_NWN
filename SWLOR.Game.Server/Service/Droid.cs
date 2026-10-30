@@ -1031,13 +1031,24 @@ namespace SWLOR.Game.Server.Service
         public static List<uint> GetControllers(uint player)
         {
             var controllers = new List<uint>();
-            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            AddControllers(player, controllers);
+            return controllers;
+        }
+
+        private static void AddControllers(uint container, List<uint> controllers)
+        {
+            // The container's items are listed before any bag is opened, as a nested walk restarts the outer one.
+            var items = new List<uint>();
+            for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
+                items.Add(item);
+
+            foreach (var item in items)
             {
                 if (GetResRef(item) == DroidControlItemResref)
                     controllers.Add(item);
+                else if (GetHasInventory(item))
+                    AddControllers(item, controllers);
             }
-
-            return controllers;
         }
 
         /// <summary>The controller the player carries for a droid id, or OBJECT_INVALID.</summary>

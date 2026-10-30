@@ -4495,7 +4495,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 1309,
+    "Line": 1320,
     "Member": "DroidOnDeath",
     "Delivery": "Retained",
     "Call": "SpeakString(personality.DeathPhrase())"
@@ -6812,70 +6812,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 744,
+    "Line": 753,
     "Member": "OpenDerelictStrongbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(boarder, ColorToken.Green($\"You crack the {boarding.Name}'s strongbox: {credits} credits and {lockboxes} sealed lockbox{(lockboxes == 1 ? string.Empty : \"es\")}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 754,
+    "Line": 755,
+    "Member": "OpenDerelictStrongbox",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(boarder, ColorToken.Red($\"Your inventory is full. {dropped} lockbox{(dropped == 1 ? \" was\" : \"es were\")} left at your feet.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
+    "Line": 765,
     "Member": "OpenDerelictStrongbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(defender, ColorToken.Green($\"Your boarders crack the {boarding.Name}'s strongbox: your share for holding the line is {defenderCredits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 774,
+    "Line": 785,
     "Member": "SendSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You must be piloting a starship to send a salvage team.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 785,
+    "Line": 796,
     "Member": "SendSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(DerelictRules.DescribeRefusal(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 824,
+    "Line": 835,
     "Member": "SendSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your salvage team ({names}, Industry {industry}) crosses to the derelict. They need \" +\n                                    $\"{seconds / 60.0:0.#} minutes of work; stay within {DerelictTuning.SalvageTetherMeters:0} meters.{warning}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 839,
+    "Line": 850,
     "Member": "ProcessSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red(\"Your ship pulled away from the derelict, so your salvage team comes back empty-handed.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 861,
+    "Line": 872,
     "Member": "ProcessSalvageTeam",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Green($\"Your salvage team strips the derelict and comes back with {credits} credits, {scrap} Ship Scrap and a find.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 950,
+    "Line": 961,
     "Member": "ReinforceDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"With no ship defending the derelict, enemy boarders cut their way in at the airlock!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 1046,
+    "Line": 1057,
     "Member": "EndDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{GetShipName(ship)} was docked at a derelict that broke apart, and it was towed back to its last dock.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDerelicts.cs",
-    "Line": 1053,
+    "Line": 1064,
     "Member": "EndDerelict",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"The {boarding.Name} is breaking apart!\"))"
@@ -7246,14 +7253,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 328,
+    "Line": 350,
     "Member": "PayRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                        $\"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 432,
+    "Line": 454,
     "Member": "MessageRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
@@ -7694,35 +7701,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 118,
-    "Member": "ScoopPod",
+    "Line": 135,
+    "Member": "LoadUnspilledCargo",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can scoop a cargo pod.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 126,
-    "Member": "ScoopPod",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoCargoBay)))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 134,
-    "Member": "ScoopPod",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.CargoBayFull)))"
+    "Call": "SendMessageToPC(pilot, ColorToken.Green($\"Recovered into the cargo bay: {text}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
     "Line": 147,
     "Member": "ScoopPod",
     "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can scoop a cargo pod.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 155,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoCargoBay)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 163,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.CargoBayFull)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 176,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Scooped into the cargo bay: {text}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 156,
+    "Line": 185,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cargo bay is full. The rest stays in the pod.\"))"

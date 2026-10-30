@@ -286,9 +286,31 @@ namespace SWLOR.Game.Server.Service
                     run.Enemies.Add(ship);
             }
 
-            if (run.Enemies.Count == 0)
-                Log.Write(LogGroup.Error, $"Rift Run {run.Id}: no ship of wave {run.Wave} in chamber {run.Room} could be created ({string.Join(", ", tags)}).");
+            if (run.Enemies.Count > 0)
+            {
+                run.FailedSpawns = 0;
+                return;
+            }
+
+            // An empty wave would count as cleared: the wave is tried again shortly, and after a few failures the run
+            // ends with the ships sent home, unpaid but unharmed.
+            Log.Write(LogGroup.Error, $"Rift Run {run.Id}: no ship of wave {run.Wave} in chamber {run.Room} could be created ({string.Join(", ", tags)}).");
+            run.FailedSpawns++;
+            if (run.FailedSpawns < MaxFailedSpawns)
+            {
+                run.Phase = RiftRunPhase.Waiting;
+                run.NextAt = DateTime.UtcNow.AddSeconds(RiftRunTuning.WaveDelaySeconds);
+                return;
+            }
+
+            run.Phase = RiftRunPhase.Returning;
+            run.NextAt = DateTime.UtcNow.AddSeconds(RiftRunTuning.ReturnDelaySeconds);
+            MessageRiftRun(run, ColorToken.Red("The rift pocket destabilizes before its defenders can form. The run is over, and the rift returns you home."));
+            Log.Write(LogGroup.Space, $"RIFT RUN ENDED - {run.Key.Resref}, chamber {run.Room + 1}: waves could not be created");
         }
+
+        /// <summary>Waves in a row that may fail to spawn before a run is ended.</summary>
+        private const int MaxFailedSpawns = 3;
 
         /// <summary>
         /// Pays each ship that finished: credits shared by the players aboard, item pulls to the pilot's hold. Every share

@@ -107,6 +107,35 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The units a cargo pod holds, by commodity.</summary>
         public static Dictionary<CommodityType, int> GetPodContents(uint pod) => ReadPod(pod);
 
+        /// <summary>
+        /// Loads units no pod could be created for straight into the pilot's cargo bay, as scooping does, and returns
+        /// the units loaded. What does not fit stays in <paramref name="units"/>.
+        /// </summary>
+        public static int LoadUnspilledCargo(uint pilot, Dictionary<CommodityType, int> units)
+        {
+            if (!GetIsPC(pilot) || units.Count == 0 || !Space.IsPlayerInSpaceMode(pilot))
+                return 0;
+
+            var ship = GetActiveShip(pilot);
+            if (ship == null || GetCargoCapacity(ship) <= 0)
+                return 0;
+
+            var taken = CargoSpillRules.Scoop(units, GetFreeVolume(ship));
+            if (taken.Count == 0)
+                return 0;
+
+            foreach (var (commodity, count) in taken)
+            {
+                var basePrice = TradeLookup.GetCommodity(commodity)?.BasePrice ?? 0;
+                CargoHoldRules.AddUnits(ship.Cargo, commodity, count, basePrice * count);
+            }
+
+            DB.Set(ship);
+            var text = string.Join(", ", taken.Select(x => $"{x.Value} {TradeLookup.GetCommodity(x.Key)?.Name}"));
+            SendMessageToPC(pilot, ColorToken.Green($"Recovered into the cargo bay: {text}."));
+            return taken.Values.Sum();
+        }
+
         /// <summary>What fits goes into the user's ship's cargo bay, and the pod keeps the rest.</summary>
         public static void ScoopPod(uint pod, uint user)
         {

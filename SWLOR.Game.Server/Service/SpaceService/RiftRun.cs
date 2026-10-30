@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int Wave { get; set; }
         public RiftRunPhase Phase { get; set; } = RiftRunPhase.Waiting;
         public DateTime NextAt { get; set; }
+
+        /// <summary>Waves in a row none of whose ships could be created; the run ends after a few.</summary>
+        public int FailedSpawns { get; set; }
         public HashSet<int> Warned { get; set; } = new();
 
         /// <summary>Seconds left on the timer when the last chamber was cleared.</summary>

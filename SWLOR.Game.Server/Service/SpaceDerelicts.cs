@@ -739,9 +739,20 @@ namespace SWLOR.Game.Server.Service
             foreach (var boarder in boarders)
             {
                 GiveGoldToCreature(boarder, credits);
+                var dropped = 0;
                 for (var count = 0; count < lockboxes; count++)
-                    CreateItemOnObject(lockbox, boarder);
+                {
+                    // A lockbox a full inventory cannot take is left at the boarder's feet rather than lost.
+                    if (GetIsObjectValid(CreateItemOnObject(lockbox, boarder)))
+                        continue;
+
+                    CreateObject(ObjectType.Item, lockbox, GetLocation(boarder));
+                    dropped++;
+                }
+
                 SendMessageToPC(boarder, ColorToken.Green($"You crack the {boarding.Name}'s strongbox: {credits} credits and {lockboxes} sealed lockbox{(lockboxes == 1 ? string.Empty : "es")}."));
+                if (dropped > 0)
+                    SendMessageToPC(boarder, ColorToken.Red($"Your inventory is full. {dropped} lockbox{(dropped == 1 ? " was" : "es were")} left at your feet."));
             }
 
             var party = GetScanPartyIds(user);

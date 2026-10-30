@@ -593,6 +593,38 @@ public class SpaceW11nReviewFixTests
             "a restart in between never leaves a load no contract can clear");
     }
 
+    [Test]
+    public void DroidControllers_AreFoundInsideBags()
+    {
+        var droid = ReadSource("Service", "Droid.cs").Replace("\r\n", "\n");
+        var add = Between(droid, "private static void AddControllers(", "/// <summary>The controller the player carries for a droid id");
+        add.Should().Contain("else if (GetHasInventory(item))").And.Contain("AddControllers(item, controllers);");
+    }
+
+    [Test]
+    public void StrongboxLockboxes_AFullInventoryCannotTake_AreLeftAtTheBoardersFeet()
+    {
+        var derelicts = ReadSource("Service", "SpaceDerelicts.cs").Replace("\r\n", "\n");
+        Index(derelicts, "if (GetIsObjectValid(CreateItemOnObject(lockbox, boarder)))")
+            .Should().BeLessThan(Index(derelicts, "CreateObject(ObjectType.Item, lockbox, GetLocation(boarder));"));
+    }
+
+    [Test]
+    public void RiftRaiderCargo_WithNoPod_GoesToTheKillersBay()
+    {
+        var wild = ReadSource("Service", "SpaceWildSpace.cs").Replace("\r\n", "\n");
+        Index(wild, "Trade.SpillUnits(cargo, GetLocation(creature), kept);").Should().BeLessThan(Index(wild, "Trade.LoadUnspilledCargo(killer, kept);"));
+    }
+
+    [Test]
+    public void ARiftWaveWithNoShips_IsRetriedThenEndsTheRunUnpaid()
+    {
+        var spawn = Between(ReadSource("Service", "SpaceRiftRuns.cs").Replace("\r\n", "\n"),
+            "private static void SpawnRiftWave(", "private const int MaxFailedSpawns");
+        Index(spawn, "run.Phase = RiftRunPhase.Waiting;").Should().BeLessThan(Index(spawn, "run.Phase = RiftRunPhase.Returning;"));
+        spawn.Should().NotContain("PayRiftRun(", "a run ended by failed spawns pays nothing");
+    }
+
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]

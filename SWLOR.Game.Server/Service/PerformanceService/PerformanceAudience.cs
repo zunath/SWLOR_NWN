@@ -58,16 +58,26 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             return true;
         }
 
-        /// <summary>Goes back to following the strongest performer of a kind.</summary>
-        public static void ClearFollow(uint watcher, PerformanceKind kind)
+        /// <summary>Drops the watcher's pick of this performer, so they go back to following the strongest of that kind.</summary>
+        public static bool Unfollow(uint watcher, uint performer)
         {
-            if (!_states.TryGetValue(watcher, out var state))
-                return;
+            if (performer == 0 || !_states.TryGetValue(watcher, out var state))
+                return false;
 
-            if (kind == PerformanceKind.Dance)
+            var cleared = false;
+            if (state.DancerChoice == performer)
+            {
                 state.DancerChoice = 0;
-            else
+                cleared = true;
+            }
+
+            if (state.MusicianChoice == performer)
+            {
                 state.MusicianChoice = 0;
+                cleared = true;
+            }
+
+            return cleared;
         }
 
         /// <summary>
@@ -461,7 +471,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 report.XpDebt,
                 report.DebtCleared,
                 composition,
-                performer => state.GetName(performer, _tickNumber, () => PlayerName.GetDisplayName(watcher, performer)));
+                performer => state.GetName(performer, _tickNumber, () => PlayerName.GetDisplayName(watcher, performer)),
+                state.DancerChoice,
+                state.MusicianChoice);
         }
 
         /// <summary>

@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         /// <param name="debtCleared">XP debt this tick cleared.</param>
         /// <param name="composition">The Inspired the followed performers give.</param>
         /// <param name="nameOf">The name the watcher knows a performer by.</param>
+        /// <param name="dancerChoice">The dancer the watcher picked, or 0 when they follow the strongest.</param>
+        /// <param name="musicianChoice">The musician the watcher picked, or 0 when they follow the strongest.</param>
         public static PerformanceWatchView Build(
             IReadOnlyList<PerformerSnapshot> candidates,
             PerformerSnapshot dancer,
@@ -26,7 +28,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             int xpDebt,
             int debtCleared,
             InspiredEffectData composition,
-            Func<uint, string> nameOf)
+            Func<uint, string> nameOf,
+            uint dancerChoice = 0,
+            uint musicianChoice = 0)
         {
             var remainingMinutes = remainingSeconds / 60.0;
             var rate = GetRatePerMinute(plan);
@@ -37,7 +41,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             {
                 HeaderText = PerformanceWatchText.Header(
                     candidates.Count, PerformanceMath.TroupeBonus(PerformanceAudienceRules.TroupeCount(candidates))),
-                Rows = BuildRows(candidates, dancer, musician, nameOf),
+                Rows = BuildRows(candidates, dancer, musician, nameOf, dancerChoice, musicianChoice),
                 BankedFraction = PerformanceWatchText.BankedFraction(remainingMinutes, plan.CapMinutes),
                 BankedText = PerformanceWatchText.Banked(remainingMinutes, plan.CapMinutes, rate, plan.IsPaying, warmupLeft),
                 DebtText = PerformanceWatchText.Debt(xpDebt, debtPercent, debtCleared),
@@ -58,11 +62,13 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             IReadOnlyList<PerformerSnapshot> candidates,
             PerformerSnapshot dancer,
             PerformerSnapshot musician,
-            Func<uint, string> nameOf)
+            Func<uint, string> nameOf,
+            uint dancerChoice,
+            uint musicianChoice)
         {
             var rows = new List<PerformanceWatchRow>(candidates.Count);
-            AddRows(rows, candidates, PerformanceKind.Dance, dancer, musician, nameOf);
-            AddRows(rows, candidates, PerformanceKind.Music, dancer, musician, nameOf);
+            AddRows(rows, candidates, PerformanceKind.Dance, dancer, musician, nameOf, dancerChoice);
+            AddRows(rows, candidates, PerformanceKind.Music, dancer, musician, nameOf, musicianChoice);
             return rows;
         }
 
@@ -72,7 +78,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             PerformanceKind kind,
             PerformerSnapshot dancer,
             PerformerSnapshot musician,
-            Func<uint, string> nameOf)
+            Func<uint, string> nameOf,
+            uint choice)
         {
             for (var index = 0; index < candidates.Count; index++)
             {
@@ -86,7 +93,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                     candidate.Performer,
                     nameOf(candidate.Performer),
                     PerformanceWatchText.RowDetail(DescribeProgram(candidate), candidate.Quality),
-                    followed));
+                    followed,
+                    choice != 0 && candidate.Performer == choice));
             }
         }
 

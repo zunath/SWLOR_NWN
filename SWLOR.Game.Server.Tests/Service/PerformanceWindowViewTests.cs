@@ -324,15 +324,26 @@ public class PerformanceWindowViewTests
         model.FollowTexts.Should().Equal("Follow", "Following");
     }
 
-    private static PerformanceWatchView BuildView(string banked = "0 / 60 min", float fraction = 0f, uint followed = 1u)
+    [Test]
+    public void Watching_APickedPerformerOffersUnfollow()
+    {
+        var model = new PerformanceWatchingViewModel();
+
+        model.ShowView(BuildView(followed: 2u, chosen: 2u));
+
+        model.FollowTexts.Should().Equal("Follow", "Unfollow");
+        model.FollowEnabled.Should().Equal(true, true);
+    }
+
+    private static PerformanceWatchView BuildView(string banked = "0 / 60 min", float fraction = 0f, uint followed = 1u, uint chosen = 0u)
     {
         return new PerformanceWatchView
         {
             HeaderText = "2 performers in range - Troupe +10%",
             Rows = new[]
             {
-                new PerformanceWatchRow(1u, "Tala Venn", "Power Step - Great", followed == 1u),
-                new PerformanceWatchRow(2u, "Kira Sol", "Quickstep - Steady", followed == 2u)
+                new PerformanceWatchRow(1u, "Tala Venn", "Power Step - Great", followed == 1u, chosen == 1u),
+                new PerformanceWatchRow(2u, "Kira Sol", "Quickstep - Steady", followed == 2u, chosen == 2u)
             },
             BankedFraction = fraction,
             BankedText = banked,

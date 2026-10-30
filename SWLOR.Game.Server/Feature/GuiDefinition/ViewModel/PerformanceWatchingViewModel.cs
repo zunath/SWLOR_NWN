@@ -81,7 +81,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= _rows.Length)
                 return;
 
-            if (PerformanceAudience.Follow(Player, _rows[index].Performer))
+            // A performer the watcher picked offers Unfollow, which goes back to following the strongest performer.
+            var row = _rows[index];
+            var changed = row.IsChosen
+                ? PerformanceAudience.Unfollow(Player, row.Performer)
+                : PerformanceAudience.Follow(Player, row.Performer);
+            if (changed)
                 PerformanceAudience.RefreshWatching(Player);
         };
 
@@ -132,8 +137,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 texts.Add($"{row.Name} - {row.Detail}");
                 colors.Add(row.IsFollowed ? PerformanceWindowColors.Gold : PerformanceWindowColors.White);
-                followTexts.Add(row.IsFollowed ? "Following" : "Follow");
-                followEnabled.Add(!row.IsFollowed);
+                followTexts.Add(row.IsChosen ? "Unfollow" : row.IsFollowed ? "Following" : "Follow");
+                followEnabled.Add(row.IsChosen || !row.IsFollowed);
             }
 
             RowTexts = texts;

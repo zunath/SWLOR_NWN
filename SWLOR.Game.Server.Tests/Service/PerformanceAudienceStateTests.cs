@@ -97,6 +97,30 @@ public class PerformanceAudienceStateTests
     }
 
     [Test]
+    public void ThePlayersOwnMusicPlayerMakesTheBandSongSendAgain()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "Music.cs"));
+
+        Section(source, "public static void PlayForPlayer(").Should().Contain("PerformanceAudience.ForgetBandSong(player);");
+        Section(source, "public static void StopForPlayer(").Should().Contain("PerformanceAudience.ForgetBandSong(player);");
+    }
+
+    [Test]
+    public void TheWatchingWindowOpensItselfOnlyAfterACountedMinute()
+    {
+        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+
+        source.Should().Contain("if (!isOpen && !state.WatchingDismissed && state.ContinuousMinutes > 0)");
+    }
+
+    private static string Section(string source, string start)
+    {
+        var from = source.IndexOf(start, StringComparison.Ordinal);
+        var to = source.IndexOf("/// <summary>", from, StringComparison.Ordinal);
+        return source.Substring(from, (to < 0 ? source.Length : to) - from);
+    }
+
+    [Test]
     public void APerformerWhoWasWatchingStopsWatching()
     {
         var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));

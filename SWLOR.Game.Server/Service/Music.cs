@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -373,6 +374,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             ApplyBackgroundTrackToPlayer(player, trackId, trackId);
+            PerformanceAudience.ForgetBandSong(player);
         }
 
         /// <summary>
@@ -392,6 +394,7 @@ namespace SWLOR.Game.Server.Service
             ApplyBackgroundTrackToPlayer(player, MusicBackgroundGetDayTrack(area), MusicBackgroundGetNightTrack(area));
             if (IsAreaMusicStopped(area))
                 PlayerPlugin.MusicBackgroundToggle(player, false);
+            PerformanceAudience.ForgetBandSong(player);
         }
 
         /// <summary>

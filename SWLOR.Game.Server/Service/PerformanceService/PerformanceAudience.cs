@@ -419,8 +419,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 state.WatchingDismissed = false;
             }
 
+            // The window opens itself only after the first counted minute, so walking past a show does not open it.
             var isOpen = PerformanceWindows.IsWatchingOpen(watcher);
-            if (!isOpen && !state.WatchingDismissed)
+            if (!isOpen && !state.WatchingDismissed && state.ContinuousMinutes > 0)
                 isOpen = PerformanceWindows.OpenWatching(watcher);
 
             if (!isOpen)
@@ -665,7 +666,16 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void ForgetBandSongOnAreaEnter()
         {
-            if (_states.TryGetValue(GetEnteringObject(), out var state))
+            ForgetBandSong(GetEnteringObject());
+        }
+
+        /// <summary>
+        /// Something else replaced the player's music, such as their own music player, so the band song they follow is
+        /// sent again at the next tick.
+        /// </summary>
+        public static void ForgetBandSong(uint player)
+        {
+            if (_states.TryGetValue(player, out var state))
             {
                 state.BandTrackId = null;
                 state.BandArea = 0;

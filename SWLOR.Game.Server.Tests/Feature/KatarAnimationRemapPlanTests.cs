@@ -24,7 +24,7 @@ public class KatarAnimationRemapPlanTests
         }
 
         Grip.ApplyTransition(mode, 0, false, Replace);
-        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(false, current, NoActiveSwing))
+        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing))
             Replace(source, replacement);
 
         current[mode == 1 ? "1hreadyr" : "2hreadyr"].Should().Be(mode == 1 ? "2hreadyr" : "1hreadyr");
@@ -47,14 +47,14 @@ public class KatarAnimationRemapPlanTests
         {
             if (!QueuedAttackAnimationPlayback.SwingKeys.Contains(source)) Replace(source, replacement);
         });
-        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(true, current, QueuedAttackAnimationPlayback.SwingKeys))
+        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(true, false, current, QueuedAttackAnimationPlayback.SwingKeys))
             Replace(source, replacement);
 
         current["1hreadyr"].Should().Be("nwreadyr");
         foreach (var key in QueuedAttackAnimationPlayback.SwingKeys) current[key].Should().Be("sw_doub_stri");
 
         foreach (var key in QueuedAttackAnimationPlayback.SwingKeys) current.Remove(key);
-        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(true, current, NoActiveSwing))
+        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(true, false, current, NoActiveSwing))
             Replace(source, replacement);
         current.Should().BeEquivalentTo(FullRemap());
     }

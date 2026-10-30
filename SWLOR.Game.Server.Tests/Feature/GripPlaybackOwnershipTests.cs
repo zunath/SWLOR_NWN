@@ -20,19 +20,25 @@ public class GripPlaybackOwnershipTests
         root.Should().NotBeNull();
         string Read(string path) => File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", path));
         // Compile the real native adapter as well: its ownership handoff must not be duplicated in the fake.
-        var native = CSharpSyntaxTree.ParseText(Read("Service/NamedAnimation.cs")).GetRoot()
-            .DescendantNodes().OfType<ClassDeclarationSyntax>().Single(c => c.Identifier.Text == "NativeRuntime");
+        var production = CSharpSyntaxTree.ParseText(Read("Service/NamedAnimation.cs")).GetRoot();
+        var active = production.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(m => m.Identifier.Text == "IsActive");
+        var restore = production.DescendantNodes().OfType<VariableDeclaratorSyntax>()
+            .Single(v => v.Identifier.Text == "Playback").Initializer!.Value
+            .DescendantNodes().OfType<ArgumentListSyntax>().First().Arguments[2].Expression;
+        var native = production.DescendantNodes().OfType<ClassDeclarationSyntax>().Single(c => c.Identifier.Text == "NativeRuntime");
         var adapter = $$"""
             using System;
             using static World;
             using SWLOR.Game.Server.Feature;
             using SWLOR.NWN.API.NWScript.Enum;
             namespace SWLOR.Game.Server.Service;
-            public static class NamedHarness
+            public static class NamedAnimation
             {
                 private const string PlaybackTokenVariable = "_NAMED_ANIMATION_PLAYBACK";
                 {{native.ToFullString()}}
-                public static NamedAnimationPlayback Create() => new(new NativeRuntime());
+                {{active.ToFullString()}}
+                public static NamedAnimationPlayback Create() => new(new NativeRuntime(), restoreEquipmentAnimations: {{restore.ToFullString()}});
             }
             """;
         var trees = new[]
@@ -40,6 +46,7 @@ public class GripPlaybackOwnershipTests
             CSharpSyntaxTree.ParseText("using System; using static World;\n" + Read("Feature/Grip.cs")),
             CSharpSyntaxTree.ParseText(Read("Service/NamedAnimationPlayback.cs")),
             CSharpSyntaxTree.ParseText(Read("Service/AnimationService/AnimationClip.cs")),
+            CSharpSyntaxTree.ParseText(Read("Service/AnimationService/AnimationWeaponHold.cs")),
             CSharpSyntaxTree.ParseText(adapter), CSharpSyntaxTree.ParseText(Harness)
         };
         var paths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator)
@@ -69,6 +76,12 @@ public class GripPlaybackOwnershipTests
     public void StaleGripWorkCannotReleaseAnotherOwner(string scenario) =>
         _run.Invoke(null, [scenario]).Should().Be(true);
 
+    [Test]
+    public void GripChangesPreserveActiveNamedPlayback(
+        [Values] bool initiallyEnabled, [Values] bool inCombat,
+        [Values] bool queued, [Values] bool interrupted) =>
+        _run.Invoke(null, [$"hold:{initiallyEnabled}:{inCombat}:{queued}:{interrupted}"]).Should().Be(true);
+
     private const string Harness = """
         using System;
         using System.Collections.Generic;
@@ -91,6 +104,10 @@ public class GripPlaybackOwnershipTests
         namespace SWLOR.Game.Server.Service
         {
             public static class DB { public static T Get<T>(string id) where T:new() => new(); public static void Set(object value) {} }
+            public static class KatarAnimationRemap
+            {
+                public static void RestoreCurrentEquipmentAnimations(uint c) => Grip.Refresh(c, true);
+            }
             public static class QueuedAttackAnimation { public static bool IsActive(uint c) => World.AttackActive; }
             public static class QueuedAttackAnimationPlayback
             {
@@ -141,6 +158,50 @@ public class GripPlaybackOwnershipTests
                 locals.Clear(); Maps.Clear(); delays.Clear(); assigned.Clear();
                 right = 10; left = 0; AttackActive = false; InCombat = scenario == "combat-toggle"; GestureCount = 0;
                 Defer = scenario is "deferred-start" or "deferred-combat";
+                if (scenario.StartsWith("hold:"))
+                {
+                    var options = scenario.Split(':').Skip(1).Select(bool.Parse).ToArray();
+                    SetLocalBool(1, "DOUBLEHAND_ENABLED", options[0]);
+                    InCombat = true;
+                    Grip.Refresh(1, true);
+                    InCombat = options[1];
+                    AttackActive = options[2];
+                    var playback = NamedAnimation.Create();
+                    var token = playback.Begin(1, new AnimationClip("staff_emote", 2), 2,
+                        weaponHold: AnimationWeaponHold.Shoulder);
+                    if (AttackActive)
+                        foreach (var key in QueuedAttackAnimationPlayback.SwingKeys) Maps[key] = "queued_attack";
+                    var gestures = GestureCount;
+                    Grip.Toggle(1);
+                    Check(GetLocalBool(1, "DOUBLEHAND_ENABLED") == !options[0]);
+                    Check(GetLocalInt(1, "DOUBLEHAND_MODE") == (options[0] ? 0 : 2));
+                    Check(Maps["2hreadyr"] == (options[0] ? "" : "1hreadyr"));
+                    Check(Maps["plpause1"] == "sw_nohold" && Maps["dodges"] == "staff_emote");
+                    Check(playback.IsCurrent(1, token) && GestureCount == gestures);
+                    Grip.Refresh(1, true);
+                    Check(Maps["plpause1"] == "sw_nohold" && Maps["dodges"] == "staff_emote");
+                    if (options[3]) playback.ReleaseForNativePlayback(1);
+                    else
+                    {
+                        playback.Complete(1, token);
+                        Grip.Refresh(1, true);
+                        Check(Maps["plpause1"] == "sw_nohold" && Maps["dodges"] == "staff_emote");
+                        delays.Last()();
+                    }
+                    Check(!NamedAnimation.IsActive(1));
+                    Check(Maps["plpause1"] == (options[0] ? "" : "sw_nohold"));
+                    Check(Maps["dodges"] == "" && GestureCount == gestures);
+                    if (AttackActive)
+                    {
+                        foreach (var key in QueuedAttackAnimationPlayback.SwingKeys)
+                            Check(Maps[key] == "queued_attack");
+                        foreach (var key in QueuedAttackAnimationPlayback.SwingKeys) Maps[key] = "";
+                        AttackActive = false;
+                        Grip.Refresh(1, true);
+                    }
+                    Check(Maps["2hstab"] == (options[0] ? "" : "1hstab"));
+                    return true;
+                }
                 SetLocalBool(1, "DOUBLEHAND_ENABLED", true);
                 if (scenario == "unowned-alias")
                 {
@@ -178,8 +239,8 @@ public class GripPlaybackOwnershipTests
                 if (scenario == "deferred-start")
                 {
                     Defer = false;
-                    var playback = NamedHarness.Create();
-                    var token = playback.Begin(1, new AnimationClip("rifle_emote", 2), 2, suppressRifleHold: true);
+                    var playback = NamedAnimation.Create();
+                    var token = playback.Begin(1, new AnimationClip("rifle_emote", 2), 2, weaponHold: AnimationWeaponHold.Rifle);
                     while (assigned.TryDequeue(out var callback)) callback();
                     Check(Maps["dodges"] == "rifle_emote" && Maps["plpause1"] == "xbowr");
                     Check(playback.IsCurrent(1, token)); return true;
@@ -206,8 +267,8 @@ public class GripPlaybackOwnershipTests
                     right = 20; AttackActive = scenario == "queued-attack";
                     Grip.Refresh(1, true); Check(Maps["dodges"] == "");
                 }
-                var named = NamedHarness.Create();
-                var owner = named.Begin(1, new AnimationClip("rifle_emote", 2), 2, suppressRifleHold: true);
+                var named = NamedAnimation.Create();
+                var owner = named.Begin(1, new AnimationClip("rifle_emote", 2), 2, weaponHold: AnimationWeaponHold.Rifle);
                 foreach (var timer in oldTimers) timer();
                 Check(Maps["dodges"] == "rifle_emote" && Maps["plpause1"] == "xbowr");
                 Check(named.IsCurrent(1, owner)); return true;

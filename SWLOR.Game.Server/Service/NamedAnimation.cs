@@ -120,6 +120,9 @@ public static class NamedAnimation
         return token;
     }
 
+    internal static bool IsActive(uint creature) =>
+        !string.IsNullOrEmpty(GetLocalString(creature, PlaybackTokenVariable));
+
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
     /// <summary>Stops restricted and weapon-held poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
@@ -172,7 +175,7 @@ public static class NamedAnimation
         }
         public void Replace(uint creature, string source, string replacement)
         {
-            if (source == NamedAnimationPlayback.RifleCarrierSource)
+            if (source == NamedAnimationPlayback.HoldCarrierSource)
                 Grip.InvalidateTransition(creature, releaseMapping: false);
             ReplaceObjectAnimation(creature, source, replacement);
         }

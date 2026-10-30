@@ -39,7 +39,7 @@ public static class Grip
     // Reapplies only the carry alias, which a finished named animation clears even while a queued swing owns the combat aliases.
     internal static void RestoreCarryAlias(uint creature)
     {
-        if (GetLocalInt(creature, ModeVariable) == 2)
+        if (!NamedAnimation.IsActive(creature) && GetLocalInt(creature, ModeVariable) == 2)
             ReplaceObjectAnimation(creature, "plpause1", NamedAnimationPlayback.NoHoldName);
     }
 
@@ -90,13 +90,15 @@ public static class Grip
         var reapply = forceRefresh || (handsChanged && desired == 2 && applied == 2);
         // A queued swing owns the swing keys; everything else changes now and the queue's release forces the rest.
         var queued = QueuedAttackAnimation.IsActive(creature);
+        var named = NamedAnimation.IsActive(creature);
         ApplyTransition(desired, applied, reapply, (source, destination) =>
         {
+            if (named && source == NamedAnimationPlayback.ShoulderHoldSource) return;
             if (!queued || !QueuedAttackAnimationPlayback.SwingKeys.Contains(source))
                 ReplaceObjectAnimation(creature, source, destination);
         });
         SetLocalInt(creature, ModeVariable, desired);
-        if (queued) return;
+        if (queued || named) return;
         if (!GetIsInCombat(creature) && ShouldPlayTransition(desired, applied, playTransition,
                 GetIsObjectValid(right) && GetMode(true, GetBaseItemType(right), false) != 0))
         {
@@ -107,7 +109,7 @@ public static class Grip
                     GetLocalInt(creature, ModeVariable) != desired ||
                     GetItemInSlot(InventorySlot.RightHand, creature) != right ||
                     GetItemInSlot(InventorySlot.LeftHand, creature) != left ||
-                    GetIsInCombat(creature)) return;
+                    GetIsInCombat(creature) || NamedAnimation.IsActive(creature)) return;
                 // Clear the existing shoulder overlay by its original name before suppressing
                 // future carry layers. A full-body pause clip is not a carry-layer replacement.
                 ReplaceObjectAnimation(creature, "plpause1", "");
@@ -136,7 +138,7 @@ public static class Grip
                 DelayCommand(0.3f, () =>
                 {
                     if (!GetIsObjectValid(creature) || GetLocalInt(creature, TransitionTokenVariable) != token ||
-                        GetLocalInt(creature, ModeVariable) != 2 ||
+                        NamedAnimation.IsActive(creature) || GetLocalInt(creature, ModeVariable) != 2 ||
                         GetItemInSlot(InventorySlot.RightHand, creature) != right ||
                         GetItemInSlot(InventorySlot.LeftHand, creature) != left) return;
                     ReplaceObjectAnimation(creature, "plpause1", NamedAnimationPlayback.NoHoldName);

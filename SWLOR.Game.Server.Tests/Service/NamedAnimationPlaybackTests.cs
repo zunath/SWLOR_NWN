@@ -401,8 +401,8 @@ public class NamedAnimationPlaybackTests
         {
             creature.Should().Be(1);
             runtime.Token.Should().BeEmpty();
-            runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().BeEmpty();
-            runtime.Replace(creature, NamedAnimationPlayback.RifleCarryResetSource, NamedAnimationPlayback.NoHoldName);
+            runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().BeEmpty();
+            runtime.Replace(creature, NamedAnimationPlayback.ShoulderHoldSource, NamedAnimationPlayback.NoHoldName);
             restores++;
         });
         var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
@@ -416,7 +416,7 @@ public class NamedAnimationPlaybackTests
         }
 
         restores.Should().Be(1);
-        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
         runtime.Callbacks[0]();
         restores.Should().Be(1, "the expired timeout must not restore equipment twice");
     }

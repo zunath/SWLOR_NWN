@@ -355,6 +355,28 @@ public class SpaceW11nReviewFixTests
                 "the load leaves the ship before the contract that clears it goes");
     }
 
+    [Test]
+    public void ARecoveredShipSale_ClearsTheSellersActiveShip()
+    {
+        var source = ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n");
+        source.Should().Contain("public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason, string oldOwnerPlayerId = null)");
+        source.Should().Contain("oldOwnerPlayerId ??= ship.OwnerPlayerId;");
+        source.Should().Contain("Complete(ship, ship.SaleBuyerPlayerId, \"was sold\", ship.SaleSellerPlayerId);",
+            "the ship may already be saved with its buyer, so recovery names the seller whose active ship is cleared");
+    }
+
+    [Test]
+    public void AnAbandonedCourier_EndsItsMissionBeforeItsContractGoes()
+    {
+        var abandon = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
+            "public static void AbandonFreight(", "SendMessageToPC(player, ColorToken.Red($\"Contract abandoned.");
+        abandon.IndexOf("FactionAgents.Abandon(player, contract.Id);", StringComparison.Ordinal)
+            .Should().BeLessThan(abandon.IndexOf("UnloadAgentCourier(GetObjectUUID(player), contract.Id);", StringComparison.Ordinal),
+                "a restart in between leaves the contract to abandon again, not an active mission without its load");
+        abandon.IndexOf("UnloadAgentCourier(GetObjectUUID(player), contract.Id);", StringComparison.Ordinal)
+            .Should().BeLessThan(abandon.IndexOf("dbPlayer.FreightContracts.Remove(contract);", StringComparison.Ordinal));
+    }
+
     private static string Between(string source, string start, string end)
     {
         var from = source.IndexOf(start, StringComparison.Ordinal);

@@ -133,6 +133,15 @@ namespace SWLOR.Game.Server.Service
             if (contract == null)
                 return;
 
+            // A courier's mission is abandoned first, and its cleanup unloads the courier; unloading again clears a
+            // contract and load a restart left behind after the mission was already gone.
+            if (contract.IsAgentCourier)
+            {
+                FactionAgents.Abandon(player, contract.Id);
+                UnloadAgentCourier(GetObjectUUID(player), contract.Id);
+                return;
+            }
+
             // The sealed load is unloaded and saved before the contract goes, so a restart in between leaves the
             // contract to abandon again rather than a load no contract can clear.
             var ship = string.IsNullOrWhiteSpace(contract.ShipId) ? null : DB.Get<PlayerShip>(contract.ShipId);
@@ -141,12 +150,6 @@ namespace SWLOR.Game.Server.Service
 
             dbPlayer.FreightContracts.Remove(contract);
             DB.Set(dbPlayer);
-
-            if (contract.IsAgentCourier)
-            {
-                FactionAgents.Abandon(player, contract.Id);
-                return;
-            }
 
             SendMessageToPC(player, ColorToken.Red($"Contract abandoned. The deposit of {contract.Deposit} credits is forfeit."));
             Log.Write(LogGroup.Space, $"FREIGHT ABANDON - {PlayerName.GetAuditName(player)} - {contract.Id} deposit {contract.Deposit} forfeit");

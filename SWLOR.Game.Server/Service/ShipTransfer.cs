@@ -171,11 +171,13 @@ namespace SWLOR.Game.Server.Service
         /// Hands the ship to its new owner. Ships docked aboard go to the starport first, droids posted aboard go back
         /// to their owners, any market listing ends, and the ship, its interior and every structure inside are
         /// re-owned. Every permission on them resets: the old owner and their guests lose access and the new owner
-        /// gets full rights. The caller has already checked <see cref="ShipTransferRules.GetRefusal"/>.
+        /// gets full rights. The caller has already checked <see cref="ShipTransferRules.GetRefusal"/>. A sale finished
+        /// after a restart names the seller as <paramref name="oldOwnerPlayerId"/>, as the ship may already be saved
+        /// with its new owner.
         /// </summary>
-        public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason)
+        public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason, string oldOwnerPlayerId = null)
         {
-            var oldOwnerPlayerId = ship.OwnerPlayerId;
+            oldOwnerPlayerId ??= ship.OwnerPlayerId;
             var shipName = GetShipName(ship);
 
             Space.UndockAllToStarport(ship, reason);
@@ -551,7 +553,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 if (!string.IsNullOrWhiteSpace(ship.SaleBuyerPlayerId))
-                    Complete(ship, ship.SaleBuyerPlayerId, "was sold");
+                    Complete(ship, ship.SaleBuyerPlayerId, "was sold", ship.SaleSellerPlayerId);
                 PaySaleProceeds(ship);
                 Log.Write(LogGroup.PlayerMarket, $"Paid owed proceeds for ship {ship.Id} after a restart.");
             }

@@ -22,9 +22,6 @@ public static class NamedAnimation
         var duration = Validate(clip, durationSeconds);
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
-        var hold = AbilityAnimationEquipment.ReadHold(creature);
-        var held = hold != AnimationWeaponHold.None;
-        var speed = held ? clip.PlaybackSpeed(duration) : 1f;
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
         AssignCommand(creature, () =>
@@ -32,11 +29,18 @@ public static class NamedAnimation
             if (!Playback.CanStartEquipmentPlayback(creature, request)) return;
             ActionDoCommand(() =>
             {
-                // A queued request may begin well after selection. Invalidated requests leave the carrier native.
+                // A queued request may begin well after selection, possibly with other equipment:
+                // choose the carrier and its hold mappings together when playback starts.
+                // Invalidated requests leave the carrier native.
+                var hold = AbilityAnimationEquipment.ReadHold(creature);
+                var held = hold != AnimationWeaponHold.None;
                 if (Playback.CanStartEquipmentPlayback(creature, request) && AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature))
                     token = Playback.Begin(creature, clip, duration, weaponHold: hold, equipmentRequest: request);
+                PlayAnimation(held ? Animation.FireForgetDodgeSide : Animation.PointForward,
+                    held ? clip.PlaybackSpeed(duration) : 1f, duration);
             });
-            ActionPlayAnimation(held ? Animation.FireForgetDodgeSide : Animation.PointForward, speed, duration);
+            // Holds the queue for the clip, as the queued carrier action did.
+            ActionWait(duration);
             ActionDoCommand(() => Playback.Complete(creature, token));
         });
     }

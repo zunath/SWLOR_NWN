@@ -109,6 +109,22 @@ public class EquipmentAnimationPlaybackTests
         handler.Body!.ToString().Should().Contain("InvalidateEquipmentPlayback").And.Contain("PlayNativePreview");
     }
 
+    [Test]
+    public void QueuedPlaybackChoosesTheHoldAndCarrierWhenItStarts()
+    {
+        var queue = Read("SWLOR.Game.Server/Service/NamedAnimation.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.Text == "Queue");
+        var started = queue.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "ActionDoCommand" && call.ToString().Contains("Playback.Begin"));
+        var startedCalls = started.DescendantNodes().OfType<InvocationExpressionSyntax>().Select(call => call.Expression.ToString()).ToArray();
+        startedCalls.Should().Contain("AbilityAnimationEquipment.ReadHold",
+            "equipment can change while the clip waits behind earlier actions");
+        startedCalls.Should().Contain("PlayAnimation", "the carrier must match the mappings installed at start");
+        queue.DescendantNodes().OfType<InvocationExpressionSyntax>().Select(call => call.Expression.ToString())
+            .Should().NotContain("ActionPlayAnimation", "a carrier queued at selection cannot follow a later weapon change")
+            .And.Contain("ActionWait");
+    }
+
     private static void AssertCreatureBinding(IEnumerable<InvocationExpressionSyntax> calls, string method)
     {
         var matches = calls.Where(call => call.Expression.ToString().EndsWith("AbilityAnimationBinding." + method)).ToArray();

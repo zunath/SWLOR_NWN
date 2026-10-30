@@ -153,7 +153,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                damagePercentAdjustment: DeviceAbilityEffects.GetBlastDamageAdjustment(activator));
         }
 
         private static Location GetFragGrenadeImpactLocation(uint activator, uint target, Location targetLocation)

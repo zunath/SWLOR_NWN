@@ -1059,6 +1059,37 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the icon layers to draw on top of each other, bottom first. Three-part weapons such as
+        /// lightsabers have one icon per model part, and their base icon shows only the bottom part; every other
+        /// item has a single layer, the same as <see cref="GetIconResref"/>.
+        /// </summary>
+        /// <param name="item">The item to retrieve the icon layers for.</param>
+        /// <returns>The bottom, middle and top icons of a three-part weapon, otherwise the single icon.</returns>
+        public static string[] GetIconLayers(uint item)
+        {
+            var baseItem = GetBaseItemType(item);
+            if (Get2DAString("baseitems", "ModelType", (int)baseItem) == "2")
+            {
+                // Part icons follow the engine's i<ItemClass>_<part>_<number> convention, which can differ from
+                // DefaultIcon. A part's number is its model followed by its color digit, e.g. model 2 color 1 is _021.
+                var itemClass = Get2DAString("baseitems", "ItemClass", (int)baseItem);
+                var prefix = string.IsNullOrEmpty(itemClass) ? string.Empty : "i" + itemClass;
+                var layers = new[] { "b", "m", "t" }
+                    .Select((part, index) =>
+                    {
+                        var number = GetItemAppearance(item, ItemAppearanceType.WeaponModel, index) * 10 +
+                                     GetItemAppearance(item, ItemAppearanceType.WeaponColor, index);
+                        return $"{prefix}_{part}_{number:000}".ToLower();
+                    })
+                    .ToArray();
+                if (!string.IsNullOrEmpty(prefix) && layers.All(IconResourceExists))
+                    return layers;
+            }
+
+            return new[] { GetIconResref(item) };
+        }
+
+        /// <summary>
         /// Determines whether an item has a real inventory icon, as opposed to falling back to the
         /// generic placeholder icon. Items with no real icon are almost always internal, prop, or
         /// creature items that should not appear on player-facing economy surfaces.

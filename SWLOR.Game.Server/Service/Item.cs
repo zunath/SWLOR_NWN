@@ -576,9 +576,17 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrEmpty(offError)) return offError;
             }
 
+            return GetRacialEquipError(creature, item);
+        }
+
+        /// <summary>
+        /// Checks the Droid-only and no-Droid equip limits of an item.
+        /// </summary>
+        public static string GetRacialEquipError(uint creature, uint item)
+        {
             var race = GetRacialType(creature);
 
-            var needsDroidLimitation = race == RacialType.Droid && DroidBaseItemTypes.Contains(itemType);
+            var needsDroidLimitation = race == RacialType.Droid && DroidBaseItemTypes.Contains(GetBaseItemType(item));
             var itemHasDroidIP = false;
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))

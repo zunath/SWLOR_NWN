@@ -532,8 +532,9 @@ namespace SWLOR.Game.Server.Service
                 !Item.CanEquipForceSensitiveWeapon(player))
                 return "Only Force Sensitive characters may equip that item.";
 
-            return Item.GetCreatureItemUseError(player, item,
+            var itemUseError = Item.GetCreatureItemUseError(player, item,
                 TwinPistolEquipment.IsPairItem(item) ? SkillType.TwinPistol : SkillType.Invalid);
+            return string.IsNullOrEmpty(itemUseError) ? Item.GetRacialEquipError(player, item) : itemUseError;
         }
 
         /// <summary>

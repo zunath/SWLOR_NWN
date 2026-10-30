@@ -111,15 +111,26 @@ public class ExtraHotbarsTests
     private const uint SecondSaber = 2;
     private const uint Shield = 3;
     private const uint Rifle = 4;
+    private const uint Pistol = 5;
 
     private static (uint MainHand, uint OffHand) Pick(uint mainHand, uint offHand, uint item)
     {
         bool CanMain(uint candidate) => candidate != Shield;
-        bool CanOff(uint candidate) => candidate != Rifle;
-        bool FillsBoth(uint candidate) => candidate == Rifle;
+        bool CanOff(uint candidate) => candidate is not (Rifle or Pistol);
+        bool CanPair(uint main, uint off) =>
+            main == NoItem || off == NoItem || (main == Pistol ? off == Shield : main != Rifle);
 
-        return ExtraHotbars.PickHandItem(mainHand, offHand, item,
-            CanMain(item), CanOff(item), FillsBoth(item), mainHand != NoItem && FillsBoth(mainHand));
+        return ExtraHotbars.PickHandItem(mainHand, offHand, item, CanMain(item), CanOff(item), CanPair);
+    }
+
+    [Test]
+    public void PickHandItem_PistolKeepsAShieldButNotASecondWeapon()
+    {
+        Pick(Pistol, NoItem, Shield).Should().Be((Pistol, Shield));
+        Pick(NoItem, Shield, Pistol).Should().Be((Pistol, Shield));
+        Pick(Saber, Shield, Pistol).Should().Be((Pistol, Shield));
+        Pick(NoItem, SecondSaber, Pistol).Should().Be((Pistol, NoItem));
+        Pick(Pistol, NoItem, Saber).Should().Be((Saber, NoItem));
     }
 
     [Test]

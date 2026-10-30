@@ -13,11 +13,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ContentElement = "extra_hotbar_picker_content";
         public const string MainPartial = "EXTRA_HOTBAR_PICKER_MAIN";
 
+        // The combo box reports the selected option's position, so these follow the option order.
         public const int AbilitiesCategory = 0;
         public const int ItemsCategory = 1;
-        public const int CommandsCategory = 2;
-        public const int ActionModesCategory = 3;
-        public const int EquipmentCategory = 4;
+        public const int EquipmentCategory = 2;
+        public const int CommandsCategory = 3;
+        public const int ActionModesCategory = 4;
 
         private sealed record Entry(FeatType Feat, uint Item, string Command, ActionMode ActionMode = ActionMode.Detect);
 
@@ -254,8 +255,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     (_mainHand, _offHand) = ExtraHotbars.PickHandItem(_mainHand, _offHand, entry.Item,
                         ExtraHotbars.CanHoldInMainHand(entry.Item),
                         ExtraHotbars.CanHoldInOffHand(entry.Item),
-                        ExtraHotbars.FillsBothHands(entry.Item),
-                        GetIsObjectValid(_mainHand) && ExtraHotbars.FillsBothHands(_mainHand));
+                        ExtraHotbars.CanPairHands);
                     LoadEntries();
                     break;
                 case ActionModesCategory:

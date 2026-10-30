@@ -572,9 +572,21 @@ namespace SWLOR.Game.Server.Service
             !FillsBothHands(item);
 
         /// <summary>
-        /// Ranged weapons, Power Gloves and weapons too large for the off hand leave no room for an off-hand item.
+        /// Whether two items can be held together. Pistols take a shield in the off hand; other ranged weapons,
+        /// Power Gloves and weapons too large for the off hand leave no room for an off-hand item.
         /// </summary>
-        public static bool FillsBothHands(uint item) =>
+        public static bool CanPairHands(uint mainHand, uint offHand)
+        {
+            if (!GetIsObjectValid(mainHand) || !GetIsObjectValid(offHand))
+                return true;
+
+            if (Item.PistolBaseItemTypes.Contains(GetBaseItemType(mainHand)))
+                return Item.ShieldBaseItemTypes.Contains(GetBaseItemType(offHand));
+
+            return !FillsBothHands(mainHand);
+        }
+
+        private static bool FillsBothHands(uint item) =>
             GetWeaponRanged(item) ||
             GetBaseItemType(item) == BaseItem.PowerGlove ||
             (GetEquipableSlots(GetBaseItemType(item)) & (RightHandSlotBit | LeftHandSlotBit)) == RightHandSlotBit;
@@ -590,11 +602,11 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// The picker's hand choices after the player clicks an item. Clicking a chosen item takes it back out;
-        /// an off-hand-only item such as a shield goes to the off hand; a one-handed item goes to the off hand
-        /// when a one-handed main hand is already chosen; anything else becomes the main hand.
+        /// an off-hand-only item such as a shield goes to the off hand; an item goes to the off hand when it fits
+        /// beside the chosen main hand; anything else becomes the main hand. A hand that no longer fits is cleared.
         /// </summary>
         public static (uint MainHand, uint OffHand) PickHandItem(uint mainHand, uint offHand, uint item,
-            bool canMainHand, bool canOffHand, bool fillsBothHands, bool mainFillsBothHands)
+            bool canMainHand, bool canOffHand, Func<uint, uint, bool> canPairHands)
         {
             if (item == mainHand)
                 return (OBJECT_INVALID, offHand);
@@ -602,12 +614,12 @@ namespace SWLOR.Game.Server.Service
                 return (mainHand, OBJECT_INVALID);
 
             if (!canMainHand)
-                return canOffHand ? (mainFillsBothHands ? OBJECT_INVALID : mainHand, item) : (mainHand, offHand);
+                return canOffHand ? (canPairHands(mainHand, item) ? mainHand : OBJECT_INVALID, item) : (mainHand, offHand);
 
-            if (mainHand != OBJECT_INVALID && canOffHand && !mainFillsBothHands)
+            if (mainHand != OBJECT_INVALID && canOffHand && canPairHands(mainHand, item))
                 return (mainHand, item);
 
-            return (item, fillsBothHands ? OBJECT_INVALID : offHand);
+            return (item, canPairHands(item, offHand) ? offHand : OBJECT_INVALID);
         }
 
         /// <summary>

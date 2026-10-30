@@ -470,6 +470,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // The seller can take the listing off the market while the buyer's confirmation is open.
+            if (!listing.IsListed)
+            {
+                FloatingTextStringOnCreature("This ship is no longer for sale.", buyer, false);
+                return false;
+            }
+
             var buyerId = GetObjectUUID(buyer);
             var refusal = ShipTransferRules.GetRefusal(BuildCheck(ship, buyerId), true);
             if (refusal != ShipTransferRefusal.None)
@@ -482,10 +489,13 @@ namespace SWLOR.Game.Server.Service
             var dockName = GetDockName(ship);
             AssignCommand(buyer, () => TakeGoldFromCreature(listing.Price, buyer, true));
 
-            // The proceeds owed are saved with the new owner, then paid, so a restart in between cannot lose them.
+            // The sale is saved before anything changes hands, and the proceeds owed are saved with the new owner, then
+            // paid: a restart part-way through finishes the transfer and the payout at the next module load.
             ship.SaleId = Guid.NewGuid().ToString();
             ship.SaleSellerPlayerId = listing.PlayerId;
+            ship.SaleBuyerPlayerId = buyerId;
             ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);
+            DB.Set(ship);
             Complete(ship, buyerId, "was sold");
             PaySaleProceeds(ship);
 
@@ -518,6 +528,7 @@ namespace SWLOR.Game.Server.Service
             var saleId = ship.SaleId;
             ship.SaleId = string.Empty;
             ship.SaleSellerPlayerId = string.Empty;
+            ship.SaleBuyerPlayerId = string.Empty;
             ship.SaleProceeds = 0;
             DB.Set(ship);
 
@@ -525,7 +536,7 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbSeller);
         }
 
-        /// <summary>Pays any ship sale proceeds a restart left owed.</summary>
+        /// <summary>Finishes any ship sale a restart interrupted: the transfer, whose steps are safe to repeat, then the payout.</summary>
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void PayOwedSaleProceeds()
         {
@@ -538,6 +549,8 @@ namespace SWLOR.Game.Server.Service
                 if (string.IsNullOrWhiteSpace(ship.SaleId))
                     continue;
 
+                if (!string.IsNullOrWhiteSpace(ship.SaleBuyerPlayerId))
+                    Complete(ship, ship.SaleBuyerPlayerId, "was sold");
                 PaySaleProceeds(ship);
                 Log.Write(LogGroup.PlayerMarket, $"Paid owed proceeds for ship {ship.Id} after a restart.");
             }

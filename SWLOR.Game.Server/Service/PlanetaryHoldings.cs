@@ -331,17 +331,68 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // The units leave the cargo bay and are noted as a pending delivery in one save, then the holding takes them.
             var units = System.Math.Min(wanted, aboard);
             CargoHoldRules.RemoveUnits(ship.Cargo, commodity, units);
-            var result = new HoldingAdvanceResult();
-            HoldingRules.Deliver(holding, detail, commodity, units, DateTime.UtcNow, result);
+            ship.PendingHoldingDeliveryId = Guid.NewGuid().ToString();
+            ship.PendingHoldingDeliveryHoldingId = holding.Id;
+            ship.PendingHoldingDeliveryCommodity = commodity;
+            ship.PendingHoldingDeliveryUnits = units;
             DB.Set(ship);
-            DB.Set(holding);
+            var result = FinishDelivery(ship, holding);
 
             SendMessageToPC(player, ColorToken.Green($"Delivered {units} {TradeLookup.GetCommodity(commodity)?.Name} to your {GetHoldingName(holding)}."));
             foreach (var text in result.Events)
                 SendMessageToPC(player, $"{GetHoldingName(holding)}: {text}");
             Log.Write(LogGroup.Space, $"HOLDING DELIVER - {PlayerName.GetAuditName(player)} - {holding.Id} - {units} {commodity} - ship {ship.Id}");
+        }
+
+        /// <summary>
+        /// Adds a ship's pending delivery to its holding's supplies, unless the holding already saved it, then clears it.
+        /// A holding that no longer exists has the units returned to the cargo bay.
+        /// </summary>
+        private static HoldingAdvanceResult FinishDelivery(PlayerShip ship, PlanetaryHolding holding)
+        {
+            var result = new HoldingAdvanceResult();
+            if (string.IsNullOrWhiteSpace(ship.PendingHoldingDeliveryId))
+                return result;
+
+            var commodity = ship.PendingHoldingDeliveryCommodity;
+            var units = ship.PendingHoldingDeliveryUnits;
+            if (holding == null)
+            {
+                CargoHoldRules.AddUnits(ship.Cargo, commodity, units, HoldingRules.GetCostBasis(commodity, units));
+            }
+            else if (holding.LastDeliveryId != ship.PendingHoldingDeliveryId)
+            {
+                HoldingRules.Deliver(holding, HoldingRules.GetDetail(holding.Type), commodity, units, DateTime.UtcNow, result);
+                holding.LastDeliveryId = ship.PendingHoldingDeliveryId;
+                DB.Set(holding);
+            }
+
+            ship.PendingHoldingDeliveryId = string.Empty;
+            ship.PendingHoldingDeliveryHoldingId = string.Empty;
+            ship.PendingHoldingDeliveryUnits = 0;
+            DB.Set(ship);
+            return result;
+        }
+
+        /// <summary>Finishes any holding delivery a restart left pending.</summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void FinishPendingDeliveries()
+        {
+            var count = (int)DB.SearchCount(new DBQuery<PlayerShip>());
+            if (count <= 0)
+                return;
+
+            foreach (var ship in DB.Search(new DBQuery<PlayerShip>().AddPaging(count, 0)))
+            {
+                if (string.IsNullOrWhiteSpace(ship.PendingHoldingDeliveryId))
+                    continue;
+
+                FinishDelivery(ship, DB.Get<PlanetaryHolding>(ship.PendingHoldingDeliveryHoldingId));
+                Log.Write(LogGroup.Space, $"HOLDING DELIVER - finished the pending delivery for ship {ship.Id} after a restart");
+            }
         }
 
         /// <summary>The player's own ship docked at the holding's dock, or null.</summary>

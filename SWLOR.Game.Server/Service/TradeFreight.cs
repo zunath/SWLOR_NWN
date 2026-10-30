@@ -132,12 +132,14 @@ namespace SWLOR.Game.Server.Service
             if (contract == null)
                 return;
 
-            dbPlayer.FreightContracts.Remove(contract);
-            DB.Set(dbPlayer);
-
+            // The sealed load is unloaded and saved before the contract goes, so a restart in between leaves the
+            // contract to abandon again rather than a load no contract can clear.
             var ship = string.IsNullOrWhiteSpace(contract.ShipId) ? null : DB.Get<PlayerShip>(contract.ShipId);
             if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
                 DB.Set(ship);
+
+            dbPlayer.FreightContracts.Remove(contract);
+            DB.Set(dbPlayer);
 
             if (contract.IsAgentCourier)
             {

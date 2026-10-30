@@ -276,6 +276,59 @@ public class SpaceW11nReviewFixTests
             .Should().BeLessThan(collect.IndexOf("DB.Set(state);", StringComparison.Ordinal));
     }
 
+    [Test]
+    public void AShipSale_IsSavedBeforeTheShipChangesHands_AndARestartFinishesIt()
+    {
+        var source = ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n");
+        var buy = Between(source, "public static bool Buy(", "private static void PaySaleProceeds(");
+        buy.IndexOf("if (!listing.IsListed)", StringComparison.Ordinal)
+            .Should().BeLessThan(buy.IndexOf("TakeGoldFromCreature(", StringComparison.Ordinal),
+                "a listing the seller took off the market is refused before the buyer pays");
+        buy.IndexOf("ship.SaleBuyerPlayerId = buyerId;", StringComparison.Ordinal)
+            .Should().BeLessThan(buy.IndexOf("DB.Set(ship);", StringComparison.Ordinal));
+        buy.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
+            .Should().BeLessThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\");", StringComparison.Ordinal),
+                "the sale is saved before any listing or property changes");
+
+        var recover = source[source.IndexOf("public static void PayOwedSaleProceeds()", StringComparison.Ordinal)..];
+        recover.IndexOf("Complete(ship, ship.SaleBuyerPlayerId, \"was sold\");", StringComparison.Ordinal)
+            .Should().BeLessThan(recover.IndexOf("PaySaleProceeds(ship);", StringComparison.Ordinal),
+                "an interrupted transfer is finished before the seller is paid");
+        new PlayerShip().SaleBuyerPlayerId.Should().BeEmpty("older ship records have no sale under way");
+    }
+
+    [Test]
+    public void AbandonedFreight_UnloadsTheSealedLotBeforeTheContractGoes()
+    {
+        var abandon = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
+            "public static void AbandonFreight(", "SendMessageToPC(player, ColorToken.Red($\"Contract abandoned.");
+        abandon.IndexOf("DB.Set(ship);", StringComparison.Ordinal).Should().BeGreaterThan(0);
+        abandon.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
+            .Should().BeLessThan(abandon.IndexOf("dbPlayer.FreightContracts.Remove(contract);", StringComparison.Ordinal),
+                "a restart in between leaves the contract to abandon again, not a load no contract can clear");
+    }
+
+    [Test]
+    public void HoldingDeliveries_ArePendingOnTheShipUntilTheHoldingSavesThem()
+    {
+        var source = ReadSource("Service", "PlanetaryHoldings.cs").Replace("\r\n", "\n");
+        var deliver = Between(source, "public static void Deliver(", "private static HoldingAdvanceResult FinishDelivery(");
+        deliver.IndexOf("ship.PendingHoldingDeliveryUnits = units;", StringComparison.Ordinal)
+            .Should().BeLessThan(deliver.IndexOf("DB.Set(ship);", StringComparison.Ordinal));
+        deliver.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
+            .Should().BeLessThan(deliver.IndexOf("FinishDelivery(ship, holding);", StringComparison.Ordinal),
+                "the units leave the cargo bay and become a pending delivery in one save");
+
+        var finish = Between(source, "private static HoldingAdvanceResult FinishDelivery(", "public static void FinishPendingDeliveries()");
+        finish.Should().Contain("holding.LastDeliveryId != ship.PendingHoldingDeliveryId", "a delivery the holding saved is not added twice");
+        finish.IndexOf("DB.Set(holding);", StringComparison.Ordinal)
+            .Should().BeLessThan(finish.IndexOf("ship.PendingHoldingDeliveryId = string.Empty;", StringComparison.Ordinal));
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleLoad)]\n        public static void FinishPendingDeliveries()");
+
+        new PlayerShip().PendingHoldingDeliveryId.Should().BeEmpty();
+        new PlanetaryHolding().LastDeliveryId.Should().BeEmpty();
+    }
+
     private static string Between(string source, string start, string end)
     {
         var from = source.IndexOf(start, StringComparison.Ordinal);

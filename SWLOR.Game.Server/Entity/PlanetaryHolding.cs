@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Entity
             PendingCollectionId = string.Empty;
             PendingCollectionShipId = string.Empty;
             PendingCollection = new Dictionary<CommodityType, int>();
+            LastDeliveryId = string.Empty;
         }
 
         [Indexed]
@@ -104,5 +105,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The units taken for <see cref="PendingCollectionId"/>.</summary>
         public Dictionary<CommodityType, int> PendingCollection { get; set; }
+
+        /// <summary>
+        /// The last ship delivery added to the supplies, saved with them, so a delivery a restart left pending on the
+        /// ship is not added twice. Older records load empty.
+        /// </summary>
+        public string LastDeliveryId { get; set; }
     }
 }

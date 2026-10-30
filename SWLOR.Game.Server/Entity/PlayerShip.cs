@@ -17,7 +17,10 @@ namespace SWLOR.Game.Server.Entity
             SealedFreight = new List<SealedFreightLot>();
             SaleId = string.Empty;
             SaleSellerPlayerId = string.Empty;
+            SaleBuyerPlayerId = string.Empty;
             LastHoldingCollectionId = string.Empty;
+            PendingHoldingDeliveryId = string.Empty;
+            PendingHoldingDeliveryHoldingId = string.Empty;
         }
 
         [Indexed]
@@ -82,9 +85,31 @@ namespace SWLOR.Game.Server.Entity
         public int SaleProceeds { get; set; }
 
         /// <summary>
+        /// The buyer of <see cref="SaleId"/>. Saved before the ship changes hands, so a restart part-way through the
+        /// transfer finishes it at the next module load. Older records load empty.
+        /// </summary>
+        public string SaleBuyerPlayerId { get; set; }
+
+        /// <summary>
         /// The last Planetary Holding collection loaded into the cargo bay, saved with the cargo, so a collection a
         /// restart left pending is not loaded twice. Older records load empty.
         /// </summary>
         public string LastHoldingCollectionId { get; set; }
+
+        /// <summary>
+        /// A Planetary Holding delivery taken out of the cargo bay whose holding may not have saved it yet, or empty.
+        /// It is saved with the cargo it came from, so a restart before the holding saves finishes the delivery at the
+        /// next module load. Older records load empty.
+        /// </summary>
+        public string PendingHoldingDeliveryId { get; set; }
+
+        /// <summary>The holding <see cref="PendingHoldingDeliveryId"/> goes to.</summary>
+        public string PendingHoldingDeliveryHoldingId { get; set; }
+
+        /// <summary>The good taken for <see cref="PendingHoldingDeliveryId"/>.</summary>
+        public CommodityType PendingHoldingDeliveryCommodity { get; set; }
+
+        /// <summary>The units taken for <see cref="PendingHoldingDeliveryId"/>.</summary>
+        public int PendingHoldingDeliveryUnits { get; set; }
     }
 }

@@ -133,6 +133,17 @@ public static partial class MigrationEngineTests
             DestroyObject(legacyController);
         });
 
+        // Former Display Plinths and their blueprints saved under the old name.
+        foreach (var (resref, newName, oldName) in FormerDisplayPlinths)
+        {
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                fixtures.Add(($"former {oldName} ({resref})", StampFormerName(ObjectPlugin.Serialize(item), newName, oldName), true));
+                DestroyObject(item);
+            });
+        }
+
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var buffedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var artwork = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
@@ -214,6 +225,33 @@ public static partial class MigrationEngineTests
         ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
     }
 
+    private static readonly (string Resref, string NewName, string OldName)[] FormerDisplayPlinths =
+    {
+        ("structure_0389", "Veilcarved Rune Pillar", "Veilcarved Display Plinth"),
+        ("bpstructure0389", "Veilcarved Rune Pillar", "Veilcarved Display Plinth"),
+        ("structure_0429", "Commandline Bust", "Commandline Display Plinth"),
+        ("bpstructure0429", "Commandline Bust", "Commandline Display Plinth"),
+    };
+
+    /// <summary>
+    /// A structure or blueprint crafted before its rename: the blueprint's name and descriptions saved with the old
+    /// name, as copied from the former blueprint (SetName and SetDescription save overrides instead).
+    /// </summary>
+    private static string StampFormerName(string data, string newName, string oldName)
+    {
+        var document = SavedDataSweepAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData");
+        var flags = BindingFlags.Public | BindingFlags.NonPublic;
+        var saved = Activator.CreateInstance(document, flags | BindingFlags.Instance, null, new object[] { Convert.FromBase64String(data) }, null);
+        var root = document.GetField("_root", flags | BindingFlags.Instance).GetValue(saved);
+        var fields = (System.Collections.IEnumerable)root.GetType().GetField("Fields").GetValue(root);
+        var replace = document.GetMethod("ReplaceLocalizedText", flags | BindingFlags.Static);
+        Func<string, string> toOld = text => text.Replace(newName, oldName, StringComparison.Ordinal);
+        foreach (var field in fields)
+            if (new[] { "LocalizedName", "DescIdentified", "Description" }.Contains((string)field.GetType().GetProperty("Name").GetValue(field)))
+                replace.Invoke(null, new[] { field, toOld });
+        return (string)document.GetMethod("Serialize", flags | BindingFlags.Instance).Invoke(saved, null);
+    }
+
     private static void StampLegacyRetiredDefense(uint item, CombatDamageType damageType, int amount, bool converted)
     {
         RemoveMatching(item, ItemPropertyType.Defense, (int)CombatDamageType.Physical);
@@ -264,6 +302,7 @@ public static partial class MigrationEngineTests
         var parts = new List<string> { $"{GetObjectType(obj)} {GetResRef(obj)} tag={GetTag(obj)} name={GetName(obj)}" };
         if (GetObjectType(obj) == ObjectType.Item)
         {
+            parts.Add($"description={GetDescription(obj, false, true)} unidentified={GetDescription(obj, false, false)}");
             parts.Add($"base={GetBaseItemType(obj)} model={GetItemAppearance(obj, ItemAppearanceType.SimpleModel, 0)} " +
                 $"stack={GetItemStackSize(obj)} charges={GetItemCharges(obj)} value={GetGoldPieceValue(obj)}");
             var properties = new List<string>();

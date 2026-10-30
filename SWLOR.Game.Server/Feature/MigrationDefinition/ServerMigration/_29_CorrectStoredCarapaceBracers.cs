@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// <summary>
 /// Removes the retired elemental Defense (<see cref="RetiredDefenseStatRevisionCatalog"/>) from stored copies and
 /// gives stored droid parts and controllers the Unarmed and Twin Pistol skills
-/// (<see cref="DroidWeaponSkillMigration"/>) in one stored-item pass.
+/// (<see cref="DroidWeaponSkillMigration"/>) and renames former Display Plinths, their blueprints, listings and placed
+/// structures (<see cref="FurnitureRenameMigration"/>) in one stored-item pass.
 /// Also sets beasts that hold more XP than the halved beast XP chart now needs for their next level one point short
 /// of that level; they keep their level and the extra XP is not refunded.
 /// </summary>

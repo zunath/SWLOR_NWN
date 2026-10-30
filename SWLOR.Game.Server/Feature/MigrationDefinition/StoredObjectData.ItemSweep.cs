@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// on worker threads at boot. Each rule mirrors its native counterpart on an unequipped item: <see cref="HeadgearSlotMigration.ConvertItem"/>,
 /// <see cref="EquipmentTypeMigration.ConvertItem"/>, <see cref="ItemIconMigration.MigrateItem"/> (with
 /// <see cref="ItemAppearanceCatalogMigration.ConvertItem"/>), <see cref="LootStatRevisionMigration"/>'s stat
-/// revision and <see cref="DroidWeaponSkillMigration.MigrateItem"/>, in the same order. Fields the sweep does not
+/// revision, <see cref="DroidWeaponSkillMigration.MigrateItem"/> and <see cref="FurnitureRenameMigration.RenameItem"/>, in the same order. Fields the sweep does not
 /// change keep their saved bytes. New properties and locals are written the way the engine saves them.
 /// </summary>
 internal sealed partial class StoredObjectData
@@ -116,6 +116,7 @@ internal sealed partial class StoredObjectData
         if (updateArtwork) changed |= UpdateArtwork(item);
         changed |= ReviseStats(item);
         if (updateArtwork) changed |= AddDroidWeaponSkills(item);
+        if (updateArtwork) changed |= RenameFurnitureItem(item);
         changed |= MigrateSavedDroid(item, repairHeadgear, updateArtwork);
 
         foreach (var list in item.Fields.Where(IsInventoryList))

@@ -433,6 +433,44 @@ public class SavedDataItemSweepTests
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 
+    [Test]
+    public void FurnitureRenames_RenameTheSavedNameAndDescriptionsOfFormerDisplayPlinths()
+    {
+        var original = Encode(Item("bpstructure0389", (BaseItem)24, 1,
+            LocString("LocalizedName", "Blueprint: Veilcarved Display Plinth"),
+            LocString("DescIdentified", "A rare schematic for crafting Veilcarved Display Plinth."),
+            LocString("Description", "A rare schematic for crafting Veilcarved Display Plinth.")));
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        var root = Read(migrated);
+        Text(root, "LocalizedName").Should().Be("Blueprint: Veilcarved Rune Pillar");
+        Text(root, "DescIdentified").Should().Be("A rare schematic for crafting Veilcarved Rune Pillar.");
+        Text(root, "Description").Should().Be("A rare schematic for crafting Veilcarved Rune Pillar.");
+        ((CExoLocString)Value(root, "LocalizedName")).StrRef.Should().Be(uint.MaxValue);
+        Migrate(migrated, out _, true, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void FurnitureRenames_LeaveOtherItemsAndChangedNamesAlone()
+    {
+        var other = Encode(Item("structure_0383", (BaseItem)24, 1, LocString("LocalizedName", "Veilcarved Display Plinth")));
+        Migrate(other, out _, true, out _).Should().BeFalse("only the renamed structures and their blueprints change");
+
+        var custom = Encode(Item("structure_0389", (BaseItem)24, 1, LocString("LocalizedName", "Grandmother's Plinth")));
+        Migrate(custom, out _, true, out _).Should().BeFalse();
+    }
+
+    private static object LocString(string name, string text)
+    {
+        var bytes = Encoding.UTF8.GetBytes(text);
+        var payload = BitConverter.GetBytes(uint.MaxValue).Concat(BitConverter.GetBytes(1))
+            .Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(bytes.Length)).Concat(bytes).ToArray();
+        return Field(12, name, BitConverter.GetBytes(payload.Length).Concat(payload).ToArray());
+    }
+
+    private static string Text(GffStruct node, string name) => ((CExoLocString)Value(node, name)).LocalizedStrings[0];
+
     // Blueprint-made droid parts save Param1Value 0; the engine-saved properties a migration adds save 255.
     private static PropertyFixture DroidStat(DroidStatSubType subtype, int value) =>
         Property(ItemPropertyType.DroidStat, (int)subtype, 45, value, param1Value: 0);

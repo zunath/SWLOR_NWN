@@ -61,6 +61,12 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
         /// <summary>The ship carrying a courier run's sealed load.</summary>
         public string ShipId { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Whether the completed mission's terms were paid. A mission whose quest completed but was not paid (a restart
+        /// in between) is paid at the next login.
+        /// </summary>
+        public bool Paid { get; set; }
+
         public AgentMission Copy()
         {
             return (AgentMission)MemberwiseClone();

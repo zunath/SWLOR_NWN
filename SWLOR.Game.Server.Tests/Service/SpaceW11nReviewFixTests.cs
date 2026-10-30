@@ -349,6 +349,41 @@ public class SpaceW11nReviewFixTests
         expire.Should().Contain("IsStillListed(listing);");
     }
 
+    [Test]
+    public void ACourierContract_IsSavedBeforeItsSealedLoad()
+    {
+        var load = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
+            "public static string LoadAgentCourier(", "public static bool HasCourierRoom(");
+        Index(load, "DB.Set(dbPlayer);").Should().BeLessThan(Index(load, "ship.SealedFreight.Add("),
+            "a restart in between leaves a contract to abandon, not a load no contract can clear");
+        Index(load, "ship.SealedFreight.Add(").Should().BeLessThan(Index(load, "DB.Set(ship);"));
+    }
+
+    [Test]
+    public void SpilledCargo_StaysAboardWhenItsPodCannotBeCreated()
+    {
+        var source = ReadSource("Service", "TradeCargoSpill.cs").Replace("\r\n", "\n");
+        var spill = Between(source, "public static void SpillCargo(", "public static int SpillUnits(");
+        Index(spill, "var spilled = SpillUnits(lots.ToDictionary(x => x.Key, x => x.Value.Units), location, kept);")
+            .Should().BeLessThan(Index(spill, "CargoHoldRules.AddUnits(ship.Cargo, commodity, units, cost);"));
+        var units = Between(source, "public static int SpillUnits(", "public static void ScoopCargoPod()");
+        Index(units, "if (!GetIsObjectValid(pod))").Should().BeLessThan(Index(units, "kept[commodity] = current + count;"));
+    }
+
+    [Test]
+    public void AgentMissionPay_IsMarkedAndACompletedUnpaidMissionIsPaidAtLogin()
+    {
+        var source = ReadSource("Service", "FactionAgents.cs").Replace("\r\n", "\n");
+        var pay = Between(source, "public static void PayMission(", "private static void FailMission(");
+        pay.Should().Contain("if (mission == null || mission.Paid)", "a mission already paid is not paid twice");
+        Index(pay, "GiveGoldToCreature(player, mission.Credits);").Should().BeLessThan(Index(pay, "ExportSingleCharacter(player);"));
+        Index(pay, "ExportSingleCharacter(player);").Should().BeLessThan(Index(pay, "held.Paid = true;"));
+
+        var login = Between(source, "public static void RegisterHeldMissions()", "// The board");
+        login.Should().Contain("!x.Paid && dbPlayer.Quests.TryGetValue(x.Id, out var quest) && quest.DateLastCompleted != null");
+        Index(login, "PayMission(player, missionId);").Should().BeLessThan(Index(login, "OnMissionCompleted(player, missionId);"));
+    }
+
     private static int Index(string source, string value) => source.IndexOf(value, StringComparison.Ordinal);
 
     [Test]

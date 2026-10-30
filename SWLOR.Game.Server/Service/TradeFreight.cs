@@ -197,10 +197,12 @@ namespace SWLOR.Game.Server.Service
                 return string.Empty;
 
             var contract = FreightContractRules.AgentCourier(missionId, origin, destination, ship.Id, volume, deadlineMinutes, DateTime.UtcNow);
-            ship.SealedFreight.Add(FreightContractRules.GetSealedLot(contract));
+            // The contract is saved before the load, so a restart in between leaves a contract to abandon, never a sealed
+            // load no contract can clear.
             dbPlayer.FreightContracts.Add(contract);
-            DB.Set(ship);
             DB.Set(dbPlayer);
+            ship.SealedFreight.Add(FreightContractRules.GetSealedLot(contract));
+            DB.Set(ship);
             return ship.Id;
         }
 

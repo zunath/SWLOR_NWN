@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// A held mission's quest is registered at login, before the quest service checks the journal, so the player keeps
-        /// it over a restart. A mission whose quest record is gone is dropped.
+        /// it over a restart. A mission whose quest record is gone is dropped; one whose quest completed but was not paid
+        /// (a restart in between) is paid now, then dropped.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void RegisterHeldMissions()
@@ -56,13 +57,31 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null || dbPlayer.AgentMissions.Count == 0)
                 return;
 
-            var stale = dbPlayer.AgentMissions.Where(x => !dbPlayer.Quests.TryGetValue(x.Id, out var quest) || quest.DateLastCompleted != null).ToList();
+            var unpaid = dbPlayer.AgentMissions
+                .Where(x => !x.Paid && dbPlayer.Quests.TryGetValue(x.Id, out var quest) && quest.DateLastCompleted != null)
+                .Select(x => x.Id)
+                .ToList();
+            var stale = dbPlayer.AgentMissions
+                .Where(x => !unpaid.Contains(x.Id) && (!dbPlayer.Quests.TryGetValue(x.Id, out var quest) || quest.DateLastCompleted != null))
+                .ToList();
             foreach (var mission in stale)
                 dbPlayer.AgentMissions.Remove(mission);
             if (stale.Count > 0)
                 DB.Set(dbPlayer);
 
-            foreach (var mission in dbPlayer.AgentMissions)
+            foreach (var missionId in unpaid)
+            {
+                DelayCommand(6f, () =>
+                {
+                    if (!GetIsObjectValid(player))
+                        return;
+
+                    PayMission(player, missionId);
+                    OnMissionCompleted(player, missionId);
+                });
+            }
+
+            foreach (var mission in dbPlayer.AgentMissions.Where(x => !unpaid.Contains(x.Id)))
                 Quest.RegisterRuntimeQuest(AgentMissionQuest.Build(mission));
         }
 
@@ -209,7 +228,7 @@ namespace SWLOR.Game.Server.Service
         public static void PayMission(uint player, string missionId)
         {
             var mission = GetMissions(player).FirstOrDefault(x => x.Id == missionId);
-            if (mission == null)
+            if (mission == null || mission.Paid)
                 return;
 
             GiveGoldToCreature(player, mission.Credits);
@@ -217,6 +236,16 @@ namespace SWLOR.Game.Server.Service
             var currency = FactionAgentRules.GetTokenCurrency(mission.Faction);
             if (currency != CurrencyService.CurrencyType.Invalid && mission.Tokens > 0)
                 Currency.GiveCurrency(player, currency, mission.Tokens);
+
+            // Saved with the character, then marked paid: a restart before the mark leaves the pay to make at the next login.
+            ExportSingleCharacter(player);
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var held = dbPlayer?.AgentMissions.FirstOrDefault(x => x.Id == missionId);
+            if (held != null)
+            {
+                held.Paid = true;
+                DB.Set(dbPlayer);
+            }
 
             var agent = FactionAgentRules.GetAgent(mission.Agent);
             SendMessageToPC(player, ColorToken.Green($"{agent?.Name ?? "The agent"} pays you {FactionAgentRules.DescribeReward(mission)}."));

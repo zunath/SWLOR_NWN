@@ -35,14 +35,28 @@ namespace SWLOR.Game.Server.Service
             if (ship.Cargo == null || ship.Cargo.Count == 0)
                 return;
 
-            var lots = ship.Cargo.ToDictionary(x => x.Key, x => x.Value.Units);
+            var lots = ship.Cargo.ToDictionary(x => x.Key, x => x.Value);
             ship.Cargo.Clear();
-            var spilled = SpillUnits(lots, location);
-            Log.Write(LogGroup.Space, $"CARGO SPILL - ship {ship.Id} spilled {spilled} units.");
+            var kept = new Dictionary<CommodityType, int>();
+            var spilled = SpillUnits(lots.ToDictionary(x => x.Key, x => x.Value.Units), location, kept);
+
+            // Units no pod could be created for stay in the bay, at their share of the lot's cost, rather than being lost.
+            foreach (var (commodity, units) in kept)
+            {
+                var lot = lots[commodity];
+                var cost = lot.Units <= 0 ? 0 : (int)((long)lot.CostBasis * units / lot.Units);
+                CargoHoldRules.AddUnits(ship.Cargo, commodity, units, cost);
+            }
+
+            Log.Write(LogGroup.Space, $"CARGO SPILL - ship {ship.Id} spilled {spilled} units" +
+                                      (kept.Count > 0 ? $", kept {kept.Values.Sum()} units no pod could hold." : "."));
         }
 
-        /// <summary>Spills commodity units into cargo pods around a location and returns the units spilled.</summary>
-        public static int SpillUnits(IReadOnlyDictionary<CommodityType, int> units, Location location)
+        /// <summary>
+        /// Spills commodity units into cargo pods around a location and returns the units spilled. Units whose pod could
+        /// not be created are added to <paramref name="kept"/>, when given.
+        /// </summary>
+        public static int SpillUnits(IReadOnlyDictionary<CommodityType, int> units, Location location, Dictionary<CommodityType, int> kept = null)
         {
             var cargo = units
                 .Where(x => x.Value > 0)
@@ -62,14 +76,25 @@ namespace SWLOR.Game.Server.Service
                     center.Z);
                 var pod = CreateObject(ObjectType.Placeable, CargoPodResref, Location(area, position, angle));
                 if (!GetIsObjectValid(pod))
+                {
+                    if (kept != null)
+                    {
+                        foreach (var (commodity, count) in pods[index].Units)
+                        {
+                            kept.TryGetValue(commodity, out var current);
+                            kept[commodity] = current + count;
+                        }
+                    }
+
                     continue;
+                }
 
                 WritePod(pod, pods[index].Units);
                 SetEventScript(pod, EventScript.Placeable_OnUsed, ScriptName.OnCargoPodUsed);
                 AssignCommand(pod, () => DelayCommand(TradeTuning.SpillSeconds, () => DestroyObject(pod)));
             }
 
-            return pods.Sum(x => x.Units.Values.Sum());
+            return pods.Sum(x => x.Units.Values.Sum()) - (kept?.Values.Sum() ?? 0);
         }
 
         /// <summary>A pilot uses a cargo pod.</summary>

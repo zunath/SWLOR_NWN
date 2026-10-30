@@ -4649,56 +4649,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 103,
+    "Line": 122,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 132,
+    "Line": 151,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent.Name}: {FactionAgentRules.Describe(mission)}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 144,
+    "Line": 163,
     "Member": "LoadCourier",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(AgentRefusal.NotEnoughRoom)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 222,
+    "Line": 251,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent?.Name ?? \"The agent\"} pays you {FactionAgentRules.DescribeReward(mission)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 230,
+    "Line": 259,
     "Member": "FailMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(reason))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 269,
+    "Line": 298,
     "Member": "GrantIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 288,
+    "Line": 317,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 298,
+    "Line": 327,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"
@@ -7652,35 +7652,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 93,
+    "Line": 118,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can scoop a cargo pod.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 101,
+    "Line": 126,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoCargoBay)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 109,
+    "Line": 134,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.CargoBayFull)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 122,
+    "Line": 147,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Scooped into the cargo bay: {text}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 131,
+    "Line": 156,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cargo bay is full. The rest stays in the pod.\"))"

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AnimationService;
 
 namespace SWLOR.Game.Server.Service.PerformanceService
@@ -9,19 +8,12 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// </summary>
     public static class PerformanceAnimations
     {
-        // The instruments' base item is wielded like a polearm, so the engine holds the right arm in its polearm carry
-        // pose during any clip. The strings clips rely on that hold; the horn clips pose the arm around the horn themselves.
-        private static readonly HashSet<AnimationClip> _posesHeldInstrument = new()
-        {
-            AuthoredAnimation.HornLoop,
-            AuthoredAnimation.HornLow,
-            AuthoredAnimation.HornMid,
-            AuthoredAnimation.HornHigh,
-            AuthoredAnimation.HornFlourish
-        };
-
-        /// <summary>True when the clip poses the right arm around the instrument, so the engine's carry pose must be held off.</summary>
-        public static bool PosesHeldInstrument(AnimationClip clip) => clip != null && _posesHeldInstrument.Contains(clip);
+        /// <summary>
+        /// The instruments' base item is wielded like a polearm, and named clips normally lift that native hold so the
+        /// clip poses the arm itself. The horn clips do; the strings clips were authored around the hold, so it stays.
+        /// </summary>
+        public static bool KeepsInstrumentHold(PerformanceKind kind, PerformanceInstrumentFamily family) =>
+            kind == PerformanceKind.Music && family == PerformanceInstrumentFamily.Strings;
 
         public static AnimationClip GetOpeningClip(PerformanceKind kind)
         {

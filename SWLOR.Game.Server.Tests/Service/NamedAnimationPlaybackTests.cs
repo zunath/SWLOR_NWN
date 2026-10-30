@@ -16,7 +16,7 @@ public class NamedAnimationPlaybackTests
         ((int)Animation.FireForgetDodgeSide).Should().Be(global::NWN.Core.NWScript.ANIMATION_FIREFORGET_DODGE_SIDE);
         var runtime = new Runtime();
         var playback = new NamedAnimationPlayback(runtime);
-        var token = playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+        var token = playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, weaponHold: AnimationWeaponHold.Rifle);
 
         runtime.Replacements["dodges"].Should().Be("sw_aimedshot");
         runtime.Replacements["xbowr"].Should().Be(NamedAnimationPlayback.NoHoldName);
@@ -29,39 +29,36 @@ public class NamedAnimationPlaybackTests
     }
 
     [Test]
-    public void PolearmHoldSuppressionHoldsOffTheCarryLayerUntilTheClipEnds()
+    public void ShoulderCarrierClearsTheExistingHoldAndSuppressesFutureHoldRefreshes()
     {
         var runtime = new Runtime();
         var playback = new NamedAnimationPlayback(runtime);
-        var token = playback.Begin(1, new AnimationClip("sw_hrn_loop", 4f), 4f, suppressPolearmHold: true);
+        var token = playback.Begin(1, new AnimationClip("sw_condstn", 2.7f), 2.7f, weaponHold: AnimationWeaponHold.Shoulder);
 
-        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().Be(NamedAnimationPlayback.NoHoldName);
-        runtime.Replacements[NamedAnimationPlayback.RifleCarrySource].Should().BeEmpty();
-        runtime.Replacements[NamedAnimationPlayback.RifleCarrierSource].Should().BeEmpty();
+        runtime.Replacements["dodges"].Should().Be("sw_condstn");
+        runtime.Replacements["plpause1"].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Replacements["xbowr"].Should().Be("plpause1",
+            "the second single-pass removal must target the existing physical hold, not the new no-op mapping");
         playback.Complete(1, token);
         runtime.Callbacks[^1]();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        runtime.Token.Should().BeEmpty();
     }
 
     [Test]
-    public void ARegularClipAfterAPolearmClipRestoresTheCarryLayer()
+    public void SwitchingBetweenRifleAndShoulderPlaybackReplacesEveryHoldMapping()
     {
         var runtime = new Runtime();
         var playback = new NamedAnimationPlayback(runtime);
-        playback.Begin(1, new AnimationClip("sw_hrn_loop", 4f), 4f, suppressPolearmHold: true);
-        playback.Begin(1, new AnimationClip("sw_pf_bow", 1.5f), 1.5f);
+        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, weaponHold: AnimationWeaponHold.Rifle);
+        var oldCallbacks = runtime.Callbacks.ToArray();
+        var shoulder = playback.Begin(1, new AnimationClip("sw_condstn", 2.7f), 2.7f, weaponHold: AnimationWeaponHold.Shoulder);
 
-        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().BeEmpty();
-    }
-
-    [Test]
-    public void RifleHoldSuppressionTakesPrecedenceOverPolearmHoldSuppression()
-    {
-        var runtime = new Runtime();
-        var playback = new NamedAnimationPlayback(runtime);
-        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true, suppressPolearmHold: true);
-
-        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().Be(NamedAnimationPlayback.RifleCarrySource);
+        foreach (var callback in oldCallbacks) callback();
+        playback.IsCurrent(1, shoulder).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().Be("sw_condstn");
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().Be(NamedAnimationPlayback.ShoulderHoldSource);
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
     }
 
     [Test]
@@ -69,17 +66,17 @@ public class NamedAnimationPlaybackTests
     {
         var runtime = new Runtime();
         var playback = new NamedAnimationPlayback(runtime);
-        var first = playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+        var first = playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, weaponHold: AnimationWeaponHold.Rifle);
         playback.Complete(1, first);
         var oldCallbacks = runtime.Callbacks.ToArray();
-        var second = playback.Begin(1, new AnimationClip("sw_headshot", 2), 2, suppressRifleHold: true);
+        var second = playback.Begin(1, new AnimationClip("sw_headshot", 2), 2, weaponHold: AnimationWeaponHold.Rifle);
 
         foreach (var callback in oldCallbacks) callback();
         playback.StopIfCurrent(1, first).Should().BeFalse();
         playback.IsCurrent(1, second).Should().BeTrue();
-        runtime.Replacements[NamedAnimationPlayback.RifleCarrierSource].Should().Be("sw_headshot");
-        runtime.Replacements[NamedAnimationPlayback.RifleCarrySource].Should().Be(NamedAnimationPlayback.NoHoldName);
-        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().Be("xbowr");
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().Be("sw_headshot");
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().Be("xbowr");
     }
 
     [Test]
@@ -87,13 +84,13 @@ public class NamedAnimationPlaybackTests
     {
         var runtime = new Runtime();
         var playback = new NamedAnimationPlayback(runtime);
-        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, weaponHold: AnimationWeaponHold.Rifle);
         var oldCallbacks = runtime.Callbacks.ToArray();
         var regular = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
 
-        runtime.Replacements[NamedAnimationPlayback.RifleCarrierSource].Should().BeEmpty();
-        runtime.Replacements[NamedAnimationPlayback.RifleCarrySource].Should().BeEmpty();
-        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.HoldCarrierSource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.RifleHoldSource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().BeEmpty();
         foreach (var callback in oldCallbacks) callback();
         playback.IsCurrent(1, regular).Should().BeTrue();
         runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_wave");
@@ -105,7 +102,7 @@ public class NamedAnimationPlaybackTests
     {
         var runtime = new Runtime { Action = action };
         var playback = new NamedAnimationPlayback(runtime);
-        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, weaponHold: AnimationWeaponHold.Rifle);
         var continued = false;
         runtime.Actions.Enqueue(() => continued = true);
 
@@ -276,11 +273,11 @@ public class NamedAnimationPlaybackTests
         runtime.Token.Should().Be(second);
         runtime.Callbacks[1](); runtime.Callbacks[^1](); runtime.Token.Should().BeEmpty();
     }
-    [TestCase(false)] [TestCase(true)]
-    public void AnInterruptedQueueStillRestoresAllMappingsViaTimeout(bool rifle)
+    [TestCase(AnimationWeaponHold.None)] [TestCase(AnimationWeaponHold.Rifle)] [TestCase(AnimationWeaponHold.Shoulder)]
+    public void AnInterruptedQueueStillRestoresAllMappingsViaTimeout(AnimationWeaponHold hold)
     {
         var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
-        playback.Begin(1, new AnimationClip("sw_wave", 2), 2, suppressRifleHold: rifle);
+        playback.Begin(1, new AnimationClip("sw_wave", 2), 2, weaponHold: hold);
         runtime.Callbacks[0]();
         runtime.Callbacks[^1]();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
@@ -333,14 +330,15 @@ public class NamedAnimationPlaybackTests
         runtime.Token.Should().BeEmpty();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
     }
-    [TestCase(false, false)] [TestCase(true, false)]
-    [TestCase(false, true)] [TestCase(true, true)]
-    public void NativeHandoffInvalidatesPreviewTimersAndDeferredRecoveryWithoutClearingActions(bool alreadyEnding, bool rifle)
+    [TestCase(false, AnimationWeaponHold.None)] [TestCase(true, AnimationWeaponHold.None)]
+    [TestCase(false, AnimationWeaponHold.Rifle)] [TestCase(true, AnimationWeaponHold.Rifle)]
+    [TestCase(false, AnimationWeaponHold.Shoulder)] [TestCase(true, AnimationWeaponHold.Shoulder)]
+    public void NativeHandoffInvalidatesPreviewTimersAndDeferredRecoveryWithoutClearingActions(bool alreadyEnding, AnimationWeaponHold hold)
     {
         var runtime = new Runtime();
         var exits = new List<Func<bool>>();
         var playback = new NamedAnimationPlayback(runtime, (_, ownsExit) => exits.Add(ownsExit));
-        var token = playback.Begin(1, new AnimationClip("sw_preview", 2), 2, completeAtDuration: true, suppressRifleHold: rifle);
+        var token = playback.Begin(1, new AnimationClip("sw_preview", 2), 2, completeAtDuration: true, weaponHold: hold);
         if (alreadyEnding) playback.Complete(1, token);
         var exitsBeforeHandoff = exits.Count;
         runtime.Actions.Enqueue(() => { });
@@ -354,13 +352,14 @@ public class NamedAnimationPlaybackTests
         runtime.Actions.Should().HaveCount(1);
     }
 
-    [TestCase(false, false)] [TestCase(true, false)]
-    [TestCase(false, true)] [TestCase(true, true)]
-    public void DeathClearsActiveOrEndingMappingsWithoutARecoveryAfterRevival(bool alreadyEnding, bool rifle)
+    [TestCase(false, AnimationWeaponHold.None)] [TestCase(true, AnimationWeaponHold.None)]
+    [TestCase(false, AnimationWeaponHold.Rifle)] [TestCase(true, AnimationWeaponHold.Rifle)]
+    [TestCase(false, AnimationWeaponHold.Shoulder)] [TestCase(true, AnimationWeaponHold.Shoulder)]
+    public void DeathClearsActiveOrEndingMappingsWithoutARecoveryAfterRevival(bool alreadyEnding, AnimationWeaponHold hold)
     {
         var runtime = new Runtime(); var exits = new List<Func<bool>>();
         var playback = new NamedAnimationPlayback(runtime, (_, ownsExit) => exits.Add(ownsExit));
-        var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2, suppressRifleHold: rifle);
+        var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2, weaponHold: hold);
         if (alreadyEnding) playback.Complete(1, token);
         playback.ClearOnDeath(1);
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
@@ -371,11 +370,11 @@ public class NamedAnimationPlaybackTests
         if (alreadyEnding) runtime.Callbacks[1]();
         runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_revived");
     }
-    [TestCase(false)] [TestCase(true)]
-    public void SchedulingFailureRestoresMappingsImmediately(bool rifle)
+    [TestCase(AnimationWeaponHold.None)] [TestCase(AnimationWeaponHold.Rifle)] [TestCase(AnimationWeaponHold.Shoulder)]
+    public void SchedulingFailureRestoresMappingsImmediately(AnimationWeaponHold hold)
     {
         var runtime = new Runtime { FailSchedule = true }; var playback = new NamedAnimationPlayback(runtime);
-        Action act = () => playback.Begin(1, new AnimationClip("sw_wave", 2), 2, suppressRifleHold: rifle);
+        Action act = () => playback.Begin(1, new AnimationClip("sw_wave", 2), 2, weaponHold: hold);
         act.Should().Throw<InvalidOperationException>();
         runtime.Replacements.Values.Should().OnlyContain(value => value == ""); runtime.Token.Should().BeEmpty();
     }

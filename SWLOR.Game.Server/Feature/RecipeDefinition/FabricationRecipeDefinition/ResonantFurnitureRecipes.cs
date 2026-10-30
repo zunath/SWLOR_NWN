@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_ruined", 2)
                 .Component("ae_echo", 1);
 
-            // Resonant Display Plinth
-            _builder.Create(RecipeType.ResonantDisplayPlinth, SkillType.Fabrication)
+            // Resonant Crystal
+            _builder.Create(RecipeType.ResonantCrystal, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0409")
                 .Level(7)

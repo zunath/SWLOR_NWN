@@ -678,19 +678,30 @@ namespace SWLOR.Game.Server.Service
                 Activity.ClearBusy(player);
         }
 
+        // The routine loop repeats in place for minutes at a time. A held weapon or horn plays through a one-shot
+        // carrier instead, so there the loop clip is replayed once per cycle.
         private static void StartLoopingAnimation(PerformanceSession session)
         {
             var clip = PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine);
-            session.AnimationToken = NamedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds,
-                suppressPolearmHold: PerformanceAnimations.PosesHeldInstrument(clip));
+            var keepHold = KeepsHold(session);
+            if (!NamedAnimation.LoopsInPlace(session.Performer, keepHold))
+            {
+                PlayThenLoop(session, clip);
+                return;
+            }
+
+            session.AnimationToken = NamedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds, keepWeaponHold: keepHold);
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(LoopRenewSeconds);
         }
+
+        private static bool KeepsHold(PerformanceSession session) =>
+            PerformanceAnimations.KeepsInstrumentHold(session.Kind, session.InstrumentFamily);
 
         // A one-shot clip hands back to the routine when it ends, unless a newer clip has replaced it.
         private static void PlayThenLoop(PerformanceSession session, AnimationClip clip)
         {
             var player = session.Performer;
-            var token = NamedAnimation.Play(player, clip, suppressPolearmHold: PerformanceAnimations.PosesHeldInstrument(clip));
+            var token = NamedAnimation.Play(player, clip, keepWeaponHold: KeepsHold(session));
             session.AnimationToken = token;
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(clip.Duration + AccentRecoverySeconds);
             AssignCommand(GetModule(), () => DelayCommand(clip.Duration, () =>
@@ -705,7 +716,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = session.Performer;
             if (reason == PerformanceEndReason.Stopped && GetCurrentAction(player) == ActionType.Invalid)
-                NamedAnimation.Play(player, AuthoredAnimation.PerformanceBow);
+                NamedAnimation.Play(player, AuthoredAnimation.PerformanceBow, keepWeaponHold: KeepsHold(session));
             else
                 NamedAnimation.StopIfCurrent(player, session.AnimationToken);
         }

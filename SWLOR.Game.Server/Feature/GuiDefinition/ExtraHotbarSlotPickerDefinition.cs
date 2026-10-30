@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
-    /// Chooses what one extra hotbar slot does: an ability, an inventory item or a chat command.
+    /// Chooses what one extra hotbar slot does: an ability, an inventory item, a set of hand items or a chat command.
     /// </summary>
     public class ExtraHotbarSlotPickerDefinition : IGuiWindowDefinition
     {
@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 r.AddComboBox()
                                     .AddOption("Abilities", ExtraHotbarSlotPickerViewModel.AbilitiesCategory)
                                     .AddOption("Items", ExtraHotbarSlotPickerViewModel.ItemsCategory)
+                                    .AddOption("Equipment", ExtraHotbarSlotPickerViewModel.EquipmentCategory)
                                     .AddOption("Chat Commands", ExtraHotbarSlotPickerViewModel.CommandsCategory)
                                     .AddOption("Combat Modes", ExtraHotbarSlotPickerViewModel.ActionModesCategory)
                                     .BindSelectedIndex(model => model.SelectedCategory)
@@ -104,11 +105,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(ControlHeight);
                                 r.AddButton()
                                     .SetText("Assign")
-                                    .SetTooltip("Puts this chat command on the slot.")
-                                    .BindIsVisible(model => model.IsCommandMode)
+                                    .BindTooltip(model => model.AssignTooltip)
+                                    .BindIsVisible(model => model.IsAssignVisible)
                                     .SetWidth(90f)
                                     .SetHeight(ControlHeight)
-                                    .BindOnClicked(model => model.OnClickAssignCommand());
+                                    .BindOnClicked(model => model.OnClickAssign());
                             });
 
                             content.AddRow(r => r.AddLabel()

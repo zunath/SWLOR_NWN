@@ -23,9 +23,9 @@ public sealed class NamedAnimationPlayback
     public const string StartSource = "custom1start";
     public const string LoopSource = "custom1lp";
     public const string EndSource = "custom1end";
-    public const string RifleCarrySource = "xbowr";
-    public const string RifleCarrierSource = "dodges";
-    public const string RifleCarryResetSource = "plpause1";
+    public const string HoldCarrierSource = "dodges";
+    public const string RifleHoldSource = "xbowr";
+    public const string ShoulderHoldSource = "plpause1";
     public const string NoHoldName = "sw_nohold";
     // Keep the authored exit mapped while the engine leaves the custom-emote state.
     // Generated exits take 0.2 seconds; the remaining time allows a deferred script tick.
@@ -35,6 +35,8 @@ public sealed class NamedAnimationPlayback
     private readonly Action<uint, Func<bool>> _releasePose;
     private readonly Dictionary<uint, EquipmentRequest> _equipmentRequests = new();
     private readonly Dictionary<uint, string> _restrictedPlaybackTokens = new();
+    // Hold mappings match the weapon equipped at start, so any equipment change releases them.
+    private readonly Dictionary<uint, string> _heldPlaybackTokens = new();
 
     /// <summary>Ownership of a restricted request, including time spent waiting in the native queue.</summary>
     public sealed class EquipmentRequest
@@ -54,13 +56,19 @@ public sealed class NamedAnimationPlayback
     public bool CanStartEquipmentPlayback(uint creature, EquipmentRequest request) => request == null ||
         _equipmentRequests.TryGetValue(creature, out var current) && ReferenceEquals(current, request);
 
-    /// <summary>Invalidates pending requests and immediately releases an owned restricted pose without cancelling gameplay actions.</summary>
+    /// <summary>
+    /// Invalidates pending requests and immediately releases an owned restricted or weapon-held pose
+    /// without cancelling gameplay actions.
+    /// </summary>
     public bool InvalidateEquipmentPlayback(uint creature)
     {
         _equipmentRequests.Remove(creature);
-        if (!_restrictedPlaybackTokens.Remove(creature, out var activeToken) || !_runtime.IsValid(creature)) return false;
+        _restrictedPlaybackTokens.Remove(creature, out var restrictedToken);
+        _heldPlaybackTokens.Remove(creature, out var heldToken);
+        if (!_runtime.IsValid(creature)) return false;
         var token = _runtime.GetToken(creature);
-        if (token != activeToken && token != EndingPrefix + activeToken) return false;
+        bool Owns(string active) => active != null && (token == active || token == EndingPrefix + active);
+        if (!Owns(restrictedToken) && !Owns(heldToken)) return false;
         ReleaseForNativePlayback(creature);
         return true;
     }
@@ -71,12 +79,8 @@ public sealed class NamedAnimationPlayback
         _releasePose = releasePose;
     }
 
-    /// <param name="suppressPolearmHold">
-    /// For clips that author the right arm around a held polearm-wield item (the horns): the engine's
-    /// polearm carry layer would otherwise hold that arm for the whole clip.
-    /// </param>
     public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false,
-        bool suppressRifleHold = false, EquipmentRequest equipmentRequest = null, bool suppressPolearmHold = false)
+        AnimationWeaponHold weaponHold = AnimationWeaponHold.None, EquipmentRequest equipmentRequest = null)
     {
         ArgumentNullException.ThrowIfNull(clip);
         if (!CanStartEquipmentPlayback(creature, equipmentRequest)) return null;
@@ -85,19 +89,19 @@ public sealed class NamedAnimationPlayback
             _equipmentRequests.Remove(creature);
             _restrictedPlaybackTokens.Remove(creature);
         }
-        var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration,
-            rifleCarry: suppressRifleHold ? NoHoldName : "", rifleClip: suppressRifleHold ? clip.Name : "",
-            polearmCarry: suppressPolearmHold && !suppressRifleHold ? NoHoldName : "");
+        var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration, weaponHold);
         if (equipmentRequest != null)
         {
             equipmentRequest.PlaybackToken = token;
             _restrictedPlaybackTokens[creature] = token;
         }
+        if (weaponHold != AnimationWeaponHold.None) _heldPlaybackTokens[creature] = token;
+        else _heldPlaybackTokens.Remove(creature);
         return token;
     }
 
     private string BeginMapped(uint creature, string start, string loop, string end, float duration, bool completeAtDuration,
-        string rifleCarry = "", string rifleClip = "", string polearmCarry = "")
+        AnimationWeaponHold weaponHold)
     {
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
@@ -109,12 +113,23 @@ public sealed class NamedAnimationPlayback
             _runtime.Replace(creature, LoopSource, loop);
             _runtime.Replace(creature, EndSource, end);
             // DodgeSide clears xbowr and plpause1 before playing dodges. Replacement
-            // lookup is a single pass: the plpause1 alias removes the existing physical
-            // xbowr layer while its new mapping suppresses subsequent carry refreshes.
+            // lookup is a single pass: the other layer's alias removes the existing physical
+            // hold while the held layer's own mapping suppresses subsequent hold refreshes.
             // Install all mappings in this script callback before issuing playback.
-            _runtime.Replace(creature, RifleCarrierSource, rifleClip);
-            _runtime.Replace(creature, RifleCarrySource, rifleCarry);
-            _runtime.Replace(creature, RifleCarryResetSource, string.IsNullOrEmpty(rifleClip) ? polearmCarry : RifleCarrySource);
+            var held = weaponHold != AnimationWeaponHold.None;
+            _runtime.Replace(creature, HoldCarrierSource, held ? loop : "");
+            _runtime.Replace(creature, RifleHoldSource, weaponHold switch
+            {
+                AnimationWeaponHold.Rifle => NoHoldName,
+                AnimationWeaponHold.Shoulder => ShoulderHoldSource,
+                _ => ""
+            });
+            _runtime.Replace(creature, ShoulderHoldSource, weaponHold switch
+            {
+                AnimationWeaponHold.Rifle => RifleHoldSource,
+                AnimationWeaponHold.Shoulder => NoHoldName,
+                _ => ""
+            });
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.
             _runtime.Schedule(duration + 1f, () => Complete(creature, token));
@@ -134,6 +149,7 @@ public sealed class NamedAnimationPlayback
     {
         _equipmentRequests.Remove(creature);
         _restrictedPlaybackTokens.Remove(creature);
+        _heldPlaybackTokens.Remove(creature);
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         ReleaseForNativePlayback(creature);
         var token = Guid.NewGuid().ToString("N");
@@ -181,15 +197,18 @@ public sealed class NamedAnimationPlayback
         if (_restrictedPlaybackTokens.TryGetValue(creature, out var activeToken) &&
             (activeToken == endingToken || EndingPrefix + activeToken == endingToken))
             _restrictedPlaybackTokens.Remove(creature);
+        if (_heldPlaybackTokens.TryGetValue(creature, out var heldToken) &&
+            (heldToken == endingToken || EndingPrefix + heldToken == endingToken))
+            _heldPlaybackTokens.Remove(creature);
         if (_equipmentRequests.TryGetValue(creature, out var request) &&
             (request.PlaybackToken == endingToken || EndingPrefix + request.PlaybackToken == endingToken))
             _equipmentRequests.Remove(creature);
         _runtime.Replace(creature, StartSource, "");
         _runtime.Replace(creature, LoopSource, "");
         _runtime.Replace(creature, EndSource, "");
-        _runtime.Replace(creature, RifleCarrierSource, "");
-        _runtime.Replace(creature, RifleCarrySource, "");
-        _runtime.Replace(creature, RifleCarryResetSource, "");
+        _runtime.Replace(creature, HoldCarrierSource, "");
+        _runtime.Replace(creature, RifleHoldSource, "");
+        _runtime.Replace(creature, ShoulderHoldSource, "");
         _runtime.SetToken(creature, "");
     }
 
@@ -210,6 +229,7 @@ public sealed class NamedAnimationPlayback
     {
         _equipmentRequests.Remove(creature);
         _restrictedPlaybackTokens.Remove(creature);
+        _heldPlaybackTokens.Remove(creature);
         ReleaseForNativePlayback(creature);
     }
 

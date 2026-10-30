@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service;
 
@@ -23,8 +22,6 @@ public static class NamedAnimation
         var duration = Validate(clip, durationSeconds);
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
-        var rifle = UsesRifleGrip(creature);
-        var speed = rifle ? clip.PlaybackSpeed(duration) : 1f;
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
         AssignCommand(creature, () =>
@@ -32,35 +29,49 @@ public static class NamedAnimation
             if (!Playback.CanStartEquipmentPlayback(creature, request)) return;
             ActionDoCommand(() =>
             {
-                // A queued request may begin well after selection. Invalidated requests leave the carrier native.
+                // A queued request may begin well after selection, possibly with other equipment:
+                // choose the carrier and its hold mappings together when playback starts.
+                // Invalidated requests leave the carrier native.
+                var hold = AbilityAnimationEquipment.ReadHold(creature);
+                var held = hold != AnimationWeaponHold.None;
                 if (Playback.CanStartEquipmentPlayback(creature, request) && AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature))
-                    token = Playback.Begin(creature, clip, duration, suppressRifleHold: rifle, equipmentRequest: request);
+                    token = Playback.Begin(creature, clip, duration, weaponHold: hold, equipmentRequest: request);
+                PlayAnimation(held ? Animation.FireForgetDodgeSide : Animation.PointForward,
+                    held ? clip.PlaybackSpeed(duration) : 1f, duration);
             });
-            ActionPlayAnimation(rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed, duration);
+            // Holds the queue for the clip, as the queued carrier action did.
+            ActionWait(duration);
             ActionDoCommand(() => Playback.Complete(creature, token));
         });
     }
 
     /// <summary>
     /// Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.
-    /// Pass suppressPolearmHold for a clip that authors the right arm around a held polearm-wield item.
+    /// keepWeaponHold leaves the main-hand item's native holding layer in place, for a clip authored around it.
     /// </summary>
     public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
         AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,
-        bool fitToDuration = false, bool suppressPolearmHold = false)
+        bool fitToDuration = false, bool keepWeaponHold = false)
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
-        var rifle = UsesRifleGrip(creature);
-        var speed = rifle || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
+        var hold = keepWeaponHold ? AnimationWeaponHold.None : AbilityAnimationEquipment.ReadHold(creature);
+        var held = hold != AnimationWeaponHold.None;
+        var speed = held || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
-        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, suppressRifleHold: rifle,
-            equipmentRequest: request, suppressPolearmHold: suppressPolearmHold);
+        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, weaponHold: hold, equipmentRequest: request);
         return PlayMapped(creature, token, duration,
-            rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
+            held ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
     }
+
+    /// <summary>
+    /// True when Play uses the looping carrier, so a duration longer than the clip repeats it in place. A held
+    /// weapon plays through a one-shot carrier instead, stretched to the duration.
+    /// </summary>
+    public static bool LoopsInPlace(uint creature, bool keepWeaponHold = false) =>
+        keepWeaponHold || AbilityAnimationEquipment.ReadHold(creature) == AnimationWeaponHold.None;
 
     private static string PlayMapped(uint creature, string token, float duration,
         Animation carrier = Animation.PointForward, float speed = 1f)
@@ -113,7 +124,7 @@ public static class NamedAnimation
 
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
-    /// <summary>Stops restricted poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
+    /// <summary>Stops restricted and weapon-held poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
     [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
     [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
     public static void OnEquipmentChanging()
@@ -150,12 +161,6 @@ public static class NamedAnimation
         var value = duration ?? clip.Duration;
         if (!float.IsFinite(value) || value <= 0 || value > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         return value;
-    }
-
-    private static bool UsesRifleGrip(uint creature)
-    {
-        var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
-        return GetIsObjectValid(weapon) && GetBaseItemType(weapon) is BaseItem.Rifle or BaseItem.Cannon;
     }
 
     private sealed class NativeRuntime : INamedAnimationRuntime

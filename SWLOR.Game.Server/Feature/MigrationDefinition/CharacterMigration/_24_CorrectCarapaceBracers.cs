@@ -6,7 +6,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 /// <summary>
 /// Removes the retired elemental Defense (Carapace set, Apprentice Dark Side Robe and Dantooine items, see
 /// <see cref="RetiredDefenseStatRevisionCatalog"/>) and gives droid parts and controllers the Unarmed and Twin Pistol
-/// skills (<see cref="DroidWeaponSkillMigration"/>) in the combined inventory traversal. The record gains a rebuild
+/// skills (<see cref="DroidWeaponSkillMigration"/>) and renames former Display Plinths (<see cref="FurnitureRenameMigration"/>)
+/// in the combined inventory traversal. The record gains a rebuild
 /// token for the Unarmed and Twin Pistol skills.
 /// </summary>
 internal sealed class _24_CorrectCarapaceBracers : ICharacterMigration

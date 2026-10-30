@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_flawed", 2)
                 .Component("hv_plate", 1);
 
-            // Aegisline Display Plinth
-            _builder.Create(RecipeType.AegislineDisplayPlinth, SkillType.Fabrication)
+            // Aegisline Sword Pedestal
+            _builder.Create(RecipeType.AegislineSwordPedestal, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0379")
                 .Level(31)

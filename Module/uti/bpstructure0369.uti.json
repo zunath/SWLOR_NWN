@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Stonewake Display Plinth."
+      "0": "A rare schematic for crafting Stonewake Stone Altar."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Stonewake Display Plinth."
+      "0": "A rare schematic for crafting Stonewake Stone Altar."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Stonewake Display Plinth"
+      "0": "Blueprint: Stonewake Stone Altar"
     }
   },
   "ModelPart1": {

@@ -364,6 +364,10 @@ layer when fitting hand contact. `NativeCarry` records the four right-arm orient
 from the reference `a_ba.plpause1` at time zero; the client still plays its native carry animation.
 Horns hold the instrument at the mouth with the bell forward and down. Both use the item
 attachment at `rhand` like the fishing rod, so check them with real instruments equipped.
+The horn recipe uses the existing `shield` facing control to set left-forearm roll, even
+without a shield equipped. `[-120, 165, 30]` keeps the left hand upright in the note and
+flourish holds; the imported saxophone loop inherits that hold. Rotate the forearm along
+its elbow-to-wrist axis so the hand follows it without moving the wrist or instrument.
 
 The slitherhorn mouthpiece is fitted in item-local coordinates from close male and female
 client views. The lower stem, grips and bell keep their original coordinates (vertices at or

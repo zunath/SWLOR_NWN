@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "d9d3cd811ad014c6682127f83c7bffc34bd25dce78719171b7aa2264fac4f61b",
-  "RecipeSha256": "79894497426a01a1e0965aa1077007e0f930b87d84a64472de2d2e0205cbc46f",
+  "RecipeSha256": "e3bea20ba545cfe5555667a3d77512753ad96ab8b4a687afd16ae4d9322da196",
   "Notes": "Authored clips retain their recipe timing. Imported SWG loops retain source timing, with shared boundary stances or holds. Installation and client verification are separate steps.",
   "Animations": [
     {
@@ -651,7 +651,7 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "a06d778d2f0900e7a05cc719daec9496471a846c07b598954d60878d337cf4f1"
+      "ProjectSha256": "262bfa2ee586f89532a4710fd76edebeb5bfbbb4a13b563863c079dafdc044af"
     },
     {
       "Id": "HornMid",
@@ -666,7 +666,7 @@
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4405628e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4038948e-07,
       "Beats": [
         {
           "Time": 0,
@@ -705,7 +705,7 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "b71fd6d685df4a7df56302e54235395dc4d3fd2b8b4d07fa644d46b4a984fa50"
+      "ProjectSha256": "57cb2e282dea2ca1624b737ab2ca27764540be18f192749c4f757df395324603"
     },
     {
       "Id": "HornHigh",
@@ -720,7 +720,7 @@
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6541224e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522e-07,
       "Beats": [
         {
           "Time": 0,
@@ -759,7 +759,7 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "815e40b80babb148a771e648a1f8ddd0dd1186a971e80e3c1130553c7c2b176e"
+      "ProjectSha256": "23366f10212d77fc631771a42007f0808790193e95e26143cc5aadd063bb7f8a"
     },
     {
       "Id": "HornFlourish",
@@ -774,7 +774,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4575624e-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758e-07,
       "Beats": [
         {
           "Time": 0,
@@ -841,7 +841,7 @@
           "Label": "Lower"
         }
       ],
-      "ProjectSha256": "21b3daf870df5f5f403eed9670615abc50db808791a010761aa441eb95eff05e"
+      "ProjectSha256": "5ec03763c1765ad87b39c96fd11c2f5b62e90e71e8c1bfafbba51a4d6f3d265a"
     },
     {
       "Id": "PerformanceBow",
@@ -1204,7 +1204,7 @@
           "Label": "Shared playing hold"
         }
       ],
-      "ProjectSha256": "d52de277e08798c7dace191aac5043d517bdabb3ec67f025e5cb232b5f32d620",
+      "ProjectSha256": "c9e65d473af805b5e944ca97ef9cef4896dfd765dfa3046660630897389dd5d7",
       "Source": "appearance/animation/all_b_dnc_musician_sax_loop.ans",
       "SourceSha256": "4250913c6ff68745b73ba1a276284f6c228dc5ff54f934e08c828aa9c550c4f5",
       "SourceFormat": "CKAT",
@@ -1213,12 +1213,12 @@
       "Calibration": "first-frame",
       "Mirror": true,
       "ReferenceProject": "design/animations/performance/HornLow.swlanim",
-      "ReferenceProjectSha256": "a06d778d2f0900e7a05cc719daec9496471a846c07b598954d60878d337cf4f1",
+      "ReferenceProjectSha256": "262bfa2ee586f89532a4710fd76edebeb5bfbbb4a13b563863c079dafdc044af",
       "ContactProjects": {
-        "design/animations/performance/HornLow.swlanim": "a06d778d2f0900e7a05cc719daec9496471a846c07b598954d60878d337cf4f1",
-        "design/animations/performance/HornMid.swlanim": "b71fd6d685df4a7df56302e54235395dc4d3fd2b8b4d07fa644d46b4a984fa50",
-        "design/animations/performance/HornHigh.swlanim": "815e40b80babb148a771e648a1f8ddd0dd1186a971e80e3c1130553c7c2b176e",
-        "design/animations/performance/HornFlourish.swlanim": "21b3daf870df5f5f403eed9670615abc50db808791a010761aa441eb95eff05e"
+        "design/animations/performance/HornLow.swlanim": "262bfa2ee586f89532a4710fd76edebeb5bfbbb4a13b563863c079dafdc044af",
+        "design/animations/performance/HornMid.swlanim": "57cb2e282dea2ca1624b737ab2ca27764540be18f192749c4f757df395324603",
+        "design/animations/performance/HornHigh.swlanim": "23366f10212d77fc631771a42007f0808790193e95e26143cc5aadd063bb7f8a",
+        "design/animations/performance/HornFlourish.swlanim": "5ec03763c1765ad87b39c96fd11c2f5b62e90e71e8c1bfafbba51a4d6f3d265a"
       }
     }
   ],

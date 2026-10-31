@@ -1310,6 +1310,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Gorak Vesh timed spawn (ESHAN_GORAK_VESH, 61-160 minute respawn)."
+        }
       }
     ]
   }

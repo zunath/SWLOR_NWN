@@ -8,8 +8,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
     /// The compact Huttball window for players, shaped like the dice bag so it tucks into a corner of the screen:
-    /// a stats box, Re-roll and Medic, then one large button per action. Nothing has a set size except the stats
-    /// box, so the buttons grow and shrink with the window in both directions.
+    /// team and role pickers with Join, Leave, and Captain, a stats box, Re-roll and Medic, then one large button
+    /// per action. Nothing has a set size except the stats box, so the buttons grow and shrink with the window in
+    /// both directions.
     /// </summary>
     public class HuttballPlayerDefinition : IGuiWindowDefinition
     {
@@ -20,12 +21,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.HuttballPlayer)
-                .SetInitialGeometry(0f, 0f, 200f, 470f)
+                .SetInitialGeometry(0f, 0f, 220f, 580f)
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .AddColumn(col =>
                 {
+                    col.AddRow(row =>
+                    {
+                        row.AddComboBox()
+                            .AddOption("Home", 0)
+                            .AddOption("Away", 1)
+                            .BindSelectedIndex(model => model.TeamSelection)
+                            .BindIsEnabled(model => model.CanJoin);
+                        row.AddComboBox()
+                            .AddOption("Bruiser", 0)
+                            .AddOption("Catcher", 1)
+                            .AddOption("Thrower", 2)
+                            .AddOption("Blocker", 3)
+                            .BindSelectedIndex(model => model.RoleSelection);
+                    });
+                    col.AddRow(row =>
+                    {
+                        AddButton(row, "Join", "Join the chosen team in the chosen role, between drives. The first player on a team captains it.",
+                            model => model.OnJoin(), model => model.CanJoin);
+                        AddButton(row, "Leave", "Leave the match.",
+                            model => model.OnLeave(), model => model.CanLeave);
+                        AddButton(row, "Captain", "Open the captain's window: set up a match with no DM, or run your team's drives and turns.",
+                            model => model.OnCaptain(), model => model.CanOpenCaptain);
+                    });
+
                     col.AddRow(row => row.AddText()
                         .BindText(model => model.StatsText)
                         .SetShowBorder(true)

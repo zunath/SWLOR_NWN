@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.HuttballService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Service
@@ -97,6 +98,36 @@ namespace SWLOR.Game.Server.Service
                 return "Place a battle grid first. Its squares become the pitch.";
 
             var pitch = HuttballPitch.FromGrid(BattleGrid.GetCenter(area), BattleGrid.Clamp(BattleGrid.GetSettings(area)));
+            OpenMatch(area, pitch);
+            return null;
+        }
+
+        /// <summary>
+        /// Starts a match with no DM: lays the pitch, without a battle grid, centred where the player stands, and
+        /// puts the player on the Home team as its captain. Returns an error, or null on success.
+        /// </summary>
+        public static string CreatePlayerMatch(uint creature, HuttballRole role)
+        {
+            var area = GetArea(creature);
+            if (!GetIsObjectValid(area))
+                return "There is no area here.";
+            if (_matches.ContainsKey(area))
+                return "This area already has a Huttball match.";
+            if (GetIsObjectValid(FindMatchArea(creature)))
+                return "You are already playing in another match.";
+
+            var pitch = HuttballPitch.At(GetPosition(creature), BattleGrid.DefaultSettings.SquareSize);
+            if (!pitch.FitsWithin(GetAreaSize(Dimension.Width, area) * 10f, GetAreaSize(Dimension.Height, area) * 10f))
+                return "There isn't room for a pitch here. Move toward the middle of a large open area.";
+
+            var entry = OpenMatch(area, pitch);
+            var result = entry.Match.AddPlayer(creature, GetName(creature), HuttballTeam.Home, role, CanCaptain(creature));
+            Apply(area, result, creature);
+            return null;
+        }
+
+        private static MatchEntry OpenMatch(uint area, HuttballPitch pitch)
+        {
             var entry = new MatchEntry
             {
                 Match = new HuttballMatch(pitch.Width, pitch.Length, new HuttballDice()),
@@ -108,10 +139,10 @@ namespace SWLOR.Game.Server.Service
             Announce(area, new[]
             {
                 $"A Huttball match is set up on a {pitch.Width} x {pitch.Length} pitch. {PitchKey} " +
-                "Type /huttball to open the match panel."
+                "Type /huttball to open the match panel and join a team."
             });
             RefreshWindows();
-            return null;
+            return entry;
         }
 
         /// <summary>
@@ -311,6 +342,15 @@ namespace SWLOR.Game.Server.Service
 
             var level = Authorization.GetAuthorizationLevel(controlled);
             return level.HasFlag(AuthorizationLevel.DM) || level.HasFlag(AuthorizationLevel.Admin);
+        }
+
+        /// <summary>
+        /// True for a player's own character, which may captain its team. NPCs, including those a DM possesses,
+        /// never do.
+        /// </summary>
+        public static bool CanCaptain(uint creature)
+        {
+            return GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
         }
 
         /// <summary>

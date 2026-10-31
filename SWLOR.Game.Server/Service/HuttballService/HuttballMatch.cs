@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
         // Re-rolls and medics start at none; the DM hands them out.
         private readonly Dictionary<HuttballTeam, int> _rerolls = new() { [HuttballTeam.Home] = 0, [HuttballTeam.Away] = 0 };
         private readonly Dictionary<HuttballTeam, int> _medics = new() { [HuttballTeam.Home] = 0, [HuttballTeam.Away] = 0 };
+        private readonly Dictionary<HuttballTeam, HuttballPlayer> _captains = new() { [HuttballTeam.Home] = null, [HuttballTeam.Away] = null };
 
         // Dice rolled so far, so a command can tell whether it rolled any.
         private int _rollCount;
@@ -164,7 +165,22 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 : square.Y >= Length - Length / 2;
         }
 
-        public HuttballActionResult AddPlayer(uint creature, string name, HuttballTeam team, HuttballRole role)
+        /// <summary>
+        /// The player who runs the team's drives and turns when no DM does, or null.
+        /// </summary>
+        public HuttballPlayer GetCaptain(HuttballTeam team) => _captains[team];
+
+        public bool IsCaptain(uint creature)
+        {
+            var player = GetPlayer(creature);
+            return player != null && _captains[player.Team] == player;
+        }
+
+        /// <summary>
+        /// Adds a player to a team. The first player on a team who <paramref name="canCaptain"/> becomes its
+        /// captain.
+        /// </summary>
+        public HuttballActionResult AddPlayer(uint creature, string name, HuttballTeam team, HuttballRole role, bool canCaptain = false)
         {
             if (GetPlayer(creature) != null)
                 return HuttballActionResult.Fail($"{name} is already in the match.");
@@ -172,12 +188,39 @@ namespace SWLOR.Game.Server.Service.HuttballService
             var player = new HuttballPlayer(creature, name, team, role)
             {
                 IsDone = true,
+                CanCaptain = canCaptain,
             };
             _rerollable = null;
             _players.Add(player);
 
             var result = new HuttballActionResult();
             Say(result, $"{player.DisplayName} joins the {team} team.");
+            if (canCaptain && _captains[team] == null)
+            {
+                _captains[team] = player;
+                Say(result, $"{player.Name} captains the {team} team.");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Hands a team's captaincy to one of its players.
+        /// </summary>
+        public HuttballActionResult SetCaptain(uint creature)
+        {
+            var player = GetPlayer(creature);
+            if (player == null)
+                return HuttballActionResult.Fail("That creature is not in the match.");
+            if (!player.CanCaptain)
+                return HuttballActionResult.Fail($"{player.Name} can't captain a team. Only player characters can.");
+            if (_captains[player.Team] == player)
+                return HuttballActionResult.Fail($"{player.Name} already captains the {player.Team} team.");
+
+            _rerollable = null;
+            _captains[player.Team] = player;
+            var result = new HuttballActionResult();
+            Say(result, $"{player.Name} now captains the {player.Team} team.");
             return result;
         }
 
@@ -192,6 +235,15 @@ namespace SWLOR.Game.Server.Service.HuttballService
             _rerollable = null;
             _players.Remove(player);
             Say(result, $"{player.DisplayName} leaves the match.");
+            if (_captains[player.Team] == player)
+            {
+                // The captaincy passes to whoever joined the team next.
+                var next = _players.FirstOrDefault(p => p.Team == player.Team && p.CanCaptain);
+                _captains[player.Team] = next;
+                if (next != null)
+                    Say(result, $"{next.Name} now captains the {player.Team} team.");
+            }
+
             if (BallCarrier == player && square != null)
             {
                 BallCarrier = null;

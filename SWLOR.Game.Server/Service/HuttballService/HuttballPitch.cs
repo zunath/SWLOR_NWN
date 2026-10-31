@@ -16,7 +16,26 @@ namespace SWLOR.Game.Server.Service.HuttballService
         /// </summary>
         public static HuttballPitch FromGrid(Vector3 center, BattleGridSettings settings)
         {
-            return new HuttballPitch(center, settings.SquareSize, HuttballRules.PitchWidth, HuttballRules.PitchLength);
+            return At(center, settings.SquareSize);
+        }
+
+        /// <summary>
+        /// Lays the pitch around a point with no battle grid, as when a player captain sets up a match where they
+        /// stand.
+        /// </summary>
+        public static HuttballPitch At(Vector3 center, float squareSize)
+        {
+            return new HuttballPitch(center, squareSize, HuttballRules.PitchWidth, HuttballRules.PitchLength);
+        }
+
+        /// <summary>
+        /// True when the pitch, its flags, and both benches lie inside an area of the given size in meters.
+        /// </summary>
+        public bool FitsWithin(float areaWidth, float areaHeight)
+        {
+            var southWest = GetPoint(-4f, -2f);
+            var northEast = GetPoint(Width + 4f, Length + 2f);
+            return southWest.X >= 0f && southWest.Y >= 0f && northEast.X <= areaWidth && northEast.Y <= areaHeight;
         }
 
         // The grid's center sits on a square corner, so the pitch edges stay on grid lines even when a side has

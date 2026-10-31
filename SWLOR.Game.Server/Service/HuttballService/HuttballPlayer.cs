@@ -40,6 +40,11 @@ namespace SWLOR.Game.Server.Service.HuttballService
         /// </summary>
         public bool IsDone { get; set; }
 
+        /// <summary>
+        /// True for player characters, who may captain their team. NPCs and test players never do.
+        /// </summary>
+        public bool CanCaptain { get; init; }
+
         public HuttballRoleStats Stats => HuttballRules.GetStats(Role);
 
         /// <summary>

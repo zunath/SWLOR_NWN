@@ -656,4 +656,55 @@ public class HuttballMatchTests
         pitch.GetSquare(new Vector3(100.1f, 49.9f, 0f)).Should().Be(new HuttballSquare(7, 9));
         pitch.GetSquare(new Vector3(80f, 50f, 0f)).X.Should().BeNegative("positions off the pitch map off it");
     }
+
+    [Test]
+    public void TheFirstPlayerCharacterOnATeamCaptainsIt()
+    {
+        var match = CreateMatch();
+        match.AddPlayer(AwayBlocker, "Npc", HuttballTeam.Home, HuttballRole.Blocker);
+        match.AddPlayer(HomeCatcher, "First", HuttballTeam.Home, HuttballRole.Catcher, canCaptain: true);
+        match.AddPlayer(HomeThrower, "Second", HuttballTeam.Home, HuttballRole.Thrower, canCaptain: true);
+
+        match.GetCaptain(HuttballTeam.Home)!.Creature.Should().Be(HomeCatcher, "NPCs never captain");
+        match.GetCaptain(HuttballTeam.Away).Should().BeNull();
+        match.IsCaptain(HomeThrower).Should().BeFalse();
+    }
+
+    [Test]
+    public void ALeavingCaptainPassesTheCaptaincyToTheNextPlayerWhoJoined()
+    {
+        var match = CreateMatch();
+        match.AddPlayer(HomeCatcher, "First", HuttballTeam.Home, HuttballRole.Catcher, canCaptain: true);
+        match.AddPlayer(HomeBruiser, "Npc", HuttballTeam.Home, HuttballRole.Bruiser);
+        match.AddPlayer(HomeThrower, "Second", HuttballTeam.Home, HuttballRole.Thrower, canCaptain: true);
+
+        match.RemovePlayer(HomeCatcher).Succeeded.Should().BeTrue();
+        match.GetCaptain(HuttballTeam.Home)!.Creature.Should().Be(HomeThrower);
+
+        match.RemovePlayer(HomeThrower).Succeeded.Should().BeTrue();
+        match.GetCaptain(HuttballTeam.Home).Should().BeNull();
+    }
+
+    [Test]
+    public void TheCaptaincyCanBeHandedOnlyToAPlayerCharacter()
+    {
+        var match = CreateMatch();
+        match.AddPlayer(HomeCatcher, "First", HuttballTeam.Home, HuttballRole.Catcher, canCaptain: true);
+        match.AddPlayer(HomeBruiser, "Npc", HuttballTeam.Home, HuttballRole.Bruiser);
+        match.AddPlayer(HomeThrower, "Second", HuttballTeam.Home, HuttballRole.Thrower, canCaptain: true);
+
+        match.SetCaptain(HomeBruiser).Succeeded.Should().BeFalse();
+        match.SetCaptain(HomeThrower).Succeeded.Should().BeTrue();
+        match.IsCaptain(HomeThrower).Should().BeTrue();
+        match.IsCaptain(HomeCatcher).Should().BeFalse();
+    }
+
+    [Test]
+    public void APlayerPitchMustFitInsideTheArea()
+    {
+        var squareSize = 2f;
+        HuttballPitch.At(new Vector3(50f, 50f, 0f), squareSize).FitsWithin(100f, 100f).Should().BeTrue();
+        HuttballPitch.At(new Vector3(20f, 50f, 0f), squareSize).FitsWithin(100f, 100f).Should().BeFalse("the west bench is off the area");
+        HuttballPitch.At(new Vector3(50f, 50f, 0f), squareSize).FitsWithin(100f, 70f).Should().BeFalse("the north flags are off the area");
+    }
 }

@@ -8,8 +8,10 @@ using SWLOR.Game.Server.Service.HuttballService;
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     /// <summary>
-    /// The staff Huttball panel: runs the match and acts with any player in it, such as the creatures of the team
-    /// a DM controls. Players use the compact <see cref="HuttballPlayerViewModel"/> instead.
+    /// The Huttball match panel. Staff run the match and act with any player in it, such as the creatures of the
+    /// team a DM controls. Team captains get the same panel to run a match with no DM: they lay a pitch where they
+    /// stand, start drives, end their team's turns, set their team's resources, and manage their own roster, but
+    /// never command anyone but themselves. Other players use the compact <see cref="HuttballPlayerViewModel"/>.
     /// </summary>
     public class HuttballViewModel : GuiViewModelBase<HuttballViewModel, GuiPayloadBase>,
         IGuiRefreshable<HuttballRefreshEvent>
@@ -64,6 +66,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsSetup { get => Get<bool>(); set => Set(value); }
         public bool IsPlaying { get => Get<bool>(); set => Set(value); }
 
+        /// <summary>True for staff, who may add any creature and command any player.</summary>
+        public bool IsStaffView { get => Get<bool>(); set => Set(value); }
+        public bool CanCreateMatch { get => Get<bool>(); set => Set(value); }
+        public bool CanEndMatch { get => Get<bool>(); set => Set(value); }
+        public bool CanStartDrive { get => Get<bool>(); set => Set(value); }
+        public bool CanEndTurn { get => Get<bool>(); set => Set(value); }
+        public bool CanChangeResources { get => Get<bool>(); set => Set(value); }
+        public bool CanManageRoster { get => Get<bool>(); set => Set(value); }
+        public bool CanSetRole { get => Get<bool>(); set => Set(value); }
+        public bool CanStaffEdit { get => Get<bool>(); set => Set(value); }
+        public bool CanSpawnTestTeams { get => Get<bool>(); set => Set(value); }
+
         /// <summary>The team a DM adds players to: 0 Home, 1 Away.</summary>
         public int TeamSelection { get => Get<int>(); set => Set(value); }
 
@@ -73,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             _isStaff = CheckIsStaff();
+            IsStaffView = _isStaff;
             TeamSelection = 0;
             RoleSelection = 0;
             TabToggleValue = 0;
@@ -112,6 +127,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Checked once per opening, since every match change refreshes every open panel.
         private bool CheckIsStaff() => Huttball.IsStaff(Player);
         private HuttballTeam SelectedTeam => TeamSelection == 1 ? HuttballTeam.Away : HuttballTeam.Home;
+
+        /// <summary>
+        /// The team this user captains, or null. Staff are never treated as captains, since they can do more.
+        /// </summary>
+        private HuttballTeam? CaptainTeam
+        {
+            get
+            {
+                var match = Match;
+                if (_isStaff || match == null || !match.IsCaptain(Controlled))
+                    return null;
+
+                return match.GetPlayer(Controlled).Team;
+            }
+        }
+
+        private bool CanRun => _isStaff || CaptainTeam != null;
         private HuttballRole SelectedRole => (HuttballRole)(RoleSelection + 1);
 
         /// <summary>
@@ -135,20 +167,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (match == null)
             {
                 ScoreText = "No Huttball match in this area.";
-                TurnText = UserIsDM ? "Place a battle grid (/battlegrid), then create a match." : "Ask a DM to set up a match.";
+                TurnText = UserIsDM
+                    ? "Place a battle grid (/battlegrid), then create a match."
+                    : "Create Match lays a pitch centred on you, with you as Home captain.";
                 BallText = string.Empty;
                 UnitText = string.Empty;
                 LogText = string.Empty;
                 ResourcesText = string.Empty;
                 IsSetup = IsPlaying = false;
+                CanCreateMatch = _isStaff || !GetIsObjectValid(Huttball.FindMatchArea(Controlled));
+                CanEndMatch = CanStartDrive = CanEndTurn = CanChangeResources = CanManageRoster = CanSetRole = false;
+                CanStaffEdit = CanSpawnTestTeams = false;
                 CanMove = CanBlock = CanPass = CanDirtyMove = CanStandUp = CanFinish = CanReroll = CanUseMedic = false;
                 return;
             }
 
             IsSetup = match.Phase == HuttballPhase.Setup;
             IsPlaying = match.Phase == HuttballPhase.Playing;
+            var captainTeam = CaptainTeam;
+            if (captainTeam != null)
+                TeamSelection = captainTeam == HuttballTeam.Away ? 1 : 0;
+            CanCreateMatch = false;
+            CanEndMatch = CanRun;
+            CanStartDrive = IsSetup && CanRun;
+            CanEndTurn = IsPlaying && (_isStaff || captainTeam == match.ActiveTeam);
+            CanChangeResources = CanRun;
+            CanManageRoster = CanRun;
+            CanSetRole = IsSetup && CanRun;
+            CanStaffEdit = _isStaff;
+            CanSpawnTestTeams = IsSetup && _isStaff;
             ScoreText = $"Score: Home (blue) {match.GetScore(HuttballTeam.Home)} - Away (red) {match.GetScore(HuttballTeam.Away)}";
-            ResourcesText = $"{DescribeResources(match, HuttballTeam.Home)}\n{DescribeResources(match, HuttballTeam.Away)}";
+            ResourcesText = $"{DescribeResources(match, HuttballTeam.Home)}\n{DescribeResources(match, HuttballTeam.Away)}\n" +
+                            $"Captains: Home {match.GetCaptain(HuttballTeam.Home)?.Name ?? "none"}, " +
+                            $"Away {match.GetCaptain(HuttballTeam.Away)?.Name ?? "none"}";
             TurnText = match.Phase switch
             {
                 HuttballPhase.Setup => $"Half {match.Half}, turn {match.Turn}: take your places. The {match.ActiveTeam} team moves first.",
@@ -198,7 +249,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var where = unit.Square != null ? $"at {unit.Square.Value}" : "off the pitch";
             var state = unit.Status == HuttballPlayerStatus.Standing ? "standing" : HuttballMatch.DescribeStatus(unit.Status);
             var stats = unit.Stats;
-            var text = $"{unit.DisplayName}, {unit.Team} team, {state} {where}. " +
+            var captain = match.IsCaptain(unit.Creature) ? " captain" : string.Empty;
+            var text = $"{unit.DisplayName}, {unit.Team} team{captain}, {state} {where}. " +
                        $"STR +{stats.Strength}, AGI +{stats.Agility}, move {stats.Movement}.";
 
             if (match.Phase == HuttballPhase.Playing && unit.Team == match.ActiveTeam)
@@ -295,10 +347,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnCreateMatch() => () =>
         {
-            if (!UserIsDM)
-                return;
-
-            var error = Huttball.CreateMatch(MatchArea);
+            var error = UserIsDM
+                ? Huttball.CreateMatch(MatchArea)
+                : Huttball.CreatePlayerMatch(Controlled, SelectedRole);
             if (error != null)
                 DMPresence.SendMessage(Player, ColorToken.Red(error));
             Refresh();
@@ -306,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnEndMatch() => () =>
         {
-            if (!UserIsDM)
+            if (!CanRun)
                 return;
 
             Huttball.EndMatch(MatchArea);
@@ -338,17 +389,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 _selectedUnit = target;
-                Run(match => match.AddPlayer(target, name, team, role));
+                Run(match => match.AddPlayer(target, name, team, role, Huttball.CanCaptain(target)));
             });
         };
 
         public Action OnRemovePlayer() => () =>
         {
-            if (!UserIsDM)
+            if (!CanRun)
                 return;
 
             PickCreature("Click a player to take out of the match.", target =>
             {
+                if (!CanManage(target))
+                    return;
+
                 if (target == _selectedUnit)
                     _selectedUnit = OBJECT_INVALID;
                 Huttball.ClearEffects(target);
@@ -371,12 +425,71 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSetRole() => () =>
         {
-            if (!UserIsDM || !RequireUnit(out var unit))
+            var role = SelectedRole;
+            if (UserIsDM)
+            {
+                if (RequireUnit(out var unit))
+                    Run(match => match.SetRole(unit.Creature, role));
+                return;
+            }
+
+            if (CaptainTeam == null)
                 return;
 
-            var role = SelectedRole;
-            Run(match => match.SetRole(unit.Creature, role));
+            PickCreature($"Click a teammate to play {role}.", target =>
+            {
+                if (CanManage(target))
+                    Run(match => match.SetRole(target, role));
+            });
         };
+
+        /// <summary>
+        /// Hands the captaincy of a team to one of its player characters. A captain picks a teammate; staff pick
+        /// any player character in the match.
+        /// </summary>
+        public Action OnMakeCaptain() => () =>
+        {
+            if (!CanRun)
+                return;
+
+            PickCreature("Click the player who should captain their team.", target =>
+            {
+                if (CanManage(target))
+                    Run(match => match.SetCaptain(target));
+            });
+        };
+
+        /// <summary>
+        /// True when this user may manage the clicked player: staff manage anyone in the match, a captain only their
+        /// own team. Tells the user why not otherwise.
+        /// </summary>
+        private bool CanManage(uint target)
+        {
+            var player = Match?.GetPlayer(target);
+            if (player == null)
+            {
+                DMPresence.SendMessage(Player, ColorToken.Red($"{GetName(target)} is not in this match."));
+                return false;
+            }
+
+            if (_isStaff)
+                return true;
+
+            var team = CaptainTeam;
+            if (team == null)
+            {
+                DMPresence.SendMessage(Player, ColorToken.Red("Only a team captain can do that."));
+                return false;
+            }
+
+            if (player.Team != team)
+            {
+                DMPresence.SendMessage(Player, ColorToken.Red($"{player.Name} is not on your team."));
+                return false;
+            }
+
+            return true;
+        }
 
         public Action OnSelectUnit() => () =>
         {
@@ -398,7 +511,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnStartDrive() => () =>
         {
-            if (!UserIsDM)
+            if (!CanRun)
                 return;
 
             PickSquare("Click the square where the ball lands for the kick-off.",
@@ -407,8 +520,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnEndTeamTurn() => () =>
         {
-            if (UserIsDM)
-                Run(match => match.EndTeamTurn());
+            var match = Match;
+            if (match != null && (UserIsDM || CaptainTeam == match.ActiveTeam))
+                Run(m => m.EndTeamTurn());
         };
 
         /// <summary>
@@ -455,18 +569,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnMedicUp() => () => ChangeResource((match, team) => match.SetMedics(team, match.GetMedics(team) + 1));
 
         /// <summary>
-        /// Changes a resource of the team chosen in the DM team box, then updates the scoreboards and panels.
+        /// Changes a resource of the team chosen in the team box (a captain's own team), then updates the scoreboards
+        /// and panels.
         /// </summary>
         private void ChangeResource(System.Action<HuttballMatch, HuttballTeam> change)
         {
-            if (!UserIsDM)
-                return;
-
             var match = Match;
             if (match == null)
                 return;
 
-            change(match, SelectedTeam);
+            HuttballTeam team;
+            if (UserIsDM)
+                team = SelectedTeam;
+            else if (CaptainTeam is { } captainTeam)
+                team = captainTeam;
+            else
+                return;
+
+            change(match, team);
             Huttball.ResourcesChanged(MatchArea);
         }
     }

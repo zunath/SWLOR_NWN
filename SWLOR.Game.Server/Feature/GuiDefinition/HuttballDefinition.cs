@@ -9,9 +9,10 @@ using SWLOR.Game.Server.Service.HuttballService;
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
-    /// The staff Huttball window, opened with /huttball by staff. Like the Appearance Editor it is split into tabs:
-    /// Match (score, drives, turns, team resources), Players (adding players and acting for the selected one), and
-    /// Play-by-Play. Each tab is a fixed-width panel; the window scrolls when it is smaller than the panel.
+    /// The Huttball match window, opened with /huttball by staff and /huttball captain by players. Like the
+    /// Appearance Editor it is split into tabs: Match (score, drives, turns, team resources), Players (the roster and
+    /// the selected player's actions), and Play-by-Play. Captains see the same window with the staff-only controls
+    /// greyed out. Each tab is a fixed-width panel; the window scrolls when it is smaller than the panel.
     /// </summary>
     public class HuttballDefinition : IGuiWindowDefinition
     {
@@ -77,20 +78,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddSectionLabel(content, "Match");
                 content.AddRow(r =>
                 {
-                    AddButton(r, "Create Match", "Lay a 15 x 20 pitch over this area's battle grid.", model => model.OnCreateMatch())
-                        .BindIsEnabled(model => model.HasNoMatch);
+                    // A player creating a match joins it in this role.
+                    AddRoleCombo(r);
+                    r.AddSpacer();
+                });
+                content.AddRow(r =>
+                {
+                    AddButton(r, "Create Match", "Staff: lay a 15 x 20 pitch over this area's battle grid. Players: lay it centred on you and captain the Home team in the chosen role.", model => model.OnCreateMatch())
+                        .BindIsEnabled(model => model.CanCreateMatch);
                     AddButton(r, "End Match", "End the match and clear the pitch, ball, and effects.", model => model.OnEndMatch())
-                        .BindIsEnabled(model => model.HasMatch);
-                    AddButton(r, "Test Teams", "For testing: add one test player of each role to each team, lined up in their own halves.", model => model.OnSpawnTestTeams())
-                        .BindIsEnabled(model => model.IsSetup);
+                        .BindIsEnabled(model => model.CanEndMatch);
+                    AddButton(r, "Test Teams", "Staff testing: add one test player of each role to each team, lined up in their own halves.", model => model.OnSpawnTestTeams())
+                        .BindIsEnabled(model => model.CanSpawnTestTeams);
                     r.AddSpacer();
                 });
                 content.AddRow(r =>
                 {
                     AddButton(r, "Start Drive", "Click where the ball lands to kick off.", model => model.OnStartDrive())
-                        .BindIsEnabled(model => model.IsSetup);
-                    AddButton(r, "End Turn", "End the active team's turn now.", model => model.OnEndTeamTurn())
-                        .BindIsEnabled(model => model.IsPlaying);
+                        .BindIsEnabled(model => model.CanStartDrive);
+                    AddButton(r, "End Turn", "End the active team's turn now. Captains end only their own team's turn.", model => model.OnEndTeamTurn())
+                        .BindIsEnabled(model => model.CanEndTurn);
                     r.AddSpacer();
                 });
 
@@ -123,32 +130,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 content.AddRow(r =>
                 {
                     AddTeamCombo(r);
-                    r.AddComboBox()
-                        .AddOption("Bruiser", 0)
-                        .AddOption("Catcher", 1)
-                        .AddOption("Thrower", 2)
-                        .AddOption("Blocker", 3)
-                        .BindSelectedIndex(model => model.RoleSelection)
-                        .SetWidth(ComboWidth)
-                        .SetHeight(ControlHeight);
+                    AddRoleCombo(r);
                     r.AddSpacer();
                 });
                 content.AddRow(r =>
                 {
-                    AddButton(r, "Add Player", "Click a creature to add it to the chosen team and role.", model => model.OnAddPlayer())
-                        .BindIsEnabled(model => model.HasMatch);
-                    AddButton(r, "Remove Player", "Click a player to take out of the match.", model => model.OnRemovePlayer())
-                        .BindIsEnabled(model => model.HasMatch);
-                    AddButton(r, "Set Role", "Give the selected player the chosen role (between drives).", model => model.OnSetRole())
-                        .BindIsEnabled(model => model.IsSetup);
+                    AddButton(r, "Add Player", "Staff: click a creature to add it to the chosen team and role.", model => model.OnAddPlayer())
+                        .BindIsEnabled(model => model.CanStaffEdit);
+                    AddButton(r, "Remove Player", "Click a player to take out of the match. Captains remove only their own teammates.", model => model.OnRemovePlayer())
+                        .BindIsEnabled(model => model.CanManageRoster);
+                    AddButton(r, "Set Role", "Give a player the chosen role between drives: the selected player for staff, a clicked teammate for captains.", model => model.OnSetRole())
+                        .BindIsEnabled(model => model.CanSetRole);
                     r.AddSpacer();
                 });
 
                 AddSectionLabel(content, "Selected Player");
                 content.AddRow(r =>
                 {
-                    AddButton(r, "Select Player", "Click a player to command with the buttons below.", model => model.OnSelectUnit())
-                        .BindIsEnabled(model => model.HasMatch);
+                    AddButton(r, "Select Player", "Staff: click a player to command with the buttons below. Captains command only themselves.", model => model.OnSelectUnit())
+                        .BindIsEnabled(model => model.CanStaffEdit);
+                    AddButton(r, "Make Captain", "Hand the captaincy to a player character. Captains pick a teammate.", model => model.OnMakeCaptain())
+                        .BindIsEnabled(model => model.CanManageRoster);
                     r.AddSpacer();
                 });
                 content.AddRow(r => r.AddText()
@@ -226,6 +228,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddOption("Home team", 0)
                 .AddOption("Away team", 1)
                 .BindSelectedIndex(model => model.TeamSelection)
+                .BindIsEnabled(model => model.IsStaffView)
+                .SetWidth(ComboWidth)
+                .SetHeight(ControlHeight);
+        }
+
+        private static void AddRoleCombo(GuiRow<HuttballViewModel> row)
+        {
+            row.AddComboBox()
+                .AddOption("Bruiser", 0)
+                .AddOption("Catcher", 1)
+                .AddOption("Thrower", 2)
+                .AddOption("Blocker", 3)
+                .BindSelectedIndex(model => model.RoleSelection)
                 .SetWidth(ComboWidth)
                 .SetHeight(ControlHeight);
         }
@@ -298,14 +313,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetWidth(StepButtonWidth)
                     .SetHeight(ControlHeight)
                     .BindOnClicked(onDown)
-                    .BindIsEnabled(model => model.HasMatch);
+                    .BindIsEnabled(model => model.CanChangeResources);
                 r.AddButton()
                     .SetText("+")
                     .SetTooltip($"Give the chosen team a {noun}.")
                     .SetWidth(StepButtonWidth)
                     .SetHeight(ControlHeight)
                     .BindOnClicked(onUp)
-                    .BindIsEnabled(model => model.HasMatch);
+                    .BindIsEnabled(model => model.CanChangeResources);
                 r.AddSpacer();
             });
         }

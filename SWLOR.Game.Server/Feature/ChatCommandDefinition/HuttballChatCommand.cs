@@ -13,15 +13,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             var builder = new ChatCommandBuilder();
 
             builder.Create("huttball")
-                .Description("Opens the Huttball match panel. DMs run matches from it.")
+                .Description("Opens your Huttball window. Staff get the match controls; /huttball player opens the player window.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
+                    var wantsPlayerWindow = args.Length > 0 && args[0].Equals("player", System.StringComparison.OrdinalIgnoreCase);
+
                     // DMs keep the window on whatever they possess, so they can run the match through a creature.
-                    if (GetIsDM(DMPresence.GetDM(user)))
+                    if (GetIsDM(DMPresence.GetDM(user)) && !wantsPlayerWindow)
+                    {
                         DMPresence.ToggleWindow(user, GuiWindowType.Huttball);
-                    else
-                        Gui.TogglePlayerWindow(user, GuiWindowType.Huttball);
+                        return;
+                    }
+
+                    var window = Huttball.IsStaff(user) && !wantsPlayerWindow
+                        ? GuiWindowType.Huttball
+                        : GuiWindowType.HuttballPlayer;
+                    Gui.TogglePlayerWindow(user, window);
                 });
 
             return builder.Build();

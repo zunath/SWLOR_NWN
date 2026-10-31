@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.HuttballService;
@@ -296,6 +297,78 @@ namespace SWLOR.Game.Server.Service
             SetUseableFlag(marker, false);
             ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(visual, false, scale), marker);
             entry.Markers.Add(marker);
+        }
+
+        /// <summary>
+        /// Returns true for staff, who run matches as they may run the battle grid: DMs, and staff on their own
+        /// characters. Staff are matched by CD key, which resolves from the creature they control.
+        /// </summary>
+        public static bool IsStaff(uint actor)
+        {
+            var controlled = DMPresence.GetControlledCreature(actor);
+            if (string.IsNullOrEmpty(GetPCPublicCDKey(controlled)))
+                return false;
+
+            var level = Authorization.GetAuthorizationLevel(controlled);
+            return level.HasFlag(AuthorizationLevel.DM) || level.HasFlag(AuthorizationLevel.Admin);
+        }
+
+        /// <summary>
+        /// Runs a match command for whoever clicked a panel button, in the area of the creature they control, then
+        /// announces and plays out the result. See <see cref="Apply"/> for the optional creatures.
+        /// </summary>
+        public static void Command(
+            uint actor,
+            System.Func<HuttballMatch, HuttballActionResult> command,
+            uint mover = OBJECT_INVALID,
+            uint striker = OBJECT_INVALID,
+            uint struck = OBJECT_INVALID)
+        {
+            var area = GetArea(DMPresence.GetControlledCreature(actor));
+            var match = GetMatch(area);
+            if (match == null)
+            {
+                DMPresence.SendMessage(actor, ColorToken.Red("There is no Huttball match in this area."));
+                return;
+            }
+
+            Apply(area, command(match), actor, mover, striker, struck);
+        }
+
+        /// <summary>
+        /// Asks whoever clicked a panel button for a square of the pitch: the ground, or anything standing on it.
+        /// </summary>
+        public static void PickSquare(uint actor, string message, System.Action<HuttballSquare> onPicked)
+        {
+            var controlled = DMPresence.GetControlledCreature(actor);
+            Targeting.EnterTargetingMode(controlled, ObjectType.All, message, target =>
+            {
+                // A ground pick arrives as the area object, the way the battle grid window reads it.
+                var area = GetArea(controlled);
+                if (!_matches.TryGetValue(area, out var entry))
+                    return;
+
+                Vector3 position;
+                if (target == area)
+                    position = GetTargetingModeSelectedPosition();
+                else if (GetIsObjectValid(target) && GetArea(target) == area)
+                    position = GetPosition(target);
+                else
+                {
+                    DMPresence.SendMessage(actor, ColorToken.Red("Pick a square of the pitch."));
+                    return;
+                }
+
+                onPicked(entry.Pitch.GetSquare(position));
+            });
+        }
+
+        /// <summary>
+        /// Asks whoever clicked a panel button to click a creature.
+        /// </summary>
+        public static void PickCreature(uint actor, string message, System.Action<uint> onPicked)
+        {
+            Targeting.EnterTargetingMode(DMPresence.GetControlledCreature(actor), ObjectType.Creature, message, onPicked);
         }
 
         /// <summary>

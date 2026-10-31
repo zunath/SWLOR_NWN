@@ -9,16 +9,21 @@ using SWLOR.Game.Server.Service.HuttballService;
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
-    /// The Huttball match panel: score, turn, the player being commanded, its actions, the DM's match controls,
-    /// and the play-by-play. Opened with /huttball. Nothing in it has a fixed width, so the buttons share each row
-    /// and the play-by-play takes whatever height is left as the window is resized.
+    /// The staff Huttball panel: score, turn, the player being commanded, its actions, the DM's match controls,
+    /// and the play-by-play. Opened with /huttball by staff.
     /// </summary>
+    /// <remarks>
+    /// The rows sit in one group that scrolls up and down only. A group that may also scroll sideways lays its
+    /// content out with no width limit, so nothing in it stretches; scrolling only vertically keeps the content as
+    /// wide as the window, and the buttons, which have no set width, share each row.
+    /// </remarks>
     public class HuttballDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<HuttballViewModel> _builder = new();
 
         private const float LabelHeight = 20f;
         private const float StepButtonWidth = 40f;
+        private const float LogHeight = 200f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -27,123 +32,120 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .DefinePartialView(HuttballViewModel.MainContentPartial, AddMainContent)
-                .AddStandardLayout(layout =>
+                .AddColumn(col => col.AddRow(row => row.AddGroup(group =>
                 {
-                    layout.SetContentPartialElement(HuttballViewModel.MainContentElement);
-                });
+                    group.SetShowBorder(false);
+                    group.SetScrollbars(NuiScrollbars.Y);
+                    group.AddColumn(AddMainContent);
+                })));
 
             return _builder.Build();
         }
 
-        private static void AddMainContent(GuiGroup<HuttballViewModel> partial)
+        private static void AddMainContent(GuiColumn<HuttballViewModel> content)
         {
-            partial.SetMargin(0f);
-            partial.SetScrollbars(NuiScrollbars.None);
-            partial.AddColumn(content =>
+            AddBoundLabel(content, model => model.ScoreText);
+            AddBoundLabel(content, model => model.TurnText);
+            AddBoundLabel(content, model => model.BallText);
+            AddMatchText(content, model => model.ResourcesText, 44f);
+            content.AddRow(r =>
             {
-                AddBoundLabel(content, model => model.ScoreText);
-                AddBoundLabel(content, model => model.TurnText);
-                AddBoundLabel(content, model => model.BallText);
-                AddMatchText(content, model => model.ResourcesText, 44f);
-                content.AddRow(r =>
-                {
-                    r.BindIsVisible(model => model.HasMatch);
-                    r.AddText()
-                        .SetText(Huttball.PitchKey)
-                        .SetHeight(56f);
-                });
+                r.BindIsVisible(model => model.HasMatch);
+                r.AddText()
+                    .SetText(Huttball.PitchKey)
+                    .SetHeight(56f);
+            });
 
-                AddSectionLabel(content, "Player", model => model.HasMatch);
-                AddMatchText(content, model => model.UnitText, 56f);
-                content.AddRow(r =>
-                {
-                    r.BindIsVisible(model => model.HasMatch);
-                    AddActionButton(r, "Move", "Click a square. In setup, take any free square in your half.",
-                        model => model.OnMove(), model => model.CanMove);
-                    AddActionButton(r, "Block", "Opposed strength roll against an adjacent opponent.",
-                        model => model.OnBlock(), model => model.CanBlock);
-                    AddActionButton(r, "Pass", $"Throw the ball to a teammate up to {HuttballRules.PassRange} squares away.",
-                        model => model.OnPass(), model => model.CanPass);
-                });
-                content.AddRow(r =>
-                {
-                    r.BindIsVisible(model => model.HasMatch);
-                    AddActionButton(r, "Dirty Move", "Kick a downed opponent: another injury roll, but the referee may send you off.",
-                        model => model.OnDirtyMove(), model => model.CanDirtyMove);
-                    AddActionButton(r, "Stand Up", "Get back on your feet. Uses this turn's movement.",
-                        model => model.OnStandUp(), model => model.CanStandUp);
-                    AddActionButton(r, "Done", "Finish this player's turn.",
-                        model => model.OnDone(), model => model.CanFinish);
-                });
-                content.AddRow(r =>
-                {
-                    r.BindIsVisible(model => model.HasMatch);
-                    AddActionButton(r, "Re-roll", "Right after one of your team's rolls: undo it and roll again. You keep the new result.",
-                        model => model.OnReroll(), model => model.CanReroll);
-                    AddActionButton(r, "Medic", "Click an injured teammate on the bench: their injury drops one step.",
-                        model => model.OnMedic(), model => model.CanUseMedic);
-                });
+            AddSectionLabel(content, "Player", model => model.HasMatch);
+            AddMatchText(content, model => model.UnitText, 56f);
+            content.AddRow(r =>
+            {
+                r.BindIsVisible(model => model.HasMatch);
+                AddActionButton(r, "Move", "Click a square. In setup, take any free square in your half.",
+                    model => model.OnMove(), model => model.CanMove);
+                AddActionButton(r, "Block", "Opposed strength roll against an adjacent opponent.",
+                    model => model.OnBlock(), model => model.CanBlock);
+                AddActionButton(r, "Pass", $"Throw the ball to a teammate up to {HuttballRules.PassRange} squares away.",
+                    model => model.OnPass(), model => model.CanPass);
+            });
+            content.AddRow(r =>
+            {
+                r.BindIsVisible(model => model.HasMatch);
+                AddActionButton(r, "Dirty Move", "Kick a downed opponent: another injury roll, but the referee may send you off.",
+                    model => model.OnDirtyMove(), model => model.CanDirtyMove);
+                AddActionButton(r, "Stand Up", "Get back on your feet. Uses this turn's movement.",
+                    model => model.OnStandUp(), model => model.CanStandUp);
+                AddActionButton(r, "Done", "Finish this player's turn.",
+                    model => model.OnDone(), model => model.CanFinish);
+            });
+            content.AddRow(r =>
+            {
+                r.BindIsVisible(model => model.HasMatch);
+                AddActionButton(r, "Re-roll", "Right after one of your team's rolls: undo it and roll again. You keep the new result.",
+                    model => model.OnReroll(), model => model.CanReroll);
+                AddActionButton(r, "Medic", "Click an injured teammate on the bench: their injury drops one step.",
+                    model => model.OnMedic(), model => model.CanUseMedic);
+            });
 
-                AddSectionLabel(content, "DM Controls", model => model.IsDM);
-                AddDMRow(content, r =>
-                {
-                    AddDMButton(r, "Create Match", "Lay a 15 x 20 pitch over this area's battle grid.", model => model.OnCreateMatch())
-                        .BindIsEnabled(model => model.HasNoMatch);
-                    AddDMButton(r, "End Match", "End the match and clear the pitch, ball, and effects.", model => model.OnEndMatch())
-                        .BindIsEnabled(model => model.HasMatch);
-                    AddDMButton(r, "Test Teams", "For testing: add one test player of each role to each team, lined up in their own halves.", model => model.OnSpawnTestTeams())
-                        .BindIsEnabled(model => model.IsSetup);
-                });
-                AddDMRow(content, r =>
-                {
-                    r.AddComboBox()
-                        .AddOption("Home team", 0)
-                        .AddOption("Away team", 1)
-                        .BindSelectedIndex(model => model.TeamSelection);
-                    r.AddComboBox()
-                        .AddOption("Bruiser", 0)
-                        .AddOption("Catcher", 1)
-                        .AddOption("Thrower", 2)
-                        .AddOption("Blocker", 3)
-                        .BindSelectedIndex(model => model.RoleSelection);
-                });
-                AddDMRow(content, r =>
-                {
-                    AddDMButton(r, "Add Player", "Click a creature to add it to the chosen team and role.", model => model.OnAddPlayer())
-                        .BindIsEnabled(model => model.HasMatch);
-                    AddDMButton(r, "Remove Player", "Click a player to take out of the match.", model => model.OnRemovePlayer())
-                        .BindIsEnabled(model => model.HasMatch);
-                    AddDMButton(r, "Set Role", "Give the selected player the chosen role (between drives).", model => model.OnSetRole())
-                        .BindIsEnabled(model => model.IsSetup);
-                });
-                AddDMRow(content, r =>
-                {
-                    AddDMButton(r, "Select Player", "Click a player to command with the buttons above.", model => model.OnSelectUnit())
-                        .BindIsEnabled(model => model.HasMatch);
-                    AddDMButton(r, "Start Drive", "Click where the ball lands to kick off.", model => model.OnStartDrive())
-                        .BindIsEnabled(model => model.IsSetup);
-                    AddDMButton(r, "End Turn", "End the active team's turn now.", model => model.OnEndTeamTurn())
-                        .BindIsEnabled(model => model.IsPlaying);
-                });
-                AddDMRow(content, r =>
-                {
-                    AddResourceStepper(r, "Re-rolls", "re-roll", model => model.OnRerollDown(), model => model.OnRerollUp());
-                    AddResourceStepper(r, "Medics", "medic", model => model.OnMedicDown(), model => model.OnMedicUp());
-                    AddResourceStepper(r, "Bribes", "bribe (one is spent automatically when a dirty move is spotted)",
-                        model => model.OnBribeDown(), model => model.OnBribeUp());
-                });
+            AddSectionLabel(content, "DM Controls", model => model.IsDM);
+            AddDMRow(content, r =>
+            {
+                AddDMButton(r, "Create Match", "Lay a 15 x 20 pitch over this area's battle grid.", model => model.OnCreateMatch())
+                    .BindIsEnabled(model => model.HasNoMatch);
+                AddDMButton(r, "End Match", "End the match and clear the pitch, ball, and effects.", model => model.OnEndMatch())
+                    .BindIsEnabled(model => model.HasMatch);
+                AddDMButton(r, "Test Teams", "For testing: add one test player of each role to each team, lined up in their own halves.", model => model.OnSpawnTestTeams())
+                    .BindIsEnabled(model => model.IsSetup);
+            });
+            AddDMRow(content, r =>
+            {
+                r.AddComboBox()
+                    .AddOption("Home team", 0)
+                    .AddOption("Away team", 1)
+                    .BindSelectedIndex(model => model.TeamSelection);
+                r.AddComboBox()
+                    .AddOption("Bruiser", 0)
+                    .AddOption("Catcher", 1)
+                    .AddOption("Thrower", 2)
+                    .AddOption("Blocker", 3)
+                    .BindSelectedIndex(model => model.RoleSelection);
+            });
+            AddDMRow(content, r =>
+            {
+                AddDMButton(r, "Add Player", "Click a creature to add it to the chosen team and role.", model => model.OnAddPlayer())
+                    .BindIsEnabled(model => model.HasMatch);
+                AddDMButton(r, "Remove Player", "Click a player to take out of the match.", model => model.OnRemovePlayer())
+                    .BindIsEnabled(model => model.HasMatch);
+                AddDMButton(r, "Set Role", "Give the selected player the chosen role (between drives).", model => model.OnSetRole())
+                    .BindIsEnabled(model => model.IsSetup);
+            });
+            AddDMRow(content, r =>
+            {
+                AddDMButton(r, "Select Player", "Click a player to command with the buttons above.", model => model.OnSelectUnit())
+                    .BindIsEnabled(model => model.HasMatch);
+                AddDMButton(r, "Start Drive", "Click where the ball lands to kick off.", model => model.OnStartDrive())
+                    .BindIsEnabled(model => model.IsSetup);
+                AddDMButton(r, "End Turn", "End the active team's turn now.", model => model.OnEndTeamTurn())
+                    .BindIsEnabled(model => model.IsPlaying);
+            });
+            AddDMRow(content, r =>
+            {
+                AddResourceStepper(r, "Re-rolls", "re-roll", model => model.OnRerollDown(), model => model.OnRerollUp());
+                AddResourceStepper(r, "Medics", "medic", model => model.OnMedicDown(), model => model.OnMedicUp());
+                AddResourceStepper(r, "Bribes", "bribe (one is spent automatically when a dirty move is spotted)",
+                    model => model.OnBribeDown(), model => model.OnBribeUp());
+            });
 
-                AddSectionLabel(content, "Play-by-Play", model => model.HasMatch);
-                content.AddRow(r =>
-                {
-                    r.BindIsVisible(model => model.HasMatch);
-                    // No height: the play-by-play takes whatever the window has left.
-                    r.AddText()
-                        .BindText(model => model.LogText)
-                        .SetShowBorder(true)
-                        .SetScrollbars(NuiScrollbars.Auto);
-                });
+            AddSectionLabel(content, "Play-by-Play", model => model.HasMatch);
+            content.AddRow(r =>
+            {
+                r.BindIsVisible(model => model.HasMatch);
+                // A set height: in a group that scrolls vertically, a box with none would collapse.
+                r.AddText()
+                    .BindText(model => model.LogText)
+                    .SetShowBorder(true)
+                    .SetScrollbars(NuiScrollbars.Auto)
+                    .SetHeight(LogHeight);
             });
         }
 

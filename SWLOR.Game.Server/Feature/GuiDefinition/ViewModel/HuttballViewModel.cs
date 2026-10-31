@@ -1,24 +1,18 @@
 using System.Linq;
-using System.Numerics;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.HuttballService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     /// <summary>
-    /// The Huttball match panel. Players use it to act with their own character; DMs also use it to run the match
-    /// and to act with any player in it, such as the creatures of the team they control.
+    /// The staff Huttball panel: runs the match and acts with any player in it, such as the creatures of the team
+    /// a DM controls. Players use the compact <see cref="HuttballPlayerViewModel"/> instead.
     /// </summary>
     public class HuttballViewModel : GuiViewModelBase<HuttballViewModel, GuiPayloadBase>,
         IGuiRefreshable<HuttballRefreshEvent>
     {
-        public const string MainContentElement = "huttball_content";
-        public const string MainContentPartial = "HUTTBALL_MAIN";
-
         private uint _selectedUnit = OBJECT_INVALID;
         private bool _isStaff;
 
@@ -50,19 +44,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            // The window has no swappable partial: its layout is already on screen, so the combo values set here
+            // reach controls that exist.
             _isStaff = CheckIsStaff();
             TeamSelection = 0;
             RoleSelection = 0;
             Refresh();
             WatchOnClient(model => model.TeamSelection);
             WatchOnClient(model => model.RoleSelection);
-
-            // Combo values are input binds, which the client drops when they arrive before the layout that shows them.
-            SwapNestedPartialView(MainContentElement, MainContentPartial, onAfterApply: () =>
-            {
-                TeamSelection = TeamSelection;
-                RoleSelection = RoleSelection;
-            });
         }
 
         public void Refresh(HuttballRefreshEvent payload)
@@ -75,20 +64,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private HuttballMatch Match => Huttball.GetMatch(MatchArea);
         private bool UserIsDM => _isStaff;
 
-        /// <summary>
-        /// Staff run matches, as they may run the battle grid: DMs, and staff on their own characters. Staff are
-        /// matched by CD key, which resolves from the creature they control. Checked once per opening, since every
-        /// match change refreshes every open panel.
-        /// </summary>
-        private bool CheckIsStaff()
-        {
-            var controlled = Controlled;
-            if (string.IsNullOrEmpty(GetPCPublicCDKey(controlled)))
-                return false;
-
-            var level = Authorization.GetAuthorizationLevel(controlled);
-            return level.HasFlag(AuthorizationLevel.DM) || level.HasFlag(AuthorizationLevel.Admin);
-        }
+        // Checked once per opening, since every match change refreshes every open panel.
+        private bool CheckIsStaff() => Huttball.IsStaff(Player);
         private HuttballTeam SelectedTeam => TeamSelection == 1 ? HuttballTeam.Away : HuttballTeam.Home;
         private HuttballRole SelectedRole => (HuttballRole)(RoleSelection + 1);
 
@@ -196,14 +173,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             uint striker = OBJECT_INVALID,
             uint struck = OBJECT_INVALID)
         {
-            var match = Match;
-            if (match == null)
-            {
-                DMPresence.SendMessage(Player, ColorToken.Red("There is no Huttball match in this area."));
-                return;
-            }
-
-            Huttball.Apply(MatchArea, command(match), Player, mover, striker, struck);
+            Huttball.Command(Player, command, mover, striker, struck);
             Refresh();
         }
 
@@ -219,38 +189,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return false;
         }
 
-        /// <summary>
-        /// Asks for a square of the pitch: the ground, or anything standing on it.
-        /// </summary>
         private void PickSquare(string message, System.Action<HuttballSquare> onPicked)
         {
-            var controlled = Controlled;
-            Targeting.EnterTargetingMode(controlled, ObjectType.All, message, target =>
-            {
-                // A ground pick arrives as the area object, the way the battle grid window reads it.
-                var area = GetArea(controlled);
-                var pitch = Huttball.GetPitch(area);
-                if (pitch == null)
-                    return;
-
-                Vector3 position;
-                if (target == area)
-                    position = GetTargetingModeSelectedPosition();
-                else if (GetIsObjectValid(target) && GetArea(target) == area)
-                    position = GetPosition(target);
-                else
-                {
-                    DMPresence.SendMessage(Player, ColorToken.Red("Pick a square of the pitch."));
-                    return;
-                }
-
-                onPicked(pitch.Value.GetSquare(position));
-            });
+            Huttball.PickSquare(Player, message, onPicked);
         }
 
         private void PickCreature(string message, System.Action<uint> onPicked)
         {
-            Targeting.EnterTargetingMode(Controlled, ObjectType.Creature, message, onPicked);
+            Huttball.PickCreature(Player, message, onPicked);
         }
 
         public Action OnMove() => () =>

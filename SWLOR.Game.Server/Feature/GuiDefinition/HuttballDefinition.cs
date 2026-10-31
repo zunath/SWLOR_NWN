@@ -26,12 +26,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ComboWidth = 208f;
         private const float StepLabelWidth = 100f;
         private const float StepButtonWidth = 40f;
-        private const float LogHeight = 440f;
+        private const float LogHeight = 360f;
+        private const float ControlHeight = 32f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Huttball)
-                .SetInitialGeometry(0f, 0f, 490f, 600f)
+                .SetInitialGeometry(0f, 0f, 480f, 520f)
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -128,7 +129,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .AddOption("Thrower", 2)
                         .AddOption("Blocker", 3)
                         .BindSelectedIndex(model => model.RoleSelection)
-                        .SetWidth(ComboWidth);
+                        .SetWidth(ComboWidth)
+                        .SetHeight(ControlHeight);
                     r.AddSpacer();
                 });
                 content.AddRow(r =>
@@ -224,7 +226,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddOption("Home team", 0)
                 .AddOption("Away team", 1)
                 .BindSelectedIndex(model => model.TeamSelection)
-                .SetWidth(ComboWidth);
+                .SetWidth(ComboWidth)
+                .SetHeight(ControlHeight);
         }
 
         private static void AddBoundLabel(GuiColumn<HuttballViewModel> content, Expression<Func<HuttballViewModel, string>> text)
@@ -253,6 +256,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetText(text)
                 .SetTooltip(tooltip)
                 .SetWidth(ButtonWidth)
+                .SetHeight(ControlHeight)
                 .BindOnClicked(onClick);
         }
 
@@ -285,18 +289,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 r.AddLabel()
                     .SetText(label)
                     .SetWidth(StepLabelWidth)
+                    .SetHeight(ControlHeight)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                 r.AddButton()
                     .SetText("-")
                     .SetTooltip($"Take a {noun} from the chosen team.")
                     .SetWidth(StepButtonWidth)
+                    .SetHeight(ControlHeight)
                     .BindOnClicked(onDown)
                     .BindIsEnabled(model => model.HasMatch);
                 r.AddButton()
                     .SetText("+")
                     .SetTooltip($"Give the chosen team a {noun}.")
                     .SetWidth(StepButtonWidth)
+                    .SetHeight(ControlHeight)
                     .BindOnClicked(onUp)
                     .BindIsEnabled(model => model.HasMatch);
                 r.AddSpacer();

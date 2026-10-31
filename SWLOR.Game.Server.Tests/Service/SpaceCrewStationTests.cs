@@ -368,7 +368,7 @@ public class SpaceCrewStationTests
         breakFormation.Should().Contain("new WeakenedStatusEffect(SpaceCommand.ApplyLeadershipScaling(activator,");
         var crew = ReadServerSource("Service", "SpaceService", "SpaceCrew.cs");
         crew.Should().Contain("ShipCrewSeats.CapEffectiveness(GetCrewMultiplier(ship))");
-        crew.Should().Contain("DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Industry, GetCrewMultiplier(ship)");
+        crew.Should().Contain("DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Industry, GetCrewMultiplier(ship, true)");
     }
 
     // Crew members' own Piloting abilities (W11b)

@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
         /// <summary>A player's Slicing rank: what every target's tier is checked against.</summary>
         public static int GetSlicingRank(uint player) => Perk.GetPerkLevel(player, PerkType.Slicing);
 
-        public static string GetRankRequirementError(int tier) =>
+        internal static string GetRankRequirementError(int tier) =>
             ColorToken.Red($"Slicing rank {tier} is required for this target.");
 
         public static bool SelectTile(uint player, int index, out string error)

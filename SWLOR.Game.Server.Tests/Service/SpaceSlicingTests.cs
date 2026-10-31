@@ -137,7 +137,7 @@ public class SpaceSlicingTests
     {
         var session = ServerSource("Service", "SlicingService", "SlicingSession.cs");
         var validate = session[session.IndexOf("public static string ValidateStart", StringComparison.Ordinal)..];
-        validate = validate[..validate.IndexOf("private static string GetRankRequirementError", StringComparison.Ordinal)];
+        validate = validate[..validate.IndexOf("internal static string GetRankRequirementError", StringComparison.Ordinal)];
 
         validate.Should().Contain("if (tier < 1 || tier > 5)");
         validate.Should().Contain("if (IsInCombat(player, source))");

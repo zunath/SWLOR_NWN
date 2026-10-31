@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Circuit minigame
 
-- Command: `SWLOR.CraftSim gates --scenario circuit --runs 100 --recipes-per-band 6 --seed 1 --out design/testing/crafting-revamp/circuit-gates.md --json design/testing/crafting-revamp/circuit-gates.json`
+- Command: `SWLOR.CraftSim gates --scenario circuit --runs 100 --recipes-per-band 6 --seed 1 --out design/testing/crafting-revamp/circuit-gates.md --json C:/Users/Zunath/AppData/Local/Temp/claude/C--Projects-SWLOR-NWN--claude-worktrees-lockbox-reward-pool-variety-9747f8/3c27674f-7215-4512-9b37-01d48c93d13d/scratchpad/sc/sim3/circuit-gates.json`
 - Seed 1; 100 runs per case.
 
 ## Inputs
@@ -11,7 +11,7 @@
   - no gear (Control 0, Craftsmanship 0, CP 0)
   - mid gear (Control 13, Craftsmanship 12, CP 20)
   - best gear (Control 29, Craftsmanship 30, CP 37)
-- Recipes: 1-10: 6 of 444; 11-20: 6 of 453; 21-30: 6 of 443; 31-40: 6 of 443; 41-53: 6 of 419 recipes played.
+- Recipes: 1-10: 6 of 442; 11-20: 6 of 453; 21-30: 6 of 443; 31-40: 6 of 443; 41-53: 6 of 419 recipes played.
 - Adaptive player: depth 3, forecast samples per result 2, budget 4000 engine copies per decision, 0.5% of value lost per extra action, heuristic DefaultLeafHeuristic. Each attempt's dice come from its own stream of the seed.
 - Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
@@ -47,7 +47,7 @@
 
 | Gate | Verdict | Summary |
 | --- | --- | --- |
-| No fixed rotation | Failed | One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -7.0 in 1-10 / best gear). The best rotation for each recipe alone, a reported metric, is -9.6 to -0.0 points behind adaptive play. |
+| No fixed rotation | Failed | One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -8.3 in 1-10 / mid gear). The best rotation for each recipe alone, a reported metric, is -10.0 to -0.0 points behind adaptive play. |
 | Style balance | Passed | Every style is the better choice on at least 30% of recipes and no pair differs by more than 5 points on average. |
 | Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 97%). |
 | Length | Passed | Every band and gear tier takes 10-20 actions (item craft at level) on average. |
@@ -61,9 +61,9 @@
 
 | Band | Gear | Recipes played | Adaptive avg quality | Best single rotation avg quality | Margin | Required | Best rotation per recipe avg quality (reported) | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 6 | 50.4 | 51.8 | -1.3 | >= 10 | 52.3 | Failed |
-| 1-10 | mid gear | 6 | 83.3 | 86.8 | -3.4 | >= 10 | 92.8 | Failed |
-| 1-10 | best gear | 6 | 92.1 | 99.1 | -7.0 | >= 10 | 99.8 | Failed |
+| 1-10 | no gear | 6 | 50.0 | 51.9 | -1.9 | >= 10 | 52.7 | Failed |
+| 1-10 | mid gear | 6 | 87.3 | 95.6 | -8.3 | >= 10 | 97.3 | Failed |
+| 1-10 | best gear | 6 | 94.1 | 98.2 | -4.1 | >= 10 | 100.0 | Failed |
 | 11-20 | no gear | 6 | 77.6 | 84.3 | -6.7 | >= 10 | 87.3 | Failed |
 | 11-20 | mid gear | 6 | 95.0 | 100.0 | -5.0 | >= 10 | 100.0 | Failed |
 | 11-20 | best gear | 6 | 99.6 | 100.0 | -0.4 | >= 10 | 100.0 | Failed |
@@ -81,9 +81,9 @@
 
 | Band | Gear | Best single rotation for the band | Training | Selection | Hold-out | Adaptive on these recipes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | wire x3 > tune x2 > discharge_calibration > wire x3 > discharge_calibration > wire x4 > discharge_calibration > wire | 51.2 | 51.8 | 51.8 | 50.4 |
-| 1-10 | mid gear | discharge_assembly > boost > wire > discharge_calibration > wire > tune x3 > discharge_calibration > wire x2 > tune x2 > discharge_assembly x2 > wire x2 > tune > wire > discharge_calibration > wire | 90.0 | 90.2 | 86.8 | 83.3 |
-| 1-10 | best gear | discharge_assembly > tune > patch > tune x2 > discharge_calibration > tune x2 > patch > tune > discharge_calibration > wire x2 > tune > discharge_calibration > wire x2 > discharge_assembly > wire x3 | 98.9 | 99.2 | 99.1 | 92.1 |
+| 1-10 | no gear | wire x3 > tune x2 > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > wire | 51.4 | 52.0 | 51.9 | 50.0 |
+| 1-10 | mid gear | tune x2 > wire > tune > discharge_calibration > tune x2 > wire > tune > discharge_calibration > wire x4 > discharge_calibration > wire > tune > wire x4 | 96.6 | 95.6 | 95.6 | 87.3 |
+| 1-10 | best gear | discharge_assembly > tune x3 > discharge_calibration > tune x3 > discharge_calibration > tune > wire x2 > discharge_calibration > wire x2 > tune > wire > discharge_assembly > wire x3 | 99.0 | 98.8 | 98.2 | 94.1 |
 | 11-20 | no gear | wire > tune x3 > discharge_calibration > wire x2 > tune x2 > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > tune > wire > discharge_calibration > wire x3 | 84.1 | 84.3 | 84.3 | 77.6 |
 | 11-20 | mid gear | wire > tune x3 > discharge_calibration > tune x4 > patch > discharge_calibration > wire x3 > discharge_calibration > wire x4 > discharge_calibration > wire x2 | 100.0 | 100.0 | 100.0 | 95.0 |
 | 11-20 | best gear | tune x4 > discharge_calibration > tune x4 > discharge_calibration > wire x4 > discharge_assembly > wire > tune > wire x2 | 100.0 | 100.0 | 100.0 | 99.6 |
@@ -101,24 +101,24 @@
 
 | Band | Gear | Recipe | Best rotation for this recipe alone (reported) | Its hold-out | The single rotation on this recipe | Adaptive on this recipe |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | sm_thrust_00 (level 2) | wire x3 > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > wire | 32.2 | 31.4 | 30.1 |
-| 1-10 | no gear | dmotive_sys1 (level 5) | wire x2 > tune > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire | 48.4 | 47.2 | 46.8 |
-| 1-10 | no gear | d_hd_pvw1 (level 6) | wire x5 > tune > discharge_calibration > wire x4 > discharge_calibration > wire | 49.8 | 49.0 | 47.5 |
+| 1-10 | no gear | sm_capr_00 (level 2) | wire x5 > discharge_calibration > wire > discharge_calibration > wire x4 > discharge_calibration > wire | 36.4 | 34.6 | 32.3 |
+| 1-10 | no gear | dmotive_sys1 (level 5) | wire x2 > tune > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire | 48.4 | 46.1 | 46.8 |
+| 1-10 | no gear | d_bd_mw1 (level 6) | wire x4 > tune > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire x2 > discharge_calibration > wire | 48.0 | 47.8 | 42.6 |
 | 1-10 | no gear | ship_fuelcapsule (level 8) | wire > tune > wire > tune x2 > discharge_calibration > wire x4 > discharge_calibration > wire x4 > discharge_calibration > wire > discharge_calibration > wire | 57.6 | 56.9 | 55.3 |
 | 1-10 | no gear | dehl001 (level 10) | wire x3 > tune x2 > discharge_calibration > wire x5 > discharge_calibration > wire x2 > discharge_calibration > wire | 64.4 | 63.4 | 62.8 |
 | 1-10 | no gear | sm_resall_10 (level 10) | wire x2 > tune x2 > wire > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire | 61.6 | 62.7 | 60.2 |
-| 1-10 | mid gear | sm_thrust_00 (level 2) | wire > tune x2 > discharge_calibration > tune x2 > wire > discharge_calibration > wire x2 > tune > wire > discharge_assembly x2 > wire > tune > wire > discharge_calibration > wire x2 | 72.7 | 62.8 | 71.8 |
-| 1-10 | mid gear | dmotive_sys1 (level 5) | wire > tune x2 > discharge_calibration > tune x3 > wire > discharge_assembly > tune > wire x2 > discharge_calibration > tune > wire x2 > discharge_calibration > wire x2 | 84.5 | 61.7 | 78.4 |
-| 1-10 | mid gear | d_hd_pvw1 (level 6) | tune x5 > discharge_calibration > wire > tune > wire > tune x2 > discharge_assembly > wire x4 > discharge_calibration > wire | 100.0 | 99.7 | 91.2 |
-| 1-10 | mid gear | ship_fuelcapsule (level 8) | wire > tune > wire > tune > discharge_calibration > tune x4 > discharge_calibration > discharge_assembly > wire x4 > discharge_calibration > discharge_assembly > wire > tune > wire x2 | 99.7 | 98.6 | 83.3 |
-| 1-10 | mid gear | dehl001 (level 10) | tune x5 > discharge_calibration > wire > tune x3 > wire > discharge_assembly > wire x2 > tune > wire x2 > discharge_calibration > wire | 100.0 | 98.7 | 90.4 |
-| 1-10 | mid gear | sm_resall_10 (level 10) | tune > wire x2 > tune x2 > discharge_calibration > tune x3 > patch > discharge_calibration > wire x2 > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > wire | 100.0 | 99.1 | 85.0 |
-| 1-10 | best gear | sm_thrust_00 (level 2) | tune x3 > discharge_calibration > tune x3 > discharge_assembly > tune x3 > ground > wire x3 > discharge_assembly > wire x2 > tune > wire x2 | 99.1 | 99.0 | 75.4 |
-| 1-10 | best gear | dmotive_sys1 (level 5) | discharge_assembly > tune x3 > discharge_calibration > tune x3 > discharge_calibration > tune > wire x2 > discharge_calibration > wire > tune > wire > discharge_assembly > wire x2 | 100.0 | 99.4 | 93.6 |
-| 1-10 | best gear | d_hd_pvw1 (level 6) | tune x5 > discharge_calibration > tune x3 > wire x2 > discharge_assembly > tune > wire x4 | 100.0 | 99.1 | 94.2 |
-| 1-10 | best gear | ship_fuelcapsule (level 8) | tune > wire > tune x2 > discharge_calibration > tune x3 > discharge_calibration > boost > wire > discharge_calibration > wire x2 > tune > wire > discharge_assembly > wire x3 | 100.0 | 98.9 | 89.7 |
-| 1-10 | best gear | dehl001 (level 10) | tune x5 > discharge_calibration > tune x4 > wire > discharge_assembly > wire x5 | 100.0 | 98.9 | 100.0 |
-| 1-10 | best gear | sm_resall_10 (level 10) | tune x5 > discharge_calibration > tune x3 > wire x2 > discharge_assembly > wire x3 > tune > wire | 100.0 | 99.0 | 99.6 |
+| 1-10 | mid gear | sm_capr_00 (level 2) | boost > tune x2 > discharge_calibration > tune x3 > wire x2 > discharge_calibration > wire x5 > discharge_calibration > wire x2 | 100.0 | 99.9 | 94.0 |
+| 1-10 | mid gear | dmotive_sys1 (level 5) | wire > tune x2 > discharge_calibration > tune x3 > wire > discharge_assembly > tune > wire x2 > discharge_calibration > tune > wire x2 > discharge_calibration > wire x2 | 84.5 | 75.0 | 78.4 |
+| 1-10 | mid gear | d_bd_mw1 (level 6) | tune x3 > wire > discharge_calibration > tune x2 > wire > tune > discharge_calibration > wire x4 > discharge_calibration > wire > tune > wire x4 | 99.6 | 99.8 | 92.9 |
+| 1-10 | mid gear | ship_fuelcapsule (level 8) | wire > tune > wire > tune > discharge_calibration > tune x4 > discharge_calibration > discharge_assembly > wire x4 > discharge_calibration > discharge_assembly > wire > tune > wire x2 | 99.7 | 99.4 | 83.3 |
+| 1-10 | mid gear | dehl001 (level 10) | tune x5 > discharge_calibration > wire > tune x3 > wire > discharge_assembly > wire x2 > tune > wire x2 > discharge_calibration > wire | 100.0 | 99.7 | 90.4 |
+| 1-10 | mid gear | sm_resall_10 (level 10) | tune > wire x2 > tune x2 > discharge_calibration > tune x3 > patch > discharge_calibration > wire x2 > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > wire | 100.0 | 99.7 | 85.0 |
+| 1-10 | best gear | sm_capr_00 (level 2) | tune x5 > discharge_calibration > tune > wire > tune x2 > wire > discharge_assembly > tune > wire x3 | 100.0 | 100.0 | 93.0 |
+| 1-10 | best gear | dmotive_sys1 (level 5) | discharge_assembly > tune x3 > discharge_calibration > tune x3 > discharge_calibration > tune > wire x2 > discharge_calibration > wire > tune > wire > discharge_assembly > wire x2 | 100.0 | 89.0 | 93.6 |
+| 1-10 | best gear | d_bd_mw1 (level 6) | tune x4 > discharge_calibration > tune x3 > wire > discharge_calibration > wire > tune > wire x2 > discharge_assembly > wire x3 | 100.0 | 100.0 | 88.6 |
+| 1-10 | best gear | ship_fuelcapsule (level 8) | tune > wire > tune x2 > discharge_calibration > tune x3 > discharge_calibration > boost > wire > discharge_calibration > wire x2 > tune > wire > discharge_assembly > wire x3 | 100.0 | 100.0 | 89.7 |
+| 1-10 | best gear | dehl001 (level 10) | tune x5 > discharge_calibration > tune x4 > wire > discharge_assembly > wire x5 | 100.0 | 100.0 | 100.0 |
+| 1-10 | best gear | sm_resall_10 (level 10) | tune x5 > discharge_calibration > tune x3 > wire x2 > discharge_assembly > wire x3 > tune > wire | 100.0 | 100.0 | 99.6 |
 | 11-20 | no gear | dlbe001a (level 14) | wire > tune x3 > discharge_calibration > wire x4 > discharge_calibration > wire x4 > discharge_calibration > wire > discharge_calibration > wire | 74.0 | 72.7 | 72.4 |
 | 11-20 | no gear | sd_hutthauler (level 15) | boost > wire > tune x3 > discharge_calibration > wire x2 > discharge_calibration > wire x6 > discharge_calibration > wire > discharge_calibration > wire | 75.1 | 67.5 | 70.6 |
 | 11-20 | no gear | dhnk002a (level 17) | wire > tune x3 > discharge_calibration > wire x3 > tune > discharge_calibration > wire x2 > discharge_calibration > wire x2 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire | 85.8 | 83.4 | 71.6 |
@@ -221,9 +221,9 @@
 
 | Band | Gear | Recipes played | Mean actions per attempt | Shortest recipe | Longest recipe | Stalled attempts | Target | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 6 | 14.4 | 13.4 | 15.1 | 0 | 10-20 | Passed |
-| 1-10 | mid gear | 6 | 16.8 | 15.6 | 18.6 | 0 | 10-20 | Passed |
-| 1-10 | best gear | 6 | 15.7 | 14.5 | 17.9 | 0 | 10-20 | Passed |
+| 1-10 | no gear | 6 | 14.1 | 12.0 | 15.1 | 0 | 10-20 | Passed |
+| 1-10 | mid gear | 6 | 16.9 | 15.6 | 18.6 | 0 | 10-20 | Passed |
+| 1-10 | best gear | 6 | 15.2 | 14.5 | 16.1 | 0 | 10-20 | Passed |
 | 11-20 | no gear | 6 | 16.9 | 15.6 | 20.2 | 0 | 10-20 | Passed |
 | 11-20 | mid gear | 6 | 17.2 | 16.0 | 18.9 | 0 | 10-20 | Passed |
 | 11-20 | best gear | 6 | 15.0 | 14.2 | 16.5 | 0 | 10-20 | Passed |
@@ -243,9 +243,9 @@
 
 | Band | Gear | Recipes played | New stacks per item | Legacy stacks per item | Ratio | New success | Legacy success | New avg quality | Legacy avg quality | Quality matched | Never made (new / legacy) | Parity rule | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 6 | 2.50 | 2.54 | 0.98 | 100% | 97% | 50% | 1% | yes | 0% / 0% | within 10% | Passed |
-| 1-10 | mid gear | 6 | 2.62 | 2.56 | 1.02 | 94% | 96% | 83% | 10% | yes | 0% / 0% | within 10% | Passed |
-| 1-10 | best gear | 6 | 2.58 | 2.53 | 1.02 | 96% | 98% | 92% | 24% | yes | 0% / 0% | within 10% | Passed |
+| 1-10 | no gear | 6 | 2.67 | 2.71 | 0.98 | 100% | 97% | 50% | 1% | yes | 0% / 0% | within 10% | Passed |
+| 1-10 | mid gear | 6 | 2.76 | 2.73 | 1.01 | 95% | 96% | 87% | 10% | yes | 0% / 0% | within 10% | Passed |
+| 1-10 | best gear | 6 | 2.72 | 2.70 | 1.01 | 97% | 98% | 94% | 24% | yes | 0% / 0% | within 10% | Passed |
 | 11-20 | no gear | 6 | 3.34 | 3.50 | 0.96 | 100% | 93% | 78% | 3% | yes | 0% / 0% | within 10% | Passed |
 | 11-20 | mid gear | 6 | 3.39 | 3.34 | 1.01 | 97% | 99% | 95% | 12% | yes | 0% / 0% | within 10% | Passed |
 | 11-20 | best gear | 6 | 3.34 | 3.35 | 1.00 | 100% | 99% | 100% | 29% | yes | 0% / 0% | within 10% | Passed |
@@ -265,18 +265,18 @@
 
 | Group | Variant | Legacy XP per craft | Legacy actions per craft | Legacy XP per hour | New XP per craft | New actions per craft | New XP per hour | Ratio | XP multiplier needed | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 591 | 5.6 | 62931 | 2066 | 14.4 | 64747 | 1.03 | - | Passed |
-| 1-10 | no gear, 1 enhancement | 453 | 6.1 | 44392 | 1854 | 17.8 | 46825 | 1.05 | - | Passed |
-| 1-10 | no gear, 2 enhancements | 279 | 6.3 | 26424 | 1896 | 17.9 | 47651 | 1.80 | - | Passed |
-| 1-10 | no gear, 3 enhancements | 164 | 6.5 | 15134 | 1844 | 17.6 | 47020 | 3.11 | - | Passed |
-| 1-10 | mid gear | 643 | 7.6 | 50946 | 2443 | 16.8 | 65481 | 1.29 | - | Passed |
-| 1-10 | mid gear, 1 enhancement | 619 | 7.4 | 50208 | 2184 | 18.5 | 53047 | 1.06 | - | Passed |
-| 1-10 | mid gear, 2 enhancements | 604 | 8.1 | 44579 | 2156 | 18.4 | 52805 | 1.18 | - | Passed |
-| 1-10 | mid gear, 3 enhancements | 544 | 8.6 | 37714 | 2164 | 18.5 | 52541 | 1.39 | - | Passed |
-| 1-10 | best gear | 734 | 8.8 | 50163 | 2587 | 15.7 | 74098 | 1.48 | - | Passed |
-| 1-10 | best gear, 1 enhancement | 706 | 8.7 | 48876 | 2434 | 17.5 | 62592 | 1.28 | - | Passed |
-| 1-10 | best gear, 2 enhancements | 699 | 9.1 | 45854 | 2509 | 17.6 | 64163 | 1.40 | - | Passed |
-| 1-10 | best gear, 3 enhancements | 685 | 9.5 | 43467 | 2498 | 17.7 | 63620 | 1.46 | - | Passed |
+| 1-10 | no gear | 591 | 5.6 | 62931 | 2060 | 14.1 | 65892 | 1.05 | - | Passed |
+| 1-10 | no gear, 1 enhancement | 453 | 6.1 | 44392 | 2070 | 18.0 | 51641 | 1.16 | - | Passed |
+| 1-10 | no gear, 2 enhancements | 279 | 6.3 | 26424 | 2049 | 18.1 | 51054 | 1.93 | - | Passed |
+| 1-10 | no gear, 3 enhancements | 164 | 6.5 | 15134 | 2027 | 17.9 | 50969 | 3.37 | - | Passed |
+| 1-10 | mid gear | 643 | 7.6 | 50946 | 2517 | 16.9 | 66998 | 1.32 | - | Passed |
+| 1-10 | mid gear, 1 enhancement | 619 | 7.4 | 50208 | 2232 | 18.5 | 54330 | 1.08 | - | Passed |
+| 1-10 | mid gear, 2 enhancements | 604 | 8.1 | 44579 | 2218 | 18.4 | 54096 | 1.21 | - | Passed |
+| 1-10 | mid gear, 3 enhancements | 544 | 8.6 | 37714 | 2155 | 18.3 | 52880 | 1.40 | - | Passed |
+| 1-10 | best gear | 734 | 8.8 | 50163 | 2632 | 15.2 | 77780 | 1.55 | - | Passed |
+| 1-10 | best gear, 1 enhancement | 706 | 8.7 | 48876 | 2460 | 17.3 | 63916 | 1.31 | - | Passed |
+| 1-10 | best gear, 2 enhancements | 699 | 9.1 | 45854 | 2492 | 17.3 | 64693 | 1.41 | - | Passed |
+| 1-10 | best gear, 3 enhancements | 685 | 9.5 | 43467 | 2451 | 17.4 | 63201 | 1.45 | - | Passed |
 | 11-20 | no gear | 582 | 7.2 | 48420 | 1828 | 16.9 | 48644 | 1.00 | - | Passed |
 | 11-20 | no gear, 1 enhancement | 437 | 8.1 | 32413 | 1906 | 20.2 | 42524 | 1.31 | - | Passed |
 | 11-20 | no gear, 2 enhancements | 348 | 7.5 | 27837 | 1922 | 20.1 | 42998 | 1.54 | - | Passed |

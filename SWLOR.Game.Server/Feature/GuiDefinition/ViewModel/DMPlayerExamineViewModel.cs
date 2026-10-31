@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Description = GetDescription(_target);
             SetGroupLayout(DescriptionElement,
                 ExamineItemText.BuildLayout<DMPlayerExamineViewModel>(Description, 96f, 480f));
-            PortraitResref = GetPortraitResRef(_target) + "l";
+            PortraitResref = GuiPortrait.GetLarge(_target);
             CharacterType = GetClassByPosition(1, _target) == ClassType.ForceSensitive
                 ? "Force Sensitive" : "Standard";
             Credits = GetGold(_target).ToString("N0");

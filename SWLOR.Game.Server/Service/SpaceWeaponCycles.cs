@@ -12,27 +12,32 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class SpaceWeaponCycles
     {
-        /// <summary>Whether the ship's next weapon cycle runs with no extra delay.</summary>
-        public static bool HasNoDelayCycle(uint ship, ShipModuleType moduleType)
+        /// <summary>
+        /// Whether the ship's next weapon cycle fired by <paramref name="shooter"/> (the pilot's ship, the crew member at
+        /// the slot's station, or OBJECT_INVALID for a droid) runs with no extra delay. The effect reaches only its
+        /// taker's weapons (<see cref="SpaceStanceRules.ReachesShooter"/>).
+        /// </summary>
+        public static bool HasNoDelayCycle(uint ship, ShipModuleType moduleType, uint shooter)
         {
-            return ShipToggleRules.IsOffensive(moduleType) && GetLimitedEffect(ship) != null;
+            return ShipToggleRules.IsOffensive(moduleType) && GetLimitedEffect(ship, shooter) != null;
         }
 
-        /// <summary>Spends one cycle of the ship's limited weapon cycle effect.</summary>
-        public static void ConsumeCycle(uint ship, ShipModuleType moduleType)
+        /// <summary>Spends one cycle of the limited weapon cycle effect that reaches the shooter's weapons.</summary>
+        public static void ConsumeCycle(uint ship, ShipModuleType moduleType, uint shooter)
         {
             if (!ShipToggleRules.IsOffensive(moduleType))
                 return;
 
-            GetLimitedEffect(ship)?.ConsumeWeaponCycle();
+            GetLimitedEffect(ship, shooter)?.ConsumeWeaponCycle();
         }
 
-        private static ILimitedWeaponCycleStatusEffect GetLimitedEffect(uint ship)
+        private static ILimitedWeaponCycleStatusEffect GetLimitedEffect(uint ship, uint shooter)
         {
             return StatusEffect.GetCreatureStatusEffects(ship)
                 .GetAllEffects()
                 .OfType<ILimitedWeaponCycleStatusEffect>()
-                .FirstOrDefault(effect => !effect.IsFlaggedForRemoval && effect.RemainingCycles > 0);
+                .FirstOrDefault(effect => !effect.IsFlaggedForRemoval && effect.RemainingCycles > 0 &&
+                                          SpaceStanceRules.ReachesShooter(ship, shooter, effect.Source));
         }
     }
 }

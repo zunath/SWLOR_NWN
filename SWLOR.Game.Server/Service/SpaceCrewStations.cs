@@ -630,6 +630,7 @@ namespace SWLOR.Game.Server.Service
             if (wasSeated && GetIsObjectValid(pilot) && IsPlayerInSpaceMode(pilot))
             {
                 SpaceAuras.RemoveUserAuras(pilot, player);
+                RemoveUserSelfBuffs(pilot, player);
 
                 var status = GetShipStatus(pilot);
                 if (status != null)
@@ -752,6 +753,7 @@ namespace SWLOR.Game.Server.Service
             if (SpaceCrew.ReleaseSeat(player) && GetIsObjectValid(assignment.Pilot) && IsPlayerInSpaceMode(assignment.Pilot))
             {
                 SpaceAuras.RemoveUserAuras(assignment.Pilot, player);
+                RemoveUserSelfBuffs(assignment.Pilot, player);
 
                 var status = GetShipStatus(assignment.Pilot);
                 if (status != null)
@@ -828,7 +830,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     _crewAssignments.Remove(crewMember);
                     if (SpaceCrew.ReleaseSeat(crewMember))
+                    {
+                        // Their stance, self-buffs and Formation end with their seat.
+                        SpaceAuras.RemoveUserAuras(assignment.Pilot, crewMember);
+                        RemoveUserSelfBuffs(assignment.Pilot, crewMember);
                         RecalculateCrewedShip(assignment.Pilot);
+                    }
+
                     continue;
                 }
 

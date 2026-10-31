@@ -270,6 +270,55 @@ public class PilotingOrdnanceTests
             .Should().NotIntersectWith(groundStats);
     }
 
+    [Test]
+    public void AStationStance_ReachesTheCrewMembersOwnShots_AndEndsWithTheirSeat()
+    {
+        const uint ship = 7, gunner = 9, other = 11;
+        const uint invalid = SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID;
+
+        // The gunner's Ordnance Stance (-10% single-target launcher damage) sits on the ship.
+        SpaceStanceRules.Owner(ship, gunner).Should().Be(gunner);
+        SpaceStanceRules.Owner(ship, invalid).Should().Be(ship, "a buff with no source is the ship's");
+        SpaceStanceRules.ShotAdjustment(ship, ship, gunner, -10).Should().Be(10, "the pilot's shots leave the gunner's stance out");
+        SpaceStanceRules.ShotAdjustment(ship, gunner, gunner, -10).Should().Be(-10, "the gunner's shots take it");
+        SpaceStanceRules.ShotAdjustment(ship, other, gunner, -10).Should().Be(0, "another crew member's shots do not");
+        SpaceStanceRules.ShotAdjustment(ship, invalid, gunner, -10).Should().Be(0, "a droid's shots do not");
+        SpaceStanceRules.ShotAdjustment(ship, ship, ship, -10).Should().Be(0, "the pilot's own stance is already the ship's");
+        SpaceStanceRules.ShotAdjustment(ship, gunner, ship, -10).Should().Be(0, "and never reached a crew member's shots");
+
+        // Dead Man's Hand's quick cycles reach only its taker's weapons.
+        SpaceStanceRules.ReachesShooter(ship, gunner, gunner).Should().BeTrue();
+        SpaceStanceRules.ReachesShooter(ship, ship, gunner).Should().BeFalse();
+        SpaceStanceRules.ReachesShooter(ship, ship, ship).Should().BeTrue();
+        SpaceStanceRules.ReachesShooter(ship, gunner, ship).Should().BeFalse();
+        SpaceStanceRules.ReachesShooter(ship, invalid, ship).Should().BeFalse("a droid takes no one's buff");
+
+        var space = ReadServerSource("Service", "Space.cs");
+        space.Should().Contain("GetShotStatAdjustment(ship, attacker, StatType.AttackPercentAdjustment)")
+            .And.Contain("var attack = GetShipAttack(source, activatorStatus, shot, activator);")
+            .And.Contain("GetShotStatAdjustment(activator, source, StatType.SpaceLauncherSingleTargetDamagePercentAdjustment)")
+            .And.Contain("GetShotStatAdjustment(activator, source, StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment)")
+            .And.Contain("GetShotStatAdjustment(activator, source, StatType.WeaponCriticalRatePercentAdjustment)");
+        ReadServerSource("Feature", "AbilityDefinition", "Piloting", "AceInTheHoleAbilityDefinition.cs")
+            .Should().Contain("StatusEffect.ApplyStatusEffect(SpaceCrew.GetAbilityUser(activator), activator, new DeadMansHandStatusEffect(), 0f);");
+        ReadServerSource("Service", "SpaceWeaponCycles.cs").Should().Contain("SpaceStanceRules.ReachesShooter(ship, shooter, effect.Source)");
+
+        // Ace, Bulwark and Ordnance Stance share the toggle: the user is the stance's source on the ship.
+        var toggle = ReadServerSource("Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
+        toggle.Should().Contain("var user = Service.SpaceService.SpaceCrew.GetAbilityUser(activator);")
+            .And.Contain("StatusEffect.ApplyStatusEffect(user, activator, statusEffectFactory(), 0f)");
+        foreach (var stance in new[] { "AceStanceAbilityDefinition.cs", "BulwarkStanceAbilityDefinition.cs", "OrdnanceStanceAbilityDefinition.cs" })
+            ReadServerSource("Feature", "AbilityDefinition", "Piloting", stance).Should().Contain("ConfigureToggle(stance, typeof(", stance);
+
+        // Every way a crew member leaves the seat ends their stance, as it ends their Formation.
+        var stations = ReadServerSource("Service", "SpaceCrewStations.cs");
+        stations.Should().Contain("RemoveUserSelfBuffs(pilot, player);")
+            .And.Contain("RemoveUserSelfBuffs(assignment.Pilot, player);")
+            .And.Contain("RemoveUserSelfBuffs(assignment.Pilot, crewMember);");
+        ReadServerSource("Service", "SpaceStances.cs")
+            .Should().Contain("effect.SourceType == StatusEffectSourceType.Stance || effect is ILimitedWeaponCycleStatusEffect");
+    }
+
     private static string ReadServerSource(params string[] path)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

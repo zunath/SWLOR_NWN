@@ -134,10 +134,10 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs",
-    "Line": 2115,
+    "Line": 2118,
     "Member": "ToggleSelfStatus",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"{StatusEffect.GetStatusEffectName(type)} deactivated.\")"
+    "Call": "SendMessageToPC(Service.SpaceService.SpaceCrew.GetAbilityUser(activator), $\"{StatusEffect.GetStatusEffectName(type)} deactivated.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/BuffTimer.cs",
@@ -6728,21 +6728,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2337,
+    "Line": 2345,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2900,
+    "Line": 2908,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2906,
+    "Line": 2914,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
@@ -6840,21 +6840,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 645,
+    "Line": 646,
     "Member": "LeaveCrewStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, $\"{PlayerName.GetDisplayName(pilot, player)} leaves the {ShipCrewSeats.GetSeatName(assignment.Seat)} station.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 657,
+    "Line": 658,
     "Member": "LeaveCrewStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 767,
+    "Line": 769,
     "Member": "CrewMemberDisconnected",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(assignment.Pilot, $\"{PlayerName.GetDisplayName(assignment.Pilot, player)} leaves the {ShipCrewSeats.GetSeatName(assignment.Seat)} station.\")"

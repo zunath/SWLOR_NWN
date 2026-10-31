@@ -254,7 +254,7 @@ public class PilotingAceTests
     public void TheSpaceCode_ReadsTheAceTraitsFromTheRightPlaces()
     {
         var space = ReadServerSource("Service", "Space.cs");
-        space.Should().Contain("Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment),\n                shot.IsAbility,\n                activatorStatus.CriticalBonus);",
+        space.Should().Contain("GetShotStatAdjustment(activator, source, StatType.WeaponCriticalRatePercentAdjustment),\n                shot.IsAbility,\n                activatorStatus.CriticalBonus);",
             "weapon cycles, not ability shots, take the weapon critical rate, and every shot takes the hull's critical bonus");
         space.Should().Contain("SpaceSustainedFire.RegisterHit(\n                activator, target, shot.Family, source, shot.WeaponSlot ?? 0,\n                SpaceSustainedFire.CountFiringEnergyWeapons(activator, activatorStatus))",
             "a crew member's station shot reads their own Sustained Fire perk, and each weapon owns its stacks");
@@ -270,7 +270,7 @@ public class PilotingAceTests
         space.Should().Contain("SpaceSustainedFire.Clear(player);");
 
         var toggles = ReadServerSource("Service", "SpaceToggles.cs");
-        toggles.Should().Contain("SpaceWeaponCycles.HasNoDelayCycle(creature, detail.Type)");
-        toggles.Should().Contain("SpaceWeaponCycles.ConsumeCycle(creature, detail.Type);");
+        toggles.Should().Contain("SpaceWeaponCycles.HasNoDelayCycle(creature, detail.Type, shooter)");
+        toggles.Should().Contain("SpaceWeaponCycles.ConsumeCycle(creature, detail.Type, shooter);");
     }
 }

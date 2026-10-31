@@ -429,8 +429,10 @@ namespace SWLOR.Game.Server.Service
                 var cycle = detail.CalculateRecastAction?.Invoke(creature, status, module.ModuleBonus) ?? 0f;
                 if (cycle <= 0f) cycle = (float)ShipToggleRules.LoopSeconds;
 
-                // "No extra delay" cycles (a limited weapon cycle effect) run back to back.
-                var noDelayCycle = SpaceWeaponCycles.HasNoDelayCycle(creature, detail.Type);
+                // "No extra delay" cycles (a limited weapon cycle effect) run back to back, for the weapons of whoever
+                // took the effect: the pilot's Helm slots, or the crew member's own station.
+                var shooter = playerCrewed ? crewMember : droid != null ? OBJECT_INVALID : creature;
+                var noDelayCycle = SpaceWeaponCycles.HasNoDelayCycle(creature, detail.Type, shooter);
                 if (noDelayCycle) cycle = (float)ShipToggleRules.LoopSeconds;
 
                 // The next cycle is anchored to the schedule, not to when this loop happened to run.
@@ -446,7 +448,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (noDelayCycle)
-                    SpaceWeaponCycles.ConsumeCycle(creature, detail.Type);
+                    SpaceWeaponCycles.ConsumeCycle(creature, detail.Type, shooter);
             }
             catch (Exception ex)
             {

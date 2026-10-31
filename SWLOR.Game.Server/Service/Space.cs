@@ -2045,8 +2045,16 @@ namespace SWLOR.Game.Server.Service
         /// Calculates the attack of a ship firing the given shot: ship and module Attack plus the pilot's damage
         /// attribute (PER for energy, MGT for launchers). A legacy NPC adds 8 + 2 x level.
         /// </summary>
-        public static int GetShipAttack(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
+        /// <param name="ship">
+        /// The firing ship when <paramref name="attacker"/> is a crew member at its station; a crew member's stance on
+        /// the ship then reaches their shots and not the pilot's (<see cref="GetShotStatAdjustment"/>). Omitted, the
+        /// attacker is the ship.
+        /// </param>
+        public static int GetShipAttack(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot, uint ship = OBJECT_INVALID)
         {
+            if (!GetIsObjectValid(ship))
+                ship = attacker;
+
             var damageAttribute = GetDamageAttribute(attacker, attackerStatus, shot.Family);
             var attack = SpaceCombatMath.Attack(attackerStatus.Attack, shot.Attack, damageAttribute);
 
@@ -2055,7 +2063,7 @@ namespace SWLOR.Game.Server.Service
             return SpaceCombatMath.AdjustRating(
                 attack,
                 Stat.GetStatAdjustment(attacker, StatType.Attack),
-                Stat.GetStatAdjustment(attacker, StatType.AttackPercentAdjustment));
+                GetShotStatAdjustment(ship, attacker, StatType.AttackPercentAdjustment));
         }
 
         /// <summary>
@@ -2111,7 +2119,7 @@ namespace SWLOR.Game.Server.Service
             var per = GetPilotScore(attacker, attackerStatus, AbilityType.Perception);
             var modifier = SpaceCombatMath.CriticalRateModifier(
                 Stat.GetStatAdjustment(attacker, StatType.CriticalRatePercentAdjustment),
-                Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalRatePercentAdjustment),
+                GetShotStatAdjustment(attacker, attacker, StatType.WeaponCriticalRatePercentAdjustment),
                 false,
                 attackerStatus?.CriticalBonus ?? 0);
             return SpaceCombatMath.CriticalRate(per, per, 0, modifier);
@@ -2185,7 +2193,7 @@ namespace SWLOR.Game.Server.Service
 
             var per = GetPilotScore(source, activatorStatus, AbilityType.Perception);
             var targetVit = GetPilotScore(target, targetStatus, AbilityType.Vitality);
-            var attack = GetShipAttack(source, activatorStatus, shot);
+            var attack = GetShipAttack(source, activatorStatus, shot, activator);
             var defense = GetShipDefense(target, targetStatus);
             var damageAttribute = GetDamageAttribute(source, activatorStatus, shot.Family);
 
@@ -2208,7 +2216,7 @@ namespace SWLOR.Game.Server.Service
             // Sith signature) applies to every shot the ship fires.
             var criticalRate = SpaceCombatMath.CriticalRateModifier(
                 Stat.GetStatAdjustment(source, StatType.CriticalRatePercentAdjustment),
-                Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment),
+                GetShotStatAdjustment(activator, source, StatType.WeaponCriticalRatePercentAdjustment),
                 shot.IsAbility,
                 activatorStatus.CriticalBonus);
             result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(per, targetVit, shot.Rank, criticalRate);
@@ -2253,8 +2261,8 @@ namespace SWLOR.Game.Server.Service
                 shapePercent += SpaceCombatMath.ShapeDamagePercent(
                     shot.IsAbility,
                     shot.IsArea,
-                    Stat.GetStatAdjustment(source, StatType.SpaceLauncherSingleTargetDamagePercentAdjustment),
-                    Stat.GetStatAdjustment(source, StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment));
+                    GetShotStatAdjustment(activator, source, StatType.SpaceLauncherSingleTargetDamagePercentAdjustment),
+                    GetShotStatAdjustment(activator, source, StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment));
             }
 
             rolled = SpaceCombatMath.ApplyDamageDealt(

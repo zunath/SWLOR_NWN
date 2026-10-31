@@ -37,8 +37,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                         return;
                     }
 
+                    // A crew member's Dead Man's Hand is theirs: it sits on the ship with them as its source, and its
+                    // critical rate and quick cycles reach their station weapons (SpaceStanceRules).
                     if (result.IsCritical)
-                        StatusEffect.ApplyStatusEffect(activator, activator, new DeadMansHandStatusEffect(), 0f);
+                        StatusEffect.ApplyStatusEffect(SpaceCrew.GetAbilityUser(activator), activator, new DeadMansHandStatusEffect(), 0f);
                 });
 
             return _builder.Build();

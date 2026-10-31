@@ -31,13 +31,16 @@ REPO = Path(__file__).resolve().parents[2]
 # ---------------------------------------------------------------------------------------------------------------
 # Credits an hour of space combat by orbit tier (trade.py --sim, W7a; plan section 13).
 REFERENCE_RATE = {1: 4100, 2: 6300, 3: 8500, 4: 7600, 5: 9200, 6: 22200}
-# Holdings are passive income and a character may own three, so all three at their best (level 3, the best droid, a
-# Processing Plant) pay about 90 minutes of the tier's combat rate a day together: about 30 minutes each. A level 1
+# Holdings are passive income and an account (public CD key) may own three across its characters, so all three at their
+# best (level 3, the best droid, a Processing Plant) pay at most 90 minutes of the tier's combat rate a day together:
+# about 30 minutes each (MAX_ACCOUNT_MINUTES, checked for three of the best type). A level 1
 # holding's daily batch is worth GROSS_MINUTES of the rate at its dock's tier, at base price; upkeep takes UPKEEP_SHARE
 # of the day's output value (the droid's share included: staff cost wages), so a level 1 holding nets about 10 minutes,
 # level 3 about 15, level 3 with the best droid about 25 and with a Processing Plant about 30.
 GROSS_MINUTES = 12
-UPKEEP_SHARE = 0.15             # of the day's output value at base price, droid included, charged every day
+UPKEEP_SHARE = 0.17             # of the day's output value at base price, droid included, charged every day. Review
+                                # 2026-10-30: was 0.15, which let three Desalination Plants at their best net 91.8
+                                # minutes a day (the best three types 90.3), over the 90-minute cap; now 90.0 and 88.5
 LEVEL_OUTPUT = {1: 1.0, 2: 1.25, 3: 1.45}
 PLANT_SHARE = 0.35              # the Processing Plant refines up to this share of each day's output. W11e: was 0.5, which
                                 # put three holdings at their best at 91 minutes a day on average and the best three types
@@ -47,7 +50,8 @@ MAX_LEVEL = 3
 # ---------------------------------------------------------------------------------------------------------------
 # Buying, upgrades and limits (in days of a level 1 batch's value)
 # ---------------------------------------------------------------------------------------------------------------
-MAX_HOLDINGS = 3                # per character (plan section 26)
+MAX_HOLDINGS = 3                # per account: every character on one public CD key counts (plan section 26; review
+                                # 2026-10-30: per character, more characters multiplied the passive income)
 PURCHASE_DAYS = 10
 SELL_BACK_SHARE = 0.5           # abandoning refunds this share of the price, less the upkeep owed
 UPGRADE_CREDIT_DAYS = {2: 1.5, 3: 2}   # each pays back in two to three weeks (holdings.py --sim, Payback)
@@ -313,6 +317,14 @@ BEST_DROID_PERCENT = droid_percent(droids.MAXIMUM_INDUSTRY, 2)
 MID_DROID_PERCENT = droid_percent(50)
 MAX_BEST_MINUTES = 27   # level 3 with the best droid (no plant): about 25 minutes
 MAX_PLANT_MINUTES = 35  # and with a Processing Plant: about 30 minutes
+MAX_ACCOUNT_MINUTES = 90  # an account's three holdings at their best, event-free, even three of the best type
+
+
+def best_account_minutes():
+    """(identical, distinct): the event-free daily minutes of an account's best legal trio, three of the best type and
+    the three best types."""
+    best = sorted((minutes(h, MAX_LEVEL, BEST_DROID_PERCENT, True) for h in HOLDINGS), reverse=True)
+    return 3 * best[0], sum(best[:3])
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -343,6 +355,10 @@ def problems():
         for name, days in payback(h).items():
             if days > MAX_PAYBACK_DAYS:
                 out.append(f"{h[1]}: {name} pays back in {days:.0f} days")
+    identical, distinct = best_account_minutes()
+    if identical > MAX_ACCOUNT_MINUTES + 1e-9 or distinct > MAX_ACCOUNT_MINUTES + 1e-9:
+        out.append(f"an account's best three holdings net {identical:.1f} (one type) / {distinct:.1f} (three types) minutes "
+                   f"a day, over {MAX_ACCOUNT_MINUTES}")
     for good, sources in trade.HOLDING_GOOD_SOURCES.items():
         for ex in sources:
             if not any(h[3] == ex and h[8][3] == good for h in HOLDINGS):
@@ -431,7 +447,10 @@ def report():
     print()
     print(f"Events kept, undefended raids {sum(r['events'] for r in rows) / len(rows):.1%} on average; an owner who drives every "
           f"raid off at the site keeps {sum(r['defended'] for r in rows) / len(rows):.1%} (W11o raid ground fight).")
-    print(f"One character with three holdings, the average of every type: level 1 {3 * sum(r['l1'] for r in rows) / len(rows):.0f} "
+    identical, distinct = best_account_minutes()
+    print(f"An account's best three holdings, event-free: {identical:.1f} minutes a day (three of the best type), "
+          f"{distinct:.1f} (the three best types); cap {MAX_ACCOUNT_MINUTES}.")
+    print(f"One account with three holdings, the average of every type: level 1 {3 * sum(r['l1'] for r in rows) / len(rows):.0f} "
           f"minutes a day, level 3 {3 * sum(r['l3'] for r in rows) / len(rows):.0f}, level 3 with the best droid "
           f"{3 * sum(r['l3_best'] for r in rows) / len(rows):.0f}, and with Processing Plants {3 * sum(r['l3_plant'] for r in rows) / len(rows):.0f}.")
     print("\nChains (refined value against both inputs at base price):")
@@ -566,6 +585,7 @@ def tuning_cs():
         f"        public const int BestDroidPercent = {BEST_DROID_PERCENT};",
         f"        public const int MaximumBestDroidMinutes = {MAX_BEST_MINUTES};",
         f"        public const int MaximumPlantMinutes = {MAX_PLANT_MINUTES};",
+        f"        public const int MaximumAccountMinutes = {MAX_ACCOUNT_MINUTES};",
         "",
         f"        public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackNames = new Dictionary<HoldingSetbackType, string> {{ {names} }};",
         f"        public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackTexts = new Dictionary<HoldingSetbackType, string> {{ {texts} }};",
@@ -601,7 +621,8 @@ def holdings_tab(Sheet):
               f"{SETBACKS[h[9]][1]}: {repair_units(h)} {com(h[10])[2]}"] for h in HOLDINGS])
     s.title("Rules")
     s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
-        ["Holdings per character", MAX_HOLDINGS, "", "", "", "", "", "bought from the Dock Master's Planetary Holdings menu"],
+        ["Holdings per account", MAX_HOLDINGS, "", "", "", "", "",
+         "across every character on one public CD key; bought from the Dock Master's Planetary Holdings menu"],
         ["Daily batch", f"{GROSS_MINUTES} min of the tier rate", "", "", "", "", "", "level 1, at base price"],
         ["Level output", ", ".join(f"L{lv} x{v}" for lv, v in LEVEL_OUTPUT.items()), "", "", "", "", "", "upkeep scales the same"],
         ["Processing Plant", f"{PLANT_SHARE:.0%} of the day's output", "", "", "", "", "", "refined with delivered input; the rest stays raw"],
@@ -630,7 +651,7 @@ def holdings_tab(Sheet):
     s.title("Upgrade payback (days of the extra daily net, no droid; goods at base price)")
     s.table(["Holding", "Level 2", "Level 3", "Processing Plant", "", "", "", "Notes"],
             [[r["name"], round(r["payback"]["L2"]), round(r["payback"]["L3"]), round(r["payback"]["Plant"]), "", "", "",
-              "a character owns at most three holdings: about 90 minutes a day at their best"] for r in income_rows()])
+              "an account owns at most three holdings: at most 90 minutes a day at their best"] for r in income_rows()])
     return s
 
 

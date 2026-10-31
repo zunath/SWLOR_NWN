@@ -231,7 +231,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           "The beacon jumps a ship docked at this station to another station's beacon. Beacons never reach into or out of Wild Space.\n\n" +
                           $"Beacon level: {level} (hulls up to {StationBuildingRules.GetMaxHull(level)}; both beacons must take the hull)\n" +
                           "Station Fuel per jump, from the ship's cargo bay: " +
-                          string.Join(", ", StationTuning.JumpFuel.Select(x => $"{x.Key} {x.Value}")) + "\n" +
+                          string.Join(", ", StationTuning.JumpFuel.Select(x => $"{x.Key} {x.Value}")) +
+                          $", plus 1 per {StationTuning.JumpFuelCargoValuePerHop} credits of cargo value for each starlane hop the jump skips\n" +
                           $"Who may jump here: {DescribeAccess(state.BeaconAccess)}";
 
             page.AddResponse("Jump a docked ship", () => GoToPage(ShipPageId));
@@ -334,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            var fuel = StationBuildingRules.GetJumpFuel(request.ShipSize, request.HullTag);
+            var fuel = StationBuildingRules.GetJumpFuel(request);
             page.Header = $"Jump {ship.CustomName} to {destination.CustomName}? The jump burns {fuel} Station Fuel from its cargo bay, " +
                           "docks the ship at that station's Starport and takes you there with it.";
             page.AddResponse("CONFIRM JUMP", () =>

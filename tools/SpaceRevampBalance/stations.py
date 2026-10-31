@@ -261,13 +261,30 @@ BEACON_MAX_HULL = {1: "Medium", 2: "Large", 3: "Capital"}
 # Barge's signature: 50% less fuel, rounded up).
 JUMP_FUEL = {"Small": 1, "Medium": 2, "Large": 4, "Capital": 8}
 JUMP_FUEL_DISCOUNT = {"sd_huttgrandbarg": 50}
+# Cargo burns fuel too (review 2026-10-30): one more unit per JUMP_FUEL_CARGO_VALUE credits of cargo per starlane hop
+# between the two stations' systems (TradeLookup.GetHops between their anchors' exchanges), rounded up, before the hull's
+# discount. Cargo is valued as pirates value it: commodities at base price and sealed freight at
+# trade.SEALED_VALUE_PER_VOLUME per volume (PirateAmbushRules.GetCargoValue). A beacon jump between any two orbits takes
+# about four minutes, so with the hull's fuel alone a beacon network hauled a 300-volume, 5-hop freight load at about
+# 16,600 credits an hour (196% of T3 combat, the plan's freight target 75%) and every good at 218-251% (target 150-200%).
+# Exchange prices rise about 4% of base value per hop from the source, so a jump's cargo fuel (about 3.75% of the cargo's
+# base value per hop at CZ-220's fuel price) takes back what the skipped starlanes would have paid for; a fuel charge by
+# cargo volume could not (at one unit per 25 volume contraband still made 210-239%, while freight already lost money).
+# The hull's own fuel is unchanged, so moving an empty ship costs what it did. trade.py --sim (Jump Beacons) checks it.
+JUMP_FUEL_CARGO_VALUE = 6000
 # Who may jump to and from a beacon (the mayor's setting, default citizens). Allies are the citizens of the stations
 # the mayor lists.
 BEACON_ACCESS = ["Citizens", "Allies", "Anyone"]
 
 
-def jump_fuel(size, hull_tag=""):
-    units = JUMP_FUEL[size]
+def jump_cargo_fuel(cargo_value, hops):
+    """The cargo's share of a jump's fuel, before rounding up."""
+    return max(0, hops) * max(0, cargo_value) / JUMP_FUEL_CARGO_VALUE
+
+
+def jump_fuel(size, hull_tag="", cargo_value=0, hops=0):
+    """Station Fuel units a jump burns (mirrors StationBuildingRules.GetJumpFuel)."""
+    units = JUMP_FUEL[size] + -(-max(0, hops) * max(0, cargo_value) // JUMP_FUEL_CARGO_VALUE)
     discount = JUMP_FUEL_DISCOUNT.get(hull_tag, 0)
     return max(1, -(-units * (100 - discount) // 100))
 
@@ -486,7 +503,9 @@ def buildings_cs():
             "        public static readonly IReadOnlyDictionary<ShipSize, int> JumpFuel = "
             f"new Dictionary<ShipSize, int> {{ {fuel_lines} }};\n"
             "        public static readonly IReadOnlyDictionary<string, int> JumpFuelDiscountPercent = "
-            f"new Dictionary<string, int> {{ {discount_lines} }};\n")
+            f"new Dictionary<string, int> {{ {discount_lines} }};\n"
+            "        /// <summary>One more fuel unit per this many credits of cargo value per starlane hop jumped.</summary>\n"
+            f"        public const int JumpFuelCargoValuePerHop = {JUMP_FUEL_CARGO_VALUE};\n")
 
 
 WRITES = {"SWLOR.Game.Server/Service/StationService/StationTuning.cs": tuning_cs}
@@ -557,7 +576,9 @@ def stations_tab(Sheet):
         ["Beacon level", "1-3", "", "", "", "", "", "a city upgrade (Manage City), +" + f"{UPGRADE_PRICE_PER_LEVEL} upkeep a week per level above 1; "
          + ", ".join(f"level {lvl} {size}" for lvl, size in BEACON_MAX_HULL.items()) + " hulls; both beacons must take the hull"],
         ["Jump fuel", " / ".join(f"{size} {n}" for size, n in JUMP_FUEL.items()), "", "", "", "", "",
-         "Station Fuel units from the ship's cargo bay; the Hutt Grand Barge burns 50% less (rounded up)"],
+         "Station Fuel units from the ship's cargo bay by hull size, plus 1 per "
+         f"{JUMP_FUEL_CARGO_VALUE:,} credits of cargo value (base price; sealed freight 40 a volume) per starlane hop "
+         "between the two stations' systems, rounded up; the Hutt Grand Barge burns 50% less (rounded up)"],
         ["Beacon access", " / ".join(BEACON_ACCESS), "", "", "", "", "", "who may jump to and from it (Edit Taxes permission), citizens by default; allies are the citizens of the stations the mayor lists"],
         ["Wild Space", "never", "", "", "", "", "", "no beacon in Wild Space, and no jump into or out of it"],
     ])

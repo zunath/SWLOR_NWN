@@ -36,11 +36,16 @@ namespace SWLOR.Game.Server.Service.HoldingService
 
         // Buying
 
-        public static HoldingRefusal GetPurchaseRefusal(HoldingDetail detail, TradeExchangeType dockExchange, int owned, int credits)
+        /// <summary>
+        /// Why the purchase is refused. <paramref name="accountOwned"/> counts the holdings of every character on the
+        /// buyer's account (public CD key, <see cref="CountAccountHoldings"/>): the limit is per account, so more
+        /// characters do not multiply the passive income.
+        /// </summary>
+        public static HoldingRefusal GetPurchaseRefusal(HoldingDetail detail, TradeExchangeType dockExchange, int accountOwned, int credits)
         {
             if (detail == null || detail.Exchange != dockExchange)
                 return HoldingRefusal.NotSoldHere;
-            if (owned >= HoldingTuning.MaximumHoldings)
+            if (accountOwned >= HoldingTuning.MaximumHoldings)
                 return HoldingRefusal.AtLimit;
             if (credits < detail.PurchasePrice)
                 return HoldingRefusal.NotEnoughCredits;
@@ -48,11 +53,31 @@ namespace SWLOR.Game.Server.Service.HoldingService
             return HoldingRefusal.None;
         }
 
-        public static PlanetaryHolding Create(string ownerPlayerId, HoldingDetail detail, string dockId, DateTime now)
+        /// <summary>
+        /// The holdings an account owns: the buyer's own (already brought up to now) plus the records saved under the
+        /// account's public CD key for its other characters, leaving out characters that were deleted (their holdings can
+        /// never be collected again) and records with no owner.
+        /// </summary>
+        public static int CountAccountHoldings(
+            string playerId,
+            int ownHoldings,
+            IEnumerable<PlanetaryHolding> accountRecords,
+            Func<string, bool> isLiveCharacter)
+        {
+            var others = accountRecords?
+                .Where(x => !string.IsNullOrWhiteSpace(x.OwnerPlayerId) && x.OwnerPlayerId != playerId)
+                .GroupBy(x => x.OwnerPlayerId)
+                .Where(x => isLiveCharacter(x.Key))
+                .Sum(x => x.Count()) ?? 0;
+            return Math.Max(0, ownHoldings) + others;
+        }
+
+        public static PlanetaryHolding Create(string ownerPlayerId, HoldingDetail detail, string dockId, DateTime now, string ownerCDKey = "")
         {
             return new PlanetaryHolding
             {
                 OwnerPlayerId = ownerPlayerId,
+                OwnerCDKey = ownerCDKey ?? string.Empty,
                 Type = detail.Type,
                 DockId = dockId ?? string.Empty,
                 Level = 1,
@@ -524,7 +549,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
             return refusal switch
             {
                 HoldingRefusal.NotSoldHere => "That holding is not sold at this dock.",
-                HoldingRefusal.AtLimit => $"You already own {HoldingTuning.MaximumHoldings} holdings, the most a character may own.",
+                HoldingRefusal.AtLimit => $"Your account already owns {HoldingTuning.MaximumHoldings} holdings across its characters, the most an account may own.",
                 HoldingRefusal.NotEnoughCredits => "You do not have enough credits.",
                 HoldingRefusal.MaximumLevel => "This holding is already at its highest level.",
                 HoldingRefusal.MissingGoods => "Deliver the goods it needs first.",

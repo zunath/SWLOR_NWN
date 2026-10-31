@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
         public const int MaximumLevel = 3;
         /// <summary>Output by level (index 1-3).</summary>
         public static readonly double[] LevelOutput = { 0.0, 1.0, 1.25, 1.45 };
-        public const double UpkeepShare = 0.15;
+        public const double UpkeepShare = 0.17;
         public const double PlantShare = 0.35;
         public const double SellBackShare = 0.5;
         public const int StorageDays = 7;
@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
         public const int BestDroidPercent = 70;
         public const int MaximumBestDroidMinutes = 27;
         public const int MaximumPlantMinutes = 35;
+        public const int MaximumAccountMinutes = 90;
 
         public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackNames = new Dictionary<HoldingSetbackType, string> { { HoldingSetbackType.Breakdown, "Breakdown" }, { HoldingSetbackType.Blight, "Blight" }, { HoldingSetbackType.Sandstorm, "Sandstorm" }, { HoldingSetbackType.CaveIn, "Cave-in" }, { HoldingSetbackType.Storm, "Storm" }, { HoldingSetbackType.Sickness, "Herd sickness" } };
         public static readonly IReadOnlyDictionary<HoldingSetbackType, string> SetbackTexts = new Dictionary<HoldingSetbackType, string> { { HoldingSetbackType.Breakdown, "The machinery broke down." }, { HoldingSetbackType.Blight, "A blight struck the crop." }, { HoldingSetbackType.Sandstorm, "A sandstorm buried the works." }, { HoldingSetbackType.CaveIn, "A tunnel caved in." }, { HoldingSetbackType.Storm, "A storm wrecked the nets and pens." }, { HoldingSetbackType.Sickness, "Sickness spread through the herd." } };

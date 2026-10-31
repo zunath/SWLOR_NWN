@@ -128,8 +128,10 @@ public class SpaceRewardTests
 
         var laser = StarshipRecipes[Step("sm_laser_20").RecipeType];
         ShipBlueprintRules.Pool(laser, 2).Should().BeEquivalentTo(ShipBlueprintRules.Pool(ShipComponentFamily.EnergyEmitter, 2));
-        var held = new[] { ShipBlueprintRules.Pool(deed, 3)[0].Type };
-        ShipBlueprintRules.PickGuaranteed(deed, 3, held, Rolls(0, 1)).Should().Be(ShipBlueprintRules.Pool(deed, 3)[1].Type);
+        var capped = ShipBlueprintRules.BonusTier(deed.Level, 3);
+        var held = new[] { ShipBlueprintRules.Pool(deed, capped)[0].Type };
+        ShipBlueprintRules.PickGuaranteed(deed, 3, held, Rolls(0, 1)).Should().Be(ShipBlueprintRules.Pool(deed, capped)[1].Type,
+            "a guaranteed trait skips the ones held, at the tier the recipe level allows");
 
         ShipTraitRules.HullSum(new[] { ShipComponentTraitType.RefinedHull3 }, ShipTraitStat.Hull).Should().Be(2,
             "Refined Hull III's +4% is +2% on a hull");
@@ -144,6 +146,69 @@ public class SpaceRewardTests
         ShipBlueprintRules.PickGuaranteed(family, 3, held, Rolls(0, 1)).Should().Be(pool[1].Type);
         RevampRewardCatalog.PrototypeTechBonusTier.Should().Be(3, "Prototype Tech adds a top-tier guaranteed trait");
         RevampRewardCatalog.PrototypeTechResref.Should().Be("proto_tech");
+    }
+
+    /// <summary>
+    /// The research ceiling (review 2026-10-30): a ship blueprint never carries more than a ground blueprint can (3 item
+    /// bonuses and 11 guaranteed bonuses), Prototype Tech included; the recipe level caps every trait's tier and no trait
+    /// repeats. The worst case: every research level's extra chance roll succeeds, level 7's tier 3, and a Prototype Tech
+    /// on every one of the ten jobs.
+    /// </summary>
+    [TestCase("sm_laser_15")]
+    [TestCase("sm_laser_30")]
+    [TestCase("sm_laser_50")]
+    [TestCase("sm_shbst_50")]
+    [TestCase("sm_plate_30")]
+    public void Research_StaysWithinTheGroundBlueprintCeiling(string tag)
+    {
+        ShipBlueprintRules.MaximumItemBonuses.Should().Be(3, "item bonuses at research levels 1, 6 and 9");
+        ShipBlueprintRules.MaximumGuaranteedTraits.Should().Be(11, "level 7's, plus one chance roll at each of the ten levels");
+        ShipBlueprintRules.MaximumTraits.Should().Be(14);
+
+        var recipe = StarshipRecipes[Step(tag).RecipeType];
+        var cap = ShipBlueprintRules.BonusTier(recipe.Level, 3);
+        var asked = new[] { 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 2, 3 }
+            .Concat(Enumerable.Repeat(RevampRewardCatalog.PrototypeTechBonusTier, 10));
+        var held = new List<ShipComponentTraitType>();
+        foreach (var tier in asked)
+        {
+            var trait = ShipBlueprintRules.PickGuaranteed(recipe, tier, held, Rolls(0));
+            if (trait != ShipComponentTraitType.None)
+                held.Add(trait);
+        }
+
+        held.Should().NotBeEmpty();
+        held.Should().OnlyHaveUniqueItems("no trait repeats on one blueprint");
+        held.Count.Should().BeLessThanOrEqualTo(ShipBlueprintRules.MaximumGuaranteedTraits);
+        held.Should().OnlyContain(x => ShipTraitRules.Get(x).Tier <= cap, $"recipe level {recipe.Level} caps tiers at {cap}");
+
+        var bonuses = ShipBlueprintRules.PickItemBonuses(recipe, 5, held, Rolls(0, 0, 0, 0, 0));
+        bonuses.Count.Should().BeLessThanOrEqualTo(ShipBlueprintRules.MaximumItemBonuses);
+        bonuses.Should().OnlyHaveUniqueItems().And.NotIntersectWith(held);
+        bonuses.Should().OnlyContain(x => ShipTraitRules.Get(x).Tier <= cap);
+        (held.Count + bonuses.Count).Should().BeLessThanOrEqualTo(ShipBlueprintRules.MaximumTraits);
+
+        // A full blueprint takes no more guaranteed traits.
+        var full = Enumerable.Repeat(ShipComponentTraitType.RefinedDamage1, ShipBlueprintRules.MaximumGuaranteedTraits).ToList();
+        ShipBlueprintRules.PickGuaranteed(recipe, 1, full, Rolls(0)).Should().Be(ShipComponentTraitType.None);
+    }
+
+    [Test]
+    public void Research_PrototypeTechAddsItsTraitOncePerBlueprint()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent;
+        string Read(params string[] parts) => File.ReadAllText(Path.Combine(new[] { root!.FullName, "SWLOR.Game.Server" }.Concat(parts).ToArray()));
+
+        var research = Read("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
+        research.Should().Contain("dbJob.PrototypeTech && ShipBlueprintRules.IsResearchable(recipe) && !blueprintDetails.PrototypeTechUsed");
+        research.Should().Contain("blueprintDetails.PrototypeTechUsed = true;");
+        research.Should().Contain("!HasSpentPrototypeTech()");
+        var craft = Read("Service", "Craft.cs");
+        craft.Should().Contain("GetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable)");
+        craft.Should().Contain("SetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable, true)");
+        Read("Feature", "GuiDefinition", "ViewModel", "CraftViewModel.cs").Should().Contain("ShipBlueprintRules.PickItemBonuses(");
     }
 
     // Named rank-50 modules

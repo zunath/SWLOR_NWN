@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using FluentAssertions;
@@ -613,10 +614,11 @@ public class HuttballMatchTests
     }
 
     [Test]
-    public void RoutesNeverOutrunTheMovementLeft()
+    public void RoutesReachExactlyTheSquaresWithinTheMovementLeft()
     {
-        // Threatened squares make safer, longer routes replace shorter ones mid-search. Try a Catcher near the
-        // halfway line against a Blocker in every nearby square, and every destination.
+        // Threatened squares make safer, longer routes compete with shorter ones. Try a Catcher near the halfway
+        // line against a Blocker in every nearby square, and every destination. A square is reachable exactly when
+        // a plain step count around the Blocker, ignoring threats, fits in the movement left.
         for (var blockerX = 0; blockerX < 10; blockerX++)
         {
             for (var blockerY = 10; blockerY < 12; blockerY++)
@@ -626,19 +628,55 @@ public class HuttballMatchTests
                 Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, blockerX, blockerY);
                 Kickoff(match, 0, 0);
                 var catcher = match.GetPlayer(HomeCatcher);
+                var steps = CountSteps(match, catcher.Square!.Value);
 
                 for (var y = 0; y < match.Length; y++)
                 {
                     for (var x = 0; x < match.Width; x++)
                     {
-                        var path = match.FindPath(catcher, new HuttballSquare(x, y));
+                        var destination = new HuttballSquare(x, y);
+                        var reachable = steps.TryGetValue(destination, out var count) &&
+                                        count > 0 &&
+                                        count <= catcher.MovementLeft;
+                        var because = $"the route to ({x}, {y}) past a Blocker at ({blockerX}, {blockerY})";
+
+                        var path = match.FindPath(catcher, destination);
+                        if (reachable)
+                            path.Should().NotBeNull(because);
+                        else
+                            path.Should().BeNull(because);
                         if (path != null)
-                            path.Count.Should().BeLessThanOrEqualTo(catcher.MovementLeft,
-                                $"the route to ({x}, {y}) past a Blocker at ({blockerX}, {blockerY})");
+                            path.Count.Should().BeLessThanOrEqualTo(catcher.MovementLeft, because);
                     }
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Counts the fewest steps from <paramref name="start"/> to every free square on the pitch, ignoring threats.
+    /// </summary>
+    private static Dictionary<HuttballSquare, int> CountSteps(HuttballMatch match, HuttballSquare start)
+    {
+        var steps = new Dictionary<HuttballSquare, int> { [start] = 0 };
+        var queue = new Queue<HuttballSquare>();
+        queue.Enqueue(start);
+        while (queue.Count > 0)
+        {
+            var square = queue.Dequeue();
+            foreach (var direction in HuttballRules.BounceDirections)
+            {
+                var neighbor = new HuttballSquare(square.X + direction.X, square.Y + direction.Y);
+                if (neighbor.X < 0 || neighbor.X >= match.Width || neighbor.Y < 0 || neighbor.Y >= match.Length ||
+                    steps.ContainsKey(neighbor) || match.GetPlayerAt(neighbor) != null)
+                    continue;
+
+                steps[neighbor] = steps[square] + 1;
+                queue.Enqueue(neighbor);
+            }
+        }
+
+        return steps;
     }
 
     [Test]

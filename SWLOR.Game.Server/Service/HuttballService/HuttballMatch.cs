@@ -950,23 +950,18 @@ namespace SWLOR.Game.Server.Service.HuttballService
         {
             var start = player.Square!.Value;
             var maxSteps = player.MovementLeft;
-            var bestRisk = new Dictionary<HuttballSquare, int> { [start] = 0 };
-            var routes = new Dictionary<HuttballSquare, List<HuttballSquare>> { [start] = new() };
-            var frontier = new List<HuttballSquare> { start };
+            var routes = new Dictionary<HuttballSquare, (int Risk, List<HuttballSquare> Route)> { [start] = (0, new()) };
+            List<HuttballSquare> best = null;
+            var bestRisk = int.MaxValue;
 
-            // Each pass extends every route by one square, so a square is first reached by its shortest route and
-            // later passes only replace it with a route that leaves fewer threatened squares.
-            for (var step = 0; step < maxSteps && frontier.Count > 0; step++)
+            // Each pass holds the safest route of exactly that many steps to each square. Keeping every length apart
+            // means a safer, longer route never hides a shorter one that still fits in the movement left.
+            for (var step = 0; step < maxSteps && routes.Count > 0; step++)
             {
-                var next = new List<HuttballSquare>();
-                foreach (var square in frontier)
+                var next = new Dictionary<HuttballSquare, (int Risk, List<HuttballSquare> Route)>();
+                foreach (var (square, (known, route)) in routes)
                 {
-                    // A safer but longer route may have replaced this square's route earlier in this pass. That
-                    // route is extended next pass, when its length matches the step, so no route outgrows the limit.
-                    if (routes[square].Count != step)
-                        continue;
-
-                    var risk = bestRisk[square] + (IsThreatened(player, square) ? 1 : 0);
+                    var risk = known + (IsThreatened(player, square) ? 1 : 0);
                     foreach (var direction in HuttballRules.BounceDirections)
                     {
                         var neighbor = new HuttballSquare(square.X + direction.X, square.Y + direction.Y);
@@ -977,19 +972,24 @@ namespace SWLOR.Game.Server.Service.HuttballService
                         if (occupant != null && occupant != player)
                             continue;
 
-                        if (bestRisk.TryGetValue(neighbor, out var known) && known <= risk)
+                        if (next.TryGetValue(neighbor, out var other) && other.Risk <= risk)
                             continue;
 
-                        bestRisk[neighbor] = risk;
-                        routes[neighbor] = new List<HuttballSquare>(routes[square]) { neighbor };
-                        next.Add(neighbor);
+                        next[neighbor] = (risk, new List<HuttballSquare>(route) { neighbor });
                     }
                 }
 
-                frontier = next;
+                // Passes run shortest first, so only a strictly safer route replaces the best one found so far.
+                if (next.TryGetValue(destination, out var arrival) && arrival.Risk < bestRisk)
+                {
+                    bestRisk = arrival.Risk;
+                    best = arrival.Route;
+                }
+
+                routes = next;
             }
 
-            return routes.TryGetValue(destination, out var route) && route.Count > 0 ? route : null;
+            return best;
         }
 
         /// <summary>

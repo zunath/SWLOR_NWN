@@ -45,7 +45,11 @@ namespace SWLOR.Game.Server.Service
             if (e.Family != SpaceWeaponFamily.Launcher || e.FromAbility || !GetIsObjectValid(e.Attacker))
                 return;
 
-            // A crew member's launcher shot reads their own Proximity Warheads perk; the ship deals the splash.
+            // A crew member's launcher shot reads their own Proximity Warheads perk; the ship deals the splash. A droid's
+            // shot has no stat source and no perks, so it never splashes.
+            if (!GetIsObjectValid(e.StatSource))
+                return;
+
             var chance = Stat.GetStatAdjustment(e.StatSource, StatType.SpaceLauncherSplashChance);
             var damage = Stat.GetStatAdjustment(e.StatSource, StatType.SpaceLauncherSplashDamage);
             if (chance <= 0 || damage <= 0 || Random.D100(1) > chance)

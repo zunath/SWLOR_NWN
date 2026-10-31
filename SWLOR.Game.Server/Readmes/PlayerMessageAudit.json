@@ -7757,7 +7757,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSustainedFire.cs",
-    "Line": 75,
+    "Line": 80,
     "Member": "RegisterHit",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maximumStacks} (+{bonus} DMG)\"),\n                    attacker,\n                    false)"

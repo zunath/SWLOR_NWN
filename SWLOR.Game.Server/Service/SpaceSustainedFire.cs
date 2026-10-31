@@ -28,13 +28,18 @@ namespace SWLOR.Game.Server.Service
             uint attacker,
             uint target,
             SpaceWeaponFamily family,
-            uint statSource = OBJECT_INVALID,
+            uint statSource,
             int weaponSlot = 0,
             int energyWeapons = 1)
         {
-            // A crew member's station shot reads their own Sustained Fire perk; the run stays on the weapon.
+            // A crew member's station shot reads their own Sustained Fire perk; the run stays on the weapon. A droid's
+            // shot has no stat source (SpaceCrew.GetStatSource) and no perks, so it gets no Sustained Fire and ends the
+            // weapon's run, as a shot without the perk does.
             if (!GetIsObjectValid(statSource))
-                statSource = attacker;
+            {
+                ClearWeapon(attacker, weaponSlot);
+                return 0;
+            }
 
             if (family != SpaceWeaponFamily.Energy ||
                 !GetIsObjectValid(attacker) ||

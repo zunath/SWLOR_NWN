@@ -385,6 +385,29 @@ public class SpaceAbilityEngineTests
         disconnect.Should().Contain("SpaceAuras.RemoveUserAuras(assignment.Pilot, player);");
     }
 
+    [Test]
+    public void ADroidsShot_KeepsItsInvalidStatSource_SoNoPerkProcFires()
+    {
+        const uint ship = 7, gunner = 9;
+        const uint invalid = SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID;
+
+        new SpaceShotEvent { Attacker = ship, Result = new ShipShotResult { StatSource = invalid } }.StatSource
+            .Should().Be(invalid, "a droid has no perks, so the pilot's must not stand in");
+        new SpaceShotEvent { Attacker = ship, Result = new ShipShotResult { StatSource = gunner } }.StatSource.Should().Be(gunner);
+        new SpaceShotEvent { Attacker = ship, Result = new ShipShotResult { StatSource = ship } }.StatSource.Should().Be(ship);
+        new SpaceShotEvent { Attacker = ship }.StatSource.Should().Be(ship, "an event with no roll reads the attacker");
+
+        var root = RepositoryRoot();
+        var sustained = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "SpaceSustainedFire.cs")).Replace("\r\n", "\n");
+        sustained.Should().NotContain("statSource = attacker;", "droid fire must not borrow the pilot's Sustained Fire")
+            .And.Contain("if (!GetIsObjectValid(statSource))\n            {\n                ClearWeapon(attacker, weaponSlot);\n                return 0;\n            }");
+        var ordnance = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "SpaceOrdnance.cs")).Replace("\r\n", "\n");
+        var landed = ordnance[ordnance.IndexOf("private static void OnShotLanded(", StringComparison.Ordinal)..];
+        landed.IndexOf("if (!GetIsObjectValid(e.StatSource))", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(landed.IndexOf("Stat.GetStatAdjustment(e.StatSource, StatType.SpaceLauncherSplashChance)", StringComparison.Ordinal));
+    }
+
     /// <summary>One refresh of a commander's aura as SpaceAuras runs it, with a non-stacking status.</summary>
     private static void ReconcileAura(uint source, IReadOnlyDictionary<uint, int> social, Dictionary<uint, uint> held,
         HashSet<uint> recipients, params uint[] inRange)

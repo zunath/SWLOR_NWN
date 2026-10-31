@@ -17,8 +17,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public SpaceWeaponFamily Family => Shot?.Family ?? SpaceWeaponFamily.Energy;
 
-        /// <summary>The creature whose perks the shot's procs read: the crew member who fired it, or the attacker.</summary>
-        public uint StatSource => Result != null && Result.StatSource != OBJECT_INVALID ? Result.StatSource : Attacker;
+        /// <summary>
+        /// The creature whose perks the shot's procs read: the crew member who fired it, or the attacker. A droid's shot
+        /// keeps its OBJECT_INVALID source (SpaceCrew.GetStatSource), so no perk proc fires from it; only an event with no
+        /// roll falls back to the attacker.
+        /// </summary>
+        public uint StatSource => Result?.StatSource ?? Attacker;
 
         /// <summary>True when a hostile ability fired the shot rather than the weapon's own cycle.</summary>
         public bool FromAbility => Shot?.IsAbility ?? false;

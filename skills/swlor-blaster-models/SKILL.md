@@ -92,9 +92,14 @@ Follow the guide's shield fit and export schema.
   scale for position/pitch changes and approved orientation for size changes.
   Rotate around the fitted grip so hand contact remains fixed. Do not reapply raw
   GR2 transforms to an already fitted MDL.
-- Use `tools/RenderBlasterGrip.py` with a local review scene and the actual human
-  right hand. Custom pistols use **bowshot**; **xbowshot** rotates the hook
-  differently. Existing fit measurements are examples, not universal presets.
+- Use `tools/RenderBlasterGrip.py` with a local review scene and the actual male
+  human right hand. Also build female and left-hand references from their own
+  socket transforms; the helper's male socket is not a female fit reference.
+  Custom pistols use **bowshot**; **xbowshot** rotates the hook differently.
+  Measure each handle at the fingers, including its width and depth. A butt
+  sample or common Z target is not a fit test. Check palm and finger contact
+  from both sides in the client. Keep fixture `BodyPart_*` and `xBodyPart_*`
+  fields synchronized and log runtime `GetCreatureBodyPart` values.
 - Stage exports in a fresh ignored folder. Review textured views, both hand views
   and the transparent icon on its native canvas. Check hand contact, orientation, UV seams
   and material maps. Copy only reviewed game resources to `SWLOR_Haks/sw_weapon/`.

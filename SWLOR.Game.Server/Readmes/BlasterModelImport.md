@@ -723,19 +723,40 @@ scale 9.6 is a starting point, not a batch-wide fit guarantee: source grip sizes
 vary. Refit oversized grips uniformly around the contact pivot and review both
 sides. Widen the review camera for long barrels rather than truncating the check.
 
-The actual human right-hand reference is `pmh0_handr001`. Custom pistol animation
+The male human right-hand reference is `pmh0_handr001`. Custom pistol animation
 uses **bowshot**, whose hook retains its rest orientation; generic **xbowshot**
 rotates it differently. The human `rhand` hook sits at
 `(0.0110681, 0, -0.0961281)` relative to `rhand_g`.
 
-That helper uses only the male bare hand. Also inspect the female hand, open or
-fingerless glove styles, both equipped hands, and the playable normal body
-families in the client. Fit to the palm and fingers rather than the wrist.
-Positive weapon-space Z raises a hanging pistol toward the wrist; translating
-along -Z seats it farther into the fingers without changing scale or pitch.
-Measure each model separately: the complete catalog has different grip depths,
-and some legacy pistols include animated muzzle emitters. Preserve those nodes
-and their relative animation tracks when moving the weapon.
+That helper uses only the male bare hand. The female normal human bind socket
+is `(0.00101395, 0.0104238, -0.0818723)` relative to `rhand_g`; do not reuse the
+male socket for a female reference. Inspect the actual female and male hands,
+open or fingerless glove styles, both equipped hands, and the playable normal
+body families in the client. Some hand meshes have permanently open fingers.
+
+Measure each actual handle's butt, neck, width and depth. Compare sections at
+the fingers' contact positions; a sample near the butt or a single Z threshold
+does not establish palm contact. An oversized handle needs a uniform scale
+correction about its grip before seating it. Keep the weapon's proportions and
+inspect the palm, back of the hand and reverse side for gaps and penetration.
+Positive weapon-space Z raises a hanging pistol toward the wrist; choose its
+offset from those contact views rather than a common catalog-wide Z target.
+Preserve muzzle attachments and model animation tracks as well as visible
+geometry. When fitting an animated model through its root, apply the same
+transform to animated root positions and retain event timing.
+
+Fixture body parts have extended fields too: keep `BodyPart_*` and
+`xBodyPart_*` synchronized. Set the intended parts with `SetCreatureBodyPart`
+and log `GetCreatureBodyPart` with each capture, alongside gender, phenotype,
+native base items and weapon appearance parts. A blueprint label alone does not
+prove that the client rendered the intended hand. Equipped armor can override
+those body parts: reproduce and log its hand appearance too. Permanently open
+fingers cannot demonstrate a closed grasp. Compare the actual left mesh as well;
+the male human bare left hand is asymmetric, not just a mirrored right hand.
+
+When cloning a model into a temporary comparison slot, rename only its model
+header and root node. A texture can share the original model's resref; replacing
+every occurrence also renames that texture and invalidates the material check.
 
 Render a local review scene already in NWN coordinates with:
 

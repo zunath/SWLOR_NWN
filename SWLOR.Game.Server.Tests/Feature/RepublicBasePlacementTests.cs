@@ -1,11 +1,49 @@
 using System.Text.Json;
+using System.Text;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class RepublicBasePlacementTests
 {
+    [Test]
+    public void NewStores_UseCurrentBlueprintStockAndItemData()
+    {
+        var area = ReadSource("git", "visredrepbase");
+        var ignored = new HashSet<string>
+        {
+            "__data_type", "Comment", "PaletteID", "__struct_id", "Infinite", "Repos_PosX", "Repos_Posy",
+            "XOrientation", "XPosition", "YOrientation", "YPosition", "ZPosition",
+        };
+        foreach (var store in area["StoreList"]!["value"]!.OfType<JObject>())
+        {
+            var source = ReadSource("utm", store["ResRef"]!["value"]!.Value<string>()!);
+            var actualPanes = store["StoreList"]!["value"]!.OfType<JObject>().ToArray();
+            var sourcePanes = source["StoreList"]!["value"]!.OfType<JObject>().ToArray();
+            actualPanes.Should().HaveCount(sourcePanes.Length);
+            for (var pane = 0; pane < sourcePanes.Length; pane++)
+            {
+                var actualItems = actualPanes[pane]["ItemList"]?["value"]?.OfType<JObject>().ToArray() ?? [];
+                var sourceItems = sourcePanes[pane]["ItemList"]?["value"]?.OfType<JObject>().ToArray() ?? [];
+                actualItems.Select(item => item["TemplateResRef"]!["value"]!.Value<string>()).Should()
+                    .Equal(sourceItems.Select(item => item["InventoryRes"]!["value"]!.Value<string>()),
+                        "new shops must use their source inventory instead of retired embedded variants");
+                for (var index = 0; index < sourceItems.Length; index++)
+                {
+                    var resref = sourceItems[index]["InventoryRes"]!["value"]!.Value<string>()!;
+                    var blueprint = ReadSource("uti", resref);
+                    foreach (var field in blueprint.Properties().Where(field => !ignored.Contains(field.Name)))
+                        JToken.DeepEquals(actualItems[index][field.Name], field.Value).Should().BeTrue(
+                            $"{resref}.{field.Name} must match its current item definition");
+                    var infinite = sourceItems[index]["Infinite"] ?? JObject.FromObject(new { type = "byte", value = 1 });
+                    JToken.DeepEquals(actualItems[index]["Infinite"], infinite).Should().BeTrue();
+                }
+            }
+        }
+    }
+
     [Test]
     public void PublicEntrances_KeepEveryExistingRoomAndTheNewWingReachable()
     {
@@ -111,11 +149,16 @@ public class RepublicBasePlacementTests
         element.TryGetProperty(name, out var field) ? field.GetProperty("value").GetString() ?? string.Empty : string.Empty;
     private static float Number(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetSingle();
 
-    private static JsonDocument Read(string area)
+    private static JObject ReadSource(string kind, string resref) =>
+        JObject.Parse(Encoding.Latin1.GetString(File.ReadAllBytes(ModulePath(kind, resref))));
+
+    private static JsonDocument Read(string area) => JsonDocument.Parse(File.ReadAllText(ModulePath("git", area)));
+
+    private static string ModulePath(string kind, string resref)
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module"))) directory = directory.Parent;
         if (directory == null) throw new DirectoryNotFoundException("Module directory not found.");
-        return JsonDocument.Parse(File.ReadAllText(Path.Combine(directory.FullName, "Module", "git", $"{area}.git.json")));
+        return Path.Combine(directory.FullName, "Module", kind, $"{resref}.{kind}.json");
     }
 }

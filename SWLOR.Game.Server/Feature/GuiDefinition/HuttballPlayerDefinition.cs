@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -8,20 +9,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
     /// The compact Huttball window for players, shaped like the dice bag so it tucks into a corner of the screen:
-    /// team and role pickers with Join, Leave, and Captain, a stats box, Re-roll and Medic, then one large button
-    /// per action. Nothing has a set size except the stats box, so the buttons grow and shrink with the window in
-    /// both directions.
+    /// team and role pickers with Join and Leave, Captain, a stats box, Re-roll and Medic, then one large button
+    /// per action. Every control has a set size so the window fits on small screens and no row runs wider than
+    /// the window.
     /// </summary>
     public class HuttballPlayerDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<HuttballPlayerViewModel> _builder = new();
 
         private const float StatsHeight = 104f;
+        private const float HalfWidth = 100f;
+        private const float FullWidth = 204f;
+        private const float ButtonHeight = 40f;
 
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.HuttballPlayer)
-                .SetInitialGeometry(0f, 0f, 220f, 580f)
+                .SetInitialGeometry(0f, 0f, 240f, 600f)
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -33,42 +37,53 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddOption("Home", 0)
                             .AddOption("Away", 1)
                             .BindSelectedIndex(model => model.TeamSelection)
-                            .BindIsEnabled(model => model.CanJoin);
+                            .BindIsEnabled(model => model.CanJoin)
+                            .SetWidth(HalfWidth);
                         row.AddComboBox()
                             .AddOption("Bruiser", 0)
                             .AddOption("Catcher", 1)
                             .AddOption("Thrower", 2)
                             .AddOption("Blocker", 3)
-                            .BindSelectedIndex(model => model.RoleSelection);
+                            .BindSelectedIndex(model => model.RoleSelection)
+                            .BindIsEnabled(model => model.CanJoin)
+                            .SetWidth(HalfWidth);
                     });
                     col.AddRow(row =>
                     {
                         AddButton(row, "Join", "Join the chosen team in the chosen role, between drives. The first player on a team captains it.",
-                            model => model.OnJoin(), model => model.CanJoin);
+                            model => model.OnJoin(), model => model.CanJoin)
+                            .SetWidth(HalfWidth);
                         AddButton(row, "Leave", "Leave the match.",
-                            model => model.OnLeave(), model => model.CanLeave);
-                        AddButton(row, "Captain", "Open the captain's window: set up a match with no DM, or run your team's drives and turns.",
-                            model => model.OnCaptain(), model => model.CanOpenCaptain);
+                            model => model.OnLeave(), model => model.CanLeave)
+                            .SetWidth(HalfWidth);
                     });
+                    AddActionRow(col, "Captain", "Open the captain's window: set up a match with no DM, or run your team's drives and turns.",
+                        model => model.OnCaptain(), model => model.CanOpenCaptain);
 
                     col.AddRow(row => row.AddText()
                         .BindText(model => model.StatsText)
                         .SetShowBorder(true)
+                        .SetScrollbars(NuiScrollbars.Y)
+                        .SetWidth(FullWidth)
                         .SetHeight(StatsHeight));
 
                     col.AddRow(row =>
                     {
                         AddButton(row, "Re-roll", "Right after one of your team's rolls: undo it and roll again. You keep the new result.",
-                            model => model.OnReroll(), model => model.CanReroll);
+                            model => model.OnReroll(), model => model.CanReroll)
+                            .SetWidth(HalfWidth);
                         AddButton(row, "Medic", "Click an injured teammate on the bench: their injury drops one step.",
-                            model => model.OnMedic(), model => model.CanUseMedic);
+                            model => model.OnMedic(), model => model.CanUseMedic)
+                            .SetWidth(HalfWidth);
                     });
 
                     col.AddRow(row => row.AddButton()
                         .BindText(model => model.MoveText)
                         .SetTooltip("Move: click a square. Stand Up: get back on your feet, using this turn's movement.")
                         .BindOnClicked(model => model.OnMoveOrStand())
-                        .BindIsEnabled(model => model.CanMoveOrStand));
+                        .BindIsEnabled(model => model.CanMoveOrStand)
+                        .SetWidth(FullWidth)
+                        .SetHeight(ButtonHeight));
                     AddActionRow(col, "Block", "Opposed strength roll against an adjacent opponent.",
                         model => model.OnBlock(), model => model.CanBlock);
                     AddActionRow(col, "Pass", $"Throw the ball to a teammate up to {HuttballRules.PassRange} squares away.",
@@ -89,21 +104,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             Expression<Func<HuttballPlayerViewModel, Action>> onClick,
             Expression<Func<HuttballPlayerViewModel, bool>> isEnabled)
         {
-            col.AddRow(row => AddButton(row, text, tooltip, onClick, isEnabled));
+            col.AddRow(row => AddButton(row, text, tooltip, onClick, isEnabled).SetWidth(FullWidth));
         }
 
-        private static void AddButton(
+        private static GuiButton<HuttballPlayerViewModel> AddButton(
             GuiRow<HuttballPlayerViewModel> row,
             string text,
             string tooltip,
             Expression<Func<HuttballPlayerViewModel, Action>> onClick,
             Expression<Func<HuttballPlayerViewModel, bool>> isEnabled)
         {
-            row.AddButton()
+            return row.AddButton()
                 .SetText(text)
                 .SetTooltip(tooltip)
                 .BindOnClicked(onClick)
-                .BindIsEnabled(isEnabled);
+                .BindIsEnabled(isEnabled)
+                .SetHeight(ButtonHeight);
         }
     }
 }

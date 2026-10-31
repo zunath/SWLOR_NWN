@@ -304,6 +304,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.Prospector)
                 .Name("Prospector")
+                .Icon("ife_stars_minin")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ProspectorTrait)
@@ -330,6 +331,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.DeepCore)
                 .Name("Deep Core")
+                .Icon("ife_treas_hunt")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeepCoreTrait)
@@ -350,6 +352,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.RapidExtraction)
                 .Name("Rapid Extraction")
+                .Icon("ife_Miner")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RapidExtractionTrait)
@@ -369,6 +372,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.GasSiphoning)
                 .Name("Gas Siphoning")
+                .Icon("ife_broil")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GasSiphoningTrait)
@@ -389,6 +393,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.SalvageExpert)
                 .Name("Salvage Expert")
+                .Icon("ife_hasty_touch")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SalvageExpertTrait)
@@ -415,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.TraitHunter)
                 .Name("Trait Hunter")
+                .Icon("ife_cred_find")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TraitHunterTrait)

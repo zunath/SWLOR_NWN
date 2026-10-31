@@ -208,7 +208,7 @@ public class SpaceRewardTests
         var craft = Read("Service", "Craft.cs");
         craft.Should().Contain("GetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable)");
         craft.Should().Contain("SetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable, true)");
-        Read("Feature", "GuiDefinition", "ViewModel", "CraftViewModel.cs").Should().Contain("ShipBlueprintRules.PickItemBonuses(");
+        Read("Service", "CraftService", "Minigame", "NwnCraftSessionWorld.cs").Should().Contain("ShipBlueprintRules.PickItemBonuses(");
     }
 
     // Named rank-50 modules

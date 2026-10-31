@@ -336,7 +336,8 @@ public class CombatUpgradeBibleSyncTests
     public void CombatUpgradeBibleManifest_MatchesLivePerkAndAbilityRegistries()
     {
         var root = FindRepositoryRoot();
-        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
+        var rows = manifest
             .Where(IsScopedImplementedRow)
             .ToArray();
         var perks = BuildPerksWithout2daLookup();
@@ -391,7 +392,12 @@ public class CombatUpgradeBibleSyncTests
             }
         }
 
-        AssertNoExtraScopedPerks(rows, perks, failures);
+        // A perk of a scoped category may have an implemented row of an unscoped type (the Gathering styles, beside the space
+        // revamp's scoped Space Industry rows): the row documents it, so it is not an extra perk.
+        var documented = manifest
+            .Where(row => !OutOfScopeTabs.Contains(row.Tab) && ImplementedStatuses.Contains(row.DevStatus) && !string.IsNullOrWhiteSpace(row.PerkName))
+            .ToArray();
+        AssertNoExtraScopedPerks(rows, documented, perks, failures);
         AssertNoExtraScopedAbilities(scopedPerkTypes, expectedActiveFeats, abilities, failures);
         AssertAllAbilityDefinitionNamesMatchAbilityNames(abilities, failures);
         AssertDefinitionFormatting(root, failures);
@@ -1755,13 +1761,14 @@ public class CombatUpgradeBibleSyncTests
 
     private static void AssertNoExtraScopedPerks(
         IReadOnlyCollection<BiblePerkRow> rows,
+        IReadOnlyCollection<BiblePerkRow> documented,
         IReadOnlyCollection<PerkRecord> perks,
         List<string> failures)
     {
         var expectedCategories = rows
             .SelectMany(GetExpectedCategories)
             .ToHashSet();
-        var expectedRows = rows
+        var expectedRows = documented
             .Select(row => (
                 Categories: GetExpectedCategories(row),
                 Name: NormalizeName(GetBaseName(row.PerkName)),
@@ -2914,6 +2921,8 @@ public class CombatUpgradeBibleSyncTests
             ("Gathering", "Harvesting") => PerkCategoryType.Gathering,
             ("Gathering", "Scavenging") => PerkCategoryType.Gathering,
             ("Gathering", "Space Industry") => PerkCategoryType.Gathering,
+            ("Gathering", "Prospector") => PerkCategoryType.Gathering,
+            ("Gathering", "Treasure Seeker") => PerkCategoryType.Gathering,
             ("Heavy Vibroblade", "Immortal") => PerkCategoryType.HeavyVibrobladeDefense,
             ("Heavy Vibroblade", "Berserker") => PerkCategoryType.HeavyVibrobladeOffense,
             ("Katar", "Iron Guard") => PerkCategoryType.KatarIronGuard,

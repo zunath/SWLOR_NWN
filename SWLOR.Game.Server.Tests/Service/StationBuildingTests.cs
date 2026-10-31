@@ -158,9 +158,11 @@ public class StationBuildingTests
         StationBuildingRules.ApplyShipyardSpeed(100, 30).Should().Be(130);
         StationBuildingRules.ApplyShipyardSpeed(55, 15).Should().Be(63);
 
-        var craft = ReadServer("Feature", "GuiDefinition", "ViewModel", "CraftViewModel.cs");
-        craft.Should().Contain("StationBuildingRules.ApplyShipyardSpeed(progress, _shipyardSpeedPercent)");
-        craft.Should().Contain("StationBuildings.PayShipyardFee").And.Contain("ProcessShipyardFee()");
+        // Engineering crafts in the Circuit: the droid raises every Assembly gain (CircuitSetup.StationAssemblyPercent).
+        ReadServer("Feature", "GuiDefinition", "ViewModel", "CircuitCraftViewModel.cs").Should().Contain("Craft.GetStationProgressBonusPercent(Player, recipe)");
+        ReadServer("Service", "Craft.cs").Should().Contain("StationBuildings.GetShipyardSpeedPercent(player)")
+            .And.Contain("StationBuildings.PayShipyardFee(player, StationBuildings.GetShipyardStation(player))");
+        ReadServer("Service", "CraftService", "Minigame", "CraftSessionLifecycle.cs").Should().Contain("_world.ChargeStationFee(player, recipe);");
         ReadServer("Service", "StationBuildings.cs").Should().Contain("StationDroidRules.ShipyardBuildSpeedPercent(state.DroidIndustry)")
             .And.Contain("StationDroidRules.DrillOutputPercent(state.DroidIndustry, state.DroidEfficiencyPercent)")
             .And.Contain("StationDroidRules.TakesDroid(detail.Slot)");

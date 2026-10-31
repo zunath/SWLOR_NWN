@@ -59,6 +59,12 @@ public static class KitchenComponentTable
             ["dried_bonito"] = Flavor(12, 0, 3),
             ["fat_greedie"] = Flavor(11, 1, 2),
             ["field_chip"] = Flavor(6, 2, 3),
+            // Fiberplast, the filler of the space revamp's Life Support Systems: the Unlisted vector, so their dishes cook as they did.
+            ["fiberp_flawed"] = Flavor(6, 0, 2),
+            ["fiberp_good"] = Flavor(6, 0, 2),
+            ["fiberp_high"] = Flavor(6, 0, 2),
+            ["fiberp_imperfect"] = Flavor(6, 0, 2),
+            ["fiberp_ruined"] = Flavor(6, 0, 2),
             ["forest_carp"] = Flavor(11, 1, 2),
             ["frigorifish"] = Flavor(11, 1, 2),
             ["frogguts"] = Flavor(11, 0, 5),

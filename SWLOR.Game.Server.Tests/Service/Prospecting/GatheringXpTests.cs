@@ -51,7 +51,8 @@ public class GatheringXpTests
     {
         var ores = RefineryOres();
 
-        ores.Where(ore => ore.Tier < 99).Should().HaveCount(12);
+        // 12 ores and the space revamp's 5 Ship Scrap tiers, which refine into electronics at the same tier XP.
+        ores.Where(ore => ore.Tier < 99).Should().HaveCount(17);
         foreach (var (resref, tier, flat) in ores.Where(ore => ore.Tier < 99))
         {
             // A rank equal to the ore's level makes the rank difference 0, which is the divisor of the curve: the flat XP, whole.

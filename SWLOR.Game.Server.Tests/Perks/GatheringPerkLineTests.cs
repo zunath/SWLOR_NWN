@@ -36,7 +36,12 @@ public class GatheringPerkLineTests
     private static readonly int[] ScheduleRanks = { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 };
     private static readonly int[] SchedulePrices = { 1, 1, 2, 2, 3, 3, 3, 3, 3, 4 };
 
-    private static Dictionary<PerkType, PerkDetail> Perks() => new GatheringPerkDefinition().BuildPerks();
+    /// <summary>
+    /// The two lines' perks. The space revamp's Space Industry perks share the Gathering definition and have their own tests
+    /// (<c>GatheringSpaceIndustryTests</c>).
+    /// </summary>
+    private static Dictionary<PerkType, PerkDetail> Perks() =>
+        new GatheringPerkDefinition().BuildPerks().Where(pair => BothLines.Contains(pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);
 
     private static IEnumerable<(PerkType Perk, int Level, int Rank, int Price)> Purchases(IEnumerable<PerkType> line)
     {

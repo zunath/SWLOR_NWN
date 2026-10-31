@@ -619,11 +619,12 @@ public class ShipComponentTests
         }
     }
 
-    [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "ShipComponents.ApplyCraftedTraits(_recipe, recipe, item, _components);")]
-    [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "return ShipComponents.OrderForConsumption(recipe, components);")]
-    [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "|| ShipComponents.IsStandInCandidate(recipe, item)")]
-    [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "AggregateStandIns(recipe, components, remainingComponents, result);")]
-    [TestCase("Feature/GuiDefinition/ViewModel/CraftViewModel.cs", "foreach (var standIn in ShipComponents.ReserveStandIns(recipe, components))")]
+    [TestCase("Service/CraftService/Minigame/NwnCraftSessionWorld.cs", "ShipComponents.ApplyCraftedTraits(recipeType, recipe, item, components);")]
+    [TestCase("Service/CraftService/Minigame/CraftSessionLifecycle.cs", "_world.ApplyComponentTraits(item, record.Recipe, recipe, record.Components);")]
+    [TestCase("Service/CraftService/Minigame/NwnCraftSessionWorld.cs", "stacks = ShipComponents.OrderForConsumption(recipe, stacks);")]
+    [TestCase("Service/CraftService/Minigame/NwnCraftSessionWorld.cs", "|| ShipComponents.IsStandInCandidate(recipe, item)")]
+    [TestCase("Service/CraftService/Minigame/NwnCraftSessionWorld.cs", "foreach (var standIn in ShipComponents.ReserveRareSlot(recipe, stacks, remaining))")]
+    [TestCase("Service/ShipComponents.cs", "foreach (var standIn in ReserveStandIns(recipe, stacks))")]
     [TestCase("Service/Craft.cs", "foreach (var line in ShipRareComponentRules.StandInLines(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare)))")]
     [TestCase("Service/ShipComponents.cs", "if (CarriesTraits(GetResRef(component)))")]
     [TestCase("Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs", "Traits = ShipComponents.GetTraitsOrNull(item),")]

@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // ---------------- selected part bindings ----------------
         public string PartPreviewImage { get => Get<string>(); set => Set(value); }
         public string PartPreviewLabel { get => Get<string>(); set => Set(value); }
-        /// <summary>The worn part's number, shown on hover over its name.</summary>
+        /// <summary>The worn part's number, drawn in the corner of its picture.</summary>
         public string PartPreviewNumber { get => Get<string>(); set => Set(value); }
         public bool IsPartPreviewEnabled { get => Get<bool>(); set => Set(value); }
         public string PreviewViewText { get => Get<string>(); set => Set(value); }
@@ -164,9 +164,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return FitWindowToScreen(new GuiRectangle(Math.Max(0f, x), editor.Y, width, height),
                 screenWidth, screenHeight, scale);
         }
-
-        /// <summary>Hover text naming a part's number, which the browser's Part # box takes.</summary>
-        internal static string PartNumberTooltip(int partId) => $"Part #{partId}";
 
         private bool IsPartBrowserOpen() => Gui.IsWindowOpen(Player, GuiWindowType.AppearancePartBrowser);
 
@@ -351,7 +348,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var current = _browserIds.Contains(_browserCurrent) ? _browserCurrent : -1;
             SetIfChanged(nameof(PartPreviewImage), current >= 0 ? AppearancePreview.Picture(_browserKey(current), view) : string.Empty);
             SetIfChanged(nameof(PartPreviewLabel), current >= 0 ? _browserLabel(current) : string.Empty);
-            SetIfChanged(nameof(PartPreviewNumber), current >= 0 ? PartNumberTooltip(current) : string.Empty);
+            SetIfChanged(nameof(PartPreviewNumber), current > 0 ? current.ToString() : string.Empty);
             SetIfChanged(nameof(IsPartPreviewEnabled), _browserIds.Count > 0 && _browserApply != null);
             SetIfChanged(nameof(PreviewViewText), view.ToString());
             SyncPartBrowser();

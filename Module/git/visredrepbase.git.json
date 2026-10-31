@@ -633635,6 +633635,21 @@
                 "type": "int",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
             }
           ]
         },
@@ -633744,7 +633759,7 @@
           "id": 5800,
           "type": "cexolocstring",
           "value": {
-            "0": "Exit Outpost Hope"
+            "0": "Enter Hangar"
           }
         },
         "OnClick": {
@@ -633965,6 +633980,21 @@
               "Name": {
                 "type": "cexostring",
                 "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
               },
               "Type": {
                 "type": "dword",
@@ -659032,269 +659062,7 @@
   },
   "TriggerList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 1,
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Cursor": {
-          "type": "byte",
-          "value": 1
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Geometry": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -5.170302867889404
-              },
-              "PointY": {
-                "type": "float",
-                "value": 4.110637664794922
-              },
-              "PointZ": {
-                "type": "float",
-                "value": -1.365000128746033
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -5.103960514068604
-              },
-              "PointY": {
-                "type": "float",
-                "value": -0.9293632507324219
-              },
-              "PointZ": {
-                "type": "float",
-                "value": -1.365000128746033
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -1.168992042541504
-              },
-              "PointY": {
-                "type": "float",
-                "value": -0.7314014434814453
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02499994076788425
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -0.9215335845947266
-              },
-              "PointY": {
-                "type": "float",
-                "value": 0.007793426513671875
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": 0.0
-              },
-              "PointY": {
-                "type": "float",
-                "value": 0.0
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": 0.01702117919921875
-              },
-              "PointY": {
-                "type": "float",
-                "value": 3.150461196899414
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -0.968632698059082
-              },
-              "PointY": {
-                "type": "float",
-                "value": 3.178676605224609
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": -1.23670768737793
-              },
-              "PointY": {
-                "type": "float",
-                "value": 3.934375762939453
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
-              }
-            }
-          ]
-        },
-        "HighlightHeight": {
-          "type": "float",
-          "value": 0.0
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": "Hangar_to_Mess"
-        },
-        "LinkedToFlags": {
-          "type": "byte",
-          "value": 2
-        },
-        "LoadScreenID": {
-          "type": "word",
-          "value": 0
-        },
-        "LocalizedName": {
-          "id": 14760,
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "ScriptHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnEnter": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnExit": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptUserDefine": {
-          "type": "resref",
-          "value": ""
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "AreaTransition"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "newtransition"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "int",
-          "value": 1
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 132.3082275390625
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 132.166748046875
-        },
-        "ZOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -0.7226043343544006
-        }
-      }
-    ]
+    "value": []
   },
   "WaypointList": {
     "type": "list",
@@ -660522,6 +660290,117 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - visredrepbase"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 75.17604064941406
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 2.58172345161438
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-06
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 49
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 83
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
         }
       }
     ]

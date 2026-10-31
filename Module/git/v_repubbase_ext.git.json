@@ -120684,7 +120684,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "RepBase_Enter1"
+                "value": "WP_V_RepBaseInt_to_RepBaseExt"
               }
             },
             {
@@ -172823,6 +172823,68 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1185356378555298
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 1
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Outpost Hope Entrance"
+          }
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "WP_V_RepBaseExt_to_RepBaseInt"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 44.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 4.203895392974451e-45
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 60.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
         }
       }
     ]

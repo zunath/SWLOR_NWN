@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Viscara - Republic Base - Entrance"
+      "0": "Viscara - Republic Base - Entrance"
     }
   },
   "NoRest": {
@@ -3949,7 +3949,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 53
+    "value": 52
   },
   "Width": {
     "type": "int",

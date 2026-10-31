@@ -3,23 +3,6 @@ using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 
-/// <summary>What an action's row in the window is: how it is coloured and what it warns about.</summary>
-public enum ProspectingActionKind
-{
-    Normal = 0,
-
-    /// <summary>The action may end the session by spending the node or the harvester.</summary>
-    Ends = 1,
-
-    /// <summary>The action may collapse the node.</summary>
-    Collapses = 2,
-
-    Unavailable = 3
-}
-
-/// <summary>The row for one action: the result it promises, a tooltip and how it is coloured.</summary>
-public sealed record ProspectingActionView(string Summary, string Tooltip, ProspectingActionKind Kind);
-
 /// <summary>
 /// The words the Prospecting window shows for the engine's previews. Every number comes from the preview or the setup, so what a button
 /// promises is what a click does. Nothing here names how many seams are hidden.

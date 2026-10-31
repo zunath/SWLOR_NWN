@@ -167,6 +167,68 @@ public class SpaceElectronicWarfareTests
     }
 
     [Test]
+    public void AWeakerJammerOrPainterOrWeb_NeverKeepsAStrongerOneAlive()
+    {
+        // A stronger and a weaker module both cycle every 4 s; the stronger one stops after its cycle at 0 s.
+        var status = new ShipStatus();
+        ShipElectronicWarfareRules.Jam(status, -12, 4.5, Now);
+        ShipElectronicWarfareRules.Paint(status, 10, 4.5, Now);
+        ShipElectronicWarfareRules.Web(status, 40, 4.5, Now);
+        for (var second = 0; second <= 12; second += 4)
+        {
+            var at = Now.AddSeconds(second);
+            ShipElectronicWarfareRules.Jam(status, -6, 4.5, at);
+            ShipElectronicWarfareRules.Paint(status, 5, 4.5, at);
+            ShipElectronicWarfareRules.Web(status, 20, 4.5, at);
+            if (second != 4)
+                continue;
+
+            status.GetAccuracyPenalty(at).Should().Be(-12, "the stronger jam still runs");
+            status.GetPaintPercent(at).Should().Be(10);
+            ShipTimedStrengthRules.Strongest(status.IonWebs, at).Should().Be(40);
+            ShipTimedStrengthRules.StrongestUntil(status.IonWebs, at).Should().Be(Now.AddSeconds(4.5), "the weaker web did not extend it");
+        }
+
+        var afterStrongerLapses = Now.AddSeconds(5);
+        status.GetAccuracyPenalty(afterStrongerLapses).Should().Be(-6, "the weaker jam never extended the stronger one");
+        status.GetPaintPercent(afterStrongerLapses).Should().Be(5);
+        ShipTimedStrengthRules.Strongest(status.IonWebs, afterStrongerLapses).Should().Be(20);
+        ShipTimedStrengthRules.StrongestUntil(status.IonWebs, afterStrongerLapses).Should().Be(Now.AddSeconds(16.5));
+
+        status.GetAccuracyPenalty(Now.AddSeconds(17)).Should().Be(0);
+        status.GetPaintPercent(Now.AddSeconds(17)).Should().Be(0);
+    }
+
+    [Test]
+    public void TimedStrengths_RenewWithoutShortening_AndDropLapsedOnes()
+    {
+        var strengths = new Dictionary<int, DateTime>();
+        ShipTimedStrengthRules.Refresh(strengths, 10, Now.AddSeconds(10), Now);
+        ShipTimedStrengthRules.Refresh(strengths, 10, Now.AddSeconds(4), Now);
+        strengths[10].Should().Be(Now.AddSeconds(10), "a renewal never shortens a strength");
+
+        ShipTimedStrengthRules.Refresh(strengths, 5, Now.AddSeconds(20), Now.AddSeconds(11));
+        strengths.Should().ContainKey(5).And.NotContainKey(10, "a lapsed strength is dropped");
+        ShipTimedStrengthRules.Refresh(strengths, 0, Now.AddSeconds(20), Now.AddSeconds(11));
+        strengths.Should().NotContainKey(0);
+
+        ShipTimedStrengthRules.Strongest(null, Now).Should().Be(0, "saved data without the effect reads as none");
+        ShipTimedStrengthRules.StrongestUntil(new Dictionary<int, DateTime>(), Now).Should().BeNull();
+        new ShipStatus { AccuracyPenalties = null }.GetAccuracyPenalty(Now).Should().Be(0);
+        new ShipStatus { Paints = null }.GetPaintPercent(Now).Should().Be(0);
+
+        // The Ion Web keeps its target's status in the module's flow (saved by the caller) and the E-War Array shares
+        // the Jammer's strengths.
+        var web = ReadSource("Service", "SpaceElectronicWarfare.cs");
+        web.Should().Contain("ShipElectronicWarfareRules.Web(targetStatus, percent, seconds, now);")
+            .And.Contain("ApplyStrongestIonWeb(target, status, DateTime.UtcNow);");
+        ReadSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs")
+            .Should().Contain("Space.ApplyIonWeb(activator, status, target, targetStatus, Effective(step));");
+        ReadSource("Service", "SpaceRevamp.cs").Should().Contain("ShipElectronicWarfareRules.Jam(enemyStatus, penalty, seconds, DateTime.UtcNow);")
+            .And.NotContain("enemyStatus.AccuracyPenaltyUntil");
+    }
+
+    [Test]
     public void Afterburner_AddsItsPercent_AndAHoldShutsItDown()
     {
         ShipAfterburnerRules.ApplySpeed(1.0, 40).Should().BeApproximately(1.4, 1e-9);

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
@@ -49,24 +51,34 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Jams a ship for one more cycle: its Accuracy drops by <paramref name="penalty"/> (a negative number). While an
-        /// earlier jam or E-War Array penalty runs, the stronger one counts.
+        /// Jams a ship for one more cycle: its Accuracy drops by <paramref name="penalty"/> (a negative number). Each
+        /// strength keeps its own expiry, so while jams or E-War Array penalties overlap the strongest active one counts,
+        /// and a weaker one renewing never keeps a stronger one alive.
         /// </summary>
         public static void Jam(ShipStatus status, int penalty, double seconds, DateTime now)
         {
-            status.AccuracyPenalty = now < status.AccuracyPenaltyUntil ? Math.Min(status.AccuracyPenalty, penalty) : penalty;
-            var until = now.AddSeconds(seconds);
-            if (until > status.AccuracyPenaltyUntil)
-                status.AccuracyPenaltyUntil = until;
+            status.AccuracyPenalties ??= new Dictionary<int, DateTime>();
+            ShipTimedStrengthRules.Refresh(status.AccuracyPenalties, penalty, now.AddSeconds(seconds), now);
         }
 
-        /// <summary>Paints a ship for one more cycle: it takes <paramref name="percent"/> more damage. The stronger paint counts.</summary>
+        /// <summary>
+        /// Paints a ship for one more cycle: it takes <paramref name="percent"/> more damage. The strongest active paint
+        /// counts, and a weaker one renewing never keeps a stronger one alive.
+        /// </summary>
         public static void Paint(ShipStatus status, int percent, double seconds, DateTime now)
         {
-            status.PaintedPercent = now < status.PaintedUntil ? Math.Max(status.PaintedPercent, percent) : percent;
-            var until = now.AddSeconds(seconds);
-            if (until > status.PaintedUntil)
-                status.PaintedUntil = until;
+            status.Paints ??= new Dictionary<int, DateTime>();
+            ShipTimedStrengthRules.Refresh(status.Paints, percent, now.AddSeconds(seconds), now);
+        }
+
+        /// <summary>
+        /// Webs a ship for one more cycle at <paramref name="percent"/> slow. The strongest active web slows it, a weaker
+        /// one never cuts a stronger one short, and a weaker one renewing never keeps a stronger one alive.
+        /// </summary>
+        public static void Web(ShipStatus status, int percent, double seconds, DateTime now)
+        {
+            status.IonWebs ??= new Dictionary<int, DateTime>();
+            ShipTimedStrengthRules.Refresh(status.IonWebs, percent, now.AddSeconds(seconds), now);
         }
 
         /// <summary>Whether the module type debuffs an enemy ship it targets (it needs one, and PvP rules apply).</summary>

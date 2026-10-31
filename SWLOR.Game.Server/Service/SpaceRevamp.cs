@@ -81,11 +81,13 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_target_upd", ally);
         }
 
-        /// <summary>Lowers an enemy ship's Accuracy for a while. Used by the E-War Array.</summary>
+        /// <summary>
+        /// Lowers an enemy ship's Accuracy for a while. Used by the E-War Array; it overlaps with Jammers, and the
+        /// strongest active penalty counts (<see cref="ShipElectronicWarfareRules.Jam"/>).
+        /// </summary>
         public static void ApplyAccuracyPenalty(uint enemy, ShipStatus enemyStatus, int penalty, double seconds)
         {
-            enemyStatus.AccuracyPenalty = penalty;
-            enemyStatus.AccuracyPenaltyUntil = DateTime.UtcNow.AddSeconds(seconds);
+            ShipElectronicWarfareRules.Jam(enemyStatus, penalty, seconds, DateTime.UtcNow);
 
             SaveShipStatus(enemy, enemyStatus);
         }

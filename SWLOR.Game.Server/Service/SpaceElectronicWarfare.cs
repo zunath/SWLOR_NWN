@@ -67,21 +67,49 @@ namespace SWLOR.Game.Server.Service
             return hull == null ? baseRange : ShipElectronicWarfareRules.InterdictorRange(baseRange, hull.Role);
         }
 
-        /// <summary>One Ion Web cycle: the target is slowed until a moment after the next cycle is due.</summary>
-        public static void ApplyIonWeb(uint activator, ShipStatus status, uint target, ShipModuleStep step)
+        /// <summary>
+        /// One Ion Web cycle: the target is slowed until a moment after the next cycle is due. With webs overlapping, the
+        /// strongest active one slows it (<see cref="ShipElectronicWarfareRules.Web"/>).
+        /// </summary>
+        public static void ApplyIonWeb(uint activator, ShipStatus status, uint target, ShipStatus targetStatus, ShipModuleStep step)
         {
             var hull = FindShipDetail(status?.ItemTag)?.Hull;
             var percent = ShipElectronicWarfareRules.WebPercent(step.WebPercent, hull?.Role ?? ShipRole.Invalid);
             percent = ShipCrewSeats.ScaleByEffectiveness(percent, SpaceCrew.GetFireEffectiveness(activator));
-            var seconds = (float)ShipElectronicWarfareRules.HoldSeconds(step.CycleSeconds);
+            var seconds = ShipElectronicWarfareRules.HoldSeconds(step.CycleSeconds);
 
-            RemoveEffectByTag(target, IonWebEffectTag);
-            if (percent > 0)
-                ApplyEffectToObject(DurationType.Temporary, TagEffect(EffectMovementSpeedDecrease(percent), IonWebEffectTag), target, seconds);
+            if (targetStatus != null)
+            {
+                var now = DateTime.UtcNow;
+                ShipElectronicWarfareRules.Web(targetStatus, percent, seconds, now);
+                ApplyStrongestIonWeb(target, targetStatus, now);
+            }
 
             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Chest), target, 1.0f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Slow), target);
             BreakCloakByElectronicWarfare(target, "An Ion Web broke your cloak.");
+        }
+
+        /// <summary>
+        /// Slows the ship by its strongest active Ion Web until that web lapses, then checks again, so a weaker web still
+        /// running takes over at once instead of waiting for its next cycle.
+        /// </summary>
+        private static void ApplyStrongestIonWeb(uint target, ShipStatus targetStatus, DateTime now)
+        {
+            RemoveEffectByTag(target, IonWebEffectTag);
+            var percent = ShipTimedStrengthRules.Strongest(targetStatus.IonWebs, now);
+            var until = ShipTimedStrengthRules.StrongestUntil(targetStatus.IonWebs, now);
+            if (percent <= 0 || until == null)
+                return;
+
+            var seconds = (float)(until.Value - now).TotalSeconds;
+            ApplyEffectToObject(DurationType.Temporary, TagEffect(EffectMovementSpeedDecrease(percent), IonWebEffectTag), target, seconds);
+            DelayCommand(seconds, () =>
+            {
+                var status = GetIsObjectValid(target) ? GetShipStatus(target) : null;
+                if (status != null)
+                    ApplyStrongestIonWeb(target, status, DateTime.UtcNow);
+            });
         }
 
         /// <summary>

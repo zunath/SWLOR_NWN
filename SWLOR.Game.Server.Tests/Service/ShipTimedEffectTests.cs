@@ -43,7 +43,7 @@ public class ShipTimedEffectTests
     [Test]
     public void EWarPenalty_LowersAccuracyOnlyWhileItLasts()
     {
-        var status = new ShipStatus { AccuracyPenalty = -12, AccuracyPenaltyUntil = Now.AddSeconds(4.5) };
+        var status = new ShipStatus { AccuracyPenalties = new() { [-12] = Now.AddSeconds(4.5) } };
 
         status.GetAccuracyPenalty(Now).Should().Be(-12);
         status.GetAccuracyPenalty(Now.AddSeconds(5)).Should().Be(0);

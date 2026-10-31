@@ -404,9 +404,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance((_, status, _, _, _) => Space.GetIonWebRange(status, step.Range))
                 .ValidTargetType(ObjectType.Creature)
                 .ValidationAction((activator, _, target, targetStatus, _) => Space.IonWebError(activator, target, targetStatus))
-                .ActivatedAction((activator, status, target, _, _) =>
+                .ActivatedAction((activator, status, target, targetStatus, _) =>
                 {
-                    Space.ApplyIonWeb(activator, status, target, Effective(step));
+                    Space.ApplyIonWeb(activator, status, target, targetStatus, Effective(step));
                     TauntTarget(activator, target);
                 });
         }

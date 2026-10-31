@@ -131,9 +131,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The resistance bonus a Shield Hardener grants while hardened.</summary>
         public int HardenedAmount { get; set; }
 
-        /// <summary>Accuracy lost to an enemy E-War Array (a negative number) until <see cref="AccuracyPenaltyUntil"/>.</summary>
-        public int AccuracyPenalty { get; set; }
-        public DateTime AccuracyPenaltyUntil { get; set; }
+        /// <summary>
+        /// Accuracy lost to enemy Jammers and E-War Arrays: each penalty (a negative number) and when it lapses. The
+        /// strongest active one counts (<see cref="ShipTimedStrengthRules"/>).
+        /// </summary>
+        public Dictionary<int, DateTime> AccuracyPenalties { get; set; } = new();
 
         /// <summary>
         /// An enemy Interdictor holds the ship until this time: no starlane or signature jump, docking, rift crossing,
@@ -141,15 +143,23 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public DateTime InterdictedUntil { get; set; }
 
-        /// <summary>Percent more damage the ship takes from an enemy Target Painter until <see cref="PaintedUntil"/>.</summary>
-        public int PaintedPercent { get; set; }
-        public DateTime PaintedUntil { get; set; }
+        /// <summary>
+        /// Enemy Target Painters on the ship: each percent more damage taken and when it lapses. The strongest active
+        /// one counts (<see cref="ShipTimedStrengthRules"/>).
+        /// </summary>
+        public Dictionary<int, DateTime> Paints { get; set; } = new();
+
+        /// <summary>
+        /// Enemy Ion Webs on the ship: each slow percent and when it lapses. The strongest active one slows the ship
+        /// (<see cref="ShipTimedStrengthRules"/>).
+        /// </summary>
+        public Dictionary<int, DateTime> IonWebs { get; set; } = new();
 
         /// <summary>Whether an Interdictor holds the ship right now.</summary>
         public bool IsInterdicted(DateTime now) => now < InterdictedUntil;
 
         /// <summary>The extra damage taken from a Target Painter right now, in percent (0 when unpainted).</summary>
-        public int GetPaintPercent(DateTime now) => now < PaintedUntil ? PaintedPercent : 0;
+        public int GetPaintPercent(DateTime now) => ShipTimedStrengthRules.Strongest(Paints, now);
 
         /// <summary>
         /// The allied Bulwark Shield Generator auras on the ship: each percent added to max shield and when it lapses.
@@ -169,7 +179,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>The Accuracy lost to an E-War Array right now (0 or negative).</summary>
-        public int GetAccuracyPenalty(DateTime now) => now < AccuracyPenaltyUntil ? AccuracyPenalty : 0;
+        public int GetAccuracyPenalty(DateTime now) => ShipTimedStrengthRules.Strongest(AccuracyPenalties, now, lowestWins: true);
 
         /// <summary>Max shield including the strongest Bulwark Shield Generator bonus that is still active.</summary>
         public int GetEffectiveMaxShield(DateTime now) => ShipShieldAuraRules.EffectiveMaxShield(MaxShield, ShieldAuras, now);

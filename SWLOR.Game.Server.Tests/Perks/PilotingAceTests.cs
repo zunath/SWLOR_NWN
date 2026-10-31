@@ -222,6 +222,24 @@ public class PilotingAceTests
         status.RemainingCycles.Should().Be(0, "a spent effect cannot go below zero");
     }
 
+    [Test]
+    public void AHitWithoutSustainedFire_EndsOnlyThatWeaponsRun()
+    {
+        // An Ace pilot and a gunner without the perk share a ship: the gunner's landed hits must not wipe the pilot's
+        // stacks, so the no-perk branch ends only the firing weapon's run. Leaving space still ends every run.
+        var source = ReadServerSource("Service", "SpaceSustainedFire.cs");
+        var register = source.Substring(source.IndexOf("public static int RegisterHit(", StringComparison.Ordinal));
+        register = register.Substring(0, register.IndexOf("\n        }\n", StringComparison.Ordinal));
+        register.Should().Contain("ClearWeapon(attacker, weaponSlot);").And.NotContain("Clear(attacker);");
+
+        var clearWeapon = source.Substring(source.IndexOf("private static void ClearWeapon(uint ship, int weaponSlot)", StringComparison.Ordinal));
+        clearWeapon = clearWeapon.Substring(0, clearWeapon.IndexOf("\n        }\n", StringComparison.Ordinal));
+        clearWeapon.Should().Contain("_states.Remove((ship, weaponSlot)) && !_states.Keys.Any(key => key.Ship == ship)",
+            "the ship's status stays while another weapon still has a run");
+
+        ReadServerSource("Service", "Space.cs").Should().Contain("SpaceSustainedFire.Clear(player);");
+    }
+
     private static string ReadServerSource(params string[] path)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

@@ -47,9 +47,10 @@ namespace SWLOR.Game.Server.Service
             var bonusPerHit = Stat.GetStatAdjustment(statSource, StatType.SpaceEnergyRepeatedTargetDamageBonusPerHit);
             var maximumBonus = Stat.GetStatAdjustment(statSource, StatType.SpaceEnergyRepeatedTargetDamageBonusMax);
             var durationSeconds = Stat.GetStatAdjustment(statSource, StatType.SpaceEnergyRepeatedTargetDamageDurationSeconds);
+            // Without the perk this weapon's run ends; a crew mate's run on another weapon of the ship carries on.
             if (bonusPerHit <= 0 || maximumBonus <= 0 || durationSeconds <= 0)
             {
-                Clear(attacker);
+                ClearWeapon(attacker, weaponSlot);
                 return 0;
             }
 
@@ -107,7 +108,14 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(1, count);
         }
 
-        /// <summary>Ends every weapon's run on the ship and removes the status.</summary>
+        /// <summary>Ends one weapon's run, and removes the status once no weapon on the ship has a run left.</summary>
+        private static void ClearWeapon(uint ship, int weaponSlot)
+        {
+            if (_states.Remove((ship, weaponSlot)) && !_states.Keys.Any(key => key.Ship == ship))
+                StatusEffect.RemoveStatusEffect(ship, typeof(SustainedFireStatusEffect), false);
+        }
+
+        /// <summary>Ends every weapon's run on the ship and removes the status. Used when the ship leaves space.</summary>
         public static void Clear(uint ship)
         {
             var keys = _states.Keys.Where(key => key.Ship == ship).ToList();

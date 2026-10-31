@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Service
@@ -80,9 +81,20 @@ namespace SWLOR.Game.Server.Service
                 return amount;
 
             PvpCombat.RecordHit(attacker, target);
+            SetLocalInt(target, PvpShipHitVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             return SpacePvpRules.ApplyRamp(amount, true, PvpCombat.GetDamageIncreasePercent(target));
         }
 
+
+        /// <summary>When a hostile player's shot last hit the ship (Unix seconds), for the death and logout rules.</summary>
+        private const string PvpShipHitVariable = "SPACE_PVP_SHIP_HIT_AT";
+
+        /// <summary>Seconds since a hostile player's shot last hit the ship, or <see cref="double.MaxValue"/> when none has.</summary>
+        private static double GetSecondsSincePvpShipHit(uint ship)
+        {
+            var at = GetLocalInt(ship, PvpShipHitVariable);
+            return at <= 0 ? double.MaxValue : DateTimeOffset.UtcNow.ToUnixTimeSeconds() - at;
+        }
 
         /// <summary>Remembers who delivered the blow that destroyed a ship, for the death rules.</summary>
         private static void RecordShipKiller(uint target, uint attacker)

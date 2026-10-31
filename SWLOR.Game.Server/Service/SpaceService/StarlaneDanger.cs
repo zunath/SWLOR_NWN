@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>It leads into one of the Small and Medium hull zones.</summary>
         Zone = 2,
 
-        /// <summary>It leads into Wild Space, where a ship another player destroys can drop its modules.</summary>
+        /// <summary>It leads into Wild Space, where a ship destroyed in a player fight loses its modules.</summary>
         WildSpace = 4,
     }
 }

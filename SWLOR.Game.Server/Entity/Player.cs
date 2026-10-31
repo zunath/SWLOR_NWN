@@ -177,10 +177,10 @@ namespace SWLOR.Game.Server.Entity
         public string ActiveShipId { get; set; }
 
         /// <summary>
-        /// A ship this player flew was lost while they were logged out (a failed Rift Run): the XP debt a pilot destroyed
-        /// online takes is applied at the next login.
+        /// Why a ship this player flew was lost while they were logged out (a failed Rift Run, or leaving a Wild Space
+        /// fight), or empty: the XP debt a pilot destroyed online takes is applied, with this message, at the next login.
         /// </summary>
-        public bool PendingShipLossDebt { get; set; }
+        public string PendingShipLossMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// The ship whose crew station or viewport the character is at, or empty. Saved so a character who

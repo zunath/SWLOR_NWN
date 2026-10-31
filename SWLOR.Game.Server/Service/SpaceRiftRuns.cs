@@ -398,32 +398,11 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = run.PilotIds.TryGetValue(ship.Id, out var pilotId) ? DB.Get<Player>(pilotId) : null;
             if (dbPlayer != null)
             {
-                dbPlayer.PendingShipLossDebt = true;
+                dbPlayer.PendingShipLossMessage = "The Rift Run failed while you were away. Your ship was wrecked in the collapsing pocket and towed home at 1 hull, its cargo lost.";
                 DB.Set(dbPlayer);
             }
 
             Log.Write(LogGroup.Space, $"RIFT RUN - away ship {ship.Id} lost in a failed run; pilot {pilotId ?? "unknown"} owes the XP debt at login");
-        }
-
-        /// <summary>A pilot whose ship was lost while they were logged out takes the XP debt now.</summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void ApplyPendingShipLossDebt()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null || !dbPlayer.PendingShipLossDebt)
-                return;
-
-            // The flag clears in the same write as the debt, so a restart neither repeats nor loses it.
-            dbPlayer.PendingShipLossDebt = false;
-            DB.Set(dbPlayer);
-            var debt = Death.ApplyPenalties(player);
-            DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
-                $"The Rift Run failed while you were away. Your ship was wrecked in the collapsing pocket and towed home at 1 hull, its cargo lost. You take {debt} XP debt.")));
         }
 
         private static void ReturnFromRiftPocket(RiftRun run, uint pilot)

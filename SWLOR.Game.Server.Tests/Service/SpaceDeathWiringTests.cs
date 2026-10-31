@@ -56,7 +56,7 @@ public class SpaceDeathWiringTests
         var death = ReadServerSource("Service", "SpaceDeath.cs");
 
         death.Should().Contain("Death.ApplyPenalties(rider)");
-        death.Should().Contain("SpaceDeathRules.ModulesDrop(IsWildSpace(GetArea(creature)), killerIsPlayer)");
+        death.Should().Contain("SpaceDeathRules.ModulesDrop(IsWildSpace(GetArea(creature)), pvpStakes)");
         death.Should().Contain("if (modulesDrop)");
     }
 

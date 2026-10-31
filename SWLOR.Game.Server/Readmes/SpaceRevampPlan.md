@@ -376,7 +376,7 @@ Two ships in the same role are sidegrades, never strict upgrades.
 - **A recipe unlock (Ship Schematic)** from drops or faction stores.
 - **A higher recipe level.**
 - **One rare component** (Appendix D).
-- **A Shipyard requirement** when it's Large or Capital. Every Capital ship, Standard or Advanced, is built at a station Shipyard (section 25).
+- **A Shipyard requirement** for Capital ships only. Every Capital ship, Standard or Advanced, is built at a station Shipyard (section 25); Large ships, Advanced included, are built at any Engineering station.
 
 **Every ship defines:**
 - High/Mid/Low slot counts.
@@ -572,7 +572,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
   - Remote repair and buffs follow the same hostility rules.
 - **Death:**
   - **Escape pods:** a destroyed ship ejects everyone aboard (pilot, crew and passengers) alive to the dock the ship is towed to. Each takes the normal ground XP debt (`Death.ApplyPenalties`). Players `Space.DetachDockedShips` returns to a docked ship are skipped (section 6, "Added by the docking update").
-  - **Modules:** they drop only on a PvP death **in Wild Space** (section 23), at today's 65% chance per module, and the attacker can loot them. Everywhere else, including every existing orbit, modules stay installed on any death; players are used to those orbits being safe.
+  - **Modules:** they drop only on a PvP death **in Wild Space** (section 23), at today's 65% chance per module, and the attacker can loot them. A death is PvP when a player lands the final blow or any hostile player's shot hit the ship within the last 30 seconds (`SpaceDeathRules.HasPvpStakes`), so an NPC or hazard finishing a player fight does not spare the modules. On such a death the ship loses every module: about 65% drop as loot and the rest are destroyed. A pilot who logs out within those 30 seconds in Wild Space loses the ship the same way (`ForfeitShipOnPvpLogout`): modules, cargo, towed home at 1 hull, XP debt at the next login. Everywhere else, including every existing orbit, modules stay installed on any death; players are used to those orbits being safe.
   - **Cargo:** spills on any death (section 13).
   - **Repairs:** the owner pays a repair bill scaled by hull size. The SOC and starport discounts stay.
 - **Global recast:** none for toggled modules (section 8, Activation). One-press items and perk abilities follow the ground ability rules, and each crew member has their own.
@@ -886,7 +886,7 @@ There is no new crafting skill. Engineering keeps building every ship and module
 - **Hull recipes:**
   - Each ship is one Engineering recipe needing a Hull Frame, a Ship Reactor, a Thruster Assembly, its role's component and its manufacturer's component.
   - Advanced ships add one rare component.
-  - Large and Capital Advanced ships, and every Capital ship, are assembled at a station Shipyard.
+  - Every Capital ship, Standard or Advanced, is assembled at a station Shipyard. Large ships, Advanced included, are not.
 - **Recipe levels (draft):**
   - Standard: the ship's Piloting gate + 5.
   - Advanced: its Advanced gate + 5.
@@ -1117,7 +1117,7 @@ Tests: `SpaceRevampBugListTests` (6, 10, 13, 15, 16, 18, 20), `ShipAccessRulesTe
 
 **Added by W11n (dangerous lanes and DM space tools):**
 
-- **Dangerous lanes (decision):** a lane is dangerous for the pilot using it when the system it leads to is a higher tier than the one the pilot is in, is one of the three Small and Medium hull zones, or is Wild Space (`StarlaneDangerRules.Classify`, `StarlaneDanger` flags; tiers from `TradeCatalog.Orbits`, Wild Space 5.5; a system with no tier never counts as higher; no starlane leads into Wild Space today, rifts do, and the rule covers it for any lane added later). When anyone first enters a space area (`Space.MarkDangerousStarlanesOnEnter`, `SpaceStarlanes.cs`), each dangerous lane in it gets a tag on its name (" [Danger: Tier 2, Zone]") and a "Dangerous lane." paragraph in its description saying why (tougher ships, hull limit, other players can attack and a ship another player destroys can drop its modules). Jumping one sends the pilot and the party members who jump with them an orange "Warning: <system> is dangerous." line before the jump (`Space.WarnOfDangerousStarlane`, called from `PlaceableScripts.UseTeleportDevice`). The jump is not blocked: the tag and the warning are the marking. Safe lanes (to the same or a lower tier) are untouched, so most outward lanes now carry a tier tag.
+- **Dangerous lanes (decision):** a lane is dangerous for the pilot using it when the system it leads to is a higher tier than the one the pilot is in, is one of the three Small and Medium hull zones, or is Wild Space (`StarlaneDangerRules.Classify`, `StarlaneDanger` flags; tiers from `TradeCatalog.Orbits`, Wild Space 5.5; a system with no tier never counts as higher; no starlane leads into Wild Space today, rifts do, and the rule covers it for any lane added later). When anyone first enters a space area (`Space.MarkDangerousStarlanesOnEnter`, `SpaceStarlanes.cs`), each dangerous lane in it gets a tag on its name (" [Danger: Tier 2, Zone]") and a "Dangerous lane." paragraph in its description saying why (tougher ships, hull limit, other players can attack, and a ship destroyed within 30 seconds of a player's hit, or whose pilot logs out then, loses every module: about 65% drop as loot and the rest are destroyed). Jumping one sends the pilot and the party members who jump with them an orange "Warning: <system> is dangerous." line before the jump (`Space.WarnOfDangerousStarlane`, called from `PlaceableScripts.UseTeleportDevice`). The jump is not blocked: the tag and the warning are the marking. Safe lanes (to the same or a lower tier) are untouched, so most outward lanes now carry a tier tag.
 - **DM Tools Space tab:** the tab is two columns in the Placeables tab's 1000 x 470 panel (a 530 px panel cut the Placeables tab off in #3000). Left: Spawn Squad, Start Incursion, Start Convoy, as before. Right (`DmSpaceToolRules`, `SpaceDmTools.cs`, a `Space` partial):
   - **Place Derelict:** click the ground or an object; places a boardable, not contested, derelict signature of the area's tier there and opens its site at once (`RevealSite` with `openToAll`, so the wreck has no party claim). **Place Signature:** the same click places a hidden signature of the picked kind (Combat, Data, Cache, Gas Site or Derelict) for a Probe Launcher to find; a DM-placed cache is never locked. Both work only in the orbits, zones and Wild Space systems that hold signatures (`ScanningTuning.Areas`), since only those areas end and check sites. A placed signature fades or ends like any other and is not counted toward the area's signature count until its refill.
   - **Rift Pockets:** Open Pocket (click a player's ship; opens a pocket of the picked key tier for it and its party with the same checks as a key, but no key is spent: `OpenRiftRun` is the shared opener), Close Pocket (stand inside one; its ships go back where they opened it, the run is set to Closing and the area is removed once nobody, the DM included, is inside) and List Pockets (the count in the tab, one line per run in the DM's chat).
@@ -1504,6 +1504,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 - **City buildings:** all of them: City Hall, Starport (with the Trade Exchange and its tariff), Medical Center (respawn), Bank, Cantina.
 - **Station-only buildings:**
   - **Shipyard:** Capital hull recipes can only be crafted at a Shipyard. A droid assigned to it shortens builds.
+    - **Station-only by design (owner decision, 2026-10-30):** there is no NPC Shipyard and no fallback. A player builds a Capital hull only at a station whose Shipyard admits them (as a citizen, or because its mayor opened it to anyone). Capital construction therefore depends on stations building and opening Shipyards; that is intended, so stations matter.
     - **Access:** the mayor decides who can build there: citizens only (the default) or anyone. The mayor can also set an optional Shipyard fee paid into the treasury, added as a new `PropertyTaxType` beside Citizenship and Transportation and edited with the existing `EditTaxes` permission. Several stations can each have a Shipyard, so the first one can't lock out everyone else.
   - **Asteroid Drill:** extracts the anchor site's ore over time into station storage, at the system's tier. An assigned droid raises output.
   - **Jump Beacon:** jumps a docked ship to any other beacon whose city permits it.

@@ -6483,91 +6483,91 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 585,
+    "Line": 587,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 634,
+    "Line": 636,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 644,
+    "Line": 646,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"ERROR: Could not locate ship. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 657,
+    "Line": 659,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"This ship is docked aboard {hostName}. Undock it from that ship's computer or with /undock.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 671,
+    "Line": 673,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 664,
+    "Line": 666,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship is listed for sale and cannot fly until the listing ends.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 678,
+    "Line": 680,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)\n                    ? \"You do not have the ability to pilot this ship.\"\n                    : skillError))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 703,
+    "Line": 705,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to locate this starship's space destination. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 711,
+    "Line": 713,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starship's space destination is unavailable. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 812,
+    "Line": 814,
     "Member": "CheckShipLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to reach this starship's space destination. Please try again or notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2321,
+    "Line": 2323,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2884,
+    "Line": 2886,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2890,
+    "Line": 2892,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
@@ -6651,14 +6651,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
-    "Line": 196,
+    "Line": 199,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), rider, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
-    "Line": 323,
+    "Line": 263,
+    "Member": "ApplyPendingShipLoss",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"{message} Your XP debt is now {debt}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
+    "Line": 383,
     "Member": "EjectEscapePods",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(rider, ColorToken.Red(message))"
@@ -7260,14 +7267,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 425,
-    "Member": "ApplyPendingShipLossDebt",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\n                $\"The Rift Run failed while you were away. Your ship was wrecked in the collapsing pocket and towed home at 1 hull, its cargo lost. You take {debt} XP debt.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 506,
+    "Line": 485,
     "Member": "MessageRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

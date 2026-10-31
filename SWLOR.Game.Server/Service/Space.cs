@@ -104,6 +104,8 @@ namespace SWLOR.Game.Server.Service
             UnloadDroidCrew(player);
             UnregisterShipPilot(player);
             TurnOffShipToggles(player);
+            if (SpaceDeathRules.LogoutForfeitsShip(IsWildSpace(GetArea(player)), GetSecondsSincePvpShipHit(player)))
+                ForfeitShipOnPvpLogout(player);
             CloneShip(player);
 
             if (_playersInSpace.Contains(player))

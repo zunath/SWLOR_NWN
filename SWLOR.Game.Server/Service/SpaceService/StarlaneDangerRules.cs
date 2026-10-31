@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             if (danger.HasFlag(StarlaneDanger.WildSpace))
             {
-                reasons.Add("Wild Space is lawless: other players can attack you there, and a ship another player destroys can drop its modules.");
+                reasons.Add("Wild Space is lawless: other players can attack you there. A ship destroyed within 30 seconds of a player's hit, or whose pilot logs out then, loses every module: about 65% drop as loot and the rest are destroyed.");
             }
 
             return reasons;

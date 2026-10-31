@@ -483,7 +483,7 @@ public class WildSpaceTests
     {
         SpaceDeathRules.ModulesDrop(true, true).Should().BeTrue();
         SpaceDeathRules.ModulesDrop(true, false).Should().BeFalse("NPC kills never drop modules");
-        ReadServerSource("Service", "SpaceDeath.cs").Should().Contain("SpaceDeathRules.ModulesDrop(IsWildSpace(GetArea(creature)), killerIsPlayer)");
+        ReadServerSource("Service", "SpaceDeath.cs").Should().Contain("SpaceDeathRules.ModulesDrop(IsWildSpace(GetArea(creature)), pvpStakes)");
         ReadServerSource("Service", "SpaceDeath.cs").Should().Contain("public const string WildSpaceVariable = \"WILD_SPACE\";");
 
         // Achievement 215 keys on the same WILD_SPACE area local the six systems carry (ShipAccessRulesTests).

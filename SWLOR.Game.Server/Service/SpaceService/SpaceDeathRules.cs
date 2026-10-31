@@ -9,13 +9,34 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int ModuleDropChancePercent = 65;
 
         /// <summary>
-        /// Modules drop only when a player ship dies to another player in Wild Space. Everywhere else, including
-        /// every existing orbit, they stay installed.
+        /// Seconds after a hostile player's shot lands during which the ship's death counts as player-caused,
+        /// whoever lands the final blow: the PvP combat window (<see cref="PvpCombatService.PvpCombatRules.CombatWindowSeconds"/>).
         /// </summary>
-        public static bool ModulesDrop(bool inWildSpace, bool killerIsPlayer)
+        public const int PvpStakesSeconds = 30;
+
+        /// <summary>
+        /// Whether a death is player-caused: a player landed the final blow, or any hostile player's shot hit the ship
+        /// within <see cref="PvpStakesSeconds"/>. An NPC or a hazard finishing a ship players were fighting does not
+        /// spare its modules, and a player finishing a ship NPCs wore down does not take them alone.
+        /// </summary>
+        public static bool HasPvpStakes(bool killerIsPlayer, double secondsSincePvpHit) =>
+            killerIsPlayer || secondsSincePvpHit <= PvpStakesSeconds;
+
+        /// <summary>
+        /// Modules drop only when a player ship dies with PvP stakes (<see cref="HasPvpStakes"/>) in Wild Space.
+        /// Everywhere else, including every existing orbit, they stay installed.
+        /// </summary>
+        public static bool ModulesDrop(bool inWildSpace, bool pvpStakes)
         {
-            return inWildSpace && killerIsPlayer;
+            return inWildSpace && pvpStakes;
         }
+
+        /// <summary>
+        /// Whether logging out loses the ship as a player-caused death would: in Wild Space within
+        /// <see cref="PvpStakesSeconds"/> of a hostile player's hit, so leaving the game never escapes a fight.
+        /// </summary>
+        public static bool LogoutForfeitsShip(bool inWildSpace, double secondsSincePvpHit) =>
+            inWildSpace && secondsSincePvpHit <= PvpStakesSeconds;
 
         /// <summary>Whether a module drops, given a d100 roll (1-100).</summary>
         public static bool ModuleDrops(int d100Roll)

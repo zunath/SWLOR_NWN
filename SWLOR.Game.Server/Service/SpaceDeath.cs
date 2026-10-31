@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
@@ -71,7 +72,9 @@ namespace SWLOR.Game.Server.Service
 
             var killer = TakeShipKiller(creature);
             var killerIsPlayer = PvpCombat.IsPlayerAgainstPlayer(killer, creature);
-            var modulesDrop = SpaceDeathRules.ModulesDrop(IsWildSpace(GetArea(creature)), killerIsPlayer);
+            var pvpStakes = SpaceDeathRules.HasPvpStakes(killerIsPlayer, GetSecondsSincePvpShipHit(creature));
+            DeleteLocalInt(creature, PvpShipHitVariable);
+            var modulesDrop = SpaceDeathRules.ModulesDrop(IsWildSpace(GetArea(creature)), pvpStakes);
 
             var hasDestination = TryResolveEscapePodDestination(dbProperty, out var podLocation, out var podType);
 
@@ -201,6 +204,63 @@ namespace SWLOR.Game.Server.Service
 
             EjectEscapePods(manifest, creature, podLocation, podType);
             return true;
+        }
+
+        /// <summary>
+        /// A pilot logging out of a Wild Space fight (<see cref="SpaceDeathRules.LogoutForfeitsShip"/>) loses the ship as a
+        /// player-caused death would: every module leaves it (each drops at 65%, the rest are destroyed), the cargo
+        /// spills, droid crew go home, and the ship is towed to its dock at 1 hull and no shield. The XP debt is applied
+        /// at the next login (<see cref="ApplyPendingShipLoss"/>). Runs before the ship would be left in space as a clone.
+        /// </summary>
+        private static void ForfeitShipOnPvpLogout(uint player)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var dbShip = dbPlayer == null ? null : DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+            var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
+            if (dbProperty == null)
+                return;
+
+            var location = GetLocation(player);
+            dbShip.Status.PendingRiders?.Clear();
+            Trade.SpillCargo(dbShip, location);
+            DropShipModules(dbShip.Status, location);
+            dbShip.Status.HighPowerModules.Clear();
+            dbShip.Status.LowPowerModules.Clear();
+            dbShip.Status.MidPowerModules.Clear();
+            dbShip.PlayerHotBars.Clear();
+            ReturnDroidCrew(dbShip, "was destroyed");
+            dbShip.Status.Hull = 1;
+            dbShip.Status.Shield = 0;
+            RecalculateShipStats(dbShip.Status, GetAbilityScore(player, AbilityType.Willpower));
+            dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+            DeleteLocalInt(player, PvpShipHitVariable);
+
+            dbPlayer.PendingShipLossMessage = "You left a Wild Space fight, so your ship was lost as if destroyed: every module left it " +
+                                              "(about 65% dropped as loot, the rest were destroyed), its cargo spilled, and it was towed home at 1 hull.";
+            DB.Set(dbProperty);
+            DB.Set(dbShip);
+            DB.Set(dbPlayer);
+            Log.Write(LogGroup.Space, $"PVP LOGOUT - {PlayerName.GetAuditName(player)} left a Wild Space fight in {GetResRef(GetArea(player))}; ship {dbShip.Id} forfeited");
+        }
+
+        /// <summary>A pilot whose ship was lost while they were logged out takes the XP debt now, with the reason.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyPendingShipLoss()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null || string.IsNullOrEmpty(dbPlayer.PendingShipLossMessage))
+                return;
+
+            // The reason is cleared before the debt is written, so a restart between the two can never apply it twice.
+            var message = dbPlayer.PendingShipLossMessage;
+            dbPlayer.PendingShipLossMessage = string.Empty;
+            DB.Set(dbPlayer);
+            var debt = Death.ApplyPenalties(player);
+            DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red($"{message} Your XP debt is now {debt}.")));
         }
 
         /// <summary>

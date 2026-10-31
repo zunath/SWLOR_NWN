@@ -105,7 +105,7 @@ public class StarlaneDangerTests
         warning.Should().Contain("Small and Medium hulls");
 
         var wild = StarlaneDangerRules.GetWarning(StarlaneDanger.WildSpace, "space_korriban", "space_wsblkhole", "Wild Space - The Maw");
-        wild.Should().Contain("other players can attack you").And.Contain("can drop its modules");
+        wild.Should().Contain("other players can attack you").And.Contain("loses every module").And.Contain("the rest are destroyed");
 
         StarlaneDangerRules.GetWarning(StarlaneDanger.None, "viscaraorbit", "moncalaorbit", "Mon Cala").Should().BeEmpty();
     }

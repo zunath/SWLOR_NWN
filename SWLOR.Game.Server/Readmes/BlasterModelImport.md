@@ -119,6 +119,50 @@ adapter below, then complete native verification. Focused runner tests use no GP
 python -B -m unittest discover -s tools/tests -p test_generate_weapon_models.py
 ```
 
+### Import Meshy weapon and shield sources
+
+Keep paid generation jobs, budget journals, reference images and downloaded GLBs
+in private staging. Review the source silhouette and PBR maps before fitting.
+`tools/MeshyWeaponExport.py --mode prepare` accepts the same explicit uniform-fit
+manifest as the GLB adapter. It snapshots each source, applies the reviewed fit,
+and emits a native-coordinate GLB with explicit tangents and a new `fit.json`.
+It rejects nonuniform source transforms, modifiers and missing UVs.
+
+Meshy can intentionally produce open, double-sided surfaces. The explicit
+`double_sided_policy: "duplicate_backfaces"` preserves them by adding reversed
+faces with negated normals and tangent frames. It requires
+`normal_basis_policy: "authored_tangent_seams"`. This policy restores the
+source's corner normals before ASCII export, then restores authored normal,
+tangent and sign seams after compilation by splitting welded vertices. Native
+positions, UVs, face winding and draw indices are validated; shaded seams are
+never averaged. The older `authored_tangents` policy keeps its stricter immutable
+native-normal behavior. Client qualification is required for either policy.
+
+For composite items, run `tools/MeshyWeaponParts.py` on the prepared manifest.
+Declare `parts` using measured native Y cuts; `clip_ranges: [[lower, upper], ...]`
+supports paired staff/twinblade roles, with `null` for an unbounded end. Supply
+`joint_envelopes` entries with `y`, `center_xz`, `radii_xz` and `depth`, measured
+from the existing native connectors, plus the complete assembly's
+`part_icon_bounds`. The authoring step closes the new cuts, adds inward-extending
+joint sleeves, and preserves the source surface UVs and corner frames. Its
+output selects complete authored `source_nodes` for each part and shares maps
+across roles. Node selectors cannot overlap or be combined with clipping.
+Shields keep one complete model and use the preparation output directly; retain
+their measured grip, clearance and impact dummies.
+
+Run `MeshyWeaponExport.py --mode export` inside Blender on the resulting
+`fit.json`, then `--mode package` with ordinary Python and the pinned compiler
+and Crunch arguments described below. All stage outputs must be empty folders
+outside the repository. Review renders, compiled resource validation, mixed
+assemblies, actual hand/arm fit and native inventory selection before copying
+finished resources into the HAK.
+
+This path accepts static rigid models only. Animated projectile MDLs require a
+separate animation-preserving rebuild: retain their native root, mesh names,
+emitters and controller tracks, then compare those fields after compilation.
+Do not replace a projectile with the static held-item export or bypass the
+static seam patcher's animation/emitter rejection.
+
 ### Generate closed shield surfaces
 
 Use `tools/workflows/trellis2_shield.json` for thin shield sources. It adds a

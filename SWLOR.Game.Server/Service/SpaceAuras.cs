@@ -151,6 +151,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void Reconcile(uint source, SpaceAura aura)
         {
+            // A ship whose copy of this aura is gone (a stronger commander's copy replaced it) is given it again below
+            // once it can be, so it keeps the buff in this aura after the stronger one ends.
+            foreach (var ship in SpaceAuraRules.LostCopies(aura.Recipients, x => StatusEffect.HasStatusEffect(x, aura.StatusEffect, source)))
+                aura.Recipients.Remove(ship);
+
             var inRange = Party.GetAllPartyMembersWithinRange(source, GetCommandRange(source))
                 .Where(x => Space.IsShipInSpace(x) && !GetIsDead(x) && (aura.TargetsSelf || x != source) &&
                             (x == source || !Space.IsShipHostile(source, x)));

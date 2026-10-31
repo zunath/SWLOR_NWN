@@ -33,6 +33,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// The recipients that no longer hold this commander's copy of the aura, for example because a stronger
+        /// commander's copy replaced it. They leave the recipient list so the next refresh gives them the aura again
+        /// once nothing stronger holds them, instead of the ship losing the buff when the stronger aura ends.
+        /// </summary>
+        public static List<uint> LostCopies(IEnumerable<uint> recipients, Func<uint, bool> holdsOwnCopy)
+        {
+            return recipients.Where(ship => !holdsOwnCopy(ship)).ToList();
+        }
+
+        /// <summary>
         /// Whether a recipient already carries a copy of the aura from a commander at least as strong (as much SOC),
         /// which keeps two commanders' copies from replacing each other every refresh.
         /// </summary>

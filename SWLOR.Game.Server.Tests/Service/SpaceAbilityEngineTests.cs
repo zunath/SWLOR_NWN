@@ -254,6 +254,108 @@ public class SpaceAbilityEngineTests
         SpaceAuraRules.HasEqualOrStrongerCopy(14, Array.Empty<int>()).Should().BeFalse();
     }
 
+    [Test]
+    public void LostCopies_TwoCommandersOnOneShip_TheWeakerAuraTakesOverWhenTheStrongerEnds()
+    {
+        // Formation's status does not stack, so a ship holds one copy at a time: here, which commander's copy it holds.
+        const uint ship = 7, strong = 1, weak = 2;
+        var social = new Dictionary<uint, int> { [strong] = 20, [weak] = 14 };
+        var held = new Dictionary<uint, uint>();
+        var recipients = new Dictionary<uint, HashSet<uint>> { [strong] = new(), [weak] = new() };
+
+        void Refresh(uint source, params uint[] inRange) => ReconcileAura(source, social, held, recipients[source], inRange);
+
+        Refresh(weak, ship);
+        held[ship].Should().Be(weak);
+        Refresh(strong, ship);
+        held[ship].Should().Be(strong, "the stronger commander's copy replaces the weaker one");
+
+        Refresh(weak, ship);
+        recipients[weak].Should().NotContain(ship, "the weaker aura no longer holds the ship, so it may give it again later");
+        held[ship].Should().Be(strong, "and it does not replace the stronger copy meanwhile");
+
+        // The stronger commander turns Formation off (or leaves range): its copy goes.
+        foreach (var recipient in recipients[strong])
+            held.Remove(recipient);
+        recipients[strong].Clear();
+
+        Refresh(weak, ship);
+        held[ship].Should().Be(weak, "the ship is still inside the weaker active aura");
+    }
+
+    [Test]
+    public void LostCopies_OneCommander_KeepsItsRecipientsAndFollowsTheRange()
+    {
+        const uint ship = 7, commander = 1;
+        var social = new Dictionary<uint, int> { [commander] = 14 };
+        var held = new Dictionary<uint, uint>();
+        var recipients = new HashSet<uint>();
+
+        ReconcileAura(commander, social, held, recipients, ship, commander);
+        ReconcileAura(commander, social, held, recipients, ship, commander);
+        recipients.Should().BeEquivalentTo(new[] { ship, commander });
+        held[ship].Should().Be(commander);
+
+        ReconcileAura(commander, social, held, recipients, commander);
+        held.Should().NotContainKey(ship, "a ship that left range loses the aura");
+
+        ReconcileAura(commander, social, held, recipients, ship, commander);
+        held[ship].Should().Be(commander, "and gets it back on return");
+
+        // Something else removed the status (a cleanse): the next refresh gives it back.
+        held.Remove(ship);
+        ReconcileAura(commander, social, held, recipients, ship, commander);
+        held[ship].Should().Be(commander);
+    }
+
+    [Test]
+    public void SpaceAuras_DropsLostCopiesBeforeItReconciles()
+    {
+        var source = File.ReadAllText(Path.Combine(RepositoryRoot(), "SWLOR.Game.Server", "Service", "SpaceAuras.cs")).Replace("\r\n", "\n");
+        var reconcile = source[source.IndexOf("private static void Reconcile(uint source, SpaceAura aura)", StringComparison.Ordinal)..];
+        var lost = reconcile.IndexOf("SpaceAuraRules.LostCopies(aura.Recipients, x => StatusEffect.HasStatusEffect(x, aura.StatusEffect, source))", StringComparison.Ordinal);
+        var diff = reconcile.IndexOf("SpaceAuraRules.Reconcile(aura.Recipients, inRange)", StringComparison.Ordinal);
+
+        lost.Should().BeGreaterThan(0);
+        diff.Should().BeGreaterThan(lost, "a recipient that lost its copy must be a ship to add again in the same pass");
+    }
+
+    /// <summary>One refresh of a commander's aura as SpaceAuras runs it, with a non-stacking status.</summary>
+    private static void ReconcileAura(uint source, IReadOnlyDictionary<uint, int> social, Dictionary<uint, uint> held,
+        HashSet<uint> recipients, params uint[] inRange)
+    {
+        foreach (var ship in SpaceAuraRules.LostCopies(recipients, x => held.TryGetValue(x, out var holder) && holder == source))
+            recipients.Remove(ship);
+
+        var (add, remove) = SpaceAuraRules.Reconcile(recipients, inRange);
+        foreach (var ship in remove)
+        {
+            recipients.Remove(ship);
+            if (held.TryGetValue(ship, out var holder) && holder == source)
+                held.Remove(ship);
+        }
+
+        foreach (var ship in add)
+        {
+            if (held.TryGetValue(ship, out var holder) && holder != source &&
+                SpaceAuraRules.HasEqualOrStrongerCopy(social[source], new[] { social[holder] }))
+            {
+                continue;
+            }
+
+            held[ship] = source;
+            recipients.Add(ship);
+        }
+    }
+
+    private static string RepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        return directory!.FullName;
+    }
+
     // Events
 
     [Test]

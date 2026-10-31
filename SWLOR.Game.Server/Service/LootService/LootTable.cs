@@ -72,37 +72,6 @@ namespace SWLOR.Game.Server.Service.LootService
         }
 
         /// <summary>
-        /// Retrieves a random item with a separate rare roll: with a <paramref name="rareChancePercent"/> chance (in
-        /// percentage points) the item is one of the rare rows, otherwise it is the normal weighted roll. The rare
-        /// share is about base + bonus x (1 - base).
-        /// </summary>
-        /// <param name="rareChancePercent">The percentage points added to the rare chance.</param>
-        /// <returns>A random item from the loot table.</returns>
-        public LootTableItem GetRandomItemWithRareChance(int rareChancePercent)
-        {
-            return GetRandomItemWithRareChance(rareChancePercent, Random.Next(100));
-        }
-
-        /// <summary>
-        /// The rare roll with the roll supplied (0-99). A roll below the chance picks a rare row, by weight when there
-        /// are several; a table with no rare row always uses the normal roll.
-        /// </summary>
-        public LootTableItem GetRandomItemWithRareChance(int rareChancePercent, int roll)
-        {
-            if (rareChancePercent > 0 && roll < rareChancePercent)
-            {
-                var rareItems = this.Where(item => item.IsRare).ToArray();
-                if (rareItems.Length == 1)
-                    return rareItems[0];
-
-                if (rareItems.Length > 1)
-                    return rareItems[Random.GetRandomWeightedIndex(rareItems.Select(item => item.Weight).ToArray())];
-            }
-
-            return GetRandomItem();
-        }
-
-        /// <summary>
         /// Retrieves a random item from the loot table.
         /// Throws an exception if there are no items in the loot table.
         /// </summary>

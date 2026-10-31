@@ -3,7 +3,9 @@ Scanner tab's information thresholds, Jump to Signature, Sensor Sweep, site cont
 
 usage: python scanning.py            (writes the generated C# scanning tuning)
        python scanning.py --check    (exit 1 when the generated file is out of date)
-       python scanning.py --sim      (prints the exploration payout against space combat per tier)
+       python scanning.py --sim      (prints the exploration payout against space combat per tier, a player slicer's
+                                      and a droid-run explorer's; exit 1 when one leaves the 100-140% band, or 120%
+                                      with --store-price)
 
 Every scanning number lives here. catalog.py reads the Probe Launcher steps from it, and bible_tabs.py calls
 scanning_tab(Sheet) to write the Scanning (Revamp) tab. The space slicing numbers (data sites' data cans, locked caches,
@@ -24,6 +26,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import droids  # noqa: E402
 import slicing  # noqa: E402
 import trade  # noqa: E402
 import wildspace  # noqa: E402
@@ -239,7 +242,11 @@ def scrap_value(tier):
     return trade.item_cost(f"ship_scrap_{min(5, tier)}") * MARKDOWN
 
 
-def site_minutes(kind, tier):
+def site_minutes(kind, tier, crew=None):
+    """A site's minutes; crew (a droid-run explorer's crew bonus percent, see DROID_CREWS) swaps the player's slicing
+    boards for the droid's cooldown."""
+    if crew is not None:
+        return droid_site_minutes(kind, tier)
     if kind == "CombatSite":
         return len(combat_squad(tier)) * (KILL_MINUTES + lockbox_kill_minutes(tier))
     if kind == "Derelict":
@@ -254,8 +261,11 @@ def site_minutes(kind, tier):
     return CACHE_MINUTES
 
 
-def own_value(kind, tier):
-    """What a site pays before its cache: the ships' own loot, the wreck's scrap, the clouds' gas."""
+def own_value(kind, tier, crew=None):
+    """What a site pays before its cache: the ships' own loot, the wreck's scrap, the clouds' gas. A droid-run
+    explorer's slicing targets pay at the droid's chance instead of the player's (slicing.SLICE_SUCCESS)."""
+    if crew is not None and kind in SLICED_KINDS:
+        return own_value(kind, tier) - SLICED_KINDS[kind](tier) * (1 - droid_chance(crew) / slicing.SLICE_SUCCESS)
     if kind == "CombatSite":
         return sum(kill_value(t) + lockbox_kill_value(tier) for t in combat_squad(tier))
     if kind == "Derelict":
@@ -276,15 +286,19 @@ def area_signatures(tier):
     return ORBIT_SIGNATURES
 
 
-def scan_minutes(tier, espionage=0):
-    """Resolving every signature in an area at once: the slowest type in play, with a matched-rank probe."""
+def scan_minutes(tier, espionage=0, crew=None):
+    """Resolving every signature in an area at once: the slowest type in play, with a matched-rank probe (run by a
+    droid at the Sensors seat when crew is given: its effectiveness and Survey Protocol II, no Espionage)."""
     rank = 10 * min(tier, 5) - 5
     kinds = [k for k, w in weights(tier).items() if w > 0]
-    return max(cycles_to_resolve(k, tier, rank, espionage) for k in kinds) * PROBE_CYCLE_SECONDS / 60
+    if crew is None:
+        return max(cycles_to_resolve(k, tier, rank, espionage) for k in kinds) * PROBE_CYCLE_SECONDS / 60
+    signal = signal_per_cycle(rank, survey_percent=DROID_SURVEY_PERCENT, effectiveness=droid_effectiveness(crew))
+    return max(math.ceil(signal_required(k, tier) / signal) for k in kinds) * PROBE_CYCLE_SECONDS / 60
 
 
-def overhead_minutes(tier):
-    return (scan_minutes(tier) + TRAVEL_MINUTES) / area_signatures(tier) + JUMP_MINUTES
+def overhead_minutes(tier, crew=None):
+    return (scan_minutes(tier, crew=crew) + TRAVEL_MINUTES) / area_signatures(tier) + JUMP_MINUTES
 
 
 def site_credits(kind, tier):
@@ -295,8 +309,8 @@ def site_credits(kind, tier):
     return max(0, int(25 * round(credits / 25)))
 
 
-def site_value(kind, tier):
-    return own_value(kind, tier) + site_credits(kind, tier) + CACHE_ITEM_PULLS * elite_pull_value(tier)
+def site_value(kind, tier, crew=None):
+    return own_value(kind, tier, crew) + site_credits(kind, tier) + CACHE_ITEM_PULLS * elite_pull_value(tier)
 
 
 def mix(tier):
@@ -309,13 +323,75 @@ def mix(tier):
     return w
 
 
-def explore_rate(tier):
-    """Credits per hour exploring the tier's areas: the weighted site mix, each with its share of the overhead."""
+def explore_rate(tier, crew=None):
+    """Credits per hour exploring the tier's areas: the weighted site mix, each with its share of the overhead. With
+    crew, a droid-run explorer: a slicing droid at the Sensors seat with that crew bonus percent (DROID_CREWS)."""
     w = mix(tier)
     total = sum(w.values())
-    minutes = sum(w[k] / total * (site_minutes(k, tier) + overhead_minutes(tier)) for k in w)
-    value = sum(w[k] / total * site_value(k, tier) for k in w)
+    minutes = sum(w[k] / total * (site_minutes(k, tier, crew) + overhead_minutes(tier, crew)) for k in w)
+    value = sum(w[k] / total * site_value(k, tier, crew) for k in w)
     return value / minutes * 60
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Droid-run explorer (review fix 2026-10-30). A droid at the Sensors seat slices with no mini-game
+# (SpaceSlicing.StartDataAnalyzer): the pilot needs the Slicing rank a player would, the droid opens one target a press
+# and then works it for DroidCrewRules.SlicingSeconds (120 s; review fix 2026-10-30, was 90, a player's board) before the next, at its seat
+# effectiveness capped at DroidCrewRules.MaximumSlicingChance (85%, the player's assumed success); a miss loses the
+# target as a player's failure does. Its 90 s run alongside the pilot's flying, so a single-target site (a locked
+# cache, a derelict's data core) costs no slicing time and a data site's three cans cost two cooldowns, not three
+# boards and the hops between them. The same droid runs the Probe Launcher at its effectiveness with Survey Protocol II
+# (+40%) and no Espionage. The best industrial droid (Industry 100) works a support seat at 75%; Crew Morale (+10%),
+# the captain's Leadership (+5% at 50) and the Czerka Armored Transport (+20% for droids) multiply it, capped at 105%.
+# Sites regenerate RESPAWN_SECONDS after completion; the model's explorer moves on to the next system after an area's
+# signatures, and an area's round (scan, sites, travel) is checked against the respawn below.
+# ---------------------------------------------------------------------------------------------------------------
+DROID_SLICE_MINUTES = 120 / 60         # DroidCrewRules.SlicingSeconds (was 90: 132-146% with the best droid and crew)
+DROID_MAXIMUM_SLICING_CHANCE = 0.85    # DroidCrewRules.MaximumSlicingChance
+DROID_SURVEY_PERCENT = 40              # Survey Protocol II (droids.PROTOCOLS)
+MAXIMUM_SEAT_EFFECTIVENESS = 1.05      # ShipCrewSeats.MaximumSeatEffectiveness
+DROID_CREWS = [("best droid, no crew bonus", 0), ("with Crew Morale", 10), ("Crew Morale and Leadership 50", 15),
+               ("Czerka Armored Transport, Crew Morale, Leadership 50", 35)]
+# The slicing a site holds: its targets' expected value at the player's success (slicing.expected_value).
+SLICED_KINDS = {
+    "DataSite": lambda t: slicing.DATA_SITE_CANS * slicing.expected_value("DataCan", slicing_tier(t)),
+    "LockedCache": lambda t: slicing.expected_value("LockedCache", slicing_tier(t)),
+    "Derelict": lambda t: slicing.expected_value("WreckDataCore", slicing_tier(t)),
+}
+
+
+def droid_effectiveness(crew):
+    """The best industrial droid's Sensors seat effectiveness with the crew bonus percent (SpaceCrew.GetDroidEffectiveness)."""
+    return min(MAXIMUM_SEAT_EFFECTIVENESS, droids.BEST_SUPPORT_EFFECTIVENESS * (1 + crew / 100))
+
+
+def droid_chance(crew):
+    """The droid's slicing chance (DroidCrewRules.SlicingSucceeds: whole percent, at most 85%)."""
+    return min(DROID_MAXIMUM_SLICING_CHANCE, math.floor(droid_effectiveness(crew) * 100 + 0.5) / 100)
+
+
+def droid_site_minutes(kind, tier):
+    """A site's minutes for a droid-run explorer: the player's site with its boards taken out, a data site waiting on
+    the droid between cans (its hops overlap the cooldown) and a derelict's core sliced while the wreck is salvaged."""
+    if kind == "DataSite":
+        return (slicing.DATA_SITE_CANS - 1) * max(DROID_SLICE_MINUTES, CAN_TRAVEL_MINUTES)
+    if kind == "LockedCache":
+        return CACHE_MINUTES
+    if kind == "Derelict":
+        return site_minutes(kind, tier) - slicing.SLICE_MINUTES
+    return site_minutes(kind, tier)
+
+
+def area_round_minutes(tier, crew=None):
+    """One pass over an area: its scan, each signature's site and jump, then the starlane on."""
+    w = mix(tier)
+    total = sum(w.values())
+    site = sum(w[k] / total * site_minutes(k, tier, crew) for k in w)
+    return scan_minutes(tier, crew=crew) + area_signatures(tier) * (site + JUMP_MINUTES) + TRAVEL_MINUTES
+
+
+EXPLORE_BAND = (1.00, 1.40)
+STORE_PRICE_BAND = (1.00, 1.20)  # --store-price: schematics and Prototype Tech at their store price (plan section 19)
 
 
 TIERS = [1, 2, 3, 4, 5, 6]
@@ -323,6 +399,9 @@ KINDS = ["CombatSite", "CacheSite", "GasSite", "Derelict", "DataSite"]
 
 
 def report():
+    """Prints the payouts and returns False when the player's or a droid-run explorer's rate leaves EXPLORE_BAND."""
+    ok = True
+    band = STORE_PRICE_BAND if slicing.SCHEMATICS_AT_STORE_PRICE else EXPLORE_BAND
     t3 = combat_rate(3)
     print("Exploration against space combat (matched-rank probe, no Espionage):")
     for t in TIERS:
@@ -333,6 +412,21 @@ def report():
             if mix(t).get(k):
                 print(f"      {k:11s} {site_minutes(k, t):4.1f} min, own {own_value(k, t):6.0f}, cache {site_credits(k, t):5d} cr "
                       f"+ {CACHE_ITEM_PULLS} elite pull ({elite_pull_value(t):.0f})")
+    print("Droid-run explorer (a slicing droid at the Sensors seat, Survey Protocol II) against the player slicer:")
+    for t in TIERS:
+        c, player = combat_rate(t), explore_rate(t)
+        cells = []
+        for name, crew in DROID_CREWS:
+            rate = explore_rate(t, crew)
+            cells.append(f"{name} {droid_chance(crew):.0%}: {100 * rate / c:5.1f}%")
+            ok &= band[0] <= rate / c <= band[1]
+        ok &= band[0] <= player / c <= band[1]
+        print(f"  T{t}: player {100 * player / c:5.1f}%; " + "; ".join(cells))
+        print(f"      an area's round: player {area_round_minutes(t):4.1f} min, best droid "
+              f"{area_round_minutes(t, DROID_CREWS[-1][1]):4.1f} min (sites respawn {RESPAWN_SECONDS / 60:g} min after completion)")
+    if not ok:
+        print(f"  BAND FAIL: exploring outside {band[0]:.0%}-{band[1]:.0%} of the tier's combat")
+    return ok
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -570,7 +664,8 @@ def scanning_tab(Sheet):
 
 def main():
     if "--sim" in sys.argv:
-        report()
+        if not report():
+            sys.exit(1)
         return
     check = "--check" in sys.argv
     stale = []

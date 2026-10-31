@@ -562,6 +562,9 @@ def income_rows():
         ("Exploring (schematics valued as components)", cells(tiers(scanning.explore_rate)), "100-140%", "scanning.py"),
         ("Exploring (schematics and Prototype Tech at store price)", cells(tiers(store_explore)), "at most 120%",
          "scanning.py --store-price"),
+        ("Exploring, droid-run (best droid at the Sensors seat, Survey Protocol II, every crew bonus)",
+         cells(tiers(lambda t: scanning.explore_rate(t, scanning.DROID_CREWS[-1][1]))), "100-140%",
+         "scanning.py (review fix 2026-10-30)"),
         ("Slicing sites (data sites and locked caches, with their caches)", cells(tiers(slicing_rate)), "100-140%",
          "slicing.py, scanning.py"),
         ("Faction agent missions (credits)", cells(tiers(agents.tier_rate)), "100-140%", "agents.py"),
@@ -583,6 +586,12 @@ def income_rows():
         ("Strip mining, Industrial, no perks (best area of the tier)", cells(best_area("strip")), "about 90-100%", "mining.py"),
         ("Mining with Prospector III and Rapid Extraction II", cells(best_area("perks")), "at most 140%", "mining.py"),
         ("Strip mining with Prospector III and Rapid Extraction II", cells(best_area("perk_strip")), "at most 140%", "mining.py"),
+        ("Mining, best pilot build (also Deep Core II, a +5 rare-find module, Prospecting Protocol II)", cells(best_area("rare")),
+         "at most 140%", "mining.py (review fix 2026-10-30)"),
+        ("Strip mining, best pilot build (also Deep Core II, a +5 rare-find module, Prospecting Protocol II)",
+         cells(best_area("rare_strip")), "at most 140%", "mining.py (review fix 2026-10-30)"),
+        ("Mining, best pilot build and a best bay droid's ore (Industry 100, Efficiency Protocol II)", cells(best_area("best")),
+         "on top of the band (droid)", "mining.py"),
     ]
 
 

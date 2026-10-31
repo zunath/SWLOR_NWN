@@ -19,6 +19,10 @@ Sources (the code, not assumptions):
 - An asteroid holds 1d4 + 2 units at its tier's ASTEROID_UNIT_PERCENT (SpaceCombatMath.AsteroidUnits). The extraction hold is per ship, so every
   laser of one ship works the same asteroid at once; a cycle that ends after the rock is gone yields nothing.
 - Each laser cycle also rolls the asteroid's LOOT_TABLE_n locals (Loot.SpawnLoot; LYASE_TYPE_1 at 11%).
+- Deep Core I / II (SpaceRareMetalChance 10 / 20), the mining module's RareFind trait (one Extraction Head per laser or
+  strip miner: Precision or Czerka-pattern +5 at best) and a bay droid's Prospecting Protocol I / II (+5 / +10) add
+  weight to the asteroid table's rare row on every ore pick, as Treasure Hunter does on the ground
+  (LootTable.GetRandomItemWithRareBonus; review fix 2026-10-30, was a separate percent roll).
 - A droid in a Mining Barge's or Industrial's bay adds BayYieldPercent to the ore delivered, rounded half up
   (DroidIndustryRules.ApplyPercent: nothing on a 1-ore cycle).
 - Ore value: the asteroid's loot table at the 40% NPC store price (stations.py's drill uses the same valuation).
@@ -71,14 +75,17 @@ WILD_SPACE_TIER = 5.5
 # Idailia, Barinium and Gostian rocks (SpaceResourceSpawnDefinition, edited by hand in this pass), since Gostian ore
 # alone at a zone's density paid 148% of tier 5 combat. Ore item values stay those of the matching ground ores, and
 # rare rows stay rare (Deep Core picks them).
-# (resref, weight, rare) per table; every *_STRIP table repeats its laser table.
-ASTEROID_TABLES = {
-    "ASTEROID_TILARIUM": [("ore_tilarium", 30, False), ("ore_durelium", 4, False), ("aluminum", 2, False), ("quadrenium", 1, True)],
-    "ASTEROID_CURRIAN": [("ore_currian", 30, False), ("ore_durelium", 4, False), ("steel", 2, False), ("vintrium", 1, True)],
-    "ASTEROID_DURELIUM_1": [("ore_durelium", 30, False), ("ore_tilarium", 10, False), ("aluminum", 2, False), ("quadrenium", 1, True)],
-    "ASTEROID_DURELIUM_2": [("ore_durelium", 30, False), ("ore_currian", 10, False), ("steel", 2, False), ("vintrium", 1, True)],
-    "ASTEROID_IDAILIA": [("ore_idailia", 240, False), ("obsidian", 2, False), ("ionite", 1, True)],
-    "ASTEROID_BARINIUM": [("ore_barinium", 480, False), ("crystal", 2, False), ("katrium", 1, True)],
+# (resref, weight, rare) per table, before RARE_SCALE below; every *_STRIP table repeats its laser table.
+# Rare rows (review fix 2026-10-30): tiers 1-4 flag their metal by-product (aluminum, steel, obsidian, crystal), worth more
+# than the ore; their mineral (quadrenium ... katrium, 2 credits) was the rare row, so Deep Core lowered income there.
+# Tier 5 rocks keep Zinsiam (1,200 credits).
+ASTEROID_BASE = {
+    "ASTEROID_TILARIUM": [("ore_tilarium", 30, False), ("ore_durelium", 4, False), ("aluminum", 2, True), ("quadrenium", 1, False)],
+    "ASTEROID_CURRIAN": [("ore_currian", 30, False), ("ore_durelium", 4, False), ("steel", 2, True), ("vintrium", 1, False)],
+    "ASTEROID_DURELIUM_1": [("ore_durelium", 30, False), ("ore_tilarium", 10, False), ("aluminum", 2, True), ("quadrenium", 1, False)],
+    "ASTEROID_DURELIUM_2": [("ore_durelium", 30, False), ("ore_currian", 10, False), ("steel", 2, True), ("vintrium", 1, False)],
+    "ASTEROID_IDAILIA": [("ore_idailia", 240, False), ("obsidian", 2, True), ("ionite", 1, False)],
+    "ASTEROID_BARINIUM": [("ore_barinium", 480, False), ("crystal", 2, True), ("katrium", 1, False)],
     "ASTEROID_GOSTIAN": [("ore_gostian", 960, False), ("diamond", 2, False), ("zinsiam", 1, True)],
     "ASTEROID_ARDANIUM": [("ore_arda", 32, False), ("ore_gostian", 256, False), ("zinsiam", 1, True)],
 }
@@ -86,8 +93,40 @@ ASTEROID_TABLES = {
 # 10 s cycle and a slow hull's travel whatever its size, so this keeps strip mining level with three lasers: 78-107%).
 STRIP_BYPRODUCT_FACTOR = 3
 STRIP_RICH_TABLES = ["ASTEROID_IDAILIA", "ASTEROID_BARINIUM", "ASTEROID_GOSTIAN", "ASTEROID_ARDANIUM"]
-ASTEROID_TABLES.update({f"{k}_STRIP": [(r, w if r.startswith("ore_") or k not in STRIP_RICH_TABLES else w * STRIP_BYPRODUCT_FACTOR,
-                                         rare) for r, w, rare in v] for k, v in list(ASTEROID_TABLES.items())})
+ASTEROID_BASE.update({f"{k}_STRIP": [(r, w if r.startswith("ore_") or k not in STRIP_RICH_TABLES else w * STRIP_BYPRODUCT_FACTOR,
+                                       rare) for r, w, rare in v] for k, v in list(ASTEROID_BASE.items())})
+
+# Rare-metal bonus (review fix 2026-10-30). Deep Core was a separate percent roll for the rare row: the best legal stack
+# (Deep Core II 20 + a +5 RareFind Extraction Head + Prospecting Protocol II 10 = 35 points) turned 35% of picks into
+# Zinsiam at tier 5 (1,200 credits beside 38 for Gostian ore: 7-10x a tier 5 table's pick value) and into 2-credit
+# minerals at tiers 1-4 (Deep Core lowered income). The points now add weight to the rare row, as Treasure Hunter's do on
+# the ground, and each table's weights are scaled by RARE_SCALE so the best stack adds at most RARE_FIND_TARGET of the
+# table's value at every tier (strip tables STRIP_RARE_FIND_TARGET; on a laser table Deep Core II alone adds about 3.4%,
+# I 1.7%, and the best stack about a third more of the rare metal) without lifting the best pilot build past the 140% band. Scaling keeps every row's share, so the no-perk value
+# and the Asteroid Drill do not move.
+DEEP_CORE = [0, 10, 20]                 # SpaceRareMetalChance by rank (GatheringPerkDefinition)
+PROSPECTING = [0, 5, 10]                # Prospecting Protocol rare-find points by rank (droids.PROTOCOLS)
+BEST_TRAIT_RARE_FIND = 5                # Precision or Czerka-pattern: a mining module takes one Extraction Head
+RARE_FIND_TARGET = 0.06
+# Strip tables already carry 3x the rare row at tiers 3-5, and Prospector III with Rapid Extraction II puts a Tatooine
+# strip miner at 136% before any rare metal, so a strip table's best stack adds at most 2.5%.
+STRIP_RARE_FIND_TARGET = 0.025
+BEST_RARE_POINTS = DEEP_CORE[-1] + BEST_TRAIT_RARE_FIND + PROSPECTING[-1]
+
+
+def _rare_scale(rows, target):
+    """The smallest whole factor on the table's weights at which BEST_RARE_POINTS add at most the target share."""
+    weight = sum(w for _, w, _ in rows)
+    mean = sum(w * trade.item_cost(r) for r, w, _ in rows) / weight
+    rare = [(r, w) for r, w, x in rows if x]
+    rare_value = sum(w * trade.item_cost(r) for r, w in rare) / sum(w for _, w in rare)
+    needed = BEST_RARE_POINTS * (rare_value - mean) / (target * mean) - BEST_RARE_POINTS
+    return max(1, math.ceil(needed / weight))
+
+
+RARE_SCALE = {k: _rare_scale(v, STRIP_RARE_FIND_TARGET if k.endswith("_STRIP") else RARE_FIND_TARGET)
+              for k, v in ASTEROID_BASE.items()}
+ASTEROID_TABLES = {k: [(r, w * RARE_SCALE[k], rare) for r, w, rare in v] for k, v in ASTEROID_BASE.items()}
 LOOT_FILE = REPO / "SWLOR.Game.Server" / "Feature" / "LootTableDefinition" / "HarvestingLootTableDefinition.cs"
 STRIP_CYCLE_SECONDS = 10.0
 STRIP_HULL = "Industrial"
@@ -135,9 +174,22 @@ def placeable_locals(resref):
     return {v["Name"]["value"]: v["Value"]["value"] for v in data.get("VarTable", {}).get("value", [])}
 
 
-def table_value(rows):
-    total = sum(w for _, w in rows)
-    return sum(w / total * trade.item_cost(r) * STORE_BUY_RATE for r, w in rows)
+def table_value(rows, rare_points=0, rare=()):
+    """One pick's value at the store price; rare_points add to each rare row's weight (LootTable.GetRandomItemWithRareBonus)."""
+    weighted = [(r, w + (rare_points if r in rare else 0)) for r, w in rows]
+    total = sum(w for _, w in weighted)
+    return sum(w / total * trade.item_cost(r) * STORE_BUY_RATE for r, w in weighted)
+
+
+def owned_value(table, rare_points=0):
+    """One ore pick from an owned asteroid table with the pilot's rare-metal points."""
+    rows = ASTEROID_TABLES[table]
+    return table_value([(r, w) for r, w, _ in rows], rare_points, {r for r, _, x in rows if x})
+
+
+def rare_gain(table, rare_points):
+    """The share the rare-metal points add to a table's pick value."""
+    return owned_value(table, rare_points) / owned_value(table) - 1
 
 
 def area_tier(area):
@@ -153,7 +205,7 @@ def hull(tier):
     return "Fighter" if tier < 2 else "Mining Barge"
 
 
-def asteroids(area):
+def asteroids(area, rare_points=0):
     """[(frequency, ore value per unit, bonus loot value per cycle, asteroid tier)] of the asteroids a matched laser can
     mine, the area's node count and the spawn table's total frequency (gas clouds and higher-tier rocks take nodes)."""
     loc = area_locals(area)
@@ -172,7 +224,8 @@ def asteroids(area):
                 rows_b = ENZYMES.get(name) or HARVEST.get(name) or []
                 if rows_b:
                     bonus += int(chance) / 100 * int(attempts) * table_value(rows_b)
-        out.append((weight, table_value(HARVEST[table]), bonus, tier))
+        unit = owned_value(table, rare_points) if table in ASTEROID_TABLES else table_value(HARVEST[table])
+        out.append((weight, unit, bonus, tier))
     nodes = int(loc.get("RESOURCE_SPAWN_COUNT", OPEN_ORBIT_NODES))
     return out, nodes, total
 
@@ -201,6 +254,16 @@ def prospector_factor(rank):
     return 1 + PROSPECTOR_PERCENT[rank] / 100
 
 
+def has_bay(hull_name):
+    """Whether the hull has a droid bay that adds to mining (droids.BAY_YIELD_ROLES): Mining Barge and Industrial."""
+    return hull_name.replace(" ", "") in droids.BAY_YIELD_ROLES
+
+
+def best_rare_points(hull_name):
+    """Deep Core II and a +5 RareFind module, plus Prospecting Protocol II where the hull has a droid bay."""
+    return DEEP_CORE[-1] + BEST_TRAIT_RARE_FIND + (PROSPECTING[-1] if has_bay(hull_name) else 0)
+
+
 def bay_factor(rank, bay_percent):
     """The droid bay's rounded percent on a cycle's ore (DroidIndustryRules.ApplyPercent): with 1 ore a cycle it adds
     nothing, so only the cycles Prospector's carry lifts to 2 ore gain (2 x 1.35 rounds to 3)."""
@@ -219,13 +282,16 @@ def travel_seconds(area, hull_name=None):
     return max(0.0, distance - LASER_RANGE) / speed + RETARGET_SECONDS
 
 
-def mining_rate(area, prospector=0, rapid=0, bay_percent=0):
-    """(ore an hour, credits an hour) of a matched pilot mining the area's asteroids with three lasers."""
-    rows, _nodes, _total = asteroids(area)
+def mining_rate(area, prospector=0, rapid=0, bay_percent=0, rare_points=0):
+    """(ore an hour, credits an hour) of a matched pilot mining the area's asteroids with three lasers. A bay droid's
+    yield needs a hull with a droid bay (the tier 1 Fighter has none)."""
+    rows, _nodes, _total = asteroids(area, rare_points)
     if not rows:
         return 0.0, 0.0
     weight = sum(r[0] for r in rows)
     travel = travel_seconds(area)
+    if not has_bay(hull(area_tier(area))):
+        bay_percent = 0
     factor = prospector_factor(prospector) * bay_factor(prospector, bay_percent)
     ore = value = seconds = 0.0
     for w, unit, bonus, tier in rows:
@@ -237,18 +303,18 @@ def mining_rate(area, prospector=0, rapid=0, bay_percent=0):
     return ore * 3600 / seconds, value * 3600 / seconds
 
 
-def strip_rate(area, prospector=0, rapid=0):
+def strip_rate(area, prospector=0, rapid=0, rare_points=0):
     """Credits an hour of a matched Industrial stripping the area's asteroids (tier 3 up), or 0 below that: one rock a
     10 s cycle for every unit it holds (SpaceCombatMath.StripMinerYield at 1 ore a cycle)."""
     if area_tier(area) < STRIP_MINIMUM_TIER:
         return 0.0
-    rows, _nodes, _total = asteroids(area)
+    rows, _nodes, _total = asteroids(area, rare_points)
     loc = area_locals(area)
     strip = {}
     for resref, _w in SPAWNS.get(loc.get("RESOURCE_SPAWN_TABLE_ID", ""), []):
         p = placeable_locals(resref)
         if p.get("STRIPMINE_LOOT_TABLE_ID"):
-            strip[(p.get("ASTEROID_LOOT_TABLE_ID"))] = table_value(HARVEST[p["STRIPMINE_LOOT_TABLE_ID"]])
+            strip[(p.get("ASTEROID_LOOT_TABLE_ID"))] = owned_value(p["STRIPMINE_LOOT_TABLE_ID"], rare_points)
     weight = sum(r[0] for r in rows)
     travel = travel_seconds(area, STRIP_HULL)
     seconds = STRIP_CYCLE_SECONDS * (100 - rapid) / 100 + travel
@@ -285,30 +351,57 @@ def combat_rate(area):
 BEST_BAY_PERCENT = round(droids.BAY_YIELD_PERCENT_PER_INDUSTRY * droids.MAXIMUM_INDUSTRY * 1.4)
 
 
+BAND_MAXIMUM = 1.40  # plan section 19: mining with the perks at most 140% of the tier's combat
+
+
 def rows():
     out = []
+    p, r = PROSPECTOR[-1], RAPID_EXTRACTION[-1]
     for area in AREAS:
         if not asteroids(area)[0]:
             continue
         ore, credits = mining_rate(area)
-        _, perks = mining_rate(area, PROSPECTOR[-1], RAPID_EXTRACTION[-1])
-        perk_strip = strip_rate(area, PROSPECTOR[-1], RAPID_EXTRACTION[-1])
-        _, best = mining_rate(area, PROSPECTOR[-1], RAPID_EXTRACTION[-1], BEST_BAY_PERCENT)
-        out.append(dict(area=area, tier=area_tier(area), ore=ore, credits=credits, perks=perks, best=best,
-                        strip=strip_rate(area), perk_strip=perk_strip, combat=combat_rate(area),
+        _, perks = mining_rate(area, p, r)
+        points = best_rare_points(hull(area_tier(area)))
+        _, rare = mining_rate(area, p, r, 0, points)
+        _, best = mining_rate(area, p, r, BEST_BAY_PERCENT, points)
+        out.append(dict(area=area, tier=area_tier(area), ore=ore, credits=credits, perks=perks, rare=rare, best=best,
+                        rare_points=points, strip=strip_rate(area), perk_strip=strip_rate(area, p, r),
+                        rare_strip=strip_rate(area, p, r, best_rare_points(STRIP_HULL)), combat=combat_rate(area),
                         travel=travel_seconds(area)))
     return out
 
 
+def band_failures(table):
+    """The pilot builds above BAND_MAXIMUM: Prospector III, Rapid Extraction II, Deep Core II, the best RareFind trait and
+    (bay hulls) Prospecting Protocol II, lasers and strip. A bay droid's ore on top is reported, not held to the band."""
+    return [(r["area"], key, r[key] / r["combat"]) for r in table for key in ("rare", "rare_strip")
+            if r[key] > BAND_MAXIMUM * r["combat"]]
+
+
 def report():
+    """Prints the rates and returns False when a pilot build breaks the band."""
     print("Active mining, a matched pilot with three Mining Lasers (Fighter at T1, Mining Barge from T2), against the "
-          "tier's combat rate. 'perks': Prospector III and Rapid Extraction II; 'best': plus a best bay droid "
-          f"(+{BEST_BAY_PERCENT}%).")
-    for r in sorted(rows(), key=lambda r: (r["tier"], r["area"])):
+          "tier's combat rate. 'perks': Prospector III and Rapid Extraction II; 'rare': plus Deep Core II, a +5 RareFind "
+          f"Extraction Head and (bay hulls) Prospecting Protocol II; 'best': plus a best bay droid's ore (+{BEST_BAY_PERCENT}%).")
+    print("  Rare-metal weight scale (Deep Core II / best stack): " + ", ".join(
+        f"{k[9:]} x{v} (+{100 * rare_gain(k, DEEP_CORE[-1]):.1f}% / +{100 * rare_gain(k, BEST_RARE_POINTS):.1f}%)"
+        for k, v in RARE_SCALE.items() if not k.endswith("_STRIP")))
+    table = rows()
+    for r in sorted(table, key=lambda r: (r["tier"], r["area"])):
         c = r["combat"]
         print(f"  T{r['tier']:<4} {r['area']:18s} {r['ore']:5.0f} ore/h {r['credits']:7.0f}/h ({100 * r['credits'] / c:4.0f}%), "
-              f"perks {r['perks']:7.0f}/h ({100 * r['perks'] / c:4.0f}%), best {r['best']:7.0f}/h ({100 * r['best'] / c:4.0f}%); "
-              f"strip {100 * r['strip'] / c:4.0f}% (perks {100 * r['perk_strip'] / c:4.0f}%); travel {r['travel']:.1f} s")
+              f"perks {100 * r['perks'] / c:4.0f}%, rare ({r['rare_points']} pts) {r['rare']:7.0f}/h ({100 * r['rare'] / c:4.0f}%), "
+              f"best {100 * r['best'] / c:4.0f}%; strip {100 * r['strip'] / c:4.0f}% (perks {100 * r['perk_strip'] / c:4.0f}%, "
+              f"rare {100 * r['rare_strip'] / c:4.0f}%); travel {r['travel']:.1f} s")
+    failures = band_failures(table)
+    for area, key, share in failures:
+        print(f"  BAND FAIL: {area} {key} {100 * share:.0f}% > {100 * BAND_MAXIMUM:.0f}%")
+    over = [r for r in table if r["best"] > BAND_MAXIMUM * r["combat"]]
+    if over:
+        print("  A best bay droid's ore puts these above 140% (plan: the droid adds on top of the band): "
+              + ", ".join(f"{r['area']} {100 * r['best'] / r['combat']:.0f}%" for r in over))
+    return not failures
 
 
 def table_block(name):
@@ -360,7 +453,8 @@ def tuning_text():
 
 def main():
     if "--sim" in sys.argv:
-        report()
+        if not report():
+            sys.exit(1)
         return
     check = "--check" in sys.argv
     stale = 0

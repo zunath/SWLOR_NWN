@@ -33,6 +33,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             var builder = new QuestBuilder();
 
+            // Each tier asks mostly for ship modules and deeds, which come at one or two recipe levels a tier, plus five other
+            // Engineering items (an enhancement pair and three droid parts) at the tier's odd levels, so the tasks span the tier's
+            // levels as the other guilds' do and a crafter at any rank of the tier finds tasks to hand in.
+
             // Tier 1 (Rank 0)
             BuildItemTask(builder, "eng_tsk_001", "sm_capb_00", 1, 0);
             BuildItemTask(builder, "eng_tsk_002", "sm_laser_00", 1, 0);
@@ -50,6 +54,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "eng_tsk_014", "sm_tcomp_00", 1, 0);
             BuildItemTask(builder, "eng_tsk_015", "sd_striker", 1, 0);
             BuildItemTask(builder, "eng_tsk_016", "sd_condor", 1, 0);
+            BuildItemTask(builder, "eng_tsk_017", "wen_con_agr1", 1, 0);
+            BuildItemTask(builder, "eng_tsk_018", "aen_con_fab1", 1, 0);
+            BuildItemTask(builder, "eng_tsk_019", "d_bl_cpu1_m", 1, 0);
+            BuildItemTask(builder, "eng_tsk_020", "d_ar_mvw1", 1, 0);
+            BuildItemTask(builder, "eng_tsk_021", "d_hd_mvw1", 1, 0);
 
             // Tier 2 (Rank 1)
             BuildItemTask(builder, "eng_tsk_200", "sm_capb_10", 1, 1);
@@ -68,6 +77,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "eng_tsk_213", "sm_tcomp_10", 1, 1);
             BuildItemTask(builder, "eng_tsk_214", "sd_republicstrik", 1, 1);
             BuildItemTask(builder, "eng_tsk_215", "sd_sithscout", 1, 1);
+            BuildItemTask(builder, "eng_tsk_216", "wen_con_agr2", 1, 1);
+            BuildItemTask(builder, "eng_tsk_217", "aen_con_fab2", 1, 1);
+            BuildItemTask(builder, "eng_tsk_218", "d_bl_cpu2_m", 1, 1);
+            BuildItemTask(builder, "eng_tsk_219", "d_ar_mvw2", 1, 1);
+            BuildItemTask(builder, "eng_tsk_220", "d_hd_mvw2", 1, 1);
 
             // Tier 3 (Rank 2)
             BuildItemTask(builder, "eng_tsk_400", "sm_capb_20", 1, 2);
@@ -86,6 +100,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "eng_tsk_413", "sm_tcomp_20", 1, 2);
             BuildItemTask(builder, "eng_tsk_414", "sd_republicscout", 1, 2);
             BuildItemTask(builder, "eng_tsk_415", "sd_sithscout", 1, 2);
+            BuildItemTask(builder, "eng_tsk_416", "wen_con_agr3", 1, 2);
+            BuildItemTask(builder, "eng_tsk_417", "aen_con_fab3", 1, 2);
+            BuildItemTask(builder, "eng_tsk_418", "d_bl_cpu3_m", 1, 2);
+            BuildItemTask(builder, "eng_tsk_419", "d_ar_mvw3", 1, 2);
+            BuildItemTask(builder, "eng_tsk_420", "d_hd_mvw3", 1, 2);
 
             // Tier 4 (Rank 3)
             BuildItemTask(builder, "eng_tsk_600", "sm_capb_30", 1, 3);
@@ -104,6 +123,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "eng_tsk_613", "sm_tcomp_30", 1, 3);
             BuildItemTask(builder, "eng_tsk_614", "sd_republicgunsh", 1, 3);
             BuildItemTask(builder, "eng_tsk_615", "sd_sithgunship", 1, 3);
+            BuildItemTask(builder, "eng_tsk_616", "wen_con_agr4", 1, 3);
+            BuildItemTask(builder, "eng_tsk_617", "aen_con_fab4", 1, 3);
+            BuildItemTask(builder, "eng_tsk_618", "d_bl_cpu4_m", 1, 3);
+            BuildItemTask(builder, "eng_tsk_619", "d_ar_mvw4", 1, 3);
+            BuildItemTask(builder, "eng_tsk_620", "d_hd_mvw4", 1, 3);
 
             // Tier 5 (Rank 4)
             BuildItemTask(builder, "eng_tsk_800", "sm_capb_40", 1, 4);
@@ -122,6 +146,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "eng_tsk_813", "sm_tcomp_40", 1, 4);
             BuildItemTask(builder, "eng_tsk_814", "sd_sithinfiltrat", 1, 4);
             BuildItemTask(builder, "eng_tsk_815", "sd_republicgunsh", 1, 4);
+            BuildItemTask(builder, "eng_tsk_816", "wen_con_agr5", 1, 4);
+            BuildItemTask(builder, "eng_tsk_817", "aen_con_fab5", 1, 4);
+            BuildItemTask(builder, "eng_tsk_818", "d_bl_cpu5_m", 1, 4);
+            BuildItemTask(builder, "eng_tsk_819", "d_ar_mvw5", 1, 4);
+            BuildItemTask(builder, "eng_tsk_820", "d_hd_mvw5", 1, 4);
 
             return builder.Build();
         }

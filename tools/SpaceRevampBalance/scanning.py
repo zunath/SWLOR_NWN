@@ -336,7 +336,7 @@ def explore_rate(tier, crew=None):
 # ---------------------------------------------------------------------------------------------------------------
 # Droid-run explorer (review fix 2026-10-30). A droid at the Sensors seat slices with no mini-game
 # (SpaceSlicing.StartDataAnalyzer): the pilot needs the Slicing rank a player would, the droid opens one target a press
-# and then works it for DroidCrewRules.SlicingSeconds (120 s; review fix 2026-10-30, was 90, a player's board) before the next, at its seat
+# and then works it as a channel the pilot waits out for DroidCrewRules.SlicingSeconds (125 s; review fix 2026-10-30), at its seat
 # effectiveness capped at DroidCrewRules.MaximumSlicingChance (85%, the player's assumed success); a miss loses the
 # target as a player's failure does. Its 90 s run alongside the pilot's flying, so a single-target site (a locked
 # cache, a derelict's data core) costs no slicing time and a data site's three cans cost two cooldowns, not three
@@ -346,7 +346,7 @@ def explore_rate(tier, crew=None):
 # Sites regenerate RESPAWN_SECONDS after completion; the model's explorer moves on to the next system after an area's
 # signatures, and an area's round (scan, sites, travel) is checked against the respawn below.
 # ---------------------------------------------------------------------------------------------------------------
-DROID_SLICE_MINUTES = 120 / 60         # DroidCrewRules.SlicingSeconds (was 90: 132-146% with the best droid and crew)
+DROID_SLICE_MINUTES = 125 / 60         # DroidCrewRules.SlicingSeconds: a channel the pilot waits out (90 s: 124-126%; 120 s: 120.9% at store prices)
 DROID_MAXIMUM_SLICING_CHANCE = 0.85    # DroidCrewRules.MaximumSlicingChance
 DROID_SURVEY_PERCENT = 40              # Survey Protocol II (droids.PROTOCOLS)
 MAXIMUM_SEAT_EFFECTIVENESS = 1.05      # ShipCrewSeats.MaximumSeatEffectiveness
@@ -371,14 +371,15 @@ def droid_chance(crew):
 
 
 def droid_site_minutes(kind, tier):
-    """A site's minutes for a droid-run explorer: the player's site with its boards taken out, a data site waiting on
-    the droid between cans (its hops overlap the cooldown) and a derelict's core sliced while the wreck is salvaged."""
+    """A site's minutes for a droid-run explorer: the droid's slice is a channel the pilot waits out in range and out of
+    combat (SpaceSlicing.RunDroidSlicing), so each target costs DROID_SLICE_MINUTES in place of a player's board; a
+    derelict's core is sliced while the wreck is salvaged, so only the channel's time past the salvage counts."""
     if kind == "DataSite":
-        return (slicing.DATA_SITE_CANS - 1) * max(DROID_SLICE_MINUTES, CAN_TRAVEL_MINUTES)
+        return slicing.DATA_SITE_CANS * (DROID_SLICE_MINUTES + CAN_TRAVEL_MINUTES)
     if kind == "LockedCache":
-        return CACHE_MINUTES
+        return CACHE_MINUTES + DROID_SLICE_MINUTES
     if kind == "Derelict":
-        return site_minutes(kind, tier) - slicing.SLICE_MINUTES
+        return site_minutes(kind, tier) - slicing.SLICE_MINUTES + max(0.0, DROID_SLICE_MINUTES - SALVAGE_MINUTES)
     return site_minutes(kind, tier)
 
 

@@ -214,12 +214,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const double MaximumSlicingChance = 0.85;
 
         /// <summary>
-        /// Seconds a droid works one target before it can start another. A matched-rank player's board takes about 90 s
-        /// (plan section 24), but the droid's press resolves at once and its time runs while the pilot flies on, so a
-        /// locked cache or a data core costs the pilot no slicing time; 120 s keeps a droid-run explorer at or below 140%
-        /// of the tier's combat with the best droid and every crew bonus (scanning.py --sim; review fix 2026-10-30).
+        /// Seconds a droid works one target, a channel the pilot waits out in Data Analyzer range and out of combat
+        /// (SpaceSlicing.RunDroidSlicing). A matched-rank player's board takes about 90 s (plan section 24); 125 s keeps a
+        /// droid-run explorer at or below a player slicer, and inside the 120% store-price band even with the best droid
+        /// and every crew bonus (scanning.py --sim --store-price; review fix 2026-10-30).
         /// </summary>
-        public const int SlicingSeconds = 120;
+        public const int SlicingSeconds = 125;
 
         /// <summary>Whether a droid runs this module while shield is low.</summary>
         public static bool RunsWhenShieldLow(ShipModuleType type) =>

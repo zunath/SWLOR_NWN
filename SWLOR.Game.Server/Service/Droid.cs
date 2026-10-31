@@ -129,7 +129,6 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a player uses a droid assembly terminal, displays the UI.
-        /// Player will receive an error if they don't have any ranks in the Droid Assembly perk.
         /// </summary>
         [NWNEventHandler(ScriptName.OnDroidAssociateUsed)]
         public static void UseDroidAssemblyTerminal()
@@ -137,12 +136,6 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
-
-            if (Perk.GetPerkLevel(player, PerkType.DroidAssembly) <= 0)
-            {
-                SendMessageToPC(player, ColorToken.Red("The 'Droid Assembly' perk is required to use this terminal."));
-                return;
-            }
 
             Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }

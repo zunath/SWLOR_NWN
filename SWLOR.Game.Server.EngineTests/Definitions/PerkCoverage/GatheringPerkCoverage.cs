@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
 {
@@ -12,52 +11,101 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
             {
                 new()
                 {
-                    Perk = PerkType.TreasureHunter,
+                    Perk = PerkType.EfficientStrikes,
+                    MaxLevel = 2,
+                    Prices = new[] { 1, 3 },
+                    Notes = "Prospector, Gathering 5 and 25. Prospecting stats only; a Strike and a Heavy Strike take less time; no feat.",
+                },
+                new()
+                {
+                    Perk = PerkType.BulkRefining,
                     MaxLevel = 3,
-                    Prices = new[] { 3, 3, 4 },
-                    GrantedFeats = new[] { FeatType.TreasureHunterTrait },
+                    Prices = new[] { 1, 3, 3 },
+                    Notes = "Prospector, Gathering 10, 30 and 45. Each power core refines more items; read by the refinery, not a Prospecting session.",
                 },
                 new()
                 {
-                    Perk = PerkType.CreditFinder,
-                    MaxLevel = 3,
-                    Prices = new[] { 3, 3, 4 },
-                    GrantedFeats = new[] { FeatType.CreditFinderTrait },
+                    Perk = PerkType.RichVeins,
+                    MaxLevel = 2,
+                    Prices = new[] { 2, 3 },
+                    Notes = "Prospector, Gathering 15 and 40. The Extract of a rich seam takes less time.",
                 },
                 new()
                 {
-                    Perk = PerkType.Harvesting,
-                    MaxLevel = 5,
-                    Prices = new[] { 1, 1, 2, 3, 4 },
-                    GrantedFeats = new[] { FeatType.Harvesting1, FeatType.Harvesting2, FeatType.Harvesting3, FeatType.Harvesting4, FeatType.Harvesting5 },
+                    Perk = PerkType.StripMiningStyle,
+                    MaxLevel = 1,
+                    Prices = new[] { 2 },
+                    Notes = "Prospector style, Gathering 20. Picked in the window; carried by StripMiningStatusEffect. Refund removes an unowned style.",
                 },
                 new()
                 {
-                    Perk = PerkType.Refining,
-                    MaxLevel = 5,
-                    Prices = new[] { 1, 1, 2, 3, 4 },
-                    GrantedFeats = new[] { FeatType.Refining1, FeatType.Refining2, FeatType.Refining3, FeatType.Refining4, FeatType.Refining5 },
+                    Perk = PerkType.CoreSample,
+                    MaxLevel = 1,
+                    Prices = new[] { 3 },
+                    Notes = "Prospector, Gathering 35. The Prospecting window shows the seams a node still holds.",
                 },
                 new()
                 {
-                    Perk = PerkType.RefineryManagement,
-                    MaxLevel = 6,
-                    Prices = new[] { 1, 1, 2, 2, 3, 4 },
-                    GrantedFeats = new[] { FeatType.RefineryManagement1, FeatType.RefineryManagement2, FeatType.RefineryManagement3, FeatType.RefineryManagement4, FeatType.RefineryManagement5, FeatType.RefineryManagement6 },
+                    Perk = PerkType.MotherLode,
+                    MaxLevel = 1,
+                    Prices = new[] { 4 },
+                    Notes = "Prospector capstone, Gathering 50. Automatic trait: the first Strike of each node takes half the time.",
                 },
                 new()
                 {
-                    Perk = PerkType.Scavenging,
-                    MaxLevel = 5,
-                    Prices = new[] { 1, 1, 2, 3, 4 },
-                    GrantedFeats = new[] { FeatType.Scavenging1, FeatType.Scavenging2, FeatType.Scavenging3, FeatType.Scavenging4, FeatType.Scavenging5 },
+                    Perk = PerkType.FineTrowel,
+                    MaxLevel = 2,
+                    Prices = new[] { 1, 3 },
+                    Notes = "Treasure Seeker, Gathering 5 and 40. A Dig Deeper find weights the site's rare entries more.",
                 },
                 new()
                 {
-                    Perk = PerkType.HardLook,
-                    MaxLevel = 5,
-                    Prices = new[] { 1, 1, 2, 3, 3 },
-                    GrantedFeats = new[] { FeatType.HardLook1, FeatType.HardLook2, FeatType.HardLook3, FeatType.HardLook4, FeatType.HardLook5 },
+                    Perk = PerkType.SharpChisel,
+                    MaxLevel = 2,
+                    Prices = new[] { 1, 3 },
+                    Notes = "Treasure Seeker, Gathering 10 and 30. A Heavy Strike shatters an unsurveyed gem pocket less often.",
+                },
+                new()
+                {
+                    Perk = PerkType.SteadyDig,
+                    MaxLevel = 1,
+                    Prices = new[] { 2 },
+                    Notes = "Treasure Seeker, Gathering 15. Dig Deeper risks ruining a spot less.",
+                },
+                new()
+                {
+                    Perk = PerkType.CarefulHandsStyle,
+                    MaxLevel = 1,
+                    Prices = new[] { 2 },
+                    Notes = "Treasure Seeker style, Gathering 20. Picked in the window; carried by CarefulHandsStatusEffect. Refund removes an unowned style.",
+                },
+                new()
+                {
+                    Perk = PerkType.KeenEye,
+                    MaxLevel = 1,
+                    Prices = new[] { 3 },
+                    Notes = "Treasure Seeker, Gathering 25. A Search finds more often on every spot.",
+                },
+                new()
+                {
+                    Perk = PerkType.DeepScan,
+                    MaxLevel = 1,
+                    Prices = new[] { 3 },
+                    Notes = "Treasure Seeker, Gathering 35. A Survey reveals one more seam and shows gem pockets first.",
+                },
+                new()
+                {
+                    Perk = PerkType.RichPickings,
+                    MaxLevel = 1,
+                    Prices = new[] { 3 },
+                    Notes = "Treasure Seeker, Gathering 45. A Search find weights the site's rare entries more.",
+                },
+                new()
+                {
+                    Perk = PerkType.Jackpot,
+                    MaxLevel = 1,
+                    Prices = new[] { 4 },
+                    Notes = "Treasure Seeker capstone, Gathering 50. Automatic trait: the first Dig Deeper find of each board weights the rare entries most.",
                 },
                 new()
                 {

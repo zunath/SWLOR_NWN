@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         public float ResearchCostModifier { get; set; }
         public bool IsItemIntendedForCrafting { get; set; }
         public List<string> EffectLines { get; set; }
+        public RecipeMinigameParameters MinigameParameters { get; set; }
 
         public RecipeDetail()
         {

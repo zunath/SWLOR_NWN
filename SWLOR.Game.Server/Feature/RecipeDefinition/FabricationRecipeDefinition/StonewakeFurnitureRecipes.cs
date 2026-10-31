@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 50, shellSizePercent: 35, frameQualityPercent: 61, shellQualityPercent: 20, wearRate: 5);
 
             // Stonewake Signal Lamp
             _builder.Create(RecipeType.StonewakeSignalLamp, SkillType.Fabrication)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 3)
                 .Component("ref_scordspar", 1)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 17, shellSizePercent: 26, frameQualityPercent: 15, shellQualityPercent: 39, wearRate: 5);
 
             // Stonewake Trophy Stand
             _builder.Create(RecipeType.StonewakeTrophyStand, SkillType.Fabrication)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 29, frameQualityPercent: 32, shellQualityPercent: 21, wearRate: 5);
 
             // Stonewake Low Table
             _builder.Create(RecipeType.StonewakeLowTable, SkillType.Fabrication)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 45, frameQualityPercent: 41, shellQualityPercent: 41, wearRate: 4);
 
             // Stonewake Wall Banner
             _builder.Create(RecipeType.StonewakeWallBanner, SkillType.Fabrication)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 3)
                 .Component("lth_flawed", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 45, frameQualityPercent: 26, shellQualityPercent: 59, wearRate: 4);
 
             // Stonewake Supply Locker
             _builder.Create(RecipeType.StonewakeSupplyLocker, SkillType.Fabrication)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 31, frameQualityPercent: 34, shellQualityPercent: 38, wearRate: 5);
 
             // Stonewake Floor Mat
             _builder.Create(RecipeType.StonewakeFloorMat, SkillType.Fabrication)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 24, shellSizePercent: 58, frameQualityPercent: 22, shellQualityPercent: 60, wearRate: 4);
 
             // Stonewake Data Console
             _builder.Create(RecipeType.StonewakeDataConsole, SkillType.Fabrication)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("elec_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 27, frameQualityPercent: 18, shellQualityPercent: 28, wearRate: 4);
 
             // Stonewake Stone Altar
             _builder.Create(RecipeType.StonewakeStoneAltar, SkillType.Fabrication)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 51, frameQualityPercent: 20, shellQualityPercent: 64, wearRate: 5);
 
             // Stonewake Work Stool
             _builder.Create(RecipeType.StonewakeWorkStool, SkillType.Fabrication)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("lth_flawed", 2)
-                .Component("vs_mask", 1);
+                .Component("vs_mask", 1)
+                .FabricatorParameters(frameSizePercent: 46, shellSizePercent: 36, frameQualityPercent: 46, shellQualityPercent: 39, wearRate: 4);
         }
     }
 }

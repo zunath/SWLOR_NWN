@@ -2905,6 +2905,8 @@ public class CombatUpgradeBibleSyncTests
             ("Espionage", "Saboteur") => PerkCategoryType.EspionageSaboteur,
             ("Espionage", "Tradecraft") => PerkCategoryType.EspionageTradecraft,
             ("Fabrication", "Invention") => PerkCategoryType.Fabrication,
+            ("Fabrication", "Builder") => PerkCategoryType.Fabrication,
+            ("Fabrication", "Researcher") => PerkCategoryType.Fabrication,
             ("Force", "Alter") => PerkCategoryType.ForceAlter,
             ("Force", "Control") => PerkCategoryType.ForceControl,
             ("Force", "Sense") => PerkCategoryType.ForceSense,

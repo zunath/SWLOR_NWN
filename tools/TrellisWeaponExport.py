@@ -1378,7 +1378,7 @@ def package(args, repo, out):
             authored_reports=[]
             if policy=='authored_tangents':
                 sources={material:{key:arrays[material+'__'+key] for key in ('positions','normals','tangents','signs','uv')} for material in record['materials']}
-                for model in record['models']+record.get('aliases',[]):authored_reports.append(helper.preserve_authored_tangents(runtime/(model+'.mdl'),sources))
+                for model in record['models']+record.get('aliases',[]):authored_reports.append(helper.preserve_authored_tangents(runtime/(model+'.mdl'),sources,float(record.get('authored_angle_limit_degrees',.5))))
             native=[mesh for model in record['models'] for mesh in helper.native_meshes(runtime/(model+'.mdl'))]
             for material in record['materials']:
                 group={key:arrays[material+'__'+key] for key in ('positions','normals','tangents','signs','uv')}

@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
@@ -577,7 +576,7 @@ namespace SWLOR.Game.Server.Service
             if (tier > 5)
                 tier = 5;
 
-            return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
+            return CraftRankMilestones.GetResearchTier(player) >= tier;
         }
 
         /// <summary>
@@ -1003,11 +1002,10 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var terminal = OBJECT_SELF;
-            var researchLevel = Perk.GetPerkLevel(player, PerkType.Research);
 
-            if (researchLevel <= 0)
+            if (CraftRankMilestones.GetResearchTier(player) <= 0)
             {
-                SendMessageToPC(player, $"Perk 'Research I' is required to use research terminals.");
+                SendMessageToPC(player, $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.");
                 return;
             }
 
@@ -1038,7 +1036,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         var delta = dbJob.DateCompleted - now;
                         var completionTime = Time.GetTimeLongIntervals(delta, false);
-                        SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                        SendMessageToPC(player, $"Another player's research job is active. This job will complete in: {completionTime}.");
                     }
                     else
                     {
@@ -1233,7 +1231,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var dbJob in dbJobs)
             {
-                DB.Delete<ResearchJob>(dbJob.Id);
+                CraftService.Research.ResearchExperimentService.DeleteJob(dbJob);
             }
         }
     }

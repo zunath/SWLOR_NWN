@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -118,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             return !_closed && GetIsObjectValid(_controller) && GetItemPossessor(_controller) == Player &&
                    !GetIsObjectValid(Droid.GetDroid(Player)) &&
-                   Perk.GetPerkLevel(Player, PerkType.DroidAssembly) >= Droid.LoadDroidItemPropertyDetails(_controller).Tier;
+                   CraftRankMilestones.GetDroidAssemblyTier(Player) >= Droid.LoadDroidItemPropertyDetails(_controller).Tier;
         }
 
         public Action AddInstructionDisk() => () =>

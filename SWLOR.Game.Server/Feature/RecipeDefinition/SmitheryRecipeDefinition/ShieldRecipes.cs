@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 4)
-                .Component("wood", 2);
+                .Component("wood", 2)
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 35, coolingRate: 1, startingThermal: 68, shapeShare: 74);
 
             // Titan Shield
             _builder.Create(RecipeType.TitanShield, SkillType.Smithery)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 4)
-                .Component("fine_wood", 2);
+                .Component("fine_wood", 2)
+                .ForgeParameters(rangeCenter: 65, rangeWidth: 45, coolingRate: 2, startingThermal: 78, shapeShare: 73);
 
             // Quark Shield
             _builder.Create(RecipeType.QuarkShield, SkillType.Smithery)
@@ -46,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 4)
-                .Component("ancient_wood", 2);
+                .Component("ancient_wood", 2)
+                .ForgeParameters(rangeCenter: 64, rangeWidth: 24, coolingRate: 4, startingThermal: 54, shapeShare: 74);
 
             // Argos Shield
             _builder.Create(RecipeType.ArgosShield, SkillType.Smithery)
@@ -56,7 +59,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 4)
-                .Component("aracia_wood", 2);
+                .Component("aracia_wood", 2)
+                .ForgeParameters(rangeCenter: 64, rangeWidth: 26, coolingRate: 1, startingThermal: 67, shapeShare: 74);
 
             // Eclipse Shield
             _builder.Create(RecipeType.EclipseShield, SkillType.Smithery)
@@ -66,7 +70,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("hyphae_wood", 2);
+                .Component("hyphae_wood", 2)
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 24, coolingRate: 1, startingThermal: 67, shapeShare: 74);
 
             // Chaos Shield
             _builder.Create(RecipeType.ChaosShield, SkillType.Smithery)
@@ -84,7 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
+                .Component("ref_keromber", 5)
+                .ForgeParameters(rangeCenter: 67, rangeWidth: 24, coolingRate: 2, startingThermal: 73, shapeShare: 74);
         }
 
         private void IntermediateShields()
@@ -98,7 +104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 6)
                 .Component("wood", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 45, coolingRate: 1, startingThermal: 73, shapeShare: 74);
 
             // Bastion Shield
             _builder.Create(RecipeType.BastionShield, SkillType.Smithery)
@@ -109,7 +116,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 6)
                 .Component("fine_wood", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 28, coolingRate: 3, startingThermal: 70, shapeShare: 74);
 
             // Sentinel Shield
             _builder.Create(RecipeType.SentinelShield, SkillType.Smithery)
@@ -120,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 6)
                 .Component("ancient_wood", 3)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .ForgeParameters(rangeCenter: 65, rangeWidth: 23, coolingRate: 1, startingThermal: 66, shapeShare: 74);
 
             // Aegis Shield
             _builder.Create(RecipeType.AegisShield, SkillType.Smithery)
@@ -131,7 +140,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 6)
                 .Component("aracia_wood", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 23, coolingRate: 1, startingThermal: 59, shapeShare: 74);
 
         }
 

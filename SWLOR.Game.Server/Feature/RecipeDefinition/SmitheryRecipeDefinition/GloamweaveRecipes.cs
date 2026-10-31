@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 4)
                 .Component("fiberp_ruined", 2)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 55, coolingRate: 3, startingThermal: 54, shapeShare: 70);
 
             // Gloamweave Wraps
             _builder.Create(RecipeType.GloamweaveWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 1, startingThermal: 56, shapeShare: 63);
 
             // Gloamweave Treads
             _builder.Create(RecipeType.GloamweaveTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 47, coolingRate: 1, startingThermal: 52, shapeShare: 61);
 
             // Gloamweave Sash
             _builder.Create(RecipeType.GloamweaveSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 48, coolingRate: 5, startingThermal: 52, shapeShare: 53);
 
             // Gloamweave Mantle
             _builder.Create(RecipeType.GloamweaveMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 3, startingThermal: 54, shapeShare: 55);
 
             // Gloamweave Gorget
             _builder.Create(RecipeType.GloamweaveGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 4, startingThermal: 55, shapeShare: 38);
 
             // Gloamweave Band
             _builder.Create(RecipeType.GloamweaveBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 7, startingThermal: 55, shapeShare: 38);
 
             // Gloamweave Guard
             _builder.Create(RecipeType.GloamweaveGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 1, startingThermal: 54, shapeShare: 62);
 
             // Gloamweave Visor
             _builder.Create(RecipeType.GloamweaveVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 3, startingThermal: 54, shapeShare: 60);
 
             // Gloamweave Charm
             _builder.Create(RecipeType.GloamweaveCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("ss_silk", 1);
+                .Component("ss_silk", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 7, startingThermal: 55, shapeShare: 39);
         }
     }
 }

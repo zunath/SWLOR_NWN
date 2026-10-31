@@ -22,5 +22,13 @@ namespace SWLOR.Game.Server.Entity
         /// top-tier blueprint trait. Older records load false.
         /// </summary>
         public bool PrototypeTech { get; set; }
+        /// <summary>The experiment the job ran and its stored outcome. Null for a job created before experiments existed.</summary>
+        public ResearchExperimentRecord Experiment { get; set; }
+
+        /// <summary>The character file sequence the start's blueprint and credit removal waits on. 0 for a job started before it was kept.</summary>
+        public int StartSequence { get; set; }
+
+        /// <summary>The character file sequence the blueprint handed back by a completion or cancel waits on. 0 until one is made.</summary>
+        public int DeliverySequence { get; set; }
     }
 }

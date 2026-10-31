@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             DualWield();
             Doublehand();
             Alertness();
+            TreasureHunter();
+            Creditfinder();
 
             return _builder.Build();
         }
@@ -112,5 +114,48 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.Detection, 20);
         }
 
+        private void TreasureHunter()
+        {
+            _builder.Create(PerkCategoryType.General, PerkType.TreasureHunter)
+                .Name("Treasure Hunter")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.TreasureHunterTrait)
+                .Description("Rare items are more likely to be chosen when loot is rolled, and rare loot tables gain up to +10% drop chance.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 20)
+
+                .AddPerkLevel()
+                .Description("Rare items are more likely to be chosen when loot is rolled, and rare loot tables gain up to +20% drop chance.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 40)
+
+                .AddPerkLevel()
+                .Description("Rare items are more likely to be chosen when loot is rolled, and rare loot tables gain up to +30% drop chance.")
+                .Price(4)
+                .RequirementSkill(SkillType.Armor, 50);
+        }
+
+        private void Creditfinder()
+        {
+            _builder.Create(PerkCategoryType.General, PerkType.CreditFinder)
+                .Name("Creditfinder")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CreditFinderTrait)
+                .Description("Increases the amount of credits found by 20%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 15)
+
+                .AddPerkLevel()
+                .Description("Increases the amount of credits found by 40%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 30)
+
+                .AddPerkLevel()
+                .Description("Increases the amount of credits found by 60%.")
+                .Price(4)
+                .RequirementSkill(SkillType.Armor, 45);
+        }
     }
 }

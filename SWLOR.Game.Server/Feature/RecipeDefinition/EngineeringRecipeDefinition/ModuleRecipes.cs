@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 3)
-				.Component("elec_ruined", 2);
+				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 57);
 
 			// Basic Combat Laser
 			_builder.Create(RecipeType.BasicCombatLaser, SkillType.Engineering)
@@ -44,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 60);
 
             // Basic Beam Cannon
             _builder.Create(RecipeType.BasicBeamCannon, SkillType.Engineering)
@@ -54,7 +56,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 2)
-                .Component("elec_ruined", 1);
+                .Component("elec_ruined", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 10, assemblySharePercent: 52);
 
             // Basic EM Amplifier
             _builder.Create(RecipeType.BasicEMAmplifier, SkillType.Engineering)
@@ -64,7 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 4)
-				.Component("elec_ruined", 2);
+				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 53);
 
 			// Basic Thermal Amplifier
 			_builder.Create(RecipeType.BasicThermalAmplifier, SkillType.Engineering)
@@ -74,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 4)
-				.Component("elec_ruined", 2);
+				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 52);
 
 			// Basic Explosive Amplifier
 			_builder.Create(RecipeType.BasicExplosiveAmplifier, SkillType.Engineering)
@@ -84,7 +89,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 4)
-				.Component("elec_ruined", 2);
+				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 52);
 
 			// Basic Evasion Booster
 			_builder.Create(RecipeType.BasicEvasionBooster, SkillType.Engineering)
@@ -94,7 +100,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 3);
+				.Component("elec_ruined", 3)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 56);
 
 			// Basic Hull Booster
 			_builder.Create(RecipeType.BasicHullBooster, SkillType.Engineering)
@@ -104,7 +111,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 3)
-				.Component("elec_ruined", 2);
+				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 59);
 
 			// Basic Hull Repairer
 			_builder.Create(RecipeType.BasicHullRepairer, SkillType.Engineering)
@@ -114,7 +122,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 52);
 
 			// Basic Ion Cannon
 			_builder.Create(RecipeType.BasicIonCannon, SkillType.Engineering)
@@ -124,7 +133,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 57);
 
 			// Basic Mining Laser
 			_builder.Create(RecipeType.BasicMiningLaser, SkillType.Engineering)
@@ -134,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 1)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 10, assemblySharePercent: 51);
 
 			// Basic Missile Launcher
 			_builder.Create(RecipeType.BasicMissileLauncher, SkillType.Engineering)
@@ -144,7 +155,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 3)
-				.Component("elec_ruined", 2);
+				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 58);
 
 			// Basic Shield Booster
 			_builder.Create(RecipeType.BasicShieldBooster, SkillType.Engineering)
@@ -154,7 +166,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 50);
 
 			// Basic Shield Repairer
 			_builder.Create(RecipeType.BasicShieldRepairer, SkillType.Engineering)
@@ -164,7 +177,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 3);
+				.Component("elec_ruined", 3)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 58);
 
 			// Basic Targeting System
 			_builder.Create(RecipeType.BasicTargetingSystem, SkillType.Engineering)
@@ -174,7 +188,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 3);
+				.Component("elec_ruined", 3)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 58);
 
 			// Basic Hypermatter Injector
 			_builder.Create(RecipeType.BasicFuelInjector, SkillType.Engineering)
@@ -184,7 +199,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 3);
+				.Component("elec_ruined", 3)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 50);
 
 			// Basic Mirrored Plating
 			_builder.Create(RecipeType.BasicThermalArmor, SkillType.Engineering)
@@ -194,7 +210,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 56);
 
             // Basic Supplemental Ion Shielding
             _builder.Create(RecipeType.BasicIonArmor, SkillType.Engineering)
@@ -204,7 +221,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // Basic Reactive Armor
             _builder.Create(RecipeType.BasicExplosiveArmor, SkillType.Engineering)
@@ -214,7 +232,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 59);
 
             // Basic Durasteel Plating
             _builder.Create(RecipeType.BasicHeavyArmor, SkillType.Engineering)
@@ -224,7 +243,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
-				.Component("elec_ruined", 1);
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 57);
 
             // Basic Fighter Config
             _builder.Create(RecipeType.BasicFighterConfig, SkillType.Engineering)
@@ -234,7 +254,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
-                .Component("elec_ruined", 2);
+                .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 58);
 
             // Basic Bomber Config
             _builder.Create(RecipeType.BasicBomberConfig, SkillType.Engineering)
@@ -244,7 +265,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
-                .Component("elec_ruined", 2);
+                .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 60);
 
             // Basic Interceptor Config
             _builder.Create(RecipeType.BasicInterceptorConfig, SkillType.Engineering)
@@ -254,7 +276,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
-                .Component("elec_ruined", 2);
+                .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Basic Logistics Config
             _builder.Create(RecipeType.BasicLogisticsConfig, SkillType.Engineering)
@@ -264,7 +287,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
-                .Component("elec_ruined", 2);
+                .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 51);
         }
 
 		private void Tier2()
@@ -278,7 +302,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 3)
-				.Component("elec_flawed", 2);
+				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 52);
 
 			//  Combat Laser I
 			_builder.Create(RecipeType.CombatLaser1, SkillType.Engineering)
@@ -288,7 +313,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 54);
 
             // Beam Cannon I
             _builder.Create(RecipeType.BeamCannon1, SkillType.Engineering)
@@ -298,7 +324,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 2)
-                .Component("elec_flawed", 1);
+                .Component("elec_flawed", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 51);
 
             //  EM Amplifier I
             _builder.Create(RecipeType.EMAmplifier1, SkillType.Engineering)
@@ -308,7 +335,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 4)
-				.Component("elec_flawed", 2);
+				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 57);
 
 			//  Thermal Amplifier I
 			_builder.Create(RecipeType.ThermalAmplifier1, SkillType.Engineering)
@@ -318,7 +346,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 4)
-				.Component("elec_flawed", 2);
+				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 60);
 
 			//  Explosive Amplifier I
 			_builder.Create(RecipeType.ExplosiveAmplifier1, SkillType.Engineering)
@@ -328,7 +357,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 4)
-				.Component("elec_flawed", 2);
+				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 51);
 
 			//  Evasion Booster I
 			_builder.Create(RecipeType.EvasionBooster1, SkillType.Engineering)
@@ -338,7 +368,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 3);
+				.Component("elec_flawed", 3)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 51);
 
 			//  Hull Booster I
 			_builder.Create(RecipeType.HullBooster1, SkillType.Engineering)
@@ -348,7 +379,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 3)
-				.Component("elec_flawed", 2);
+				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 58);
 
 			//  Hull Repairer I
 			_builder.Create(RecipeType.HullRepairer1, SkillType.Engineering)
@@ -358,7 +390,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 59);
 
 			//  Ion Cannon I
 			_builder.Create(RecipeType.IonCannon1, SkillType.Engineering)
@@ -368,7 +401,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 60);
 
 			//  Mining Laser I
 			_builder.Create(RecipeType.MiningLaser1, SkillType.Engineering)
@@ -378,7 +412,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 1)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 55);
 
 			//  Missile Launcher I
 			_builder.Create(RecipeType.MissileLauncher1, SkillType.Engineering)
@@ -388,7 +423,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 3)
-				.Component("elec_flawed", 2);
+				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 53);
 
 			//  Shield Booster I
 			_builder.Create(RecipeType.ShieldBooster1, SkillType.Engineering)
@@ -398,7 +434,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 53);
 
 			//  Shield Repairer I
 			_builder.Create(RecipeType.ShieldRepairer1, SkillType.Engineering)
@@ -408,7 +445,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 3);
+				.Component("elec_flawed", 3)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 50);
 
 			//  Targeting System I
 			_builder.Create(RecipeType.TargetingSystem1, SkillType.Engineering)
@@ -418,7 +456,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 3);
+				.Component("elec_flawed", 3)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 51);
 
 			// Hypermatter Injector I
 			_builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
@@ -428,7 +467,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 3);
+				.Component("elec_flawed", 3)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 53);
 
 			// Mirror Plating I
 			_builder.Create(RecipeType.ThermalArmor1, SkillType.Engineering)
@@ -438,7 +478,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 60);
 
 			// Supplemental Ion Shielding I
 			_builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
@@ -448,7 +489,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 54);
 
 			// Reactive Armor I
 			_builder.Create(RecipeType.ExplosiveArmor1, SkillType.Engineering)
@@ -458,7 +500,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 59);
 
 			// Durasteel Plating I
 			_builder.Create(RecipeType.HeavyArmor1, SkillType.Engineering)
@@ -468,7 +511,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
-				.Component("elec_flawed", 1);
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 60);
 
             // Fighter Config I
             _builder.Create(RecipeType.FighterConfig1, SkillType.Engineering)
@@ -478,7 +522,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 60);
 
             // Bomber Config I
             _builder.Create(RecipeType.BomberConfig1, SkillType.Engineering)
@@ -488,7 +533,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 59);
 
             // Interceptor Config I
             _builder.Create(RecipeType.InterceptorConfig1, SkillType.Engineering)
@@ -498,7 +544,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 51);
 
             // Logistics Config I
             _builder.Create(RecipeType.LogisticsConfig1, SkillType.Engineering)
@@ -508,7 +555,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 56);
         }
 
 		private void Tier3()
@@ -522,7 +570,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 3)
-				.Component("elec_good", 2);
+				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 50);
 
 			//  Combat Laser II
 			_builder.Create(RecipeType.CombatLaser2, SkillType.Engineering)
@@ -532,7 +581,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 50);
 
             // Beam Cannon II
             _builder.Create(RecipeType.BeamCannon2, SkillType.Engineering)
@@ -542,7 +592,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 2)
-                .Component("elec_good", 1);
+                .Component("elec_good", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 51);
 
             //  EM Amplifier II
             _builder.Create(RecipeType.EMAmplifier2, SkillType.Engineering)
@@ -552,7 +603,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 4)
-				.Component("elec_good", 2);
+				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 53);
 
 			//  Thermal Amplifier II
 			_builder.Create(RecipeType.ThermalAmplifier2, SkillType.Engineering)
@@ -562,7 +614,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 4)
-				.Component("elec_good", 2);
+				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 50);
 
 			//  Explosive Amplifier II
 			_builder.Create(RecipeType.ExplosiveAmplifier2, SkillType.Engineering)
@@ -572,7 +625,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 4)
-				.Component("elec_good", 2);
+				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 51);
 
 			//  Evasion Booster II
 			_builder.Create(RecipeType.EvasionBooster2, SkillType.Engineering)
@@ -582,7 +636,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 3);
+				.Component("elec_good", 3)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 54);
 
 			//  Hull Booster II
 			_builder.Create(RecipeType.HullBooster2, SkillType.Engineering)
@@ -592,7 +647,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 3)
-				.Component("elec_good", 2);
+				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
 			//  Hull Repairer II
 			_builder.Create(RecipeType.HullRepairer2, SkillType.Engineering)
@@ -602,7 +658,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 56);
 
 			//  Ion Cannon II
 			_builder.Create(RecipeType.IonCannon2, SkillType.Engineering)
@@ -612,7 +669,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 52);
 
 			//  Mining Laser II
 			_builder.Create(RecipeType.MiningLaser2, SkillType.Engineering)
@@ -622,7 +680,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 1)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
 			//  Missile Launcher II
 			_builder.Create(RecipeType.MissileLauncher2, SkillType.Engineering)
@@ -632,7 +691,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 3)
-				.Component("elec_good", 2);
+				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 52);
 
 			//  Shield Booster II
 			_builder.Create(RecipeType.ShieldBooster2, SkillType.Engineering)
@@ -642,7 +702,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 58);
 
 			//  Shield Repairer II
 			_builder.Create(RecipeType.ShieldRepairer2, SkillType.Engineering)
@@ -652,7 +713,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 3);
+				.Component("elec_good", 3)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
 			//  Targeting System II
 			_builder.Create(RecipeType.TargetingSystem2, SkillType.Engineering)
@@ -662,7 +724,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 3);
+				.Component("elec_good", 3)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 58);
 
 			// Hypermatter Injector II
 			_builder.Create(RecipeType.FuelInjector2, SkillType.Engineering)
@@ -672,7 +735,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 3);
+				.Component("elec_good", 3)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 56);
 
 			// Mirrored Plating II
 			_builder.Create(RecipeType.ThermalArmor2, SkillType.Engineering)
@@ -682,7 +746,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
 			// Supplemental Ion Shielding II
 			_builder.Create(RecipeType.IonArmor2, SkillType.Engineering)
@@ -692,7 +757,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 51);
 
 			// Reactive Armor II
 			_builder.Create(RecipeType.ExplosiveArmor2, SkillType.Engineering)
@@ -702,7 +768,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 54);
 
 			// Durasteel Plating II
 			_builder.Create(RecipeType.HeavyArmor2, SkillType.Engineering)
@@ -712,7 +779,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
-				.Component("elec_good", 1);
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 54);
 
             // Fighter Config II
             _builder.Create(RecipeType.FighterConfig2, SkillType.Engineering)
@@ -722,7 +790,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
-                .Component("elec_good", 2);
+                .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 56);
 
             // Bomber Config II
             _builder.Create(RecipeType.BomberConfig2, SkillType.Engineering)
@@ -732,7 +801,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
-                .Component("elec_good", 2);
+                .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 58);
 
             // Interceptor Config II
             _builder.Create(RecipeType.InterceptorConfig2, SkillType.Engineering)
@@ -742,7 +812,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
-                .Component("elec_good", 2);
+                .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Logistics Config II
             _builder.Create(RecipeType.LogisticsConfig2, SkillType.Engineering)
@@ -752,7 +823,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
-                .Component("elec_good", 2);
+                .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 59);
         }
 
 		private void Tier4()
@@ -766,7 +838,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 3)
-				.Component("elec_imperfect", 2);
+				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 53);
 
 			//  Combat Laser III
 			_builder.Create(RecipeType.CombatLaser3, SkillType.Engineering)
@@ -776,7 +849,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 53);
 
             //  Beam Cannon III
             _builder.Create(RecipeType.BeamCannon3, SkillType.Engineering)
@@ -786,7 +860,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 2)
-                .Component("elec_imperfect", 1);
+                .Component("elec_imperfect", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 59);
 
             //  EM Amplifier III
             _builder.Create(RecipeType.EMAmplifier3, SkillType.Engineering)
@@ -796,7 +871,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 4)
-				.Component("elec_imperfect", 2);
+				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 54);
 
 			//  Thermal Amplifier III
 			_builder.Create(RecipeType.ThermalAmplifier3, SkillType.Engineering)
@@ -806,7 +882,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 4)
-				.Component("elec_imperfect", 2);
+				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 56);
 
 			//  Explosive Amplifier III
 			_builder.Create(RecipeType.ExplosiveAmplifier3, SkillType.Engineering)
@@ -816,7 +893,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 4)
-				.Component("elec_imperfect", 2);
+				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 60);
 
 			//  Evasion Booster III
 			_builder.Create(RecipeType.EvasionBooster3, SkillType.Engineering)
@@ -826,7 +904,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 3);
+				.Component("elec_imperfect", 3)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 59);
 
 			//  Hull Booster III
 			_builder.Create(RecipeType.HullBooster3, SkillType.Engineering)
@@ -836,7 +915,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 3)
-				.Component("elec_imperfect", 2);
+				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 53);
 
 			//  Hull Repairer III
 			_builder.Create(RecipeType.HullRepairer3, SkillType.Engineering)
@@ -846,7 +926,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 59);
 
 			//  Ion Cannon III
 			_builder.Create(RecipeType.IonCannon3, SkillType.Engineering)
@@ -856,7 +937,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 60);
 
 			//  Mining Laser III
 			_builder.Create(RecipeType.MiningLaser3, SkillType.Engineering)
@@ -866,7 +948,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 1)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 51);
 
 			//  Missile Launcher III
 			_builder.Create(RecipeType.MissileLauncher3, SkillType.Engineering)
@@ -876,7 +959,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 3)
-				.Component("elec_imperfect", 2);
+				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 51);
 
 			//  Shield Booster III
 			_builder.Create(RecipeType.ShieldBooster3, SkillType.Engineering)
@@ -886,7 +970,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 56);
 
 			//  Shield Repairer III
 			_builder.Create(RecipeType.ShieldRepairer3, SkillType.Engineering)
@@ -896,7 +981,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 3);
+				.Component("elec_imperfect", 3)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 60);
 
 			//  Targeting System III
 			_builder.Create(RecipeType.TargetingSystem3, SkillType.Engineering)
@@ -906,7 +992,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 3);
+				.Component("elec_imperfect", 3)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 56);
 
 			// Hypermatter Injector III
 			_builder.Create(RecipeType.FuelInjector3, SkillType.Engineering)
@@ -916,7 +1003,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 3);
+				.Component("elec_imperfect", 3)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 51);
 
 			// Mirrored Plating III
 			_builder.Create(RecipeType.ThermalArmor3, SkillType.Engineering)
@@ -926,7 +1014,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 59);
 
 			// Supplemental Ion Shielding III
 			_builder.Create(RecipeType.IonArmor3, SkillType.Engineering)
@@ -936,7 +1025,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 51);
 
 			// Reactive Armor III
 			_builder.Create(RecipeType.ExplosiveArmor3, SkillType.Engineering)
@@ -946,7 +1036,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
 			// Durasteel Plating III
 			_builder.Create(RecipeType.HeavyArmor3, SkillType.Engineering)
@@ -956,7 +1047,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
-				.Component("elec_imperfect", 1);
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 58);
 
             // Fighter Config III
             _builder.Create(RecipeType.FighterConfig3, SkillType.Engineering)
@@ -966,7 +1058,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
-                .Component("elec_imperfect", 2);
+                .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 58);
 
             // Bomber Config III
             _builder.Create(RecipeType.BomberConfig3, SkillType.Engineering)
@@ -976,7 +1069,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
-                .Component("elec_imperfect", 2);
+                .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 51);
 
             // Interceptor Config III
             _builder.Create(RecipeType.InterceptorConfig3, SkillType.Engineering)
@@ -986,7 +1080,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
-                .Component("elec_imperfect", 2);
+                .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 59);
 
             // Logistics Config III
             _builder.Create(RecipeType.LogisticsConfig3, SkillType.Engineering)
@@ -996,7 +1091,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
-                .Component("elec_imperfect", 2);
+                .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 50);
         }
 
 		private void Tier5()
@@ -1010,7 +1106,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 3)
-				.Component("elec_high", 2);
+				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 50);
 
 			//  Combat Laser IV
 			_builder.Create(RecipeType.CombatLaser4, SkillType.Engineering)
@@ -1020,7 +1117,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 52);
 
             //  Beam Cannon IV
             _builder.Create(RecipeType.BeamCannon4, SkillType.Engineering)
@@ -1030,7 +1128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 2)
-                .Component("elec_high", 1);
+                .Component("elec_high", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 60);
 
             //  EM Amplifier IV
             _builder.Create(RecipeType.EMAmplifier4, SkillType.Engineering)
@@ -1040,7 +1139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 4)
-				.Component("elec_high", 2);
+				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 60);
 
 			//  Thermal Amplifier IV
 			_builder.Create(RecipeType.ThermalAmplifier4, SkillType.Engineering)
@@ -1050,7 +1150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 4)
-				.Component("elec_high", 2);
+				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 58);
 
 			//  Explosive Amplifier IV
 			_builder.Create(RecipeType.ExplosiveAmplifier4, SkillType.Engineering)
@@ -1060,7 +1161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 4)
-				.Component("elec_high", 2);
+				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 51);
 
 			//  Evasion Booster IV
 			_builder.Create(RecipeType.EvasionBooster4, SkillType.Engineering)
@@ -1070,7 +1172,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 3);
+				.Component("elec_high", 3)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 51);
 
 			//  Hull Booster IV
 			_builder.Create(RecipeType.HullBooster4, SkillType.Engineering)
@@ -1080,7 +1183,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 3)
-				.Component("elec_high", 2);
+				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 58);
 
 			//  Hull Repairer IV
 			_builder.Create(RecipeType.HullRepairer4, SkillType.Engineering)
@@ -1090,7 +1194,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 50);
 
 			//  Ion Cannon IV
 			_builder.Create(RecipeType.IonCannon4, SkillType.Engineering)
@@ -1100,7 +1205,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 57);
 
 			//  Mining Laser IV
 			_builder.Create(RecipeType.MiningLaser4, SkillType.Engineering)
@@ -1110,7 +1216,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 1)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 53);
 
 			//  Missile Launcher IV
 			_builder.Create(RecipeType.MissileLauncher4, SkillType.Engineering)
@@ -1120,7 +1227,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 3)
-				.Component("elec_high", 2);
+				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 52);
 
             //  Proton Bomb Launcher
             _builder.Create(RecipeType.ProtonBombLauncher, SkillType.Engineering)
@@ -1130,7 +1238,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
-                .Component("elec_high", 2);
+                .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 60);
 
             //  Shield Booster IV
             _builder.Create(RecipeType.ShieldBooster4, SkillType.Engineering)
@@ -1140,7 +1249,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 57);
 
 			//  Shield Repairer IV
 			_builder.Create(RecipeType.ShieldRepairer4, SkillType.Engineering)
@@ -1150,7 +1260,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 3);
+				.Component("elec_high", 3)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 50);
 
 			//  Targeting System IV
 			_builder.Create(RecipeType.TargetingSystem4, SkillType.Engineering)
@@ -1160,7 +1271,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 3);
+				.Component("elec_high", 3)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 55);
 
 			// Hypermatter Injector IV
 			_builder.Create(RecipeType.FuelInjector4, SkillType.Engineering)
@@ -1170,7 +1282,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 3);
+				.Component("elec_high", 3)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 56);
 
 			// Mirrored Plating IV
 			_builder.Create(RecipeType.ThermalArmor4, SkillType.Engineering)
@@ -1180,7 +1293,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 50);
 
 			// Supplemental Ion Shielding IV
 			_builder.Create(RecipeType.IonArmor4, SkillType.Engineering)
@@ -1190,7 +1304,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
 			// Reactive Armor IV
 			_builder.Create(RecipeType.ExplosiveArmor4, SkillType.Engineering)
@@ -1200,7 +1315,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 60);
 
 			// Durasteel Plating IV
 			_builder.Create(RecipeType.HeavyArmor4, SkillType.Engineering)
@@ -1210,7 +1326,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Quantity(1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
-				.Component("elec_high", 1);
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 53);
 
             // Fighter Config IV
             _builder.Create(RecipeType.FighterConfig4, SkillType.Engineering)
@@ -1220,7 +1337,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
-                .Component("elec_high", 2);
+                .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 51);
 
             // Bomber Config IV
             _builder.Create(RecipeType.BomberConfig4, SkillType.Engineering)
@@ -1230,7 +1348,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
-                .Component("elec_high", 2);
+                .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 51);
 
             // Interceptor Config IV
             _builder.Create(RecipeType.InterceptorConfig4, SkillType.Engineering)
@@ -1240,7 +1359,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
-                .Component("elec_high", 2);
+                .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 52);
 
             // Logistics Config IV
             _builder.Create(RecipeType.LogisticsConfig4, SkillType.Engineering)
@@ -1250,7 +1370,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
-                .Component("elec_high", 2);
+                .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 52);
         }
 	}
 }

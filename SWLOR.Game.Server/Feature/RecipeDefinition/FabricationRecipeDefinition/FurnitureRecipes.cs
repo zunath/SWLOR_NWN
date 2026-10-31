@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 1)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 51, shellSizePercent: 27, frameQualityPercent: 56, shellQualityPercent: 23, wearRate: 4);
 
             // Easel
             _builder.Create(RecipeType.Easel, SkillType.Fabrication)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 1)
-                .Component("lth_ruined", 1);
+                .Component("lth_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 33, frameQualityPercent: 34, shellQualityPercent: 28, wearRate: 3);
 
             // Bench
             _builder.Create(RecipeType.Bench, SkillType.Fabrication)
@@ -49,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 1)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .FabricatorParameters(frameSizePercent: 46, shellSizePercent: 38, frameQualityPercent: 42, shellQualityPercent: 41, wearRate: 3);
 
             // Candle
             _builder.Create(RecipeType.Candle, SkillType.Fabrication)
@@ -59,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 2)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 23, shellSizePercent: 33, frameQualityPercent: 15, shellQualityPercent: 37, wearRate: 4);
 
             // Campfire
             _builder.Create(RecipeType.Campfire, SkillType.Fabrication)
@@ -69,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 1)
-                .Component("wood", 1);
+                .Component("wood", 1)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 25, frameQualityPercent: 20, shellQualityPercent: 39, wearRate: 5);
 
             // Carpet
             _builder.Create(RecipeType.Carpet, SkillType.Fabrication)
@@ -79,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 2)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 23, shellSizePercent: 58, frameQualityPercent: 20, shellQualityPercent: 62, wearRate: 4);
 
             // Banner, Wall, Lizard
             _builder.Create(RecipeType.BannerWallLizard, SkillType.Fabrication)
@@ -89,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 22, frameQualityPercent: 35, shellQualityPercent: 21, wearRate: 4);
 
             // Weapon Rack
             _builder.Create(RecipeType.WeaponRack, SkillType.Fabrication)
@@ -99,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 29, frameQualityPercent: 30, shellQualityPercent: 29, wearRate: 3);
 
             // Table, Plastic (Large)
             _builder.Create(RecipeType.TablePlasticLarge, SkillType.Fabrication)
@@ -109,7 +117,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
-                .Component("wood", 2);
+                .Component("wood", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 44, frameQualityPercent: 39, shellQualityPercent: 43, wearRate: 2);
 
             // Cot
             _builder.Create(RecipeType.Cot, SkillType.Fabrication)
@@ -119,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 2)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 57, shellSizePercent: 25, frameQualityPercent: 55, shellQualityPercent: 21, wearRate: 4);
 
             // Keg
             _builder.Create(RecipeType.Keg, SkillType.Fabrication)
@@ -129,7 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 35, frameQualityPercent: 38, shellQualityPercent: 31, wearRate: 3);
 
             // Chair, Wood, Small
             _builder.Create(RecipeType.ChairWoodSmall, SkillType.Fabrication)
@@ -139,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 35, frameQualityPercent: 44, shellQualityPercent: 37, wearRate: 3);
 
             // Rope Coil
             _builder.Create(RecipeType.RopeCoil, SkillType.Fabrication)
@@ -149,7 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
-                .Component("lth_ruined", 1);
+                .Component("lth_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 38, frameQualityPercent: 36, shellQualityPercent: 34, wearRate: 3);
 
             // Throw Rug
             _builder.Create(RecipeType.ThrowRug, SkillType.Fabrication)
@@ -159,7 +172,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 3)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 63, frameQualityPercent: 26, shellQualityPercent: 57, wearRate: 2);
 
             // Chair, Wood
             _builder.Create(RecipeType.ChairWood, SkillType.Fabrication)
@@ -169,7 +183,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 42, frameQualityPercent: 42, shellQualityPercent: 38, wearRate: 4);
 
             // Stuffed Toy, Bantha
             _builder.Create(RecipeType.StuffedToyBantha, SkillType.Fabrication)
@@ -179,7 +194,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
-                .Component("lth_ruined", 1);
+                .Component("lth_ruined", 1)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 35, frameQualityPercent: 31, shellQualityPercent: 37, wearRate: 4);
 
             // Cushions
             _builder.Create(RecipeType.Cushions, SkillType.Fabrication)
@@ -189,7 +205,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 37, frameQualityPercent: 37, shellQualityPercent: 30, wearRate: 2);
 
             // Table, Wood
             _builder.Create(RecipeType.TableWood, SkillType.Fabrication)
@@ -199,7 +216,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 41, frameQualityPercent: 35, shellQualityPercent: 43, wearRate: 3);
 
             // Bench, Wood, Small
             _builder.Create(RecipeType.BenchWoodSmall, SkillType.Fabrication)
@@ -209,7 +227,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 48, shellSizePercent: 35, frameQualityPercent: 41, shellQualityPercent: 40, wearRate: 3);
 
             // Table, Darkwood
             _builder.Create(RecipeType.TableDarkwood, SkillType.Fabrication)
@@ -219,7 +238,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 44, frameQualityPercent: 37, shellQualityPercent: 48, wearRate: 5);
 
             // Table, Wood, With Fish
             _builder.Create(RecipeType.TableWoodWithFish, SkillType.Fabrication)
@@ -229,7 +249,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 42, frameQualityPercent: 35, shellQualityPercent: 50, wearRate: 4);
 
             // Hand Chair
             _builder.Create(RecipeType.HandChair, SkillType.Fabrication)
@@ -239,7 +260,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 4)
-                .Component("wood", 2);
+                .Component("wood", 2)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 38, frameQualityPercent: 49, shellQualityPercent: 36, wearRate: 5);
 
             // Footstool
             _builder.Create(RecipeType.Footstool, SkillType.Fabrication)
@@ -249,7 +271,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 36, frameQualityPercent: 45, shellQualityPercent: 35, wearRate: 3);
 
             // Ornament, Solar System
             _builder.Create(RecipeType.OrnamentSolarSystem, SkillType.Fabrication)
@@ -259,7 +282,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 4)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 33, frameQualityPercent: 31, shellQualityPercent: 31, wearRate: 3);
 
             // Bench, Elegant, Grey
             _builder.Create(RecipeType.BenchElegantGrey, SkillType.Fabrication)
@@ -269,7 +293,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 38, frameQualityPercent: 43, shellQualityPercent: 42, wearRate: 3);
 
             // Pedestal
             _builder.Create(RecipeType.Pedestal, SkillType.Fabrication)
@@ -279,7 +304,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 55, frameQualityPercent: 24, shellQualityPercent: 61, wearRate: 5);
 
             // Tome
             _builder.Create(RecipeType.Tome, SkillType.Fabrication)
@@ -289,7 +315,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 4)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 20, frameQualityPercent: 35, shellQualityPercent: 23, wearRate: 2);
 
             // Potted Plant
             _builder.Create(RecipeType.PottedPlant, SkillType.Fabrication)
@@ -299,7 +326,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 22, frameQualityPercent: 26, shellQualityPercent: 24, wearRate: 3);
 
             // Fridge, Worn
             _builder.Create(RecipeType.FridgeWorn, SkillType.Fabrication)
@@ -309,7 +337,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 4)
-                .Component("elec_ruined", 2);
+                .Component("elec_ruined", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 27, frameQualityPercent: 23, shellQualityPercent: 27, wearRate: 3);
 
             // Table, Coffee, Shelf
             _builder.Create(RecipeType.TableCoffeeShelf, SkillType.Fabrication)
@@ -319,7 +348,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 4)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 41, frameQualityPercent: 41, shellQualityPercent: 40, wearRate: 3);
 
             // Net
             _builder.Create(RecipeType.Net, SkillType.Fabrication)
@@ -329,7 +359,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 5)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 24, frameQualityPercent: 29, shellQualityPercent: 29, wearRate: 4);
 
             // Gong
             _builder.Create(RecipeType.Gong, SkillType.Fabrication)
@@ -339,7 +370,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 5)
-                .Component("wood", 2);
+                .Component("wood", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 27, frameQualityPercent: 30, shellQualityPercent: 22, wearRate: 5);
 
             // Chair, Open Frame (Brown)
             _builder.Create(RecipeType.ChairOpenFrameBrown, SkillType.Fabrication)
@@ -349,7 +381,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 5)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 38, frameQualityPercent: 44, shellQualityPercent: 41, wearRate: 2);
 
             // Toilet, White /w Cistern
             _builder.Create(RecipeType.ToiletWhiteWithCistern, SkillType.Fabrication)
@@ -359,7 +392,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 5)
-                .Component("wood", 2);
+                .Component("wood", 2)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 27, frameQualityPercent: 25, shellQualityPercent: 25, wearRate: 3);
 
             // Table, Round, Oak
             _builder.Create(RecipeType.TableRoundOak, SkillType.Fabrication)
@@ -369,7 +403,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 2)
-                .Component("wood", 4);
+                .Component("wood", 4)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 46, frameQualityPercent: 39, shellQualityPercent: 43, wearRate: 3);
 
             // Umbrella, Blue
             _builder.Create(RecipeType.UmbrellaBlue, SkillType.Fabrication)
@@ -379,7 +414,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("lth_ruined", 4);
+                .Component("lth_ruined", 4)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 32, frameQualityPercent: 32, shellQualityPercent: 30, wearRate: 4);
 
             // Umbrella, Red
             _builder.Create(RecipeType.UmbrellaRed, SkillType.Fabrication)
@@ -389,7 +425,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("lth_ruined", 4);
+                .Component("lth_ruined", 4)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 30, frameQualityPercent: 33, shellQualityPercent: 36, wearRate: 3);
 
             // Trash Can
             _builder.Create(RecipeType.TrashCan, SkillType.Fabrication)
@@ -400,7 +437,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 4)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 33, frameQualityPercent: 30, shellQualityPercent: 35, wearRate: 5);
 
             // Doorway, Metal
             _builder.Create(RecipeType.DoorwayMetal, SkillType.Fabrication)
@@ -410,7 +448,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 5)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 44, shellSizePercent: 33, frameQualityPercent: 42, shellQualityPercent: 28, wearRate: 3);
 
             // Bird Cage
             _builder.Create(RecipeType.BirdCage, SkillType.Fabrication)
@@ -420,7 +459,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 5)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 28, frameQualityPercent: 27, shellQualityPercent: 21, wearRate: 5);
 
             // Chair, Pedestal /w Arms
             _builder.Create(RecipeType.ChairPedestalWithArms, SkillType.Fabrication)
@@ -430,7 +470,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 5)
-                .Component("ref_veldite", 3);
+                .Component("ref_veldite", 3)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 38, frameQualityPercent: 42, shellQualityPercent: 38, wearRate: 5);
 
             // Cot /w Table
             _builder.Create(RecipeType.CotWithTable, SkillType.Fabrication)
@@ -440,7 +481,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 5)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 51, shellSizePercent: 34, frameQualityPercent: 57, shellQualityPercent: 20, wearRate: 4);
 
             // Pile of Cushions (White)
             _builder.Create(RecipeType.PileOfCushionsWhite, SkillType.Fabrication)
@@ -450,7 +492,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_flawed", 3)
-                .Component("fiberp_flawed", 5);
+                .Component("fiberp_flawed", 5)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 30, frameQualityPercent: 39, shellQualityPercent: 30, wearRate: 3);
 
             // Lamp, Bars
             _builder.Create(RecipeType.LampBars, SkillType.Fabrication)
@@ -460,7 +503,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 5)
-                .Component("wood", 5);
+                .Component("wood", 5)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 26, frameQualityPercent: 17, shellQualityPercent: 39, wearRate: 5);
 
             // Screen, Closed
             _builder.Create(RecipeType.ScreenClosed, SkillType.Fabrication)
@@ -471,7 +515,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("lth_ruined", 5);
+                .Component("lth_ruined", 5)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 23, frameQualityPercent: 34, shellQualityPercent: 28, wearRate: 2);
 
             // Screen, Open
             _builder.Create(RecipeType.ScreenOpen, SkillType.Fabrication)
@@ -482,7 +527,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 4)
-                .Component("lth_ruined", 5);
+                .Component("lth_ruined", 5)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 20, frameQualityPercent: 34, shellQualityPercent: 29, wearRate: 3);
 
             // Torch Bracket
             _builder.Create(RecipeType.TorchBracket, SkillType.Fabrication)
@@ -492,7 +538,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 6)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 15, shellSizePercent: 34, frameQualityPercent: 15, shellQualityPercent: 30, wearRate: 5);
 
             // Obelisk, Small
             _builder.Create(RecipeType.ObeliskSmall, SkillType.Fabrication)
@@ -502,7 +549,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 6)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 28, frameQualityPercent: 27, shellQualityPercent: 25, wearRate: 4);
 
             // Table, Wood, Large
             _builder.Create(RecipeType.TableWoodLarge, SkillType.Fabrication)
@@ -512,7 +560,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 6)
-                .Component("ref_veldite", 3);
+                .Component("ref_veldite", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 47, frameQualityPercent: 39, shellQualityPercent: 40, wearRate: 4);
 
             // Space Suit (Tan)
             _builder.Create(RecipeType.SpaceSuitTan, SkillType.Fabrication)
@@ -522,7 +571,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 6)
-                .Component("wood", 3);
+                .Component("wood", 3)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 28, frameQualityPercent: 29, shellQualityPercent: 33, wearRate: 3);
 
             // Chair, Desk (Light Gray)
             _builder.Create(RecipeType.ChairDeskBlackDarkGrey, SkillType.Fabrication)
@@ -533,7 +583,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 5)
-                .Component("fiberp_ruined", 5);
+                .Component("fiberp_ruined", 5)
+                .FabricatorParameters(frameSizePercent: 45, shellSizePercent: 36, frameQualityPercent: 44, shellQualityPercent: 36, wearRate: 3);
 
             // Lamp, Bars (Dark)
             _builder.Create(RecipeType.LampBarsDark, SkillType.Fabrication)
@@ -544,7 +595,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_veldite", 5)
-                .Component("wood", 5);
+                .Component("wood", 5)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 29, frameQualityPercent: 16, shellQualityPercent: 30, wearRate: 3);
 
             // DNA Extractor I
             _builder.Create(RecipeType.DNAExtractor1, SkillType.Fabrication)
@@ -554,7 +606,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_tilarium", 3)
-                .Component("elec_ruined", 2);
+                .Component("elec_ruined", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 25, frameQualityPercent: 25, shellQualityPercent: 23, wearRate: 3);
         }
 
         private void Tier2()
@@ -567,7 +620,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 1)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 27, frameQualityPercent: 32, shellQualityPercent: 20, wearRate: 5);
 
             // Birdbath
             _builder.Create(RecipeType.Birdbath, SkillType.Fabrication)
@@ -577,7 +631,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 1)
-                .Component("lth_flawed", 1);
+                .Component("lth_flawed", 1)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 25, frameQualityPercent: 35, shellQualityPercent: 29, wearRate: 4);
 
             // Bench, Wood
             _builder.Create(RecipeType.BenchWood, SkillType.Fabrication)
@@ -587,7 +642,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 1)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 36, frameQualityPercent: 44, shellQualityPercent: 40, wearRate: 6);
 
             // Shower, White
             _builder.Create(RecipeType.ShowerWhite, SkillType.Fabrication)
@@ -597,7 +653,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 36, frameQualityPercent: 29, shellQualityPercent: 38, wearRate: 5);
 
             // Shower, Floor Basin
             _builder.Create(RecipeType.ShowerFloorBasin, SkillType.Fabrication)
@@ -607,7 +664,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 3)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 60, frameQualityPercent: 26, shellQualityPercent: 57, wearRate: 6);
 
             // Ladder, Dark
             _builder.Create(RecipeType.LadderDark, SkillType.Fabrication)
@@ -617,7 +675,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 30, frameQualityPercent: 32, shellQualityPercent: 22, wearRate: 5);
 
             // Pillar, Wood, Dark
             _builder.Create(RecipeType.PillarWoodDark, SkillType.Fabrication)
@@ -627,7 +686,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 53, frameQualityPercent: 20, shellQualityPercent: 62, wearRate: 5);
 
             // Statue, Twi'lek
             _builder.Create(RecipeType.StatueTwilek, SkillType.Fabrication)
@@ -637,7 +697,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 2)
-                .Component("lth_flawed", 1);
+                .Component("lth_flawed", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 52, frameQualityPercent: 21, shellQualityPercent: 63, wearRate: 5);
 
             // Wooden Wall, Planks (Small)
             _builder.Create(RecipeType.MetalWallSinglePipes, SkillType.Fabrication)
@@ -647,7 +708,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("fiberp_flawed", 1);
+                .Component("fiberp_flawed", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 50, frameQualityPercent: 25, shellQualityPercent: 57, wearRate: 3);
 
             // Bed, Low (Blue)
             _builder.Create(RecipeType.BedLowBlue, SkillType.Fabrication)
@@ -657,7 +719,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("lth_flawed", 2);
+                .Component("lth_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 57, shellSizePercent: 25, frameQualityPercent: 64, shellQualityPercent: 21, wearRate: 5);
 
             // Bed, Low (Red)
             _builder.Create(RecipeType.BedLowRed, SkillType.Fabrication)
@@ -667,7 +730,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("lth_flawed", 2);
+                .Component("lth_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 58, shellSizePercent: 26, frameQualityPercent: 57, shellQualityPercent: 24, wearRate: 4);
 
             // Pile Of Cushions, Square
             _builder.Create(RecipeType.PileOfCushionsSquare, SkillType.Fabrication)
@@ -677,7 +741,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 1)
-                .Component("lth_flawed", 2);
+                .Component("lth_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 36, frameQualityPercent: 38, shellQualityPercent: 31, wearRate: 3);
 
             // Window
             _builder.Create(RecipeType.Window, SkillType.Fabrication)
@@ -687,7 +752,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 26, frameQualityPercent: 31, shellQualityPercent: 28, wearRate: 5);
 
             // Pedestal, Evil
             _builder.Create(RecipeType.PedestalEvil, SkillType.Fabrication)
@@ -697,7 +763,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 2)
-                .Component("lth_flawed", 1);
+                .Component("lth_flawed", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 50, frameQualityPercent: 24, shellQualityPercent: 59, wearRate: 4);
 
             // Cabinet, Curved (Grey/White)
             _builder.Create(RecipeType.CabinetCurvedGreyWhite, SkillType.Fabrication)
@@ -707,7 +774,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 2)
-                .Component("lth_flawed", 1);
+                .Component("lth_flawed", 1)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 21, frameQualityPercent: 31, shellQualityPercent: 24, wearRate: 5);
 
             // Skeleton, Medical Display
             _builder.Create(RecipeType.SkeletonMedicalDisplay, SkillType.Fabrication)
@@ -717,7 +785,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 2)
-                .Component("lth_flawed", 1);
+                .Component("lth_flawed", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 24, frameQualityPercent: 33, shellQualityPercent: 28, wearRate: 5);
 
             // Oven
             _builder.Create(RecipeType.Oven, SkillType.Fabrication)
@@ -727,7 +796,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 2)
-                .Component("elec_flawed", 4);
+                .Component("elec_flawed", 4)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 20, frameQualityPercent: 24, shellQualityPercent: 29, wearRate: 5);
 
             // Bunk bed (Metal) Grey
             _builder.Create(RecipeType.BunkBedMetalGrey, SkillType.Fabrication)
@@ -737,7 +807,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 2)
-                .Component("lth_flawed", 4);
+                .Component("lth_flawed", 4)
+                .FabricatorParameters(frameSizePercent: 51, shellSizePercent: 28, frameQualityPercent: 64, shellQualityPercent: 20, wearRate: 4);
 
             // Chair Plinth
             _builder.Create(RecipeType.ChairPlinth, SkillType.Fabrication)
@@ -747,7 +818,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 36, frameQualityPercent: 40, shellQualityPercent: 44, wearRate: 5);
 
             // Brazier, Round
             _builder.Create(RecipeType.BrazierRound, SkillType.Fabrication)
@@ -757,7 +829,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 3)
-                .Component("lth_flawed", 2);
+                .Component("lth_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 23, shellSizePercent: 27, frameQualityPercent: 15, shellQualityPercent: 33, wearRate: 4);
 
             // Vase, Tall
             _builder.Create(RecipeType.VaseTall, SkillType.Fabrication)
@@ -767,7 +840,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 3)
-                .Component("fine_wood", 2);
+                .Component("fine_wood", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 31, frameQualityPercent: 30, shellQualityPercent: 29, wearRate: 4);
 
             // Bed, High Back (Black/Grey)
             _builder.Create(RecipeType.BedHighBackBlackGrey, SkillType.Fabrication)
@@ -777,7 +851,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 3)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .FabricatorParameters(frameSizePercent: 50, shellSizePercent: 35, frameQualityPercent: 57, shellQualityPercent: 21, wearRate: 4);
 
             // Dining Chair - Grey
             _builder.Create(RecipeType.ChairDiningGrey, SkillType.Fabrication)
@@ -787,7 +862,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 36, frameQualityPercent: 46, shellQualityPercent: 39, wearRate: 4);
 
             // Dining Chair, Orange
             _builder.Create(RecipeType.ChairDiningOrange, SkillType.Fabrication)
@@ -797,7 +873,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 42, frameQualityPercent: 44, shellQualityPercent: 38, wearRate: 6);
 
             // Mat, Small Tatami
             _builder.Create(RecipeType.MatSmallTatami, SkillType.Fabrication)
@@ -807,7 +884,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 56, frameQualityPercent: 26, shellQualityPercent: 56, wearRate: 5);
 
             // Brazier, Stone
             _builder.Create(RecipeType.BrazierStone, SkillType.Fabrication)
@@ -817,7 +895,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 3)
-                .Component("fine_wood", 2);
+                .Component("fine_wood", 2)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 59, frameQualityPercent: 21, shellQualityPercent: 62, wearRate: 5);
 
             // Ottoman
             _builder.Create(RecipeType.Ottoman, SkillType.Fabrication)
@@ -827,7 +906,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 3)
-                .Component("lth_flawed", 2);
+                .Component("lth_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 33, frameQualityPercent: 30, shellQualityPercent: 32, wearRate: 4);
 
             // Bed, Side Table
             _builder.Create(RecipeType.BedSideTable, SkillType.Fabrication)
@@ -837,7 +917,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 3)
-                .Component("lth_flawed", 2);
+                .Component("lth_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 55, shellSizePercent: 30, frameQualityPercent: 55, shellQualityPercent: 29, wearRate: 5);
 
             // Rug, Classic (Light Brown)
             _builder.Create(RecipeType.RugClassicLightBrown, SkillType.Fabrication)
@@ -847,7 +928,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 2)
-                .Component("lth_flawed", 3);
+                .Component("lth_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 56, frameQualityPercent: 20, shellQualityPercent: 64, wearRate: 5);
 
             // Metal Wall, Wide, Pipes
             _builder.Create(RecipeType.MetalWallWidePipes, SkillType.Fabrication)
@@ -857,7 +939,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 47, frameQualityPercent: 27, shellQualityPercent: 52, wearRate: 6);
 
             // Chair, Wooden Padded
             _builder.Create(RecipeType.ChairWoodenPadded, SkillType.Fabrication)
@@ -867,7 +950,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 3)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 37, frameQualityPercent: 43, shellQualityPercent: 36, wearRate: 4);
 
             // Mat, Medium Tatami
             _builder.Create(RecipeType.MatMediumTatami, SkillType.Fabrication)
@@ -878,7 +962,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 3)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 24, shellSizePercent: 55, frameQualityPercent: 27, shellQualityPercent: 58, wearRate: 5);
 
             // Statue, Guardian
             _builder.Create(RecipeType.StatueGuardian, SkillType.Fabrication)
@@ -888,7 +973,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 4)
-                .Component("fine_wood", 2);
+                .Component("fine_wood", 2)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 51, frameQualityPercent: 21, shellQualityPercent: 62, wearRate: 6);
 
             // Lamp Post
             _builder.Create(RecipeType.LampPost, SkillType.Fabrication)
@@ -898,7 +984,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 27, frameQualityPercent: 17, shellQualityPercent: 32, wearRate: 5);
 
             // Bed, Low
             _builder.Create(RecipeType.BedLow, SkillType.Fabrication)
@@ -908,7 +995,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 53, shellSizePercent: 27, frameQualityPercent: 63, shellQualityPercent: 21, wearRate: 4);
 
             // Fridge, Dark
             _builder.Create(RecipeType.FridgeDark, SkillType.Fabrication)
@@ -918,7 +1006,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 4)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 30, frameQualityPercent: 16, shellQualityPercent: 27, wearRate: 4);
 
             // Couch, Leather Panels (Grey)
             _builder.Create(RecipeType.CouchLeatherPanelsGrey, SkillType.Fabrication)
@@ -928,7 +1017,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("lth_flawed", 6);
+                .Component("lth_flawed", 6)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 40, frameQualityPercent: 43, shellQualityPercent: 38, wearRate: 5);
 
             // Flaming Statue
             _builder.Create(RecipeType.FlamingStatue, SkillType.Fabrication)
@@ -938,7 +1028,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 4)
-                .Component("fine_wood", 2);
+                .Component("fine_wood", 2)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 53, frameQualityPercent: 22, shellQualityPercent: 62, wearRate: 6);
 
             // Pillar, Rounded
             _builder.Create(RecipeType.PillarRounded, SkillType.Fabrication)
@@ -948,7 +1039,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 20, frameQualityPercent: 34, shellQualityPercent: 25, wearRate: 5);
 
             // Bed, High Back (Blue)
             _builder.Create(RecipeType.BedHighBackBlue, SkillType.Fabrication)
@@ -958,7 +1050,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .FabricatorParameters(frameSizePercent: 56, shellSizePercent: 28, frameQualityPercent: 62, shellQualityPercent: 20, wearRate: 6);
 
             // Bed, Medical/Exam
             _builder.Create(RecipeType.BedMedicalExam, SkillType.Fabrication)
@@ -968,7 +1061,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .FabricatorParameters(frameSizePercent: 58, shellSizePercent: 25, frameQualityPercent: 57, shellQualityPercent: 25, wearRate: 5);
 
             // Mirror (Small)
             _builder.Create(RecipeType.MirrorSmall, SkillType.Fabrication)
@@ -978,7 +1072,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 29, frameQualityPercent: 36, shellQualityPercent: 36, wearRate: 6);
 
             // Table, Wall, Oval
             _builder.Create(RecipeType.TableWallOval, SkillType.Fabrication)
@@ -988,7 +1083,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 44, frameQualityPercent: 36, shellQualityPercent: 48, wearRate: 5);
 
             // Metal Wall, Door, Pipes
             _builder.Create(RecipeType.MetalWallDoorPipes, SkillType.Fabrication)
@@ -998,7 +1094,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 4)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 45, frameQualityPercent: 26, shellQualityPercent: 57, wearRate: 5);
 
             // Jukebox
             _builder.Create(RecipeType.Jukebox, SkillType.Fabrication)
@@ -1008,7 +1105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("elec_flawed", 5)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 32, frameQualityPercent: 36, shellQualityPercent: 31, wearRate: 5);
 
             // Painting 1
             _builder.Create(RecipeType.Painting1, SkillType.Fabrication)
@@ -1018,7 +1116,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 38, frameQualityPercent: 37, shellQualityPercent: 36, wearRate: 5);
 
             // Banner, Standing
             _builder.Create(RecipeType.BannerStanding, SkillType.Fabrication)
@@ -1028,7 +1127,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 23, frameQualityPercent: 30, shellQualityPercent: 22, wearRate: 5);
 
             // Ottoman, Decorated (Black)
             _builder.Create(RecipeType.OttomanDecoratedBlack, SkillType.Fabrication)
@@ -1038,7 +1138,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 42, frameQualityPercent: 41, shellQualityPercent: 41, wearRate: 4);
 
             // Microwave (Black)
             _builder.Create(RecipeType.MicrowaveBlack, SkillType.Fabrication)
@@ -1048,7 +1149,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 4)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 20, frameQualityPercent: 23, shellQualityPercent: 30, wearRate: 6);
 
             // Chair, Curved Form
             _builder.Create(RecipeType.ChairCurvedForm, SkillType.Fabrication)
@@ -1058,7 +1160,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("ref_scordspar", 4);
+                .Component("ref_scordspar", 4)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 42, frameQualityPercent: 41, shellQualityPercent: 44, wearRate: 5);
 
             // Lantern, Floor Small
             _builder.Create(RecipeType.LanternFloorSmall, SkillType.Fabrication)
@@ -1069,7 +1172,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("fiberp_flawed", 4);
+                .Component("fiberp_flawed", 4)
+                .FabricatorParameters(frameSizePercent: 16, shellSizePercent: 31, frameQualityPercent: 16, shellQualityPercent: 31, wearRate: 5);
 
             // Doorway, Stone
             _builder.Create(RecipeType.DoorwayStone, SkillType.Fabrication)
@@ -1079,7 +1183,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 5)
-                .Component("fine_wood", 3);
+                .Component("fine_wood", 3)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 34, frameQualityPercent: 45, shellQualityPercent: 31, wearRate: 4);
 
             // Pillar, Wood
             _builder.Create(RecipeType.PillarWood, SkillType.Fabrication)
@@ -1089,7 +1194,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 23, frameQualityPercent: 31, shellQualityPercent: 26, wearRate: 4);
 
             // Bookshelf, Pedestal (White)
             _builder.Create(RecipeType.BookshelfPedestalWhite, SkillType.Fabrication)
@@ -1099,7 +1205,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 5)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 37, frameQualityPercent: 37, shellQualityPercent: 28, wearRate: 5);
 
             // Pot, Urn, Grecian
             _builder.Create(RecipeType.PotUrnGrecian, SkillType.Fabrication)
@@ -1109,7 +1216,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 5)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 28, frameQualityPercent: 31, shellQualityPercent: 35, wearRate: 5);
 
             // Chair, Wooden Striped
             _builder.Create(RecipeType.ChairWoodenStriped, SkillType.Fabrication)
@@ -1119,7 +1227,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 3)
-                .Component("ref_scordspar", 5);
+                .Component("ref_scordspar", 5)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 42, frameQualityPercent: 44, shellQualityPercent: 39, wearRate: 5);
 
             // Table, Coffee, Wood /w Glass
             _builder.Create(RecipeType.TableCoffeeWoodwGlass, SkillType.Fabrication)
@@ -1130,7 +1239,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 4)
-                .Component("fine_wood", 4);
+                .Component("fine_wood", 4)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 43, frameQualityPercent: 35, shellQualityPercent: 42, wearRate: 5);
 
             // Bed, Art Deco
             _builder.Create(RecipeType.BedArtDeco, SkillType.Fabrication)
@@ -1141,7 +1251,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 4)
-                .Component("lth_flawed", 4);
+                .Component("lth_flawed", 4)
+                .FabricatorParameters(frameSizePercent: 50, shellSizePercent: 26, frameQualityPercent: 59, shellQualityPercent: 24, wearRate: 5);
 
             // Statue, Monster
             _builder.Create(RecipeType.StatueMonster, SkillType.Fabrication)
@@ -1151,7 +1262,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 6)
-                .Component("lth_flawed", 3);
+                .Component("lth_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 51, frameQualityPercent: 24, shellQualityPercent: 60, wearRate: 6);
 
             // Candelabra
             _builder.Create(RecipeType.Candelabra, SkillType.Fabrication)
@@ -1161,7 +1273,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 6)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 26, frameQualityPercent: 18, shellQualityPercent: 38, wearRate: 3);
 
             // Chair, Crew (Grey)
             _builder.Create(RecipeType.ChairCrewGrey, SkillType.Fabrication)
@@ -1171,7 +1284,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 6)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 44, frameQualityPercent: 46, shellQualityPercent: 39, wearRate: 5);
 
             // Monitor, Wall, Logo Display (Blue)
             _builder.Create(RecipeType.MonitorWallLogoDisplayBlue, SkillType.Fabrication)
@@ -1181,7 +1295,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("elec_flawed", 6)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .FabricatorParameters(frameSizePercent: 20, shellSizePercent: 25, frameQualityPercent: 20, shellQualityPercent: 22, wearRate: 6);
 
             // Bathtub
             _builder.Create(RecipeType.Bathtub, SkillType.Fabrication)
@@ -1191,7 +1306,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_good", 4)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 35, frameQualityPercent: 36, shellQualityPercent: 28, wearRate: 5);
 
             // Wardrobe, Grey, Low
             _builder.Create(RecipeType.WardrobeGreyLow, SkillType.Fabrication)
@@ -1202,7 +1318,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 5)
-                .Component("fine_wood", 4);
+                .Component("fine_wood", 4)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 34, frameQualityPercent: 39, shellQualityPercent: 30, wearRate: 5);
 
             // DNA Extractor II
             _builder.Create(RecipeType.DNAExtractor2, SkillType.Fabrication)
@@ -1212,7 +1329,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_currian", 3)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 17, frameQualityPercent: 15, shellQualityPercent: 15, wearRate: 6);
         }
 
         private void Tier3()
@@ -1226,7 +1344,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 1)
-                .Component("ancient_wood", 1);
+                .Component("ancient_wood", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 21, frameQualityPercent: 32, shellQualityPercent: 23, wearRate: 7);
 
             // Gnomish Contraption
             _builder.Create(RecipeType.GnomishContraption, SkillType.Fabrication)
@@ -1236,7 +1355,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 1)
-                .Component("ancient_wood", 1);
+                .Component("ancient_wood", 1)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 36, frameQualityPercent: 35, shellQualityPercent: 38, wearRate: 7);
 
             // Chair, Pedestal, Padded (Red)
             _builder.Create(RecipeType.ChairPedestalPaddedRed, SkillType.Fabrication)
@@ -1246,7 +1366,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 1)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .FabricatorParameters(frameSizePercent: 44, shellSizePercent: 35, frameQualityPercent: 43, shellQualityPercent: 38, wearRate: 7);
 
             // Pot, Bush, Clipped
             _builder.Create(RecipeType.PotBushClipped, SkillType.Fabrication)
@@ -1256,7 +1377,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 1)
-                .Component("lth_good", 1);
+                .Component("lth_good", 1)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 28, frameQualityPercent: 29, shellQualityPercent: 36, wearRate: 7);
 
             // Coffee Maker
             _builder.Create(RecipeType.CoffeeMaker, SkillType.Fabrication)
@@ -1266,7 +1388,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 2)
-                .Component("elec_flawed", 3);
+                .Component("elec_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 24, shellSizePercent: 27, frameQualityPercent: 23, shellQualityPercent: 23, wearRate: 3);
 
             // Metal Wall, Single, Ribbed
             _builder.Create(RecipeType.MetalWallSingleRibbed, SkillType.Fabrication)
@@ -1276,7 +1399,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 2)
-                .Component("fiberp_good", 1);
+                .Component("fiberp_good", 1)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 52, frameQualityPercent: 27, shellQualityPercent: 50, wearRate: 6);
 
             // Female Statue
             _builder.Create(RecipeType.FemaleStatue, SkillType.Fabrication)
@@ -1286,7 +1410,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 1)
-                .Component("lth_good", 1);
+                .Component("lth_good", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 54, frameQualityPercent: 26, shellQualityPercent: 56, wearRate: 6);
 
             // Vase, Rounded
             _builder.Create(RecipeType.VaseRounded, SkillType.Fabrication)
@@ -1296,7 +1421,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 2)
-                .Component("lth_good", 1);
+                .Component("lth_good", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 30, frameQualityPercent: 32, shellQualityPercent: 33, wearRate: 5);
 
             // Chair, Pedestal, Panel
             _builder.Create(RecipeType.ChairPedestalPanel, SkillType.Fabrication)
@@ -1306,7 +1432,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 2)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .FabricatorParameters(frameSizePercent: 45, shellSizePercent: 38, frameQualityPercent: 46, shellQualityPercent: 37, wearRate: 6);
 
             // Pot, Bush, Flowers
             _builder.Create(RecipeType.PotBushFlowers, SkillType.Fabrication)
@@ -1316,7 +1443,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 2)
-                .Component("lth_good", 1);
+                .Component("lth_good", 1)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 29, frameQualityPercent: 29, shellQualityPercent: 31, wearRate: 6);
 
             // Footlocker, Black
             _builder.Create(RecipeType.FootlockerBlack, SkillType.Fabrication)
@@ -1326,7 +1454,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 1);
+                .Component("ancient_wood", 1)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 37, frameQualityPercent: 34, shellQualityPercent: 38, wearRate: 6);
 
             // Pedestal, Sword
             _builder.Create(RecipeType.PedestalSword, SkillType.Fabrication)
@@ -1336,7 +1465,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 2)
-                .Component("ancient_wood", 1);
+                .Component("ancient_wood", 1)
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 51, frameQualityPercent: 20, shellQualityPercent: 61, wearRate: 8);
 
             // Bed, Wood, Yellow
             _builder.Create(RecipeType.BedWoodYellow, SkillType.Fabrication)
@@ -1346,7 +1476,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 2)
-                .Component("fiberp_good", 1);
+                .Component("fiberp_good", 1)
+                .FabricatorParameters(frameSizePercent: 54, shellSizePercent: 30, frameQualityPercent: 61, shellQualityPercent: 23, wearRate: 8);
 
             // Console, Floor Mounted (Blue Screens)
             _builder.Create(RecipeType.ConsoleFloorMountedBlueScreens, SkillType.Fabrication)
@@ -1356,7 +1487,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_good", 2)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .FabricatorParameters(frameSizePercent: 20, shellSizePercent: 25, frameQualityPercent: 21, shellQualityPercent: 28, wearRate: 5);
 
             // Pot, Bush, Tall
             _builder.Create(RecipeType.PotBushTall, SkillType.Fabrication)
@@ -1366,7 +1498,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 2)
-                .Component("lth_good", 1);
+                .Component("lth_good", 1)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 31, frameQualityPercent: 33, shellQualityPercent: 36, wearRate: 7);
 
             // Store Counter (Stained)
             _builder.Create(RecipeType.StoreCounterStained, SkillType.Fabrication)
@@ -1376,7 +1509,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 44, frameQualityPercent: 38, shellQualityPercent: 43, wearRate: 7);
 
             // Metal Wall, Wide, Ribbed
             _builder.Create(RecipeType.MetalWallWideRibbed, SkillType.Fabrication)
@@ -1386,7 +1520,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 46, frameQualityPercent: 27, shellQualityPercent: 56, wearRate: 7);
 
             // Table, Steel, Stained
             _builder.Create(RecipeType.TableSteelStained, SkillType.Fabrication)
@@ -1396,7 +1531,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 3);
+                .Component("ancient_wood", 3)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 44, frameQualityPercent: 41, shellQualityPercent: 43, wearRate: 7);
 
             // Urn
             _builder.Create(RecipeType.Urn, SkillType.Fabrication)
@@ -1406,7 +1542,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 2)
-                .Component("ancient_wood", 1);
+                .Component("ancient_wood", 1)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 38, frameQualityPercent: 35, shellQualityPercent: 28, wearRate: 7);
 
             // Pillar, Stone
             _builder.Create(RecipeType.PillarStone, SkillType.Fabrication)
@@ -1416,7 +1553,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 2);
+                .Component("ancient_wood", 2)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 20, frameQualityPercent: 30, shellQualityPercent: 29, wearRate: 7);
 
             // Console, Floor Mounted (Green Screens)
             _builder.Create(RecipeType.ConsoleFloorMountedGreenScreens, SkillType.Fabrication)
@@ -1426,7 +1564,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 22, frameQualityPercent: 21, shellQualityPercent: 28, wearRate: 6);
 
             // Pipes, Conduit (with Power Controls)
             _builder.Create(RecipeType.PipesConduitWithPowerControls, SkillType.Fabrication)
@@ -1436,7 +1575,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 30, frameQualityPercent: 20, shellQualityPercent: 27, wearRate: 6);
 
             // Metal Wall, Door, Ribbed
             _builder.Create(RecipeType.MetalWallDoorRibbed, SkillType.Fabrication)
@@ -1446,7 +1586,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 49, frameQualityPercent: 28, shellQualityPercent: 50, wearRate: 5);
 
             // Couch, Cushion, Grey/Red
             _builder.Create(RecipeType.CouchCushionGreyRed, SkillType.Fabrication)
@@ -1456,7 +1597,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_flawed", 2)
-                .Component("lth_flawed", 3);
+                .Component("lth_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 48, shellSizePercent: 35, frameQualityPercent: 42, shellQualityPercent: 38, wearRate: 3);
 
             // Monitor, Overhead
             _builder.Create(RecipeType.MonitorOverhead, SkillType.Fabrication)
@@ -1466,7 +1608,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 2)
-                .Component("elec_good", 4);
+                .Component("elec_good", 4)
+                .FabricatorParameters(frameSizePercent: 20, shellSizePercent: 29, frameQualityPercent: 18, shellQualityPercent: 27, wearRate: 5);
 
             // Cage
             _builder.Create(RecipeType.Cage, SkillType.Fabrication)
@@ -1476,7 +1619,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 2);
+                .Component("ancient_wood", 2)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 27, frameQualityPercent: 32, shellQualityPercent: 24, wearRate: 6);
 
             // Overgrown Pillar
             _builder.Create(RecipeType.OvergrownPillar, SkillType.Fabrication)
@@ -1486,7 +1630,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 2);
+                .Component("ancient_wood", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 26, frameQualityPercent: 29, shellQualityPercent: 25, wearRate: 6);
 
             // Floor-anchored shackles
             _builder.Create(RecipeType.FloorAnchoredShackles, SkillType.Fabrication)
@@ -1496,7 +1641,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("lth_good", 2);
+                .Component("lth_good", 2)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 33, frameQualityPercent: 38, shellQualityPercent: 37, wearRate: 7);
 
             // Pot, Clay Urn
             _builder.Create(RecipeType.PotClayUrn, SkillType.Fabrication)
@@ -1506,7 +1652,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 3)
-                .Component("lth_good", 2);
+                .Component("lth_good", 2)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 30, frameQualityPercent: 32, shellQualityPercent: 38, wearRate: 6);
 
             // Cookpot
             _builder.Create(RecipeType.Cookpot, SkillType.Fabrication)
@@ -1515,7 +1662,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(25)
                 .Quantity(1)
                 .Component("ref_plagionite", 5)
-                .Component("ancient_wood", 3);
+                .Component("ancient_wood", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 28, frameQualityPercent: 34, shellQualityPercent: 32, wearRate: 8);
 
             // Bar White
             _builder.Create(RecipeType.BarWhite, SkillType.Fabrication)
@@ -1525,7 +1673,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 5)
-                .Component("fiberp_good", 3);
+                .Component("fiberp_good", 3)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 45, frameQualityPercent: 35, shellQualityPercent: 40, wearRate: 7);
 
             // Table, Polygon Design
             _builder.Create(RecipeType.TablePolygonDesign, SkillType.Fabrication)
@@ -1535,7 +1684,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_flawed", 2)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 45, frameQualityPercent: 42, shellQualityPercent: 41, wearRate: 6);
 
             // Table, Round, Glass
             _builder.Create(RecipeType.TableRoundGlass, SkillType.Fabrication)
@@ -1545,7 +1695,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_flawed", 4)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 42, frameQualityPercent: 45, shellQualityPercent: 40, wearRate: 6);
 
             // Pillar, Power Control
             _builder.Create(RecipeType.PillarPowerControl, SkillType.Fabrication)
@@ -1555,7 +1706,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 3)
-                .Component("elec_good", 3);
+                .Component("elec_good", 3)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 30, frameQualityPercent: 17, shellQualityPercent: 28, wearRate: 7);
 
             // Statue, Wyvern
             _builder.Create(RecipeType.StatueWyvern, SkillType.Fabrication)
@@ -1565,7 +1717,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("lth_good", 2);
+                .Component("lth_good", 2)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 52, frameQualityPercent: 23, shellQualityPercent: 55, wearRate: 5);
 
             // Bunk Bed
             _builder.Create(RecipeType.BunkBed, SkillType.Fabrication)
@@ -1575,7 +1728,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 4)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .FabricatorParameters(frameSizePercent: 56, shellSizePercent: 27, frameQualityPercent: 61, shellQualityPercent: 23, wearRate: 6);
 
             // Chair, Chancellor
             _builder.Create(RecipeType.ChairChancellor, SkillType.Fabrication)
@@ -1585,7 +1739,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 4)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 41, frameQualityPercent: 45, shellQualityPercent: 35, wearRate: 6);
 
             // Pot, Flower, Daisy
             _builder.Create(RecipeType.PotFlowerDaisy, SkillType.Fabrication)
@@ -1595,7 +1750,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 4)
-                .Component("lth_good", 2);
+                .Component("lth_good", 2)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 35, frameQualityPercent: 33, shellQualityPercent: 30, wearRate: 6);
 
             // Engineering Terminal
             _builder.Create(RecipeType.EngineeringTerminal, SkillType.Fabrication)
@@ -1604,7 +1760,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(26)
                 .Quantity(1)
                 .Component("ref_plagionite", 5)
-                .Component("elec_good", 3);
+                .Component("elec_good", 3)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 33, frameQualityPercent: 38, shellQualityPercent: 33, wearRate: 6);
 
             // Espionage Workbench
             _builder.Create(RecipeType.EspionageWorkbench, SkillType.Fabrication)
@@ -1613,7 +1770,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(30)
                 .Quantity(1)
                 .Component("ref_plagionite", 5)
-                .Component("elec_good", 3);
+                .Component("elec_good", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 33, frameQualityPercent: 35, shellQualityPercent: 34, wearRate: 6);
 
             // Fountain, Dark Grey
             _builder.Create(RecipeType.FountainDarkGrey, SkillType.Fabrication)
@@ -1624,7 +1782,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("fiberp_good", 3);
+                .Component("fiberp_good", 3)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 26, frameQualityPercent: 31, shellQualityPercent: 26, wearRate: 5);
 
             // Canopy, Leather
             _builder.Create(RecipeType.CanopyLeather, SkillType.Fabrication)
@@ -1635,7 +1794,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 4)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 20, frameQualityPercent: 30, shellQualityPercent: 27, wearRate: 7);
 
             // Fountain
             _builder.Create(RecipeType.Fountain, SkillType.Fabrication)
@@ -1645,7 +1805,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 52, frameQualityPercent: 29, shellQualityPercent: 56, wearRate: 5);
 
             // Round Wooden Table
             _builder.Create(RecipeType.RoundWoodenTable, SkillType.Fabrication)
@@ -1655,7 +1816,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 4)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 43, frameQualityPercent: 35, shellQualityPercent: 50, wearRate: 7);
 
             // Desk, Control Board Inlay
             _builder.Create(RecipeType.DeskControlBoardInlay, SkillType.Fabrication)
@@ -1665,7 +1827,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_good", 4)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 40, frameQualityPercent: 38, shellQualityPercent: 47, wearRate: 5);
 
             // Cylinder, Cross Top
             _builder.Create(RecipeType.CylinderCrossTop, SkillType.Fabrication)
@@ -1675,7 +1838,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("ancient_wood", 2);
+                .Component("ancient_wood", 2)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 24, frameQualityPercent: 33, shellQualityPercent: 21, wearRate: 6);
 
             // Fabrication Terminal
             _builder.Create(RecipeType.FabricationTerminal, SkillType.Fabrication)
@@ -1684,7 +1848,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .Component("ref_plagionite", 5)
-                .Component("elec_good", 3);
+                .Component("elec_good", 3)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 34, frameQualityPercent: 31, shellQualityPercent: 28, wearRate: 5);
 
             // Chair, Dining, Gothic
             _builder.Create(RecipeType.ChairDiningGothic, SkillType.Fabrication)
@@ -1694,7 +1859,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("ancient_wood", 3);
+                .Component("ancient_wood", 3)
+                .FabricatorParameters(frameSizePercent: 46, shellSizePercent: 36, frameQualityPercent: 43, shellQualityPercent: 41, wearRate: 8);
 
             // Console, Floor Mounted, Dark
             _builder.Create(RecipeType.ConsoleFloorMountedDark, SkillType.Fabrication)
@@ -1705,7 +1871,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 4)
-                .Component("elec_good", 4);
+                .Component("elec_good", 4)
+                .FabricatorParameters(frameSizePercent: 23, shellSizePercent: 22, frameQualityPercent: 22, shellQualityPercent: 23, wearRate: 5);
 
             // Altar, Stone
             _builder.Create(RecipeType.AltarStone, SkillType.Fabrication)
@@ -1715,7 +1882,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 5)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 56, frameQualityPercent: 21, shellQualityPercent: 59, wearRate: 7);
 
             // Statue of Lathander
             _builder.Create(RecipeType.StatueOfLathander, SkillType.Fabrication)
@@ -1725,7 +1893,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 5)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 27, shellSizePercent: 52, frameQualityPercent: 23, shellQualityPercent: 62, wearRate: 7);
 
             // Statue, Robed Woman
             _builder.Create(RecipeType.StatueRobedWoman, SkillType.Fabrication)
@@ -1735,7 +1904,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 5)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 53, frameQualityPercent: 21, shellQualityPercent: 63, wearRate: 7);
 
             // Pot, Flower, Yellow
             _builder.Create(RecipeType.PotFlowerYellow, SkillType.Fabrication)
@@ -1745,7 +1915,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 5)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 30, frameQualityPercent: 38, shellQualityPercent: 31, wearRate: 6);
 
             // Refinery
             _builder.Create(RecipeType.Refinery, SkillType.Fabrication)
@@ -1754,7 +1925,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(28)
                 .Quantity(1)
                 .Component("ref_plagionite", 5)
-                .Component("elec_good", 3);
+                .Component("elec_good", 3)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 35, frameQualityPercent: 36, shellQualityPercent: 32, wearRate: 5);
 
             // Television, Old Model
             _builder.Create(RecipeType.TelevisionOldModel, SkillType.Fabrication)
@@ -1764,7 +1936,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_flawed", 2)
-                .Component("elec_flawed", 3);
+                .Component("elec_flawed", 3)
+                .FabricatorParameters(frameSizePercent: 24, shellSizePercent: 30, frameQualityPercent: 18, shellQualityPercent: 22, wearRate: 4);
 
             // Carpet, Medallion
             _builder.Create(RecipeType.CarpetMedallion, SkillType.Fabrication)
@@ -1773,7 +1946,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(28)
                 .Quantity(1)
                 .Component("lth_good", 4)
-                .Component("fiberp_good", 4);
+                .Component("fiberp_good", 4)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 61, frameQualityPercent: 23, shellQualityPercent: 58, wearRate: 5);
 
             // Bear Skin Rug
             _builder.Create(RecipeType.BearSkinRug, SkillType.Fabrication)
@@ -1783,7 +1957,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_good", 5)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 63, frameQualityPercent: 21, shellQualityPercent: 59, wearRate: 5);
 
             // Carpet, Fancy
             _builder.Create(RecipeType.CarpetFancy, SkillType.Fabrication)
@@ -1793,7 +1968,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("lth_good", 5)
-                .Component("fiberp_good", 3);
+                .Component("fiberp_good", 3)
+                .FabricatorParameters(frameSizePercent: 27, shellSizePercent: 55, frameQualityPercent: 20, shellQualityPercent: 62, wearRate: 6);
 
             // Desk, Control Center, Large Screen
             _builder.Create(RecipeType.DeskControlCenterLargeScreen, SkillType.Fabrication)
@@ -1803,7 +1979,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_good", 5)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 25, frameQualityPercent: 16, shellQualityPercent: 24, wearRate: 5);
 
             // Pot, Long Leaf 1
             _builder.Create(RecipeType.PotLongLeaf1, SkillType.Fabrication)
@@ -1813,7 +1990,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 5)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 30, frameQualityPercent: 35, shellQualityPercent: 38, wearRate: 8);
 
             // Smithery Bench
             _builder.Create(RecipeType.SmitheryBench, SkillType.Fabrication)
@@ -1822,7 +2000,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(29)
                 .Quantity(1)
                 .Component("ref_plagionite", 5)
-                .Component("elec_good", 3);
+                .Component("elec_good", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 28, frameQualityPercent: 32, shellQualityPercent: 32, wearRate: 5);
 
             // Chair, Pilot
             _builder.Create(RecipeType.ChairPilot, SkillType.Fabrication)
@@ -1833,7 +2012,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 5)
-                .Component("lth_good", 4);
+                .Component("lth_good", 4)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 42, frameQualityPercent: 40, shellQualityPercent: 40, wearRate: 8);
 
             // Altar, Evil
             _builder.Create(RecipeType.AltarEvil, SkillType.Fabrication)
@@ -1843,7 +2023,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 6)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 53, frameQualityPercent: 30, shellQualityPercent: 55, wearRate: 6);
 
             // Illithid Table
             _builder.Create(RecipeType.IllithidTable, SkillType.Fabrication)
@@ -1853,7 +2034,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 6)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 44, frameQualityPercent: 37, shellQualityPercent: 40, wearRate: 7);
 
             // Desk, Control Center, Wide
             _builder.Create(RecipeType.DeskControlCenterWide, SkillType.Fabrication)
@@ -1863,7 +2045,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_good", 6)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 46, frameQualityPercent: 41, shellQualityPercent: 41, wearRate: 7);
 
             // Pot, Plant, Aloa
             _builder.Create(RecipeType.PotPlantAloa, SkillType.Fabrication)
@@ -1873,7 +2056,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 6)
-                .Component("lth_good", 3);
+                .Component("lth_good", 3)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 36, frameQualityPercent: 35, shellQualityPercent: 28, wearRate: 6);
 
             // Fountain, Stone, 4 Spouts
             _builder.Create(RecipeType.FountainStone4Spouts, SkillType.Fabrication)
@@ -1883,7 +2067,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_plagionite", 5)
-                .Component("ancient_wood", 5);
+                .Component("ancient_wood", 5)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 34, frameQualityPercent: 31, shellQualityPercent: 35, wearRate: 7);
 
             // Carpet, Twisted Pattern
             _builder.Create(RecipeType.CarpetTwistedPattern, SkillType.Fabrication)
@@ -1894,7 +2079,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("lth_good", 5)
-                .Component("fiberp_good", 4);
+                .Component("fiberp_good", 4)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 63, frameQualityPercent: 28, shellQualityPercent: 57, wearRate: 4);
 
             // DNA Extractor III
             _builder.Create(RecipeType.DNAExtractor3, SkillType.Fabrication)
@@ -1904,7 +2090,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_idailia", 3)
-                .Component("elec_good", 2);
+                .Component("elec_good", 2)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 25, frameQualityPercent: 22, shellQualityPercent: 22, wearRate: 7);
         }
 
         private void Tier4()
@@ -1917,7 +2104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 1)
-                .Component("aracia_wood", 1);
+                .Component("aracia_wood", 1)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 45, frameQualityPercent: 43, shellQualityPercent: 41, wearRate: 7);
 
             // Bed, Large
             _builder.Create(RecipeType.BedLarge, SkillType.Fabrication)
@@ -1927,7 +2115,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 1)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .FabricatorParameters(frameSizePercent: 56, shellSizePercent: 29, frameQualityPercent: 55, shellQualityPercent: 25, wearRate: 8);
 
             // Desk, Corner /w Terminal
             _builder.Create(RecipeType.DeskCornerWithTerminal, SkillType.Fabrication)
@@ -1937,7 +2126,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 1)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 41, frameQualityPercent: 43, shellQualityPercent: 41, wearRate: 7);
 
             // Specimen Tube (Alien)
             _builder.Create(RecipeType.SpecimenTubeAlien, SkillType.Fabrication)
@@ -1947,7 +2137,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 1)
-                .Component("aracia_wood", 1);
+                .Component("aracia_wood", 1)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 24, frameQualityPercent: 34, shellQualityPercent: 24, wearRate: 8);
 
             // Speaker, Standing
             _builder.Create(RecipeType.SpeakerStanding, SkillType.Fabrication)
@@ -1957,7 +2148,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 1)
-                .Component("elec_imperfect", 1);
+                .Component("elec_imperfect", 1)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 26, frameQualityPercent: 26, shellQualityPercent: 23, wearRate: 8);
 
             // Statue, Wizard
             _builder.Create(RecipeType.StatueWizard, SkillType.Fabrication)
@@ -1967,7 +2159,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 2)
-                .Component("fiberp_imperfect", 1);
+                .Component("fiberp_imperfect", 1)
+                .FabricatorParameters(frameSizePercent: 27, shellSizePercent: 50, frameQualityPercent: 23, shellQualityPercent: 60, wearRate: 8);
 
             // Bench, Large
             _builder.Create(RecipeType.BenchLarge, SkillType.Fabrication)
@@ -1977,7 +2170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .FabricatorParameters(frameSizePercent: 45, shellSizePercent: 36, frameQualityPercent: 43, shellQualityPercent: 40, wearRate: 5);
 
             // Armchair, High Back (Orange)
             _builder.Create(RecipeType.ArmchairHighBackOrange, SkillType.Fabrication)
@@ -1987,7 +2181,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .FabricatorParameters(frameSizePercent: 45, shellSizePercent: 36, frameQualityPercent: 44, shellQualityPercent: 38, wearRate: 6);
 
             // Specimen Tube, Empty
             _builder.Create(RecipeType.SpecimenTubeEmpty, SkillType.Fabrication)
@@ -1997,7 +2192,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 2)
-                .Component("aracia_wood", 1);
+                .Component("aracia_wood", 1)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 20, frameQualityPercent: 32, shellQualityPercent: 25, wearRate: 8);
 
             // Locker, Open Shelves
             _builder.Create(RecipeType.LockerOpenShelves, SkillType.Fabrication)
@@ -2007,7 +2203,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 2)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 22, frameQualityPercent: 30, shellQualityPercent: 29, wearRate: 7);
 
             // Table, Stone, Large
             _builder.Create(RecipeType.TableStoneLarge, SkillType.Fabrication)
@@ -2017,7 +2214,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 2)
-                .Component("aracia_wood", 1);
+                .Component("aracia_wood", 1)
+                .FabricatorParameters(frameSizePercent: 44, shellSizePercent: 41, frameQualityPercent: 35, shellQualityPercent: 50, wearRate: 6);
 
             // Carpet, Round, Blue
             _builder.Create(RecipeType.CarpetRoundBlue, SkillType.Fabrication)
@@ -2027,7 +2225,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_imperfect", 2)
-                .Component("lth_imperfect", 1);
+                .Component("lth_imperfect", 1)
+                .FabricatorParameters(frameSizePercent: 20, shellSizePercent: 65, frameQualityPercent: 29, shellQualityPercent: 55, wearRate: 6);
 
             // Desk, Information/Control Center
             _builder.Create(RecipeType.DeskInformationControlCenter, SkillType.Fabrication)
@@ -2037,7 +2236,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 20, frameQualityPercent: 19, shellQualityPercent: 26, wearRate: 7);
 
             // Specimen Tube, Tall
             _builder.Create(RecipeType.SpecimenTubeTall, SkillType.Fabrication)
@@ -2047,7 +2247,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 23, frameQualityPercent: 34, shellQualityPercent: 26, wearRate: 6);
 
             // Table Dark Glass
             _builder.Create(RecipeType.TableDarkGlass, SkillType.Fabrication)
@@ -2057,7 +2258,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_good", 4)
-                .Component("ref_plagionite", 4);
+                .Component("ref_plagionite", 4)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 42, frameQualityPercent: 36, shellQualityPercent: 42, wearRate: 6);
 
             // Chandelier
             _builder.Create(RecipeType.Chandelier, SkillType.Fabrication)
@@ -2067,7 +2269,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("aracia_wood", 2);
+                .Component("aracia_wood", 2)
+                .FabricatorParameters(frameSizePercent: 17, shellSizePercent: 26, frameQualityPercent: 18, shellQualityPercent: 33, wearRate: 8);
 
             // Foyer, Chandelier
             _builder.Create(RecipeType.FoyerChandelier, SkillType.Fabrication)
@@ -2077,7 +2280,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 5)
-                .Component("fiberp_good", 3);
+                .Component("fiberp_good", 3)
+                .FabricatorParameters(frameSizePercent: 19, shellSizePercent: 33, frameQualityPercent: 15, shellQualityPercent: 30, wearRate: 6);
 
 
             // Chair, Wood, Medium
@@ -2088,7 +2292,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 44, shellSizePercent: 37, frameQualityPercent: 44, shellQualityPercent: 36, wearRate: 7);
 
             // Armchair, High Back (Blue)
             _builder.Create(RecipeType.ArmchairHighBackBlue, SkillType.Fabrication)
@@ -2098,7 +2303,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 44, shellSizePercent: 37, frameQualityPercent: 45, shellQualityPercent: 37, wearRate: 7);
 
             // Table, Coffee, Elegant (White)
             _builder.Create(RecipeType.TableCoffeeElegantWhite, SkillType.Fabrication)
@@ -2108,7 +2314,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 40, frameQualityPercent: 36, shellQualityPercent: 45, wearRate: 6);
 
             // Chair, Large (Grey/Red)
             _builder.Create(RecipeType.ChairLargeGreyRed, SkillType.Fabrication)
@@ -2118,7 +2325,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("lth_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 39, frameQualityPercent: 44, shellQualityPercent: 39, wearRate: 6);
 
             // Statue, Huge
             _builder.Create(RecipeType.StatueHuge, SkillType.Fabrication)
@@ -2128,7 +2336,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("aracia_wood", 2);
+                .Component("aracia_wood", 2)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 54, frameQualityPercent: 20, shellQualityPercent: 57, wearRate: 7);
 
             // Bench, Stone, Dwarven
             _builder.Create(RecipeType.BenchStoneDwarven, SkillType.Fabrication)
@@ -2138,7 +2347,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("aracia_wood", 2);
+                .Component("aracia_wood", 2)
+                .FabricatorParameters(frameSizePercent: 46, shellSizePercent: 36, frameQualityPercent: 48, shellQualityPercent: 36, wearRate: 6);
 
             // Desk, Wall /w Terminal
             _builder.Create(RecipeType.DeskWallTerminal, SkillType.Fabrication)
@@ -2148,7 +2358,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 42, shellSizePercent: 40, frameQualityPercent: 36, shellQualityPercent: 43, wearRate: 8);
 
             // Table, Conference, Centre Cloth
             _builder.Create(RecipeType.TableConferenceCentreCloth, SkillType.Fabrication)
@@ -2158,7 +2369,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 46, frameQualityPercent: 35, shellQualityPercent: 49, wearRate: 5);
 
             // Armchair, Low, Wood Trim (Blue)
             _builder.Create(RecipeType.CouchLeatherBlue, SkillType.Fabrication)
@@ -2168,7 +2380,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 42, frameQualityPercent: 40, shellQualityPercent: 45, wearRate: 7);
 
             // Cabinet, Liquor (Mixed)
             _builder.Create(RecipeType.CabinetLiquorMixed, SkillType.Fabrication)
@@ -2178,7 +2391,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 3)
-                .Component("lth_imperfect", 3);
+                .Component("lth_imperfect", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 24, frameQualityPercent: 25, shellQualityPercent: 30, wearRate: 7);
 
             // Console, Tall w/ Screen (Orange)
             _builder.Create(RecipeType.ConsoleTallwScreenOrange, SkillType.Fabrication)
@@ -2189,7 +2403,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("elec_imperfect", 3);
+                .Component("elec_imperfect", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 25, frameQualityPercent: 17, shellQualityPercent: 22, wearRate: 8);
 
             // Pillar, Flame
             _builder.Create(RecipeType.PillarFlame, SkillType.Fabrication)
@@ -2199,7 +2414,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 4)
-                .Component("aracia_wood", 2);
+                .Component("aracia_wood", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 22, frameQualityPercent: 26, shellQualityPercent: 21, wearRate: 7);
 
             // Drow Table
             _builder.Create(RecipeType.DrowTable, SkillType.Fabrication)
@@ -2209,7 +2425,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 43, frameQualityPercent: 43, shellQualityPercent: 40, wearRate: 7);
 
             // Desk, Wall /w Terminal, Wide
             _builder.Create(RecipeType.DeskWallTerminalWide, SkillType.Fabrication)
@@ -2219,7 +2436,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 40, frameQualityPercent: 44, shellQualityPercent: 41, wearRate: 7);
 
             // Table, Oval, Centre Leg (Dark)
             _builder.Create(RecipeType.TableOvalCentreLegDark, SkillType.Fabrication)
@@ -2229,7 +2447,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 40, frameQualityPercent: 39, shellQualityPercent: 44, wearRate: 6);
 
             // Chaise Lounge - Orange
             _builder.Create(RecipeType.ChaiseLoungeOrange, SkillType.Fabrication)
@@ -2239,7 +2458,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("lth_good", 4)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 37, frameQualityPercent: 43, shellQualityPercent: 41, wearRate: 6);
 
             // Chaise Lounge - Red
             _builder.Create(RecipeType.ChaiseLoungeRed, SkillType.Fabrication)
@@ -2249,7 +2469,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("lth_good", 4)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 40, frameQualityPercent: 41, shellQualityPercent: 36, wearRate: 6);
 
             // Holo Projector, Standing
             _builder.Create(RecipeType.HoloProjectorStanding, SkillType.Fabrication)
@@ -2260,7 +2481,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("elec_imperfect", 3);
+                .Component("elec_imperfect", 3)
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 24, frameQualityPercent: 17, shellQualityPercent: 23, wearRate: 8);
 
             // Metal Wall, Single, Panels
             _builder.Create(RecipeType.MetalWallSinglePanels, SkillType.Fabrication)
@@ -2270,7 +2492,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 2)
-                .Component("fiberp_imperfect", 1);
+                .Component("fiberp_imperfect", 1)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 46, frameQualityPercent: 27, shellQualityPercent: 54, wearRate: 6);
 
             // Mining Well Platform
             _builder.Create(RecipeType.MiningWellPlatform, SkillType.Fabrication)
@@ -2280,7 +2503,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 4)
-                .Component("aracia_wood", 2);
+                .Component("aracia_wood", 2)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 25, frameQualityPercent: 25, shellQualityPercent: 22, wearRate: 6);
 
             // Weapon Rack, Wall Mounted
             _builder.Create(RecipeType.WeaponRackWallMounted, SkillType.Fabrication)
@@ -2290,7 +2514,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 4)
-                .Component("aracia_wood", 2);
+                .Component("aracia_wood", 2)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 36, frameQualityPercent: 32, shellQualityPercent: 36, wearRate: 6);
 
             // Work Station, Droid Repair
             _builder.Create(RecipeType.WorkStationDroidRepair, SkillType.Fabrication)
@@ -2300,7 +2525,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 23, frameQualityPercent: 21, shellQualityPercent: 23, wearRate: 8);
 
             // Table, Oval, Low (Blue)
             _builder.Create(RecipeType.TableOvalLowBlue, SkillType.Fabrication)
@@ -2310,7 +2536,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 44, frameQualityPercent: 41, shellQualityPercent: 43, wearRate: 6);
 
             // Wall Light, Curved
             _builder.Create(RecipeType.WallLightCurved, SkillType.Fabrication)
@@ -2320,7 +2547,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 25, frameQualityPercent: 15, shellQualityPercent: 34, wearRate: 5);
 
             // Metal Wall, Wide, Panels
             _builder.Create(RecipeType.MetalWallWidePanels, SkillType.Fabrication)
@@ -2330,7 +2558,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 2)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 49, frameQualityPercent: 30, shellQualityPercent: 53, wearRate: 7);
 
             // Counter, Lab (Straight)
             _builder.Create(RecipeType.CounterLabStraight, SkillType.Fabrication)
@@ -2340,7 +2569,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 45, frameQualityPercent: 36, shellQualityPercent: 47, wearRate: 8);
 
             // Counter, Lab (Sink)
             _builder.Create(RecipeType.CounterLabSink, SkillType.Fabrication)
@@ -2350,7 +2580,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 4)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 44, frameQualityPercent: 35, shellQualityPercent: 41, wearRate: 8);
 
             // Mining Well
             _builder.Create(RecipeType.MiningWell, SkillType.Fabrication)
@@ -2360,7 +2591,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 25, frameQualityPercent: 33, shellQualityPercent: 21, wearRate: 8);
 
             // Bed, Stone, Yellow
             _builder.Create(RecipeType.BedStoneYellow, SkillType.Fabrication)
@@ -2370,7 +2602,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 55, shellSizePercent: 30, frameQualityPercent: 57, shellQualityPercent: 23, wearRate: 8);
 
             // Footlocker, Modern (Keyed Entry)
             _builder.Create(RecipeType.FootlockerModernKeyedEntry, SkillType.Fabrication)
@@ -2380,7 +2613,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 34, frameQualityPercent: 31, shellQualityPercent: 30, wearRate: 8);
 
             // Table, Round, Low (Blue)
             _builder.Create(RecipeType.TableRoundLowBlue, SkillType.Fabrication)
@@ -2390,7 +2624,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 46, frameQualityPercent: 37, shellQualityPercent: 44, wearRate: 7);
 
             // Wall Light, Octagon
             _builder.Create(RecipeType.WallLightOctagon, SkillType.Fabrication)
@@ -2400,7 +2635,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 25, frameQualityPercent: 20, shellQualityPercent: 33, wearRate: 7);
 
             // Metal Wall, Door, Panels
             _builder.Create(RecipeType.MetalWallDoorPanels, SkillType.Fabrication)
@@ -2410,7 +2646,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 4)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 47, frameQualityPercent: 34, shellQualityPercent: 51, wearRate: 6);
 
             // Metal Wall, Single, Indent
             _builder.Create(RecipeType.MetalWallSingleIndent, SkillType.Fabrication)
@@ -2421,7 +2658,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 46, frameQualityPercent: 31, shellQualityPercent: 54, wearRate: 7);
 
             // Mirror
             _builder.Create(RecipeType.Mirror, SkillType.Fabrication)
@@ -2431,7 +2669,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 36, frameQualityPercent: 33, shellQualityPercent: 30, wearRate: 7);
 
             // Bed, Extra Large
             _builder.Create(RecipeType.BedExtraLarge, SkillType.Fabrication)
@@ -2441,7 +2680,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 50, shellSizePercent: 35, frameQualityPercent: 56, shellQualityPercent: 22, wearRate: 6);
 
             // Fountain, Oval
             _builder.Create(RecipeType.FountainOval, SkillType.Fabrication)
@@ -2451,7 +2691,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 24, frameQualityPercent: 25, shellQualityPercent: 24, wearRate: 7);
 
             // Table, Stone (Blue)
             _builder.Create(RecipeType.TableStoneBlue, SkillType.Fabrication)
@@ -2461,7 +2702,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 45, frameQualityPercent: 36, shellQualityPercent: 43, wearRate: 5);
 
             // Wardrobe, Curved (White)
             _builder.Create(RecipeType.WardrobeCurvedWhite, SkillType.Fabrication)
@@ -2471,7 +2713,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 31, frameQualityPercent: 39, shellQualityPercent: 29, wearRate: 7);
 
             // Chair, Brown Wingback
             _builder.Create(RecipeType.ChairBrownWingback, SkillType.Fabrication)
@@ -2481,7 +2724,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 4)
-                .Component("lth_imperfect", 4);
+                .Component("lth_imperfect", 4)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 44, frameQualityPercent: 42, shellQualityPercent: 39, wearRate: 7);
 
             // Metal Wall, Wide, Indent
             _builder.Create(RecipeType.MetalWallWideIndent, SkillType.Fabrication)
@@ -2492,7 +2736,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 3)
-                .Component("fiberp_imperfect", 3);
+                .Component("fiberp_imperfect", 3)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 52, frameQualityPercent: 26, shellQualityPercent: 50, wearRate: 6);
 
             // Rune Pillar
             _builder.Create(RecipeType.RunePillar, SkillType.Fabrication)
@@ -2502,7 +2747,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 6)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 22, frameQualityPercent: 33, shellQualityPercent: 21, wearRate: 7);
 
             // Statue, Cyric
             _builder.Create(RecipeType.StatueCyric, SkillType.Fabrication)
@@ -2512,7 +2758,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 6)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 51, frameQualityPercent: 21, shellQualityPercent: 56, wearRate: 6);
 
             // Holo Display
             _builder.Create(RecipeType.HoloDisplay, SkillType.Fabrication)
@@ -2522,7 +2769,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 6)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 27, shellSizePercent: 22, frameQualityPercent: 17, shellQualityPercent: 23, wearRate: 7);
 
             // Table, Stone (Brown)
             _builder.Create(RecipeType.TableStoneBrown, SkillType.Fabrication)
@@ -2532,7 +2780,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("aracia_wood", 6)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 41, frameQualityPercent: 35, shellQualityPercent: 44, wearRate: 7);
 
             // Washbasin
             _builder.Create(RecipeType.WashbasinLeverFaucet, SkillType.Fabrication)
@@ -2542,7 +2791,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 6)
-                .Component("aracia_wood", 3);
+                .Component("aracia_wood", 3)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 23, frameQualityPercent: 30, shellQualityPercent: 24, wearRate: 7);
 
             // Metal Wall, Door, Indent
             _builder.Create(RecipeType.MetalWallDoorIndent, SkillType.Fabrication)
@@ -2553,7 +2803,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 4)
-                .Component("fiberp_imperfect", 3);
+                .Component("fiberp_imperfect", 3)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 46, frameQualityPercent: 25, shellQualityPercent: 53, wearRate: 7);
 
             // Pillar, Dish Tower
             _builder.Create(RecipeType.PillarDishTower, SkillType.Fabrication)
@@ -2563,7 +2814,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 4)
-                .Component("elec_imperfect", 5);
+                .Component("elec_imperfect", 5)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 30, frameQualityPercent: 20, shellQualityPercent: 20, wearRate: 8);
 
             // DNA Extractor IV
             _builder.Create(RecipeType.DNAExtractor4, SkillType.Fabrication)
@@ -2573,7 +2825,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_barinium", 3)
-                .Component("elec_imperfect", 2);
+                .Component("elec_imperfect", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 22, frameQualityPercent: 15, shellQualityPercent: 20, wearRate: 7);
         }
 
         private void Tier5()
@@ -2587,7 +2840,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 1)
-                .Component("hyphae_wood", 1);
+                .Component("hyphae_wood", 1)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 51, frameQualityPercent: 26, shellQualityPercent: 56, wearRate: 7);
 
             // Dartboard
             _builder.Create(RecipeType.Dartboard, SkillType.Fabrication)
@@ -2597,7 +2851,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 1)
-                .Component("lth_high", 1);
+                .Component("lth_high", 1)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 32, frameQualityPercent: 35, shellQualityPercent: 31, wearRate: 7);
 
             // Holo Display 2
             _builder.Create(RecipeType.HoloDisplay2, SkillType.Fabrication)
@@ -2607,7 +2862,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 1)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 25, frameQualityPercent: 18, shellQualityPercent: 28, wearRate: 8);
 
             // Statue, Bust on Column
             _builder.Create(RecipeType.StatueBustOnColumn, SkillType.Fabrication)
@@ -2617,7 +2873,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 1)
-                .Component("hyphae_wood", 1);
+                .Component("hyphae_wood", 1)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 52, frameQualityPercent: 20, shellQualityPercent: 59, wearRate: 9);
 
             // Fridge, Stainless
             _builder.Create(RecipeType.FridgeStainless, SkillType.Fabrication)
@@ -2627,7 +2884,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 2)
-                .Component("elec_high", 1);
+                .Component("elec_high", 1)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 26, frameQualityPercent: 16, shellQualityPercent: 22, wearRate: 9);
 
             // Metal Wall, Single - Light, White
             _builder.Create(RecipeType.MetalWallSingleLight, SkillType.Fabrication)
@@ -2637,7 +2895,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 2)
-                .Component("fiberp_high", 1);
+                .Component("fiberp_high", 1)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 47, frameQualityPercent: 30, shellQualityPercent: 52, wearRate: 9);
 
             // Holo Display 1
             _builder.Create(RecipeType.HoloDisplay1, SkillType.Fabrication)
@@ -2648,7 +2907,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 1)
-                .Component("elec_high", 1);
+                .Component("elec_high", 1)
+                .FabricatorParameters(frameSizePercent: 23, shellSizePercent: 21, frameQualityPercent: 25, shellQualityPercent: 21, wearRate: 9);
 
             // Dran Statue
             _builder.Create(RecipeType.DranStatue, SkillType.Fabrication)
@@ -2658,7 +2918,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 2)
-                .Component("hyphae_wood", 1);
+                .Component("hyphae_wood", 1)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 56, frameQualityPercent: 23, shellQualityPercent: 57, wearRate: 7);
 
             // Map
             _builder.Create(RecipeType.Map, SkillType.Fabrication)
@@ -2668,7 +2929,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_high", 2)
-                .Component("lth_high", 1);
+                .Component("lth_high", 1)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 34, frameQualityPercent: 32, shellQualityPercent: 29, wearRate: 9);
 
             // Holo Display 4
             _builder.Create(RecipeType.HoloDisplay4, SkillType.Fabrication)
@@ -2678,7 +2940,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 23, frameQualityPercent: 24, shellQualityPercent: 28, wearRate: 8);
 
             // Statue, Kneeling Man
             _builder.Create(RecipeType.StatueKneelingMan, SkillType.Fabrication)
@@ -2688,7 +2951,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 2)
-                .Component("hyphae_wood", 1);
+                .Component("hyphae_wood", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 53, frameQualityPercent: 23, shellQualityPercent: 60, wearRate: 7);
 
             // Shelves, Warehouse, Full
             _builder.Create(RecipeType.ShelvesWarehouseFull, SkillType.Fabrication)
@@ -2698,7 +2962,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("fiberp_high", 4);
+                .Component("fiberp_high", 4)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 34, frameQualityPercent: 38, shellQualityPercent: 34, wearRate: 9);
 
             // Sea Idol
             _builder.Create(RecipeType.SeaIdol, SkillType.Fabrication)
@@ -2708,7 +2973,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 2)
-                .Component("fiberp_high", 1);
+                .Component("fiberp_high", 1)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 58, frameQualityPercent: 28, shellQualityPercent: 56, wearRate: 9);
 
             // Painting 2
             _builder.Create(RecipeType.Painting2, SkillType.Fabrication)
@@ -2718,7 +2984,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 2)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 37, frameQualityPercent: 36, shellQualityPercent: 30, wearRate: 6);
 
             // Holo Display 5
             _builder.Create(RecipeType.HoloDisplay5, SkillType.Fabrication)
@@ -2728,7 +2995,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 20, frameQualityPercent: 18, shellQualityPercent: 24, wearRate: 7);
 
             // Statue, Robed Figure /w Staff
             _builder.Create(RecipeType.StatueRobedFigureWithStaff, SkillType.Fabrication)
@@ -2738,7 +3006,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 2)
-                .Component("hyphae_wood", 1);
+                .Component("hyphae_wood", 1)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 53, frameQualityPercent: 22, shellQualityPercent: 63, wearRate: 7);
 
             // Bookshelf, Jedi
             _builder.Create(RecipeType.BookshelfJedi, SkillType.Fabrication)
@@ -2748,7 +3017,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("fiberp_high", 4);
+                .Component("fiberp_high", 4)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 22, frameQualityPercent: 31, shellQualityPercent: 20, wearRate: 7);
 
             // Metal Wall, Wide - Light, White
             _builder.Create(RecipeType.MetalWallWideLight, SkillType.Fabrication)
@@ -2758,7 +3028,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 47, frameQualityPercent: 26, shellQualityPercent: 56, wearRate: 8);
 
             // Chair, Stone
             _builder.Create(RecipeType.ChairStone, SkillType.Fabrication)
@@ -2768,7 +3039,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("hyphae_wood", 2);
+                .Component("hyphae_wood", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 35, frameQualityPercent: 44, shellQualityPercent: 41, wearRate: 9);
 
             // Drow Altar
             _builder.Create(RecipeType.DrowAltar, SkillType.Fabrication)
@@ -2778,7 +3050,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("hyphae_wood", 2);
+                .Component("hyphae_wood", 2)
+                .FabricatorParameters(frameSizePercent: 27, shellSizePercent: 57, frameQualityPercent: 22, shellQualityPercent: 56, wearRate: 8);
 
             // Holo Projector 1
             _builder.Create(RecipeType.HoloProjector1, SkillType.Fabrication)
@@ -2788,7 +3061,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 23, shellSizePercent: 28, frameQualityPercent: 21, shellQualityPercent: 26, wearRate: 8);
 
             // Statue, Senator
             _builder.Create(RecipeType.StatueSenator, SkillType.Fabrication)
@@ -2798,7 +3072,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("hyphae_wood", 2);
+                .Component("hyphae_wood", 2)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 60, frameQualityPercent: 20, shellQualityPercent: 61, wearRate: 9);
 
             // Banner, Jedi Order
             _builder.Create(RecipeType.BannerJediOrder, SkillType.Fabrication)
@@ -2810,7 +3085,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
                 .Component("lth_high", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 26, frameQualityPercent: 27, shellQualityPercent: 23, wearRate: 7);
 
             // Banner, Empire
             _builder.Create(RecipeType.BannerEmpire, SkillType.Fabrication)
@@ -2822,7 +3098,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
                 .Component("lth_high", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 30, frameQualityPercent: 27, shellQualityPercent: 25, wearRate: 6);
 
             // Banner, Mandalorian
             _builder.Create(RecipeType.BannerMandalorian, SkillType.Fabrication)
@@ -2834,7 +3111,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
                 .Component("lth_high", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 25, frameQualityPercent: 25, shellQualityPercent: 20, wearRate: 7);
 
             // Banner, Republic
             _builder.Create(RecipeType.BannerRepublic, SkillType.Fabrication)
@@ -2846,7 +3124,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
                 .Component("lth_high", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 26, frameQualityPercent: 33, shellQualityPercent: 20, wearRate: 6);
 
             // Banner, Cartel
             _builder.Create(RecipeType.BannerCartel, SkillType.Fabrication)
@@ -2858,7 +3137,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
                 .Component("lth_high", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 23, frameQualityPercent: 34, shellQualityPercent: 23, wearRate: 6);
 
             // Throne, Wood
             _builder.Create(RecipeType.ThroneWood, SkillType.Fabrication)
@@ -2868,7 +3148,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 44, shellSizePercent: 41, frameQualityPercent: 40, shellQualityPercent: 38, wearRate: 7);
 
             // Illithid Chair
             _builder.Create(RecipeType.IllithidChair, SkillType.Fabrication)
@@ -2878,7 +3159,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 39, frameQualityPercent: 50, shellQualityPercent: 35, wearRate: 7);
 
             // Holo Projector 2
             _builder.Create(RecipeType.HoloProjector2, SkillType.Fabrication)
@@ -2888,7 +3170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 30, frameQualityPercent: 19, shellQualityPercent: 28, wearRate: 7);
 
             // Storage Tank, Hemisphere /w Monitor
             _builder.Create(RecipeType.StorageTankHemisphereWithMonitor, SkillType.Fabrication)
@@ -2898,7 +3181,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 24, shellSizePercent: 30, frameQualityPercent: 19, shellQualityPercent: 25, wearRate: 9);
 
             // Wall Metal, Door Light
             _builder.Create(RecipeType.MetalWallDoorLight, SkillType.Fabrication)
@@ -2908,7 +3192,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("fiberp_high", 3);
+                .Component("fiberp_high", 3)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 47, frameQualityPercent: 27, shellQualityPercent: 52, wearRate: 7);
 
             // Console, Tall w/ Screen (Spiral)
             _builder.Create(RecipeType.ConsoleTwScreenSpiral, SkillType.Fabrication)
@@ -2918,7 +3203,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("elec_high", 3);
+                .Component("elec_high", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 24, frameQualityPercent: 20, shellQualityPercent: 28, wearRate: 8);
 
             // Metal Wall, Single, Grating
             _builder.Create(RecipeType.MetalWallSingleGrating, SkillType.Fabrication)
@@ -2929,7 +3215,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("fiberp_high", 3);
+                .Component("fiberp_high", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 45, frameQualityPercent: 25, shellQualityPercent: 53, wearRate: 9);
 
             // Dance Floor
             _builder.Create(RecipeType.DanceFloor, SkillType.Fabrication)
@@ -2941,7 +3228,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
                 .Component("fiberp_high", 4)
-                .Component("ref_arkoxit", 1);
+                .Component("ref_arkoxit", 1)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 59, frameQualityPercent: 21, shellQualityPercent: 64, wearRate: 7);
 
             // Monster Statue
             _builder.Create(RecipeType.MonsterStatue, SkillType.Fabrication)
@@ -2951,7 +3239,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("hyphae_wood", 2);
+                .Component("hyphae_wood", 2)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 50, frameQualityPercent: 22, shellQualityPercent: 60, wearRate: 9);
 
             // Shrine of Umberlee
             _builder.Create(RecipeType.ShrineOfUmberlee, SkillType.Fabrication)
@@ -2961,7 +3250,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("hyphae_wood", 2);
+                .Component("hyphae_wood", 2)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 50, frameQualityPercent: 26, shellQualityPercent: 57, wearRate: 8);
 
             // Instrument Panel, Large Monitor (Technical Data)
             _builder.Create(RecipeType.InstrumentPanelLargeMonitorTechnicalData, SkillType.Fabrication)
@@ -2971,7 +3261,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 4)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 25, frameQualityPercent: 22, shellQualityPercent: 20, wearRate: 6);
 
             // Storage Tank, Cylinder
             _builder.Create(RecipeType.StorageTankCylinder, SkillType.Fabrication)
@@ -2981,7 +3272,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("elec_high", 4);
+                .Component("elec_high", 4)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 22, frameQualityPercent: 26, shellQualityPercent: 28, wearRate: 9);
 
             // WorkStationMonitors
             _builder.Create(RecipeType.WorkStationMonitors, SkillType.Fabrication)
@@ -2991,7 +3283,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("elec_high", 3);
+                .Component("elec_high", 3)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 40, frameQualityPercent: 39, shellQualityPercent: 40, wearRate: 9);
 
             // Metal Wall, Wide, Grating
             _builder.Create(RecipeType.MetalWallWideGrating, SkillType.Fabrication)
@@ -3002,7 +3295,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("fiberp_high", 3);
+                .Component("fiberp_high", 3)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 53, frameQualityPercent: 25, shellQualityPercent: 59, wearRate: 8);
 
             // Carpet, Fancy, Smaller
             _builder.Create(RecipeType.CarpetFancySmaller, SkillType.Fabrication)
@@ -3012,7 +3306,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("lth_high", 4)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 58, frameQualityPercent: 21, shellQualityPercent: 62, wearRate: 8);
 
             // Drow Chair
             _builder.Create(RecipeType.DrowChair, SkillType.Fabrication)
@@ -3022,7 +3317,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 4)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 44, shellSizePercent: 40, frameQualityPercent: 45, shellQualityPercent: 38, wearRate: 6);
 
             // Kolto Tank (Empty)
             _builder.Create(RecipeType.KoltoTankEmpty, SkillType.Fabrication)
@@ -3032,7 +3328,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 4)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 20, frameQualityPercent: 27, shellQualityPercent: 28, wearRate: 6);
 
             // Chest, Lengthwise
             _builder.Create(RecipeType.ChestLengthwise, SkillType.Fabrication)
@@ -3042,7 +3339,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 4)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 27, frameQualityPercent: 26, shellQualityPercent: 23, wearRate: 7);
 
             // Metal Wall, Door, Grating
             _builder.Create(RecipeType.MetalWallDoorGrating, SkillType.Fabrication)
@@ -3053,7 +3351,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("fiberp_high", 4);
+                .Component("fiberp_high", 4)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 47, frameQualityPercent: 28, shellQualityPercent: 52, wearRate: 7);
 
             // Metal Wall, Single, Hazard
             _builder.Create(RecipeType.MetalWallSingleHazard, SkillType.Fabrication)
@@ -3065,7 +3364,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("hyphae_wood", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 45, frameQualityPercent: 27, shellQualityPercent: 56, wearRate: 9);
 
             // Bench, Wood, Small 2
             _builder.Create(RecipeType.BenchWoodSmall2, SkillType.Fabrication)
@@ -3075,7 +3375,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 47, shellSizePercent: 35, frameQualityPercent: 46, shellQualityPercent: 35, wearRate: 7);
 
             // Drow Bar
             _builder.Create(RecipeType.DrowBar, SkillType.Fabrication)
@@ -3085,7 +3386,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 31, frameQualityPercent: 35, shellQualityPercent: 38, wearRate: 6);
 
             // Lamp, Eggs (Pink)
             _builder.Create(RecipeType.LampEggsPink, SkillType.Fabrication)
@@ -3095,7 +3397,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 18, shellSizePercent: 25, frameQualityPercent: 17, shellQualityPercent: 31, wearRate: 7);
 
             // Television, Big Screen
             _builder.Create(RecipeType.TelevisionBigScreen, SkillType.Fabrication)
@@ -3105,7 +3408,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 4)
-                .Component("elec_high", 6);
+                .Component("elec_high", 6)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 21, frameQualityPercent: 21, shellQualityPercent: 29, wearRate: 7);
 
             // Console, Central Control
             _builder.Create(RecipeType.ConsoleCentralControl, SkillType.Fabrication)
@@ -3115,7 +3419,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
-                .Component("elec_high", 5);
+                .Component("elec_high", 5)
+                .FabricatorParameters(frameSizePercent: 24, shellSizePercent: 30, frameQualityPercent: 19, shellQualityPercent: 26, wearRate: 9);
 
             // Medical, Monitoring Unit
             _builder.Create(RecipeType.MedicalMonitoringUnit, SkillType.Fabrication)
@@ -3127,7 +3432,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("elec_high", 5)
-                .Component("ref_arkoxit", 2);
+                .Component("ref_arkoxit", 2)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 23, frameQualityPercent: 25, shellQualityPercent: 25, wearRate: 9);
 
             // Metal Wall, Wide, Hazard
             _builder.Create(RecipeType.MetalWallWideHazard, SkillType.Fabrication)
@@ -3139,7 +3445,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("hyphae_wood", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 40, shellSizePercent: 45, frameQualityPercent: 31, shellQualityPercent: 52, wearRate: 8);
 
             // Chair, Shell
             _builder.Create(RecipeType.ChairShell, SkillType.Fabrication)
@@ -3149,7 +3456,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 42, frameQualityPercent: 44, shellQualityPercent: 35, wearRate: 8);
 
             // Bench, Wood, Large
             _builder.Create(RecipeType.BenchWoodLarge, SkillType.Fabrication)
@@ -3159,7 +3467,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 43, shellSizePercent: 39, frameQualityPercent: 44, shellQualityPercent: 38, wearRate: 7);
 
             // Lamp, On Poles
             _builder.Create(RecipeType.LampOnPoles, SkillType.Fabrication)
@@ -3169,7 +3478,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 6)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 24, shellSizePercent: 31, frameQualityPercent: 20, shellQualityPercent: 40, wearRate: 6);
 
             // Couch, Blanket Cover, Red
             _builder.Create(RecipeType.CouchBlanketCoverRed, SkillType.Fabrication)
@@ -3179,7 +3489,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 6)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .FabricatorParameters(frameSizePercent: 45, shellSizePercent: 35, frameQualityPercent: 43, shellQualityPercent: 41, wearRate: 7);
 
             // Console, Circular Command
             _builder.Create(RecipeType.ConsoleCircularCommand, SkillType.Fabrication)
@@ -3189,7 +3500,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
-                .Component("elec_high", 5);
+                .Component("elec_high", 5)
+                .FabricatorParameters(frameSizePercent: 27, shellSizePercent: 28, frameQualityPercent: 21, shellQualityPercent: 28, wearRate: 7);
 
             // Holo Projector, Hover
             _builder.Create(RecipeType.HoloProjectorHover, SkillType.Fabrication)
@@ -3201,7 +3513,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("elec_high", 5)
-                .Component("ref_arkoxit", 2);
+                .Component("ref_arkoxit", 2)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 22, frameQualityPercent: 16, shellQualityPercent: 25, wearRate: 9);
 
             // Metal Wall, Door, Hazard
             _builder.Create(RecipeType.MetalWallDoorHazard, SkillType.Fabrication)
@@ -3213,7 +3526,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("hyphae_wood", 5)
-                .Component("fiberp_high", 5);
+                .Component("fiberp_high", 5)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 49, frameQualityPercent: 29, shellQualityPercent: 54, wearRate: 7);
 
             // Storage, Warehouse, Industry
             _builder.Create(RecipeType.StorageWarehouseIndustry, SkillType.Fabrication)
@@ -3225,7 +3539,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("hyphae_wood", 5)
-                .Component("ref_arkoxit", 2);
+                .Component("ref_arkoxit", 2)
+                .FabricatorParameters(frameSizePercent: 54, shellSizePercent: 25, frameQualityPercent: 62, shellQualityPercent: 22, wearRate: 9);
 
             // Couch, Wood, Yellow
             _builder.Create(RecipeType.CouchWoodYellow, SkillType.Fabrication)
@@ -3235,7 +3550,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("hyphae_wood", 6)
-                .Component("lth_high", 3);
+                .Component("lth_high", 3)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 38, frameQualityPercent: 40, shellQualityPercent: 39, wearRate: 7);
 
             // Lantern, Post, Marble
             _builder.Create(RecipeType.LanternPostMarble, SkillType.Fabrication)
@@ -3245,7 +3561,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 6)
-                .Component("hyphae_wood", 3);
+                .Component("hyphae_wood", 3)
+                .FabricatorParameters(frameSizePercent: 15, shellSizePercent: 35, frameQualityPercent: 18, shellQualityPercent: 40, wearRate: 8);
 
             // Locker, Metal Trapezoid
             _builder.Create(RecipeType.LockerMetalTrapezoid, SkillType.Fabrication)
@@ -3255,7 +3572,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 6)
-                .Component("hyphae_wood", 3);
+                .Component("hyphae_wood", 3)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 36, frameQualityPercent: 30, shellQualityPercent: 33, wearRate: 9);
 
             // Storage, Cargo Container
             _builder.Create(RecipeType.StorageCargoContainer, SkillType.Fabrication)
@@ -3265,7 +3583,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 6)
-                .Component("hyphae_wood", 4);
+                .Component("hyphae_wood", 4)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 23, frameQualityPercent: 26, shellQualityPercent: 29, wearRate: 7);
 
             // Console, Corner, Large
             _builder.Create(RecipeType.ConsoleCornerLarge, SkillType.Fabrication)
@@ -3275,7 +3594,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 6)
-                .Component("elec_high", 6);
+                .Component("elec_high", 6)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 28, frameQualityPercent: 15, shellQualityPercent: 22, wearRate: 7);
 
             // Holo Projector, Small Tree
             _builder.Create(RecipeType.HoloProjectorSmallTree, SkillType.Fabrication)
@@ -3286,7 +3606,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 6)
-                .Component("elec_high", 5);
+                .Component("elec_high", 5)
+                .FabricatorParameters(frameSizePercent: 20, shellSizePercent: 22, frameQualityPercent: 22, shellQualityPercent: 30, wearRate: 9);
 
             // Droid Assembly Terminal
             _builder.Create(RecipeType.DroidAssemblyTerminal, SkillType.Fabrication)
@@ -3295,7 +3616,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(50)
                 .Quantity(1)
                 .Component("ref_jasioclase", 5)
-                .Component("elec_imperfect", 3);
+                .Component("elec_imperfect", 3)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 34, frameQualityPercent: 38, shellQualityPercent: 35, wearRate: 8);
 
             // Beast Stables Terminal
             _builder.Create(RecipeType.BeastStablesTerminal, SkillType.Fabrication)
@@ -3304,7 +3626,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(50)
                 .Quantity(1)
                 .Component("ref_jasioclase", 5)
-                .Component("elec_imperfect", 3);
+                .Component("elec_imperfect", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 32, frameQualityPercent: 31, shellQualityPercent: 29, wearRate: 9);
 
             // Incubator
             _builder.Create(RecipeType.Incubator, SkillType.Fabrication)
@@ -3314,7 +3637,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .Component("zinsiam", 6)
                 .Component("elec_imperfect", 6)
-                .Component("diamond", 2);
+                .Component("diamond", 2)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 28, frameQualityPercent: 29, shellQualityPercent: 36, wearRate: 8);
 
             // DNA Extractor V
             _builder.Create(RecipeType.DNAExtractor5, SkillType.Fabrication)
@@ -3324,7 +3648,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_gostian", 3)
-                .Component("elec_high", 2);
+                .Component("elec_high", 2)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 15, frameQualityPercent: 23, shellQualityPercent: 23, wearRate: 7);
 
             // Research Terminal
             _builder.Create(RecipeType.ResearchTerminal, SkillType.Fabrication)
@@ -3334,7 +3659,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .Component("zinsiam", 10)
                 .Component("elec_imperfect", 8)
-                .Component("diamond", 4);
+                .Component("diamond", 4)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 30, frameQualityPercent: 36, shellQualityPercent: 28, wearRate: 7);
 
             // Swoop Bike, Black
             _builder.Create(RecipeType.SwoopBikeBlack, SkillType.Fabrication)
@@ -3351,7 +3677,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_high", 40)
                 .Component("ref_arkoxit", 20)
                 .Component("emerald", 10)
-                .Component("zinsiam", 5);
+                .Component("zinsiam", 5)
+                .FabricatorParameters(frameSizePercent: 39, shellSizePercent: 25, frameQualityPercent: 30, shellQualityPercent: 27, wearRate: 7);
 
             // Swoop Bike, Grey
             _builder.Create(RecipeType.SwoopBikeGrey, SkillType.Fabrication)
@@ -3368,7 +3695,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_high", 40)
                 .Component("ref_arkoxit", 20)
                 .Component("emerald", 10)
-                .Component("zinsiam", 5);
+                .Component("zinsiam", 5)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 20, frameQualityPercent: 34, shellQualityPercent: 27, wearRate: 8);
 
             // Swoop Bike, Red
             _builder.Create(RecipeType.SwoopBikeRed, SkillType.Fabrication)
@@ -3385,7 +3713,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_high", 40)
                 .Component("ref_arkoxit", 20)
                 .Component("emerald", 10)
-                .Component("zinsiam", 5);
+                .Component("zinsiam", 5)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 25, frameQualityPercent: 34, shellQualityPercent: 22, wearRate: 9);
 
             // Swoop Bike, Yellow
             _builder.Create(RecipeType.SwoopBikeYellow, SkillType.Fabrication)
@@ -3402,7 +3731,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_high", 40)
                 .Component("ref_arkoxit", 20)
                 .Component("emerald", 10)
-                .Component("zinsiam", 5);
+                .Component("zinsiam", 5)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 26, frameQualityPercent: 35, shellQualityPercent: 27, wearRate: 9);
 
         }
     }

@@ -750,7 +750,7 @@ public class PlanetaryHoldingTests
     [Test]
     public void Wiring_DockMasterWindowAndSite()
     {
-        ((int)GuiWindowType.PlanetaryHoldings).Should().Be(88);
+        ((int)GuiWindowType.PlanetaryHoldings).Should().Be(104);
         Source(Path.Combine("Feature", "DialogDefinition", "StarportDialog.cs")).Should().Contain("\"Planetary Holdings\"");
         Source(Path.Combine("Feature", "DialogDefinition", "HoldingSiteDialog.cs")).Should().Contain("PlanetaryHoldings.LeaveSite");
         var service = Source(Path.Combine("Service", "PlanetaryHoldings.cs"));

@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -25,6 +26,28 @@ except ImportError:
 
 class MeshyWeaponPartsTests(unittest.TestCase):
     joint={'y':.1,'center_xz':[.01,-.02],'radii_xz':[.022,.027],'depth':.007}
+
+    def test_author_binds_parsed_bytes_to_the_validated_source_snapshot(self):
+        for change_before_parse in (True,False):
+            with self.subTest(change_before_parse=change_before_parse),tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary);repo=root/'repo';repo.mkdir();source=root/'source.glb'
+                reviewed=b'reviewed prepared GLB snapshot';source.write_bytes(reviewed)
+                asset={'_model_type':2,'_source':str(source),'scale':1,'orientation':np.eye(3).tolist(),
+                       'source_grip':[0,0,0],'target_grip':[0,0,0],'sha256':hashlib.sha256(reviewed).hexdigest()}
+                def validated(*args):
+                    if change_before_parse:source.write_bytes(b'changed after validation')
+                def parse_snapshot(data):
+                    self.assertIsInstance(data,bytes);self.assertEqual(reviewed,data)
+                    source.write_bytes(b'changed after snapshot')
+                    raise RuntimeError('Snapshot reached parser')
+                with patch.object(exporter,'load_blender'),patch.object(exporter,'load_manifest',return_value=({'assets':[asset]},None)), \
+                     patch.object(exporter,'validate_manifest',side_effect=validated),patch.object(exporter,'glb_document',side_effect=parse_snapshot) as parser:
+                    if change_before_parse:
+                        with self.assertRaisesRegex(ValueError,'changed after manifest validation'):parts.author(root/'fit.json',root/'out',repo)
+                        parser.assert_not_called()
+                    else:
+                        with self.assertRaisesRegex(RuntimeError,'Snapshot reached parser'):parts.author(root/'fit.json',root/'out',repo)
+                        parser.assert_called_once()
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for the authoring entrypoint')
     def test_author_roundtrip_keeps_empty_slots_and_explicit_partial_assemblies(self):

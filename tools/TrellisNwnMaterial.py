@@ -141,7 +141,9 @@ def trim_dds_mips(data, maximum_size):
         raise ValueError('Expected a power-of-two material budget of at least four')
     if len(data) < 128 or data[:4] != b'DDS ' or struct.unpack_from('<I',data,4)[0] != 124:
         raise ValueError('Expected a complete standard DDS header')
-    height,width=struct.unpack_from('<II',data,12);mips=struct.unpack_from('<I',data,28)[0]
+    height,width=struct.unpack_from('<II',data,12);mips=max(1,struct.unpack_from('<I',data,28)[0])
+    if struct.unpack_from('<I',data,76)[0]!=32 or not struct.unpack_from('<I',data,80)[0]&4:
+        raise ValueError('Expected a 32-byte FourCC pixel-format header')
     block={b'DXT1':8,b'DXT5':16,b'ATI1':8,b'ATI2':16}.get(data[84:88])
     if not block or struct.unpack_from('<I',data,112)[0] or struct.unpack_from('<I',data,24)[0] not in (0,1) or any(n < 1 or n & (n-1) for n in (width,height)):
         raise ValueError('Expected a standard power-of-two 2D BC material map')
@@ -154,7 +156,8 @@ def trim_dds_mips(data, maximum_size):
         raise ValueError('Expected a complete material mip chain')
     removed=next(i for i,(w,h,_) in enumerate(levels) if max(w,h)<=maximum_size)
     skipped=sum(n for _,_,n in levels[:removed]);header=bytearray(data[:128]);w,h,size=levels[removed]
-    struct.pack_into('<III',header,12,h,w,size);struct.pack_into('<I',header,28,mips-removed)
+    if removed:
+        struct.pack_into('<III',header,12,h,w,size);struct.pack_into('<I',header,28,mips-removed)
     return bytes(header)+data[128+skipped:], {'before_size':[width,height],'after_size':[w,h],
                                           'removed_top_mips':removed,'bytes_saved':skipped,
                                           'retained_mip_bytes_unchanged':True}

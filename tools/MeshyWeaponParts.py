@@ -160,7 +160,10 @@ def author(manifest,output,repo):
         if asset['scale']!=1 or asset['orientation']!=identity or any(asset['source_grip']) or any(asset['target_grip']):
             raise ValueError('Apply the reviewed fit with MeshyWeaponExport prepare first')
         joints=asset.get('joint_envelopes',[]);validate_joints(joints)
-        source=Path(asset['_source']);document,binary=e.glb_document(source);e.validate_glb_geometry(document,True)
+        source=Path(asset['_source']);source_bytes=source.read_bytes()
+        if hashlib.sha256(source_bytes).hexdigest()!=asset['sha256']:
+            raise ValueError('Source GLB changed after manifest validation: '+str(source))
+        document,binary=e.glb_document(source_bytes);e.validate_glb_geometry(document,True)
         if any('TANGENT' not in p['attributes'] for m in document['meshes'] for p in m['primitives']):raise ValueError('Explicit prepared source tangents required')
         folder=output/asset['asset'];folder.mkdir();names={i:'source_'+str(i) for i in range(len(document['materials']))}
         basis_path=folder/'source_basis.npz';normals.source_basis(document,binary,asset,names,basis_path)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
@@ -183,6 +184,25 @@ namespace SWLOR.Game.Server.Service.PropertyService
             positions[PropertyLocationType.LastNPCDockPosition] = Copy(planetStarport.Landing);
             positions[PropertyLocationType.LastNPCSpacePosition] = Copy(planetStarport.Orbit);
             return true;
+        }
+
+        /// <summary>
+        /// The planet whose orbit is the given area, or PlanetType.Invalid if it is no planet's orbit.
+        /// </summary>
+        /// <param name="areaResref">The area to look up, such as a ship's saved orbit.</param>
+        /// <param name="planetOrbits">Each planet and the resref of the area its orbit waypoint is in.</param>
+        public static PlanetType FindOrbitPlanet(string areaResref, IEnumerable<(PlanetType Planet, string OrbitAreaResref)> planetOrbits)
+        {
+            if (string.IsNullOrWhiteSpace(areaResref))
+                return PlanetType.Invalid;
+
+            foreach (var (planet, orbitAreaResref) in planetOrbits)
+            {
+                if (string.Equals(orbitAreaResref, areaResref, StringComparison.OrdinalIgnoreCase))
+                    return planet;
+            }
+
+            return PlanetType.Invalid;
         }
 
         private static bool IsKnownPlanet(

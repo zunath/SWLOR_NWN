@@ -1463,6 +1463,16 @@ namespace SWLOR.Game.Server.Service
         private static (PropertyLocation Landing, PropertyLocation Orbit)? GetPlanetStarport(string areaResref)
         {
             var planetType = Planet.GetPlanetType(Area.GetAreaByResref(areaResref));
+
+            // Planet.GetPlanetType leaves space areas unresolved, but a ship's saved orbit still names the planet it
+            // docked at: match it against each planet's orbit waypoint.
+            if (planetType == PlanetType.Invalid)
+            {
+                var orbits = Planet.GetAllPlanets()
+                    .Select(planet => (planet.Key, GetResRef(GetArea(GetWaypointByTag(planet.Value.SpaceOrbitWaypointTag)))));
+                planetType = StarshipDockReturn.FindOrbitPlanet(areaResref, orbits);
+            }
+
             if (planetType == PlanetType.Invalid)
                 return null;
 

@@ -21,7 +21,8 @@ public class StarshipDockReturnTests
 
     private static bool IsShipOnly(string areaResref) => ShipOnlyAreas.Contains(areaResref);
 
-    // The Abandoned Station, Veles and Viscara's orbit all belong to Viscara, as Planet.GetPlanetType resolves them.
+    // The Abandoned Station, Veles and Viscara's orbit all belong to Viscara, as Property.GetPlanetStarport resolves
+    // them (an orbit through its planet's orbit waypoint, ModuleOrbits_ResolveToTheirPlanets).
     private static (PropertyLocation Landing, PropertyLocation Orbit)? ViscaraStarport(string areaResref) =>
         areaResref.StartsWith("zomb_abanstati", StringComparison.Ordinal) || areaResref is Veles or StationOrbit
             ? (At(Veles, 1f), At(StationOrbit, 2f))
@@ -389,6 +390,31 @@ public class StarshipDockReturnTests
         var regularStarports = areas.Where(area => area.Value.WaypointTags.Overlaps(landingTags)).Select(area => area.Key).ToList();
         regularStarports.Should().Contain("velesinterior");
         regularStarports.Should().NotIntersectWith(shipOnly, "docking at a regular starport must record it as the safe dock");
+    }
+
+    [Test]
+    public void ModuleOrbits_ResolveToTheirPlanets()
+    {
+        // A ship's saved orbit is the space area it docked from. Planet.GetPlanetType leaves space areas unresolved, so
+        // the dock return matches the orbit against each planet's orbit waypoint.
+        var root = FindRepositoryRoot();
+        var areas = Directory.EnumerateFiles(Path.Combine(root, "Module", "git"), "*.git.json")
+            .ToDictionary(path => Path.GetFileName(path)[..^".git.json".Length], ReadArea);
+        var planetOrbits = Enum.GetValues<PlanetType>()
+            .Where(planet => planet != PlanetType.Invalid && planet.GetAttribute<PlanetType, PlanetAttribute>().IsActive)
+            .Select(planet => (planet, areas.Single(area => area.Value.WaypointTags.Contains(
+                planet.GetAttribute<PlanetType, PlanetAttribute>().SpaceOrbitWaypointTag)).Key))
+            .ToList();
+
+        StarshipDockReturn.FindOrbitPlanet(StationOrbit, planetOrbits).Should().Be(PlanetType.Viscara);
+        StarshipDockReturn.FindOrbitPlanet(TatooineOrbit, planetOrbits).Should().Be(PlanetType.Tatooine);
+        StarshipDockReturn.FindOrbitPlanet(Veles, planetOrbits).Should().Be(PlanetType.Invalid, "a landing area is no orbit");
+        StarshipDockReturn.FindOrbitPlanet("", planetOrbits).Should().Be(PlanetType.Invalid);
+
+        var property = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Property.cs"));
+        var lookup = property[property.IndexOf("GetPlanetStarport(string areaResref)", StringComparison.Ordinal)..];
+        lookup.IndexOf("StarshipDockReturn.FindOrbitPlanet", StringComparison.Ordinal)
+            .Should().BeLessThan(lookup.IndexOf("Planet.GetPlanetByType", StringComparison.Ordinal), "an orbit resolves before the planet is read");
     }
 
     private static (Dictionary<string, int> Variables, HashSet<string> WaypointTags) ReadArea(string path)

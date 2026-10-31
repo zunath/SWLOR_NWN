@@ -3135,7 +3135,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 60.06716537475586
+          "value": 51.4
         },
         "YOrientation": {
           "type": "float",
@@ -3143,11 +3143,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 96.68232727050781
+          "value": 95.2
         },
         "ZPosition": {
           "type": "float",
-          "value": 3.814697265625e-006
+          "value": 5.0
         },
         "VarTable": {
           "type": "list",

@@ -1615,6 +1615,15 @@ namespace SWLOR.Game.Server.Service
             if (isDroid && ShipToggleRules.GetTargetMode(_shipModules[shipModule.ItemTag].Type) == ShipToggleTargetMode.Locked)
                 target = activator;
 
+            // A support toggle locks onto the friendly ship selected when it is switched on, or else the ship itself, so
+            // the checks below validate the ship that will receive it (an enemy out of range or an asteroid selected
+            // still lets a pilot repair their own ship).
+            if (isToggle && ShipToggleRules.GetTargetMode(shipModuleDetails.Type) == ShipToggleTargetMode.Locked)
+            {
+                var usable = GetIsObjectValid(target) && GetShipStatus(target) != null && !IsShipHostile(activator, target);
+                target = ShipToggleRules.ChooseLockTarget(usable, target, activator);
+            }
+
             // Targeting your own ship uses the one status, so the module's effect and its cost are saved together.
             if (target == activator)
                 targetShipStatus = activatorShipStatus;
@@ -1699,12 +1708,9 @@ namespace SWLOR.Game.Server.Service
                 var cycle = recastSeconds is > 0f ? recastSeconds.Value : (float)ShipToggleRules.LoopSeconds;
                 var lockedTarget = OBJECT_INVALID;
 
-                // Support modules lock onto the target that was selected when they were turned on, or the ship itself.
+                // Support modules keep the target resolved above: the ally selected when they were turned on, or the ship itself.
                 if (targetMode == ShipToggleTargetMode.Locked)
-                {
-                    var usable = GetIsObjectValid(target) && targetShipStatus != null && !IsShipHostile(activator, target);
-                    lockedTarget = ShipToggleRules.ChooseLockTarget(usable, target, activator);
-                }
+                    lockedTarget = target;
 
                 var fireTarget = ShipToggleRules.ChooseTarget(targetMode, target, lockedTarget, activator);
                 var fireTargetStatus = fireTarget == activator

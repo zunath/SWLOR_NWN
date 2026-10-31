@@ -88,6 +88,27 @@ public class SpaceRevampBugListTests
         }
     }
 
+    [Test]
+    public void SupportToggle_ResolvesItsLockTargetBeforeTheTargetChecks()
+    {
+        // A repairer switched on with an enemy out of range or an asteroid selected locks onto the pilot's own ship, so
+        // the type, range and module checks must validate that ship, not the selection.
+        var space = ReadServerSource("Service", "Space.cs");
+        var activation = space.Substring(space.IndexOf("// A support toggle locks onto the friendly ship selected", StringComparison.Ordinal));
+        var resolve = activation.IndexOf("target = ShipToggleRules.ChooseLockTarget(usable, target, activator);", StringComparison.Ordinal);
+        var selfStatus = activation.IndexOf("if (target == activator)", StringComparison.Ordinal);
+        var typeCheck = activation.IndexOf("This module cannot be used on that target type.", StringComparison.Ordinal);
+        var rangeCheck = activation.IndexOf("Target is too far away.", StringComparison.Ordinal);
+        var validation = activation.IndexOf("shipModuleDetails.ModuleValidationAction(activator", StringComparison.Ordinal);
+
+        resolve.Should().BeGreaterThan(0);
+        selfStatus.Should().BeGreaterThan(resolve, "the ship's own status replaces the selection's once the lock falls back to it");
+        typeCheck.Should().BeGreaterThan(selfStatus);
+        rangeCheck.Should().BeGreaterThan(typeCheck);
+        validation.Should().BeGreaterThan(rangeCheck);
+        activation.Should().Contain("lockedTarget = target;", "the toggle keeps the target the checks validated");
+    }
+
     private static string ReadServerSource(params string[] path)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

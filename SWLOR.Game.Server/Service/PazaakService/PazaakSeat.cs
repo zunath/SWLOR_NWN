@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.Service.PazaakService
         public List<PazaakCardType> Hand { get; } = new();
 
         public List<PazaakTableCard> Table { get; } = new();
-        public List<int> MainDeck { get; } = new();
         public bool IsStanding { get; set; }
         public bool HasPlayedSideCardThisTurn { get; set; }
         public int SetsWon { get; set; }

@@ -24,17 +24,19 @@ public class PazaakMatchTests
     }
 
     /// <summary>
-    /// Replaces a seat's table and the cards it draws next (first in the list is drawn first).
+    /// Replaces a seat's table and, when given, the next cards drawn from the shared main deck
+    /// (first in the list is drawn first).
     /// </summary>
     private static void Rig(PazaakMatch match, int seat, int[] table, params int[] nextDraws)
     {
         var target = match.Seats[seat];
         target.Table.Clear();
         target.Table.AddRange(table.Select(x => new PazaakTableCard(x)));
-        target.MainDeck.Clear();
-        target.MainDeck.AddRange(nextDraws.Reverse());
-        if (target.MainDeck.Count == 0)
-            target.MainDeck.AddRange(Enumerable.Repeat(1, 40));
+        if (nextDraws.Length == 0)
+            return;
+
+        match.MainDeck.Clear();
+        match.MainDeck.AddRange(nextDraws.Reverse());
     }
 
     [Test]
@@ -107,6 +109,20 @@ public class PazaakMatchTests
         error.Should().Be("It is not your turn.");
         match.PlaySideCard(1, 0, negative: false, out _).Should().BeFalse();
         match.EndTurn(1, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void BothPlayersDrawFromTheSameDeck()
+    {
+        var match = StartMatch();
+        Rig(match, 0, new[] { 5 }, 7, 2);
+
+        match.EndTurn(0, out _).Should().BeTrue();
+        match.EndTurn(1, out _).Should().BeTrue();
+
+        match.Seats[1].Table.Select(x => x.Value).Should().Equal(7);
+        match.Seats[0].Table.Select(x => x.Value).Should().Equal(5, 2);
+        match.MainDeck.Should().BeEmpty();
     }
 
     [Test]
@@ -269,11 +285,12 @@ public class PazaakMatchTests
     }
 
     [Test]
-    public void MainDeckHasFourOfEachCardFromOneToTen()
+    public void BothPlayersShareOneMainDeckWithFourOfEachCardFromOneToTen()
     {
         var match = StartMatch();
 
-        var cards = new List<int>(match.Seats[1].MainDeck);
+        // The first player's opening draw came from the shared deck.
+        var cards = new List<int>(match.MainDeck) { match.Seats[0].Table[0].Value };
         cards.Should().HaveCount(40);
         cards.GroupBy(x => x).Should().OnlyContain(x => x.Count() == 4);
         cards.Distinct().OrderBy(x => x).Should().Equal(Enumerable.Range(1, 10));

@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service.PazaakService
 {
     /// <summary>
     /// Rules of one two-player Pazaak match. Holds no engine state so it can be tested directly.
-    /// Each set, players take turns drawing a main deck card (1-10) onto their table and may play
+    /// Each set, players take turns drawing from one shared main deck (four each of 1-10) onto their table and may play
     /// one side card per turn. A total above 20 when a turn ends is a bust. The higher total wins
     /// the set when both players stand, and filling all nine table slots without busting wins it
     /// outright. The first player to win three sets wins the match.
@@ -28,6 +28,12 @@ namespace SWLOR.Game.Server.Service.PazaakService
         }
 
         public PazaakSeat[] Seats { get; }
+
+        /// <summary>
+        /// The shared main deck both players draw from. The last card is drawn first.
+        /// </summary>
+        public List<int> MainDeck { get; } = new();
+
         public int CurrentSeat { get; private set; }
         public int SetNumber { get; private set; }
 
@@ -195,28 +201,29 @@ namespace SWLOR.Game.Server.Service.PazaakService
             {
                 seat.Table.Clear();
                 seat.IsStanding = false;
-                ShuffleMainDeck(seat);
             }
+
+            ShuffleMainDeck();
 
             CurrentSeat = starter;
             BeginTurn();
         }
 
-        private void ShuffleMainDeck(PazaakSeat seat)
+        private void ShuffleMainDeck()
         {
-            seat.MainDeck.Clear();
+            MainDeck.Clear();
             for (var value = 1; value <= MainDeckHighestCard; value++)
             {
                 for (var copy = 0; copy < MainDeckCopies; copy++)
                 {
-                    seat.MainDeck.Add(value);
+                    MainDeck.Add(value);
                 }
             }
 
-            for (var index = seat.MainDeck.Count - 1; index > 0; index--)
+            for (var index = MainDeck.Count - 1; index > 0; index--)
             {
                 var swap = _nextInt(index + 1);
-                (seat.MainDeck[index], seat.MainDeck[swap]) = (seat.MainDeck[swap], seat.MainDeck[index]);
+                (MainDeck[index], MainDeck[swap]) = (MainDeck[swap], MainDeck[index]);
             }
         }
 
@@ -226,8 +233,9 @@ namespace SWLOR.Game.Server.Service.PazaakService
             var seat = Seats[CurrentSeat];
             seat.HasPlayedSideCardThisTurn = false;
 
-            var card = seat.MainDeck[^1];
-            seat.MainDeck.RemoveAt(seat.MainDeck.Count - 1);
+            // A set uses at most 18 cards, so the 40-card deck never runs out before the next shuffle.
+            var card = MainDeck[^1];
+            MainDeck.RemoveAt(MainDeck.Count - 1);
             seat.Table.Add(new PazaakTableCard(card));
 
             if (seat.Table.Count >= TableSize && seat.Total <= TargetTotal)

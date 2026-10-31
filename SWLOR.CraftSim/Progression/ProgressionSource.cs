@@ -44,7 +44,7 @@ namespace SWLOR.CraftSim.Progression
             "private const float RefiningDelaySeconds = 6f;");
 
         public static readonly SourceReference ResearchCost = new(
-            "Research job length and credits", Craft, 1145, 1192,
+            "Research job length and credits", Craft, 1206, 1238,
             "var perkLevel = recipeDetail.Level / 10 + 1;", "if (perkLevel > 5)",
             "var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));",
             "price += price * recipeDetail.ResearchCostModifier;", "return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);");

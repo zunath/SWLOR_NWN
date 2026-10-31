@@ -1,6 +1,9 @@
 """Runs the space revamp plan's section 19 combat checks on model.py and writes checks.md.
 
 usage: python checks.py [runs]   (writes checks.md next to the simulator work files)
+
+Every pilot is a legal reference build (model.BUILDS, scaled to the tier's SP by model.legal_pilot). Each band names the
+build it is judged on. The script exits 1 when any band is not met.
 """
 import json
 import sys
@@ -8,10 +11,27 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import model as m  # noqa: E402
+import styles  # noqa: E402
 
 TIERS = [5, 15, 25, 35, 45]
 RUNS = int(sys.argv[1]) if len(sys.argv) > 1 else 150
 out = []
+bands = []  # (section, band, result text, met)
+
+
+def band(section, text, result, met):
+    """Records one band's result for the summary and the exit code; returns the 'met' / 'NOT MET' word."""
+    bands.append((section, text, result, bool(met)))
+    return "met" if met else "NOT MET"
+
+
+def launcher_fit(fit):
+    """The same fit with its Laser Cannons swapped for Missile Launchers (a launcher build's fit)."""
+    return {k.replace("Laser Cannon", "Missile Launcher"): v for k, v in fit.items()}
+
+
+def build_fit(build, fit):
+    return launcher_fit(fit) if m.BUILDS[build]["family"] == "Launcher" else fit
 
 
 def table(head, rows):
@@ -20,6 +40,8 @@ def table(head, rows):
     for r in rows:
         out.append("| " + " | ".join(str(c) for c in r) + " |")
     out.append("")
+    # A partial copy, so a long run that stops still leaves the sections it finished.
+    Path(m.HERE / "checks.partial.md").write_text("\n".join(out))
 
 
 def fight(players, npcs, passive=False):
@@ -34,53 +56,111 @@ def best_rank(size, L):
     return max(L, m.GATE[size])
 
 
+out.append("## Pilots: legal reference builds\n")
+table(["Build", "Damage family"] + [f"T{i + 1} (R{L}, {m.total_sp(L)} SP, {m.attribute_points(L)} points)" for i, L in enumerate(TIERS)],
+      [[f"{b}: {v['label']}", v["family"]] + [" / ".join(f"{k.upper()} {m.build_attributes(b, L)[k]}" for k in m.ATTRIBUTES)
+                                               for L in TIERS] for b, v in m.BUILDS.items()])
+out.append("Every attribute starts at 10. A character holds 15 creation points (at most 6 on one attribute), 1 AP per 10 SP "
+           "(40 at 400 SP) and 1 racial point; AP buy an attribute to 26, 27 with the racial point. Total SP is taken as "
+           "8 x (rank + 5), so T5 (rank 45) has all 400 SP and 56 points above 10 across six attributes; SOC stays at 10. "
+           "Lower tiers keep each build's shape. STM: 10 + MGT x 1.5, regen 10 + MGT / 4 per 30 s, no gear. Unless a section "
+           "says otherwise its pilot is build A (lasers) or build B (missiles), the dedicated pilots.\n")
+
 # A. Fight length
-out.append("## A. Fight length: a Fighter (3 Laser Cannons) vs one same-level Normal of each role\n")
-rows, worst = [], 0
+out.append("## A. Fight length: a matched Fighter vs one same-level Normal of each role\n")
+rows, worst, slowest = [], 0, 0
 for L in TIERS:
-    res = {role: fight([m.player_ship("Fighter", L, m.FIT["Fighter"])], [m.npc_ship(role, L)]) for role in m.NORMAL_ROLES}
-    means = [r["mean"] for r in res.values()]
-    spread = max(means) / min(means)
-    worst = max(worst, spread)
-    rows.append([f"T{TIERS.index(L) + 1} (R{L})", m.GROUND_TTK[L]] + [f"{r['mean']:.0f}s ({r['left']:.0%})" for r in res.values()]
-                + [f"{max(means) / m.GROUND_TTK[L]:.0%}", f"{spread:.2f}x"])
-table(["Tier", "Ground s"] + m.NORMAL_ROLES + ["Slowest vs ground", "Slowest / fastest"], rows)
-out.append(f"Mean time to kill, (hull + shield left). Targets: every role within the ground time, slowest / fastest <= 1.5x. Worst spread {worst:.2f}x.\n")
+    for build, fit in (("A", "Fighter"), ("B", "Fighter-missile")):
+        res = {role: fight([m.player_ship("Fighter", L, m.FIT[fit], build=build)], [m.npc_ship(role, L)]) for role in m.NORMAL_ROLES}
+        means = [r["mean"] for r in res.values()]
+        spread = max(means) / min(means)
+        worst = max(worst, spread)
+        slowest = max(slowest, max(means) / m.GROUND_TTK[L])
+        rows.append([f"T{TIERS.index(L) + 1} (R{L})", f"{build} ({'lasers' if build == 'A' else 'missiles'})", m.GROUND_TTK[L]]
+                    + [f"{r['mean']:.0f}s ({r['left']:.0%})" for r in res.values()]
+                    + [f"{max(means) / m.GROUND_TTK[L]:.0%}", f"{spread:.2f}x"])
+table(["Tier", "Build", "Ground s"] + m.NORMAL_ROLES + ["Slowest vs ground", "Slowest / fastest"], rows)
+out.append(f"Mean time to kill, (hull + shield left). Judged on the worse of build A on 3 Laser Cannons and build B on 3 "
+           f"Missile Launchers: the band's pilot is matched (a dedicated pilot of the weapon's family, as the ground run's is "
+           f"of its weapon), so builds C and D are judged on the solo target in B instead. The ground baseline itself used "
+           f"16 + 0.2 x rank on every attribute (not legal), but its fight-length attributes (damage and accuracy) sit within "
+           f"2 of build A's, so its times stand. Targets: every role within the ground time (slowest "
+           f"{slowest:.0%}: {band('A', 'every Normal role within the ground time (builds A and B)', f'{slowest:.0%}', slowest <= 1.0)}), "
+           f"slowest / fastest <= 1.5x (worst {worst:.2f}x: {band('A', 'slowest / fastest role <= 1.5x (builds A and B)', f'{worst:.2f}x', worst <= 1.5)}).\n")
 
 # B. Hull comparison
-out.append("## B. Hulls at each tier (standard fit, all modules at the tier's rank)\n")
-hulls = [("Fighter", "Fighter"), ("Interceptor", "Interceptor"), ("Bomber", "Bomber"), ("Gunship", "Gunship"),
-         ("Frigate", "Frigate"), ("Cruiser", "Cruiser")]
-rows = []
+out.append("## B. Every hull at each tier, under every legal build with its weapon style (combat fit, modules at the tier's rank)\n")
+# Each build's natural weapon style (plan section 5: ranged builds take Ace, melee builds Ordnance).
+STYLE = {"A": "Ace", "B": "Ordnance", "C": "Ordnance", "D": "Ace"}
+COMBAT_HULLS = ("Fighter", "Interceptor", "Bomber", "Gunship", "Frigate", "Cruiser")
+rows, worst_normal, worst_elite, other_elite = [], None, None, {}
 for L in TIERS:
-    for role, fit in hulls:
+    for role in m.ROLES:
         size = m.ROLES[role]["size"]
         if L < m.GATE[size]:
             continue
         for crew in ((0.0, 0.5) if m.ROLES[role].get("stH") else (1.0,)):
-            p = m.player_ship(role, L, m.FIT[fit], crew=crew)
-            a = fight([p], [m.npc_ship("Fighter", L)])
-            g = fight([p], [m.npc_ship("Gunship", L)])
-            pack = fight([p], [m.npc_ship("Fighter", L), m.npc_ship("Bomber", L, vs_size=size)])
-            pack3 = fight([p], [m.npc_ship("Fighter", L, count=2), m.npc_ship("Bomber", L, vs_size=size)])
-            e = fight([p], [m.npc_ship("Fighter", L, "Elite")])
-            label = role if crew == 1.0 else f"{role} ({'solo' if crew == 0 else 'droid crew, 50%'})"
-            rows.append([f"T{TIERS.index(L) + 1}", label, round(p["maxHull"] + p["maxShield"]), cell(a), cell(g), cell(pack), cell(pack3), cell(e)])
-table(["Tier", "Hull", "Hull+shield", "vs Normal Fighter", "vs Normal Gunship", "vs Fighter + Bomber", "vs 2 Fighters + Bomber", "vs Elite Fighter (Medium)"], rows)
+            for build in m.BUILDS:
+                style = STYLE[build]
+                p = styles.apply(style, m.player_ship(role, L, build_fit(build, m.FIT[role]), crew=crew, build=build), L)
+                a = fight([p], [styles.debuff(style, m.npc_ship("Fighter", L), L)])
+                g = fight([p], [styles.debuff(style, m.npc_ship("Gunship", L), L)])
+                e = fight([p], [styles.debuff(style, m.npc_ship("Fighter", L, "Elite"), L)])
+                pack = pack3 = None
+                if build == "A":
+                    pack = fight([p], [styles.debuff(style, n, L) for n in (m.npc_ship("Fighter", L), m.npc_ship("Bomber", L, vs_size=size))])
+                    pack3 = fight([p], [styles.debuff(style, n, L) for n in (m.npc_ship("Fighter", L, count=2), m.npc_ship("Bomber", L, vs_size=size))])
+                label = role if crew == 1.0 else f"{role} ({'solo' if crew == 0 else 'droid crew, 50%'})"
+                where = f"T{TIERS.index(L) + 1} {label}, {build} + {style}"
+                # The solo target: a solo pilot (Small and Medium hulls, or a Large or Capital hull flown alone).
+                if crew in (0.0, 1.0):
+                    normal = min(a["win"], g["win"])
+                    if worst_normal is None or normal < worst_normal[0]:
+                        worst_normal = (normal, where)
+                    if role in COMBAT_HULLS and build in ("A", "B"):
+                        if worst_elite is None or e["win"] < worst_elite[0]:
+                            worst_elite = (e["win"], where)
+                    else:
+                        key = "non-combat hulls" if role not in COMBAT_HULLS else f"build {build}"
+                        if key not in other_elite or e["win"] < other_elite[key][0]:
+                            other_elite[key] = (e["win"], where)
+                rows.append([f"T{TIERS.index(L) + 1}", label, f"{build} + {style}", round(p["maxHull"] + p["maxShield"]), cell(a), cell(g),
+                             cell(pack) if pack else "-", cell(pack3) if pack3 else "-", cell(e)])
+table(["Tier", "Hull", "Build + style", "Hull+shield", "vs Normal Fighter", "vs Normal Gunship", "vs Fighter + Bomber",
+       "vs 2 Fighters + Bomber", "vs Elite Fighter (Medium)"], rows)
+out.append("Fits (`model.FIT`): every High slot a weapon (Laser Cannons, Missile Launchers for the launcher builds B and C; "
+           "a Bomber keeps its torpedo; capital hulls carry Turbolasers and Point-Defense, energy for every build), Mid "
+           "Shield Booster and Targeting Computer then Shield Booster or Shield Repairer, Low Hull Plating and Thrusters "
+           "then Capacitor Regulator or more plating. Non-combat hulls are fitted to fight here; a working fit (mining "
+           "lasers, scanners, cloaks, cargo expanders) gives up those slots. Each build flies its weapon style at the "
+           "tier's rank (section R: Ace for A and D, Ordnance for B and C; Ordnance's area, burn and fragmentation damage "
+           "is not modeled, so its rows are a floor). Packs run on build A only. "
+           f"Solo target (plan section 4: one weapon style solos all normal content and most elites in any hull the rank "
+           f"allows), flown solo (Large and Capital Helm slots only). All normal content, judged on the worst of the four "
+           f"builds on every hull: a same-level Normal Fighter and Normal Gunship at least 90% of the time (worst "
+           f"{worst_normal[0]:.0%}, {worst_normal[1]}: "
+           f"{band('B', 'solo: every hull and build with its style beats a Normal Fighter and Gunship >= 90%', f'{worst_normal[0]:.0%} ({worst_normal[1]})', worst_normal[0] >= 0.9)}). "
+           f"Most elites, judged on the dedicated builds (A + Ace, B + Ordnance) in every combat hull: an Elite Fighter at "
+           f"least half the time (worst {worst_elite[0]:.0%}, {worst_elite[1]}: "
+           f"{band('B', 'solo: A + Ace and B + Ordnance beat an Elite Fighter >= 50% in every combat hull', f'{worst_elite[0]:.0%} ({worst_elite[1]})', worst_elite[0] >= 0.5)}). "
+           "No band, reported: the worst Elite Fighter result " + "; ".join(f"for {k} {v[0]:.0%} ({v[1]})" for k, v in sorted(other_elite.items()))
+           + ". Non-combat hulls have no kill-time band.\n")
 
 # C. Melee vs ranged
-out.append("## C. Melee build on Missile Launchers vs ranged build on Laser Cannons (Fighter hull)\n")
+out.append("## C. Melee builds on Missile Launchers vs the ranged build on Laser Cannons (Fighter hull)\n")
 rows = []
 for L in TIERS:
-    a = m.attr(L)
-    ranged = {"agi": a, "per": a, "vit": a, "wil": a, "mgt": a - 4}
-    melee = {"agi": a - 4, "per": a, "vit": a, "wil": a, "mgt": a}
     for target in ("Fighter", "Gunship"):
-        rl = fight([m.player_ship("Fighter", L, m.FIT["Fighter"], pilot=ranged)], [m.npc_ship(target, L)])
-        ml = fight([m.player_ship("Fighter", L, m.FIT["Fighter-missile"], pilot=melee)], [m.npc_ship(target, L)])
-        rows.append([f"T{TIERS.index(L) + 1}", target, cell(rl), cell(ml), f"{ml['mean'] / rl['mean']:.2f}"])
-table(["Tier", "Target", "Ranged (lasers)", "Melee (missiles)", "Melee / ranged time"], rows)
-out.append("Ranged build: PER and AGI at the standard value, MGT 4 lower. Melee build: MGT and PER standard, AGI 4 lower (it loses evasion).\n")
+        rl = fight([m.player_ship("Fighter", L, m.FIT["Fighter"], build="A")], [m.npc_ship(target, L)])
+        ml = fight([m.player_ship("Fighter", L, m.FIT["Fighter-missile"], build="B")], [m.npc_ship(target, L)])
+        gl = fight([m.player_ship("Fighter", L, m.FIT["Fighter-missile"], build="C")], [m.npc_ship(target, L)])
+        rows.append([f"T{TIERS.index(L) + 1}", target, cell(rl), cell(ml), f"{ml['mean'] / rl['mean']:.2f}", cell(gl),
+                     f"{gl['mean'] / rl['mean']:.2f}"])
+table(["Tier", "Target", "Ranged, build A (lasers)", "Melee, build B (missiles)", "B / A time", "Ground fighter, build C (missiles)",
+       "C / A time"], rows)
+out.append("Build A: PER and AGI first. Build B: MGT and PER first, AGI 10 (it loses evasion). Build C: a ground melee "
+           "fighter (MGT, AGI, VIT) who adds Piloting, PER 16 at T5 for launcher accuracy. No band (plan section 19 asks "
+           "for the comparison).\n")
 
 # D. Advanced fighters
 out.append("## D. Advanced Fighters (Piloting 10+)\n")
@@ -89,7 +169,7 @@ ADV = {
     "Sith Fighter": dict(maker="Sith", extra=m.SIGNATURE["Sith Fighter"], fit=m.FIT["Fighter"]),
     "Cutlass": dict(maker="Corellian", extra={"M": 1}, fit=dict(m.FIT["Fighter"], **{"Shield Booster": 2})),
 }
-rows = []
+rows, d_worst = [], 9.9
 for L in TIERS[1:]:
     scores = {}
     for name, a in ADV.items():
@@ -102,8 +182,13 @@ for L in TIERS[1:]:
     top = max(scores.values())
     for r in rows[-3:]:
         r.append(f"{scores[r[1]] / top:.0%}")
+    d_worst = min(d_worst, min(scores.values()) / top)
 table(["Tier", "Ship", "Hull+shield", "vs 2 Normal Fighters", "vs Elite Fighter", "Job score vs best"], rows)
-out.append("Job score: the sum over both fights of win rate x (0.5 + hull and shield left) / kill time. Target: every ship within 10% of the best.\n")
+out.append("Build A pilots every ship. Job score: the sum over both fights of win rate x (0.5 + hull and shield left) / kill "
+           f"time. Target: every ship within 10% of the best (worst {d_worst:.0%}: "
+           f"{band('D', 'Advanced Fighters within 10% of the best (build A)', f'{d_worst:.0%}', d_worst >= 0.9)}). The Sith "
+           "Fighter's +13 Critical Rate is modeled as the signature reads; the server stores ShipStatus.CriticalBonus but "
+           "does not read it yet.\n")
 
 # E. Elites, bosses and capitals
 out.append("## E. Elites, bosses and capitals vs ground\n")
@@ -150,9 +235,12 @@ table(["Side", "Hull+shield", "vs Boss capital"], [["1 Cruiser, 5 crew seats", r
 # Crew Morale and Leadership raise crew effectiveness, capped at 105% (the crew update, W8a).
 cr_cap = m.player_ship("Cruiser", 45, m.FIT["Cruiser"], crew=m.CREW_CAP)
 r_cap = fight([cr_cap], [m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0)])
+g_ratio = r_cap["mean"] / r5["mean"]
 out.append(f"Crew effectiveness is capped at {m.CREW_CAP:.0%} (Crew Morale and Leadership); at the cap the Cruiser takes "
            f"{cell(r_cap)} (hull+shield {round(cr_cap['maxHull'] + cr_cap['maxShield'])}). Crew seats add only the crew's own perks "
-           "and seat-skill bonuses (W8), so a crewed capital must stay at or below N separate ships.\n")
+           "and seat-skill bonuses (W8), so a crewed capital must stay at or below N separate ships (build A on every ship; "
+           f"at the cap the Cruiser's kill time is {g_ratio:.2f} of the 5 Fighters', 0.98 allowed for noise: "
+           f"{band('G', 'crewed Cruiser at the cap kills no faster than 5 Fighters (build A)', f'{g_ratio:.2f}', g_ratio >= 0.98)}).\n")
 
 # H. Weapon families
 out.append("## H. Weapon families on a Fighter (3 of one family), mean kill time\n")
@@ -161,7 +249,7 @@ for L in TIERS:
     cells = []
     for fam in ("Laser Cannon", "Ion Cannon", "Beam Cannon", "Missile Launcher"):
         fit = {fam: 3, **{k: v for k, v in m.FIT["Fighter"].items() if k != "Laser Cannon"}}
-        p = m.player_ship("Fighter", L, fit)
+        p = m.player_ship("Fighter", L, fit, build="B" if fam == "Missile Launcher" else "A")
         a = fight([p], [m.npc_ship("Fighter", L)])
         g = fight([p], [m.npc_ship("Gunship", L)])
         cells.append(f"{a['mean']:.0f}s / {g['mean']:.0f}s")
@@ -172,7 +260,8 @@ for L in TIERS:
     big2 = fight([p2], [m.npc_ship("Fighter", L, "Boss")], passive=True)
     rows.append([f"T{TIERS.index(L) + 1}"] + cells + [f"{big2['mean']:.0f}s / {big['mean']:.0f}s"])
 table(["Tier", "Laser (vs Fighter / Gunship)", "Ion", "Beam", "Missile", "Boss (Large), 3 Lasers / 2 Lasers + Torpedo"], rows)
-out.append("Beam pays 5 capacitor per cycle (lasers 3, missiles 2 plus ammo); beams are short range, missiles long range.\n")
+out.append("Energy families fly build A, missiles build B (the launcher pilot); the torpedo fits fly build A. Beam pays 5 "
+           "capacitor per cycle (lasers 3, missiles 2 plus ammo); beams are short range, missiles long range.\n")
 
 # I. Crewed frigate vs separate fighters
 out.append("## I. Crewed Frigate (3 players) vs 3 Fighters\n")
@@ -189,7 +278,8 @@ table(["Tier", "Enemy", "Crewed Frigate", "3 Fighters", f"Crewed Frigate ({m.CRE
 # J. Sidegrades: every ship in a combat role, fitted the same way
 out.append("## J. Ships in the same role (T3 and T5, each at its own gate or above)\n")
 rows = []
-FITS = {"Fighter": "Fighter", "Interceptor": "Interceptor", "Bomber": "Bomber", "Gunship": "Gunship", "Frigate": "Frigate", "Cruiser": "Cruiser"}
+FITS = {role: role for role in m.ROLES}
+adv_worst = (9.9, "")
 for L in (25, 45):
     for role, fitname in FITS.items():
         ships = [sh for sh in m.SHIPS if sh[1] == role]
@@ -215,11 +305,20 @@ for L in (25, 45):
             if not group:
                 continue
             top = max(v[0] for v in group.values())
+            if tier_adv and len(group) > 1:
+                low = min(group, key=lambda k: group[k][0])
+                ratio = group[low][0] / top if top else 0.0
+                if ratio < adv_worst[0]:
+                    adv_worst = (ratio, f"T{TIERS.index(L) + 1} {role}: {low}")
             for name, (sc, adv, p, pack, e) in group.items():
                 rows.append([f"T{TIERS.index(L) + 1}", role, name, "Advanced" if adv else "Standard", round(p["maxHull"] + p["maxShield"]),
-                             cell(pack), cell(e), f"{sc / top:.0%}"])
+                             cell(pack), cell(e), f"{sc / top:.0%}" if top else "-"])
 table(["Tier", "Role", "Ship", "Tier", "Hull+shield", "vs 2 Normal Fighters", "vs Elite Fighter", "Combat score vs best in group"], rows)
-out.append("Large and Capital ships are fully crewed here. Non-combat signatures (speed, cargo, scan, range) do not show in this score.\n")
+out.append("Build A pilots every ship (a same-pilot comparison). Large and Capital ships are fully crewed here. Non-combat "
+           "signatures (speed, cargo, scan, range, yield) do not show in this score, so Standard ships carry no band. Advanced "
+           f"ships in a role land within 10% of the best Advanced ship of that role (plan section 19; worst {adv_worst[0]:.0%}, "
+           f"{adv_worst[1] or 'no role has two'}: "
+           f"{band('J', 'Advanced ships in a role within 10% of the best (build A)', f'{adv_worst[0]:.0%} ({adv_worst[1]})', adv_worst[0] >= 0.9)}).\n")
 
 # K. Role behaviors
 out.append("## K. Role behaviors: a Fighter (3 Laser Cannons) vs the roles with their behavior modeled\n")
@@ -326,6 +425,7 @@ for role, enemy, separate, separate_enemy, label, separate_label in cases:
             rows.append([role, f"{crew:.0%}", label, mode, cell(r), f"{job(r) / job(balanced):.0%}",
                          f"{separate_label}: {sep['mean']:.0f}s", "yes" if r["mean"] >= balanced["mean"] - 0.5 else "NO"])
 table(["Ship", "Crew", "Enemy", "Routing", "Result", "Job score vs Balanced", "Separate ships", "Kill no faster than Balanced"], rows)
+band("L", "no power routing mode kills faster than Balanced, 0.5 s noise (build A)", f"{worst_time:.2f}", all(r[-1] == "yes" for r in rows))
 out.append(f"Weapons: weapons use {-m.POWER_ROUTING['Weapons']['cap']}% less capacitor, shield regen and speed -10%. Shields: shield regen "
            f"+{m.POWER_ROUTING['Shields']['regen']}%, weapon damage -5%, speed -10%. Engines: speed +{m.POWER_ROUTING['Engines']['speed']}%, "
            "weapon damage -5%, shield regen -10%. No mode kills faster than Balanced (worst Balanced / mode kill-time ratio "
@@ -338,7 +438,7 @@ import rewards  # noqa: E402
 
 out.append("## M. Named rank-50 modules: a Fighter on named modules vs the top band (levels 45-52)\n")
 rows, worst_spread, slowest_ratio, worst_gain, step_ratios = [], 0.0, 0.0, 0.0, []
-pilot45 = m.pilot_for(45)
+pilot45 = m.legal_pilot("A", 45)
 for L in (45, 50, 52):
     r40 = {role: fight([m.player_ship("Fighter", 40, m.FIT["Fighter"], pilot=pilot45)], [m.npc_ship(role, L)])
            for role in m.NORMAL_ROLES}
@@ -351,7 +451,8 @@ for L in (45, 50, 52):
     means = [r["mean"] for r in named.values()]
     spread = max(means) / min(means)
     worst_spread = max(worst_spread, spread)
-    slowest_ratio = max(slowest_ratio, max(means) / m.GROUND_TTK[45])
+    if L <= 50:  # level 52 is tier 5.5, which has no ground time to compare (plan section 14, named modules)
+        slowest_ratio = max(slowest_ratio, max(means) / m.GROUND_TTK[45])
     speedup = sum(r45[k]["mean"] for k in r45) / sum(named[k]["mean"] for k in named)
     worst_gain = max(worst_gain, speedup)
     rows.append([f"L{L}", m.GROUND_TTK[45]] + [f"{named[k]['mean']:.0f}s ({named[k]['left']:.0%}) vs {r45[k]['mean']:.0f}s"
@@ -367,9 +468,12 @@ out.append(f"Mean time to kill (hull + shield left), every fit on the same rank-
            f"Accuracy included (weapons {rewards.named_value(90, 80)}). Rank step: a rank-45 fit's kill speed over a rank-40 fit "
            f"({min(step_ratios):.2f}x-{max(step_ratios):.2f}x). Targets: the named speed-up stays at or below the rank step, "
            f"capped at {rewards.NAMED_GAIN_CAP}x ({cap:.2f}x here; worst {worst_gain:.2f}x, "
-           f"{'met' if worst_gain <= cap + 0.005 else 'NOT MET'}), and the top band keeps the fight-length bands (every role "
-           f"within the ground T5 time, slowest / fastest <= 1.5x): worst spread {worst_spread:.2f}x, slowest "
-           f"{slowest_ratio:.0%} of the ground T5 time. Level-50 Elite Fighter: named {cell(elite_named)}, rank 45 {cell(elite_r45)}.\n")
+           f"{band('M', 'named speed-up within the rank step and the cap (build A)', f'{worst_gain:.2f}x', worst_gain <= cap + 0.005)}), "
+           f"and the top band keeps the fight-length bands (every role within the ground T5 time, slowest / fastest <= 1.5x): "
+           f"worst spread {worst_spread:.2f}x ({band('M', 'top band slowest / fastest <= 1.5x (build A)', f'{worst_spread:.2f}x', worst_spread <= 1.5)}), "
+           f"slowest against levels 45 and 50 {slowest_ratio:.0%} of the ground T5 time ({band('M', 'named fit within the ground T5 time against levels 45 and 50 (build A)', f'{slowest_ratio:.0%}', slowest_ratio <= 1.0)}; "
+           f"level 52 is tier 5.5, with no ground time to compare). "
+           f"Pilot: build A at rank 45 (400 SP). Level-50 Elite Fighter: named {cell(elite_named)}, rank 45 {cell(elite_r45)}.\n")
 
 # N. Wild Space environments (W12c)
 import wildspace  # noqa: E402
@@ -383,7 +487,7 @@ table(["Environment", "Effects"] + m.NORMAL_ROLES + ["Mean change", "Not modeled
 out.append(f"Change in mean time to kill against the same fight with no environment (baseline "
            f"{', '.join(f'{k} {v:.0f}s' for k, v in env_base.items())}). Every ship in a system takes its environment, so a "
            f"change helps and hurts both sides. Target: no environment moves a fight more than about +-{wildspace.FIGHT_BAND}% "
-           f"(worst {worst_env:.1f}%, {'met' if worst_env <= wildspace.FIGHT_BAND + 0.5 else 'NOT MET'}). Speed, ability damage "
+           f"(worst {worst_env:.1f}%, {band('N', 'no environment moves a fight more than about 10% (build A)', f'{worst_env:.1f}%', worst_env <= wildspace.FIGHT_BAND + 0.5)}). Speed, ability damage "
            "and capacitor use do not change an auto-fire fight here: the Black Hole's speed matters for kiting and escape, the "
            "Red Giant's ability damage only for pilots who use abilities (about a quarter of a fit's damage, so about 5% "
            "faster kills), and a laser fit's capacitor does not run dry in these fights.\n")
@@ -440,8 +544,9 @@ for tenths, resref, _ in events.KEYS:
     rows.append([f"{events.key_label(tenths)} ({resref})", "; ".join(cells), f"{solo_time / 60:.1f} min"])
 table(["Key", "Solo waves (mean time, win, hull + shield left)", "Solo fight time"], rows)
 out.append(f"Each wave of each chamber, solo and with the 2- and 3-ship extras. Worst solo win {solo_worst:.0%}, worst party win "
-           f"{group_worst:.0%}. Target: a matched solo pilot wins every wave (at least 90%: "
-           f"{'met' if solo_worst >= 0.9 else 'NOT MET'}) and a party at least as often (met: {group_worst >= 0.9}). The solo fight "
+           f"{group_worst:.0%}. Target: a matched solo pilot (build A) wins every wave (at least 90%: "
+           f"{band('O', 'a matched solo pilot wins every Rift Run wave >= 90% (build A)', f'{solo_worst:.0%}', solo_worst >= 0.9)}) "
+           f"and a party at least as often ({band('O', 'a party wins every Rift Run wave >= 90% (build A)', f'{group_worst:.0%}', group_worst >= 0.9)}). The solo fight "
            f"time sits inside the {events.TIMER_SECONDS // 60}-minute timer with room for the waves' delays, shield regeneration "
            "between waves and the chamber pulls. Tier 5.5: a named-fit rank 45 Fighter against the level 52 Rift Raiders.\n")
 
@@ -450,11 +555,11 @@ out.append("## P. Player E-War modules (W11k): the Fighter's Targeting Computer 
 
 
 def ewar_target(n, accuracy=0, paint=0):
-    # The Jammer takes flat Accuracy from the target; the paint's damage taken is modeled as lower resistance (within a
-    # point or two of the game's multiplier at these resistances). Both modeled as always on: the upper bound.
+    # The Jammer takes flat Accuracy from the target; the paint adds to its damage taken (applied after resistance, as
+    # Space.RollWeaponShot does). Both modeled as always on: the upper bound.
     n = json.loads(json.dumps(n))
     n["accuracy"] += accuracy
-    n["resistances"] = {k: v - paint for k, v in n["resistances"].items()}
+    n["damageTakenPercent"] = n.get("damageTakenPercent", 0) + paint
     return n
 
 
@@ -497,9 +602,9 @@ table(["Tier", "Ground s", "Jam / paint at the tier's rank", "Targeting Computer
 out.append(f"A matched Fighter keeps its Targeting Computer, or swaps it for a Jammer (target Accuracy -4 - 0.4 x rank) or a Target "
            f"Painter (target damage taken +5% + rank / 9), against every Normal role. Job score = kill speed x (0.5 + hull and "
            f"shield left) x win rate, against the Targeting Computer fit. Bands: every fight stays within the ground time "
-           f"(slowest {ewar_slowest:.0%}: {'met' if ewar_slowest <= 1.0 else 'NOT MET'}); solo, no swap beats the Targeting "
-           f"Computer by more than 10% (the Advanced-ship band; range {ewar_low:.0%}-{ewar_high:.0%}: "
-           f"{'met' if ewar_high <= 1.1 else 'NOT MET'}), so a Mid slot's E-War module is a support pick, not an upgrade. In a "
+           f"(slowest {ewar_slowest:.0%}: {band('P', 'E-War swap fits within the ground time (build A)', f'{ewar_slowest:.0%}', ewar_slowest <= 1.0)}); "
+           f"solo, no swap beats the Targeting Computer by more than 10% (the Advanced-ship band; range {ewar_low:.0%}-{ewar_high:.0%}: "
+           f"{band('P', 'no E-War swap beats the Targeting Computer by more than 10% solo (build A)', f'{ewar_high:.0%}', ewar_high <= 1.1)}), so a Mid slot's E-War module is a support pick, not an upgrade. In a "
            f"party the one module helps every ship: up to {party_high:.0%} of the all-Targeting-Computer party's job (no band; "
            "the stronger jam or paint counts, so a second one adds nothing). Budget: the jam matches the Targeting Computer's Accuracy step "
            "(-22 against +20 at rank 45) and the paint the Damage Amplifier's (+10%, every type). The Ion Web, Interdictor and "
@@ -539,7 +644,7 @@ w, s_, e_ = (m.routing_gain(mode, eng_routing) for mode in ("Weapons", "Shields"
 out.append(f"Engineering 50 makes the routing's gain {eng_routing}% larger (Weapons: weapons use {-w['cap']}% less capacitor; "
            f"Shields: shield regen +{s_['regen']}%; Engines: speed +{e_['speed']}%), its penalties unchanged, and repairs "
            f"{eng_support}% larger. No crewed fight kills faster than Balanced with no rank, so section L's standing against "
-           f"the separate ships holds (fastest Balanced / Engineering kill-time ratio {q_fastest:.2f}: {'met' if q_fastest <= 1.01 else 'NOT MET'}); the best "
+           f"the separate ships holds (fastest Balanced / Engineering kill-time ratio {q_fastest:.2f}: {band('Q', 'Engineering 50 crewed fights kill no faster than Balanced (build A)', f'{q_fastest:.2f}', q_fastest <= 1.01)}); the best "
            f"job score is {q_score:.0%} of Balanced with no rank (repairs and regen add staying power, never kill speed).\n")
 
 # Q2. A solo pilot with Engineering 50: the Gunship's Helm Shield Repairer repairs 10% more.
@@ -556,7 +661,7 @@ for L in TIERS:
     rows.append([f"T{TIERS.index(L) + 1} (R{L})", "; ".join(cells)])
 table(["Tier", "Gunship vs each Normal role: no rank / Engineering 50 (job vs no rank)"], rows)
 out.append(f"A solo Gunship's Helm Shield Repairer at Engineering 50 gives at most {solo_high:.0%} of the job of the same pilot with "
-           f"no Engineering (the Advanced-ship band is 110%: {'met' if solo_high <= 1.1 else 'NOT MET'}).\n")
+           f"no Engineering (the Advanced-ship band is 110%: {band('Q', 'solo Gunship at Engineering 50 <= 110% job (build A)', f'{solo_high:.0%}', solo_high <= 1.1)}).\n")
 
 # Q3. Espionage 50: jams and paints 10% stronger (section P's fits).
 rows, esp_low, esp_high, esp_party = [], 9.9, 0.0, 0.0
@@ -588,7 +693,7 @@ table(["Tier", "Jam / paint at Espionage 50", "Jammer fit / Target Painter fit (
        "3 Fighters vs a Boss, one Jammer / one Painter (job vs all TC)"], rows)
 out.append(f"Espionage 50 makes a Jammer's Accuracy penalty and a Target Painter's damage taken {esp_ewar}% stronger. Solo, no swap "
            f"beats the Targeting Computer by more than 10% (range {esp_low:.0%}-{esp_high:.0%}: "
-           f"{'met' if esp_high <= 1.1 else 'NOT MET'}); in a party one module gives up to {esp_party:.0%} of the all-Targeting-"
+           f"{band('Q', 'Espionage 50 swap within 110% of the Targeting Computer solo (build A)', f'{esp_high:.0%}', esp_high <= 1.1)}); in a party one module gives up to {esp_party:.0%} of the all-Targeting-"
            "Computer party's job.\n")
 
 # Q4. A fully crewed Cruiser at the cap with a Target Painter at the Sensors seat (in place of its Shield Repairer) against
@@ -612,9 +717,49 @@ table(["Seat skills", "Cruiser at the 105% cap with a Target Painter", "5 Fighte
        "Cruiser / Fighters kill time"], q4_rows)
 q4_met = q4_ratio[50] >= q4_ratio[0] - 0.02
 out.append(f"Rank 50 seat skills move the crewed Cruiser's kill time against the 5 separate Fighters from {q4_ratio[0]:.2f} to "
-           f"{q4_ratio[50]:.2f} of theirs ({'met: no gain beyond noise' if q4_met else 'NOT MET'}): both sides bring the same painter, "
+           f"{q4_ratio[50]:.2f} of theirs ({band('Q', 'rank 50 seat skills add no crewed Cruiser gain beyond noise (build A)', f'{q4_ratio[0]:.2f} -> {q4_ratio[50]:.2f}', q4_met)}): both sides bring the same painter, "
            "Engineering adds staying power only, and the 105% cap stays level with N separate ships as in section G. The seat "
            "skills sit outside the crew cap (they are the crew member's own, as perks are) and add no weapon damage.\n")
 
+# R. Piloting styles (plan section 6, Appendix A): each style's main damage abilities on a matched Fighter
+
+out.append("## R. Piloting styles: the main damage abilities, with their real STM and cooldowns, on a matched Fighter\n")
+rows = []
+for L in TIERS:
+    t = TIERS.index(L) + 1
+    for style, build, fit in (("Ace", "A", "Fighter"), ("Ordnance", "B", "Fighter-missile"), ("Bulwark", "A", "Fighter"),
+                              ("Command", "A", "Fighter")):
+        plain = m.player_ship("Fighter", L, m.FIT[fit], build=build)
+        styled = styles.apply(style, plain, L)
+        cells = []
+        for role in m.NORMAL_ROLES:
+            npc = m.npc_ship(role, L)
+            a, b = fight([plain], [npc]), fight([styled], [styles.debuff(style, npc, L)])
+            cells.append(f"{role}: {a['mean']:.0f}s -> {b['mean']:.0f}s")
+        ea = fight([plain], [m.npc_ship("Fighter", L, "Elite")])
+        eb = fight([styled], [styles.debuff(style, m.npc_ship("Fighter", L, "Elite"), L)])
+        rows.append([f"T{t} (R{L})", style, build, styles.describe(style, L), "; ".join(cells), f"{cell(ea)} -> {cell(eb)}"])
+table(["Tier", "Style", "Build", "Modeled at this rank", "Normal roles: no style -> style (mean kill time)",
+       "Elite Fighter: no style -> style"], rows)
+out.append("Each style at the tier's Piloting rank, with every row it has by then (Appendix A unlock ranks); abilities fire "
+           "whenever they are off cooldown and the pilot's STM pays (build STM, no gear). Modeled: Ace's Disabling Shot "
+           "(its Attack penalty on the target as always on: 30 s on an 18 s cooldown), Double Shot (two shots) and Sustained "
+           "Fire; Ordnance's Volley and Flare Missile as single-target shots; Bulwark's Bulwark trait (+Defense %); "
+           "Command's Focus Fire (+damage dealt, 30 s on a 24 s cooldown, so always on). Not modeled, so style output there "
+           "is unvalidated: area hits on other ships, Burn and fragmentation damage over time, Blind, Dazed, Exposed, "
+           "Proximity Warheads, crit STM refunds, High Noon, the stances, Evasive Reload, Mobile Footwork, Defiance and "
+           "Shield Ram riders, Critical Ward, Unbreakable, Invincible, goads and threat, Emergency Repair, Mark Target, "
+           "Break Formation, Formation and the capstones. No band: the plan sets none for style output beyond the solo "
+           "target (section B is its no-style floor).\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))
+
+failed = [b for b in bands if not b[3]]
+print(f"\n## Summary: {len(bands) - len(failed)} of {len(bands)} bands met\n")
+for section, text, result, met in bands:
+    print(f"- {section}: {text}: {result} ({'met' if met else 'NOT MET'})")
+summary = ["", f"## Summary: {len(bands) - len(failed)} of {len(bands)} bands met", ""] + \
+          [f"- {section}: {text}: {result} ({'met' if met else 'NOT MET'})" for section, text, result, met in bands]
+Path(m.HERE / "checks.md").write_text("\n".join(out + summary))
+sys.exit(1 if failed else 0)

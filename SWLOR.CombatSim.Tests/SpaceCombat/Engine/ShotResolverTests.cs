@@ -42,8 +42,8 @@ public class ShotResolverTests
             target => target.Resistances.Thermal = 40);
 
         plain.Damage.Should().BeGreaterThan(0);
-        resisted.Damage.Should().BeApproximately(plain.Damage * 0.6, 1e-9);
-        resisted.Applied.Should().BeApproximately(plain.Applied * 0.6, 1e-9);
+        resisted.Damage.Should().Be(Math.Round(plain.Damage * 0.6, MidpointRounding.AwayFromZero));
+        resisted.Applied.Should().Be(resisted.Damage);
     }
 
     [Test]
@@ -67,7 +67,7 @@ public class ShotResolverTests
         var large = Fire(scenario, SpaceTestShips.Laser(dmg: 60), ShipSize.Large, _ => { }, ShipSize.Large, seed);
 
         large.Damage.Should().BeGreaterThan(0);
-        small.Damage.Should().BeApproximately(large.Damage * 0.75 * 0.75, 1e-9);
+        small.Damage.Should().Be(Math.Round(large.Damage * 0.75 * 0.75, MidpointRounding.AwayFromZero));
     }
 
     [Test]
@@ -96,6 +96,116 @@ public class ShotResolverTests
 
         misses.Should().NotBeEmpty();
         misses.Should().OnlyContain(shot => shot.Damage == 0 && shot.Applied == 0 && !shot.Critical);
+    }
+
+    [Test]
+    public void Fire_MultipliesTheDamageBonusAndTheResistanceSeparately()
+    {
+        // The server multiplies (1 + bonus %) and (1 - resistance %); folding the bonus into the resistance would give
+        // 1 - (40 - 20) % = 0.8 instead of 1.2 x 0.6 = 0.72.
+        var weapon = SpaceTestShips.Laser(dmg: 60);
+        var seed = FirstHitSeed(new SpaceScenarioSpec(), ShipSize.Small, ShipSize.Small);
+        var plain = FireFrom(weapon, _ => { }, target => target.Resistances.Thermal = 40, seed);
+        var boosted = FireFrom(weapon, attacker => attacker.DamageBonusPercent.Thermal = 20, target => target.Resistances.Thermal = 40, seed);
+        var unresisted = FireFrom(weapon, _ => { }, _ => { }, seed);
+
+        boosted.Damage.Should().Be(Math.Round(unresisted.Damage * 1.2 * 0.6, MidpointRounding.AwayFromZero));
+        plain.Damage.Should().Be(Math.Round(unresisted.Damage * 0.6, MidpointRounding.AwayFromZero));
+    }
+
+    [Test]
+    public void Fire_ADamageBonusOnAnotherTypeChangesNothing()
+    {
+        var weapon = SpaceTestShips.Laser(dmg: 60);
+        var seed = FirstHitSeed(new SpaceScenarioSpec(), ShipSize.Small, ShipSize.Small);
+        var plain = FireFrom(weapon, _ => { }, _ => { }, seed);
+        var other = FireFrom(weapon, attacker => attacker.DamageBonusPercent.EM = 50, _ => { }, seed);
+
+        other.Damage.Should().Be(plain.Damage);
+    }
+
+    [Test]
+    public void Fire_AFullyResistedShotDoesNothingButAnyOtherHitDoesAtLeastOne()
+    {
+        var weapon = SpaceTestShips.Laser(dmg: 20);
+        var seed = FirstHitSeed(new SpaceScenarioSpec(), ShipSize.Small, ShipSize.Small);
+
+        FireFrom(weapon, _ => { }, target => target.Resistances.Thermal = 100, seed).Damage.Should().Be(0);
+        FireFrom(weapon, _ => { }, target => target.Resistances.Thermal = 99, seed).Damage.Should().Be(1);
+    }
+
+    [Test]
+    public void Fire_DamageIsWholePoints()
+    {
+        var weapon = SpaceTestShips.Laser(dmg: 37);
+        var hits = Enumerable.Range(1, 100)
+            .Select(seed => FireFrom(weapon, a => a.DamageBonusPercent.Thermal = 13, t => t.Resistances.Thermal = 7, seed))
+            .Where(shot => shot.Hit)
+            .ToList();
+
+        hits.Should().NotBeEmpty();
+        hits.Should().OnlyContain(shot => shot.Damage == Math.Floor(shot.Damage));
+    }
+
+    [Test]
+    public void Fire_TheTargetsDamageTakenPercentAppliesAfterRounding()
+    {
+        var weapon = SpaceTestShips.Laser(dmg: 60);
+        var seed = FirstHitSeed(new SpaceScenarioSpec(), ShipSize.Small, ShipSize.Small);
+        var plain = FireFrom(weapon, _ => { }, _ => { }, seed);
+        var painted = FireFrom(weapon, _ => { }, target => target.DamageTakenPercent = 10, seed);
+
+        painted.Damage.Should().Be(SWLOR.Game.Server.Service.SpaceService.SpaceCombatMath.ApplyDamageTaken((int)plain.Damage, 10));
+        painted.Damage.Should().BeGreaterThan(plain.Damage);
+    }
+
+    [Test]
+    public void Fire_SustainedFireAddsDmgForEachHitOnTheSameTargetUpToTheMaximum()
+    {
+        var weapon = SpaceTestShips.Laser(dmg: 20);
+        var spec = SpaceTestShips.Ship(weapons: weapon);
+        spec.Accuracy = 1000;
+        spec.EnergyRepeatedHitDmg = 3;
+        spec.EnergyRepeatedHitMaxDmg = 15;
+        var attacker = ShipState.Create(spec, "Attacker", 0);
+        var first = ShipState.Create(SpaceTestShips.Ship(hull: 100000), "First", 1);
+        var second = ShipState.Create(SpaceTestShips.Ship(hull: 100000), "Second", 1);
+        var resolver = new ShotResolver(new SpaceScenarioSpec(), new System.Random(1));
+
+        for (var shot = 0; shot < 7; shot++)
+            resolver.Fire(attacker, weapon, 0, first);
+        attacker.RepeatedHitStacks.Should().Be(5);
+        SpaceShotMath.RegisterRepeatedHit(attacker, weapon, first).Should().Be(15);
+
+        resolver.Fire(attacker, weapon, 0, second);
+        attacker.RepeatedHitTarget.Should().BeSameAs(second);
+        attacker.RepeatedHitStacks.Should().Be(1);
+    }
+
+    [Test]
+    public void CriticalChance_AddsTheShipsCriticalRatePercent()
+    {
+        var weapon = SpaceTestShips.Laser();
+        var plain = ShipState.Create(SpaceTestShips.Ship(weapons: weapon), "Plain", 0);
+        var spec = SpaceTestShips.Ship(weapons: weapon);
+        spec.CriticalRatePercent = 10;
+        var sharp = ShipState.Create(spec, "Sharp", 0);
+        var target = ShipState.Create(SpaceTestShips.Ship(), "Target", 1);
+        var scenario = new SpaceScenarioSpec();
+
+        SpaceShotMath.CriticalChance(scenario, sharp, weapon, target)
+            .Should().Be(SpaceShotMath.CriticalChance(scenario, plain, weapon, target) + 10);
+    }
+
+    private static ShotResult FireFrom(WeaponModuleSpec weapon, Action<ShipSpec> changeAttacker, Action<ShipSpec> changeTarget, int seed)
+    {
+        var attackerSpec = SpaceTestShips.Ship(weapons: weapon);
+        changeAttacker(attackerSpec);
+        var targetSpec = SpaceTestShips.Ship(hull: 100000);
+        changeTarget(targetSpec);
+        var attacker = ShipState.Create(attackerSpec, "Attacker", 0);
+        var target = ShipState.Create(targetSpec, "Target", 1);
+        return new ShotResolver(new SpaceScenarioSpec(), new System.Random(seed)).Fire(attacker, weapon, 0, target);
     }
 
     // The first seed whose shot hits when the size penalties do not change the hit roll.

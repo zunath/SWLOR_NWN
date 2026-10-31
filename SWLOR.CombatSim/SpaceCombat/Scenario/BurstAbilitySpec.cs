@@ -13,6 +13,9 @@ public sealed class BurstAbilitySpec
     public string Weapon { get; set; }
 
     public int BonusDmg { get; set; }
+
+    /// <summary>Shots the press fires, each rolled on its own (Double Shot fires two).</summary>
+    public int Shots { get; set; } = 1;
     public double CooldownSeconds { get; set; } = 20;
     public double CapacitorCost { get; set; }
     public double StmCost { get; set; }

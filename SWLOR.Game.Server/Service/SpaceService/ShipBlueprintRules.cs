@@ -18,6 +18,24 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The blueprint item local that stores its guaranteed traits as comma-separated numbers.</summary>
         public const string GuaranteedTraitsVariable = "BLUEPRINT_SHIP_TRAITS";
 
+        /// <summary>The blueprint item local set once a research job on it has spent Prototype Tech.</summary>
+        public const string PrototypeTechVariable = "BLUEPRINT_PROTOTYPE_TECH";
+
+        // The research ceiling (review 2026-10-30): space research is a bounded extension of ground research. A ground
+        // blueprint gains at most 3 item bonuses (research levels 1, 6 and 9) and at most 11 guaranteed bonuses (level
+        // 7's, plus one chance roll at each of the ten levels: 0.2% at level 1 up to 12.1% at level 10). A ship blueprint
+        // keeps that ceiling: Prototype Tech adds its guaranteed trait at most once per blueprint and counts inside the 11,
+        // every trait's tier is capped by the recipe level (BonusTier), and no trait repeats on one blueprint.
+
+        /// <summary>The most item bonuses research grants a blueprint (levels 1, 6 and 9), as on the ground.</summary>
+        public const int MaximumItemBonuses = 3;
+
+        /// <summary>The most guaranteed bonuses a ground blueprint can gain (level 7, plus one chance roll per level).</summary>
+        public const int MaximumGuaranteedTraits = 11;
+
+        /// <summary>The most blueprint traits one crafted ship module or deed carries from its blueprint.</summary>
+        public const int MaximumTraits = MaximumItemBonuses + MaximumGuaranteedTraits;
+
         private static readonly Dictionary<string, ShipModuleStep> _stepsByTag =
             RevampModuleCatalog.Steps.ToDictionary(x => x.Tag);
 
@@ -104,22 +122,51 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return pool.Count == 0 ? ShipComponentTraitType.None : pool[next(pool.Count)].Type;
         }
 
-        /// <summary>A guaranteed trait for a researched recipe's blueprint that does not repeat one it holds (a few rolls, then any).</summary>
+        /// <summary>
+        /// A guaranteed trait for a researched recipe's blueprint: of the tier asked for, capped by the recipe's level
+        /// (<see cref="BonusTier"/>), never one the blueprint holds. None once the blueprint holds
+        /// <see cref="MaximumGuaranteedTraits"/> or every trait of that tier.
+        /// </summary>
         public static ShipComponentTraitType PickGuaranteed(
             RecipeDetail recipe,
             int tier,
             IReadOnlyCollection<ShipComponentTraitType> held,
             Func<int, int> next)
         {
-            var trait = ShipComponentTraitType.None;
-            for (var attempt = 0; attempt < 5; attempt++)
+            if (recipe == null || held != null && held.Count >= MaximumGuaranteedTraits)
+                return ShipComponentTraitType.None;
+
+            var pool = Pool(recipe, BonusTier(recipe.Level, tier))
+                .Where(x => held == null || !held.Contains(x.Type))
+                .ToList();
+            return pool.Count == 0 ? ShipComponentTraitType.None : pool[next(pool.Count)].Type;
+        }
+
+        /// <summary>
+        /// The item bonuses a crafted module or deed rolls from its blueprint: the nth of at most
+        /// <see cref="MaximumItemBonuses"/> rolls tier n capped by the recipe level, and none repeats another or one of the
+        /// blueprint's guaranteed traits (a bonus whose tier has nothing left is skipped).
+        /// </summary>
+        public static List<ShipComponentTraitType> PickItemBonuses(
+            RecipeDetail recipe,
+            int itemBonuses,
+            IReadOnlyCollection<ShipComponentTraitType> guaranteed,
+            Func<int, int> next)
+        {
+            var picked = new List<ShipComponentTraitType>();
+            if (recipe == null)
+                return picked;
+
+            for (var bonus = 1; bonus <= Math.Min(itemBonuses, MaximumItemBonuses); bonus++)
             {
-                trait = Pick(recipe, tier, next);
-                if (held == null || !held.Contains(trait))
-                    return trait;
+                var pool = Pool(recipe, BonusTier(recipe.Level, bonus))
+                    .Where(x => (guaranteed == null || !guaranteed.Contains(x.Type)) && !picked.Contains(x.Type))
+                    .ToList();
+                if (pool.Count > 0)
+                    picked.Add(pool[next(pool.Count)].Type);
             }
 
-            return trait;
+            return picked;
         }
 
         /// <summary>
@@ -132,24 +179,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return pool.Count == 0 ? ShipComponentTraitType.None : pool[next(pool.Count)].Type;
         }
 
-        /// <summary>
-        /// A guaranteed trait for a blueprint that does not repeat one it already holds (a few rolls, then any).
-        /// </summary>
+        /// <summary>A guaranteed trait of the tier for a component family's module that the blueprint does not hold, or None.</summary>
         public static ShipComponentTraitType PickGuaranteed(
             ShipComponentFamily family,
             int tier,
             IReadOnlyCollection<ShipComponentTraitType> held,
             Func<int, int> next)
         {
-            var trait = ShipComponentTraitType.None;
-            for (var attempt = 0; attempt < 5; attempt++)
-            {
-                trait = Pick(family, tier, next);
-                if (held == null || !held.Contains(trait))
-                    return trait;
-            }
+            if (held != null && held.Count >= MaximumGuaranteedTraits)
+                return ShipComponentTraitType.None;
 
-            return trait;
+            var pool = Pool(family, tier).Where(x => held == null || !held.Contains(x.Type)).ToList();
+            return pool.Count == 0 ? ShipComponentTraitType.None : pool[next(pool.Count)].Type;
         }
     }
 }

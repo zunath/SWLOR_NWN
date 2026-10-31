@@ -627,6 +627,8 @@ namespace SWLOR.Game.Server.Service
             var destinationBeacon = destination == null ? null : GetBeaconBuilding(destination.Id);
             var originState = originBeacon == null ? null : GetState(originBeacon);
             var destinationState = destinationBeacon == null ? null : GetState(destinationBeacon);
+            var originAnchor = Station.GetAnchor(origin);
+            var destinationAnchor = destination == null ? null : Station.GetAnchor(destination);
             return new JumpRequest
             {
                 ShipDocked = ship != null && IsDockedAt(ship, record, GetStarportInteriorIds(origin.Id)),
@@ -643,6 +645,10 @@ namespace SWLOR.Game.Server.Service
                 ShipSize = record == null ? ShipSize.Invalid : Space.GetShipSize(record),
                 HullTag = record?.Status?.ItemTag ?? string.Empty,
                 FuelAboard = record == null ? 0 : CargoHoldRules.GetUnits(record.Cargo, CommodityType.StationFuel),
+                CargoValue = record == null ? 0 : PirateAmbushRules.GetCargoValue(record.Cargo, record.SealedFreight),
+                Hops = originAnchor == null || destinationAnchor == null
+                    ? 0
+                    : TradeLookup.GetHops(originAnchor.Exchange, destinationAnchor.Exchange),
                 DestinationBlockaded = destination != null && Space.IsStationBlockaded(destination.Id),
             };
         }
@@ -691,7 +697,7 @@ namespace SWLOR.Game.Server.Service
 
             // The jump's destination is saved with the fuel it burns, so a restart before the ship moves finishes the jump
             // at the next module load rather than losing the fuel.
-            var fuel = StationBuildingRules.GetJumpFuel(request.ShipSize, request.HullTag);
+            var fuel = StationBuildingRules.GetJumpFuel(request);
             var dockPosition = GetPositionFromLocation(dock.Location);
             var spacePosition = GetPosition(anchorWaypoint);
             record.PendingJumpDock = new PropertyLocation

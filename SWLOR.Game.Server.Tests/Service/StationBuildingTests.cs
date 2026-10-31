@@ -301,6 +301,49 @@ public class StationBuildingTests
         StationBuildingRules.GetJumpFuel(barge.Size, barge.Tag).Should().Be(2);
     }
 
+    /// <summary>
+    /// Cargo burns fuel by its value and the starlane hops the jump skips (review 2026-10-30), so a jump never pays
+    /// better than flying the lanes it skips (trade.py --sim, Jump Beacons). The hull's own fuel is unchanged.
+    /// </summary>
+    [Test]
+    public void AJumpsCargoBurnsFuelByItsValueAndTheHopsSkipped()
+    {
+        StationTuning.JumpFuelCargoValuePerHop.Should().Be(6000);
+        StationBuildingRules.GetJumpFuel(ShipSize.Medium, "", 0, 5).Should().Be(2, "an empty ship burns its hull's fuel");
+        StationBuildingRules.GetJumpFuel(ShipSize.Medium, "", 12000, 0).Should().Be(2, "a jump within one system skips no lane");
+        StationBuildingRules.GetJumpFuel(ShipSize.Medium, "", 1, 1).Should().Be(3, "rounded up");
+        StationBuildingRules.GetJumpFuel(ShipSize.Medium, "", 6000, 1).Should().Be(3);
+        StationBuildingRules.GetJumpFuel(ShipSize.Medium, "", 6001, 1).Should().Be(4);
+
+        // The review's case: a 300-volume sealed freight load (valued 40 a volume) jumped across 5 hops.
+        var freight = PirateAmbushRules.GetCargoValue(new Dictionary<CommodityType, CargoLot>(),
+            new[] { new SealedFreightLot { Volume = 300 } });
+        freight.Should().Be(300 * TradeTuning.SealedValuePerVolume);
+        StationBuildingRules.GetJumpFuel(ShipSize.Medium, "", freight, 5).Should().Be(12);
+        var barge = RevampShipCatalog.Hulls.Single(x => x.Name == "Hutt Grand Barge");
+        StationBuildingRules.GetJumpFuel(barge.Size, barge.Tag, freight, 5).Should().Be(7, "(4 + 10) less 50%");
+
+        var loaded = new JumpRequest
+        {
+            ShipDocked = true, CanPilot = true, OriginPermits = true, DestinationPermits = true, OriginBeaconLevel = 1,
+            DestinationBeaconLevel = 1, ShipSize = ShipSize.Medium, FuelAboard = 11, CargoValue = freight, Hops = 5,
+        };
+        StationBuildingRules.GetJumpFuel(loaded).Should().Be(12);
+        StationBuildingRules.GetJumpRefusal(loaded).Should().Be(JumpRefusal.InsufficientFuel);
+        StationBuildingRules.DescribeJumpRefusal(JumpRefusal.InsufficientFuel, loaded).Should().Contain("12 Station Fuel");
+        StationBuildingRules.GetJumpRefusal(new JumpRequest
+        {
+            ShipDocked = true, CanPilot = true, OriginPermits = true, DestinationPermits = true, OriginBeaconLevel = 1,
+            DestinationBeaconLevel = 1, ShipSize = ShipSize.Medium, FuelAboard = 12, CargoValue = freight, Hops = 5,
+        }).Should().Be(JumpRefusal.None);
+
+        var service = ReadServer("Service", "StationBuildings.cs");
+        service.Should().Contain("CargoValue = record == null ? 0 : PirateAmbushRules.GetCargoValue(record.Cargo, record.SealedFreight)");
+        service.Should().Contain("TradeLookup.GetHops(originAnchor.Exchange, destinationAnchor.Exchange)");
+        service.Should().Contain("var fuel = StationBuildingRules.GetJumpFuel(request);");
+        ReadServer("Feature", "DialogDefinition", "StationBuildingDialog.cs").Should().Contain("StationBuildingRules.GetJumpFuel(request)");
+    }
+
     [TestCase(JumpBeaconAccessType.Citizens, true, false, true)]
     [TestCase(JumpBeaconAccessType.Citizens, false, true, false)]
     [TestCase(JumpBeaconAccessType.Allies, false, true, true)]

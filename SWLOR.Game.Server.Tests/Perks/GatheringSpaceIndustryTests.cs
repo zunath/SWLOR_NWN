@@ -47,12 +47,12 @@ public class GatheringSpaceIndustryTests
     [Test]
     public void TheIds_AreReservedAfterTheCommandStyle()
     {
-        ((int)PerkType.Prospector).Should().Be(883);
-        ((int)PerkType.DeepCore).Should().Be(884);
-        ((int)PerkType.RapidExtraction).Should().Be(885);
-        ((int)StatType.SpaceMiningYieldBonus).Should().Be(1215);
-        ((int)StatType.SpaceRareMetalChance).Should().Be(1216);
-        ((int)StatType.SpaceMiningCycleSpeedPercent).Should().Be(1217);
+        ((int)PerkType.Prospector).Should().Be(1039);
+        ((int)PerkType.DeepCore).Should().Be(1040);
+        ((int)PerkType.RapidExtraction).Should().Be(1041);
+        ((int)StatType.SpaceMiningYieldBonus).Should().Be(1444);
+        ((int)StatType.SpaceRareMetalChance).Should().Be(1445);
+        ((int)StatType.SpaceMiningCycleSpeedPercent).Should().Be(1446);
         ((int)FeatType.ProspectorTrait).Should().Be(3347);
         ((int)FeatType.DeepCoreTrait).Should().Be(3348);
         ((int)FeatType.RapidExtractionTrait).Should().Be(3349);
@@ -61,10 +61,10 @@ public class GatheringSpaceIndustryTests
     [Test]
     public void TheGasAndSalvageIds_FollowThePowerRoutingFeats()
     {
-        ((int)PerkType.GasSiphoning).Should().Be(886);
-        ((int)PerkType.SalvageExpert).Should().Be(887);
-        ((int)StatType.SpaceGasYieldBonus).Should().Be(1218);
-        ((int)StatType.SpaceSalvageYieldBonus).Should().Be(1219);
+        ((int)PerkType.GasSiphoning).Should().Be(1042);
+        ((int)PerkType.SalvageExpert).Should().Be(1043);
+        ((int)StatType.SpaceGasYieldBonus).Should().Be(1447);
+        ((int)StatType.SpaceSalvageYieldBonus).Should().Be(1448);
         ((int)FeatType.GasSiphoningTrait).Should().Be(3355);
         ((int)FeatType.SalvageExpertTrait).Should().Be(3356);
     }
@@ -72,8 +72,8 @@ public class GatheringSpaceIndustryTests
     [Test]
     public void TheTraitHunterIds_FollowTheSalvageUpdate()
     {
-        ((int)PerkType.TraitHunter).Should().Be(888);
-        ((int)StatType.SpaceRareTraitChance).Should().Be(1220);
+        ((int)PerkType.TraitHunter).Should().Be(1044);
+        ((int)StatType.SpaceRareTraitChance).Should().Be(1449);
         ((int)FeatType.TraitHunterTrait).Should().Be(3357);
     }
 

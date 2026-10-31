@@ -146,5 +146,7 @@ namespace SWLOR.Game.Server.Service.StationService
         public static readonly IReadOnlyDictionary<int, ShipSize> BeaconMaxHull = new Dictionary<int, ShipSize> { [1] = ShipSize.Medium, [2] = ShipSize.Large, [3] = ShipSize.Capital };
         public static readonly IReadOnlyDictionary<ShipSize, int> JumpFuel = new Dictionary<ShipSize, int> { [ShipSize.Small] = 1, [ShipSize.Medium] = 2, [ShipSize.Large] = 4, [ShipSize.Capital] = 8 };
         public static readonly IReadOnlyDictionary<string, int> JumpFuelDiscountPercent = new Dictionary<string, int> { ["sd_huttgrandbarg"] = 50 };
+        /// <summary>One more fuel unit per this many credits of cargo value per starlane hop jumped.</summary>
+        public const int JumpFuelCargoValuePerHop = 6000;
     }
 }

@@ -202,6 +202,7 @@ public class PlanetaryHoldingTests
         HoldingRules.GetPurchaseRefusal(farm, TradeExchangeType.Tatooine, 3, farm.PurchasePrice).Should().Be(HoldingRefusal.AtLimit);
         HoldingRules.GetPurchaseRefusal(farm, TradeExchangeType.Tatooine, 0, farm.PurchasePrice - 1).Should().Be(HoldingRefusal.NotEnoughCredits);
         HoldingTuning.MaximumHoldings.Should().Be(3);
+        HoldingRules.GetRefusalMessage(HoldingRefusal.AtLimit).Should().Contain("account");
 
         var holding = New(HoldingType.MoistureFarm);
         holding.Level.Should().Be(1);
@@ -656,7 +657,67 @@ public class PlanetaryHoldingTests
         board.Rows.Where(x => TradeLookup.GetCommodity(x.Commodity).IsHoldingGood).Should().OnlyContain(x => x.BuyAt == TradeExchangeType.Invalid);
     }
 
+    /// <summary>
+    /// The limit is per account (review 2026-10-30): every character on one public CD key counts, so more characters do
+    /// not multiply the passive income. A deleted character's holdings no longer count.
+    /// </summary>
+    [Test]
+    public void Buying_TheLimitIsPerAccount()
+    {
+        var farm = Detail(HoldingType.MoistureFarm);
+        var mine = HoldingRules.Create("player", farm, "tatooine_dock", Start, "ACCOUNT1");
+        mine.OwnerCDKey.Should().Be("ACCOUNT1");
+        New(HoldingType.MoistureFarm).OwnerCDKey.Should().BeEmpty("older callers and records have no key until the owner's holdings load");
+
+        var alt = HoldingRules.Create("alt", farm, "tatooine_dock", Start, "ACCOUNT1");
+        var deleted = HoldingRules.Create("deleted", farm, "tatooine_dock", Start, "ACCOUNT1");
+        bool Live(string playerId) => playerId != "deleted";
+        var records = new[] { mine, HoldingRules.Create("player", farm, "x", Start, "ACCOUNT1"), alt, deleted };
+
+        // The buyer's own records come from their loaded holdings and are never counted twice.
+        var owned = HoldingRules.CountAccountHoldings("player", 2, records, Live);
+        owned.Should().Be(3, "two on this character and one on another of the account's characters");
+        HoldingRules.GetPurchaseRefusal(farm, TradeExchangeType.Tatooine, owned, farm.PurchasePrice).Should().Be(HoldingRefusal.AtLimit);
+
+        HoldingRules.CountAccountHoldings("player", 2, new[] { mine, deleted }, Live).Should().Be(2, "a deleted character's holdings do not count");
+        HoldingRules.CountAccountHoldings("alt", 1, records, Live).Should().Be(3, "the alt sees the same account total");
+        HoldingRules.CountAccountHoldings("player", 1, null, Live).Should().Be(1);
+
+        var service = Source(Path.Combine("Service", "PlanetaryHoldings.cs"));
+        service.Should().Contain("var owned = CountAccountHoldings(player, LoadHoldings(player).Count);");
+        service.Should().Contain("AddFieldSearch(nameof(PlanetaryHolding.OwnerCDKey), cdKey, false)");
+        service.Should().Contain("GetPCPublicCDKey(player)");
+        Source(Path.Combine("Feature", "GuiDefinition", "ViewModel", "PlanetaryHoldingsViewModel.cs"))
+            .Should().Contain("PlanetaryHoldings.CountAccountHoldings(Player, _holdingIds.Count)");
+    }
+
     // Income
+
+    /// <summary>Daily net minutes of the dock tier's rate at level 3 with the best droid and a Processing Plant.</summary>
+    private static double BestMinutes(HoldingDetail detail)
+    {
+        var rate = HoldingTuning.ReferenceRateByTier[TradeLookup.GetExchange(detail.Exchange).OrbitTier];
+        var price = TradeLookup.GetCommodity(detail.Output).BasePrice;
+        var units = HoldingRules.GetDailyUnits(detail, 3, HoldingTuning.BestDroidPercent);
+        var (refined, used, input) = HoldingRules.Refine(detail.Chain, HoldingRules.GetPlantUnits(units), int.MaxValue);
+        var value = (units - used) * price + refined * TradeLookup.GetCommodity(detail.Chain.Refined).BasePrice -
+                    input * TradeLookup.GetCommodity(detail.Chain.Input).BasePrice -
+                    HoldingRules.GetDailyUpkeep(detail, 3, HoldingTuning.BestDroidPercent);
+        return value * 60.0 / rate;
+    }
+
+    /// <summary>
+    /// An account's best legal trio, event-free, stays within the 90-minute passive cap (review 2026-10-30): three of
+    /// the best type and the three best types.
+    /// </summary>
+    [Test]
+    public void Income_AnAccountsBestThreeHoldingsStayWithinThePassiveCap()
+    {
+        HoldingTuning.MaximumAccountMinutes.Should().Be(90);
+        var best = HoldingCatalog.Holdings.Select(BestMinutes).OrderByDescending(x => x).ToList();
+        (3 * best[0]).Should().BeLessThanOrEqualTo(HoldingTuning.MaximumAccountMinutes + 1e-6, "three holdings of the best type");
+        best.Take(3).Sum().Should().BeLessThanOrEqualTo(HoldingTuning.MaximumAccountMinutes + 1e-6, "the three best types");
+    }
 
     [Test]
     public void Income_IsAModestPassiveIncomeAtTheDockTier()
@@ -689,7 +750,7 @@ public class PlanetaryHoldingTests
     [Test]
     public void Wiring_DockMasterWindowAndSite()
     {
-        ((int)GuiWindowType.PlanetaryHoldings).Should().Be(88);
+        ((int)GuiWindowType.PlanetaryHoldings).Should().Be(104);
         Source(Path.Combine("Feature", "DialogDefinition", "StarportDialog.cs")).Should().Contain("\"Planetary Holdings\"");
         Source(Path.Combine("Feature", "DialogDefinition", "HoldingSiteDialog.cs")).Should().Contain("PlanetaryHoldings.LeaveSite");
         var service = Source(Path.Combine("Service", "PlanetaryHoldings.cs"));

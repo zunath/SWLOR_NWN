@@ -108,7 +108,7 @@ public class ScanningTests
     [Test]
     public void Signal_EnvironmentStatIsDeclared()
     {
-        ((int)StatType.SpaceScanStrengthPercent).Should().Be(1221);
+        ((int)StatType.SpaceScanStrengthPercent).Should().Be(1450);
     }
 
     [Test]
@@ -322,7 +322,7 @@ public class ScanningTests
         ((int)FeatType.ShipJumpToSignature).Should().Be(3358);
         var feats = File.ReadAllLines(RepositoryFile("SWLOR_Haks", "sw_2da", "feat.2da"));
         var row = feats.Single(x => x.StartsWith("3358 ", StringComparison.Ordinal));
-        row.Should().Contain("ShipJumpToSignature").And.Contain("16970126").And.Contain("16970127").And.Contain("ife_sigjump");
+        row.Should().Contain("ShipJumpToSignature").And.Contain("16970364").And.Contain("16970365").And.Contain("ife_sigjump");
     }
 
     // Sensor Sweep

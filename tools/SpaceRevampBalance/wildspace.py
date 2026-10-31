@@ -71,7 +71,7 @@ RESOURCE_SPAWN_TABLE = "SPACE_RESOURCES_KORRIBAN_DEBRIS"  # tier 5 ores (Gostian
 ENVIRONMENT_IDS = {"Pulsar": 1, "BlackHole": 2, "IonStorm": 3, "Magnetar": 4, "RedGiant": 5, "ShipGraveyard": 6}
 ENVIRONMENT_NAMES = {"Pulsar": "Pulsar", "BlackHole": "Black Hole", "IonStorm": "Ion Storm", "Magnetar": "Magnetar",
                      "RedGiant": "Red Giant", "ShipGraveyard": "Ship Graveyard"}
-# New StatTypes (from 1280; W9c may use 1260-1279) and the existing ones the environments use.
+# New StatTypes (from 1280; other space StatTypes use 1400-1452, clear of crafting's 1168-1267) and the existing ones the environments use.
 NEW_STATS = {
     "SpaceShieldDamageTakenPercentAdjustment": 1280,
     "SpaceCapacitorRegenPercentAdjustment": 1281,

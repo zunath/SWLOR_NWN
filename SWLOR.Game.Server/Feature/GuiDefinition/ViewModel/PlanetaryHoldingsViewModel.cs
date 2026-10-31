@@ -446,9 +446,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshBuy()
         {
-            var owned = _holdingIds.Count;
+            var owned = PlanetaryHoldings.CountAccountHoldings(Player, _holdingIds.Count);
             var gold = GetGold(Player);
-            OwnedText = $"You own {owned} of {HoldingTuning.MaximumHoldings} holdings.";
+            OwnedText = $"Your account owns {owned} of {HoldingTuning.MaximumHoldings} holdings ({_holdingIds.Count} on this character).";
 
             var details = HoldingRules.GetHoldingsAt(_exchange);
             _buyTypes = details.Select(x => x.Type).ToList();

@@ -1066,6 +1066,7 @@ namespace SWLOR.Game.Server.Service
             blueprintDetail.Recipe = (RecipeType)recipeId;
             blueprintDetail.RandomEnhancementSlotGranted = GetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED");
             blueprintDetail.GuaranteedTraits = ShipTraitRules.Parse(GetLocalString(blueprint, ShipBlueprintRules.GuaranteedTraitsVariable));
+            blueprintDetail.PrototypeTechUsed = GetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable);
 
             var blueprintProperties = new List<(ItemProperty Property, ItemPropertyType Type, int SubType, int CostValue)>();
             for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
@@ -1157,6 +1158,8 @@ namespace SWLOR.Game.Server.Service
             SetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED", blueprintDetail.RandomEnhancementSlotGranted);
             if (blueprintDetail.GuaranteedTraits.Count > 0)
                 SetLocalString(blueprint, ShipBlueprintRules.GuaranteedTraitsVariable, ShipTraitRules.Format(blueprintDetail.GuaranteedTraits));
+            if (blueprintDetail.PrototypeTechUsed)
+                SetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable, true);
 
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprintDetail.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.LicensedRuns, blueprintDetail.LicensedRuns), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

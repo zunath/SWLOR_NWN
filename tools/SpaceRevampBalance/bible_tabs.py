@@ -476,7 +476,7 @@ ACTIVE_BAND = (100, 140)       # of the tier's combat rate: every active activit
 CONTRABAND_BAND = (150, 200)   # contraband trade after customs and pirates
 MINING_BAND = (88, 107)        # "about 90-100%": a no-perk miner (W11e), level with the strip miner
 STORE_EXPLORE_MAX = 120        # exploring with schematics and Prototype Tech at their store price
-PASSIVE_CAP_MINUTES = 90       # passive income per character a day, in minutes of the tier's combat rate
+PASSIVE_CAP_MINUTES = 90       # passive income per account a day, in minutes of the tier's combat rate
 
 
 def income_rows():
@@ -596,7 +596,7 @@ def income_rows():
 
 
 def passive_rows():
-    """Passive income a day in minutes of the tier's combat rate: three holdings per character (holdings.py) and a
+    """Passive income a day in minutes of the tier's combat rate: three holdings per account (holdings.py) and a
     station's Asteroid Drill (stations.py; the city's ore, not a character's)."""
     import holdings
     import scanning
@@ -609,12 +609,15 @@ def passive_rows():
         return 3 * sum(r[key] for r in rows) / len(rows)
 
     best = sorted(rows, key=lambda r: -r["l3_plant"])[:3]
+    top = best[0]
     out = [
         ("Three holdings, level 1 (average type)", f"{average('l1'):.0f} min"),
         ("Three holdings, level 3, best droid, Processing Plant (average type)", f"{average('l3_plant'):.0f} min"),
         ("Three holdings at their best, the three best types",
          f"{sum(r['l3_plant'] for r in best):.0f} min ({sum(r['l3_plant'] * r['events'] for r in best):.0f} after events, "
          f"{sum(r['l3_plant'] * r['defended'] for r in best):.0f} with every raid driven off)"),
+        (f"Three holdings at their best, three of the best type ({top['name']})",
+         f"{3 * top['l3_plant']:.0f} min ({3 * top['l3_plant'] * top['events']:.0f} after events)"),
     ]
     ratios = []
     for d in stations.drill_income():

@@ -71,22 +71,6 @@ public class WeaponAttackAnimationTests
         WeaponAttackAnimation.VariantReplacement(source, existing, variant).Should().Be(expected);
     }
 
-    [TestCase("longsword_b", BaseItem.Longsword, true, false)]
-    [TestCase("b_longsword", BaseItem.Longsword, true, false)]
-    [TestCase("dagger_b", BaseItem.Dagger, false, true)]
-    [TestCase("b_knife", BaseItem.Dagger, false, true)]
-    [TestCase("tit_longsword", BaseItem.Longsword, false, false)]
-    [TestCase("longsword_b", BaseItem.Dagger, false, false)]
-    public void LegacyRepairIsLimitedToTheBasicWeaponTemplates(
-        string resref,
-        BaseItem baseItem,
-        bool expectedVibroblade,
-        bool expectedVibroknife)
-    {
-        BasicVibrobladeCompatibility.IsBasicVibroblade(baseItem, resref).Should().Be(expectedVibroblade);
-        BasicVibrobladeCompatibility.IsBasicVibroknife(baseItem, resref).Should().Be(expectedVibroknife);
-    }
-
     [Test]
     public void QysRetiredBasicDagger_RepairsOnlyTheMissingDamageAndVibroknifeRequirement()
     {

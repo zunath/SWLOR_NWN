@@ -58,8 +58,8 @@ The stored-item sweep (`StoredItemSweep`) edits saved GFF directly instead of lo
 
 Renaming an enum member (required by `CodingStandards.md`, "Renames") always comes with migration code that moves old data to the new member.
 
-- Map each old name to its new member in a rename table, and rewrite raw records before they deserialize. The reference is `RelocatedDungeonEnumMigration`, which a `PostDatabaseLoad` server migration applies to raw Player JSON.
-- Also add a read-time fallback on each affected property so records that skip the migration (restored from a backup or imported after the version was recorded) still load. The reference is `RelocatedKeyItemsJsonConverter` and `RelocatedKillProgressesJsonConverter`, attached in `Player.cs` with `[JsonConverter]`; test that a legacy record deserializes without the migration.
+- Map each old name to its new member in a rename table, and rewrite raw records before they deserialize, in a server migration over raw Player JSON (`DB.SearchRawJson`).
+- Also add a read-time fallback on each affected property so records that skip the migration (restored from a backup or imported after the version was recorded) still load. The reference is `RenamedRecipesJsonConverter`, attached in `Player.cs` with `[JsonConverter]`; test that a legacy record deserializes without the migration. Remove the table and fallbacks when the migration is retired.
 - Cover every place the old name can live: dictionaries keyed by the enum on `Player` and other entities, item and character locals, serialized item or object data, and stored strings such as search fields.
 - Add the rewrite to the release's existing migration and pass ("One migration per release", "One pass per data set").
 - Test from a legacy record that still uses the old name, and assert the entry survives under the new one.

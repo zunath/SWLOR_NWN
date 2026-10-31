@@ -65,6 +65,25 @@ public class SlitherhornFitTests
         Rebase(authored + previous, previous, next).Should().BeApproximately(authored, .000001f);
     }
 
+    [Test]
+    public void CopiedLocalsDoNotSubtractTheOriginalItemsFitFromAResetTransform()
+    {
+        const float saved = .035f;
+        var copiedOffset = Invoke("ResolveOwnedOffset", "original-item", "copied-item", saved);
+        Rebase(0f, copiedOffset, 0f).Should().Be(0f);
+        Rebase(0f, copiedOffset, saved).Should().Be(saved);
+    }
+
+    [Test]
+    public void ReloadingTheSameItemRetainsItsOwnedOffset()
+    {
+        const float authored = -.014f;
+        const float saved = -.028f;
+        var owned = Invoke("ResolveOwnedOffset", "persisted-item", "persisted-item", saved);
+        Rebase(authored + saved, owned, saved).Should().BeApproximately(authored + saved, .000001f);
+        Rebase(authored + saved, owned, 0f).Should().BeApproximately(authored, .000001f);
+    }
+
     private static float Offset(string resref, AppearanceType appearance, int phenotype, Gender gender) =>
         Invoke("ResolveOffset", resref, appearance, phenotype, gender);
 

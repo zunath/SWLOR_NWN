@@ -11,6 +11,7 @@ public static class SlitherhornFit
     private const ObjectVisualTransformDataScopeType FitScope =
         (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2;
     private const string AppliedOffsetVariable = "SLITHERHORN_FIT_Z";
+    private const string FittedItemVariable = "SLITHERHORN_FIT_ITEM";
 
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnModuleEnter() => RefreshInventory(GetEnteringObject());
@@ -123,17 +124,31 @@ public static class SlitherhornFit
     private static float RebaseOffset(float current, float previousOffset, float nextOffset) =>
         current - previousOffset + nextOffset;
 
+    private static float ResolveOwnedOffset(string fittedItem, string currentItem, float offset) =>
+        !string.IsNullOrEmpty(fittedItem) && fittedItem == currentItem ? offset : 0f;
+
     private static void ApplyOffset(uint item, float offset)
     {
-        var previous = GetLocalFloat(item, AppliedOffsetVariable);
-        if (previous == 0f && offset == 0f)
+        var saved = GetLocalFloat(item, AppliedOffsetVariable);
+        if (saved == 0f && offset == 0f)
             return;
+        // CopyItem copies locals but resets visual transforms; UUIDs survive ordinary reloads.
+        var identity = GetObjectUUID(item);
+        var previous = ResolveOwnedOffset(GetLocalString(item, FittedItemVariable), identity, saved);
         var current = GetObjectVisualTransform(item, ObjectVisualTransform.TranslateZ, nScope: FitScope);
         var next = RebaseOffset(current, previous, offset);
         if (Math.Abs(current - next) > .000001f)
             SetObjectVisualTransform(item, ObjectVisualTransform.TranslateZ, next, nScope: FitScope);
         // Both values persist on the item, so reloading cannot compound the fit.
-        if (offset == 0f) DeleteLocalFloat(item, AppliedOffsetVariable);
-        else SetLocalFloat(item, AppliedOffsetVariable, offset);
+        if (offset == 0f)
+        {
+            DeleteLocalFloat(item, AppliedOffsetVariable);
+            DeleteLocalString(item, FittedItemVariable);
+        }
+        else
+        {
+            SetLocalFloat(item, AppliedOffsetVariable, offset);
+            SetLocalString(item, FittedItemVariable, identity);
+        }
     }
 }

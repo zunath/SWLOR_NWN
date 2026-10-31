@@ -376,7 +376,8 @@ below original Y=0.04). The editable model is
 0.035 m for males and -0.028 m for females, including their robe variants. Equipment
 and appearance refreshes rebase against the saved fit delta, preserving cosmetic
 transforms and removing only this offset on unequip. Other body families retain their
-authored attachment until they have a measured profile.
+authored attachment until they have a measured profile. The saved delta belongs to the
+item's UUID, so a native `CopyItem` with copied locals and reset transforms starts unfitted.
 
 The SWG loops retain their original duration and speed. The first and last 0.25 seconds blend to
 the shared stance, without extending or retiming the clip. Locomotion is folded into `rootdummy`

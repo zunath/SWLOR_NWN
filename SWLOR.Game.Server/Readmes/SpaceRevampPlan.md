@@ -1364,6 +1364,13 @@ Everything merges to one integration branch and releases together.
   - **Mid Rim Nebula:** its lane now leaves Hutlar Orbit (T3) from the Mon Cala arrival corner's no-spawn zone, lane at (272.5, 28.5), landing `STARLANE_LANDING_HUTLAR_4` at (275.5, 25.5); the nebula's lane back (306.4, 15.6) is "Starlane - Hutlar". Mid Rim 1's lane pair is gone. `trade.py --check` now compares `LANES` with the Module starlanes. Placement is a client check.
   - **Combat checks (`checks.py`, 150 runs):** all fifteen sections (A-O) reran identically before and after this pass and after merging master (W11e changes no combat input); every combat band held under the old pilot model. Superseded by the model fidelity pass under Combat simulator above (legal builds and the server's damage order).
 - **Bible sync:** run `tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` after every Bible edit. The Bible, C# descriptions, TLK and behavior must agree.
+- **Release gates (review fix, 2026-10-30):** the space revamp does not merge to master until every gate holds on the integrated release head (after the crafting revamp has merged and been merged in):
+  - **Numbers:** every balance tool exits 0: `checks.py`, `mining.py --sim`, `scanning.py --sim` and `--sim --store-price`, `production.py --sim`, `holdings.py --check`, `trade.py --sim` (`beacon_problems()` empty), `kills.py --sim` only after the measurement below. A band that fails is a failure, not a note.
+  - **IDs and migrations:** no enum, 2DA row or TLK id shared with the crafting revamp or master (`PerkType`, `StatType`, `GuiWindowType`, TLK, `RecipeType` and the rest), checked again on the release head; character migration 26 and server migration 30 still above everything else that ships.
+  - **Bible:** the workbook regenerated from the tools on the release head and the `CombatUpgradeBible*`, `RecipeBibleRows*` and Bible sync tests passing.
+  - **Tests:** the space, crafting, trade, migration and message-audit test filters green, including the interrupted-operation cases (crash windows, logout mid-craft, logout mid-fight, restart mid-run).
+  - **Measured:** kills an hour in a live client session at T1, T3 and T5 with a legal build; within 15% of `KILLS_PER_HOUR` or the bands are retuned.
+  - **Client evidence:** the list above, through the established procedure.
 - **Docs after release:**
   - Move lasting rules into `ContentStandards.md` (hull, module and enemy standards; ship-access and docking rules) and `SkillPerkStandards.md` (space styles). Done (W11n): "Space content" in `ContentStandards.md`, "Space skills and styles" in `SkillPerkStandards.md`.
   - Fix `Builders.md`.

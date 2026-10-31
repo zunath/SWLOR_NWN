@@ -30,8 +30,6 @@ namespace SWLOR.Game.Server.Service
         public const string TestPlayerTag = "HUTTBALL_TEST_PLAYER";
         private const string CarrierEffectTag = "HUTTBALL_CARRIER";
         private const string KnockedDownEffectTag = "HUTTBALL_DOWN";
-        private const string TurnEffectTag = "HUTTBALL_TURN";
-        private const float TurnRingScale = 0.6f;
 
         // The module's Teleport Object: an invisible placeable whose name shows on hover, used as a scoreboard.
         private const string ScoreboardResref = "tele_obj";
@@ -66,6 +64,11 @@ namespace SWLOR.Game.Server.Service
             /// Bumped by each touchdown, so a celebration countdown left over from an earlier one does nothing.
             /// </summary>
             public int CelebrationId { get; set; }
+
+            /// <summary>
+            /// The half, turn, and team last flashed as starting their turn.
+            /// </summary>
+            public (int Half, int Turn, HuttballTeam Team)? LastTurn { get; set; }
         }
 
         private static readonly Dictionary<uint, MatchEntry> _matches = new();
@@ -527,15 +530,34 @@ namespace SWLOR.Game.Server.Service
 
                 SetTaggedEffect(creature, CarrierEffectTag, match.BallCarrier == player,
                     () => SupernaturalEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Glow_Yellow)));
-
-                // A small ring in the team's color under everyone on the team whose turn it is.
-                var isTheirTurn = match.Phase == HuttballPhase.Playing && player.Team == match.ActiveTeam && player.IsOnPitch;
-                var turnRing = player.Team == HuttballTeam.Home ? VisualEffect.Vfx_Dur_Aura_Blue : VisualEffect.Vfx_Dur_Aura_Red;
-                SetTaggedEffect(creature, TurnEffectTag, isTheirTurn,
-                    () => SupernaturalEffect(EffectVisualEffect(turnRing, false, TurnRingScale)));
             }
 
             SyncBall(area, entry);
+            AnnounceTurnStart(area, entry);
+        }
+
+        /// <summary>
+        /// Flashes every on-pitch player of a team when its turn begins, so they know it is their move.
+        /// </summary>
+        private static void AnnounceTurnStart(uint area, MatchEntry entry)
+        {
+            var match = entry.Match;
+            if (match.Phase != HuttballPhase.Playing)
+            {
+                entry.LastTurn = null;
+                return;
+            }
+
+            var turn = (match.Half, match.Turn, match.ActiveTeam);
+            if (entry.LastTurn == turn)
+                return;
+
+            entry.LastTurn = turn;
+            foreach (var player in match.Players.Where(p => p.Team == match.ActiveTeam && p.IsOnPitch))
+            {
+                if (GetIsObjectValid(player.Creature) && GetArea(player.Creature) == area)
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pdk_Final_Stand), player.Creature);
+            }
         }
 
         /// <summary>
@@ -614,7 +636,7 @@ namespace SWLOR.Game.Server.Service
             // Clearing actions ends a knocked-down player's pose.
             if (HasEffectByTag(creature, KnockedDownEffectTag))
                 AssignCommand(creature, () => ClearAllActions());
-            RemoveEffectByTag(creature, KnockedDownEffectTag, CarrierEffectTag, TurnEffectTag);
+            RemoveEffectByTag(creature, KnockedDownEffectTag, CarrierEffectTag);
         }
 
         private static void SyncBall(uint area, MatchEntry entry)

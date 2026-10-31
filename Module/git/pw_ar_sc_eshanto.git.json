@@ -2687,11 +2687,11 @@
         },
         "X": {
           "type": "float",
-          "value": 18
+          "value": 18.0
         },
         "Y": {
           "type": "float",
-          "value": 40
+          "value": 40.0
         },
         "Z": {
           "type": "float",
@@ -82599,7 +82599,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 18
+          "value": 18.0
         },
         "YOrientation": {
           "type": "float",

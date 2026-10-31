@@ -427,6 +427,200 @@ public class HuttballMatchTests
         match.LooseBall.Should().Be(new HuttballSquare(4, 9));
     }
 
+    private HuttballMatch SetUpBlock()
+    {
+        var match = CreateMatch();
+        Add(match, HomeBruiser, HuttballTeam.Home, HuttballRole.Bruiser, 5, 9);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 5, 10);
+        Kickoff(match);
+        return match;
+    }
+
+    [TestCase(10, 15, true)]  // 15 vs 15: a tie.
+    [TestCase(10, 14, true)]  // Wins by 1: nobody is shoved.
+    [TestCase(10, 13, false)] // Wins by 2: a shove.
+    public void BlocksWithoutAShoveRebound(int attackRoll, int defendRoll, bool rebounded)
+    {
+        var match = SetUpBlock();
+
+        _dice.Queue(attackRoll, defendRoll);
+        match.Block(HomeBruiser, AwayCatcher).Rebounded.Should().Be(rebounded);
+    }
+
+    [Test]
+    public void AReRollUndoesTheActionAndRollsAgain()
+    {
+        var match = SetUpBlock();
+        match.SetRerolls(HuttballTeam.Home, 1);
+
+        _dice.Queue(10, 1, 3); // Wins by 14: shoved and knocked down.
+        match.Block(HomeBruiser, AwayCatcher);
+        match.CanReroll(HuttballTeam.Home).Should().BeTrue();
+        match.CanReroll(HuttballTeam.Away).Should().BeFalse("only the acting team re-rolls its action");
+
+        _dice.Queue(10, 15); // A tie this time.
+        var result = match.Reroll(HuttballTeam.Home);
+
+        result.Succeeded.Should().BeTrue(result.Error);
+        result.Messages.First().Should().Contain("re-roll");
+        var defender = match.GetPlayer(AwayCatcher);
+        defender.Square.Should().Be(new HuttballSquare(5, 10), "the shove was undone");
+        defender.Status.Should().Be(HuttballPlayerStatus.Standing);
+        match.GetPlayer(HomeBruiser).HasActed.Should().BeTrue();
+        match.GetRerolls(HuttballTeam.Home).Should().Be(0);
+        match.CanReroll(HuttballTeam.Home).Should().BeFalse("a re-rolled action stands");
+        match.Log.Should().Contain(line => line.Contains("Away") || line.Contains("P11"), "the replaced rolls stay on record");
+    }
+
+    [Test]
+    public void AReRollNeedsAReRollLeft()
+    {
+        var match = SetUpBlock();
+
+        _dice.Queue(10, 1, 3);
+        match.Block(HomeBruiser, AwayCatcher);
+
+        match.CanReroll(HuttballTeam.Home).Should().BeFalse("teams start with none");
+        match.Reroll(HuttballTeam.Home).Succeeded.Should().BeFalse();
+    }
+
+    [Test]
+    public void TheNextCommandTakesAwayTheReRoll()
+    {
+        var match = SetUpBlock();
+        match.SetRerolls(HuttballTeam.Home, 2);
+
+        _dice.Queue(10, 15);
+        match.Block(HomeBruiser, AwayCatcher);
+        match.FinishActivation(HomeBruiser);
+
+        match.CanReroll(HuttballTeam.Home).Should().BeFalse();
+    }
+
+    [Test]
+    public void AReRolledDodgeCanSaveTheTurn()
+    {
+        var match = CreateMatch();
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 9);
+        Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, 5, 10);
+        Kickoff(match);
+        match.SetRerolls(HuttballTeam.Home, 1);
+
+        _dice.Queue(1, 20); // Tripped, which ends the Home turn.
+        match.Move(HomeCatcher, new HuttballSquare(5, 6));
+        match.ActiveTeam.Should().Be(HuttballTeam.Away);
+
+        _dice.Queue(20, 1);
+        match.Reroll(HuttballTeam.Home);
+
+        var mover = match.GetPlayer(HomeCatcher);
+        mover.Square.Should().Be(new HuttballSquare(5, 6));
+        mover.Status.Should().Be(HuttballPlayerStatus.Standing);
+        match.ActiveTeam.Should().Be(HuttballTeam.Home);
+    }
+
+    [Test]
+    public void MovesWithoutDiceCannotBeReRolled()
+    {
+        var match = SetUpBlock();
+        match.SetRerolls(HuttballTeam.Home, 1);
+
+        match.Move(HomeBruiser, new HuttballSquare(0, 8)).Succeeded.Should().BeFalse("too far for a Bruiser");
+        _dice.Queue(20, 1); // Leaving the Away Catcher.
+        match.Move(HomeBruiser, new HuttballSquare(4, 7));
+        match.CanReroll(HuttballTeam.Home).Should().BeTrue();
+
+        match.Move(HomeBruiser, new HuttballSquare(4, 6));
+        match.CanReroll(HuttballTeam.Home).Should().BeFalse("the last move rolled nothing");
+    }
+
+    [Test]
+    public void AMedicStepsAnInjuryDown()
+    {
+        var match = SetUpBlock();
+        match.SetMedics(HuttballTeam.Away, 3);
+
+        _dice.Queue(18, 1, 20); // Maimed.
+        match.Block(HomeBruiser, AwayCatcher);
+        var victim = match.GetPlayer(AwayCatcher);
+        victim.Status.Should().Be(HuttballPlayerStatus.Maimed);
+        match.CanUseMedic(HuttballTeam.Away).Should().BeTrue();
+        match.CanUseMedic(HuttballTeam.Home).Should().BeFalse();
+
+        match.UseMedic(HuttballTeam.Home, AwayCatcher).Succeeded.Should().BeFalse("medics treat their own team");
+        match.UseMedic(HuttballTeam.Away, AwayCatcher).Succeeded.Should().BeTrue();
+        victim.Status.Should().Be(HuttballPlayerStatus.SeverelyInjured);
+        match.UseMedic(HuttballTeam.Away, AwayCatcher);
+        victim.Status.Should().Be(HuttballPlayerStatus.Injured);
+        match.UseMedic(HuttballTeam.Away, AwayCatcher);
+        victim.Status.Should().Be(HuttballPlayerStatus.Standing, "patched up for the next kick-off");
+        victim.Square.Should().BeNull();
+        match.GetMedics(HuttballTeam.Away).Should().Be(0);
+    }
+
+    [Test]
+    public void AMedicNeedsAMedicLeft()
+    {
+        var match = SetUpBlock();
+
+        _dice.Queue(18, 1, 12);
+        match.Block(HomeBruiser, AwayCatcher);
+
+        match.CanUseMedic(HuttballTeam.Away).Should().BeFalse("teams start with none");
+        match.UseMedic(HuttballTeam.Away, AwayCatcher).Succeeded.Should().BeFalse();
+    }
+
+    [Test]
+    public void AfterATouchdownTeamsReturnToTheirHalves()
+    {
+        var match = CreateMatch(10, 8);
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 2, 3);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 9, 7);
+        Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, 9, 4);
+        Kickoff(match, 2, 3);
+        var result = match.Move(HomeCatcher, new HuttballSquare(2, 7));
+        result.Scorer.Creature.Should().Be(HomeCatcher);
+
+        match.ReturnToHalves().Succeeded.Should().BeTrue();
+
+        match.GetPlayer(HomeCatcher).Square.Should().Be(new HuttballSquare(2, 3));
+        match.GetPlayer(AwayCatcher).Square.Should().Be(new HuttballSquare(9, 7), "already in its own half");
+        match.GetPlayer(AwayBlocker).Square.Should().Be(new HuttballSquare(9, 4));
+    }
+
+    [Test]
+    public void ActionsAreOnlyOfferedWhenTheyCanBeTaken()
+    {
+        var match = CreateMatch();
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 9);
+        Add(match, HomeThrower, HuttballTeam.Home, HuttballRole.Thrower, 0, 0);
+        Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, 5, 10);
+        Kickoff(match, 0, 0);
+        var catcher = match.GetPlayer(HomeCatcher);
+        var thrower = match.GetPlayer(HomeThrower);
+        var away = match.GetPlayer(AwayBlocker);
+
+        match.CanBlock(catcher).Should().BeTrue();
+        match.CanBlock(thrower).Should().BeFalse("nobody is next to the Thrower");
+        match.CanPass(thrower).Should().BeFalse("no teammate within four squares");
+        match.CanPass(catcher).Should().BeFalse("the Catcher does not have the ball");
+        match.CanDirtyMove(catcher).Should().BeFalse("nobody is down");
+        match.CanStandUp(catcher).Should().BeFalse();
+        match.CanMove(away).Should().BeFalse("it is the Home team's turn");
+
+        _dice.Queue(1, 20); // The Catcher trips leaving the Blocker.
+        match.Move(HomeCatcher, new HuttballSquare(5, 7));
+        match.CanStandUp(catcher).Should().BeFalse("the Catcher is done this turn");
+        match.EndTeamTurn();
+        match.CanDirtyMove(away).Should().BeTrue("the Catcher lies next to the Blocker");
+        match.CanBlock(away).Should().BeFalse("the only adjacent opponent is down");
+        match.EndTeamTurn();
+
+        match.CanStandUp(catcher).Should().BeTrue();
+        match.CanMove(catcher).Should().BeFalse("they must stand first");
+        match.CanBlock(catcher).Should().BeFalse("a downed player cannot block");
+    }
+
     [TestCase(1f, 0f, 0f)]
     [TestCase(0f, 1f, 90f)]
     [TestCase(-1f, 0f, 180f)]

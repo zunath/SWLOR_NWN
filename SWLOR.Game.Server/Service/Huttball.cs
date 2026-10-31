@@ -30,11 +30,23 @@ namespace SWLOR.Game.Server.Service
         public const string TestPlayerTag = "HUTTBALL_TEST_PLAYER";
         private const string CarrierEffectTag = "HUTTBALL_CARRIER";
         private const string KnockedDownEffectTag = "HUTTBALL_DOWN";
+        private const string TurnEffectTag = "HUTTBALL_TURN";
+        private const float TurnRingScale = 0.6f;
+
+        // The module's Teleport Object: an invisible placeable whose name shows on hover, used as a scoreboard.
+        private const string ScoreboardResref = "tele_obj";
+        private const string ScoreboardTag = "HUTTBALL_SCOREBOARD";
 
         // A block borrows the taunt for one swing: the engine plays the slash in its place, with no real attack.
+        // A tied block then plays the hit reaction the same way on both players at the moment of contact.
         private const string SwingStandIn = "taunt";
         private const string SwingAnimation = "1hslashr";
+        private const string FlinchAnimation = "damages";
         private const float SwingSeconds = 1.5f;
+        private const float ContactSeconds = 0.5f;
+
+        // After a touchdown, players get this long to celebrate before they are sent back to their halves.
+        private const int CelebrationSeconds = 60;
 
         private class MatchEntry
         {
@@ -44,6 +56,16 @@ namespace SWLOR.Game.Server.Service
             public HuttballSquare? BallSquare { get; set; }
             public List<uint> Markers { get; } = new();
             public List<uint> TestPlayers { get; } = new();
+            public Dictionary<HuttballTeam, List<uint>> Scoreboards { get; } = new()
+            {
+                [HuttballTeam.Home] = new List<uint>(),
+                [HuttballTeam.Away] = new List<uint>(),
+            };
+
+            /// <summary>
+            /// Bumped by each touchdown, so a celebration countdown left over from an earlier one does nothing.
+            /// </summary>
+            public int CelebrationId { get; set; }
         }
 
         private static readonly Dictionary<uint, MatchEntry> _matches = new();
@@ -100,7 +122,7 @@ namespace SWLOR.Game.Server.Service
                 ClearEffects(player.Creature);
 
             DestroyBall(entry);
-            foreach (var marker in entry.Markers)
+            foreach (var marker in entry.Markers.Concat(entry.Scoreboards.Values.SelectMany(boards => boards)))
                 DestroyObject(marker);
             foreach (var testPlayer in entry.TestPlayers.Where(GetIsObjectValid))
                 DestroyObject(testPlayer);
@@ -134,12 +156,64 @@ namespace SWLOR.Game.Server.Service
                 AddMarker(area, entry, pitch.GetPoint(x + 0.5f, halfway), VisualEffect.Vfx_Dur_Aura_White, ringScale);
             }
 
-            AddMarker(area, entry, pitch.GetPoint(-1f, -1f), VisualEffect.Vfx_Dur_Flag_Blue, 1f);
-            AddMarker(area, entry, pitch.GetPoint(pitch.Width + 1f, -1f), VisualEffect.Vfx_Dur_Flag_Blue, 1f);
-            AddMarker(area, entry, pitch.GetPoint(-1f, pitch.Length + 1f), VisualEffect.Vfx_Dur_Flag_Red, 1f);
-            AddMarker(area, entry, pitch.GetPoint(pitch.Width + 1f, pitch.Length + 1f), VisualEffect.Vfx_Dur_Flag_Red, 1f);
+            var homeFlags = new[] { pitch.GetPoint(-1f, -1f), pitch.GetPoint(pitch.Width + 1f, -1f) };
+            var awayFlags = new[] { pitch.GetPoint(-1f, pitch.Length + 1f), pitch.GetPoint(pitch.Width + 1f, pitch.Length + 1f) };
+            foreach (var flag in homeFlags)
+            {
+                AddMarker(area, entry, flag, VisualEffect.Vfx_Dur_Flag_Blue, 1f);
+                AddScoreboard(area, entry, HuttballTeam.Home, flag);
+            }
+
+            foreach (var flag in awayFlags)
+            {
+                AddMarker(area, entry, flag, VisualEffect.Vfx_Dur_Flag_Red, 1f);
+                AddScoreboard(area, entry, HuttballTeam.Away, flag);
+            }
+
             AddMarker(area, entry, pitch.GetPoint(-1f, halfway), VisualEffect.Vfx_Dur_Flag_Gold_Fixed, 1f);
             AddMarker(area, entry, pitch.GetPoint(pitch.Width + 1f, halfway), VisualEffect.Vfx_Dur_Flag_Gold_Fixed, 1f);
+            UpdateScoreboards(entry);
+        }
+
+        /// <summary>
+        /// Puts a team scoreboard at one of its flags: a Teleport Object whose hover name shows the team's score
+        /// and resources. Its teleport script is cleared, so using it does nothing.
+        /// </summary>
+        private static void AddScoreboard(uint area, MatchEntry entry, HuttballTeam team, Vector3 position)
+        {
+            var board = CreateObject(ObjectType.Placeable, ScoreboardResref, Location(area, position, 0f), false, ScoreboardTag);
+            if (!GetIsObjectValid(board))
+                return;
+
+            SetEventScript(board, EventScript.Placeable_OnUsed, string.Empty);
+            SetPlotFlag(board, true);
+            entry.Scoreboards[team].Add(board);
+        }
+
+        /// <summary>
+        /// Renames each team's scoreboards to show its score, re-rolls, medics, and bribes.
+        /// </summary>
+        private static void UpdateScoreboards(MatchEntry entry)
+        {
+            var match = entry.Match;
+            foreach (var (team, boards) in entry.Scoreboards)
+            {
+                var color = team == HuttballTeam.Home ? "Blue" : "Red";
+                var name = $"{team} ({color}): {match.GetScore(team)} pts | Re-rolls {match.GetRerolls(team)} | " +
+                           $"Medics {match.GetMedics(team)} | Bribes {match.GetBribes(team)}";
+                foreach (var board in boards.Where(GetIsObjectValid))
+                    SetName(board, name);
+            }
+        }
+
+        /// <summary>
+        /// Shows a change to a team's re-rolls, medics, or bribes on its scoreboards and every match panel.
+        /// </summary>
+        public static void ResourcesChanged(uint area)
+        {
+            if (_matches.TryGetValue(area, out var entry))
+                UpdateScoreboards(entry);
+            RefreshWindows();
         }
 
         /// <summary>
@@ -264,16 +338,20 @@ namespace SWLOR.Game.Server.Service
 
             Announce(area, result.Messages);
             if (GetIsObjectValid(striker) && GetIsObjectValid(struck))
-                Swing(striker, struck);
+                Swing(striker, struck, result.Rebounded);
             SyncWorld(area, entry, result, mover, striker);
+            UpdateScoreboards(entry);
+            if (result.Scorer != null)
+                Celebrate(area, entry, result.Scorer);
             RefreshWindows();
         }
 
         /// <summary>
         /// Turns the two players to face each other and plays a melee slash for the striker. The slash stands in
-        /// for the taunt for one swing, so no attack is made and nobody turns hostile.
+        /// for the taunt for one swing, so no attack is made and nobody turns hostile. On a rebound, both players
+        /// flinch at the moment of contact as if struck.
         /// </summary>
-        private static void Swing(uint striker, uint struck)
+        private static void Swing(uint striker, uint struck, bool rebound)
         {
             var strikerPosition = GetPosition(striker);
             var struckPosition = GetPosition(struck);
@@ -284,12 +362,85 @@ namespace SWLOR.Game.Server.Service
                 SetFacingPoint(struckPosition);
                 PlayAnimation(Animation.FireForgetTaunt);
             });
-            AssignCommand(GetModule(), () => DelayCommand(SwingSeconds, () =>
-            {
-                if (GetIsObjectValid(striker))
-                    ReplaceObjectAnimation(striker, SwingStandIn);
-            }));
             AssignCommand(struck, () => SetFacingPoint(strikerPosition));
+
+            if (rebound)
+            {
+                Delay(ContactSeconds, () =>
+                {
+                    foreach (var creature in new[] { striker, struck }.Where(GetIsObjectValid))
+                    {
+                        ReplaceObjectAnimation(creature, SwingStandIn, FlinchAnimation);
+                        AssignCommand(creature, () => PlayAnimation(Animation.FireForgetTaunt));
+                    }
+                });
+            }
+
+            Delay(SwingSeconds, () =>
+            {
+                foreach (var creature in new[] { striker, struck }.Where(GetIsObjectValid))
+                    ReplaceObjectAnimation(creature, SwingStandIn);
+            });
+        }
+
+        private static void Delay(float seconds, System.Action action)
+        {
+            AssignCommand(GetModule(), () => DelayCommand(seconds, action));
+        }
+
+        /// <summary>
+        /// Celebrates a touchdown: a burst over the scorer, a cheer from the scoring team, and a one-minute
+        /// countdown for emotes before both teams are sent back to their halves for the kick-off.
+        /// </summary>
+        private static void Celebrate(uint area, MatchEntry entry, HuttballPlayer scorer)
+        {
+            var celebrationId = ++entry.CelebrationId;
+            if (GetIsObjectValid(scorer.Creature))
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), scorer.Creature);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), scorer.Creature);
+                FloatingTextStringOnCreature(ColorToken.Yellow($"TOUCHDOWN! {scorer.Name}!"), scorer.Creature, false);
+            }
+
+            var cheers = new[] { Animation.FireForgetVictory1, Animation.FireForgetVictory2, Animation.FireForgetVictory3 };
+            var index = 0;
+            foreach (var teammate in entry.Match.Players.Where(p => p.Team == scorer.Team && p.IsStandingOnPitch))
+            {
+                var cheer = cheers[index++ % cheers.Length];
+                if (GetIsObjectValid(teammate.Creature))
+                    AssignCommand(teammate.Creature, () => PlayAnimation(cheer));
+            }
+
+            if (entry.Match.Phase != HuttballPhase.Setup)
+                return;
+
+            Announce(area, new[] { $"Celebrate! Both teams return to their halves in {CelebrationSeconds} seconds." });
+            foreach (var remaining in new[] { 30, 10, 5 })
+            {
+                Delay(CelebrationSeconds - remaining, () =>
+                {
+                    if (IsCelebrating(area, entry, celebrationId))
+                        Announce(area, new[] { $"Back to your halves in {remaining} seconds." });
+                });
+            }
+
+            Delay(CelebrationSeconds, () =>
+            {
+                if (IsCelebrating(area, entry, celebrationId))
+                    Apply(area, entry.Match.ReturnToHalves(), OBJECT_INVALID);
+            });
+        }
+
+        /// <summary>
+        /// Returns true while a touchdown's countdown should still run: the match is the same one, no later
+        /// touchdown has started its own countdown, and the next drive has not begun.
+        /// </summary>
+        private static bool IsCelebrating(uint area, MatchEntry entry, int celebrationId)
+        {
+            return _matches.TryGetValue(area, out var current) &&
+                   current == entry &&
+                   entry.CelebrationId == celebrationId &&
+                   entry.Match.Phase == HuttballPhase.Setup;
         }
 
         private static void Announce(uint area, IEnumerable<string> messages)
@@ -376,6 +527,12 @@ namespace SWLOR.Game.Server.Service
 
                 SetTaggedEffect(creature, CarrierEffectTag, match.BallCarrier == player,
                     () => SupernaturalEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Glow_Yellow)));
+
+                // A small ring in the team's color under everyone on the team whose turn it is.
+                var isTheirTurn = match.Phase == HuttballPhase.Playing && player.Team == match.ActiveTeam && player.IsOnPitch;
+                var turnRing = player.Team == HuttballTeam.Home ? VisualEffect.Vfx_Dur_Aura_Blue : VisualEffect.Vfx_Dur_Aura_Red;
+                SetTaggedEffect(creature, TurnEffectTag, isTheirTurn,
+                    () => SupernaturalEffect(EffectVisualEffect(turnRing, false, TurnRingScale)));
             }
 
             SyncBall(area, entry);
@@ -457,7 +614,7 @@ namespace SWLOR.Game.Server.Service
             // Clearing actions ends a knocked-down player's pose.
             if (HasEffectByTag(creature, KnockedDownEffectTag))
                 AssignCommand(creature, () => ClearAllActions());
-            RemoveEffectByTag(creature, KnockedDownEffectTag, CarrierEffectTag);
+            RemoveEffectByTag(creature, KnockedDownEffectTag, CarrierEffectTag, TurnEffectTag);
         }
 
         private static void SyncBall(uint area, MatchEntry entry)

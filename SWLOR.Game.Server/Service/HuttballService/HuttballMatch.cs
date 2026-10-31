@@ -22,6 +22,17 @@ namespace SWLOR.Game.Server.Service.HuttballService
             [HuttballTeam.Away] = HuttballRules.DefaultBribes,
         };
 
+        // Re-rolls and medics start at none; the DM hands them out.
+        private readonly Dictionary<HuttballTeam, int> _rerolls = new() { [HuttballTeam.Home] = 0, [HuttballTeam.Away] = 0 };
+        private readonly Dictionary<HuttballTeam, int> _medics = new() { [HuttballTeam.Home] = 0, [HuttballTeam.Away] = 0 };
+
+        // Dice rolled so far, so a command can tell whether it rolled any.
+        private int _rollCount;
+
+        // The last command that rolled dice, which its team may still re-roll: the state before it and how to
+        // run it again. Any other command that changes the match clears it.
+        private (HuttballTeam Team, HuttballMatchSnapshot Before, Func<HuttballActionResult> Run)? _rerollable;
+
         public HuttballMatch(int width, int length, IHuttballDice dice)
         {
             if (width < 2 || length < 4)
@@ -67,6 +78,41 @@ namespace SWLOR.Game.Server.Service.HuttballService
         public void SetBribes(HuttballTeam team, int bribes)
         {
             _bribes[team] = Math.Max(0, bribes);
+        }
+
+        public int GetRerolls(HuttballTeam team) => _rerolls[team];
+        public int GetMedics(HuttballTeam team) => _medics[team];
+
+        public void SetRerolls(HuttballTeam team, int rerolls)
+        {
+            _rerolls[team] = Math.Max(0, rerolls);
+        }
+
+        public void SetMedics(HuttballTeam team, int medics)
+        {
+            _medics[team] = Math.Max(0, medics);
+        }
+
+        /// <summary>
+        /// Returns true when the team may re-roll its last action now: it was the last command, it rolled dice, and
+        /// the team has a re-roll left.
+        /// </summary>
+        public bool CanReroll(HuttballTeam team)
+        {
+            return _rerollable?.Team == team && _rerolls[team] > 0;
+        }
+
+        /// <summary>
+        /// Returns true when the team has a medic and a teammate injured, severely injured, or maimed.
+        /// </summary>
+        public bool CanUseMedic(HuttballTeam team)
+        {
+            return _medics[team] > 0 && _players.Any(p => p.Team == team && IsTreatable(p.Status));
+        }
+
+        private static bool IsTreatable(HuttballPlayerStatus status)
+        {
+            return status is HuttballPlayerStatus.Injured or HuttballPlayerStatus.SeverelyInjured or HuttballPlayerStatus.Maimed;
         }
 
         public static HuttballTeam GetOpponent(HuttballTeam team)
@@ -127,6 +173,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             {
                 IsDone = true,
             };
+            _rerollable = null;
             _players.Add(player);
 
             var result = new HuttballActionResult();
@@ -142,6 +189,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
             var result = new HuttballActionResult();
             var square = player.Square;
+            _rerollable = null;
             _players.Remove(player);
             Say(result, $"{player.DisplayName} leaves the match.");
             if (BallCarrier == player && square != null)
@@ -163,6 +211,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             if (Phase == HuttballPhase.Playing)
                 return HuttballActionResult.Fail("Roles can only change between drives.");
 
+            _rerollable = null;
             player.Role = role;
             var result = new HuttballActionResult();
             Say(result, $"{player.Name} now plays {role}.");
@@ -190,6 +239,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             if (occupant != null && occupant != player)
                 return HuttballActionResult.Fail($"{occupant.Name} is already on that square.");
 
+            _rerollable = null;
             player.Square = square;
             var result = new HuttballActionResult();
             result.Path.Add(square);
@@ -220,6 +270,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 return HuttballActionResult.Fail("Both teams need at least one player on the pitch.");
 
             var result = new HuttballActionResult();
+            _rerollable = null;
             Phase = HuttballPhase.Playing;
             Say(result, $"Kick-off! Half {Half}, turn {Turn}.");
 
@@ -249,6 +300,11 @@ namespace SWLOR.Game.Server.Service.HuttballService
             if (Phase == HuttballPhase.Setup)
                 return Place(creature, destination);
 
+            return RunRerollable(player.Team, () => MoveInPlay(player, destination));
+        }
+
+        private HuttballActionResult MoveInPlay(HuttballPlayer player, HuttballSquare destination)
+        {
             var error = GetActError(player);
             if (error != null)
                 return HuttballActionResult.Fail(error);
@@ -309,6 +365,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
             var result = new HuttballActionResult();
             player.Status = HuttballPlayerStatus.Standing;
+            _rerollable = null;
             player.MovementLeft = 0;
             Say(result, $"{player.DisplayName} gets back up. Standing uses this turn's movement.");
             FinishIfSpent(player);
@@ -319,6 +376,15 @@ namespace SWLOR.Game.Server.Service.HuttballService
         public HuttballActionResult Block(uint attackerCreature, uint defenderCreature)
         {
             var attacker = GetPlayer(attackerCreature);
+            if (attacker == null)
+                return HuttballActionResult.Fail("That creature is not in the match.");
+
+            return RunRerollable(attacker.Team, () => BlockCore(attackerCreature, defenderCreature));
+        }
+
+        private HuttballActionResult BlockCore(uint attackerCreature, uint defenderCreature)
+        {
+            var attacker = GetPlayer(attackerCreature);
             var defender = GetPlayer(defenderCreature);
             var error = GetActionError(attacker, defender, mustBeStanding: true);
             if (error != null)
@@ -327,13 +393,15 @@ namespace SWLOR.Game.Server.Service.HuttballService
             var result = new HuttballActionResult();
             attacker.HasActed = true;
 
-            var attackRoll = _dice.Roll(HuttballRules.D20);
-            var defendRoll = _dice.Roll(HuttballRules.D20);
+            var attackRoll = Roll(HuttballRules.D20);
+            var defendRoll = Roll(HuttballRules.D20);
             var attackTotal = attackRoll + attacker.Stats.Strength;
             var defendTotal = defendRoll + defender.Stats.Strength;
             Say(result, $"{attacker.DisplayName} blocks {defender.DisplayName}: " +
                         $"{FormatRoll(attackRoll, attacker.Stats.Strength)} vs {FormatRoll(defendRoll, defender.Stats.Strength)}.");
 
+            // Neither shoved: the two bounce off each other.
+            result.Rebounded = Math.Abs(attackTotal - defendTotal) < HuttballRules.ShoveMargin;
             if (attackTotal == defendTotal)
             {
                 Say(result, "Neither gives ground.");
@@ -367,6 +435,15 @@ namespace SWLOR.Game.Server.Service.HuttballService
         public HuttballActionResult DirtyMove(uint attackerCreature, uint victimCreature)
         {
             var attacker = GetPlayer(attackerCreature);
+            if (attacker == null)
+                return HuttballActionResult.Fail("That creature is not in the match.");
+
+            return RunRerollable(attacker.Team, () => DirtyMoveCore(attackerCreature, victimCreature));
+        }
+
+        private HuttballActionResult DirtyMoveCore(uint attackerCreature, uint victimCreature)
+        {
+            var attacker = GetPlayer(attackerCreature);
             var victim = GetPlayer(victimCreature);
             var error = GetActionError(attacker, victim, mustBeStanding: false);
             if (error != null)
@@ -379,7 +456,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             Say(result, $"{attacker.DisplayName} puts the boot into {victim.DisplayName}!");
             RollInjury(result, victim);
 
-            var refereeRoll = _dice.Roll(HuttballRules.D20);
+            var refereeRoll = Roll(HuttballRules.D20);
             if (refereeRoll < HuttballRules.RefereeTarget)
             {
                 if (_bribes[attacker.Team] > 0)
@@ -405,6 +482,15 @@ namespace SWLOR.Game.Server.Service.HuttballService
         }
 
         public HuttballActionResult Pass(uint throwerCreature, uint catcherCreature)
+        {
+            var thrower = GetPlayer(throwerCreature);
+            if (thrower == null)
+                return HuttballActionResult.Fail("That creature is not in the match.");
+
+            return RunRerollable(thrower.Team, () => PassCore(throwerCreature, catcherCreature));
+        }
+
+        private HuttballActionResult PassCore(uint throwerCreature, uint catcherCreature)
         {
             var thrower = GetPlayer(throwerCreature);
             var catcher = GetPlayer(catcherCreature);
@@ -435,7 +521,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             thrower.HasActed = true;
             BallCarrier = null;
 
-            var throwRoll = _dice.Roll(HuttballRules.D20);
+            var throwRoll = Roll(HuttballRules.D20);
             var throwTotal = throwRoll + thrower.Stats.Agility;
             if (throwTotal < HuttballRules.PassTarget)
             {
@@ -457,7 +543,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 if (opponent == null || opponent.Team == thrower.Team || opponent.Status != HuttballPlayerStatus.Standing)
                     continue;
 
-                var roll = _dice.Roll(HuttballRules.D20);
+                var roll = Roll(HuttballRules.D20);
                 var total = roll + opponent.Stats.Agility;
                 Say(result, $"{opponent.DisplayName} leaps for it: {FormatRoll(roll, opponent.Stats.Agility)}.");
                 if (total > bestInterception)
@@ -499,6 +585,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 return HuttballActionResult.Fail($"{player.Name} is already done this turn.");
 
             var result = new HuttballActionResult();
+            _rerollable = null;
             player.IsDone = true;
             Say(result, $"{player.DisplayName} is done.");
             CheckTeamTurnOver(result);
@@ -514,9 +601,236 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 return HuttballActionResult.Fail("No drive is under way.");
 
             var result = new HuttballActionResult();
+            _rerollable = null;
             Say(result, $"The {ActiveTeam} team's turn ends.");
             AdvanceTurn(result);
             return result;
+        }
+
+        /// <summary>
+        /// Undoes the team's last action and rolls it again. The team keeps the new result: the action cannot be
+        /// re-rolled a second time.
+        /// </summary>
+        public HuttballActionResult Reroll(HuttballTeam team)
+        {
+            if (_rerollable?.Team != team)
+                return HuttballActionResult.Fail($"The {team} team has no roll to re-roll. Re-roll right after one of your own rolls.");
+            if (_rerolls[team] <= 0)
+                return HuttballActionResult.Fail($"The {team} team has no re-rolls left.");
+
+            var (_, before, run) = _rerollable.Value;
+            _rerollable = null;
+            _rerolls[team]--;
+            Restore(before);
+
+            var announcement = $"The {team} team uses a re-roll ({_rerolls[team]} left)!";
+            AddToLog(announcement);
+            var result = run();
+            _rerollable = null;
+            result.Messages.Insert(0, announcement);
+            return result;
+        }
+
+        /// <summary>
+        /// Sends the team's medic to an injured teammate on the bench: maimed becomes a severe injury, a severe
+        /// injury becomes an injury until halftime, and an injured player is patched up to rejoin at the next
+        /// kick-off.
+        /// </summary>
+        public HuttballActionResult UseMedic(HuttballTeam team, uint creature)
+        {
+            var player = GetPlayer(creature);
+            if (player == null)
+                return HuttballActionResult.Fail("That creature is not in the match.");
+            if (player.Team != team)
+                return HuttballActionResult.Fail("Medics only treat their own team.");
+            if (!IsTreatable(player.Status))
+                return HuttballActionResult.Fail($"{player.Name} has no injury to treat.");
+            if (_medics[team] <= 0)
+                return HuttballActionResult.Fail($"The {team} team has no medics left.");
+
+            _medics[team]--;
+            _rerollable = null;
+            var result = new HuttballActionResult();
+            player.Status = player.Status switch
+            {
+                HuttballPlayerStatus.Maimed => HuttballPlayerStatus.SeverelyInjured,
+                HuttballPlayerStatus.SeverelyInjured => HuttballPlayerStatus.Injured,
+                _ => HuttballPlayerStatus.Standing,
+            };
+            var outcome = player.Status == HuttballPlayerStatus.Standing
+                ? "patched up and ready for the next kick-off"
+                : HuttballMatch.DescribeStatus(player.Status);
+            Say(result, $"The {team} medic treats {player.DisplayName}: now {outcome}. {_medics[team]} medic(s) left.");
+            return result;
+        }
+
+        /// <summary>
+        /// Sends every player standing outside their own half to the nearest free square of it, for the next
+        /// kick-off. Players already in their own half stay where they are.
+        /// </summary>
+        public HuttballActionResult ReturnToHalves()
+        {
+            if (Phase != HuttballPhase.Setup)
+                return HuttballActionResult.Fail("Players return to their halves only between drives.");
+
+            var result = new HuttballActionResult();
+            var strays = _players
+                .Where(p => p.IsOnPitch && !IsInOwnHalf(p.Team, p.Square!.Value))
+                .OrderBy(p => p.Team == HuttballTeam.Home ? p.Square!.Value.Y : Length - p.Square!.Value.Y)
+                .ToList();
+            foreach (var player in strays)
+            {
+                var from = player.Square!.Value;
+                var target = Enumerable.Range(0, Length)
+                    .SelectMany(y => Enumerable.Range(0, Width).Select(x => new HuttballSquare(x, y)))
+                    .Where(square => IsInOwnHalf(player.Team, square) && GetPlayerAt(square) == null)
+                    .OrderBy(square => square.DistanceTo(from))
+                    .ThenBy(square => Math.Abs(square.X - from.X))
+                    .Cast<HuttballSquare?>()
+                    .FirstOrDefault();
+                player.Square = target;
+            }
+
+            if (strays.Count > 0)
+                _rerollable = null;
+            Say(result, "Both teams return to their own halves for the kick-off.");
+            return result;
+        }
+
+        /// <summary>
+        /// Returns true when the player may move now: between drives to take a place, or on their turn while
+        /// standing with movement left.
+        /// </summary>
+        public bool CanMove(HuttballPlayer player)
+        {
+            if (Phase == HuttballPhase.Setup)
+                return player.Status == HuttballPlayerStatus.Standing;
+
+            return GetActError(player) == null &&
+                   player.Status == HuttballPlayerStatus.Standing &&
+                   player.MovementLeft > 0;
+        }
+
+        public bool CanStandUp(HuttballPlayer player)
+        {
+            return GetActError(player) == null && player.Status == HuttballPlayerStatus.KnockedDown;
+        }
+
+        public bool CanFinish(HuttballPlayer player)
+        {
+            return Phase == HuttballPhase.Playing && player.Team == ActiveTeam && !player.IsDone;
+        }
+
+        /// <summary>
+        /// Returns true when the player has their action and a standing opponent next to them.
+        /// </summary>
+        public bool CanBlock(HuttballPlayer player)
+        {
+            return CanTakeAction(player) &&
+                   GetAdjacentOpponents(player).Any(p => p.Status == HuttballPlayerStatus.Standing);
+        }
+
+        /// <summary>
+        /// Returns true when the player has their action and a downed opponent next to them.
+        /// </summary>
+        public bool CanDirtyMove(HuttballPlayer player)
+        {
+            return CanTakeAction(player) &&
+                   GetAdjacentOpponents(player).Any(p => p.Status == HuttballPlayerStatus.KnockedDown);
+        }
+
+        /// <summary>
+        /// Returns true when the player has their action, holds the ball, and has a standing teammate in range.
+        /// </summary>
+        public bool CanPass(HuttballPlayer player)
+        {
+            return CanTakeAction(player) &&
+                   BallCarrier == player &&
+                   _players.Any(p => p != player &&
+                                     p.Team == player.Team &&
+                                     p.IsStandingOnPitch &&
+                                     p.Square!.Value.DistanceTo(player.Square!.Value) <= HuttballRules.PassRange);
+        }
+
+        private bool CanTakeAction(HuttballPlayer player)
+        {
+            return GetActError(player) == null &&
+                   !player.HasActed &&
+                   player.Status == HuttballPlayerStatus.Standing;
+        }
+
+        private IEnumerable<HuttballPlayer> GetAdjacentOpponents(HuttballPlayer player)
+        {
+            return _players.Where(p => p.Team != player.Team &&
+                                       p.IsOnPitch &&
+                                       p.Square!.Value.IsAdjacentTo(player.Square!.Value));
+        }
+
+        /// <summary>
+        /// Runs a command that rolls dice. When it succeeds and rolled at least one die during a drive, its team
+        /// may re-roll it until the next command; any other successful command takes that chance away.
+        /// </summary>
+        private HuttballActionResult RunRerollable(HuttballTeam team, Func<HuttballActionResult> run)
+        {
+            var before = Capture();
+            var rollsBefore = _rollCount;
+            var result = run();
+            if (!result.Succeeded)
+                return result;
+
+            // A touchdown or the end of a half resets the pitch, so there is nothing left to roll again.
+            _rerollable = _rollCount > rollsBefore && Phase == HuttballPhase.Playing
+                ? (team, before, run)
+                : null;
+            return result;
+        }
+
+        private HuttballMatchSnapshot Capture()
+        {
+            return new HuttballMatchSnapshot(
+                _players.Select(p => new HuttballMatchSnapshot.PlayerState(
+                    p.Creature, p.Status, p.Square, p.MovementLeft, p.HasActed, p.IsDone)).ToList(),
+                Phase,
+                Half,
+                Turn,
+                ActiveTeam,
+                BallCarrier?.Creature,
+                LooseBall,
+                new Dictionary<HuttballTeam, int>(_score),
+                new Dictionary<HuttballTeam, int>(_bribes));
+        }
+
+        private void Restore(HuttballMatchSnapshot snapshot)
+        {
+            foreach (var state in snapshot.Players)
+            {
+                var player = GetPlayer(state.Creature);
+                if (player == null)
+                    continue;
+
+                player.Status = state.Status;
+                player.Square = state.Square;
+                player.MovementLeft = state.MovementLeft;
+                player.HasActed = state.HasActed;
+                player.IsDone = state.IsDone;
+            }
+
+            Phase = snapshot.Phase;
+            Half = snapshot.Half;
+            Turn = snapshot.Turn;
+            ActiveTeam = snapshot.ActiveTeam;
+            BallCarrier = snapshot.BallCarrier == null ? null : GetPlayer(snapshot.BallCarrier.Value);
+            LooseBall = snapshot.LooseBall;
+            foreach (var (team, score) in snapshot.Score)
+                _score[team] = score;
+            foreach (var (team, bribes) in snapshot.Bribes)
+                _bribes[team] = bribes;
+        }
+
+        private int Roll(int sides)
+        {
+            _rollCount++;
+            return _dice.Roll(sides);
         }
 
         /// <summary>
@@ -547,6 +861,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 HuttballPlayerStatus.Injured => "injured until halftime",
                 HuttballPlayerStatus.SeverelyInjured => "out for the match",
                 HuttballPlayerStatus.SentOff => "sent off until halftime",
+                HuttballPlayerStatus.Maimed => "maimed, out for the match",
                 _ => status.ToString(),
             };
         }
@@ -651,8 +966,8 @@ namespace SWLOR.Game.Server.Service.HuttballService
             var markBonus = GetMarkBonus(marker);
             var markStat = marker.Stats.OpposesMovementWithStrength ? "STR" : "AGI";
 
-            var moveRoll = _dice.Roll(HuttballRules.D20);
-            var markRoll = _dice.Roll(HuttballRules.D20);
+            var moveRoll = Roll(HuttballRules.D20);
+            var markRoll = Roll(HuttballRules.D20);
             var moveTotal = moveRoll + player.Stats.Agility;
             var markTotal = markRoll + markBonus;
             if (moveTotal >= markTotal)
@@ -695,7 +1010,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
         private void RollInjury(HuttballActionResult result, HuttballPlayer victim)
         {
-            var roll = _dice.Roll(HuttballRules.D20);
+            var roll = Roll(HuttballRules.D20);
             var injury = HuttballRules.GetInjury(roll);
             Say(result, $"Injury roll for {victim.Name}: {roll}. {HuttballRules.GetInjuryText(injury)}.");
 
@@ -707,8 +1022,11 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 case HuttballInjury.Injured:
                     Bench(result, victim, HuttballPlayerStatus.Injured);
                     break;
-                default:
+                case HuttballInjury.SevereInjury:
                     Bench(result, victim, HuttballPlayerStatus.SeverelyInjured);
+                    break;
+                default:
+                    Bench(result, victim, HuttballPlayerStatus.Maimed);
                     break;
             }
         }
@@ -757,7 +1075,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             var current = from;
             for (var bounce = 0; bounce < HuttballRules.MaxBounces; bounce++)
             {
-                var direction = HuttballRules.BounceDirections[_dice.Roll(HuttballRules.BounceDirections.Count) - 1];
+                var direction = HuttballRules.BounceDirections[Roll(HuttballRules.BounceDirections.Count) - 1];
                 var landing = ClampToPitch(new HuttballSquare(current.X + direction.X, current.Y + direction.Y));
                 current = landing;
 
@@ -783,7 +1101,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
         /// </summary>
         private bool TryCatch(HuttballActionResult result, HuttballPlayer catcher)
         {
-            var roll = _dice.Roll(HuttballRules.D20);
+            var roll = Roll(HuttballRules.D20);
             var total = roll + catcher.Stats.Agility;
             if (total >= HuttballRules.PassTarget)
             {
@@ -833,6 +1151,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 return false;
 
             _score[player.Team]++;
+            result.Scorer = player;
             Say(result, $"TOUCHDOWN! {player.DisplayName} scores for the {player.Team} team. " +
                         $"Home {_score[HuttballTeam.Home]} - Away {_score[HuttballTeam.Away]}.");
 
@@ -962,6 +1281,11 @@ namespace SWLOR.Game.Server.Service.HuttballService
         private void Say(HuttballActionResult result, string message)
         {
             result.Messages.Add(message);
+            AddToLog(message);
+        }
+
+        private void AddToLog(string message)
+        {
             _log.Add(message);
             if (_log.Count > MaxLogLines)
                 _log.RemoveAt(0);

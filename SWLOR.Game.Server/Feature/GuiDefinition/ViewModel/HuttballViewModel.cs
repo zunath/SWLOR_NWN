@@ -30,7 +30,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsDM { get => Get<bool>(); set => Set(value); }
         public bool HasMatch { get => Get<bool>(); set => Set(value); }
         public bool HasNoMatch { get => Get<bool>(); set => Set(value); }
-        public bool CanAct { get => Get<bool>(); set => Set(value); }
+        public bool CanMove { get => Get<bool>(); set => Set(value); }
+        public bool CanBlock { get => Get<bool>(); set => Set(value); }
+        public bool CanPass { get => Get<bool>(); set => Set(value); }
+        public bool CanDirtyMove { get => Get<bool>(); set => Set(value); }
+        public bool CanStandUp { get => Get<bool>(); set => Set(value); }
+        public bool CanFinish { get => Get<bool>(); set => Set(value); }
+        public bool CanReroll { get => Get<bool>(); set => Set(value); }
+        public bool CanUseMedic { get => Get<bool>(); set => Set(value); }
+        public string ResourcesText { get => Get<string>(); set => Set(value); }
         public bool IsSetup { get => Get<bool>(); set => Set(value); }
         public bool IsPlaying { get => Get<bool>(); set => Set(value); }
 
@@ -110,14 +118,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BallText = string.Empty;
                 UnitText = string.Empty;
                 LogText = string.Empty;
-                CanAct = IsSetup = IsPlaying = false;
+                ResourcesText = string.Empty;
+                IsSetup = IsPlaying = false;
+                CanMove = CanBlock = CanPass = CanDirtyMove = CanStandUp = CanFinish = CanReroll = CanUseMedic = false;
                 return;
             }
 
             IsSetup = match.Phase == HuttballPhase.Setup;
             IsPlaying = match.Phase == HuttballPhase.Playing;
-            ScoreText = $"Home {match.GetScore(HuttballTeam.Home)} - Away {match.GetScore(HuttballTeam.Away)}" +
-                        $"   (bribes: Home {match.GetBribes(HuttballTeam.Home)}, Away {match.GetBribes(HuttballTeam.Away)})";
+            ScoreText = $"Score: Home (blue) {match.GetScore(HuttballTeam.Home)} - Away (red) {match.GetScore(HuttballTeam.Away)}";
+            ResourcesText = $"{DescribeResources(match, HuttballTeam.Home)}\n{DescribeResources(match, HuttballTeam.Away)}";
             TurnText = match.Phase switch
             {
                 HuttballPhase.Setup => $"Half {match.Half}, turn {match.Turn}: take your places. The {match.ActiveTeam} team moves first.",
@@ -132,8 +142,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var unit = GetUnit();
             UnitText = DescribeUnit(match, unit);
-            CanAct = unit != null;
+            CanMove = unit != null && match.CanMove(unit);
+            CanBlock = unit != null && match.CanBlock(unit);
+            CanPass = unit != null && match.CanPass(unit);
+            CanDirtyMove = unit != null && match.CanDirtyMove(unit);
+            CanStandUp = unit != null && match.CanStandUp(unit);
+            CanFinish = unit != null && match.CanFinish(unit);
+
+            var team = GetResourceTeam();
+            CanReroll = team != null && match.CanReroll(team.Value);
+            CanUseMedic = team != null && match.CanUseMedic(team.Value);
             LogText = string.Join("\n", match.Log.Reverse());
+        }
+
+        private static string DescribeResources(HuttballMatch match, HuttballTeam team)
+        {
+            return $"{team}: re-rolls {match.GetRerolls(team)}, medics {match.GetMedics(team)}, bribes {match.GetBribes(team)}";
+        }
+
+        /// <summary>
+        /// The team whose re-rolls and medics this window spends: a player's own team, or the team of the player a
+        /// DM selected.
+        /// </summary>
+        private HuttballTeam? GetResourceTeam()
+        {
+            return GetUnit()?.Team;
         }
 
         private string DescribeUnit(HuttballMatch match, HuttballPlayer unit)
@@ -388,11 +421,53 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Run(match => match.EndTeamTurn());
         };
 
-        public Action OnBribeDown() => () => ChangeBribes(-1);
+        /// <summary>
+        /// Undoes the team's last roll and rolls it again, spending one of the team's re-rolls.
+        /// </summary>
+        public Action OnReroll() => () =>
+        {
+            var team = GetResourceTeam();
+            if (team == null)
+            {
+                RequireUnit(out _);
+                return;
+            }
 
-        public Action OnBribeUp() => () => ChangeBribes(1);
+            Run(match => match.Reroll(team.Value));
+        };
 
-        private void ChangeBribes(int change)
+        /// <summary>
+        /// Sends the team's medic to an injured teammate on the bench.
+        /// </summary>
+        public Action OnMedic() => () =>
+        {
+            var team = GetResourceTeam();
+            if (team == null)
+            {
+                RequireUnit(out _);
+                return;
+            }
+
+            PickCreature($"Click an injured {team} teammate on the bench for the medic.",
+                target => Run(match => match.UseMedic(team.Value, target)));
+        };
+
+        public Action OnBribeDown() => () => ChangeResource((match, team) => match.SetBribes(team, match.GetBribes(team) - 1));
+
+        public Action OnBribeUp() => () => ChangeResource((match, team) => match.SetBribes(team, match.GetBribes(team) + 1));
+
+        public Action OnRerollDown() => () => ChangeResource((match, team) => match.SetRerolls(team, match.GetRerolls(team) - 1));
+
+        public Action OnRerollUp() => () => ChangeResource((match, team) => match.SetRerolls(team, match.GetRerolls(team) + 1));
+
+        public Action OnMedicDown() => () => ChangeResource((match, team) => match.SetMedics(team, match.GetMedics(team) - 1));
+
+        public Action OnMedicUp() => () => ChangeResource((match, team) => match.SetMedics(team, match.GetMedics(team) + 1));
+
+        /// <summary>
+        /// Changes a resource of the team chosen in the DM team box, then updates the scoreboards and panels.
+        /// </summary>
+        private void ChangeResource(System.Action<HuttballMatch, HuttballTeam> change)
         {
             if (!UserIsDM)
                 return;
@@ -401,8 +476,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (match == null)
                 return;
 
-            match.SetBribes(SelectedTeam, match.GetBribes(SelectedTeam) + change);
-            Huttball.RefreshWindows();
+            change(match, SelectedTeam);
+            Huttball.ResourcesChanged(MatchArea);
         }
     }
 }

@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float LabelHeight = 20f;
         private const float ButtonWidth = 130f;
         private const float ComboWidth = 150f;
+        private const float ResourceLabelWidth = 100f;
+        private const float StepButtonSize = 40f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -53,6 +55,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundLabel(content, model => model.TurnText);
                             AddBoundLabel(content, model => model.BallText);
                             content.AddRow(r => r.AddText()
+                                .BindText(model => model.ResourcesText)
+                                .BindIsVisible(model => model.HasMatch)
+                                .SetHeight(44f));
+                            content.AddRow(r => r.AddText()
                                 .SetText(Huttball.PitchKey)
                                 .BindIsVisible(model => model.HasMatch)
                                 .SetHeight(56f));
@@ -65,16 +71,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             content.AddRow(r =>
                             {
-                                AddActionButton(r, "Move", "Click a square. In setup, take any free square in your half.", model => model.OnMove());
-                                AddActionButton(r, "Block", "Opposed strength roll against an adjacent opponent.", model => model.OnBlock());
-                                AddActionButton(r, "Pass", $"Throw the ball to a teammate up to {HuttballRules.PassRange} squares away.", model => model.OnPass());
+                                AddActionButton(r, "Move", "Click a square. In setup, take any free square in your half.",
+                                    model => model.OnMove(), model => model.CanMove);
+                                AddActionButton(r, "Block", "Opposed strength roll against an adjacent opponent.",
+                                    model => model.OnBlock(), model => model.CanBlock);
+                                AddActionButton(r, "Pass", $"Throw the ball to a teammate up to {HuttballRules.PassRange} squares away.",
+                                    model => model.OnPass(), model => model.CanPass);
                                 r.AddSpacer();
                             });
                             content.AddRow(r =>
                             {
-                                AddActionButton(r, "Dirty Move", "Kick a downed opponent: another injury roll, but the referee may send you off.", model => model.OnDirtyMove());
-                                AddActionButton(r, "Stand Up", "Get back on your feet. Uses this turn's movement.", model => model.OnStandUp());
-                                AddActionButton(r, "Done", "Finish this player's turn.", model => model.OnDone());
+                                AddActionButton(r, "Dirty Move", "Kick a downed opponent: another injury roll, but the referee may send you off.",
+                                    model => model.OnDirtyMove(), model => model.CanDirtyMove);
+                                AddActionButton(r, "Stand Up", "Get back on your feet. Uses this turn's movement.",
+                                    model => model.OnStandUp(), model => model.CanStandUp);
+                                AddActionButton(r, "Done", "Finish this player's turn.",
+                                    model => model.OnDone(), model => model.CanFinish);
+                                r.AddSpacer();
+                            });
+                            content.AddRow(r =>
+                            {
+                                AddActionButton(r, "Re-roll", "Right after one of your team's rolls: undo it and roll again. You keep the new result.",
+                                    model => model.OnReroll(), model => model.CanReroll);
+                                AddActionButton(r, "Medic", "Click an injured teammate on the bench: their injury drops one step.",
+                                    model => model.OnMedic(), model => model.CanUseMedic);
                                 r.AddSpacer();
                             });
 
@@ -127,14 +147,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsEnabled(model => model.IsPlaying);
                                 r.AddSpacer();
                             });
-                            content.AddRow(r =>
-                            {
-                                AddDMButton(r, "Bribe -", "Take a bribe from the chosen team.", model => model.OnBribeDown())
-                                    .BindIsEnabled(model => model.HasMatch);
-                                AddDMButton(r, "Bribe +", "Give the chosen team a bribe. One is spent automatically when a dirty move is spotted.", model => model.OnBribeUp())
-                                    .BindIsEnabled(model => model.HasMatch);
-                                r.AddSpacer();
-                            });
+                            AddResourceStepper(content, "Re-rolls", "re-roll",
+                                model => model.OnRerollDown(), model => model.OnRerollUp());
+                            AddResourceStepper(content, "Medics", "medic",
+                                model => model.OnMedicDown(), model => model.OnMedicUp());
+                            AddResourceStepper(content, "Bribes", "bribe (one is spent automatically when a dirty move is spotted)",
+                                model => model.OnBribeDown(), model => model.OnBribeUp());
 
                             AddSectionLabel(content, "Play-by-Play", model => model.HasMatch);
                             content.AddRow(r => r.AddText()
@@ -170,19 +188,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
         }
 
+        /// <summary>
+        /// A player action, greyed out whenever the commanded player cannot take it right now.
+        /// </summary>
         private static void AddActionButton(
             GuiRow<HuttballViewModel> row,
             string text,
             string tooltip,
-            Expression<Func<HuttballViewModel, Action>> onClick)
+            Expression<Func<HuttballViewModel, Action>> onClick,
+            Expression<Func<HuttballViewModel, bool>> isEnabled)
         {
             row.AddButton()
                 .SetText(text)
                 .SetTooltip(tooltip)
                 .SetWidth(ButtonWidth)
                 .BindOnClicked(onClick)
-                .BindIsEnabled(model => model.CanAct)
+                .BindIsEnabled(isEnabled)
                 .BindIsVisible(model => model.HasMatch);
+        }
+
+        /// <summary>
+        /// A DM row that takes one of a resource from, or gives one to, the team chosen in the team box.
+        /// </summary>
+        private static void AddResourceStepper(
+            GuiColumn<HuttballViewModel> content,
+            string label,
+            string noun,
+            Expression<Func<HuttballViewModel, Action>> onDown,
+            Expression<Func<HuttballViewModel, Action>> onUp)
+        {
+            content.AddRow(r =>
+            {
+                r.AddLabel()
+                    .SetText(label)
+                    .BindIsVisible(model => model.IsDM)
+                    .SetWidth(ResourceLabelWidth)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                r.AddButton()
+                    .SetText("-")
+                    .SetTooltip($"Take a {noun} from the chosen team.")
+                    .SetWidth(StepButtonSize)
+                    .BindOnClicked(onDown)
+                    .BindIsVisible(model => model.IsDM)
+                    .BindIsEnabled(model => model.HasMatch);
+                r.AddButton()
+                    .SetText("+")
+                    .SetTooltip($"Give the chosen team a {noun}.")
+                    .SetWidth(StepButtonSize)
+                    .BindOnClicked(onUp)
+                    .BindIsVisible(model => model.IsDM)
+                    .BindIsEnabled(model => model.HasMatch);
+                r.AddSpacer();
+            });
         }
 
         private static GuiButton<HuttballViewModel> AddDMButton(

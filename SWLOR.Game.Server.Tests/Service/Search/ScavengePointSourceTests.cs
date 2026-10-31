@@ -30,6 +30,20 @@ public class ScavengePointSourceTests
     }
 
     [Test]
+    public void RecoveredCredits_CountAsDeliveredByTheGoldTheyAdd_SoTheyArePaidOnce()
+    {
+        var deliver = Method(
+            Source("Service", "ScavengeService", "NwnScavengeWorld.cs"),
+            "private static int Deliver(uint player, string resref, int quantity, Dictionary<string, string> names)");
+        var gold = deliver[..deliver.IndexOf("var before = CountInInventory(player, resref);", StringComparison.Ordinal)];
+
+        gold.Should().Contain("if (resref == ScavengeLoot.GoldResref)",
+            "credits never sit in the inventory, so counting the inventory would report none delivered and keep them waiting to pay again");
+        gold.Should().Contain("var goldBefore = GetGold(player);");
+        gold.Should().Contain("return Math.Clamp(GetGold(player) - goldBefore, 0, quantity);");
+    }
+
+    [Test]
     public void ASiteOpenedForItsScavenger_IsHeldForThemUntilTheyCloseIt()
     {
         var source = Source("Feature", "ScavengePoint.cs");

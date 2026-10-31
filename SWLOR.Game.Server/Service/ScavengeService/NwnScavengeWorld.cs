@@ -163,10 +163,18 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// <summary>
         /// Creates the item in the player's inventory and returns how many the inventory gained. A created item that is not in the
         /// player's inventory (a full inventory leaves it on the ground) is destroyed, so it cannot be looted while its quantity stays
-        /// waiting.
+        /// waiting. Credits are added to the player's gold, never as an inventory item, so their delivery is what the gold gained.
         /// </summary>
         private static int Deliver(uint player, string resref, int quantity, Dictionary<string, string> names)
         {
+            if (resref == ScavengeLoot.GoldResref)
+            {
+                var goldBefore = GetGold(player);
+                GiveGoldToCreature(player, quantity);
+                names[resref] = "Credits";
+                return Math.Clamp(GetGold(player) - goldBefore, 0, quantity);
+            }
+
             var before = CountInInventory(player, resref);
             var item = CreateItemOnObject(resref, player, quantity);
             if (GetIsObjectValid(item))

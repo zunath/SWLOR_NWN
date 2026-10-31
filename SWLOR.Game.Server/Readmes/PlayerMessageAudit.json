@@ -7344,21 +7344,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceElectronicWarfare.cs",
-    "Line": 38,
+    "Line": 41,
     "Member": "RefuseWhileInterdicted",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Red(refusal))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceElectronicWarfare.cs",
-    "Line": 134,
+    "Line": 150,
     "Member": "ApplyInterdiction",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(SignatureJumpRules.Message(SignatureJumpRefusal.Interdicted)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceElectronicWarfare.cs",
-    "Line": 138,
+    "Line": 154,
     "Member": "ApplyInterdiction",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red($\"{ShipElectronicWarfareRules.InterdictedMessage} You cannot jump, dock or cloak while it holds.\"))"

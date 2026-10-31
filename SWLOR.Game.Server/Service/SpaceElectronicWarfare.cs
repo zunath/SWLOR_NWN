@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.Service
     public static partial class Space
     {
         private const string IonWebEffectTag = "SPACE_ION_WEB";
+
+        /// <summary>Each webbed ship's one pending Ion Web expiry check.</summary>
+        private static readonly ShipPendingChecks _ionWebChecks = new();
         public const string HostileTargetMessage = "Target an enemy ship.";
 
         /// <summary>Whether an Interdictor holds the ship right now.</summary>
@@ -92,7 +95,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Slows the ship by its strongest active Ion Web until that web lapses, then checks again, so a weaker web still
-        /// running takes over at once instead of waiting for its next cycle.
+        /// running takes over at once instead of waiting for its next cycle. The ship keeps one pending check: each web
+        /// cycle supersedes the last, and a superseded check exits without scheduling another.
         /// </summary>
         private static void ApplyStrongestIonWeb(uint target, ShipStatus targetStatus, DateTime now)
         {
@@ -100,15 +104,27 @@ namespace SWLOR.Game.Server.Service
             var percent = ShipTimedStrengthRules.Strongest(targetStatus.IonWebs, now);
             var until = ShipTimedStrengthRules.StrongestUntil(targetStatus.IonWebs, now);
             if (percent <= 0 || until == null)
+            {
+                _ionWebChecks.End(target);
                 return;
+            }
 
             var seconds = (float)(until.Value - now).TotalSeconds;
             ApplyEffectToObject(DurationType.Temporary, TagEffect(EffectMovementSpeedDecrease(percent), IonWebEffectTag), target, seconds);
+            var check = _ionWebChecks.Begin(target);
             DelayCommand(seconds, () =>
             {
+                if (!_ionWebChecks.IsCurrent(target, check))
+                    return;
+
                 var status = GetIsObjectValid(target) ? GetShipStatus(target) : null;
-                if (status != null)
-                    ApplyStrongestIonWeb(target, status, DateTime.UtcNow);
+                if (status == null)
+                {
+                    _ionWebChecks.End(target);
+                    return;
+                }
+
+                ApplyStrongestIonWeb(target, status, DateTime.UtcNow);
             });
         }
 

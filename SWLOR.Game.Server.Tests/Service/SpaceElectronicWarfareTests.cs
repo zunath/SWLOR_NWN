@@ -167,6 +167,33 @@ public class SpaceElectronicWarfareTests
     }
 
     [Test]
+    public void IonWebExpiryChecks_OnlyTheLatestCheckPerShipRuns()
+    {
+        var checks = new ShipPendingChecks();
+        var first = checks.Begin(7);
+        var second = checks.Begin(7);
+        var other = checks.Begin(8);
+
+        checks.IsCurrent(7, first).Should().BeFalse("a later web cycle superseded it, so its callback exits");
+        checks.IsCurrent(7, second).Should().BeTrue();
+        checks.IsCurrent(8, other).Should().BeTrue("each ship keeps its own check");
+        checks.Count.Should().Be(2, "one pending check per ship, however many cycles ran");
+
+        checks.End(7);
+        checks.IsCurrent(7, second).Should().BeFalse("a ship with no web left has no check");
+        checks.Count.Should().Be(1);
+
+        var web = ReadSource("Service", "SpaceElectronicWarfare.cs").Replace("\r\n", "\n");
+        var apply = web[web.IndexOf("private static void ApplyStrongestIonWeb(", StringComparison.Ordinal)..];
+        apply.IndexOf("var check = _ionWebChecks.Begin(target);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(apply.IndexOf("DelayCommand(seconds,", StringComparison.Ordinal));
+        apply.Should().Contain("if (!_ionWebChecks.IsCurrent(target, check))\n                    return;")
+            .And.Contain("_ionWebChecks.End(target);");
+        web.Split("DelayCommand(").Length.Should().Be(3, "the web check and the existing cloak break are the only delayed callbacks");
+    }
+
+    [Test]
     public void AWeakerJammerOrPainterOrWeb_NeverKeepsAStrongerOneAlive()
     {
         // A stronger and a weaker module both cycle every 4 s; the stronger one stops after its cycle at 0 s.

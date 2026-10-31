@@ -457,9 +457,13 @@ namespace SWLOR.Game.Server.Service
             ShipHold.DeliverYield(ship, items, components);
         }
 
-        /// <summary>Space lockbox rewards: everything goes to the player who sliced it.</summary>
+        /// <summary>
+        /// Space lockbox rewards: everything goes to the player who sliced it. An item a full inventory refuses goes the
+        /// way a yield that fits nowhere does (ShipHold.KeepUnplacedYield), so no reward is lost.
+        /// </summary>
         private static void GiveRewardsToPlayer(uint player, IReadOnlyList<SpaceSlicingReward> rewards)
         {
+            var unplaced = new List<(string Resref, ShipComponentTraitType? Trait)>();
             foreach (var reward in rewards)
             {
                 switch (reward.Kind)
@@ -472,13 +476,17 @@ namespace SWLOR.Game.Server.Service
                         break;
                     default:
                         var item = CreateItemOnObject(reward.Resref, player, reward.Quantity);
-                        if (reward.Trait != ShipComponentTraitType.None && GetIsObjectValid(item))
+                        if (!GetIsObjectValid(item))
+                            unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward));
+                        else if (reward.Trait != ShipComponentTraitType.None)
                             ShipComponents.SetTraits(item, new[] { reward.Trait });
                         break;
                 }
             }
 
             SendMessageToPC(player, ColorToken.Green($"You recover {DescribeRewards(rewards)}."));
+            if (unplaced.Count > 0)
+                ShipHold.KeepUnplacedYield(player, unplaced);
         }
 
         private static string DescribeRewards(IEnumerable<SpaceSlicingReward> rewards)

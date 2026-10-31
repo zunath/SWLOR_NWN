@@ -533,7 +533,7 @@ public class SpaceW11nReviewFixTests
         deliver.Should().Contain("if (!GetIsObjectValid(CreateItemOnObject(resref, pilot)))");
         Index(deliver, "unplaced.Add((resref, trait));").Should().BeLessThan(Index(deliver, "KeepUnplacedYield(pilot, unplaced);"));
 
-        var keep = Between(source, "private static void KeepUnplacedYield(", "private static void SaveNewHold(");
+        var keep = Between(source, "public static void KeepUnplacedYield(", "private static void SaveNewHold(");
         keep.Should().Contain("AddNewStack(hold, resref, Math.Min(left, maxStack));");
         keep.Should().Contain("DB.Set(hold);");
         keep.Should().Contain("CreateObject(ObjectType.Item, resref, location);", "without a hold the yield is left at the pilot");

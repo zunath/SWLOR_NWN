@@ -6308,21 +6308,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipHold.cs",
-    "Line": 240,
+    "Line": 241,
     "Member": "KeepUnplacedYield",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red($\"Your ship hold and inventory are full. {names} was packed into the hold past its limit; take items out to make room.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipHold.cs",
-    "Line": 252,
+    "Line": 253,
     "Member": "KeepUnplacedYield",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red($\"Your inventory is full. {names} was left at your location.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipHold.cs",
-    "Line": 390,
+    "Line": 391,
     "Member": "WarnHoldFull",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red(\"Your ship's hold is full. Yields go to your inventory until you make room.\"))"
@@ -7729,21 +7729,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 481,
+    "Line": 487,
     "Member": "GiveRewardsToPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover {DescribeRewards(rewards)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 546,
+    "Line": 554,
     "Member": "OpenLockedCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"The lock gives way. You open the {GetName(cache)}: {credits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 570,
+    "Line": 578,
     "Member": "RollSpaceLockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"

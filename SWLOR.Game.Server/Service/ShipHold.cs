@@ -215,9 +215,10 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Yield that fit neither the hold nor the pilot's inventory is packed into the hold past its entry limit, so it is
         /// never lost: taking items out works as usual, and storing more waits for room. Without a hold the pilot may use,
-        /// it is left at the pilot's location.
+        /// it is left at the pilot's location. Other rewards a full inventory refused (a space lockbox's) are kept the same
+        /// way: one entry per item, a component with its trait.
         /// </summary>
-        private static void KeepUnplacedYield(uint pilot, List<(string Resref, ShipComponentTraitType? Trait)> unplaced)
+        public static void KeepUnplacedYield(uint pilot, List<(string Resref, ShipComponentTraitType? Trait)> unplaced)
         {
             var names = string.Join(", ", unplaced.GroupBy(x => x.Resref).Select(x => $"{x.Count()}x {Cache.GetItemNameByResref(x.Key)}"));
             if (TryGetHold(pilot, out var property, out _, out var hold, out var holdIsNew))

@@ -12,6 +12,22 @@ namespace SWLOR.Game.Server.Service.SlicingService
     /// </summary>
     public static class SpaceSlicingRules
     {
+        /// <summary>
+        /// The items of a reward the slicer's full inventory refused, as ShipHold.KeepUnplacedYield keeps them: one
+        /// entry per item, a component with its trait. Credits and agent intel are never items.
+        /// </summary>
+        public static List<(string Resref, ShipComponentTraitType? Trait)> UnplacedItems(SpaceSlicingReward reward)
+        {
+            if (reward == null || reward.Kind is SpaceSlicingRewardKind.Credits or SpaceSlicingRewardKind.AgentIntel ||
+                string.IsNullOrWhiteSpace(reward.Resref))
+            {
+                return new List<(string Resref, ShipComponentTraitType? Trait)>();
+            }
+
+            ShipComponentTraitType? trait = reward.Trait == ShipComponentTraitType.None ? null : reward.Trait;
+            return Enumerable.Repeat((reward.Resref, trait), Math.Max(0, reward.Quantity)).ToList();
+        }
+
         /// <summary>Whether a source is one of the space targets.</summary>
         public static bool IsSpaceSource(SlicingSourceType source) =>
             source is SlicingSourceType.DataCan or SlicingSourceType.LockedCache or SlicingSourceType.WreckDataCore

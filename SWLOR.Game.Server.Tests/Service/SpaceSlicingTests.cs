@@ -473,6 +473,34 @@ public class SpaceSlicingTests
             .And.BeLessThan(complete.IndexOf("SlicingReward.RollSpace(", StringComparison.Ordinal));
     }
 
+    [Test]
+    public void LockboxRewards_AFullInventoryKeepsEveryItemOnce()
+    {
+        // Each refused item becomes one kept entry, a component keeps its trait, and credits are never items.
+        SpaceSlicingRules.UnplacedItems(new SpaceSlicingReward { Kind = SpaceSlicingRewardKind.Ammo, Resref = "ship_missile_ion", Quantity = 3 })
+            .Should().Equal(("ship_missile_ion", null), ("ship_missile_ion", null), ("ship_missile_ion", null));
+        SpaceSlicingRules.UnplacedItems(new SpaceSlicingReward
+            {
+                Kind = SpaceSlicingRewardKind.Component, Resref = "sc_emitter_1", Quantity = 1, Trait = ShipComponentTraitType.Overcharged,
+            })
+            .Should().Equal(("sc_emitter_1", (ShipComponentTraitType?)ShipComponentTraitType.Overcharged));
+        SpaceSlicingRules.UnplacedItems(new SpaceSlicingReward { Kind = SpaceSlicingRewardKind.Credits, Credits = 500 }).Should().BeEmpty();
+        SpaceSlicingRules.UnplacedItems(new SpaceSlicingReward { Kind = SpaceSlicingRewardKind.AgentIntel }).Should().BeEmpty();
+
+        // Only an item the inventory refused is kept, after the loop, so none is lost and none is given twice.
+        var source = ServerSource("Service", "SpaceSlicing.cs").Replace("\r\n", "\n");
+        var give = Between(source, "private static void GiveRewardsToPlayer(", "private static string DescribeRewards(");
+        give.Should().Contain("if (!GetIsObjectValid(item))\n                            unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward));\n                        else if");
+        give.IndexOf("ShipHold.KeepUnplacedYield(player, unplaced);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(give.IndexOf("foreach (var reward in rewards)", StringComparison.Ordinal));
+
+        // The lockbox goes only after its rewards are in hand (DestroyObject runs at the end of the script anyway, so
+        // destroying it first would not free its slot).
+        var complete = Between(source, "case SlicingSourceType.SpaceLockbox:", "case SlicingSourceType.DataCan:");
+        complete.IndexOf("GiveRewardsToPlayer(slicer, rewards);", StringComparison.Ordinal)
+            .Should().BeLessThan(complete.IndexOf("DestroyObject(target);", StringComparison.Ordinal));
+    }
+
     private static string Between(string source, string start, string end)
     {
         var from = source.IndexOf(start, StringComparison.Ordinal);

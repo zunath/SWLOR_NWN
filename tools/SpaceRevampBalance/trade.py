@@ -556,8 +556,76 @@ def market(ex, com):
     return MARKET_INDEX.get((ex, com))
 
 
-def plan_leg(state, here, there, hold, social, goods, tier=0):
-    """The basket that earns the most from here to there: add the best unit per volume until nothing pays."""
+# Jump Beacons (W13b, plan section 25; review 2026-10-30): a player station's beacon jumps a ship docked at it, cargo and
+# sealed freight aboard, to another station's beacon, whatever the starlane hops between them. Every orbit with an
+# exchange has two station anchor sites (stations.ORBIT_ANCHORS), so the best case modelled is a beacon in every one of
+# those orbits, open to anyone and able to take the hull. A beacon leg between exchanges in different orbits: trade at
+# the dock, fly to the station in the same orbit, jump, and fly from the destination station to its dock:
+# BEACON_LEG_MINUTES. It skips the orbits between, but launching from the dock and from the destination station still
+# enters both end orbits, which roll customs and ambushes as usual (Trade.CheckOrbitRisks on entering an orbit). It
+# burns Station Fuel (stations.jump_fuel, which scales with the cargo aboard), bought at CZ-220's exchange.
+BEACON_LEG_MINUTES = STOP_MINUTES + 2 * SAME_ORBIT_MINUTES
+# The trade sim's hulls (HULLS): size and hull tag for the beacon's fuel.
+HULL_BEACON = {"Fighter": ("Small", ""), "Y8 Miner": ("Medium", ""), "Barracuda": ("Medium", ""),
+               "XS Freighter": ("Medium", ""), "Heavy Lifter": ("Large", ""), "Republic Quartermaster": ("Large", ""),
+               "Hutt Grand Barge": ("Large", "sd_huttgrandbarg")}
+
+
+def _stations():
+    import stations  # stations.py imports this module, so it is loaded on first use
+    return stations
+
+
+def station_fuel_price(social=10):
+    """What a unit of Station Fuel costs at its cheapest exchange (CZ-220, the exporter), fresh market."""
+    m = market("CZ220", "StationFuel")
+    return unit_buy(m["base"], m["factor"], -0.5, m["depth"], social)
+
+
+def beacon_orbits():
+    return {a[1] for a in _stations().ORBIT_ANCHORS}
+
+
+def basket_volume(basket):
+    return sum(n * commodity(c)[4] for c, n in basket.items())
+
+
+def beacon_hops(here, there):
+    return hops(exchange(here)[3], exchange(there)[3])
+
+
+def beacon_fuel_cost(size, hull_tag, here, there, basket, sealed_volume=0):
+    """The credits of Station Fuel a jump with this cargo burns. Sealed freight counts as pirates value it."""
+    value = sum(n * commodity(c)[3] for c, n in basket.items()) + sealed_volume * SEALED_VALUE_PER_VOLUME
+    return _stations().jump_fuel(size, hull_tag, value, beacon_hops(here, there)) * station_fuel_price()
+
+
+def beacon_unit_cost(size, hull_tag, here, there):
+    """The fuel one more unit of each good adds to the jump, in credits (for choosing what to carry)."""
+    st = _stations()
+    share = (100 - st.JUMP_FUEL_DISCOUNT.get(hull_tag, 0)) / 100
+    h = beacon_hops(here, there)
+    price = station_fuel_price()
+    return lambda c: price * share * st.jump_cargo_fuel(commodity(c)[3], h)
+
+
+def beacon_leg_orbits(here, there):
+    """The orbits a beacon leg enters: launching from the dock, then from the destination station."""
+    return [exchange(here)[3], exchange(there)[3]]
+
+
+def beacon_leg(here, there, size, hull_tag, basket, sealed_volume=0):
+    """(minutes, fuel credits) of the leg by Jump Beacon, or None when both docks share an orbit or one has no anchor."""
+    a, b = exchange(here)[3], exchange(there)[3]
+    orbits = beacon_orbits()
+    if a == b or a not in orbits or b not in orbits:
+        return None
+    return BEACON_LEG_MINUTES, beacon_fuel_cost(size, hull_tag, here, there, basket, sealed_volume)
+
+
+def plan_leg(state, here, there, hold, social, goods, tier=0, unit_cost=None):
+    """The basket that earns the most from here to there: add the best unit per volume until nothing pays. A beacon leg
+    passes the fuel each unit adds to the jump (unit_cost, credits by good), which the unit must also pay for."""
     basket, used, profit = {}, 0, 0.0
     buy_bonus, sell_bonus = exchange_price_bonus(here, tier), exchange_price_bonus(there, tier)
     while True:
@@ -569,19 +637,20 @@ def plan_leg(state, here, there, hold, social, goods, tier=0):
             n = basket.get(c, 0)
             buy = unit_buy(hm["base"], hm["factor"], state[(here, c)] - n - 0.5, hm["depth"], social, buy_bonus)
             sell = unit_sell(tm["base"], tm["factor"], state[(there, c)] + n + 0.5, tm["depth"], social, sell_bonus)
-            gain = (sell - buy) / hm["volume"]
+            gain = (sell - buy - (unit_cost(c) if unit_cost else 0.0)) / hm["volume"]
             if gain > best_gain:
                 best, best_gain = c, gain
         if best is None:
             return basket, profit
         basket[best] = basket.get(best, 0) + 1
         used += market(here, best)["volume"]
-        profit += best_gain * market(here, best)["volume"]
+        profit += best_gain * market(here, best)["volume"] + (unit_cost(best) if unit_cost else 0.0)
 
 
-def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False, tier=0):
+def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False, tier=0, beacon=None):
     """Credits earned in each hour by a trader who always flies the leg that pays most per minute. A lawful trader
-    carries only legal goods."""
+    carries only legal goods. With beacon (hull size, hull tag) the trader may also take any leg by Jump Beacon
+    (beacon_leg), paying its fuel."""
     goods = [c[1] for c in COMMODITIES if (not lawful or not c[5]) and not is_holding_good(c[1])]
     state = {(m["exchange"], m["commodity"]): 0.0 for m in MARKETS}
     here, clock = start, 0.0
@@ -591,14 +660,18 @@ def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False, 
         for ex in EXCHANGES:
             if ex[0] != here:
                 basket, profit = plan_leg(state, here, ex[0], hold, social, goods, tier)
-                options.append((profit / leg_minutes(here, ex[0]), ex[0], basket))
-        _, there, basket = max(options)
-        realized = 0
+                options.append((profit / leg_minutes(here, ex[0]), ex[0], basket, leg_minutes(here, ex[0]), 0.0))
+                if beacon and beacon_leg(here, ex[0], beacon[0], beacon[1], {}):
+                    basket, profit = plan_leg(state, here, ex[0], hold, social, goods, tier,
+                                              beacon_unit_cost(beacon[0], beacon[1], here, ex[0]))
+                    minutes, fuel = beacon_leg(here, ex[0], beacon[0], beacon[1], basket)
+                    options.append(((profit - fuel) / minutes, ex[0], basket, minutes, fuel))
+        _, there, basket, minutes, fuel = max(options, key=lambda o: (o[0], o[1]))
+        realized = -fuel
         for c, n in basket.items():
             hm = market(here, c)
             realized -= buy_cost(hm["base"], hm["factor"], state[(here, c)], hm["depth"], n, social, exchange_price_bonus(here, tier))
             state[(here, c)] -= n
-        minutes = leg_minutes(here, there)
         for k in state:
             state[k] = recover(state[k], minutes / 60)
         clock += minutes
@@ -701,12 +774,13 @@ def route(a, b):
     return path[::-1]
 
 
-def leg_risk(basket, revenue, cost, here, there, reduction=0.0, standing_cut=0.0):
+def leg_risk(basket, revenue, cost, here, there, reduction=0.0, standing_cut=0.0, orbits=None):
     """Expected credits and extra minutes of one leg after customs and pirates, in expectation: each orbit entered may
-    bring an ambush (some cargo lost) and a customs scan (the patrol's banned goods confiscated and fined)."""
+    bring an ambush (some cargo lost) and a customs scan (the patrol's banned goods confiscated and fined). The orbits
+    entered are the starlane route's unless given (a beacon leg's)."""
     left = {c: float(n) for c, n in basket.items()}
     fines, minutes = 0.0, 0.0
-    for orbit in route(exchange(here)[3], exchange(there)[3]):
+    for orbit in orbits or route(exchange(here)[3], exchange(there)[3]):
         value = sum(n * commodity(c)[3] for c, n in left.items())
         pa = ambush_chance(value, ORBIT_TIERS[orbit])
         minutes += pa * AMBUSH_SIM_MINUTES
@@ -747,9 +821,10 @@ def priced(state, here, there, basket, social, tier=0):
     return cost, revenue
 
 
-def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduction=0.0, log=None, tier=0):
+def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduction=0.0, log=None, tier=0, beacon=None):
     """simulate() with customs and pirates in expectation. The trader weighs each leg's expected profit after risk and
-    may carry fewer banned goods (BANNED_CAPS) than fit."""
+    may carry fewer banned goods (BANNED_CAPS) than fit. With beacon (hull size, hull tag) a leg may go by Jump Beacon,
+    paying its fuel, with the risks of the two orbits it launches into (beacon_leg_orbits)."""
     goods = [c[1] for c in COMMODITIES if (not lawful or not c[5]) and not is_holding_good(c[1])]
     state = {(m["exchange"], m["commodity"]): 0.0 for m in MARKETS}
     here, clock = start, 0.0
@@ -769,6 +844,22 @@ def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduc
                 cost, revenue = priced(state, here, ex[0], basket, social, tier)
                 expected, extra = leg_risk(basket, revenue, cost, here, ex[0], reduction, standing_scan_cut(tier))
                 minutes = leg_minutes(here, ex[0]) + extra
+                if best is None or expected / minutes > best[0]:
+                    best = (expected / minutes, ex[0], basket, expected, minutes)
+            if not beacon or not beacon_leg(here, ex[0], beacon[0], beacon[1], {}):
+                continue
+            full, _ = plan_leg(state, here, ex[0], hold, social, goods, tier, beacon_unit_cost(beacon[0], beacon[1], here, ex[0]))
+            tried = []
+            for cap in ([0] if lawful else BANNED_CAPS):
+                basket = {c: n for c, n in trim_banned(full, cap).items() if n > 0}
+                if basket in tried:
+                    continue
+                tried.append(basket)
+                cost, revenue = priced(state, here, ex[0], basket, social, tier)
+                minutes, fuel = beacon_leg(here, ex[0], beacon[0], beacon[1], basket)
+                expected, extra = leg_risk(basket, revenue, cost + fuel, here, ex[0], reduction, standing_scan_cut(tier),
+                                           beacon_leg_orbits(here, ex[0]))
+                minutes += extra
                 if best is None or expected / minutes > best[0]:
                     best = (expected / minutes, ex[0], basket, expected, minutes)
         _, there, basket, expected, minutes = best
@@ -792,6 +883,59 @@ def freight_rate(volume=FREIGHT_SIM_VOLUME):
     for h in range(1, 6):
         minutes = STOP_MINUTES + h * HOP_MINUTES
         out[h] = freight_fee(volume, h) / minutes * 60
+    return out
+
+
+def freight_rate_beacon(volume, size, hull_tag=""):
+    """freight_rate() for a pilot who may take each job by Jump Beacon (one jump from the pickup's orbit to the
+    delivery's, the sealed load aboard), whichever pays more per minute."""
+    out = {}
+    for h in range(1, 6):
+        fee = freight_fee(volume, h)
+        here, there = next((a[0], b[0]) for a in EXCHANGES for b in EXCHANGES if beacon_hops(a[0], b[0]) == h)
+        fuel = beacon_fuel_cost(size, hull_tag, here, there, {}, volume)
+        out[h] = max(fee / (STOP_MINUTES + h * HOP_MINUTES), (fee - fuel) / BEACON_LEG_MINUTES) * 60
+    return out
+
+
+def beacon_outcome():
+    """Beacon-assisted hauling against T3 combat, for each hull that carries FREIGHT_SIM_VOLUME: freight contracts with
+    that volume aboard (average over 1-5 hop jobs and the best, 5-hop, job, with the fuel that job's jump burns), the
+    greedy trader's 4-hour average with beacons (legal goods, and every good after risk)."""
+    t3 = combat_credits_per_hour(3)[1]
+    rows = []
+    for name, hold in HULLS:
+        if hold < FREIGHT_SIM_VOLUME:
+            continue
+        size, tag = HULL_BEACON[name]
+        freight = freight_rate_beacon(FREIGHT_SIM_VOLUME, size, tag)
+        legal = sum(simulate(hold, lawful=True, beacon=(size, tag))) / 4
+        every = sum(simulate_risk(hold, beacon=(size, tag))) / 4
+        rows.append(dict(Hull=name, Size=size,
+                         Fuel=_stations().jump_fuel(size, tag, FREIGHT_SIM_VOLUME * SEALED_VALUE_PER_VOLUME, 5),
+                         FreightPerHour=round(sum(freight.values()) / 5),
+                         FreightPercent=round(100 * sum(freight.values()) / 5 / t3),
+                         Best5HopPerHour=round(freight[5]), Best5HopPercent=round(100 * freight[5] / t3),
+                         LegalPerHour=round(legal), LegalPercent=round(100 * legal / t3),
+                         EveryPerHour=round(every), EveryPercent=round(100 * every / t3)))
+    return dict(T3Combat=round(t3), FuelPrice=round(station_fuel_price()), Rows=rows)
+
+
+BEACON_FREIGHT_MAX_PERCENT = 125   # freight by beacon stays inside the open-trading band (starlane freight: about 75%)
+BEACON_LEGAL_MAX_PERCENT = 125
+BEACON_EVERY_MAX_PERCENT = 200
+
+
+def beacon_problems(outcome=None):
+    """Beacon-assisted hauling outside the plan's trade bands (section 13)."""
+    out = []
+    for row in (outcome or beacon_outcome())["Rows"]:
+        if row["Best5HopPercent"] > BEACON_FREIGHT_MAX_PERCENT:
+            out.append(f"{row['Hull']}: a 5-hop freight job by beacon pays {row['Best5HopPercent']}% of T3 combat")
+        if row["LegalPercent"] > BEACON_LEGAL_MAX_PERCENT:
+            out.append(f"{row['Hull']}: legal trade with beacons pays {row['LegalPercent']}%")
+        if row["EveryPercent"] > BEACON_EVERY_MAX_PERCENT:
+            out.append(f"{row['Hull']}: every good with beacons pays {row['EveryPercent']}%")
     return out
 
 
@@ -965,6 +1109,16 @@ def report():
             hours = simulate(bay, lawful=True)
             avg = sum(hours) / len(hours)
             print(f"  {name:24s} {len(ranks)} x Mk X, hold {bay:5d}: avg {avg:6.0f} ({100 * avg / t3:3.0f}% of T3)")
+    beacons = beacon_outcome()
+    print(f"\nJump Beacons (best case: a beacon open to anyone in every orbit with an exchange; a beacon leg takes "
+          f"{BEACON_LEG_MINUTES:.0f} minutes whatever the hops and rolls customs and ambushes only in its two end orbits; "
+          f"Station Fuel at {beacons['FuelPrice']}): 4-hour averages against T3 combat ({beacons['T3Combat']}):")
+    for row in beacons["Rows"]:
+        print(f"  {row['Hull']:24s} {row['Size']:6s}: freight {FREIGHT_SIM_VOLUME} volume {row['FreightPerHour']} "
+              f"({row['FreightPercent']}%; target 75%), best job (5 hops, {row['Fuel']} fuel) {row['Best5HopPerHour']} "
+              f"({row['Best5HopPercent']}%), legal {row['LegalPerHour']} ({row['LegalPercent']}%; target 100-125%), "
+              f"every good after risk {row['EveryPerHour']} ({row['EveryPercent']}%; target 150-200%)")
+    print("  Checks: " + ("; ".join(beacon_problems(beacons)) or "all inside the trade bands"))
     print("\nCity tariff, one buy and one sale of 1,000 credits at 10%:",
           f"{tariff(1000, 10)} each, {tariff(1000, 10) * 2 / 2000:.0%} of the money changing hands")
 

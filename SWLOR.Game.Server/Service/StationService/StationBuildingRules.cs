@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Service.StationService
 {
@@ -134,17 +135,36 @@ namespace SWLOR.Game.Server.Service.StationService
         public static bool TakesHull(int originLevel, int destinationLevel, ShipSize size) =>
             size != ShipSize.Invalid && (int)size <= (int)GetMaxHull(Math.Min(originLevel, destinationLevel));
 
-        /// <summary>Station Fuel units a jump burns: by hull size, less for the hulls built to save it (rounded up).</summary>
-        public static int GetJumpFuel(ShipSize size, string hullTag)
+        /// <summary>
+        /// Station Fuel units a jump burns: by hull size, plus one per <see cref="StationTuning.JumpFuelCargoValuePerHop"/>
+        /// credits of cargo value (<see cref="PirateAmbushRules.GetCargoValue"/>) per starlane hop between the two
+        /// stations' systems, rounded up; less for the hulls built to save it (rounded up). The cargo's share keeps a jump
+        /// from out-earning the starlanes it skips (plan section 25).
+        /// </summary>
+        public static int GetJumpFuel(ShipSize size, string hullTag, int cargoValue = 0, int hops = 0)
         {
             if (!StationTuning.JumpFuel.TryGetValue(size, out var units))
                 return 0;
 
+            units += GetCargoJumpFuel(cargoValue, hops);
             var discount = !string.IsNullOrWhiteSpace(hullTag) && StationTuning.JumpFuelDiscountPercent.TryGetValue(hullTag, out var percent)
                 ? percent
                 : 0;
             return Math.Max(1, (int)Math.Ceiling(units * (100 - discount) / 100.0));
         }
+
+        /// <summary>The cargo's share of a jump's fuel, before the hull's discount.</summary>
+        public static int GetCargoJumpFuel(int cargoValue, int hops)
+        {
+            if (cargoValue <= 0 || hops <= 0)
+                return 0;
+
+            return (int)Math.Ceiling((long)cargoValue * hops / (double)StationTuning.JumpFuelCargoValuePerHop);
+        }
+
+        /// <summary>Station Fuel units this jump burns (<see cref="GetJumpFuel"/>).</summary>
+        public static int GetJumpFuel(JumpRequest request) =>
+            GetJumpFuel(request.ShipSize, request.HullTag, request.CargoValue, request.Hops);
 
         /// <summary>Whether a beacon's access setting admits the player.</summary>
         public static bool CanUseBeacon(JumpBeaconAccessType access, bool isCitizen, bool isAllyCitizen) => access switch
@@ -175,7 +195,7 @@ namespace SWLOR.Game.Server.Service.StationService
                 return JumpRefusal.UnknownSize;
             if (!TakesHull(request.OriginBeaconLevel, request.DestinationBeaconLevel, request.ShipSize))
                 return JumpRefusal.HullTooLarge;
-            if (request.FuelAboard < GetJumpFuel(request.ShipSize, request.HullTag))
+            if (request.FuelAboard < GetJumpFuel(request))
                 return JumpRefusal.InsufficientFuel;
 
             return JumpRefusal.None;
@@ -192,7 +212,7 @@ namespace SWLOR.Game.Server.Service.StationService
             JumpRefusal.DestinationBlockaded => "An armada blockades that station's docks. Docking services there are offline until the blockade is broken.",
             JumpRefusal.UnknownSize => "This ship has no hull size, so no beacon can jump it. Notify an admin.",
             JumpRefusal.HullTooLarge => $"A beacon pair of level {Math.Min(request.OriginBeaconLevel, request.DestinationBeaconLevel)} jumps hulls up to {GetMaxHull(Math.Min(request.OriginBeaconLevel, request.DestinationBeaconLevel))}. Upgrade the beacons from Manage City.",
-            JumpRefusal.InsufficientFuel => $"The jump needs {GetJumpFuel(request.ShipSize, request.HullTag)} Station Fuel in the ship's cargo bay; it carries {request.FuelAboard}.",
+            JumpRefusal.InsufficientFuel => $"The jump needs {GetJumpFuel(request)} Station Fuel in the ship's cargo bay; it carries {request.FuelAboard}.",
             _ => string.Empty,
         };
     }

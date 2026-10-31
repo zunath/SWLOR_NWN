@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// <summary>A ship module blueprint's guaranteed bonuses: blueprint traits stamped on every module it crafts.</summary>
         public List<ShipComponentTraitType> GuaranteedTraits { get; set; }
 
+        /// <summary>A research job on this ship blueprint has spent Prototype Tech, which a blueprint takes only once.</summary>
+        public bool PrototypeTechUsed { get; set; }
+
         public BlueprintDetail()
         {
             Recipe = RecipeType.Invalid;

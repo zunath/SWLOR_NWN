@@ -7,13 +7,15 @@ namespace SWLOR.Game.Server.Entity
 {
     /// <summary>
     /// A Planetary Holding a character owns (plan section 26): one record per holding, found by its owner. Output is
-    /// commodity units in the dock warehouse, never items. A new type, so no migration.
+    /// commodity units in the dock warehouse, never items. A new type, so no migration. The limit of holdings is per
+    /// account, counted by <see cref="OwnerCDKey"/>.
     /// </summary>
     public class PlanetaryHolding : EntityBase
     {
         public PlanetaryHolding()
         {
             OwnerPlayerId = string.Empty;
+            OwnerCDKey = string.Empty;
             DockId = string.Empty;
             Level = 1;
             RefineOutput = true;
@@ -30,6 +32,13 @@ namespace SWLOR.Game.Server.Entity
 
         [Indexed]
         public string OwnerPlayerId { get; set; }
+
+        /// <summary>
+        /// The owner's public CD key when bought, which the per-account limit counts. Older records read empty and are
+        /// filled the next time their owner's holdings load.
+        /// </summary>
+        [Indexed]
+        public string OwnerCDKey { get; set; }
 
         public HoldingType Type { get; set; }
 

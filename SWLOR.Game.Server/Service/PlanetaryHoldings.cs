@@ -14,7 +14,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Planetary Holdings (plan section 26): a character buys up to three holdings at NPC planet docks. Each makes one
+    /// Planetary Holdings (plan section 26): an account (public CD key) owns up to three holdings across its characters,
+    /// bought at NPC planet docks. Each makes one
     /// batch of its planet's good a day into that dock's warehouse, owes credit upkeep, and is upgraded with credits and
     /// goods hauled from other planets. A Processing Plant refines the output with a delivered input; an industrial droid
     /// posted as staff raises the output; events roll every few days. The owner's ship docked there collects the
@@ -51,10 +52,42 @@ namespace SWLOR.Game.Server.Service
             return DB.Search(query).OrderBy(x => x.DateCreated).ToList();
         }
 
-        /// <summary>The player's holdings brought up to now. Foreclosed holdings are gone from the list.</summary>
+        /// <summary>
+        /// The player's holdings brought up to now. Foreclosed holdings are gone from the list. Each record is marked with
+        /// the owner's public CD key here, so records saved before the per-account limit count toward it from now on.
+        /// </summary>
         public static List<PlanetaryHolding> LoadHoldings(uint player)
         {
-            return GetHoldingRecords(GetObjectUUID(player)).Where(x => Process(x, player)).ToList();
+            var holdings = GetHoldingRecords(GetObjectUUID(player)).Where(x => Process(x, player)).ToList();
+            var cdKey = GetPCPublicCDKey(player);
+            if (!string.IsNullOrWhiteSpace(cdKey))
+            {
+                foreach (var holding in holdings.Where(x => x.OwnerCDKey != cdKey))
+                {
+                    holding.OwnerCDKey = cdKey;
+                    DB.Set(holding);
+                }
+            }
+
+            return holdings;
+        }
+
+        /// <summary>
+        /// The holdings the player's account owns: <paramref name="ownHoldings"/> (the player's, already loaded) plus those
+        /// of the account's other characters that still exist. The limit is per account so that more characters do not
+        /// multiply the passive income (review 2026-10-30).
+        /// </summary>
+        public static int CountAccountHoldings(uint player, int ownHoldings)
+        {
+            var cdKey = GetPCPublicCDKey(player);
+            if (string.IsNullOrWhiteSpace(cdKey))
+                return ownHoldings;
+
+            var query = new DBQuery<PlanetaryHolding>()
+                .AddFieldSearch(nameof(PlanetaryHolding.OwnerCDKey), cdKey, false)
+                .AddPaging(HoldingTuning.MaximumHoldings * 20, 0);
+            return HoldingRules.CountAccountHoldings(GetObjectUUID(player), ownHoldings, DB.Search(query),
+                playerId => DB.Get<Player>(playerId) is { IsDeleted: false });
         }
 
         /// <summary>One of the player's holdings brought up to now, or null when it is not theirs or was lost.</summary>
@@ -126,7 +159,7 @@ namespace SWLOR.Game.Server.Service
         public static bool Buy(uint player, HoldingType type, TradeExchangeType exchange, string dockId)
         {
             var detail = HoldingRules.GetDetail(type);
-            var owned = LoadHoldings(player).Count;
+            var owned = CountAccountHoldings(player, LoadHoldings(player).Count);
             var refusal = HoldingRules.GetPurchaseRefusal(detail, exchange, owned, GetGold(player));
             if (refusal == HoldingRefusal.None && string.IsNullOrWhiteSpace(dockId))
                 refusal = HoldingRefusal.NotSoldHere;
@@ -137,7 +170,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             AssignCommand(player, () => TakeGoldFromCreature(detail.PurchasePrice, player, true));
-            var holding = HoldingRules.Create(GetObjectUUID(player), detail, dockId, DateTime.UtcNow);
+            var holding = HoldingRules.Create(GetObjectUUID(player), detail, dockId, DateTime.UtcNow, GetPCPublicCDKey(player));
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"Bought for {detail.PurchasePrice} credits.");
             DB.Set(holding);
 

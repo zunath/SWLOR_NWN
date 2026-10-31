@@ -1617,12 +1617,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             if (ShipBlueprintRules.IsResearchable(recipe))
             {
-                for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
+                foreach (var trait in ShipBlueprintRules.PickItemBonuses(recipe, _activeBlueprint.ItemBonuses, _activeBlueprint.GuaranteedTraits, Random.Next))
                 {
-                    var trait = ShipBlueprintRules.Pick(recipe, ShipBlueprintRules.BonusTier(recipe.Level, currentBonus), Random.Next);
-                    if (trait == ShipComponentTraitType.None)
-                        continue;
-
                     traits.Add(trait);
                     SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {ShipTraitRules.Get(trait).Name}"));
                 }

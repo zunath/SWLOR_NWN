@@ -338,11 +338,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. Are you sure you want to start the job?",
                 () =>
                 {
-                    // A ship module blueprint can spend a Prototype Tech for a guaranteed top-tier bonus.
+                    // A ship blueprint can spend one Prototype Tech, once, for a guaranteed bonus of the best tier its recipe allows.
                     var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
-                    if (ShipBlueprintRules.IsResearchable(Craft.GetRecipe(_recipeType)) && GetIsObjectValid(prototypeTech))
+                    if (ShipBlueprintRules.IsResearchable(Craft.GetRecipe(_recipeType)) && GetIsObjectValid(prototypeTech) &&
+                        !HasSpentPrototypeTech())
                     {
-                        ShowModal("Spend one Prototype Tech on this job? The blueprint gains a guaranteed top-tier bonus when the job completes.",
+                        ShowModal("Spend one Prototype Tech on this job? The blueprint gains a guaranteed bonus of the best tier its recipe level allows when the job completes. A blueprint takes Prototype Tech only once.",
                             () => StartJob(researchJob, true),
                             () => StartJob(researchJob, false),
                             "Spend",
@@ -357,6 +358,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 });
         };
 
+        /// <summary>Whether the blueprint being researched already gained its Prototype Tech bonus.</summary>
+        private bool HasSpentPrototypeTech() =>
+            GetIsObjectValid(_blueprintItem) && Craft.GetBlueprintDetails(_blueprintItem).PrototypeTechUsed;
+
         private void StartJob(ResearchJobDetails researchJob, bool spendPrototypeTech)
         {
             var jobValidation = ValidateJob();
@@ -368,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
-            var usesPrototypeTech = spendPrototypeTech && GetIsObjectValid(prototypeTech);
+            var usesPrototypeTech = spendPrototypeTech && GetIsObjectValid(prototypeTech) && !HasSpentPrototypeTech();
             if (usesPrototypeTech)
                 Item.ReduceItemStack(prototypeTech, 1);
 
@@ -498,7 +503,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             void AddGuaranteedBonus(int tier)
             {
-                // A ship module blueprint's guaranteed bonuses are blueprint traits.
+                // A ship blueprint's guaranteed bonuses are blueprint traits, within the research ceiling
+                // (ShipBlueprintRules.PickGuaranteed: the recipe level caps the tier, no repeats, at most 11).
                 if (ShipBlueprintRules.IsResearchable(recipe))
                 {
                     var trait = ShipBlueprintRules.PickGuaranteed(
@@ -592,8 +598,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     break;
             }
 
-            if (dbJob.PrototypeTech)
+            // Prototype Tech adds its guaranteed trait once per blueprint.
+            if (dbJob.PrototypeTech && ShipBlueprintRules.IsResearchable(recipe) && !blueprintDetails.PrototypeTechUsed)
+            {
                 AddGuaranteedBonus(RevampRewardCatalog.PrototypeTechBonusTier);
+                blueprintDetails.PrototypeTechUsed = true;
+            }
 
             if (isNewBlueprint)
             {

@@ -408,7 +408,7 @@ public class TradeRiskTests
         var convoys = ReadServerSource("Service", "TradeConvoys.cs");
         convoys.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]");
         convoys.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureDeathAfter)]");
-        convoys.Should().Contain("SpillUnits(units, GetLocation(hauler))");
+        convoys.Should().Contain("SpillUnits(units, GetLocation(hauler), kept)");
 
         ReadServerSource("Service", "TradeCargoSpill.cs").Should().Contain("FailSealedFreight(ship);");
         ReadServerSource("Feature", "GuiDefinition", "DMToolsDefinition.cs").Should().Contain("model.OnStartConvoy()");

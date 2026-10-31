@@ -230,13 +230,10 @@ public class AppearancePreviewTests
         FitWindowToScreen(geometry, 0f, 0f, 1f).Should().BeSameAs(geometry);
     }
 
-    [TestCase(AppearanceEditorSlot.LeftShoulder, "Left Shoulder")]
-    [TestCase(AppearanceEditorSlot.Chest, "Chest")]
-    [TestCase(AppearanceEditorSlot.RightFoot, "Right Foot")]
-    public void PartColourRowsNameTheSelectedPart(AppearanceEditorSlot slot, string expected) =>
-        ((string)typeof(AppearanceEditorViewModel)
-            .GetMethod("PartColorsTitle", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { slot })!).Should().Be(expected);
+    [Test]
+    public void PartColourRowsHaveNoTitle() =>
+        typeof(AppearanceEditorViewModel).GetProperty("SelectedPartColorsTitle").Should().BeNull(
+            "the body map's highlighted slot already names the part");
 
     // editor x, screen width, scale -> browser x
     [TestCase(100f, 1920f, 1f, 810f)]
@@ -259,6 +256,34 @@ public class AppearancePreviewTests
         placed.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
         PlaceBeside(null, 620f, 590f, 1920f, 1080f, 1f).Should().BeNull();
     }
+
+    [TestCase(0, false, "A1")]
+    [TestCase(7, false, "H1")]
+    [TestCase(63, false, "P4")]
+    [TestCase(175, false, "P11")]
+    [TestCase(42, true, "RGB")]
+    [TestCase(255, false, "")]
+    [TestCase(255, true, "RGB")]
+    public void SwatchCodesShowThePaletteCodeOrRgb(int colorId, bool custom, string expected) =>
+        SwatchCode(BuildPaletteRegion(colorId), custom).Should().Be(expected,
+            "a part using the outfit colour has no code of its own");
+
+    [Test]
+    public void ASwatchWithNoRegionHasNoCode()
+    {
+        SwatchCode(null, false).Should().BeEmpty();
+        SwatchCode(null, true).Should().Be("RGB");
+    }
+
+    private static string SwatchCode(GuiRectangle region, bool custom) =>
+        (string)typeof(AppearanceEditorViewModel)
+            .GetMethod("SwatchCode", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { region, custom })!;
+
+    private static GuiRectangle BuildPaletteRegion(int colorId) =>
+        (GuiRectangle)typeof(AppearanceEditorViewModel)
+            .GetMethod("BuildPaletteRegion", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { colorId })!;
 
     private static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,
         float screenWidth, float screenHeight, float scale) =>

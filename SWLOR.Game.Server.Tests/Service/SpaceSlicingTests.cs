@@ -494,6 +494,14 @@ public class SpaceSlicingTests
         give.IndexOf("ShipHold.KeepUnplacedYield(player, unplaced);", StringComparison.Ordinal)
             .Should().BeGreaterThan(give.IndexOf("foreach (var reward in rewards)", StringComparison.Ordinal));
 
+        // With no ship, a site's rewards and a locked cache's loot go to the slicer the same way, in one kept batch.
+        var noShip = Between(source, "private static void DeliverRewardsToShip(", "var items = new List<string>(extraItems);");
+        noShip.Should().Contain("GiveRewardsToPlayer(slicer, rewards, extraItems);").And.NotContain("CreateItemOnObject(");
+        var extra = give.IndexOf("foreach (var resref in extraItems ?? Array.Empty<string>())", StringComparison.Ordinal);
+        extra.Should().BeGreaterThan(0);
+        give.Should().Contain("if (!GetIsObjectValid(CreateItemOnObject(resref, player)))\n                    unplaced.Add((resref, null));");
+        give.IndexOf("ShipHold.KeepUnplacedYield(player, unplaced);", StringComparison.Ordinal).Should().BeGreaterThan(extra);
+
         // The lockbox goes only after its rewards are in hand (DestroyObject runs at the end of the script anyway, so
         // destroying it first would not free its slot).
         var complete = Between(source, "case SlicingSourceType.SpaceLockbox:", "case SlicingSourceType.DataCan:");

@@ -425,9 +425,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsObjectValid(ship))
             {
-                GiveRewardsToPlayer(slicer, rewards);
-                foreach (var resref in extraItems)
-                    CreateItemOnObject(resref, slicer);
+                GiveRewardsToPlayer(slicer, rewards, extraItems);
                 return;
             }
 
@@ -458,10 +456,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Space lockbox rewards: everything goes to the player who sliced it. An item a full inventory refuses goes the
-        /// way a yield that fits nowhere does (ShipHold.KeepUnplacedYield), so no reward is lost.
+        /// Space lockbox rewards, and a site's rewards with no ship to take them: everything goes to the player who sliced
+        /// it, with <paramref name="extraItems"/> (a locked cache's loot, one entry per item). An item a full inventory
+        /// refuses goes the way a yield that fits nowhere does (ShipHold.KeepUnplacedYield), so no reward is lost.
         /// </summary>
-        private static void GiveRewardsToPlayer(uint player, IReadOnlyList<SpaceSlicingReward> rewards)
+        private static void GiveRewardsToPlayer(uint player, IReadOnlyList<SpaceSlicingReward> rewards, IReadOnlyCollection<string> extraItems = null)
         {
             var unplaced = new List<(string Resref, ShipComponentTraitType? Trait)>();
             foreach (var reward in rewards)
@@ -482,6 +481,12 @@ namespace SWLOR.Game.Server.Service
                             ShipComponents.SetTraits(item, new[] { reward.Trait });
                         break;
                 }
+            }
+
+            foreach (var resref in extraItems ?? Array.Empty<string>())
+            {
+                if (!GetIsObjectValid(CreateItemOnObject(resref, player)))
+                    unplaced.Add((resref, null));
             }
 
             SendMessageToPC(player, ColorToken.Green($"You recover {DescribeRewards(rewards)}."));

@@ -7722,28 +7722,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 456,
+    "Line": 454,
     "Member": "DeliverRewardsToShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"Slicing recovered: {DescribeRewards(rewards)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 487,
+    "Line": 492,
     "Member": "GiveRewardsToPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover {DescribeRewards(rewards)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 554,
+    "Line": 559,
     "Member": "OpenLockedCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"The lock gives way. You open the {GetName(cache)}: {credits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 578,
+    "Line": 583,
     "Member": "RollSpaceLockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"

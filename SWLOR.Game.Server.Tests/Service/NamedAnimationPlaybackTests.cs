@@ -391,6 +391,53 @@ public class NamedAnimationPlaybackTests
         if (valid) new AnimationClip(name, 1).EndName.Length.Should().BeLessThanOrEqualTo(16);
         else { Action create = () => new AnimationClip(name, 1); create.Should().Throw<ArgumentException>(); }
     }
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ReleasingNamedPlaybackRestoresCurrentEquipmentAfterClearingTemporaryAliases(bool immediate)
+    {
+        var runtime = new Runtime();
+        var restores = 0;
+        var playback = new NamedAnimationPlayback(runtime, restoreEquipmentAnimations: creature =>
+        {
+            creature.Should().Be(1);
+            runtime.Token.Should().BeEmpty();
+            runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().BeEmpty();
+            runtime.Replace(creature, NamedAnimationPlayback.ShoulderHoldSource, NamedAnimationPlayback.NoHoldName);
+            restores++;
+        });
+        var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        if (immediate)
+            playback.ReleaseForNativePlayback(1);
+        else
+        {
+            playback.Complete(1, token);
+            restores.Should().Be(0, "equipment must not replace the authored exit before it finishes");
+            runtime.Callbacks[^1]();
+        }
+
+        restores.Should().Be(1);
+        runtime.Replacements[NamedAnimationPlayback.ShoulderHoldSource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Callbacks[0]();
+        restores.Should().Be(1, "the expired timeout must not restore equipment twice");
+    }
+
+    [Test]
+    public void SupersededNamedExitDoesNotRestoreEquipmentOverNewPlayback()
+    {
+        var runtime = new Runtime();
+        var restores = 0;
+        var playback = new NamedAnimationPlayback(runtime, restoreEquipmentAnimations: _ => restores++);
+        var first = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        playback.Complete(1, first);
+        var oldCallbacks = runtime.Callbacks.ToArray();
+        var second = playback.Begin(1, new AnimationClip("sw_new", 2), 2);
+
+        foreach (var callback in oldCallbacks) callback();
+
+        restores.Should().Be(0);
+        playback.IsCurrent(1, second).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_new");
+    }
     private sealed class Runtime : INamedAnimationRuntime
     {
         public string Token = "";

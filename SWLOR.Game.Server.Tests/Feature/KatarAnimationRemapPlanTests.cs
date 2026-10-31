@@ -12,6 +12,53 @@ public class KatarAnimationRemapPlanTests
     private static Dictionary<string, string> FullRemap() =>
         KatarAnimationRemapPlan.Pairs.ToDictionary(pair => pair.Source, pair => pair.Replacement);
 
+    [TestCase(1)]
+    [TestCase(2)]
+    public void SwitchingFromKatarToGrip_RemovesOnlyRemainingKatarMappings(int mode)
+    {
+        var current = FullRemap();
+        void Replace(string source, string replacement)
+        {
+            if (replacement == "") current.Remove(source);
+            else current[source] = replacement;
+        }
+
+        Grip.ApplyTransition(mode, 0, false, Replace);
+        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing))
+            Replace(source, replacement);
+
+        current[mode == 1 ? "1hreadyr" : "2hreadyr"].Should().Be(mode == 1 ? "2hreadyr" : "1hreadyr");
+        current.Where(pair => KatarAnimationRemapPlan.Pairs.Contains((pair.Key, pair.Value))).Should().BeEmpty();
+    }
+
+    [Test]
+    public void SwitchingFromGripToKatarWhileQueued_PreservesSwingUntilRelease()
+    {
+        var current = new Dictionary<string, string>();
+        void Replace(string source, string replacement)
+        {
+            if (replacement == "") current.Remove(source);
+            else current[source] = replacement;
+        }
+
+        Grip.ApplyTransition(1, 0, false, Replace);
+        foreach (var key in QueuedAttackAnimationPlayback.SwingKeys) current[key] = "sw_doub_stri";
+        Grip.ApplyTransition(0, 1, false, (source, replacement) =>
+        {
+            if (!QueuedAttackAnimationPlayback.SwingKeys.Contains(source)) Replace(source, replacement);
+        });
+        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(true, false, current, QueuedAttackAnimationPlayback.SwingKeys))
+            Replace(source, replacement);
+
+        current["1hreadyr"].Should().Be("nwreadyr");
+        foreach (var key in QueuedAttackAnimationPlayback.SwingKeys) current[key].Should().Be("sw_doub_stri");
+
+        foreach (var key in QueuedAttackAnimationPlayback.SwingKeys) current.Remove(key);
+        foreach (var (source, replacement) in KatarAnimationRemapPlan.GetChanges(true, false, current, NoActiveSwing))
+            Replace(source, replacement);
+        current.Should().BeEquivalentTo(FullRemap());
+    }
+
     [Test]
     public void SavedRemapWithoutKatar_IsRemoved()
     {

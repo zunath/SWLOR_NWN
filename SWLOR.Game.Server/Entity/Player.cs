@@ -294,6 +294,7 @@ namespace SWLOR.Game.Server.Entity
 
     public class PlayerSettings
     {
+        public bool AlternateGripEnabled { get; set; }
         public int? BattleThemeId { get; set; }
         public int? PersonalMusicTrackId { get; set; }
         public bool DisplayAchievementNotification { get; set; }

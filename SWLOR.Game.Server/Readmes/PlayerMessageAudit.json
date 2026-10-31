@@ -1134,6 +1134,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Cyan(message))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/Grip.cs",
+    "Line": 65,
+    "Member": "Toggle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, enabled\n            ? \"Alternate grip enabled: blades use two hands; staffs, spears and double blades use one hand. Keep the offhand empty.\"\n            : \"Alternate grip disabled.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
     "Line": 1812,
     "Member": "CloseForUnsupportedAppearance",

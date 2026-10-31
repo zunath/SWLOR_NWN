@@ -28,8 +28,8 @@ namespace SWLOR.Game.Server.Feature
             QueuedAttackAnimation.RestoreEquipmentAnimations += RestoreCurrentEquipmentAnimations;
         }
 
-        private static void RestoreCurrentEquipmentAnimations(uint creature) =>
-            SyncKatarRemapState(creature);
+        internal static void RestoreCurrentEquipmentAnimations(uint creature) =>
+            SyncKatarRemapState(creature, forceRefresh: true);
 
         [NWNEventHandler(ScriptName.OnModuleEquip)]
         public static void OnEquip()
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            SyncKatarRemapState(player);
+            SyncKatarRemapState(player, forceRefresh: true);
         }
 
         [NWNEventHandler(ScriptName.OnModuleUnequip)]
@@ -62,12 +62,20 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             SyncKatarRemapState(player);
+            // Module equip events can expose the old slots. Read both hands again
+            // after the transition, using current equipment rather than captured items.
+            AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>
+            {
+                if (GetIsObjectValid(player))
+                    SyncKatarRemapState(player);
+            }));
         }
 
         // Brings the creature's animation mappings in line with its equipment. The engine saves these
         // mappings with the character, so a login or equipment change can find stale ones to remove.
-        private static void SyncKatarRemapState(uint creature)
+        private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
         {
+            Grip.Refresh(creature, forceRefresh);
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             BaseItem? rightHandBaseItem = GetIsObjectValid(rightHand) ? GetBaseItemType(rightHand) : null;

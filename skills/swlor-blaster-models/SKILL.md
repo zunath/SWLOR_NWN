@@ -32,7 +32,11 @@ For local image-to-GLB generation, follow the guide's [TRELLIS.2 workflow](../..
   shared slot replacement changes persisted items too. Ask only if intent cannot
   be inferred. Choose another modern pistol for a new model unless asked to revise
   an existing replacement.
-- Pistol base item is **11**, class **WBwSh**. Native slot is `model * 10 + color`;
+- Pistol class is **WBwSh**. Logical base item **11** and production native-sling
+  base item **61** share its models; preserve the production blueprint's type.
+  Client fixtures must use **61** to render an off-hand pistol or shield (see
+  `PistolBaseItemCompatibility`). Keep byte and extended appearance fields in sync.
+  Native slot is `model * 10 + color`;
   toolset label is `model-color`; catalog ID is `color * 100 + model`. Imported
   Inspect current assets/catalogs and open asset PRs for occupied slots; these
   examples are not the complete replacement list. blaster_high41_a01 occupies **44 / 4-4 / Part #404**; Vesper-9 occupies

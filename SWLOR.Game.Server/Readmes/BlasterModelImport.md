@@ -11,7 +11,11 @@ are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
 
 ## Slots and existing replacements
 
-Pistol base item **11** uses item class **WBwSh**. Native middle slots encode
+Pistol appearances use item class **WBwSh**. Logical pistol base item **11** and
+the production native-sling base item **61** share these resources. Player
+pistols use **61**, as enforced by `PistolBaseItemCompatibility`; native item 11
+hardcodes the bow attachment and suppresses the off-hand weapon. Use the current
+production blueprint and item types when building client fixtures. Native middle slots encode
 `model * 10 + color`; the toolset shows `model-color`; the in-game appearance
 catalog encodes `color * 100 + model`.
 
@@ -23,8 +27,10 @@ catalog encodes `color * 100 + model`.
 These are examples, not a complete free-slot inventory. Inspect the current HAK
 resources, catalog and open asset PRs before selecting a slot. Choose another modern pistol for a new
 design unless asked to revise one of them. Replacing a shared slot also changes
-persisted items using it. Basic Pistol already uses middle 201. Do not substitute
-the native-sling compatibility base item 61 or change item stats to select a model.
+persisted items using it. Basic Pistol already uses middle 201. Preserve the
+blueprint's base item and stats when selecting a different model. In temporary
+fixtures, update both `ModelPart*` and `xModelPart*`: the extended fields take
+precedence over the byte fields.
 
 A middle slot uses `wbwsh_m_NNN.mdl` and `iwbwsh_m_NNN.dds` in
 `SWLOR_Haks/sw_weapon/`. Register its catalog ID in
@@ -717,6 +723,15 @@ The actual human right-hand reference is `pmh0_handr001`. Custom pistol animatio
 uses **bowshot**, whose hook retains its rest orientation; generic **xbowshot**
 rotates it differently. The human `rhand` hook sits at
 `(0.0110681, 0, -0.0961281)` relative to `rhand_g`.
+
+That helper uses only the male bare hand. Also inspect the female hand, open or
+fingerless glove styles, both equipped hands, and the playable normal body
+families in the client. Fit to the palm and fingers rather than the wrist.
+Positive weapon-space Z raises a hanging pistol toward the wrist; translating
+along -Z seats it farther into the fingers without changing scale or pitch.
+Measure each model separately: the complete catalog has different grip depths,
+and some legacy pistols include animated muzzle emitters. Preserve those nodes
+and their relative animation tracks when moving the weapon.
 
 Render a local review scene already in NWN coordinates with:
 

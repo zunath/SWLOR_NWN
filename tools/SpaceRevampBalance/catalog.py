@@ -289,6 +289,7 @@ def hull_bill(role, adv, maker=None):
                [(comp.resref(comp.family(f)[0], t), q) for f, q in parts if f not in banded]
         ore -= comp.CAPITAL_PART_ORE_SAVED * sum(n for *_x, n, _d in comp.CAPITAL_PARTS)
         assert ore >= 0, role
+        wires -= comp.CAPITAL_ELECTRONICS_SAVED  # review fix 2026-10-30: the full production cost band (production.py)
     if adv and maker and r["size"] in comp.RARE_COMPONENT_SIZES:  # the Bible's per-role table passes no maker
         rare = comp.advanced_rare_resref(maker)
         replaced = comp.RARE_REPLACES[next(f[1] for f in comp.RARE_FAMILIES if comp.rare_resref(f[0]) == rare)]

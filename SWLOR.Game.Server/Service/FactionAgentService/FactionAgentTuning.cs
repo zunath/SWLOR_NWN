@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
         /// <summary>The NPC faction flying each tier's ships (plan section 11's ladder).</summary>
         public static readonly string[] TierFactionNames = { "", "Septra Khanate", "Krakenborne", "Snowdrift Syndicate", "Clan Zel Arun", "Red Hand", "Imperial" };
         /// <summary>Credits a minute of mission time pays at each tier: the tier's space combat rate times the agent premium.</summary>
-        public static readonly double[] CreditsPerMinute = new double[] { 0.0, 72.99208421052631, 112.85431578947367, 153.00303157894737, 136.026, 168.2534411650485, 399.82248000000004 };
+        public static readonly double[] CreditsPerMinute = new double[] { 0.0, 72.99208421052631, 112.85431578947367, 153.00303157894737, 136.026, 167.6652081553398, 399.82248000000004 };
         /// <summary>One kill's credits at each tier, as the combat baseline counts them.</summary>
-        public static readonly double[] KillValue = new double[] { 0.0, 67.58526315789473, 104.49473684210525, 141.66947368421052, 125.95, 155.79022330097084, 370.206 };
+        public static readonly double[] KillValue = new double[] { 0.0, 67.58526315789473, 104.49473684210525, 141.66947368421052, 125.95, 155.24556310679608, 370.206 };
         public static readonly IReadOnlyDictionary<ShipNpcRole, int> KillCount = new Dictionary<ShipNpcRole, int> { [ShipNpcRole.Invalid] = 10, [ShipNpcRole.Fighter] = 8, [ShipNpcRole.Interceptor] = 6, [ShipNpcRole.Gunship] = 3 };
         public static readonly IReadOnlyDictionary<ShipNpcRole, double> KillMinutes = new Dictionary<ShipNpcRole, double> { [ShipNpcRole.Invalid] = 1.0, [ShipNpcRole.Fighter] = 1.2, [ShipNpcRole.Interceptor] = 1.5, [ShipNpcRole.Gunship] = 4.0 };
         public static readonly string[] OreResref = { "", "ore_tilarium", "ore_currian", "ore_idailia", "ore_barinium", "ore_gostian", "ore_gostian" };
@@ -55,9 +55,9 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
         public static readonly double[] ConvoyRaiderValue = new double[] { 0.0, 135.17052631578946, 208.9894736842105, 425.00842105263155, 377.85, 861.2199999999999, 1775.3568 };
         public static readonly SignatureType[] ScanDownSites = { SignatureType.CombatSite, SignatureType.CacheSite, SignatureType.Derelict };
         public static readonly IReadOnlyDictionary<SignatureType, double[]> ScanDownMinutes = new Dictionary<SignatureType, double[]> { [SignatureType.CombatSite] = new double[] { 0.0, 4.916666666666667, 4.916666666666667, 5.916666666666667, 5.916666666666667, 7.066666666666667, 7.25 }, [SignatureType.CacheSite] = new double[] { 0.0, 2.75, 2.75, 2.75, 2.75, 2.75, 3.25 }, [SignatureType.Derelict] = new double[] { 0.0, 7.3, 7.3, 7.3, 7.3, 9.36, 9.8 } };
-        public static readonly IReadOnlyDictionary<SignatureType, double[]> ScanDownValue = new Dictionary<SignatureType, double[]> { [SignatureType.CombatSite] = new double[] { 0.0, 367.5007894736842, 563.4984962406015, 940.0921804511278, 843.6619047619047, 1224.9463166666667, 2946.9988000000003 }, [SignatureType.CacheSite] = new double[] { 0.0, 164.745, 275.01428571428573, 373.4142857142857, 314.8619047619047, 397.1666666666667, 1026.436 }, [SignatureType.Derelict] = new double[] { 0.0, 483.24850000000004, 752.5664285714286, 1023.5014285714286, 918.4386904761905, 1501.6445266666667, 3615.3660000000004 } };
+        public static readonly IReadOnlyDictionary<SignatureType, double[]> ScanDownValue = new Dictionary<SignatureType, double[]> { [SignatureType.CombatSite] = new double[] { 0.0, 367.5007894736842, 563.4984962406015, 940.0921804511278, 843.6619047619047, 1222.1413166666666, 2946.9988000000003 }, [SignatureType.CacheSite] = new double[] { 0.0, 164.745, 275.01428571428573, 373.4142857142857, 314.8619047619047, 397.1666666666667, 1026.436 }, [SignatureType.Derelict] = new double[] { 0.0, 479.84850000000006, 745.7664285714286, 1023.5014285714286, 918.4386904761905, 1499.5225266666669, 3614.3660000000004 } };
         public static readonly double[] HeistMinutes = new double[] { 0.0, 7.514705882352941, 7.514705882352941, 8.514705882352942, 8.514705882352942, 9.514705882352942, 10.014705882352942 };
-        public static readonly double[] HeistValue = new double[] { 0.0, 258.6007894736842, 402.9892105263158, 727.497894736842, 664.8325, 1326.54, 2458.1928000000003 };
+        public static readonly double[] HeistValue = new double[] { 0.0, 255.20078947368418, 396.1892105263158, 727.497894736842, 664.8325, 1275.54, 2407.1928000000003 };
 
         /// <summary>The orbits whose spawn tables fly each tier's faction ships.</summary>
         public static readonly IReadOnlyDictionary<int, string[]> MissionOrbits = new Dictionary<int, string[]>

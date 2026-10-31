@@ -277,7 +277,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "Derelict",
-      "Credits": 1075,
+      "Credits": 1100,
       "Tokens": 2
     },
     {
@@ -286,7 +286,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1450,
+      "Credits": 1475,
       "Tokens": 3,
       "IntelTokens": 6
     },
@@ -613,7 +613,7 @@
       "Hops": 2,
       "Role": "Fighter",
       "Site": "",
-      "Credits": 2900,
+      "Credits": 2875,
       "Tokens": 6
     },
     {
@@ -649,7 +649,7 @@
       "Hops": 2,
       "Role": "Gunship",
       "Site": "",
-      "Credits": 4075,
+      "Credits": 4050,
       "Tokens": 8
     },
     {
@@ -721,7 +721,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1800,
+      "Credits": 1825,
       "Tokens": 4,
       "IntelTokens": 8
     },
@@ -866,7 +866,7 @@
       "Hops": 1,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 5150,
+      "Credits": 5200,
       "Tokens": 10,
       "IntelTokens": 20
     }
@@ -874,13 +874,13 @@
   "Rates": {
     "1": {
       "Combat": 4055,
-      "Agents": 4357,
+      "Agents": 4354,
       "Percent": 107.4
     },
     "2": {
       "Combat": 6270,
-      "Agents": 6759,
-      "Percent": 107.8
+      "Agents": 6777,
+      "Percent": 108.1
     },
     "3": {
       "Combat": 8500,
@@ -893,13 +893,13 @@
       "Percent": 108.2
     },
     "5": {
-      "Combat": 9347,
-      "Agents": 10104,
+      "Combat": 9315,
+      "Agents": 10069,
       "Percent": 108.1
     },
     "6": {
       "Combat": 22212,
-      "Agents": 23989,
+      "Agents": 23988,
       "Percent": 108.0
     }
   },

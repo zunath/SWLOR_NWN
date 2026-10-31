@@ -138,6 +138,28 @@ public class SpaceRevampBugListTests
         source.Should().Contain("FireFrom(activator, status, weapon, target, targetStatus, bonusDmg, options, LauncherAmmo(activator, weapon), consumeAmmo: true)");
     }
 
+    [Test]
+    public void AbilityShot_TakesTheWeaponsComponentTraits()
+    {
+        // A weapon's own cycle fires its step as its component traits make it (RevampModuleDefinition.Effective), so
+        // an ability firing that weapon must too, before an ammo variant changes the shot.
+        var source = ReadServerSource("Service", "SpaceAbilities.cs");
+        var fire = source.Substring(source.IndexOf("private static SpaceFireResult FireFrom(", StringComparison.Ordinal));
+        var traits = fire.IndexOf("var step = ShipTraitRules.Apply(weapon.Fitted.Step, weapon.Fitted.Traits);", StringComparison.Ordinal);
+        var shot = fire.IndexOf("ShipShotBuilder.BuildFor(step, status, targetStatus)", StringComparison.Ordinal);
+
+        traits.Should().BeGreaterThan(0);
+        shot.Should().BeGreaterThan(traits, "the shot is built from the step the traits made");
+        fire.Should().NotContain("var step = weapon.Fitted.Step;");
+
+        // An Overcharged emitter's +6% DMG reaches the shot built from the traited step.
+        var laser = RevampModuleCatalog.Steps.First(x => x.Family == ShipModuleFamily.LaserCannon && x.Dmg >= 20);
+        var status = new ShipStatus { Size = ShipSize.Small };
+        var plain = ShipShotBuilder.BuildFor(laser, status, null).Dmg;
+        var traited = ShipShotBuilder.BuildFor(ShipTraitRules.Apply(laser, new[] { ShipComponentTraitType.Overcharged }), status, null).Dmg;
+        traited.Should().BeGreaterThan(plain);
+    }
+
     private static string ReadServerSource(params string[] path)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

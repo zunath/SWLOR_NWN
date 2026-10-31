@@ -1,0 +1,177 @@
+"""Authored native cut covers are closed, outward, and preserve GLB attributes."""
+from collections import Counter
+import copy
+import hashlib
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+import numpy as np
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import MeshyWeaponParts as parts
+import TrellisWeaponExport as exporter
+import TrellisWeaponNormals as normals
+import NativeTangentSeams as seams
+
+try:
+    exporter.load_blender()
+    HAS_BLENDER=True
+except ImportError:
+    HAS_BLENDER=False
+
+
+class MeshyWeaponPartsTests(unittest.TestCase):
+    joint={'y':.1,'center_xz':[.01,-.02],'radii_xz':[.022,.027],'depth':.007}
+
+    def test_author_binds_parsed_bytes_to_the_validated_source_snapshot(self):
+        for change_before_parse in (True,False):
+            with self.subTest(change_before_parse=change_before_parse),tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary);repo=root/'repo';repo.mkdir();source=root/'source.glb'
+                reviewed=b'reviewed prepared GLB snapshot';source.write_bytes(reviewed)
+                asset={'_model_type':2,'_source':str(source),'scale':1,'orientation':np.eye(3).tolist(),
+                       'source_grip':[0,0,0],'target_grip':[0,0,0],'sha256':hashlib.sha256(reviewed).hexdigest()}
+                def validated(*args):
+                    if change_before_parse:source.write_bytes(b'changed after validation')
+                def parse_snapshot(data):
+                    self.assertIsInstance(data,bytes);self.assertEqual(reviewed,data)
+                    source.write_bytes(b'changed after snapshot')
+                    raise RuntimeError('Snapshot reached parser')
+                with patch.object(exporter,'load_blender'),patch.object(exporter,'load_manifest',return_value=({'assets':[asset]},None)), \
+                     patch.object(exporter,'validate_manifest',side_effect=validated),patch.object(exporter,'glb_document',side_effect=parse_snapshot) as parser:
+                    if change_before_parse:
+                        with self.assertRaisesRegex(ValueError,'changed after manifest validation'):parts.author(root/'fit.json',root/'out',repo)
+                        parser.assert_not_called()
+                    else:
+                        with self.assertRaisesRegex(RuntimeError,'Snapshot reached parser'):parts.author(root/'fit.json',root/'out',repo)
+                        parser.assert_called_once()
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for the authoring entrypoint')
+    def test_author_roundtrip_keeps_empty_slots_and_explicit_partial_assemblies(self):
+        for partial,explicit in ((False,False),(False,True),(True,True)):
+            with self.subTest(partial=partial,explicit=explicit),tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary);repo=root/'repo';table=repo/'SWLOR_Haks/sw_2da';table.mkdir(parents=True)
+                (table/'baseitems.2da').write_text('2DA V2.0\n\nItemClass ModelType InvSlotWidth InvSlotHeight\n12 wdbsw 2 2 5\n59 wthsh 0 1 1\n')
+                source=parts.flat_basis([[[-.2,-.8,0],[.2,0,.1],[0,.8,0]]])
+                path=root/'source.glb';parts.write_source({'asset':{'version':'2.0'},'materials':[{'pbrMetallicRoughness':{}}]},b'',[(0,source)],path,exporter)
+                frame={'min':[-1,-1,-1],'max':[1,1,1]}
+                asset={'asset':'test_parts','source':'source.glb','sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+                       'base_item':12,'model':'wdbsw_b_011','texture':'test_parts','texture_size':512,
+                       'scale':1,'orientation':np.eye(3).tolist(),'source_grip':[0,0,0],'target_grip':[0,0,0],
+                       'icon_size':[64,256],'part_icon_bounds':frame,
+                       'attachment':{'review_notes':'Native axes reviewed','axis_pairs':[{'source':[0,1,0],'target':[0,1,0]},{'source':[1,0,0],'target':[1,0,0]}]},
+                       'parts':[{'model':'wdbsw_b_011','clip_max_y':-.1},{'model':'wdbsw_m_011','clip_min_y':-.1,'clip_max_y':.1},{'model':'wdbsw_t_011','clip_min_y':.1}],
+                       'joint_envelopes':[{**self.joint,'y':y} for y in (-.1,.1)]}
+                config={'schema_version':1,'assets':[asset],
+                        'empty_parts':[{'model':'wthsh_099','base_item':59,'icon_size':[32,32]}]}
+                assembly={'base_item':12,'bottom':'wdbsw_b_011','middle':'wdbsw_m_011','top':'wdbsw_t_011','icon_bounds':frame}
+                if partial:
+                    companion=copy.deepcopy(asset);companion.update(asset='companion',model='wdbsw_b_021',texture='companion')
+                    for part in companion['parts']:part['model']=part['model'].replace('011','021')
+                    config['assets'].append(companion);asset['parts']=asset['parts'][:1]
+                    assembly.update(middle='wdbsw_m_021',top='wdbsw_t_021')
+                if explicit:
+                    assembly['icon_bounds']={'min':[-2,-2,-2],'max':[2,2,2]}
+                    config['composite_assemblies']=[assembly]
+                manifest=root/'input.json';manifest.write_text(json.dumps(config));output=root/'authored'
+                parts.author(manifest,output,repo)
+                result=json.loads((output/'fit.json').read_text())
+                self.assertEqual(config['empty_parts'],result['empty_parts'])
+                self.assertEqual([assembly],result['composite_assemblies'])
+                if partial:
+                    self.assertEqual([{'model':'wdbsw_b_011','source_nodes':['wdbsw_b_011']}],result['assets'][0]['parts'])
+                else:
+                    self.assertEqual(3,len(result['assets'][0]['parts']))
+
+    def test_clipping_keeps_each_coincident_triangles_authored_basis(self):
+        source=parts.flat_basis([[[0,0,0],[1,0,0],[0,1,0]]]*2)
+        source['normals'][1]=[0,.6,.8]
+        result=parts.clip_source_basis(source,[(.25,float('inf'))])
+        self.assertEqual(2,len(result['positions']))
+        np.testing.assert_allclose(result['normals'][0],source['normals'][0])
+        np.testing.assert_allclose(result['normals'][1],source['normals'][1])
+        np.testing.assert_allclose(result['positions'][0],result['positions'][1])
+
+    def test_clipping_preserves_the_linear_uv_field_and_winding(self):
+        source=parts.flat_basis([[[0,0,0],[1,0,0],[0,1,0]]])
+        source['uv']=source['positions'][...,:2]*[.7,.6]+[.1,.2]
+        result=parts.clip_source_basis(source,[(.2,.7)])
+        np.testing.assert_allclose(result['uv'],result['positions'][...,:2]*[.7,.6]+[.1,.2])
+        self.assertTrue(np.all(result['positions'][...,1]>=.2-1e-12))
+        self.assertTrue(np.all(result['positions'][...,1]<=.7+1e-12))
+        cross=np.cross(result['positions'][:,1]-result['positions'][:,0],result['positions'][:,2]-result['positions'][:,0])
+        self.assertTrue(np.all(cross[:,2]>0))
+
+    def test_shared_plane_faces_belong_to_the_above_part(self):
+        source=parts.flat_basis([[[0,.25,0],[0,.25,1],[1,.25,0]]])
+        self.assertEqual(0,len(parts.clip_source_basis(source,[(float('-inf'),.25)])['positions']))
+        self.assertEqual(1,len(parts.clip_source_basis(source,[(.25,float('inf'))])['positions']))
+
+    def test_clipping_rejects_interpolated_mixed_handedness(self):
+        source=parts.flat_basis([[[0,0,0],[1,0,0],[0,1,0]]])
+        source['signs'][0]=[1,-1,1]
+        with self.assertRaisesRegex(ValueError,'ambiguous tangent handedness'):
+            parts.clip_source_basis(source,[(.5,float('inf'))])
+
+    def test_sleeves_are_closed_outward_and_end_at_both_native_sides(self):
+        for outward in (-1,1):
+            triangles=np.asarray(parts.sleeve_triangles(self.joint,.1,outward))
+            edges=Counter()
+            for tri in triangles:
+                for a,b in zip(tri,np.roll(tri,-1,axis=0)):
+                    edges[tuple(sorted((tuple(a),tuple(b))))]+=1
+            self.assertTrue(all(count==2 for count in edges.values()))
+            origin=triangles[0,0]
+            local=triangles-origin
+            volume=np.sum(np.einsum('ij,ij->i',local[:,0],np.cross(local[:,1],local[:,2])))/6
+            self.assertGreater(volume,0)
+            y=triangles[...,1]
+            self.assertAlmostEqual(y.min(),min(.1,.1-outward*.007))
+            self.assertAlmostEqual(y.max(),max(.1,.1-outward*.007))
+
+    def test_cut_cap_winding_matches_the_outward_normal(self):
+        points=[[-.1,-.2],[.1,-.2],[.1,.2],[-.1,.2],[0,0],[-.1,-.2]]
+        for outward in (-1,1):
+            triangles=np.asarray(parts.cap_triangles(points,.1,outward))
+            cross=np.cross(triangles[:,1]-triangles[:,0],triangles[:,2]-triangles[:,0])
+            self.assertTrue(np.all(cross[:,1]*outward>0))
+            self.assertAlmostEqual(np.linalg.norm(cross,axis=1).sum()/2,.08)
+
+    def test_glb_roundtrip_keeps_authored_positions_uvs_normals_and_tangents(self):
+        source=parts.flat_basis(parts.sleeve_triangles(self.joint,.1,1))
+        document={'asset':{'version':'2.0'},'materials':[{'pbrMetallicRoughness':{}}]}
+        identity={'orientation':np.eye(3).tolist(),'scale':1,'source_grip':[0,0,0],'target_grip':[0,0,0], 'sha256':'0'*64}
+        with tempfile.TemporaryDirectory() as temporary:
+            path=Path(temporary)/'part.glb';basis=Path(temporary)/'basis.npz'
+            parts.write_source(document,b'',[(0,source)],path,exporter)
+            doc,binary=exporter.glb_document(path);exporter.validate_glb_geometry(doc)
+            normals.source_basis(doc,binary,identity,{0:'metal'},basis)
+            with np.load(basis,allow_pickle=False) as data:
+                for key in source:np.testing.assert_allclose(data['metal__'+key],source[key],atol=1e-7)
+
+    def test_invalid_unmeasured_or_repeated_joint_data_is_rejected(self):
+        for update in ({'depth':0},{'radii_xz':[-1,.02]},{'center_xz':[0]}, {'y':float('nan')},{'unknown':1}):
+            joint={**self.joint,**update}
+            with self.subTest(update=update),self.assertRaises(ValueError):parts.validate_joints([joint])
+        with self.assertRaises(ValueError):parts.validate_joints([self.joint,self.joint])
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for the actual glTF UV conversion')
+    def test_blender_import_restores_normals_using_the_native_uv_frame_once(self):
+        source=parts.flat_basis([[[0,0,0],[.1,.2,0],[0,.1,.3]]])
+        source['uv']=np.array([[[.13,.21],[.82,.37],[.27,.91]]])
+        document={'asset':{'version':'2.0'},'materials':[{'pbrMetallicRoughness':{}}]}
+        with tempfile.TemporaryDirectory() as temporary:
+            path=Path(temporary)/'source.glb';parts.write_source(document,b'',[(0,source)],path,exporter)
+            bpy=exporter.bpy;bpy.ops.wm.read_factory_settings(use_empty=True);bpy.ops.import_scene.gltf(filepath=str(path))
+            ob=next(ob for ob in bpy.context.scene.objects if ob.type=='MESH')
+            helper=exporter.load_module('parts_test_geometry',Path(__file__).resolve().parents[1]/'ImportBlasterModel.py')
+            mesh=helper.export_mesh(ob.data,ob.matrix_world)
+            restored=seams.restore_source_normals(mesh,source,normals);indices=np.asarray(restored[2])
+            np.testing.assert_allclose(np.asarray(restored[1])[indices],source['uv'],atol=1e-7)
+            np.testing.assert_allclose(np.asarray(restored[3])[indices],source['normals'],atol=1e-7)
+
+
+if __name__=='__main__':unittest.main(argv=[__file__] if HAS_BLENDER else None)

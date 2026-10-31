@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Service
                 return SpaceFireResult.Failure(error);
 
             PickWeapon(activator, status, target, targetStatus, filter, out var weapon);
-            return FireFrom(activator, status, weapon, target, targetStatus, bonusDmg, options, consumeAmmo: true);
+            return FireFrom(activator, status, weapon, target, targetStatus, bonusDmg, options, LauncherAmmo(activator, weapon), consumeAmmo: true);
         }
 
         /// <summary>
@@ -304,6 +304,8 @@ namespace SWLOR.Game.Server.Service
                 ? weapon.Fitted.Step.Range
                 : weapon.Detail.ModuleMaxDistanceAction(activator, status, aim, aimStatus, weapon.Module.ModuleBonus);
 
+            // The volley spends one ammo item, and every ship it reaches takes that ammo's shot.
+            var ammo = LauncherAmmo(activator, weapon);
             var spentAmmo = false;
             foreach (var ship in targets)
             {
@@ -314,7 +316,7 @@ namespace SWLOR.Game.Server.Service
                 if (shipStatus == null)
                     continue;
 
-                results.Add(FireFrom(activator, status, weapon, ship, shipStatus, bonusDmg, options, consumeAmmo: !spentAmmo));
+                results.Add(FireFrom(activator, status, weapon, ship, shipStatus, bonusDmg, options, ammo, consumeAmmo: !spentAmmo));
                 spentAmmo = true;
             }
 
@@ -322,6 +324,17 @@ namespace SWLOR.Game.Server.Service
                 results.Add(SpaceFireResult.Failure("Your enemies are out of range of your weapons."));
 
             return results;
+        }
+
+        /// <summary>
+        /// The ammo an ability's launcher shot fires: what the launcher would fire next, the pilot's loaded variant
+        /// first (<see cref="ShipModuleActions.PickAmmo"/>), else its plain ammo. Null for a weapon that needs no ammo.
+        /// </summary>
+        private static string LauncherAmmo(uint activator, FittedWeapon weapon)
+        {
+            var family = weapon.Fitted.Step.Family;
+            var plainAmmo = ShipModuleActions.GetAmmoResref(family);
+            return plainAmmo == null ? null : ShipModuleActions.PickAmmo(activator, family, plainAmmo) ?? plainAmmo;
         }
 
         private static SpaceFireResult FireFrom(
@@ -332,10 +345,15 @@ namespace SWLOR.Game.Server.Service
             ShipStatus targetStatus,
             int bonusDmg,
             SpaceFireOptions options,
+            string ammo,
             bool consumeAmmo)
         {
             var step = weapon.Fitted.Step;
-            var shot = ShipShotBuilder.BuildFor(step, status, targetStatus);
+
+            // An ammo variant changes the weapon's shot before the ability adds to it, as on the launcher's own
+            // cycle, and its rider follows the landed hit.
+            var variant = ShipAmmoRules.Variant(ammo);
+            var shot = ShipAmmoRules.Apply(ShipShotBuilder.BuildFor(step, status, targetStatus), variant);
             shot.WeaponSlot = weapon.Slot;
             shot.Dmg += bonusDmg;
             shot.IsAbility = options.IsAbility;
@@ -344,12 +362,11 @@ namespace SWLOR.Game.Server.Service
             if (options.DamageType.HasValue)
                 shot.DamageType = options.DamageType.Value;
 
-            // An ability's launcher shot spends the ammo the launcher would fire next, plain or a variant.
-            var plainAmmo = ShipModuleActions.GetAmmoResref(step.Family);
-            if (consumeAmmo && plainAmmo != null)
-                ShipModuleActions.ConsumeAmmo(activator, ShipModuleActions.PickAmmo(activator, step.Family, plainAmmo) ?? plainAmmo);
+            if (consumeAmmo && ammo != null)
+                ShipModuleActions.ConsumeAmmo(activator, ammo);
 
-            var roll = ShipModuleActions.FireStep(step, activator, status, target, targetStatus, shot, true);
+            var roll = ShipModuleActions.FireStep(step, activator, status, target, targetStatus, shot, true,
+                ShipModuleActions.AmmoRider(activator, target, shot, variant));
             if (roll == null)
                 return SpaceFireResult.Failure("Your ship cannot fire right now.");
 

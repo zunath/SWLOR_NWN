@@ -109,6 +109,35 @@ public class SpaceRevampBugListTests
         activation.Should().Contain("lockedTarget = target;", "the toggle keeps the target the checks validated");
     }
 
+    [Test]
+    public void LauncherAbility_FiresTheAmmoVariantItSpends()
+    {
+        // An ability fired from a launcher with variant ammo loaded spends that variant, so its shot takes the
+        // variant's modifiers and landed-hit rider, as the launcher's own cycle does (RevampModuleDefinition.AmmoWeapon).
+        var source = ReadServerSource("Service", "SpaceAbilities.cs");
+        var fire = source.Substring(source.IndexOf("private static SpaceFireResult FireFrom(", StringComparison.Ordinal));
+        var variant = fire.IndexOf("var variant = ShipAmmoRules.Variant(ammo);", StringComparison.Ordinal);
+        var apply = fire.IndexOf("var shot = ShipAmmoRules.Apply(ShipShotBuilder.BuildFor(step, status, targetStatus), variant);", StringComparison.Ordinal);
+        var bonus = fire.IndexOf("shot.Dmg += bonusDmg;", StringComparison.Ordinal);
+        var consume = fire.IndexOf("ShipModuleActions.ConsumeAmmo(activator, ammo);", StringComparison.Ordinal);
+        var rider = fire.IndexOf("ShipModuleActions.AmmoRider(activator, target, shot, variant)", StringComparison.Ordinal);
+
+        variant.Should().BeGreaterThan(0);
+        apply.Should().BeGreaterThan(variant);
+        bonus.Should().BeGreaterThan(apply, "the variant scales the weapon's DMG, and the ability adds its bonus after");
+        consume.Should().BeGreaterThan(bonus, "the ammo spent is the ammo the shot was built from");
+        rider.Should().BeGreaterThan(consume, "the variant's rider follows the hit it fired");
+
+        // A volley picks its ammo once, before its first shot, so every ship it reaches takes the shot of the ammo spent.
+        var area = source.Substring(source.IndexOf("public static List<SpaceFireResult> FireWeaponArea(", StringComparison.Ordinal));
+        var pick = area.IndexOf("var ammo = LauncherAmmo(activator, weapon);", StringComparison.Ordinal);
+        var loop = area.IndexOf("foreach (var ship in targets)", StringComparison.Ordinal);
+        pick.Should().BeGreaterThan(0);
+        loop.Should().BeGreaterThan(pick);
+        area.Should().Contain("FireFrom(activator, status, weapon, ship, shipStatus, bonusDmg, options, ammo, consumeAmmo: !spentAmmo)");
+        source.Should().Contain("FireFrom(activator, status, weapon, target, targetStatus, bonusDmg, options, LauncherAmmo(activator, weapon), consumeAmmo: true)");
+    }
+
     private static string ReadServerSource(params string[] path)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

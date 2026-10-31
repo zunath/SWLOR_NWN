@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     !Enum.IsDefined(typeof(TintMapLayerType), value) ||
                     TintMapVariable.IsCreatureColorLayer((TintMapLayerType)value) ||
                     !int.TryParse(Get2DAString(Table, "COLOR", row), out var color) ||
-                    color < 0 || color >= TintMapMaterialRegistry.PaletteColorCount)
+                    (!(color >= 0 && color < TintMapMaterialRegistry.PaletteColorCount) &&
+                     !TintMapColor.TryFromStoredValue(color, out _)))
                     continue;
 
                 var key = Key(model, material, (TintMapLayerType)value);
@@ -34,12 +35,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
         }
 
-        public static bool TryGetPaletteColor(TintMapMaterialSelection selection, TintMapLayerType layer,
-            out int color)
+        public static bool TryGetColor(TintMapMaterialSelection selection, TintMapLayerType layer,
+            out TintMapColorSelection color)
         {
-            color = 0;
-            return HeadTintChannels.IsHead(selection) &&
-                   Defaults.TryGetValue(Key(selection.ModelResref, selection.Material.Resref, layer), out color);
+            color = default;
+            if (!HeadTintChannels.IsHead(selection) ||
+                !Defaults.TryGetValue(Key(selection.ModelResref, selection.Material.Resref, layer), out var value))
+                return false;
+
+            color = TintMapColor.TryFromStoredValue(value, out var rgb)
+                ? new TintMapColorSelection(TintMapPaletteColors.GetClosestColorId(layer, rgb), rgb)
+                : new TintMapColorSelection(value, null);
+            return true;
         }
 
         private static string Key(string model, string material, TintMapLayerType layer) =>

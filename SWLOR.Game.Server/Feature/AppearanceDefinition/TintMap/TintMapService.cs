@@ -1528,6 +1528,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (savedColor == 0 && TintMapVariable.IsCreatureColorLayer(layer))
                 return GetEffectiveCreatureColor(creature, layer);
 
+            if (savedColor == 0 && HeadTintDefaults.TryGetColor(selection, layer, out var authoredColor))
+                return authoredColor;
+
             var standardColor = GetStandardColor(creature, selection, layer);
             if (TintMapColor.TryFromStoredValue(savedColor, out var customColor))
             {
@@ -1660,8 +1663,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // fallback until the player explicitly chooses a head color.
             if (HeadTintChannels.IsHead(selection) && !TintMapVariable.IsCreatureColorLayer(layer))
             {
-                if (HeadTintDefaults.TryGetPaletteColor(selection, layer, out var authoredColor))
-                    return authoredColor;
+                if (HeadTintDefaults.TryGetColor(selection, layer, out var authoredColor))
+                    return authoredColor.PaletteColorId;
 
                 var armor = GetItemInSlot(InventorySlot.Chest, creature);
                 if (GetIsObjectValid(armor))

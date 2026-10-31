@@ -801,7 +801,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var armor = GetItemInSlot(InventorySlot.Chest, creature);
                 var lips = TintMapModelResolver.GetCurrentSelections(creature)
                     .Where(HeadTintChannels.IsHead)
-                    .Where(selection => HeadTintDefaults.TryGetPaletteColor(selection, TintMapLayerType.Leather2, out _))
+                    .Where(selection => HeadTintDefaults.TryGetColor(selection, TintMapLayerType.Leather2, out _))
                     .ToArray();
                 ctx.Assert(lips.Length > 0, "Female Human 258 has an authored natural lip default");
                 foreach (var dye in new[] { 37, 82 })
@@ -809,7 +809,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Leather2, dye);
                     EquippedItemAppearance.Refresh(creature, armor);
                     foreach (var lip in lips)
-                        ctx.AssertEqual(TintMapPaletteColors.GetColor(TintMapLayerType.Leather2, 0),
+                        ctx.AssertEqual(new TintMapColor(142, 65, 72),
                             TintMapService.GetEffectiveDisplayColor(creature, lip, TintMapLayerType.Leather2),
                             "Unset lips retain their natural default when the outfit dye changes");
                 }

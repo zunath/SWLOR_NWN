@@ -23,18 +23,26 @@ Head accessory overrides remain on the creature in `TMH_` state. Until an
 override is saved, Cloth, Leather and Metal use the equipped chest armor's
 global dyes, matching native NWN. With no armor, they use the creature default.
 Changing the outfit does not replace an explicit head palette or RGB choice.
-Authored lip surfaces use their declared natural palette default until edited.
+Authored lip surfaces use the approved muted rose RGB default (142, 65, 72)
+until edited; explicit palette choices, including palette 0, still win.
 `headtintdefs.2da`, generated from the head manifest, records these defaults by
 model, material and layer; other head accessories keep the outfit fallback.
+Its `COLOR` is a palette index (0-175) or a packed `TintMapColor` RGB value.
 
 Head color maps use BC1, normals use BC5, scalar masks/specularity use BC4 and
 two-channel masks use BC5. Ordinary maps retain full mip chains. Packed shade
 and categorical-layer maps retain a single BC5 level with `mipmap 0`, preventing
-interpolation of category IDs. Dimensions are powers of two. Texture exceptions,
-roles and codecs are recorded and checked in the head manifest. Changed playable
-head models are checked against the per-model budgets in the manifest. The owner
-approved a 30,000-triangle exception for the 60 CU heads restored from the initial
-10,000-triangle reduction; the other changed heads retain their 10,000 budget.
+interpolation of category IDs. Dimensions are powers of two. Authored head maps
+are DDS; all head profiles reuse the existing shared `plt_palette` resource
+without a head-specific palette copy or TGA exception. Texture roles and codecs
+are recorded and checked in the head manifest. Changed playable
+head models are checked against the per-model budgets in the manifest. The 60 CU
+heads restored from the initial 10,000-triangle reduction have a 30,000-triangle
+LOD 0 target; the other changed heads retain their 10,000 budget. ContentStandards
+also requires LOD 1 at 10,000 and LOD 2 at 3,000 for every head above 10,000.
+The restored heads remain work in progress until those levels preserve native
+palette and RGB overrides in the client; a passing LOD 0 audit alone does not
+satisfy that requirement.
 
 Run `python -B tools/HeadTintAssets.py --check` and
 `python -B tools/GenerateTintMapAssets.py --check` from the HAK checkout.
@@ -42,7 +50,7 @@ With the installed game data, run `python -B tools/TestHeadTintMaterials.py
 --game-data "<NWN install>/data"` and `python -B tools/TestTintShaderMaterials.py
 --game-data "<NWN install>/data"`. These compile the current profiles, validate
 material-state resets and compare native palette/RGB values against the installed
-original palettes, including the folded head palette. No pre-squash Git history
+original palettes. No pre-squash Git history
 is required. Native client evidence is also required for visual changes.
 
 The current item catalog includes helmet and cloak materials; weapons

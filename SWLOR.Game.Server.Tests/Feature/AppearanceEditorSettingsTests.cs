@@ -139,6 +139,7 @@ public class AppearanceEditorSettingsTests
                 private int _tintEditGeneration;
                 private void FlushPendingPickerColor() { }
                 private void CancelTintPickerGesture() { }
+                private void ClosePartBrowser() { }
                 private void CommitCustomTintComponents() { }
                 private bool _isDMArmorDisplay;
                 private int _watches;

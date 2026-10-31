@@ -302,15 +302,21 @@ public class TintMapSavedColorTests
             Locals.Clear();
             var layer = (TintMapLayerType)int.Parse(row[2]);
             var head = Head(row[0], row[1], layer);
+            TintMapColor.TryFromStoredValue(int.Parse(row[3]), out var natural).Should().BeTrue();
+            natural.Should().Be(new TintMapColor(142, 65, 72));
             foreach (var dye in new[] { 37, 82 })
             {
                 _harness.GetField("ArmorDye")!.SetValue(null, dye);
                 ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
-                    .Should().Be(new TintMapColorSelection(int.Parse(row[3]), null), row[0] + "/" + row[1]);
+                    .CustomColor.Should().Be(natural, row[0] + "/" + row[1]);
             }
-            Invoke("SetPaletteColor", 1u, head, layer, 31);
-            ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
-                .Should().Be(new TintMapColorSelection(31, null));
+            Read(head, layer).Should().Be(0, "an authored default is not a saved player override");
+            foreach (var palette in new[] { 0, 31 })
+            {
+                Invoke("SetPaletteColor", 1u, head, layer, palette);
+                ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer))
+                    .Should().Be(new TintMapColorSelection(palette, null));
+            }
             var rgb = new TintMapColor(17, 83, 209);
             Invoke("SetStoredColor", 1u, head, layer, rgb.ToStoredValue(), true);
             _harness.GetField("ArmorDye")!.SetValue(null, 99);

@@ -365,6 +365,12 @@ from the reference `a_ba.plpause1` at time zero; the client still plays its nati
 Horns hold the instrument at the mouth with the bell forward and down. Both use the item
 attachment at `rhand` like the fishing rod, so check them with real instruments equipped.
 
+The slitherhorn mouthpiece is fitted to the same horn contact as the kloo horn. Its hand grips
+and bell keep their original coordinates. The editable model is
+`SWLOR_Haks/sw_item_source/wmgfs_m_221.mdl.ascii`; copy it to
+`SWLOR_Haks/sw_weapon/wmgfs_m_221.mdl`, then compile with
+`python -B SWLOR_Haks/tools/CompileModels.py --model wmgfs_m_221 --apply`.
+
 The SWG loops retain their original duration and speed. The first and last 0.25 seconds blend to
 the shared stance, without extending or retiming the clip. Locomotion is folded into `rootdummy`
 and its net drift is removed, so it does not move the game object. Instrument tracks are mirrored

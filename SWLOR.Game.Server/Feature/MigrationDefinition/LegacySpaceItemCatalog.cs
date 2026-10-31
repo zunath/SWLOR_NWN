@@ -158,6 +158,9 @@ public static class LegacySpaceItemCatalog
         foreach (var (family, items) in RankFortyModules)
             foreach (var item in items)
                 modules.Add(item, Step(family, 40));
+        // Revamp steps a family dropped (the Target Painter starts at rank 10) become its first remaining step.
+        foreach (var (retired, replacement) in RevampModuleCatalog.RetiredTags)
+            modules.Add(retired, replacement);
         return modules;
     }
 

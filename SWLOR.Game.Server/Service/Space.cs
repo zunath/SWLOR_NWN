@@ -294,6 +294,14 @@ namespace SWLOR.Game.Server.Service
                         _shipModuleItemTags.Add(moduleType);
                 }
             }
+
+            // A retired revamp step (the Target Painter's rank 0 and 5) still fitted to a ship works as the step it
+            // became; the item itself converts when it reaches an inventory (LegacySpaceItemCatalog).
+            foreach (var (retired, replacement) in SWLOR.Game.Server.Feature.ShipModuleDefinition.RevampModuleCatalog.RetiredTags)
+            {
+                if (_shipModules.TryGetValue(replacement, out var replacementDetail))
+                    _shipModules.TryAdd(retired, replacementDetail);
+            }
         }
 
         /// <summary>

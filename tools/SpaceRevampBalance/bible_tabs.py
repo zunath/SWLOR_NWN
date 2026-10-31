@@ -220,7 +220,7 @@ UTILITY = {
     "Damage Amplifier": lambda r: f"+{5 + r // 9}% one damage type",
     "Ion Web": lambda r: f"target speed -{20 + r // 3}%",
     "Jammer": lambda r: f"target Accuracy -{4 + round(0.4 * r)}",
-    "Target Painter": lambda r: f"target takes +{5 + r // 9}% damage",
+    "Target Painter": lambda r: f"target takes +{5 + r // 9}% damage" if r >= 10 else "- (starts at rank 10)",
     "Interdictor": lambda r: f"{15 + r // 5} m",
     "Afterburner": lambda r: f"+{25 + r // 3}% speed",
     "Cloaking Device": lambda r: f"reveal range {cloak.reveal_range(r)} m",

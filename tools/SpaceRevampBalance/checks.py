@@ -569,11 +569,20 @@ def ewar_job(r):
     return (1 / r["mean"]) * (0.5 + r["left"]) * r["win"]
 
 
+import catalog  # noqa: E402  (the module line: the Target Painter starts at catalog.FIRST_RANK)
+PAINTER_FIRST_RANK = catalog.FIRST_RANK["TargetPainter"]
+
+
+def painter_paint(r):
+    """The Target Painter's paint at a module rank, or None below the line's first rank (no item to fit)."""
+    return 5 + r // 9 if r >= PAINTER_FIRST_RANK else None
+
+
 rows, ewar_slowest, ewar_low, ewar_high, party_high = [], 0.0, 9.9, 0.0, 0.0
 no_tc = {k: v for k, v in m.FIT["Fighter"].items() if k != "Targeting Computer"}
 for L in TIERS:
     r = min(45, L // 5 * 5)  # the tier's module rank (section K's step; "step" is rebound by section M)
-    jam, paint = -(4 + round(0.4 * r)), 5 + r // 9
+    jam, paint = -(4 + round(0.4 * r)), painter_paint(r)
     standard = m.player_ship("Fighter", L, m.FIT["Fighter"])
     swapped = m.player_ship("Fighter", L, no_tc)
     cells = []
@@ -581,28 +590,36 @@ for L in TIERS:
         npc = m.npc_ship(role, L)
         base = fight([standard], [npc])
         with_jam = fight([swapped], [ewar_target(npc, accuracy=jam)])
-        with_paint = fight([swapped], [ewar_target(npc, paint=paint)])
+        with_paint = fight([swapped], [ewar_target(npc, paint=paint)]) if paint is not None else None
         for res in (with_jam, with_paint):
+            if res is None:
+                continue
             ewar_slowest = max(ewar_slowest, res["mean"] / m.GROUND_TTK[L])
             ratio = ewar_job(res) / ewar_job(base)
             ewar_low, ewar_high = min(ewar_low, ratio), max(ewar_high, ratio)
+        paint_cell = (f"paint {with_paint['mean']:.0f}s ({ewar_job(with_paint) / ewar_job(base):.0%})" if with_paint
+                      else f"no painter below rank {PAINTER_FIRST_RANK}")
         cells.append(f"{role}: {base['mean']:.0f}s / jam {with_jam['mean']:.0f}s ({ewar_job(with_jam) / ewar_job(base):.0%}) / "
-                     f"paint {with_paint['mean']:.0f}s ({ewar_job(with_paint) / ewar_job(base):.0%})")
+                     + paint_cell)
     # A party: three matched Fighters against a Boss, one of them swapping its Targeting Computer. The jam and the paint
     # help the whole party (the stronger one counts, so a second painter adds nothing).
     boss = m.npc_ship("Fighter", L, "Boss")
     party = fight([dict(standard, count=3)], [boss])
     party_cells = []
     for label, kw in (("jam", dict(accuracy=jam)), ("paint", dict(paint=paint))):
+        if kw.get("paint", 0) is None:
+            continue
         res = fight([dict(standard, count=2), swapped], [ewar_target(boss, **kw)])
         party_high = max(party_high, ewar_job(res) / ewar_job(party))
         party_cells.append(f"{label} {res['mean']:.0f}s ({ewar_job(res) / ewar_job(party):.0%})")
-    rows.append([f"T{TIERS.index(L) + 1} (R{L})", m.GROUND_TTK[L], f"{jam} / +{paint}%", "; ".join(cells),
+    rows.append([f"T{TIERS.index(L) + 1} (R{L})", m.GROUND_TTK[L], f"{jam} / " + (f"+{paint}%" if paint is not None else "-"),
+                 "; ".join(cells),
                  f"{party['mean']:.0f}s / " + " / ".join(party_cells)])
 table(["Tier", "Ground s", "Jam / paint at the tier's rank", "Targeting Computer fit / Jammer fit (job vs TC) / Target Painter fit (job vs TC)",
        "3 Fighters vs a Boss: all TC / one Jammer / one Painter (job vs all TC)"], rows)
 out.append(f"A matched Fighter keeps its Targeting Computer, or swaps it for a Jammer (target Accuracy -4 - 0.4 x rank) or a Target "
-           f"Painter (target damage taken +5% + rank / 9), against every Normal role. Job score = kill speed x (0.5 + hull and "
+           f"Painter (target damage taken +5% + rank / 9, from rank {PAINTER_FIRST_RANK}: tier 1 has no painter, since the "
+           f"round-up made any paint +1 damage on its small hits), against every Normal role. Job score = kill speed x (0.5 + hull and "
            f"shield left) x win rate, against the Targeting Computer fit. Bands: every fight stays within the ground time "
            f"(slowest {ewar_slowest:.0%}: {band('P', 'E-War swap fits within the ground time (build A)', f'{ewar_slowest:.0%}', ewar_slowest <= 1.0)}); "
            f"solo, no swap beats the Targeting Computer by more than 10% (the Advanced-ship band; range {ewar_low:.0%}-{ewar_high:.0%}: "
@@ -669,8 +686,9 @@ out.append(f"A solo Gunship's Helm Shield Repairer at Engineering 50 gives at mo
 rows, esp_low, esp_high, esp_party = [], 9.9, 0.0, 0.0
 for L in TIERS:
     r = min(45, L // 5 * 5)
-    jam, paint = -(4 + round(0.4 * r)), 5 + r // 9
-    jam_e, paint_e = m.scale_percent(jam, esp_ewar), m.scale_percent(paint, esp_ewar)
+    jam, paint = -(4 + round(0.4 * r)), painter_paint(r)
+    jam_e = m.scale_percent(jam, esp_ewar)
+    paint_e = m.scale_percent(paint, esp_ewar) if paint is not None else None
     standard = m.player_ship("Fighter", L, m.FIT["Fighter"])
     swapped = m.player_ship("Fighter", L, no_tc)
     cells = []
@@ -678,19 +696,25 @@ for L in TIERS:
         npc = m.npc_ship(role, L)
         base = fight([standard], [npc])
         with_jam = fight([swapped], [ewar_target(npc, accuracy=jam_e)])
-        with_paint = fight([swapped], [ewar_target(npc, paint=paint_e)])
+        with_paint = fight([swapped], [ewar_target(npc, paint=paint_e)]) if paint_e is not None else None
         for res in (with_jam, with_paint):
+            if res is None:
+                continue
             ratio = ewar_job(res) / ewar_job(base)
             esp_low, esp_high = min(esp_low, ratio), max(esp_high, ratio)
-        cells.append(f"{role}: jam {ewar_job(with_jam) / ewar_job(base):.0%} / paint {ewar_job(with_paint) / ewar_job(base):.0%}")
+        cells.append(f"{role}: jam {ewar_job(with_jam) / ewar_job(base):.0%} / "
+                     + (f"paint {ewar_job(with_paint) / ewar_job(base):.0%}" if with_paint else "no painter"))
     boss = m.npc_ship("Fighter", L, "Boss")
     party = fight([dict(standard, count=3)], [boss])
     party_cells = []
     for lbl, kw in (("jam", dict(accuracy=jam_e)), ("paint", dict(paint=paint_e))):
+        if kw.get("paint", 0) is None:
+            continue
         res = fight([dict(standard, count=2), swapped], [ewar_target(boss, **kw)])
         esp_party = max(esp_party, ewar_job(res) / ewar_job(party))
         party_cells.append(f"{lbl} {ewar_job(res) / ewar_job(party):.0%}")
-    rows.append([f"T{TIERS.index(L) + 1} (R{L})", f"{jam_e} / +{paint_e}%", "; ".join(cells), " / ".join(party_cells)])
+    rows.append([f"T{TIERS.index(L) + 1} (R{L})", f"{jam_e} / " + (f"+{paint_e}%" if paint_e is not None else "-"), "; ".join(cells),
+                 " / ".join(party_cells)])
 table(["Tier", "Jam / paint at Espionage 50", "Jammer fit / Target Painter fit (job vs Targeting Computer)",
        "3 Fighters vs a Boss, one Jammer / one Painter (job vs all TC)"], rows)
 out.append(f"Espionage 50 makes a Jammer's Accuracy penalty and a Target Painter's damage taken {esp_ewar}% stronger. Solo, no swap "

@@ -199,7 +199,7 @@ ROLES = {
     "Heavy Freighter": dict(size="Large", H=2, M=3, L=4, stH=1, stM=1, stL=2, hull=140, shield=110, cap=120, capr=4.0, speed=0.70, atk=8, acc=8, df=14, ev=-6,
                             cargo=1200, interior=120, repair=2.5, crew="Pilot, Gunner, Engineer", bonus="Largest non-capital interior and hold"),
     "Cruiser": dict(size="Capital", H=6, M=5, L=5, stH=4, stM=3, stL=3, hull=340, shield=340, cap=250, capr=8.0, speed=0.60, atk=8, acc=8, df=20, ev=-12,
-                    cargo=600, interior=150, repair=4.0, crew="Pilot, 2 Gunners, Engineer, Sensors", bonus="Can fit capital weapons; +10% weapon damage", dmg=10),
+                    cargo=600, interior=150, repair=4.0, crew="Pilot, 2 Gunners, Engineer, Sensors", bonus="Can fit capital weapons; +8% weapon damage", dmg=8),
     "Command Ship": dict(size="Capital", H=5, M=6, L=5, stH=3, stM=4, stL=3, hull=320, shield=380, cap=280, capr=9.0, speed=0.60, atk=8, acc=8, df=18, ev=-12,
                          cargo=600, interior=150, repair=4.0, crew="Pilot, 2 Gunners, Engineer, Sensors", bonus="Command aura range +50% and strength +20%"),
 }

@@ -65,6 +65,28 @@ public sealed class PassengerShuttleInteriorTests
     }
 
     [Test]
+    public void StatusConsoleStandsInTheSeatingCabinInsteadOfOnTheBoardingDivider()
+    {
+        var tag = typeof(Shuttle).GetField("ConsoleWaypointTag",
+            BindingFlags.NonPublic | BindingFlags.Static)!.GetRawConstantValue()!.ToString();
+        var waypoints = Objects(ReadResource("git", "shuttle"), "WaypointList").ToList();
+        var console = waypoints.Single(point => Value<string>(point, "Tag") == tag);
+        var entrance = waypoints.Single(point => Value<string>(point, "Tag") == "PROPERTY_ENTRANCE");
+
+        // The boarding point sits on the boarding bay's center divider, which the console clipped into.
+        var x = Value<float>(console, "XPosition");
+        var y = Value<float>(console, "YPosition");
+        x.Should().BeApproximately(45f, 0.01f);
+        y.Should().BeApproximately(37f, 0.01f);
+        Math.Abs(y - Value<float>(entrance, "YPosition")).Should().BeGreaterThan(10f);
+
+        // The terminal model's screen is on its back, so facing north turns the screen
+        // toward boarding passengers and the rear seats.
+        Value<float>(console, "XOrientation").Should().BeApproximately(0f, 0.01f);
+        Value<float>(console, "YOrientation").Should().BeApproximately(1f, 0.01f);
+    }
+
+    [Test]
     public void CenterFacingPassengerSittingPlaceablesAreRemoved()
     {
         Objects(ReadResource("git", "shuttle"), "Placeable List")

@@ -72,10 +72,13 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Runs what an area launcher ability's perks add once its shots have landed: fragmentation on every ship it
-        /// hit, the Exposed sequence, the Cluster Warheads hit and Bombardier's Rhythm.
+        /// hit, the Exposed sequence, the Cluster Warheads hit and Bombardier's Rhythm. The perks, the hit sequence and
+        /// the STM refund are the ability user's (a crew member using it from a station, <see cref="SpaceCrew.GetAbilityUser"/>);
+        /// the ship deals the damage and applies the statuses.
         /// </summary>
         public static void OnAreaAbilityResolved(uint activator, IEnumerable<SpaceFireResult> results)
         {
+            var user = SpaceCrew.GetAbilityUser(activator);
             var hits = results
                 .Where(x => x.IsHit && GetIsObjectValid(x.Target))
                 .Select(x => x.Target)
@@ -84,17 +87,17 @@ namespace SWLOR.Game.Server.Service
             if (hits.Count == 0)
                 return;
 
-            ApplyFragmentation(activator, hits);
-            ApplyHitSequence(activator, hits);
-            ApplyCluster(activator, hits);
-            ApplyMinimumTargetsStamina(activator, hits.Count);
+            ApplyFragmentation(activator, user, hits);
+            ApplyHitSequence(activator, user, hits);
+            ApplyCluster(activator, user, hits);
+            ApplyMinimumTargetsStamina(activator, user, hits.Count);
         }
 
-        private static void ApplyFragmentation(uint activator, IEnumerable<uint> hits)
+        private static void ApplyFragmentation(uint activator, uint user, IEnumerable<uint> hits)
         {
-            var damage = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaFragmentationDamage);
-            var pulse = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaFragmentationPulseSeconds);
-            var duration = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaFragmentationDurationSeconds);
+            var damage = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaFragmentationDamage);
+            var pulse = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaFragmentationPulseSeconds);
+            var duration = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaFragmentationDurationSeconds);
             if (damage <= 0 || pulse <= 0 || duration <= 0)
                 return;
 
@@ -102,11 +105,11 @@ namespace SWLOR.Game.Server.Service
                 Space.ApplyStatusToShip(activator, ship, new FragmentationStatusEffect(damage, pulse), duration);
         }
 
-        private static void ApplyHitSequence(uint activator, IEnumerable<uint> hits)
+        private static void ApplyHitSequence(uint activator, uint user, IEnumerable<uint> hits)
         {
-            var required = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaHitSequenceCountRequired);
-            var window = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaHitSequenceWindowSeconds);
-            var exposedSeconds = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaHitSequenceExposedDurationSeconds);
+            var required = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaHitSequenceCountRequired);
+            var window = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaHitSequenceWindowSeconds);
+            var exposedSeconds = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaHitSequenceExposedDurationSeconds);
             if (required <= 0 || window <= 0 || exposedSeconds <= 0)
                 return;
 
@@ -114,7 +117,8 @@ namespace SWLOR.Game.Server.Service
             PruneHitSequences(now);
             foreach (var ship in hits)
             {
-                var key = (activator, ship);
+                // Each user keeps their own count, as each ground thrower does.
+                var key = (user, ship);
                 _hitSequences.TryGetValue(key, out var current);
                 var count = SpaceHitSequences.NextCount(current, now, window);
                 if (SpaceHitSequences.IsTriggered(count, required))
@@ -128,10 +132,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyCluster(uint activator, IReadOnlyList<uint> hits)
+        private static void ApplyCluster(uint activator, uint user, IReadOnlyList<uint> hits)
         {
-            var damage = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaClusterDamageBonus);
-            var maximumTargets = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaClusterMaximumTargets);
+            var damage = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaClusterDamageBonus);
+            var maximumTargets = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaClusterMaximumTargets);
             if (damage <= 0 || maximumTargets <= 0)
                 return;
 
@@ -144,22 +148,24 @@ namespace SWLOR.Game.Server.Service
                 ApplyTriggeredDamage(activator, ship, damage);
         }
 
-        private static void ApplyMinimumTargetsStamina(uint activator, int enemiesHit)
+        private static void ApplyMinimumTargetsStamina(uint activator, uint user, int enemiesHit)
         {
-            var threshold = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaMinTargetsStaminaRestoreThreshold);
-            var restore = Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaMinTargetsStaminaRestore);
+            var threshold = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaMinTargetsStaminaRestoreThreshold);
+            var restore = Stat.GetStatAdjustment(user, StatType.SpaceLauncherAreaMinTargetsStaminaRestore);
             if (threshold <= 0 || restore <= 0 || enemiesHit < threshold)
                 return;
 
+            // The ship runs the impact; the user paid the STM, so the refund is theirs.
             var ability = Ability.GetActiveAbilityImpactSummary(activator)?.Ability;
-            Combat.RestoreAbilityHitStamina(activator, ability, restore, sendFeedback: false);
+            Combat.RestoreAbilityHitStamina(user, ability, restore, sendFeedback: false);
         }
 
         // Saturation Strike
 
         /// <summary>
-        /// Starts the fragmentation zones of Saturation Strike: for <paramref name="zoneSeconds"/>, the pilot's area
-        /// launcher abilities add this fragmentation to the Shrapnel Warheads' (the stats add, as the ground's do).
+        /// Starts the fragmentation zones of Saturation Strike: for <paramref name="zoneSeconds"/>, the user's area
+        /// launcher abilities add this fragmentation to the Shrapnel Warheads' (the stats add, as the ground's do). The
+        /// zones go on the ability user, whose stats <see cref="OnAreaAbilityResolved"/> reads.
         /// </summary>
         public static void StartFragmentationZones(
             uint activator,
@@ -168,12 +174,13 @@ namespace SWLOR.Game.Server.Service
             int durationSeconds,
             int zoneSeconds)
         {
+            var user = SpaceCrew.GetAbilityUser(activator);
             TemporaryStatModifier.Replace(
-                activator, StatType.SpaceLauncherAreaFragmentationDamage, damage, zoneSeconds, FragmentationZoneGroup);
+                user, StatType.SpaceLauncherAreaFragmentationDamage, damage, zoneSeconds, FragmentationZoneGroup);
             TemporaryStatModifier.Replace(
-                activator, StatType.SpaceLauncherAreaFragmentationPulseSeconds, pulseSeconds, zoneSeconds, FragmentationZoneGroup);
+                user, StatType.SpaceLauncherAreaFragmentationPulseSeconds, pulseSeconds, zoneSeconds, FragmentationZoneGroup);
             TemporaryStatModifier.Replace(
-                activator, StatType.SpaceLauncherAreaFragmentationDurationSeconds, durationSeconds, zoneSeconds, FragmentationZoneGroup);
+                user, StatType.SpaceLauncherAreaFragmentationDurationSeconds, durationSeconds, zoneSeconds, FragmentationZoneGroup);
         }
 
         /// <summary>Forgets a pilot's hit counts and zones when they leave space, so none follow them onto the ground.</summary>

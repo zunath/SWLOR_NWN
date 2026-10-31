@@ -71,6 +71,9 @@ namespace SWLOR.Game.Server.Service
                 BonusDmg = bonusDmg,
                 ExtraEnmity = enmity,
                 Amount = defensePercent,
+
+                // The hit lands later, from a weapon cycle; Anger Strike reads the perks of whoever used Defiance.
+                StatSource = SpaceCrew.GetAbilityUser(ship),
             });
         }
 
@@ -87,7 +90,8 @@ namespace SWLOR.Game.Server.Service
                 e.Result.Damage,
                 Stat.GetStatAdjustment(e.Attacker, StatType.DamageEnmityPercentAdjustment)));
 
-            var angerStrikeEnmity = Stat.GetStatAdjustment(e.Attacker, StatType.SpaceDefianceEnmityBonus);
+            var user = GetIsObjectValid(e.Rider.StatSource) ? e.Rider.StatSource : e.Attacker;
+            var angerStrikeEnmity = Stat.GetStatAdjustment(user, StatType.SpaceDefianceEnmityBonus);
             if (angerStrikeEnmity > 0)
                 Enmity.ModifyEnmity(e.Attacker, e.Target, angerStrikeEnmity);
 
@@ -97,13 +101,13 @@ namespace SWLOR.Game.Server.Service
                     e.Attacker, e.Attacker, new FortressStrikeStatusEffect(e.Rider.Amount), DefianceDefenseSeconds);
             }
 
-            ArmAngerStrike(e.Attacker, e.Rider);
+            ArmAngerStrike(e.Attacker, user, e.Rider);
         }
 
-        private static void ArmAngerStrike(uint ship, SpaceShotRider defiance)
+        private static void ArmAngerStrike(uint ship, uint user, SpaceShotRider defiance)
         {
-            var damage = Stat.GetStatAdjustment(ship, StatType.SpaceDefianceNextAttackDamageBonus);
-            var window = Stat.GetStatAdjustment(ship, StatType.SpaceDefianceNextAttackDamageDurationSeconds);
+            var damage = Stat.GetStatAdjustment(user, StatType.SpaceDefianceNextAttackDamageBonus);
+            var window = Stat.GetStatAdjustment(user, StatType.SpaceDefianceNextAttackDamageDurationSeconds);
             var usedAt = defiance.ExpiresAt.AddSeconds(-SpaceAbilities.RiderSeconds);
             var seconds = AngerStrikeSeconds(usedAt, DateTime.UtcNow, window);
             if (damage <= 0 || seconds <= 0f)

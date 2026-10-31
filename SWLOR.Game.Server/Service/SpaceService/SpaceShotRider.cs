@@ -26,6 +26,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>A second value for the key's handler.</summary>
         public int SecondaryAmount { get; set; }
 
+        /// <summary>
+        /// The creature whose perks the key's handler reads: the user of the ability that armed it (a crew member
+        /// using it from a station). OBJECT_INVALID reads the consuming ship's own.
+        /// </summary>
+        public uint StatSource { get; set; } = OBJECT_INVALID;
+
         /// <summary>Only shots of this weapon family consume the rider.</summary>
         public SpaceWeaponFilter Filter { get; set; } = SpaceWeaponFilter.Any;
 

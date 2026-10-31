@@ -295,4 +295,57 @@ public class PilotingOrdnanceTests
         ordnance.Should().Contain("e.Family != SpaceWeaponFamily.Launcher || e.FromAbility",
             "Proximity Warheads belongs to the launcher's own cycles, as the ground splash belongs to auto-attacks");
     }
+
+    [Test]
+    public void ACrewMembersStationAbility_ReadsTheirOwnPerks_AndTheShipDealsTheDamage()
+    {
+        // A gunner's Concussion Barrage or Saturation Strike runs with the ship as the activator; the perks, the hit
+        // sequence, the fragmentation zones and the STM refund are the gunner's (SpaceCrew.GetAbilityUser).
+        var ordnance = ReadServerSource("Service", "SpaceOrdnance.cs");
+        var resolved = ordnance[ordnance.IndexOf("public static void OnAreaAbilityResolved(", StringComparison.Ordinal)..];
+        resolved.Should().Contain("var user = SpaceCrew.GetAbilityUser(activator);");
+        ordnance.Should().NotContain("Stat.GetStatAdjustment(activator,", "every area perk reads the ability user");
+        foreach (var stat in new[]
+                 {
+                     "SpaceLauncherAreaFragmentationDamage", "SpaceLauncherAreaHitSequenceCountRequired",
+                     "SpaceLauncherAreaClusterDamageBonus", "SpaceLauncherAreaMinTargetsStaminaRestore",
+                 })
+        {
+            ordnance.Should().Contain($"Stat.GetStatAdjustment(user, StatType.{stat})", stat);
+        }
+
+        ordnance.Should().Contain("var key = (user, ship);", "each user keeps their own Exposed count")
+            .And.Contain("Combat.RestoreAbilityHitStamina(user, ability, restore, sendFeedback: false);", "the user paid the STM")
+            .And.Contain("Ability.GetActiveAbilityImpactSummary(activator)?.Ability;", "the ship runs the impact");
+        var zones = ordnance[ordnance.IndexOf("public static void StartFragmentationZones(", StringComparison.Ordinal)..];
+        zones.Should().Contain("var user = SpaceCrew.GetAbilityUser(activator);")
+            .And.Contain("TemporaryStatModifier.Replace(\n                user, StatType.SpaceLauncherAreaFragmentationDamage");
+        ordnance.Should().Contain("Space.ApplyStatusToShip(activator, ship, new FragmentationStatusEffect(damage, pulse), duration);")
+            .And.Contain("Space.ApplyStatusToShip(activator, ship, typeof(ExposedStatusEffect), exposedSeconds);")
+            .And.Contain("ApplyTriggeredDamage(activator, ship, damage);", "the ship stays the damage source");
+
+        // Mobile Footwork and Kiting Instinct read the user's perks and give the bonus to the ship.
+        var rewards = ReadServerSource("Service", "SpaceHostileAbilityRewards.cs");
+        rewards.Should().Contain("var user = SpaceCrew.GetAbilityUser(e.Activator);")
+            .And.Contain("var amount = Stat.GetStatAdjustment(user, amountStat);")
+            .And.Contain("var duration = Stat.GetStatAdjustment(user, durationStat);")
+            .And.Contain("TemporaryStatModifier.Replace(ship, granted, amount, duration, amountStat);");
+
+        // Defiance's hit lands later from a weapon cycle, so its rider carries the user whose Anger Strike perks apply.
+        var bulwark = ReadServerSource("Service", "SpaceBulwark.cs");
+        bulwark.Should().Contain("StatSource = SpaceCrew.GetAbilityUser(ship),")
+            .And.Contain("var user = GetIsObjectValid(e.Rider.StatSource) ? e.Rider.StatSource : e.Attacker;")
+            .And.Contain("Stat.GetStatAdjustment(user, StatType.SpaceDefianceEnmityBonus)")
+            .And.Contain("Stat.GetStatAdjustment(user, StatType.SpaceDefianceNextAttackDamageBonus)")
+            .And.Contain("Stat.GetStatAdjustment(user, StatType.SpaceDefianceNextAttackDamageDurationSeconds)");
+    }
+
+    [Test]
+    public void ARiderWithoutAStatSource_ReadsTheShipsOwnPerks()
+    {
+        // A rider armed by the pilot, or saved before riders named their user, falls back to the consuming ship.
+        new SpaceShotRider().StatSource.Should().Be(SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID);
+        Newtonsoft.Json.JsonConvert.DeserializeObject<SpaceShotRider>("{\"Key\":\"BulwarkDefiance\",\"Amount\":10}")!
+            .StatSource.Should().Be(SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID);
+    }
 }

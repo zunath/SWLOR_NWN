@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Service
     /// What a pilot's perks grant after a hostile space ability resolves: a temporary Evasion or Movement Speed
     /// bonus (the Ace style's Mobile Footwork and Kiting Instinct). It listens to
     /// <see cref="SpaceCombatEvents.HostileAbilityUsed"/>, so only space abilities trigger it and a pilot's ground
-    /// abilities never grant it.
+    /// abilities never grant it. The perks are the ability user's (a crew member using it from a station); the
+    /// bonus goes to the ship.
     /// </summary>
     public static class SpaceHostileAbilityRewards
     {
@@ -25,22 +26,26 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(e.Activator) || !Space.IsShipInSpace(e.Activator))
                 return;
 
+            // The event is raised inside the ability's use, so a crew member's station use is still known here.
+            var user = SpaceCrew.GetAbilityUser(e.Activator);
             Grant(
                 e.Activator,
+                user,
                 StatType.EvasionPercentAdjustment,
                 StatType.SpaceHostileAbilityUsedEvasionPercentAdjustment,
                 StatType.SpaceHostileAbilityUsedEvasionDurationSeconds);
             Grant(
                 e.Activator,
+                user,
                 StatType.MovementSpeedPercentAdjustment,
                 StatType.SpaceHostileAbilityUsedMovementSpeedPercentAdjustment,
                 StatType.SpaceHostileAbilityUsedMovementSpeedDurationSeconds);
         }
 
-        private static void Grant(uint ship, StatType granted, StatType amountStat, StatType durationStat)
+        private static void Grant(uint ship, uint user, StatType granted, StatType amountStat, StatType durationStat)
         {
-            var amount = Stat.GetStatAdjustment(ship, amountStat);
-            var duration = Stat.GetStatAdjustment(ship, durationStat);
+            var amount = Stat.GetStatAdjustment(user, amountStat);
+            var duration = Stat.GetStatAdjustment(user, durationStat);
             if (amount == 0 || duration <= 0)
                 return;
 

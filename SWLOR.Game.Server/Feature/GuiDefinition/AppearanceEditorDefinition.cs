@@ -574,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        /// <summary>Skin and hair, then the two tattoo colours, each under its name.</summary>
+        /// <summary>Native body swatches, followed by supported head accessory colours.</summary>
         private void BuildBodySwatches(GuiColumn<AppearanceEditorViewModel> col)
         {
             var swatches = new[]
@@ -611,6 +611,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                 });
             }
+            col.AddRow(headRow => headRow.AddColumn(head =>
+            {
+                head.AddRow(row => row.AddLabel()
+                    .SetText("Head colors")
+                    .SetHeight(18f));
+                head.AddRow(row => row.AddComboBox()
+                    .SetId("ae_head_color_channel")
+                    .BindOptions(model => model.HeadColorOptions)
+                    .BindSelectedIndex(model => model.SelectedColorCategoryIndex)
+                    .SetWidth(BodySwatchColumnWidth * 2f - 4f)
+                    .SetHeight(28f));
+            })).BindIsVisible(model => model.HasHeadAccessoryColors);
         }
 
         /// <summary>

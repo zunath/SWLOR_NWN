@@ -338,6 +338,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<GuiComboEntry> HeadColorOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public bool HasHeadAccessoryColors
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> PartCategoryOptions
         {
             get => Get<GuiBindingList<string>>();
@@ -1444,6 +1456,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
+            if (IsAppearanceSelected && propertyName == nameof(SelectedColorCategoryIndex))
+                LoadTintMapEditor();
+
             if (_isDMArmorDisplay && propertyName is nameof(ShowHelmet) or nameof(ShowCloak))
                 ApplyDMArmorDisplay();
 
@@ -1698,6 +1713,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadColorCategoryOptions()
         {
+            HeadColorOptions = new GuiBindingList<GuiComboEntry>();
+            HasHeadAccessoryColors = false;
             if (DoesNotHaveItemEquipped)
                 return;
 
@@ -1740,6 +1757,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ColorCategoryOptions = colorCategoryOptions;
             ColorCategorySelected = colorCategorySelected;
+
+            if (IsAppearanceSelected)
+            {
+                var headOptions = new GuiBindingList<GuiComboEntry>();
+                for (var index = 0; index < colorCategoryOptions.Count; index++)
+                    headOptions.Add(new GuiComboEntry(colorCategoryOptions[index], index));
+                HeadColorOptions = headOptions;
+                HasHeadAccessoryColors = _appearanceColorLayers.Any(layer => !TintMapVariable.IsCreatureColorLayer(layer));
+            }
 
             SelectedColorCategoryIndex = 0;
             ColorCategorySelected[SelectedColorCategoryIndex] = true;

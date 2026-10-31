@@ -186,8 +186,9 @@ public class AppearanceEditorLayoutTests
         column.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
 
         var rows = column.Elements.ToList();
-        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Where(combo => combo.Id != "ae_quick_outfit")
-            .Should().BeEmpty("the equipment slots are tabs, not a list");
+        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>()
+            .Where(combo => combo.Id != "ae_quick_outfit" && combo.Id != "ae_head_color_channel")
+            .Should().BeEmpty("equipment slots stay tabs; only outfit and head-color choices use combos");
         if (partialName == AppearanceEditorViewModel.EditorMainPartial)
         {
             // No hidden rows above the editors: a hidden row still takes up height.
@@ -750,6 +751,21 @@ public class AppearanceEditorLayoutTests
             PathTo(settings, button).Should().NotContain(ancestor =>
                 ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPlayerSettingsVisible));
         }
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
+    [Test]
+    public void HeadAccessoryColorsRemainSelectableInTheBodyMapLayout()
+    {
+        var panel = _partials[AppearanceEditorViewModel.EditorMainPartial];
+        var picker = Walk(panel).Single(widget => widget.Id == "ae_head_color_channel");
+        picker.Should().BeOfType<GuiComboBox<AppearanceEditorViewModel>>();
+        ReadProperty<string>(picker, "OptionsBindName").Should().Be(nameof(AppearanceEditorViewModel.HeadColorOptions));
+        ReadProperty<string>(picker, "SelectedIndexBindName").Should().Be(nameof(AppearanceEditorViewModel.SelectedColorCategoryIndex));
+        PathTo(panel, picker).Should().Contain(widget =>
+            ReadProperty<string>(widget, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.HasHeadAccessoryColors));
+        Width(picker).Should().BeLessThanOrEqualTo(144f,
+            "the head selector must fit the existing two-column body swatch area");
         _window.LayoutFindings.Should().BeEmpty();
     }
 

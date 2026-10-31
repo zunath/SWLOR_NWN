@@ -203,11 +203,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_sabstorm_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_guardmst_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -215,11 +210,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_guardmst_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_guardmst_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -231,11 +221,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_sabcycl_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_SABSTORM_IC_SPAWN", "Dantooine Jedi Enclave Trial Halls - Saber Storm Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_sabstorm_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_GUARDMST_IC_SPAWN", "Dantooine Jedi Enclave Trial Halls - Guardian Master Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_guardmst_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_SABCYCL_IC_SPAWN", "Dantooine Jedi Enclave Trial Halls - Saber Cyclone Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_sabcycl_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
 
@@ -252,11 +254,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_emcocktail_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
                 .AddSpawn(ObjectType.Creature, "cp_holdline_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -264,11 +261,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "cp_holdline_sp")
                 .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_holdline_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -280,11 +272,23 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "cp_infconduit_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_EMCOCKTAIL_IC_SPAWN", "Dantooine Medical Sublevel - Emergency Cocktail Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_emcocktail_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_HOLDLINE_IC_SPAWN", "Dantooine Medical Sublevel - Hold the Line Inner Circle")
+                .AddSpawn(ObjectType.Creature, "cp_holdline_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_INFCONDUIT_IC_SPAWN", "Dantooine Medical Sublevel - Infinite Conduit Inner Circle")
                 .AddSpawn(ObjectType.Creature, "cp_infconduit_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }

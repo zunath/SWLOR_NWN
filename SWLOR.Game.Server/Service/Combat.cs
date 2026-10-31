@@ -2324,7 +2324,10 @@ namespace SWLOR.Game.Server.Service
             var duration = Stat.GetStatAdjustment(
                 activator,
                 StatType.NonCriticalAbilityNextSkillAbilityCriticalRateWindowSeconds);
-            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+            var rangedOnly = Stat.GetStatAdjustment(
+                activator,
+                StatType.NonCriticalAbilityNextSkillAbilityCriticalRateRangedOnly) > 0;
+            if (!MatchesNextSkillAbilityCriticalRateSkill(skillType, requiredSkillType, rangedOnly) ||
                 criticalRate <= 0 ||
                 maximum <= 0 ||
                 duration <= 0)
@@ -2335,7 +2338,13 @@ namespace SWLOR.Game.Server.Service
             TemporaryStatModifier.Replace(
                 activator,
                 StatType.PersistentNextSkillAbilityCriticalRateSkillType,
-                (int)skillType,
+                (int)requiredSkillType,
+                duration,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                activator,
+                StatType.PersistentNextSkillAbilityCriticalRateRangedOnly,
+                rangedOnly ? 1 : 0,
                 duration,
                 StatType.PersistentNextSkillAbilityCriticalRateSkillType);
             TemporaryStatModifier.AddCapped(
@@ -9587,14 +9596,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType)
         {
-            if (skillType == SkillType.Invalid)
-                return 0;
-
-            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
-                creature,
-                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
-                StatType.PersistentNextSkillAbilityCriticalRateSkillType));
-            if (!SkillTypeMatches(skillType, storedSkillType))
+            if (!PersistentNextSkillAbilityCriticalRateMatches(creature, skillType))
                 return 0;
 
             var criticalRate = TemporaryStatModifier.Consume(
@@ -9605,22 +9607,45 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.PersistentNextSkillAbilityCriticalRateSkillType,
                 StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateRangedOnly,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
             StatusEffect.RemoveStatusEffect(creature, typeof(CriticalRateStackTrackerStatusEffect), false);
             return criticalRate;
         }
 
         public static int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType)
         {
-            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
-                creature,
-                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
-                StatType.PersistentNextSkillAbilityCriticalRateSkillType));
-            return SkillTypeMatches(skillType, storedSkillType)
+            return PersistentNextSkillAbilityCriticalRateMatches(creature, skillType)
                 ? TemporaryStatModifier.GetStatAdjustment(
                     creature,
                     StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
                     StatType.PersistentNextSkillAbilityCriticalRateSkillType)
                 : 0;
+        }
+
+        private static bool PersistentNextSkillAbilityCriticalRateMatches(uint creature, SkillType skillType)
+        {
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType));
+            var rangedOnly = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateRangedOnly,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType) > 0;
+            return MatchesNextSkillAbilityCriticalRateSkill(skillType, storedSkillType, rangedOnly);
+        }
+
+        public static bool MatchesNextSkillAbilityCriticalRateSkill(
+            SkillType skillType,
+            SkillType requiredSkillType,
+            bool rangedOnly)
+        {
+            return rangedOnly
+                ? IsRangedWeaponSkill(skillType) && SkillTypeMatchesOrGlobal(skillType, requiredSkillType)
+                : SkillTypeMatches(skillType, requiredSkillType);
         }
 
         public static void StoreQueuedWeaponAbilityCriticalRateBonus(
@@ -10043,6 +10068,10 @@ namespace SWLOR.Game.Server.Service
                 TemporaryStatModifier.Consume(
                     creature,
                     StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                    StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.PersistentNextSkillAbilityCriticalRateRangedOnly,
                     StatType.PersistentNextSkillAbilityCriticalRateSkillType);
                 StatusEffect.RemoveStatusEffect(
                     creature,

@@ -66,14 +66,20 @@ public static class CannonMuzzleAnchors
         DestroyAnchors(pool.Sources);
     }
 
-    /// <summary>True when the actor's anchors exist and have reached clients, so a burst can use them.</summary>
-    public static bool IsReady(uint actor) =>
-        Anchors.TryGetValue(actor, out var pool) && pool.Area == GetArea(actor) &&
-        pool.ReadyAt <= Environment.TickCount64 && Array.TrueForAll(pool.Sources, GetIsObjectValid);
+    /// <summary>True once every source is parked at the current muzzle and has reached clients.</summary>
+    public static bool IsReady(uint actor)
+    {
+        if (!Anchors.TryGetValue(actor, out var pool) || pool.Area != GetArea(actor) ||
+            pool.ReadyAt > Environment.TickCount64) return false;
+        var muzzle = Muzzle(actor);
+        return Array.TrueForAll(pool.Sources, source => GetIsObjectValid(source) &&
+            NumericsVector3.Distance(GetPosition(source), muzzle) <= ParkToleranceMeters);
+    }
 
     /// <summary>Draws one bolt from a free muzzle anchor. Returns false when none is free.</summary>
     public static bool Launch(uint actor, uint target, bool hit)
     {
+        Prepare(actor);
         if (!IsReady(actor) || !GetIsObjectValid(target) || GetArea(target) != GetArea(actor)) return false;
         var pool = Anchors[actor];
         var muzzle = Muzzle(actor);
@@ -81,17 +87,18 @@ public static class CannonMuzzleAnchors
             NumericsVector3.Distance(muzzle, GetPosition(target)), false);
         if (slot < 0) return false;
         var source = pool.Sources[slot];
-        MoveIfNeeded(source, muzzle);
         AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant,
             EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2, !hit), target));
         AssignCommand(actor, () => PlaySound(ShotSound));
         return true;
     }
 
-    private static void MoveIfNeeded(uint anchor, NumericsVector3 point)
+    private static bool MoveIfNeeded(uint anchor, NumericsVector3 point)
     {
-        if (GetIsObjectValid(anchor) && NumericsVector3.Distance(GetPosition(anchor), point) > ParkToleranceMeters)
-            ObjectPlugin.SetPosition(anchor, point);
+        if (!GetIsObjectValid(anchor) || NumericsVector3.Distance(GetPosition(anchor), point) <= ParkToleranceMeters)
+            return false;
+        ObjectPlugin.SetPosition(anchor, point);
+        return true;
     }
 
     /// <summary>Moves every free source to the muzzle once the actor has held the same pose for one check.</summary>
@@ -109,8 +116,14 @@ public static class CannonMuzzleAnchors
             {
                 var pool = Anchors[actor];
                 var muzzle = Muzzle(actor);
+                var moved = false;
                 for (var slot = 0; slot < pool.Sources.Length; slot++)
-                    if (pool.BusyUntil[slot] <= now) MoveIfNeeded(pool.Sources[slot], muzzle);
+                    if (pool.BusyUntil[slot] <= now) moved |= MoveIfNeeded(pool.Sources[slot], muzzle);
+                if (moved)
+                {
+                    pool.ReadyAt = now + ReplicationWarmupMilliseconds;
+                    Anchors[actor] = pool;
+                }
             }
             LastPoses[actor] = (position, facing);
         }

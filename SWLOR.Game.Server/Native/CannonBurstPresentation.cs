@@ -79,8 +79,11 @@ public static unsafe class CannonBurstPresentation
                     var hit = CannonMuzzleAnchors.IsHitResult(result);
                     drawnFromMuzzle = CannonMuzzleAnchors.Launch(origin, target, hit);
                     if (drawnFromMuzzle)
+                    {
+                        var muzzleShot = shot with { Weapon = rightHand };
                         foreach (var delay in FollowUpDelays)
-                            Scheduler.Schedule(() => FollowUp(origin, target, hit, rightHand), delay);
+                            Scheduler.Schedule(() => FollowUp(muzzleShot, hit), delay);
+                    }
                 }
             }
         }
@@ -94,11 +97,11 @@ public static unsafe class CannonBurstPresentation
             Scheduler.Schedule(() => Replay(followUp), delay);
     }
 
-    private static void FollowUp(uint origin, uint target, bool hit, uint weapon)
+    private static void FollowUp(Shot shot, bool hit)
     {
-        if (!GetIsObjectValid(origin) || GetIsDead(origin) ||
-            GetItemInSlot(InventorySlot.RightHand, origin) != weapon) return;
-        CannonMuzzleAnchors.Launch(origin, target, hit);
+        if (!GetIsObjectValid(shot.Origin) || GetIsDead(shot.Origin) ||
+            GetItemInSlot(InventorySlot.RightHand, shot.Origin) != shot.Weapon) return;
+        if (!CannonMuzzleAnchors.Launch(shot.Origin, shot.Target, hit)) Replay(shot);
     }
 
     private static void Replay(Shot shot)

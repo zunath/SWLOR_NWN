@@ -38,5 +38,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>The droids posted aboard the ship (stations and droid bay).</summary>
         public int PostedDroids { get; init; }
+
+        /// <summary>The ship's salvage team is out stripping a derelict, this one or another.</summary>
+        public bool SalvageTeamOut { get; init; }
     }
 }

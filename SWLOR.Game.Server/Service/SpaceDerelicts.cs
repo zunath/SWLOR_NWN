@@ -195,6 +195,7 @@ namespace SWLOR.Game.Server.Service
                 SameParty = existing != null && existing.PartyIds.Overlaps(party),
                 DockedCount = existing?.DockedShipIds.Count ?? 0,
                 PostedDroids = GetPostedDroids(ship).Count,
+                SalvageTeamOut = _derelicts.Values.Any(x => x.Mode == DerelictMode.SalvageTeam && x.SalvageShipId == ship.Id),
             };
         }
 

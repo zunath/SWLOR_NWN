@@ -105,6 +105,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 return DerelictRefusal.BoardingUnderway;
             if (request.Underway == DerelictMode.SalvageTeam)
                 return DerelictRefusal.SalvageUnderway;
+
+            // One team per ship: the same droids cannot strip two derelicts at once.
+            if (request.SalvageTeamOut)
+                return DerelictRefusal.TeamAlreadyOut;
             if (request.PostedDroids <= 0)
                 return DerelictRefusal.NoDroids;
 
@@ -141,6 +145,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             DerelictRefusal.SalvageUnderway => "A salvage team is already stripping this derelict.",
             DerelictRefusal.BoardingUnderway => "A party has boarded this derelict. Board it with them instead.",
             DerelictRefusal.NoDroids => "Post a droid at one of your ship's stations or its droid bay to send a salvage team.",
+            DerelictRefusal.TeamAlreadyOut => "Your salvage team is still out on a derelict. Wait for it to return before sending it again.",
             _ => string.Empty,
         };
 

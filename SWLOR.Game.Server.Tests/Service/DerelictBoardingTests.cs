@@ -30,8 +30,9 @@ public class DerelictBoardingTests
     }
 
     private static DerelictRequest Request(ShipSize size = ShipSize.Small, float distance = 10f, DerelictMode underway = DerelictMode.None,
-        bool sameParty = false, int docked = 0, int droids = 1) => new()
+        bool sameParty = false, int docked = 0, int droids = 1, bool teamOut = false) => new()
     {
+        SalvageTeamOut = teamOut,
         IsDerelict = true,
         Boardable = true,
         PartyLocated = true,
@@ -185,6 +186,21 @@ public class DerelictBoardingTests
         DerelictRules.GetSalvageRefusal(Request(underway: DerelictMode.Boarding, sameParty: true)).Should().Be(DerelictRefusal.BoardingUnderway);
         DerelictRules.GetSalvageRefusal(Request(underway: DerelictMode.SalvageTeam)).Should().Be(DerelictRefusal.SalvageUnderway);
         DerelictRules.GetSalvageRefusal(Request(distance: 100f)).Should().Be(DerelictRefusal.OutOfRange);
+    }
+
+    [Test]
+    public void Salvage_OneTeamPerShip_TheSameDroidsCannotStripTwoDerelicts()
+    {
+        DerelictRules.GetSalvageRefusal(Request(teamOut: true)).Should().Be(DerelictRefusal.TeamAlreadyOut);
+        DerelictRules.GetSalvageRefusal(Request(teamOut: true, droids: 0)).Should().Be(DerelictRefusal.TeamAlreadyOut,
+            "droids out with the team are not missing from the ship");
+        DerelictRules.GetSalvageRefusal(Request(teamOut: true, underway: DerelictMode.SalvageTeam))
+            .Should().Be(DerelictRefusal.SalvageUnderway, "on the derelict the team is already stripping, that says so");
+        DerelictRules.GetSalvageRefusal(Request(teamOut: false)).Should().Be(DerelictRefusal.None);
+        DerelictRules.DescribeRefusal(DerelictRefusal.TeamAlreadyOut).Should().Contain("salvage team is still out");
+
+        var source = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceDerelicts.cs"));
+        source.Should().Contain("SalvageTeamOut = _derelicts.Values.Any(x => x.Mode == DerelictMode.SalvageTeam && x.SalvageShipId == ship.Id),");
     }
 
     [Test]

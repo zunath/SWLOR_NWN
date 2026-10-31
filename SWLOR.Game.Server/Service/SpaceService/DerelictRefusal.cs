@@ -17,5 +17,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         SalvageUnderway = 11,
         BoardingUnderway = 12,
         NoDroids = 13,
+        TeamAlreadyOut = 14,
     }
 }

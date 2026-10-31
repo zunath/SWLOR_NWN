@@ -1296,14 +1296,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.PartBrowser.cs",
-    "Line": 610,
+    "Line": 623,
     "Member": "OnClickMapSlot",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"No {(itemType == 1 ? \"helmet\" : \"cloak\")} is equipped.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearancePartBrowserViewModel.cs",
-    "Line": 239,
+    "Line": 417,
     "Member": "OnClickGo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"Part #{PartNumberText?.Trim()} is not in this list.\"))"

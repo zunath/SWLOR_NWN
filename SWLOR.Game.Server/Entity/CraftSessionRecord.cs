@@ -30,6 +30,15 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         public int DebitSequence { get; set; }
 
+        /// <summary>
+        /// The station fee the craft took from the player with its debit (a Shipyard's fee for a Capital hull, space revamp), or 0. The
+        /// station's treasury is credited when the craft ends, never at the start, so a crash that rolls the payment back credits nothing.
+        /// </summary>
+        public int StationFee { get; set; }
+
+        /// <summary>The station property whose treasury takes <see cref="StationFee"/>.</summary>
+        public string StationFeePropertyId { get; set; }
+
         /// <summary>One serialized item per committed component stack.</summary>
         public List<string> Components { get; set; } = new();
 

@@ -12,7 +12,7 @@ Drill values the same tables and agents.py's mining quotas use open_orbit_ore_pe
 Sources (the code, not assumptions):
 - Mining Laser: catalog.py FAMILIES (6 s cycle, 15 m range, mines asteroids up to tier rank / 10 + 1), a High module.
   Revamp lasers carry no Module Bonus property and no hull sets the legacy Industrial bonus, so a cycle's amount is
-  ExtractionBaseAmount(0, 0) = 1 and it uses MiningUnitsPerCycle(1) = 1 of the asteroid's units. Prospector I-III add
+  ExtractionBaseAmount(0, 0) = 1 and it uses MiningUnitsPerCycle(1) = 1 of the asteroid's units. Asteroid Miner I-III (PerkType.Prospector) add
   5 / 10 / 15% to the ore delivered, the fraction carried on the ship (SpaceCombatMath.MiningYield; W11e, was a flat
   +1 / +2 / +3 ore, which quadrupled a 1-ore cycle).
 - Rapid Extraction I / II shorten the cycle 10 / 20% (SpaceCombatMath.MiningCycleSeconds).
@@ -56,7 +56,7 @@ AVAILABLE_SHARE = 0.5
 PC_RUN_METERS_PER_SECOND = 4.0
 RETARGET_SECONDS = 4.0
 STORE_BUY_RATE = 0.40
-PROSPECTOR_PERCENT = [0, 5, 10, 15]     # Prospector I-III: percent on each cycle's ore, remainder carried (W11e)
+PROSPECTOR_PERCENT = [0, 5, 10, 15]     # Asteroid Miner I-III: percent on each cycle's ore, remainder carried (W11e)
 PROSPECTOR = [0, 1, 2, 3]               # ranks
 RAPID_EXTRACTION = [0, 10, 20]
 WILD_SPACE_TIER = 5.5
@@ -184,7 +184,7 @@ def asteroid_units(roll, tier):
 
 
 def asteroid_haul(tier, lasers=LASERS):
-    """Average (ore before Prospector, laser cycles, cycle batches) per asteroid of a tier: every laser on the same rock,
+    """Average (ore before Asteroid Miner, laser cycles, cycle batches) per asteroid of a tier: every laser on the same rock,
     1 ore and 1 unit a cycle (the base amount of a revamp laser)."""
     ore = cycles = batches = 0.0
     for roll in ASTEROID_UNITS:
@@ -197,13 +197,13 @@ def asteroid_haul(tier, lasers=LASERS):
 
 
 def prospector_factor(rank):
-    """Prospector's percent on every cycle's ore, the remainder carried (SpaceCombatMath.MiningYield)."""
+    """Asteroid Miner's percent on every cycle's ore, the remainder carried (SpaceCombatMath.MiningYield)."""
     return 1 + PROSPECTOR_PERCENT[rank] / 100
 
 
 def bay_factor(rank, bay_percent):
     """The droid bay's rounded percent on a cycle's ore (DroidIndustryRules.ApplyPercent): with 1 ore a cycle it adds
-    nothing, so only the cycles Prospector's carry lifts to 2 ore gain (2 x 1.35 rounds to 3)."""
+    nothing, so only the cycles Asteroid Miner's carry lifts to 2 ore gain (2 x 1.35 rounds to 3)."""
     if bay_percent <= 0:
         return 1.0
     extra = PROSPECTOR_PERCENT[rank] / 100  # the share of cycles that deliver 2 ore
@@ -302,7 +302,7 @@ def rows():
 
 def report():
     print("Active mining, a matched pilot with three Mining Lasers (Fighter at T1, Mining Barge from T2), against the "
-          "tier's combat rate. 'perks': Prospector III and Rapid Extraction II; 'best': plus a best bay droid "
+          "tier's combat rate. 'perks': Asteroid Miner III and Rapid Extraction II; 'best': plus a best bay droid "
           f"(+{BEST_BAY_PERCENT}%).")
     for r in sorted(rows(), key=lambda r: (r["tier"], r["area"])):
         c = r["combat"]

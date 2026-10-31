@@ -581,8 +581,8 @@ def income_rows():
         ("Mining, three Mining Lasers, no perks (best area of the tier)", cells(best_area("credits")), "about 90-100%",
          "mining.py"),
         ("Strip mining, Industrial, no perks (best area of the tier)", cells(best_area("strip")), "about 90-100%", "mining.py"),
-        ("Mining with Prospector III and Rapid Extraction II", cells(best_area("perks")), "at most 140%", "mining.py"),
-        ("Strip mining with Prospector III and Rapid Extraction II", cells(best_area("perk_strip")), "at most 140%", "mining.py"),
+        ("Mining with Asteroid Miner III and Rapid Extraction II", cells(best_area("perks")), "at most 140%", "mining.py"),
+        ("Strip mining with Asteroid Miner III and Rapid Extraction II", cells(best_area("perk_strip")), "at most 140%", "mining.py"),
     ]
 
 

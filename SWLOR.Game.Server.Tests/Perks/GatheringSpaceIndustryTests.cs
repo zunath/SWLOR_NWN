@@ -77,7 +77,7 @@ public class GatheringSpaceIndustryTests
         ((int)FeatType.TraitHunterTrait).Should().Be(3357);
     }
 
-    [TestCase(PerkType.Prospector, "Prospector", new[] { 2, 3, 4 }, new[] { 10, 25, 40 }, FeatType.ProspectorTrait)]
+    [TestCase(PerkType.Prospector, "Asteroid Miner", new[] { 2, 3, 4 }, new[] { 10, 25, 40 }, FeatType.ProspectorTrait)]
     [TestCase(PerkType.DeepCore, "Deep Core", new[] { 3, 4 }, new[] { 20, 40 }, FeatType.DeepCoreTrait)]
     [TestCase(PerkType.RapidExtraction, "Rapid Extraction", new[] { 3, 4 }, new[] { 30, 45 }, FeatType.RapidExtractionTrait)]
     [TestCase(PerkType.GasSiphoning, "Gas Siphoning", new[] { 2, 3 }, new[] { 15, 35 }, FeatType.GasSiphoningTrait)]

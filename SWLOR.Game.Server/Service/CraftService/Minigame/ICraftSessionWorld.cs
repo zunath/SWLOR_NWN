@@ -30,8 +30,18 @@ public interface ICraftSessionWorld
     /// </summary>
     string ValidateStationFee(uint player, RecipeDetail recipe, uint blueprintItem);
 
-    /// <summary>Takes the station's fee for the recipe, when it has one. It is not refunded when the craft fails.</summary>
-    void ChargeStationFee(uint player, RecipeDetail recipe);
+    /// <summary>
+    /// Takes the station's fee for the recipe from the player, when it has one, and returns it for the station's treasury; null when
+    /// there is none. It is not refunded when the craft fails. The treasury is credited by <see cref="CreditStationFee"/> only when the
+    /// craft ends and a character file holds the payment.
+    /// </summary>
+    StationFeeCharge ChargeStationFee(uint player, RecipeDetail recipe);
+
+    /// <summary>
+    /// Credits a fee the player paid to its station's treasury, exactly once: a fee already credited (the same id) is not credited again,
+    /// so a retry after a stop between the credit and the player's save does nothing.
+    /// </summary>
+    void CreditStationFee(uint player, PendingStationFee fee);
 
     /// <summary>
     /// Takes exactly the recipe's components from the player's inventory, one serialized item per stack taken. When the

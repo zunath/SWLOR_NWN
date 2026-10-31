@@ -63,12 +63,6 @@ namespace SWLOR.Game.Server.Service.StationService
         /// <summary>The Shipyard fee kept within 0 and the cap.</summary>
         public static int ClampShipyardFee(int fee) => Math.Clamp(fee, 0, StationTuning.ShipyardFeeMax);
 
-        /// <summary>
-        /// A crafting step's progress raised by the Shipyard droid's percent (<see cref="StationDroidRules.ShipyardBuildSpeedPercent"/>).
-        /// </summary>
-        public static int ApplyShipyardSpeed(int progress, int percent) =>
-            percent <= 0 ? progress : (int)Math.Round(progress * (1 + percent / 100.0), MidpointRounding.AwayFromZero);
-
         // The Asteroid Drill
 
         /// <summary>

@@ -300,6 +300,8 @@ namespace SWLOR.Game.Server.Entity
         // Items a craft put in the inventory that the character file may not hold yet, each with the file sequence it needs.
         // See CraftSessionLifecycle for how a login settles them.
         public List<PendingCraftReturn> PendingCraftReturns { get; set; }
+        // Station fees (a Shipyard's, space revamp) the player paid whose station treasury is not credited yet. See CraftSessionLifecycle.
+        public List<PendingStationFee> PendingStationFees { get; set; }
         // Skill XP a settled craft earned while its player was dead, by skill. It is given once the player is alive again, at a
         // respawn, a login or the next crafting window.
         public Dictionary<SkillType, int> PendingCraftXp { get; set; }

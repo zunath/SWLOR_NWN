@@ -154,7 +154,10 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             : string.Empty;
     }
 
-    public void ChargeStationFee(uint player, RecipeDetail recipe) => Craft.PayStationFee(player, recipe);
+    public StationFeeCharge ChargeStationFee(uint player, RecipeDetail recipe) => Craft.TakeStationFee(player, recipe);
+
+    public void CreditStationFee(uint player, PendingStationFee fee) =>
+        StationBuildings.CreditShipyardFee(fee.PropertyId, fee.Id, fee.Fee, PlayerName.GetAuditName(player));
 
     public void ApplyComponentTraits(uint item, RecipeType recipeType, RecipeDetail recipe, IReadOnlyList<string> components) =>
         ShipComponents.ApplyCraftedTraits(recipeType, recipe, item, components);

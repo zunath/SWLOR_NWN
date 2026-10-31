@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Feature.ShipDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Feature.TradeDefinition;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -154,14 +155,21 @@ public class StationBuildingTests
         StationDroidRules.TakesDroid(StationDeckSlotType.JumpBeacon).Should().BeFalse();
         StationDroidRules.ShipyardBuildSpeedPercent(0).Should().Be(0);
         StationDroidRules.ShipyardBuildSpeedPercent(100).Should().Be(30);
-        StationBuildingRules.ApplyShipyardSpeed(100, 0).Should().Be(100);
-        StationBuildingRules.ApplyShipyardSpeed(100, 30).Should().Be(130);
-        StationBuildingRules.ApplyShipyardSpeed(55, 15).Should().Be(63);
+        // The droid's percent raises every Circuit Assembly gain (CircuitSetup.StationAssemblyPercent) and nothing else.
+        CircuitSetup Setup(int percent) =>
+            new(new CircuitParameters(6, 10, 50), 45, 89, 1296, 70, 45, 30, 30, 20, 0, null, percent);
+        Setup(0).StationAssemblyPercent.Should().Be(0);
+        Setup(StationDroidRules.ShipyardBuildSpeedPercent(100)).StationAssemblyPercent.Should().Be(30);
+        Setup(-5).StationAssemblyPercent.Should().Be(0, "a negative percent is ignored");
+        Setup(30).WireGain(0).Should().BeCloseTo((int)Math.Round(Setup(0).WireGain(0) * 1.3, MidpointRounding.AwayFromZero), 1);
+        Setup(30).DischargeAssemblyGain(5).Should().BeGreaterThan(Setup(0).DischargeAssemblyGain(5));
+        Setup(30).TuneGain(0).Should().Be(Setup(0).TuneGain(0), "the droid speeds up the build, not its quality");
+        Setup(30).MaxAssembly.Should().Be(Setup(0).MaxAssembly);
 
         // Engineering crafts in the Circuit: the droid raises every Assembly gain (CircuitSetup.StationAssemblyPercent).
         ReadServer("Feature", "GuiDefinition", "ViewModel", "CircuitCraftViewModel.cs").Should().Contain("Craft.GetStationProgressBonusPercent(Player, recipe)");
         ReadServer("Service", "Craft.cs").Should().Contain("StationBuildings.GetShipyardSpeedPercent(player)")
-            .And.Contain("StationBuildings.PayShipyardFee(player, StationBuildings.GetShipyardStation(player))");
+            .And.Contain("StationBuildings.TakeShipyardFee(player, station)");
         ReadServer("Service", "CraftService", "Minigame", "CraftSessionLifecycle.cs").Should().Contain("_world.ChargeStationFee(player, recipe);");
         ReadServer("Service", "StationBuildings.cs").Should().Contain("StationDroidRules.ShipyardBuildSpeedPercent(state.DroidIndustry)")
             .And.Contain("StationDroidRules.DrillOutputPercent(state.DroidIndustry, state.DroidEfficiencyPercent)")

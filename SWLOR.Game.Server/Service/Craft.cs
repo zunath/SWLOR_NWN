@@ -1193,9 +1193,19 @@ namespace SWLOR.Game.Server.Service
         public static int GetStationFee(uint player, RecipeDetail recipe) =>
             IsShipyardRecipe(recipe) ? StationBuildings.GetShipyardFee(StationBuildings.GetShipyardStation(player)) : 0;
 
-        /// <summary>Takes the station's fee for one craft of the recipe into the station's treasury. Returns false when it cannot be paid.</summary>
-        public static bool PayStationFee(uint player, RecipeDetail recipe) =>
-            !IsShipyardRecipe(recipe) || StationBuildings.PayShipyardFee(player, StationBuildings.GetShipyardStation(player));
+        /// <summary>
+        /// Takes the station's fee for one craft of the recipe from the player. Returns the charge for the station's treasury, which is
+        /// credited only once the character file holds the payment (<c>CraftSessionLifecycle</c>); null when there is none.
+        /// </summary>
+        public static CraftService.Minigame.StationFeeCharge TakeStationFee(uint player, RecipeDetail recipe)
+        {
+            if (!IsShipyardRecipe(recipe))
+                return null;
+
+            var station = StationBuildings.GetShipyardStation(player);
+            var fee = station == null ? 0 : StationBuildings.TakeShipyardFee(player, station);
+            return fee > 0 ? new CraftService.Minigame.StationFeeCharge(station.Id, fee) : null;
+        }
 
         /// <summary>
         /// The station's bonus to a craft's progress, in percent: a droid assigned to the Shipyard speeds up Capital hull builds

@@ -76,10 +76,11 @@ public static class CircuitRules
     // gate found the Circuit pays less XP per hour than the old window at low levels, where the old window took 6 to 9
     // actions and the Circuit takes 14 to 18. Each is the smallest two-decimal multiplier at which every case of its band (every gear
     // tier, with none to three enhancements) reaches the old window's XP per hour on both of the samples the notes name (6 recipes
-    // per band at seed 1, 10 per band at seed 2). Higher bands need little or nothing.
+    // per band at seed 1, 10 per band at seed 2). Higher bands need little or nothing. The space revamp's Engineering recipes changed the
+    // cohort, so 11-20 and 21-30 were raised from 1.54 and 1.15 to keep every case of the committed sample at 1.00x or more.
     public const double XpMultiplierLevels1To10 = 2.29;
-    public const double XpMultiplierLevels11To20 = 1.54;
-    public const double XpMultiplierLevels21To30 = 1.15;
+    public const double XpMultiplierLevels11To20 = 1.72;
+    public const double XpMultiplierLevels21To30 = 1.19;
     public const double XpMultiplierLevels31To40 = 1.0;
     public const double XpMultiplierLevels41AndUp = 1.0;
 

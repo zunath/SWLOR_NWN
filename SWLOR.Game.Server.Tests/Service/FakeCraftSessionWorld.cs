@@ -69,11 +69,26 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>The station fee a craft owes (a Shipyard's, space revamp); 0 for none.</summary>
     public int StationFee { get; set; }
 
-    /// <summary>The player's credits, read by the station fee check.</summary>
+    /// <summary>The player's credits, read by the station fee check. They are in the character file, so a crash restores the file's.</summary>
     public int Gold { get; set; } = int.MaxValue;
 
-    /// <summary>The station fees taken, in order.</summary>
+    /// <summary>The station whose Shipyard takes the fee.</summary>
+    public const string StationId = "station-1";
+
+    /// <summary>The station fees taken from the player, in order.</summary>
     public List<int> StationFeesPaid { get; } = new();
+
+    /// <summary>The station's treasury, in the database: a crash does not roll it back.</summary>
+    public long Treasury { get; private set; }
+
+    /// <summary>The fee ids the treasury has credited (the station's ledger).</summary>
+    public HashSet<string> CreditedFees { get; } = new();
+
+    /// <summary>Every credit request, including ones the ledger refused as already credited.</summary>
+    public int CreditRequests { get; private set; }
+
+    /// <summary>True to stop the server right after the treasury's save, before the player's save forgets the fee.</summary>
+    public bool StopAfterTreasuryCredit { get; set; }
 
     /// <summary>Each call that passed the committed components on to a finished item: the recipe and the components.</summary>
     public List<(uint Item, RecipeType Recipe, List<string> Components)> ComponentTraitCalls { get; } = new();
@@ -84,14 +99,30 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public string ValidateStationFee(uint player, RecipeDetail recipe, uint blueprintItem) =>
         StationFee > 0 && Gold < StationFee ? $"The Shipyard fee is {StationFee} credits!" : string.Empty;
 
-    public void ChargeStationFee(uint player, RecipeDetail recipe)
+    public StationFeeCharge ChargeStationFee(uint player, RecipeDetail recipe)
     {
         if (StationFee <= 0)
-            return;
+            return null;
 
         Gold -= StationFee;
         StationFeesPaid.Add(StationFee);
         Events.Add("station-fee");
+        return new StationFeeCharge(StationId, StationFee);
+    }
+
+    public void CreditStationFee(uint player, PendingStationFee fee)
+    {
+        CreditRequests++;
+        if (!CreditedFees.Add(fee.Id))
+            return;
+
+        Treasury += fee.Fee;
+        Events.Add("treasury-credit");
+        if (StopAfterTreasuryCredit)
+        {
+            StopAfterTreasuryCredit = false;
+            throw new ServerStoppedException();
+        }
     }
 
     public void ApplyComponentTraits(uint item, RecipeType recipeType, RecipeDetail recipe, IReadOnlyList<string> components)
@@ -308,6 +339,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     }
 
     private Dictionary<string, int> _fileInventory = new();
+    private int _fileGold = int.MaxValue;
     private List<string> _fileReturned = new();
     private List<string> _fileCrafted = new();
 
@@ -317,6 +349,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         FileSequenceOnDisk = Sequence;
         _exported = Sequence;
         _fileInventory = new Dictionary<string, int>(Inventory);
+        _fileGold = Gold;
         _fileReturned = new List<string>(Returned);
         _fileCrafted = new List<string>(Crafted);
     }
@@ -331,6 +364,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         Inventory.Clear();
         foreach (var (resref, quantity) in _fileInventory)
             Inventory[resref] = quantity;
+        Gold = _fileGold;
         Returned.Clear();
         Returned.AddRange(_fileReturned);
         Crafted.Clear();

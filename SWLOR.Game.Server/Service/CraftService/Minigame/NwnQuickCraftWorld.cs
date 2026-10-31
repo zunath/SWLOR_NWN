@@ -36,6 +36,14 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         if (!GetIsObjectValid(player))
             return;
 
+        // A batch's station fees are credited once the file holds their payments: write it, then credit.
+        var dbPlayer = DB.Get<Entity.Player>(GetObjectUUID(player));
+        if (dbPlayer?.PendingStationFees is { Count: > 0 })
+        {
+            NwnCraftSessionWorld.Instance.FlushCharacter(player);
+            CraftSessionService.CreditStationFees(player);
+        }
+
         AssignCommand(player, () => ClearAllActions());
         PlayerPlugin.StopGuiTimingBar(player);
     }
@@ -153,7 +161,9 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         if (!NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, taken))
             return false;
 
-        Craft.PayStationFee(player, recipe);
+        // The fee leaves the player now; the station's treasury is credited once a character file holds the payment.
+        CraftSessionService.QueueStationFee(player, Craft.TakeStationFee(player, recipe));
+        CraftSessionService.CreditStationFees(player);
 
         // The item made just before carries what the components pass on, as a manual craft's does (ship component traits).
         if (_lastCreated.TryGetValue(player, out var last))

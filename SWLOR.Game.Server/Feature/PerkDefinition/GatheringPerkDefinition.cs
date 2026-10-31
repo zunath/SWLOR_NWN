@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Prospector()
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.Prospector)
-                .Name("Prospector")
+                .Name("Asteroid Miner")
                 .Icon("ife_stars_minin")
 
                 .AddPerkLevel()

@@ -234,22 +234,38 @@ namespace SWLOR.Game.Server.Service
                 : StationDroidRules.DrillOutputPercent(state.DroidIndustry, state.DroidEfficiencyPercent);
         }
 
-        /// <summary>Takes the station's Shipyard fee from the player into its treasury. Returns false when they cannot pay.</summary>
-        public static bool PayShipyardFee(uint player, WorldProperty station)
+        /// <summary>
+        /// Takes the station's Shipyard fee from the player. The treasury is credited later (<see cref="CreditShipyardFee"/>), once the
+        /// character file holds the payment. Returns the fee taken: 0 when there is none or the player cannot pay.
+        /// </summary>
+        public static int TakeShipyardFee(uint player, WorldProperty station)
         {
             var fee = GetShipyardFee(station);
-            if (fee <= 0)
-                return true;
-            if (GetGold(player) < fee)
-                return false;
+            if (fee <= 0 || GetGold(player) < fee)
+                return 0;
 
             AssignCommand(player, () => TakeGoldFromCreature(fee, player, true));
-            var dbStation = DB.Get<WorldProperty>(station.Id);
+            SendMessageToPC(player, $"Paid the {station.CustomName} Shipyard fee of {fee} credits.");
+            return fee;
+        }
+
+        /// <summary>
+        /// Credits a Shipyard fee to the station's treasury once: the fee's id is recorded in the same save as the credit, so a second
+        /// call (a retry after a crash) does nothing. A station that no longer exists takes nothing.
+        /// </summary>
+        public static void CreditShipyardFee(string propertyId, string feeId, int fee, string payer)
+        {
+            var dbStation = DB.Get<WorldProperty>(propertyId);
+            if (dbStation == null || fee <= 0)
+                return;
+
+            dbStation.PaidCraftFees ??= new HashSet<string>();
+            if (!dbStation.PaidCraftFees.Add(feeId))
+                return;
+
             dbStation.Treasury += fee;
             DB.Set(dbStation);
-            SendMessageToPC(player, $"Paid the {dbStation.CustomName} Shipyard fee of {fee} credits.");
-            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} paid a Shipyard fee of {fee} credits to station '{dbStation.CustomName}' ({dbStation.Id}).");
-            return true;
+            Log.Write(LogGroup.Property, $"{payer} paid a Shipyard fee of {fee} credits to station '{dbStation.CustomName}' ({dbStation.Id}).");
         }
 
         // The Asteroid Drill

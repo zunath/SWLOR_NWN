@@ -123,6 +123,12 @@ namespace SWLOR.Game.Server.Entity
         public long Treasury { get; set; }
 
         /// <summary>
+        /// The ids of craft station fees already credited to <see cref="Treasury"/> (<see cref="PendingStationFee.Id"/>), saved with the credit, so
+        /// a retry after a crash never credits a fee twice. Records saved before this existed hold null, which means none.
+        /// </summary>
+        public HashSet<string> PaidCraftFees { get; set; }
+
+        /// <summary>
         /// Tracks the amount of credits required to pay off the upkeep for this property.
         /// Only applicable to City property types.
         /// </summary>

@@ -117,6 +117,163 @@ public class ShipCraftSessionTests
 
         _world.Gold.Should().Be(1500, "the fee pays for the Shipyard's time, as before the crafting revamp");
         _world.StationFeesPaid.Should().Equal(ShipyardFee);
+        _world.Treasury.Should().Be(ShipyardFee, "the station is credited when the craft ends");
+        _player.PendingStationFees.Should().BeEmpty();
+    }
+
+    // ---- Shipyard fee: the treasury is credited once, when the craft ends ------------------------------------------------
+
+    private CraftSession StartWithFee(CraftSessionLifecycle lifecycle)
+    {
+        _world.StationFee = ShipyardFee;
+        _world.Gold = 2000;
+        _world.ExportNow();
+        return Start(lifecycle);
+    }
+
+    private static Player Copy(Player player) => JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))!;
+
+    [Test]
+    public void Start_TakesTheFeeFromThePlayer_ButLeavesTheTreasuryAlone()
+    {
+        StartWithFee(Lifecycle());
+
+        _world.Gold.Should().Be(1500);
+        _world.Treasury.Should().Be(0, "the start's payment is not in a character file yet");
+        _player.ActiveCraftSession.StationFee.Should().Be(ShipyardFee);
+        _player.ActiveCraftSession.StationFeePropertyId.Should().Be(FakeCraftSessionWorld.StationId);
+    }
+
+    [Test]
+    public void Success_CreditsTheTreasuryOnce()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartWithFee(lifecycle);
+
+        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100), CraftSessionTestPace.Actions);
+
+        _world.Treasury.Should().Be(ShipyardFee);
+        _world.CreditedFees.Should().Equal(session.SessionId);
+        _player.PendingStationFees.Should().BeEmpty();
+        _world.Gold.Should().Be(1500);
+    }
+
+    [TestCase(CraftSessionEndReason.Broken)]
+    [TestCase(CraftSessionEndReason.WindowClosed)]
+    public void FailureAndClose_CreditTheTreasuryOnce_WithNoRefund(CraftSessionEndReason reason)
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartWithFee(lifecycle);
+
+        lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, reason, CraftSessionTestPace.Actions);
+        lifecycle.SettleLeftover(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
+
+        _world.Treasury.Should().Be(ShipyardFee);
+        _world.CreditRequests.Should().Be(1);
+        _world.Gold.Should().Be(1500);
+    }
+
+    [Test]
+    public void SettleLeftover_AfterALogout_CreditsTheTreasuryOnce()
+    {
+        StartWithFee(Lifecycle());
+
+        var lifecycle = Lifecycle(100, 100);
+        lifecycle.SettleLeftover(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
+        lifecycle.SettleLeftover(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
+
+        _player.ActiveCraftSession.Should().BeNull();
+        _world.Treasury.Should().Be(ShipyardFee);
+        _world.CreditRequests.Should().Be(1);
+    }
+
+    [Test]
+    public void ACrashBeforeTheStartsExport_RollsBackTheGoldAndTheFeeTogether()
+    {
+        StartWithFee(Lifecycle());
+        var saved = Copy(_player);
+        _world.CrashAndReload();
+
+        Lifecycle(100, 100).RecoverAtLogin(FakeCraftSessionWorld.PlayerHandle, saved, CraftSessionEndReason.Interrupted);
+
+        _world.Gold.Should().Be(2000, "the file still holds the credits");
+        saved.ActiveCraftSession.Should().BeNull();
+        saved.PendingStationFees.Should().BeNullOrEmpty();
+        _world.Treasury.Should().Be(0, "no credit is duplicated");
+        _world.CreditRequests.Should().Be(0);
+    }
+
+    [Test]
+    public void ARestartAfterTheStartsExport_SettlesTheCraftAndCreditsTheFeeOnce()
+    {
+        StartWithFee(Lifecycle());
+        _world.RunQueuedExport();
+        var saved = Copy(_player);
+        _world.CrashAndReload();
+
+        var lifecycle = Lifecycle(100, 100);
+        lifecycle.RecoverAtLogin(FakeCraftSessionWorld.PlayerHandle, saved, CraftSessionEndReason.Interrupted);
+        lifecycle.RecoverAtLogin(FakeCraftSessionWorld.PlayerHandle, saved, CraftSessionEndReason.Interrupted);
+
+        _world.Gold.Should().Be(1500, "the file holds the payment");
+        saved.ActiveCraftSession.Should().BeNull();
+        saved.PendingStationFees.Should().BeEmpty();
+        _world.Treasury.Should().Be(ShipyardFee);
+        _world.CreditRequests.Should().Be(1);
+    }
+
+    [Test]
+    public void AStopBetweenTheTreasuryCreditAndThePlayersSave_IsNotCreditedAgainAtLogin()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartWithFee(lifecycle);
+        _world.StopAfterTreasuryCredit = true;
+
+        var stop = () => lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100), CraftSessionTestPace.Actions);
+
+        stop.Should().Throw<ServerStoppedException>();
+        var saved = Copy(_player);
+        saved.PendingStationFees.Should().ContainSingle("the player's save that forgets the fee never ran");
+        _world.CrashAndReload();
+
+        Lifecycle().RecoverAtLogin(FakeCraftSessionWorld.PlayerHandle, saved, CraftSessionEndReason.Interrupted);
+
+        saved.PendingStationFees.Should().BeEmpty();
+        _world.CreditRequests.Should().Be(2, "the login asked again");
+        _world.Treasury.Should().Be(ShipyardFee, "the station's ledger already held the fee");
+    }
+
+    [Test]
+    public void AQuickCraftFee_IsCreditedOnlyOnceTheFileHoldsIt_AndExactlyOnce()
+    {
+        var lifecycle = Lifecycle();
+        _world.ExportNow();
+
+        lifecycle.QueueStationFee(FakeCraftSessionWorld.PlayerHandle, _player, new StationFeeCharge(FakeCraftSessionWorld.StationId, ShipyardFee));
+        lifecycle.CreditStationFees(FakeCraftSessionWorld.PlayerHandle, _player).Should().BeFalse("the payment is not in a file yet");
+        _world.Treasury.Should().Be(0);
+
+        _world.RunQueuedExport();
+        lifecycle.CreditStationFees(FakeCraftSessionWorld.PlayerHandle, _player).Should().BeTrue();
+        lifecycle.CreditStationFees(FakeCraftSessionWorld.PlayerHandle, _player).Should().BeFalse();
+
+        _world.Treasury.Should().Be(ShipyardFee);
+        _world.CreditRequests.Should().Be(1);
+    }
+
+    [Test]
+    public void AQuickCraftFeeTheFilePredates_IsDroppedAtLogin()
+    {
+        var lifecycle = Lifecycle();
+        _world.ExportNow();
+        lifecycle.QueueStationFee(FakeCraftSessionWorld.PlayerHandle, _player, new StationFeeCharge(FakeCraftSessionWorld.StationId, ShipyardFee));
+        var saved = Copy(_player);
+        _world.CrashAndReload();
+
+        Lifecycle().RecoverAtLogin(FakeCraftSessionWorld.PlayerHandle, saved, CraftSessionEndReason.Interrupted);
+
+        saved.PendingStationFees.Should().BeEmpty();
+        _world.Treasury.Should().Be(0);
     }
 
     // ---- Component traits ------------------------------------------------------------------------------------------------
@@ -304,7 +461,9 @@ public class ShipCraftSessionTests
         var consume = Section(source, "public bool TryConsumeComponents(uint player, RecipeType recipeType, RecipeDetail recipe)", "public void RemoveCreatedItem");
 
         consume.IndexOf("TryTakeComponents(player, recipe, taken)", StringComparison.Ordinal)
-            .Should().BeLessThan(consume.IndexOf("Craft.PayStationFee(player, recipe)", StringComparison.Ordinal));
+            .Should().BeLessThan(consume.IndexOf("CraftSessionService.QueueStationFee(player, Craft.TakeStationFee(player, recipe))", StringComparison.Ordinal));
+        Section(source, "public void EndBatch", "public void PlayItemAnimation").Should().Contain("FlushCharacter(player)")
+            .And.Contain("CraftSessionService.CreditStationFees(player)");
         consume.Should().Contain("ApplyComponentTraits(item, recipeType, recipe, taken)");
         Section(source, "public bool HasComponents", "private readonly Dictionary").Should().Contain("Craft.GetStationFee(player, recipe)");
         ReadServer("Service", "CraftService", "Minigame", "QuickCraftService.cs")
@@ -324,7 +483,8 @@ public class ShipCraftSessionTests
         var craft = ReadServer("Service", "Craft.cs");
         craft.Should().Contain("recipe.Requirements.OfType<RecipeShipyardRequirement>().Any()");
         craft.Should().Contain("StationBuildings.GetShipyardSpeedPercent(player)");
-        craft.Should().Contain("StationBuildings.PayShipyardFee(player, StationBuildings.GetShipyardStation(player))");
+        craft.Should().Contain("StationBuildings.TakeShipyardFee(player, station)");
+        ReadServer("Service", "StationBuildings.cs").Should().Contain("if (!dbStation.PaidCraftFees.Add(feeId))");
     }
 
     [Test]

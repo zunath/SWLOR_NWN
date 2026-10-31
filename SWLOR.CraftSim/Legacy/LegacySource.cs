@@ -102,17 +102,17 @@ namespace SWLOR.CraftSim.Legacy
         // The scavenge rules live in Quick Search now, which plays today's search at the parity reference (Perception modifier 0). The
         // legacy model still takes the modifier as a parameter, so the old baseline stays reproducible; the rules it ports are checked here.
         public static readonly SourceReference ScavengeChance = new(
-            "Scavenge chances at the reference Perception modifier", Scavenge, 38, 49,
+            "Scavenge chances at the reference Perception modifier", Scavenge, 23, 34,
             "public const int ReferencePerceptionModifier = 0;", "public const int BaseDc = 6;",
             "Math.Clamp(hardLookLevel * 10 + ReferencePerceptionModifier * 5, 0, 100);",
             "Math.Clamp(21 - (dc - ReferencePerceptionModifier), 0, 20) / 20.0;");
 
         public static readonly SourceReference ScavengeAttempts = new(
-            "Scavenge second attempt", Scavenge, 97, 99,
+            "Scavenge second attempt", Scavenge, 82, 84,
             "var attempts = 1;", "random.D100() <= SecondAttemptChance(hardLookLevel)", "attempts++;");
 
         public static readonly SourceReference ScavengeRoll = new(
-            "Scavenge success roll and DC", Scavenge, 101, 108,
+            "Scavenge success roll and DC", Scavenge, 86, 93,
             "var dc = BaseDc;", "var roll = random.Next(1, 21);", "var success = roll + ReferencePerceptionModifier >= dc;",
             "success ? deltaXp : deltaXp / 4", "dc += random.Next(1, 4);");
 

@@ -26,19 +26,18 @@ namespace SWLOR.Game.Server.Service
             play.ProfitableWins = 0;
         }
 
-        public static string GetFailure(CasinoDailyPlay play, DateTime utcNow)
+        public static bool IsCoolingDown(CasinoDailyPlay play, DateTime utcNow)
         {
             ResetIfNeeded(play, utcNow);
-            return utcNow < play.NextSpinUtc ? "Please wait three seconds between spins." : string.Empty;
+            return utcNow < play.NextSpinUtc;
         }
 
         public static void RecordSpin(CasinoDailyPlay play, DateTime utcNow, int payout)
         {
             if (payout < 0 || payout > CasinoSlot.MaximumPayout)
                 throw new ArgumentOutOfRangeException(nameof(payout));
-            var failure = GetFailure(play, utcNow);
-            if (!string.IsNullOrEmpty(failure))
-                throw new InvalidOperationException(failure);
+            if (IsCoolingDown(play, utcNow))
+                throw new InvalidOperationException("Spin cooldown is active.");
             play.Spins++;
             if (payout > CasinoSlot.SpinCost)
                 play.ProfitableWins++;

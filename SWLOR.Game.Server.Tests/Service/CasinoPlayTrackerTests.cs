@@ -16,7 +16,7 @@ public class CasinoPlayTrackerTests
         for (var i = 0; i < 1000; i++)
             CasinoPlayTracker.RecordSpin(play, Start.AddSeconds(i * 3), 0);
 
-        Assert.That(CasinoPlayTracker.GetFailure(play, Start.AddSeconds(3000)), Is.Empty);
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, Start.AddSeconds(3000)), Is.False);
         Assert.That(play.Spins, Is.EqualTo(1000));
         Assert.That(play.ProfitableWins, Is.Zero);
     }
@@ -31,7 +31,7 @@ public class CasinoPlayTrackerTests
 
         Assert.That(play.Spins, Is.EqualTo(1000));
         Assert.That(play.ProfitableWins, Is.EqualTo(1000));
-        Assert.That(CasinoPlayTracker.GetFailure(play, Start.AddSeconds(3000)), Is.Empty);
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, Start.AddSeconds(3000)), Is.False);
     }
 
     [Test]
@@ -42,7 +42,7 @@ public class CasinoPlayTrackerTests
             CasinoPlayTracker.RecordSpin(play, Start.AddSeconds(i * 3), CasinoSlot.SpinCost);
         Assert.That(play.Spins, Is.EqualTo(20));
         Assert.That(play.ProfitableWins, Is.Zero);
-        Assert.That(CasinoPlayTracker.GetFailure(play, Start.AddSeconds(60)), Is.Empty);
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, Start.AddSeconds(60)), Is.False);
     }
 
     [Test]
@@ -50,7 +50,7 @@ public class CasinoPlayTrackerTests
     {
         var play = new CasinoDailyPlay();
         CasinoPlayTracker.RecordSpin(play, Start, 500);
-        Assert.That(CasinoPlayTracker.GetFailure(play, Start.AddSeconds(2)), Does.Contain("three seconds"));
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, Start.AddSeconds(2)), Is.True);
         Assert.Throws<InvalidOperationException>(() => CasinoPlayTracker.RecordSpin(play, Start.AddSeconds(2), 1000));
         Assert.That(play.Spins, Is.EqualTo(1));
         Assert.That(play.ProfitableWins, Is.EqualTo(1));
@@ -65,11 +65,11 @@ public class CasinoPlayTrackerTests
         var play = new CasinoDailyPlay();
         CasinoPlayTracker.RecordSpin(play, beforeReset, 10000);
         play.Spins = 20;
-        Assert.That(CasinoPlayTracker.GetFailure(play, beforeReset), Does.Contain("three seconds"));
-        Assert.That(CasinoPlayTracker.GetFailure(play, beforeReset.AddSeconds(1)), Does.Contain("three seconds"));
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, beforeReset), Is.True);
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, beforeReset.AddSeconds(1)), Is.True);
         Assert.That(play.Spins, Is.Zero);
         Assert.That(play.ProfitableWins, Is.Zero);
-        Assert.That(CasinoPlayTracker.GetFailure(play, beforeReset.AddSeconds(3)), Is.Empty);
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, beforeReset.AddSeconds(3)), Is.False);
     }
 
     [Test]
@@ -96,9 +96,9 @@ public class CasinoPlayTrackerTests
             Assert.That(play.Id, Is.EqualTo(CasinoPlayTracker.GetAccountId("test-account")));
             Assert.That(play.Spins, Is.EqualTo(cycle + 1));
             Assert.That(play.ProfitableWins, Is.EqualTo(cycle + 1));
-            Assert.That(CasinoPlayTracker.GetFailure(play, Start.AddSeconds(cycle * 3 + 1)), Is.Not.Empty);
+            Assert.That(CasinoPlayTracker.IsCoolingDown(play, Start.AddSeconds(cycle * 3 + 1)), Is.True);
         }
-        Assert.That(CasinoPlayTracker.GetFailure(play, Start.AddMinutes(5)), Is.Empty);
+        Assert.That(CasinoPlayTracker.IsCoolingDown(play, Start.AddMinutes(5)), Is.False);
         Assert.That(CasinoPlayTracker.GetAccountId("different-account"), Is.Not.EqualTo(play.Id));
         Assert.That(accountId, Is.Not.EqualTo("test-account"));
     }

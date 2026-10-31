@@ -53,20 +53,8 @@ namespace SWLOR.Game.Server.Service
             return DB.Get<CasinoDailyPlay>(id) ?? new CasinoDailyPlay { Id = id };
         }
 
-        public static string GetPlayStatus(uint player, out bool canPlay)
-        {
-            var play = GetDailyPlay(player);
-            if (play == null)
-            {
-                canPlay = false;
-                return "Your casino account could not be loaded. Please try again later.";
-            }
-            canPlay = true;
-            return "Unlimited spins. Wins do not end your session.\n" +
-                   "Each spin is independent and costs 100 credits.\n" +
-                   "Average return: 89%. House edge: 11%.\n" +
-                   "Please wait three seconds between spins.";
-        }
+        public static DateTime GetNextSpinUtc(uint player) =>
+            GetDailyPlay(player)?.NextSpinUtc ?? DateTime.MinValue;
 
         public static CasinoSpinResult Spin(uint player, uint machine)
         {
@@ -77,9 +65,8 @@ namespace SWLOR.Game.Server.Service
             var play = GetDailyPlay(player);
             if (play == null)
                 return new CasinoSpinResult(false, 0, "Your casino account could not be loaded. No credits were taken.");
-            var failure = CasinoPlayTracker.GetFailure(play, now);
-            if (!string.IsNullOrEmpty(failure))
-                return new CasinoSpinResult(false, 0, failure);
+            if (CasinoPlayTracker.IsCoolingDown(play, now))
+                return new CasinoSpinResult(false, 0, string.Empty);
             if (GetGold(player) < SpinCost)
                 return new CasinoSpinResult(false, 0, "You need 100 credits to spin.");
 
@@ -101,13 +88,12 @@ namespace SWLOR.Game.Server.Service
 
             var result = payout switch
             {
-                0 => "[HUTT | STAR | CREDIT] No win this time.",
-                100 => "[STAR | STAR | HUTT] 100 credits returned. You broke even!",
-                500 => "[STAR | STAR | STAR] You won 500 credits!",
-                1000 => "[HUTT | HUTT | HUTT] You won 1,000 credits!",
-                _ => "[CREDIT | CREDIT | CREDIT] JACKPOT! You won 10,000 credits!"
+                0 => "0 credits",
+                100 => "100 credits",
+                500 => "500 credits",
+                1000 => "1,000 credits",
+                _ => "10,000 credits"
             };
-            SendMessageToPC(player, result);
             AssignCommand(player, () => PlaySound("gui_prompt"));
             if (payout == MaximumPayout)
                 AssignCommand(machine, () => SpeakString("Jackpot! This machine has paid out 10,000 credits!"));

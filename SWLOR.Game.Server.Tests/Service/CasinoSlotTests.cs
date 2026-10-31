@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class CasinoSlotTests
 {
     [Test]
-    public void PayoutsHaveTheAdvertisedOddsAndReturn()
+    public void PayoutsRetainTheHouseEdge()
     {
         var payouts = Enumerable.Range(0, 10000).Select(CasinoSlot.GetPayout).ToArray();
         using (Assert.EnterMultipleScope())

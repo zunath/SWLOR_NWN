@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CasinoSlot)
-                .SetInitialGeometry(80f, 25f, 620f, 660f)
+                .SetInitialGeometry(80f, 25f, 620f, 430f)
                 .SetTitle("Smuggler's Moon Casino")
                 .SetIsResizable(true)
                 .SetIsCollapsible(false)
@@ -44,23 +44,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         reels.AddSpacer();
                     });
                     content.AddRow(r => r.AddText().BindText(m => m.ResultText).SetShowBorder(false).SetHeight(48f));
-                    content.AddRow(details =>
-                    {
-                        details.AddImage().BindResref(m => m.HostImage).SetAspect(NuiAspect.Fit).SetWidth(160f).SetHeight(160f);
-                        details.AddText().BindText(m => m.PlayText).SetShowBorder(false).SetWidth(376f).SetHeight(160f);
-                    });
-                    content.AddRow(buttons =>
-                    {
-                        buttons.AddButton().SetText("SPIN - 100 CREDITS").BindIsEnabled(m => m.CanSpin)
-                            .BindOnClicked(m => m.OnClickSpin()).SetHeight(36f).SetWidth(260f);
-                        buttons.AddButton().SetText("Refresh").BindOnClicked(m => m.OnClickRefresh()).SetHeight(36f);
-                        buttons.AddButton().SetText("Leave").BindOnClicked(m => m.OnClickLeave()).SetHeight(36f);
-                    });
-                    content.AddRow(r => r.AddText().SetText(
-                        "Payout odds: 70%: 0 | 20%: 100 | 8%: 500 | 1.9%: 1,000 | 0.1%: 10,000\n" +
-                        "Payouts include your stake. Average return: 89%. Three seconds between spins.\n" +
-                        "Big wins of 1,000 credits or more earn a Hutt celebration!")
-                        .SetShowBorder(false).SetHeight(74f));
+                    content.AddRow(r => r.AddButton().SetText("SPIN - 100 CREDITS")
+                        .BindIsEnabled(m => m.CanSpin).BindOnClicked(m => m.OnClickSpin()).SetHeight(36f));
                 });
             }).SetWidth(560f)));
         }

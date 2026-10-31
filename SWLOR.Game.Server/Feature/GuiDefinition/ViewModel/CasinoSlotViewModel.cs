@@ -12,15 +12,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _machine;
         private int _animationVersion;
         private bool _isAnimating;
+        private DateTime _cooldownRefreshUtc;
 
         public string LeftReel { get => Get<string>(); set => Set(value); }
         public string MiddleReel { get => Get<string>(); set => Set(value); }
         public string RightReel { get => Get<string>(); set => Set(value); }
-        public string HostImage { get => Get<string>(); set => Set(value); }
         public string Headline { get => Get<string>(); set => Set(value); }
         public string ResultText { get => Get<string>(); set => Set(value); }
         public string CreditsText { get => Get<string>(); set => Set(value); }
-        public string PlayText { get => Get<string>(); set => Set(value); }
         public bool CanSpin { get => Get<bool>(); set => Set(value); }
         public GuiColor ResultColor { get => Get<GuiColor>(); set => Set(value); }
 
@@ -29,12 +28,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _machine = initialPayload?.Machine ?? OBJECT_INVALID;
             _animationVersion++;
             _isAnimating = false;
+            _cooldownRefreshUtc = DateTime.MinValue;
             LeftReel = CasinoSlotPresentation.HuttImage;
             MiddleReel = CasinoSlotPresentation.StarImage;
             RightReel = CasinoSlotPresentation.CreditImage;
-            HostImage = CasinoSlotPresentation.HuttImage;
             Headline = "SMUGGLER'S MOON SLOTS";
-            ResultText = "Your Hutt host is feeling generous. Spin for 100 credits.";
+            ResultText = string.Empty;
             ResultColor = new GuiColor(245, 200, 75);
             RefreshStatus();
             ChangePartialView(BodyElement, BodyPartial);
@@ -42,13 +41,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshStatus()
         {
-            PlayText = CasinoSlot.GetPlayStatus(Player, out var canPlay);
             CreditsText = $"CREDITS: {GetGold(Player):N0}     STAKE: 100     MAX PAYOUT: 10,000";
-            CanSpin = canPlay && !_isAnimating && GetIsObjectValid(_machine);
+            var nextSpinUtc = CasinoSlot.GetNextSpinUtc(Player);
+            var now = DateTime.UtcNow;
+            var coolingDown = now < nextSpinUtc;
+            CanSpin = !coolingDown && !_isAnimating && GetIsObjectValid(_machine);
+            if (coolingDown && _cooldownRefreshUtc != nextSpinUtc)
+            {
+                _cooldownRefreshUtc = nextSpinUtc;
+                var version = _animationVersion;
+                DelayCommand((float)(nextSpinUtc - now).TotalSeconds + 0.1f, () =>
+                {
+                    if (!IsCurrentAnimation(version)) return;
+                    _cooldownRefreshUtc = DateTime.MinValue;
+                    RefreshStatus();
+                });
+            }
         }
-
-        public Action OnClickRefresh() => () => RefreshStatus();
-        public Action OnClickLeave() => () => Gui.CloseWindow(Player, GuiWindowType.CasinoSlot, Player);
 
         public Action OnClickSpin() => () =>
         {
@@ -57,8 +66,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var result = CasinoSlot.Spin(Player, _machine);
             if (!result.Succeeded)
             {
-                ResultText = result.Message;
-                ResultColor = new GuiColor(255, 160, 100);
+                if (!string.IsNullOrEmpty(result.Message))
+                {
+                    ResultText = result.Message;
+                    ResultColor = new GuiColor(255, 160, 100);
+                }
                 RefreshStatus();
                 return;
             }
@@ -66,8 +78,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isAnimating = true;
             var version = ++_animationVersion;
             Headline = "SPINNING...";
-            ResultText = "The reels are turning...";
-            HostImage = CasinoSlotPresentation.HuttImage;
+            ResultText = string.Empty;
             ResultColor = new GuiColor(245, 200, 75);
             RefreshStatus();
             AnimateReels(result, version, 0);
@@ -99,23 +110,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isAnimating = false;
             RefreshStatus();
             if (CasinoSlotPresentation.IsBigWin(result.Payout))
-                AnimateCelebration(version, 0);
+                AnimateCelebration(version, result.Payout, 0);
         }
 
-        private void AnimateCelebration(int version, int frame)
+        private void AnimateCelebration(int version, int payout, int frame)
         {
             if (!IsCurrentAnimation(version))
                 return;
-            HostImage = frame % 2 == 0 || frame == 8
-                ? CasinoSlotPresentation.BigWinImage : CasinoSlotPresentation.HuttImage;
+            MiddleReel = frame < 8 && frame % 2 == 0
+                ? CasinoSlotPresentation.BigWinImage : CasinoSlotPresentation.GetReels(payout)[1];
             if (frame < 8)
-                DelayCommand(0.25f, () => AnimateCelebration(version, frame + 1));
+                DelayCommand(0.25f, () => AnimateCelebration(version, payout, frame + 1));
         }
 
         public override Action OnWindowClosed() => () =>
         {
             _animationVersion++;
             _isAnimating = false;
+            _cooldownRefreshUtc = DateTime.MinValue;
         };
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.PropertyService
@@ -9,7 +8,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
     /// A ship's safe dock is the last regular starport it docked at (LastNPCDockPosition and LastNPCSpacePosition).
     /// On restart, a ship docked in a ship-only location, at a player starport that no longer exists,
     /// or with no dock at all returns to the regular starport of the planet it is at, so a restart never moves a ship
-    /// (or what it carries) to another system. Its safe dock is used when that dock is on the same planet, or when the
+    /// (or what it carries) to another system. Its safe dock is used when that dock is in the same system, or when the
     /// planet the ship is at cannot be resolved.
     /// </summary>
     public static class StarshipDockReturn
@@ -50,15 +49,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 return false;
             }
 
-            return TrySetPlanetSafeDock(positions, safeDock.AreaResref, getPlanetStarport);
+            return TrySetSafeDock(positions, AreaStarport(safeDock.AreaResref, getPlanetStarport));
         }
 
         /// <summary>
         /// Returns a starship to the regular starport of the planet it is at if its current dock cannot be relied on
         /// after a restart. The planet comes from its ship-only location, the caller's fallback area, or the orbit it
-        /// docked from, in that order. Its safe dock is kept when it is on that planet (or the planet is unknown), so a
-        /// restart never carries a ship to another system. Ships docked at a regular starport or an existing player
-        /// starport are left untouched.
+        /// docked from, in that order. Its safe dock is kept when it is in the same system (its starport shares the
+        /// planet's landing or orbit area) or the planet is unknown, so a restart never carries a ship to another
+        /// system. Ships docked at a regular starport or an existing player starport are left untouched.
         /// </summary>
         /// <param name="positions">The starship property's positions. Updated in place.</param>
         /// <param name="isShipOnlyArea">Whether the area with the given resref is a ship-only location.</param>
@@ -72,13 +71,19 @@ namespace SWLOR.Game.Server.Service.PropertyService
         /// An area whose planet's starport receives a ship that must return, has no usable safe dock and is not in a
         /// ship-only location, such as the city area of a player starport being retrieved.
         /// </param>
+        /// <param name="getOrbitStarport">
+        /// The landing and orbit of the starport serving the planet a saved orbit belongs to, or null if there is none.
+        /// One orbit area can hold several planets' orbits, so this resolves the orbit's position, not just its area.
+        /// When omitted, the orbit's area is resolved with getPlanetStarport.
+        /// </param>
         /// <returns>What happened to the ship's dock.</returns>
         public static StarshipDockReturnResult ReturnToSafeDock(
             Dictionary<PropertyLocationType, PropertyLocation> positions,
             Func<string, bool> isShipOnlyArea,
             Func<string, bool> starportExists,
             Func<string, (PropertyLocation Landing, PropertyLocation Orbit)?> getPlanetStarport,
-            string fallbackAreaResref = "")
+            string fallbackAreaResref = "",
+            Func<PropertyLocation, (PropertyLocation Landing, PropertyLocation Orbit)?> getOrbitStarport = null)
         {
             StarshipDockReturnResult result;
             var shipOnlyAreaResref = string.Empty;
@@ -104,26 +109,25 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 return StarshipDockReturnResult.Unchanged;
             }
 
-            // The planet the ship is at: its ship-only location, the caller's fallback area (a retrieved starport's
-            // city), or the orbit it docked from.
-            var hereAreaResref = new[]
-                {
-                    shipOnlyAreaResref,
-                    fallbackAreaResref,
-                    positions.TryGetValue(PropertyLocationType.SpacePosition, out var orbit) ? orbit?.AreaResref : null
-                }
-                .FirstOrDefault(areaResref => !string.IsNullOrWhiteSpace(areaResref) && IsKnownPlanet(areaResref, getPlanetStarport));
+            // The starport of the planet the ship is at: its ship-only location's, the caller's fallback area's
+            // (a retrieved starport's city), or that of the orbit it docked from.
+            getOrbitStarport ??= orbitLocation => getPlanetStarport(orbitLocation.AreaResref);
+            var hereStarport = AreaStarport(shipOnlyAreaResref, getPlanetStarport) ??
+                               AreaStarport(fallbackAreaResref, getPlanetStarport) ??
+                               (positions.TryGetValue(PropertyLocationType.SpacePosition, out var orbit) && IsAreaLocation(orbit)
+                                   ? ValidStarport(getOrbitStarport(orbit))
+                                   : null);
 
             var hasSafeDock = positions.TryGetValue(PropertyLocationType.LastNPCDockPosition, out var safeDock) &&
                               IsAreaLocation(safeDock) &&
                               !isShipOnlyArea(safeDock.AreaResref);
 
-            // A safe dock on another planet would carry the ship (and its cargo) to another system, so the ship goes
-            // to the starport of the planet it is at instead, which becomes its safe dock.
+            // A safe dock in another system would carry the ship (and its cargo) there, so the ship goes to the
+            // starport of the planet it is at instead, which becomes its safe dock.
             if (hasSafeDock &&
-                hereAreaResref != null &&
-                !IsSamePlanet(safeDock.AreaResref, hereAreaResref, getPlanetStarport) &&
-                TrySetPlanetSafeDock(positions, hereAreaResref, getPlanetStarport))
+                hereStarport != null &&
+                !IsSameSystem(AreaStarport(safeDock.AreaResref, getPlanetStarport), hereStarport.Value) &&
+                TrySetSafeDock(positions, hereStarport))
             {
                 positions[PropertyLocationType.DockPosition] = Copy(positions[PropertyLocationType.LastNPCDockPosition]);
                 positions[PropertyLocationType.SpacePosition] = Copy(positions[PropertyLocationType.LastNPCSpacePosition]);
@@ -157,8 +161,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
             // A ship without a usable safe dock goes to the starport of the planet it is at, which becomes its safe
             // dock from now on.
-            if (hereAreaResref != null &&
-                TrySetPlanetSafeDock(positions, hereAreaResref, getPlanetStarport))
+            if (TrySetSafeDock(positions, hereStarport))
             {
                 positions[PropertyLocationType.DockPosition] = Copy(positions[PropertyLocationType.LastNPCDockPosition]);
                 positions[PropertyLocationType.SpacePosition] = Copy(positions[PropertyLocationType.LastNPCSpacePosition]);
@@ -169,63 +172,85 @@ namespace SWLOR.Game.Server.Service.PropertyService
             return StarshipDockReturnResult.NoSafeDock;
         }
 
-        private static bool TrySetPlanetSafeDock(
-            Dictionary<PropertyLocationType, PropertyLocation> positions,
-            string areaResref,
-            Func<string, (PropertyLocation Landing, PropertyLocation Orbit)?> getPlanetStarport)
+        /// <summary>
+        /// The planet a saved orbit belongs to: of the planets whose orbit waypoint is in the orbit's area, the one
+        /// whose waypoint is nearest the orbit's position, since one orbit area can hold several planets' orbits.
+        /// </summary>
+        /// <param name="orbit">The orbit to look up, such as a ship's saved orbit.</param>
+        /// <param name="planetOrbits">Each planet and the location of its orbit waypoint.</param>
+        /// <returns>The planet, or PlanetType.Invalid if no planet's orbit is in that area.</returns>
+        public static PlanetType FindOrbitPlanet(PropertyLocation orbit, IEnumerable<(PlanetType Planet, PropertyLocation OrbitWaypoint)> planetOrbits)
         {
-            if (getPlanetStarport(areaResref) is not { } planetStarport ||
-                !IsAreaLocation(planetStarport.Landing) ||
-                !IsAreaLocation(planetStarport.Orbit))
+            if (!IsAreaLocation(orbit))
+                return PlanetType.Invalid;
+
+            var nearestPlanet = PlanetType.Invalid;
+            var nearestDistanceSquared = float.MaxValue;
+            foreach (var (planet, waypoint) in planetOrbits)
             {
-                return false;
+                if (!IsAreaLocation(waypoint) ||
+                    !string.Equals(waypoint.AreaResref, orbit.AreaResref, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var x = waypoint.X - orbit.X;
+                var y = waypoint.Y - orbit.Y;
+                var z = waypoint.Z - orbit.Z;
+                var distanceSquared = x * x + y * y + z * z;
+                if (distanceSquared < nearestDistanceSquared)
+                {
+                    nearestPlanet = planet;
+                    nearestDistanceSquared = distanceSquared;
+                }
             }
 
-            positions[PropertyLocationType.LastNPCDockPosition] = Copy(planetStarport.Landing);
-            positions[PropertyLocationType.LastNPCSpacePosition] = Copy(planetStarport.Orbit);
+            return nearestPlanet;
+        }
+
+        private static bool TrySetSafeDock(
+            Dictionary<PropertyLocationType, PropertyLocation> positions,
+            (PropertyLocation Landing, PropertyLocation Orbit)? starport)
+        {
+            if (ValidStarport(starport) is not { } validStarport)
+                return false;
+
+            positions[PropertyLocationType.LastNPCDockPosition] = Copy(validStarport.Landing);
+            positions[PropertyLocationType.LastNPCSpacePosition] = Copy(validStarport.Orbit);
             return true;
         }
 
-        /// <summary>
-        /// The planet whose orbit is the given area, or PlanetType.Invalid if it is no planet's orbit.
-        /// </summary>
-        /// <param name="areaResref">The area to look up, such as a ship's saved orbit.</param>
-        /// <param name="planetOrbits">Each planet and the resref of the area its orbit waypoint is in.</param>
-        public static PlanetType FindOrbitPlanet(string areaResref, IEnumerable<(PlanetType Planet, string OrbitAreaResref)> planetOrbits)
-        {
-            if (string.IsNullOrWhiteSpace(areaResref))
-                return PlanetType.Invalid;
-
-            foreach (var (planet, orbitAreaResref) in planetOrbits)
-            {
-                if (string.Equals(orbitAreaResref, areaResref, StringComparison.OrdinalIgnoreCase))
-                    return planet;
-            }
-
-            return PlanetType.Invalid;
-        }
-
-        private static bool IsKnownPlanet(
+        private static (PropertyLocation Landing, PropertyLocation Orbit)? AreaStarport(
             string areaResref,
             Func<string, (PropertyLocation Landing, PropertyLocation Orbit)?> getPlanetStarport)
         {
-            return getPlanetStarport(areaResref) is { } planetStarport &&
+            return string.IsNullOrWhiteSpace(areaResref)
+                ? null
+                : ValidStarport(getPlanetStarport(areaResref));
+        }
+
+        private static (PropertyLocation Landing, PropertyLocation Orbit)? ValidStarport(
+            (PropertyLocation Landing, PropertyLocation Orbit)? starport)
+        {
+            return starport is { } planetStarport &&
                    IsAreaLocation(planetStarport.Landing) &&
-                   IsAreaLocation(planetStarport.Orbit);
+                   IsAreaLocation(planetStarport.Orbit)
+                ? starport
+                : null;
         }
 
         /// <summary>
-        /// Whether two areas belong to the same planet, judged by the starport that serves each. An area whose planet
+        /// Whether a safe dock's starport is in the same system as the starport of the planet the ship is at: the
+        /// same landing, or an orbit in the same area, which the ship reaches without a jump. A safe dock whose planet
         /// cannot be resolved matches nothing.
         /// </summary>
-        private static bool IsSamePlanet(
-            string areaResref,
-            string otherAreaResref,
-            Func<string, (PropertyLocation Landing, PropertyLocation Orbit)?> getPlanetStarport)
+        private static bool IsSameSystem(
+            (PropertyLocation Landing, PropertyLocation Orbit)? safeDockStarport,
+            (PropertyLocation Landing, PropertyLocation Orbit) hereStarport)
         {
-            return getPlanetStarport(areaResref) is { } planetStarport &&
-                   getPlanetStarport(otherAreaResref) is { } otherPlanetStarport &&
-                   planetStarport.Landing?.AreaResref == otherPlanetStarport.Landing?.AreaResref;
+            return safeDockStarport is { } safeStarport &&
+                   (string.Equals(safeStarport.Landing.AreaResref, hereStarport.Landing.AreaResref, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(safeStarport.Orbit.AreaResref, hereStarport.Orbit.AreaResref, StringComparison.OrdinalIgnoreCase));
         }
 
         private static bool IsAreaLocation(PropertyLocation location)

@@ -799,5 +799,20 @@ namespace SWLOR.Game.Server.Service
             ClearEffects(player);
             Apply(area, _matches[area].Match.RemovePlayer(player), player);
         }
+
+        /// <summary>
+        /// Clears Huttball effects left on a player whose match is gone, such as after a server restart, when the
+        /// exit cleanup never ran.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ClearStaleEffects()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!GetIsObjectValid(FindMatchArea(player)))
+                ClearEffects(player);
+        }
     }
 }

@@ -961,6 +961,11 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 var next = new List<HuttballSquare>();
                 foreach (var square in frontier)
                 {
+                    // A safer but longer route may have replaced this square's route earlier in this pass. That
+                    // route is extended next pass, when its length matches the step, so no route outgrows the limit.
+                    if (routes[square].Count != step)
+                        continue;
+
                     var risk = bestRisk[square] + (IsThreatened(player, square) ? 1 : 0);
                     foreach (var direction in HuttballRules.BounceDirections)
                     {
@@ -1211,8 +1216,14 @@ namespace SWLOR.Game.Server.Service.HuttballService
             foreach (var other in _players.Where(p => p.Status == HuttballPlayerStatus.KnockedDown))
                 other.Status = HuttballPlayerStatus.Standing;
 
+            var half = Half;
             Phase = HuttballPhase.Setup;
             AdvanceTurn(result);
+
+            // The team scored on moves first next drive, even after an interception scores in its own turn.
+            if (Phase == HuttballPhase.Setup && Half == half && ActiveTeam == player.Team)
+                AdvanceTurn(result);
+
             if (Phase == HuttballPhase.Setup)
                 Say(result, "Teams, take your places in your own half for the next kick-off.");
             return true;

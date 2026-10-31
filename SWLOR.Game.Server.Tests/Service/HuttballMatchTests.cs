@@ -469,7 +469,7 @@ public class HuttballMatchTests
         match.GetPlayer(HomeBruiser).HasActed.Should().BeTrue();
         match.GetRerolls(HuttballTeam.Home).Should().Be(0);
         match.CanReroll(HuttballTeam.Home).Should().BeFalse("a re-rolled action stands");
-        match.Log.Should().Contain(line => line.Contains("Away") || line.Contains("P11"), "the replaced rolls stay on record");
+        match.Log.Should().Contain(line => line.Contains("10+5=15 vs 1."), "the replaced rolls stay on record");
     }
 
     [Test]
@@ -586,6 +586,59 @@ public class HuttballMatchTests
         match.GetPlayer(HomeCatcher).Square.Should().Be(new HuttballSquare(2, 3));
         match.GetPlayer(AwayCatcher).Square.Should().Be(new HuttballSquare(9, 7), "already in its own half");
         match.GetPlayer(AwayBlocker).Square.Should().Be(new HuttballSquare(9, 4));
+    }
+
+    [Test]
+    public void AnInterceptionTouchdownGivesTheNextDriveToTheTeamScoredOn()
+    {
+        var match = CreateMatch(10, 8);
+        Add(match, HomeThrower, HuttballTeam.Home, HuttballRole.Thrower, 1, 0);
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 0);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 3, 4);
+        Kickoff(match, 1, 0);
+
+        // Home passes the turn; Away runs onto the passing lane in its scoring row.
+        match.EndTeamTurn();
+        var move = match.Move(AwayCatcher, new HuttballSquare(3, 0));
+        move.Succeeded.Should().BeTrue(move.Error);
+        match.EndTeamTurn();
+
+        // Home's turn 2: throw 12+5=17, the interceptor rolls 16+2=18 and scores where it stands.
+        _dice.Queue(12, 16);
+        var result = match.Pass(HomeThrower, HomeCatcher);
+
+        result.Scorer.Creature.Should().Be(AwayCatcher);
+        match.Phase.Should().Be(HuttballPhase.Setup);
+        match.ActiveTeam.Should().Be(HuttballTeam.Home);
+    }
+
+    [Test]
+    public void RoutesNeverOutrunTheMovementLeft()
+    {
+        // Threatened squares make safer, longer routes replace shorter ones mid-search. Try a Catcher near the
+        // halfway line against a Blocker in every nearby square, and every destination.
+        for (var blockerX = 0; blockerX < 10; blockerX++)
+        {
+            for (var blockerY = 10; blockerY < 12; blockerY++)
+            {
+                var match = CreateMatch();
+                Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 9);
+                Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, blockerX, blockerY);
+                Kickoff(match, 0, 0);
+                var catcher = match.GetPlayer(HomeCatcher);
+
+                for (var y = 0; y < match.Length; y++)
+                {
+                    for (var x = 0; x < match.Width; x++)
+                    {
+                        var path = match.FindPath(catcher, new HuttballSquare(x, y));
+                        if (path != null)
+                            path.Count.Should().BeLessThanOrEqualTo(catcher.MovementLeft,
+                                $"the route to ({x}, {y}) past a Blocker at ({blockerX}, {blockerY})");
+                    }
+                }
+            }
+        }
     }
 
     [Test]

@@ -3100,56 +3100,6 @@
     "ProjectPath": "design/animations/performance/PlayInstrument.swlanim"
   },
   {
-    "Name": "CantinaShuffle",
-    "AnimationName": "sw_dn_shufl",
-    "Duration": 4.8,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/CantinaShuffle.swlanim"
-  },
-  {
-    "Name": "LightFeet",
-    "AnimationName": "sw_dn_light",
-    "Duration": 4.8,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/LightFeet.swlanim"
-  },
-  {
-    "Name": "PowerStep",
-    "AnimationName": "sw_dn_power",
-    "Duration": 4.8,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/PowerStep.swlanim"
-  },
-  {
-    "Name": "Quickstep",
-    "AnimationName": "sw_dn_quick",
-    "Duration": 4.8,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/Quickstep.swlanim"
-  },
-  {
-    "Name": "VigorReel",
-    "AnimationName": "sw_dn_vigor",
-    "Duration": 4.8,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/VigorReel.swlanim"
-  },
-  {
     "Name": "DanceStepLeft",
     "AnimationName": "sw_dn_stepl",
     "Duration": 0.6,
@@ -3198,16 +3148,6 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/DanceDip.swlanim"
-  },
-  {
-    "Name": "StringsLoop",
-    "AnimationName": "sw_str_loop",
-    "Duration": 3.6,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/StringsLoop.swlanim"
   },
   {
     "Name": "StringsLow",
@@ -3260,16 +3200,6 @@
     "ProjectPath": "design/animations/performance/PerformanceBow.swlanim"
   },
   {
-    "Name": "HornLoop",
-    "AnimationName": "sw_hrn_loop",
-    "Duration": 4,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/performance/HornLoop.swlanim"
-  },
-  {
     "Name": "HornLow",
     "AnimationName": "sw_hrn_low",
     "Duration": 0.5,
@@ -3318,5 +3248,75 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/DanceSpin.swlanim"
+  },
+  {
+    "Name": "CantinaShuffle",
+    "AnimationName": "sw_dn_shufl",
+    "Duration": 6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/CantinaShuffle.swlanim"
+  },
+  {
+    "Name": "LightFeet",
+    "AnimationName": "sw_dn_light",
+    "Duration": 6.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/LightFeet.swlanim"
+  },
+  {
+    "Name": "PowerStep",
+    "AnimationName": "sw_dn_power",
+    "Duration": 8.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PowerStep.swlanim"
+  },
+  {
+    "Name": "Quickstep",
+    "AnimationName": "sw_dn_quick",
+    "Duration": 5.1666665,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/Quickstep.swlanim"
+  },
+  {
+    "Name": "VigorReel",
+    "AnimationName": "sw_dn_vigor",
+    "Duration": 6.733333,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VigorReel.swlanim"
+  },
+  {
+    "Name": "StringsLoop",
+    "AnimationName": "sw_str_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/StringsLoop.swlanim"
+  },
+  {
+    "Name": "HornLoop",
+    "AnimationName": "sw_hrn_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/HornLoop.swlanim"
   }
 ]

@@ -30,7 +30,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip BruiserStance = new("sw_bruisst", 1.79999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip BrutalBashTechnique = new("sw_brut_bash", 2.0999999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip CallBeast = new("sw_callbeast", 2.4000001f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip CantinaShuffle = new("sw_dn_shufl", 4.80000019f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip CantinaShuffle = new("sw_dn_shufl", 6f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip CapacitorSurgeTechnique = new("sw_capa_surg", 2.45000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ChargeOrder = new("sw_char_orde", 2.5999999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip CircleSlash = new("sw_circslash", 2.4000001f);
@@ -141,7 +141,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HookingStrike = new("sw_hook_stri", 1.75f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HornFlourish = new("sw_hrn_flour", 1.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HornHigh = new("sw_hrn_high", 0.5f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HornLoop = new("sw_hrn_loop", 4f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HornLoop = new("sw_hrn_loop", 5.19999981f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HornLow = new("sw_hrn_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HornMid = new("sw_hrn_mid", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip HungerOfTheDark = new("sw_hung_dark", 2.95000005f);
@@ -177,7 +177,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LastWord = new("sw_lastword", 1.64999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LeadShot = new("sw_blstslide", 1.04999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LegSweep = new("sw_legsweep", 2.04999995f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LightFeet = new("sw_dn_light", 4.80000019f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LightFeet = new("sw_dn_light", 6.80000019f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LineBreaker = new("sw_line_brea", 1.89999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LockstepCrushTechnique = new("sw_lockcrush", 2.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LowKick = new("sw_lowkick", 1f);
@@ -210,14 +210,14 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PointBlankBurst = new("sw_ptblkbst", 1.54999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PouncingStrikeTechnique = new("sw_poun_stri", 2.04999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PowerCell = new("sw_powercell", 1.75f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PowerStep = new("sw_dn_power", 4.80000019f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PowerStep = new("sw_dn_power", 8.19999981f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PredatoryBondStance = new("sw_predbond", 1.64999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PressTheAttack = new("sw_pres_atta", 2.29999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PressureLockTechnique = new("sw_pres_lock", 2.70000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Provoke = new("sw_provoke", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PurifyingWave = new("sw_puri_wave", 2.5999999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip QuickDraw = new("sw_quickdraw", 1.04999995f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Quickstep = new("sw_dn_quick", 4.80000019f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Quickstep = new("sw_dn_quick", 5.16666651f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RadiantLance = new("sw_radi_lanc", 2.25f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RailDart = new("sw_raildart", 1.12f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RainOfSteel = new("sw_rainsteel", 2f);
@@ -282,7 +282,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StimCanisterTechnique = new("sw_stim_cani", 2.8499999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StringsFlourish = new("sw_str_flour", 1.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StringsHigh = new("sw_str_high", 0.5f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StringsLoop = new("sw_str_loop", 3.5999999f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StringsLoop = new("sw_str_loop", 5.19999981f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StringsLow = new("sw_str_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StringsMid = new("sw_str_mid", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip SunderingSweep = new("sw_sund_swee", 2.1500001f);
@@ -315,7 +315,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Uppercut = new("sw_uppercut", 1.25f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VeiledStrike = new("sw_veil_stri", 1.79999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VenomSprayTechnique = new("sw_veno_spra", 2.6500001f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VigorReel = new("sw_dn_vigor", 4.80000019f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VigorReel = new("sw_dn_vigor", 6.73333311f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VigorStance = new("sw_vigorstn", 2.6500001f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VigorThrust = new("sw_vigo_thru", 2.0999999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ViralCascade = new("sw_vira_casc", 2.25f);

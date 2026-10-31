@@ -3,760 +3,10 @@
   "Workbook": "",
   "Sheet": "Animations",
   "Model": "a_ba",
-  "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "29601d7c1d3820205d820733ef78b43818cc74238fbb307ca30111c6f4194c9c",
-  "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
+  "ModelSha256": "d9d3cd811ad014c6682127f83c7bffc34bd25dce78719171b7aa2264fac4f61b",
+  "RecipeSha256": "79894497426a01a1e0965aa1077007e0f930b87d84a64472de2d2e0205cbc46f",
+  "Notes": "Authored clips retain their recipe timing. Imported SWG loops retain source timing, with shared boundary stances or holds. Installation and client verification are separate steps.",
   "Animations": [
-    {
-      "Id": "CantinaShuffle",
-      "Name": "Cantina Shuffle",
-      "BibleRow": 0,
-      "Reference": "",
-      "Observation": "Relaxed side-steps with a loose hand sway, the easy groove of a cantina floor.",
-      "Interpretation": "Four beats step left and close, four beats step right and close. The weight rolls over the leading foot, the shoulders counter-turn a few degrees and both hands drift with the sway. The clip starts and ends in the dance stance so it loops without a seam.",
-      "Activity": "Performing",
-      "Status": "Draft: visual review required",
-      "Project": "CantinaShuffle.swlanim",
-      "Duration": 4.8,
-      "Keyframes": 97,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.8115454E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Step left"
-        },
-        {
-          "Time": 0.15,
-          "Label": "Step left"
-        },
-        {
-          "Time": 0.3,
-          "Label": "Step left"
-        },
-        {
-          "Time": 0.45,
-          "Label": "Step left"
-        },
-        {
-          "Time": 0.6,
-          "Label": "Close"
-        },
-        {
-          "Time": 0.75,
-          "Label": "Close"
-        },
-        {
-          "Time": 0.9,
-          "Label": "Close"
-        },
-        {
-          "Time": 1.05,
-          "Label": "Close"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Step back"
-        },
-        {
-          "Time": 1.35,
-          "Label": "Step back"
-        },
-        {
-          "Time": 1.5,
-          "Label": "Step back"
-        },
-        {
-          "Time": 1.65,
-          "Label": "Step back"
-        },
-        {
-          "Time": 1.8,
-          "Label": "Close"
-        },
-        {
-          "Time": 1.95,
-          "Label": "Close"
-        },
-        {
-          "Time": 2.1,
-          "Label": "Close"
-        },
-        {
-          "Time": 2.25,
-          "Label": "Close"
-        },
-        {
-          "Time": 2.4,
-          "Label": "Step right"
-        },
-        {
-          "Time": 2.55,
-          "Label": "Step right"
-        },
-        {
-          "Time": 2.7,
-          "Label": "Step right"
-        },
-        {
-          "Time": 2.85,
-          "Label": "Step right"
-        },
-        {
-          "Time": 3,
-          "Label": "Close"
-        },
-        {
-          "Time": 3.15,
-          "Label": "Close"
-        },
-        {
-          "Time": 3.3,
-          "Label": "Close"
-        },
-        {
-          "Time": 3.45,
-          "Label": "Close"
-        },
-        {
-          "Time": 3.6,
-          "Label": "Step back"
-        },
-        {
-          "Time": 3.75,
-          "Label": "Step back"
-        },
-        {
-          "Time": 3.9,
-          "Label": "Step back"
-        },
-        {
-          "Time": 4.05,
-          "Label": "Step back"
-        },
-        {
-          "Time": 4.2,
-          "Label": "Close"
-        },
-        {
-          "Time": 4.35,
-          "Label": "Close"
-        },
-        {
-          "Time": 4.5,
-          "Label": "Close"
-        },
-        {
-          "Time": 4.65,
-          "Label": "Close"
-        },
-        {
-          "Time": 4.8,
-          "Label": "Close"
-        }
-      ],
-      "ProjectSha256": "42cee21f7ffd18aa6f5c5a518167df7900bc996ea18cf81a014a0acb2c8004c2"
-    },
-    {
-      "Id": "LightFeet",
-      "Name": "Light Feet",
-      "BibleRow": 0,
-      "Reference": "",
-      "Observation": "Quick, light footwork on the balls of the feet with the hands carried high and loose.",
-      "Interpretation": "The body rides up on the toes and the feet trade fast small taps and scuffs, a pair of forward taps then a pair that cut inward. The torso barely moves, the shoulders twist a few degrees and the hands circle at chest height in time with the feet.",
-      "Activity": "Performing",
-      "Status": "Draft: visual review required",
-      "Project": "LightFeet.swlanim",
-      "Duration": 4.8,
-      "Keyframes": 97,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5288108E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 0.15,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 0.3,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 0.45,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 0.6,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 0.75,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 0.9,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 1.05,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 1.35,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 1.5,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 1.65,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 1.8,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 1.95,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 2.1,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 2.25,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 2.4,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 2.55,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 2.7,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 2.85,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 3,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 3.15,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 3.3,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 3.45,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 3.6,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 3.75,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 3.9,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 4.05,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 4.2,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 4.35,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 4.5,
-          "Label": "Tap right"
-        },
-        {
-          "Time": 4.65,
-          "Label": "Tap left"
-        },
-        {
-          "Time": 4.8,
-          "Label": "Tap left"
-        }
-      ],
-      "ProjectSha256": "a89d2f621d6f54aa7eb9bfbc8f1b8f41a70bf158022c0763bfc7936727281ea8"
-    },
-    {
-      "Id": "PowerStep",
-      "Name": "Power Step",
-      "BibleRow": 0,
-      "Reference": "",
-      "Observation": "Strong stomps with driving arm pumps, planted low in the hips.",
-      "Interpretation": "A low wide stance. Each four-count lifts one foot high, slams it down on the beat while the chest dips into the impact, and pumps the opposite fist up to the chest. The closing two beats raise and drop both feet together with both fists pumping.",
-      "Activity": "Performing",
-      "Status": "Draft: visual review required",
-      "Project": "PowerStep.swlanim",
-      "Duration": 4.8,
-      "Keyframes": 97,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.6530645E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 0.15,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 0.3,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 0.45,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 0.6,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 0.75,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 0.9,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 1.05,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 1.35,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 1.5,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 1.65,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 1.8,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 1.95,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 2.1,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 2.25,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 2.4,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 2.55,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 2.7,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 2.85,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 3,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 3.15,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 3.3,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 3.45,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 3.6,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 3.75,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 3.9,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 4.05,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 4.2,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 4.35,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 4.5,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 4.65,
-          "Label": "Stomp"
-        },
-        {
-          "Time": 4.8,
-          "Label": "Stomp"
-        }
-      ],
-      "ProjectSha256": "0633b227226bfc0f3083347440e5591093b4c6d31dad90fe7c55e004389dcb03"
-    },
-    {
-      "Id": "Quickstep",
-      "Name": "Quickstep",
-      "BibleRow": 0,
-      "Reference": "",
-      "Observation": "Fast crossing steps with the shoulders turning against the hips.",
-      "Interpretation": "Each foot in turn crosses in front of the other and uncrosses on a three-tenths-of-a-second count. The chest turns up to twenty degrees toward the crossing foot against a smaller hip turn and the arms counter-swing, so the pattern reads as fast without leaving the spot.",
-      "Activity": "Performing",
-      "Status": "Draft: visual review required",
-      "Project": "Quickstep.swlanim",
-      "Duration": 4.8,
-      "Keyframes": 97,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.8189185E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Cross"
-        },
-        {
-          "Time": 0.15,
-          "Label": "Cross"
-        },
-        {
-          "Time": 0.3,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 0.45,
-          "Label": "Cross"
-        },
-        {
-          "Time": 0.6,
-          "Label": "Cross"
-        },
-        {
-          "Time": 0.75,
-          "Label": "Cross"
-        },
-        {
-          "Time": 0.9,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 1.05,
-          "Label": "Cross"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Cross"
-        },
-        {
-          "Time": 1.35,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 1.5,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 1.65,
-          "Label": "Cross"
-        },
-        {
-          "Time": 1.8,
-          "Label": "Cross"
-        },
-        {
-          "Time": 1.95,
-          "Label": "Cross"
-        },
-        {
-          "Time": 2.1,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 2.25,
-          "Label": "Cross"
-        },
-        {
-          "Time": 2.4,
-          "Label": "Cross"
-        },
-        {
-          "Time": 2.55,
-          "Label": "Cross"
-        },
-        {
-          "Time": 2.7,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 2.85,
-          "Label": "Cross"
-        },
-        {
-          "Time": 3,
-          "Label": "Cross"
-        },
-        {
-          "Time": 3.15,
-          "Label": "Cross"
-        },
-        {
-          "Time": 3.3,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 3.45,
-          "Label": "Cross"
-        },
-        {
-          "Time": 3.6,
-          "Label": "Cross"
-        },
-        {
-          "Time": 3.75,
-          "Label": "Cross"
-        },
-        {
-          "Time": 3.9,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 4.05,
-          "Label": "Cross"
-        },
-        {
-          "Time": 4.2,
-          "Label": "Cross"
-        },
-        {
-          "Time": 4.35,
-          "Label": "Cross"
-        },
-        {
-          "Time": 4.5,
-          "Label": "Uncross"
-        },
-        {
-          "Time": 4.65,
-          "Label": "Cross"
-        },
-        {
-          "Time": 4.8,
-          "Label": "Cross"
-        }
-      ],
-      "ProjectSha256": "031c07eed791da2ea45a9251aabb51a46c082ef487b3f434f4ce6ae0ce430e26"
-    },
-    {
-      "Id": "VigorReel",
-      "Name": "Vigor Reel",
-      "BibleRow": 0,
-      "Reference": "",
-      "Observation": "A bouncy reel with high knees and arms pumping in opposition.",
-      "Interpretation": "The performer hops lightly and lifts alternate knees to hip height every three-tenths of a second. The arm opposite the raised knee drives up as the other drops, the body rides a small bounce, and the shoulders rock a few degrees with each lift.",
-      "Activity": "Performing",
-      "Status": "Draft: visual review required",
-      "Project": "VigorReel.swlanim",
-      "Duration": 4.8,
-      "Keyframes": 97,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.40274E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 0.15,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 0.3,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 0.45,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 0.6,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 0.75,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 0.9,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 1.05,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 1.35,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 1.5,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 1.65,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 1.8,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 1.95,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 2.1,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 2.25,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 2.4,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 2.55,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 2.7,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 2.85,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 3,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 3.15,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 3.3,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 3.45,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 3.6,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 3.75,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 3.9,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 4.05,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 4.2,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 4.35,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 4.5,
-          "Label": "Knee right"
-        },
-        {
-          "Time": 4.65,
-          "Label": "Knee left"
-        },
-        {
-          "Time": 4.8,
-          "Label": "Knee left"
-        }
-      ],
-      "ProjectSha256": "309ff409e6d7cb73e29fffd39c03c69cd739a2874bb5b19759dd7650520952fa"
-    },
     {
       "Id": "DanceStepLeft",
       "Name": "Dance Step Left",
@@ -770,7 +20,7 @@
       "Duration": 0.6,
       "Keyframes": 13,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.2745635E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.2745635e-07,
       "Beats": [
         {
           "Time": 0,
@@ -816,7 +66,7 @@
       "Duration": 0.6,
       "Keyframes": 13,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.8189185E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.8189185e-07,
       "Beats": [
         {
           "Time": 0,
@@ -862,7 +112,7 @@
       "Duration": 0.6,
       "Keyframes": 13,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2287812E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.2287812e-07,
       "Beats": [
         {
           "Time": 0,
@@ -908,7 +158,7 @@
       "Duration": 0.6,
       "Keyframes": 13,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4211522E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522e-07,
       "Beats": [
         {
           "Time": 0,
@@ -954,7 +204,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.625609E-07,
+      "MdlRoundTripMaximumErrorMetres": 3.625609e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1036,7 +286,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.0392525E-07,
+      "MdlRoundTripMaximumErrorMetres": 3.0392525e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1106,137 +356,19 @@
       "ProjectSha256": "4055e5baee6796230f9bb0a8d5cd0a0661d372383de7d99960289357941b0ce7"
     },
     {
-      "Id": "StringsLoop",
-      "Name": "Strings Loop",
-      "BibleRow": 0,
-      "Reference": "",
-      "Observation": "A steady strumming loop with a guitar held in the right hand.",
-      "Interpretation": "The instrument rides across the chest with the neck angled up and left, the right hand strums down and up on the eighth notes, the left hand slides slowly along the neck for chord changes and the body sways with a small foot tap.",
-      "Activity": "Performing",
-      "Status": "Draft: visual review required",
-      "Project": "StringsLoop.swlanim",
-      "Duration": 3.6,
-      "Keyframes": 73,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4038948E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 0.15,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 0.3,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 0.45,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 0.6,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 0.75,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 0.9,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 1.05,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 1.35,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 1.5,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 1.65,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 1.8,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 1.95,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 2.1,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 2.25,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 2.4,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 2.55,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 2.7,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 2.85,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 3,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 3.15,
-          "Label": "Strum up"
-        },
-        {
-          "Time": 3.3,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 3.45,
-          "Label": "Strum down"
-        },
-        {
-          "Time": 3.6,
-          "Label": "Strum up"
-        }
-      ],
-      "ProjectSha256": "d58ca407dbda54d7fb5e4d19930b5576f6c760d97fc6494282defe4d627793f2"
-    },
-    {
       "Id": "StringsLow",
       "Name": "Strings Low",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "A single accent strum with the fretting hand low on the neck, close to the body.",
-      "Interpretation": "The right hand lifts and drives one strong down-stroke while the left hand slides low on the neck, close to the body and the chest nods into the accent, then everything returns to the playing hold.",
+      "Observation": "A low string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "StringsLow.swlanim",
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.494554E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.682209e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1275,22 +407,22 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "65b9318a3cca62c185b9c4e66e9dc27b82494e0c46362ab45034ef1eb9b68de3"
+      "ProjectSha256": "094c880e90bb315e6e410e33ca2f5e2642e2145b94bb0f79346693fd7c634e76"
     },
     {
       "Id": "StringsMid",
       "Name": "Strings Mid",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "A single accent strum with the fretting hand at the middle of the neck.",
-      "Interpretation": "The right hand lifts and drives one strong down-stroke while the left hand slides at the middle of the neck and the chest nods into the accent, then everything returns to the playing hold.",
+      "Observation": "A mid string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "StringsMid.swlanim",
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.7677677E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5463115e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1329,22 +461,22 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "213110e51b1ab72e5bb15411b1b0015c4f844e59b6ca2c39f23e49995d9ff477"
+      "ProjectSha256": "73b8af8e28d6b33b3be23e90290f5b268a24e01493f4f89c7aa57eac65f745c7"
     },
     {
       "Id": "StringsHigh",
       "Name": "Strings High",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "A single accent strum with the fretting hand high on the neck, reaching toward the headstock.",
-      "Interpretation": "The right hand lifts and drives one strong down-stroke while the left hand slides high on the neck, reaching toward the headstock and the chest nods into the accent, then everything returns to the playing hold.",
+      "Observation": "A high string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The free left hand plays an accent across the upper soundboard or lower harp strings while the engine carry layer keeps the right hand on the instrument. The body emphasizes the note, then returns to the shared playing hold.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "StringsHigh.swlanim",
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3513635E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1383,22 +515,22 @@
           "Label": "Return"
         }
       ],
-      "ProjectSha256": "fcd7ff32f0646aa524de8c6884b1fab1aeb1269d2790ceeb3b2553d31d3a8407"
+      "ProjectSha256": "b9468e8ebf3c67b4e3218eddacb431d6b1cae9d910e0e71a1bcb3d216aee0b15"
     },
     {
       "Id": "StringsFlourish",
       "Name": "Strings Flourish",
       "BibleRow": 0,
       "Reference": "",
-      "Observation": "The guitar is thrown up and swept down in a big strum.",
-      "Interpretation": "The instrument lifts high on the left with the chest opening back, holds for a beat, then the right arm drives a large downward strum as the knees sink and the chest folds into it, before settling back into the playing hold.",
+      "Observation": "A flourish string accent with the free playing hand near the upper soundboard or lower harp strings.",
+      "Interpretation": "The body opens back and the free left hand sweeps across the strings, then settles into the shared playing hold. The right hand keeps the native carry grip.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "StringsFlourish.swlanim",
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1465,109 +597,7 @@
           "Label": "Settle"
         }
       ],
-      "ProjectSha256": "1d2956cb6684afb915afa5d53ce58324e373e3d25548189a540d102656c459ad"
-    },
-    {
-      "Id": "HornLoop",
-      "Name": "Horn Loop",
-      "BibleRow": 0,
-      "Reference": "",
-      "Observation": "A held-note loop with the horn raised to the mouth.",
-      "Interpretation": "Two breaths and two phrases: the chest eases back and the bell dips on each breath, then the bell lifts as the phrase swells while the shoulders sway slowly. The mouthpiece stays at the lips, the right hand holds the horn below the mouth and the left hand steadies it above, so the loop starts and ends in the playing hold.",
-      "Activity": "Performing",
-      "Status": "Draft: visual review required",
-      "Project": "HornLoop.swlanim",
-      "Duration": 4,
-      "Keyframes": 81,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6151432E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Breath"
-        },
-        {
-          "Time": 0.2,
-          "Label": "Breath"
-        },
-        {
-          "Time": 0.4,
-          "Label": "Breath"
-        },
-        {
-          "Time": 0.6,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 0.8,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 1,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 1.4,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 1.6,
-          "Label": "Breath"
-        },
-        {
-          "Time": 1.8,
-          "Label": "Breath"
-        },
-        {
-          "Time": 2,
-          "Label": "Breath"
-        },
-        {
-          "Time": 2.2,
-          "Label": "Breath"
-        },
-        {
-          "Time": 2.4,
-          "Label": "Breath"
-        },
-        {
-          "Time": 2.6,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 2.8,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 3,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 3.2,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 3.4,
-          "Label": "Phrase"
-        },
-        {
-          "Time": 3.6,
-          "Label": "Breath"
-        },
-        {
-          "Time": 3.8,
-          "Label": "Breath"
-        },
-        {
-          "Time": 4,
-          "Label": "Breath"
-        }
-      ],
-      "ProjectSha256": "5775a08ec0c18552ba9fd24879c551e412d5d4ed3b25295523ea40f9a91487d7"
+      "ProjectSha256": "c27ffa3ca09a52d7be5d3c72f886d40975cccfeae15edd00a056c80b47525a98"
     },
     {
       "Id": "HornLow",
@@ -1582,7 +612,7 @@
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.40274E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.40274e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1636,7 +666,7 @@
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4405628E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4405628e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1690,7 +720,7 @@
       "Duration": 0.5,
       "Keyframes": 17,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6541224E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6541224e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1744,7 +774,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4575624E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4575624e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1826,7 +856,7 @@
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4620758E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758e-07,
       "Beats": [
         {
           "Time": 0,
@@ -1854,6 +884,351 @@
         }
       ],
       "ProjectSha256": "a64780eebf95f96e4991408a2bcd59a8bf120c65f97287f9d91b14d180b446a7"
+    },
+    {
+      "Id": "CantinaShuffle",
+      "Name": "Cantina Shuffle",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG basic2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "CantinaShuffle.swlanim",
+      "Duration": 6.0,
+      "Keyframes": 181,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 5.75,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 6.0,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "3ba9b474fc74b1d886d2a9e47f010f8c28483773ba5e8c0bfbaabd6c23ddff9b",
+      "Source": "appearance/animation/all_b_dnc_goofy_base_loop.ans",
+      "SourceSha256": "7c3ce293000796e1ede7779bc4feeadd7501b5f9192ba991f1e878349fd7304f",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 180,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "LightFeet",
+      "Name": "Light Feet",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG popular2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "LightFeet.swlanim",
+      "Duration": 6.8,
+      "Keyframes": 205,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 6.55,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 6.8,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "ab25c3d0b20d45bb93386090c0f45406fd8ea7d5433c70db852d1f8337ee74d8",
+      "Source": "appearance/animation/all_f_dnc_f_gogo_loop.ans",
+      "SourceSha256": "d0e755d21eb4460604bd3897c9056e6f0c5224347254a7cd7a08200edfa4142a",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 204,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "PowerStep",
+      "Name": "Power Step",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG poplock2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "PowerStep.swlanim",
+      "Duration": 8.2,
+      "Keyframes": 247,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 7.949999999999999,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 8.2,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "272fcbeb71bc2528e4bae0b3cf6f58b32d54133bc2e83328b8bf7928d44212be",
+      "Source": "appearance/animation/all_m_dnc_m_poplock_base_loop.ans",
+      "SourceSha256": "c3481a23cbc4989a7b1dccc7efe106a290721ac7107bccb5d736406720242d00",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 246,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "Quickstep",
+      "Name": "Quickstep",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG footloose2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "Quickstep.swlanim",
+      "Duration": 5.166666666666667,
+      "Keyframes": 156,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 4.916666666666667,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 5.166666666666667,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "8ce0cad918d527e96e4b4d38aa89d4891947388057ece30b74a121e770792751",
+      "Source": "appearance/animation/all_m_dnc_m_african_base_loop.ans",
+      "SourceSha256": "2574642aa47c89ba27bccd5d14779755397d1cef4093e756c32be4531305a027",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 155,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "VigorReel",
+      "Name": "Vigor Reel",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG jazzy2 dance.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared dance stance.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "VigorReel.swlanim",
+      "Duration": 6.733333333333333,
+      "Keyframes": 203,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared dance stance"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 6.483333333333333,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 6.733333333333333,
+          "Label": "Shared dance stance"
+        }
+      ],
+      "ProjectSha256": "c92e158b11a07464dbe1a816df5f829b658e44a9b704e2d0acb794c8387ae001",
+      "Source": "appearance/animation/all_b_dnc_tatooine_jazz_loop.ans",
+      "SourceSha256": "99644e96f8e7d487fbc1ca272f9acf17033c89824d8d2d5d0465db113952b9ed",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 202,
+      "Calibration": "bind",
+      "Mirror": false,
+      "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+      "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+      "ContactProjects": {}
+    },
+    {
+      "Id": "StringsLoop",
+      "Name": "StringsLoop",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG guitar playing loop.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "StringsLoop.swlanim",
+      "Duration": 5.2,
+      "Keyframes": 157,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared playing hold"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 4.95,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 5.2,
+          "Label": "Shared playing hold"
+        }
+      ],
+      "ProjectSha256": "515a0c4bd3034d6299549413815d627659cea93d1d6fb0b163ec7317cac5a400",
+      "Source": "appearance/animation/all_b_dnc_musician_guitar_loop.ans",
+      "SourceSha256": "977eaab481199cfb8b50b865e611dc449fe56b895281c337e244225002226447",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 156,
+      "Calibration": "first-frame",
+      "Mirror": true,
+      "NativeCarry": {
+        "rbicep_g": [
+          0.042193142254618,
+          -0.02110844394293926,
+          0.04351269477532014,
+          0.9979382835297879
+        ],
+        "rforearm_g": [
+          0.8964589748893939,
+          0.019920941216683606,
+          -0.021221492627160096,
+          0.44216977586892303
+        ],
+        "rhand_g": [
+          0.2369595205570208,
+          -0.1078502703975327,
+          0.044665270221847325,
+          0.9644809580435351
+        ],
+        "rhand": [
+          0.0,
+          -0.7132505475215891,
+          0.0,
+          0.7009091642004357
+        ]
+      },
+      "ReferenceProject": "design/animations/performance/StringsLow.swlanim",
+      "ReferenceProjectSha256": "094c880e90bb315e6e410e33ca2f5e2642e2145b94bb0f79346693fd7c634e76",
+      "ContactProjects": {
+        "design/animations/performance/StringsLow.swlanim": "094c880e90bb315e6e410e33ca2f5e2642e2145b94bb0f79346693fd7c634e76",
+        "design/animations/performance/StringsMid.swlanim": "73b8af8e28d6b33b3be23e90290f5b268a24e01493f4f89c7aa57eac65f745c7",
+        "design/animations/performance/StringsHigh.swlanim": "b9468e8ebf3c67b4e3218eddacb431d6b1cae9d910e0e71a1bcb3d216aee0b15"
+      }
+    },
+    {
+      "Id": "HornLoop",
+      "Name": "HornLoop",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Original SWG saxophone playing loop.",
+      "Interpretation": "Retargeted at the original speed; root locomotion stays inside the model. The first and last 0.25 seconds blend to the shared playing hold.",
+      "Activity": "Performing",
+      "Status": "Draft: visual review required",
+      "Project": "HornLoop.swlanim",
+      "Duration": 5.2,
+      "Keyframes": 157,
+      "Joints": 57,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Shared playing hold"
+        },
+        {
+          "Time": 0.25,
+          "Label": "Original SWG motion"
+        },
+        {
+          "Time": 4.95,
+          "Label": "Return to shared stance"
+        },
+        {
+          "Time": 5.2,
+          "Label": "Shared playing hold"
+        }
+      ],
+      "ProjectSha256": "d52de277e08798c7dace191aac5043d517bdabb3ec67f025e5cb232b5f32d620",
+      "Source": "appearance/animation/all_b_dnc_musician_sax_loop.ans",
+      "SourceSha256": "4250913c6ff68745b73ba1a276284f6c228dc5ff54f934e08c828aa9c550c4f5",
+      "SourceFormat": "CKAT",
+      "SourceFramesPerSecond": 30.0,
+      "SourceFrameCount": 156,
+      "Calibration": "first-frame",
+      "Mirror": true,
+      "ReferenceProject": "design/animations/performance/HornLow.swlanim",
+      "ReferenceProjectSha256": "a06d778d2f0900e7a05cc719daec9496471a846c07b598954d60878d337cf4f1",
+      "ContactProjects": {
+        "design/animations/performance/HornLow.swlanim": "a06d778d2f0900e7a05cc719daec9496471a846c07b598954d60878d337cf4f1",
+        "design/animations/performance/HornMid.swlanim": "b71fd6d685df4a7df56302e54235395dc4d3fd2b8b4d07fa644d46b4a984fa50",
+        "design/animations/performance/HornHigh.swlanim": "815e40b80babb148a771e648a1f8ddd0dd1186a971e80e3c1130553c7c2b176e",
+        "design/animations/performance/HornFlourish.swlanim": "21b3daf870df5f5f403eed9670615abc50db808791a010761aa441eb95eff05e"
+      }
     }
-  ]
+  ],
+  "SwgImport": {
+    "ConfigurationSha256": "fcc693148a55cb6aef30d8b20d29d1e902e09c4db7a8ccc23d8709cf0dc604c4",
+    "Skeleton": "appearance/skeleton/all_b.skt",
+    "SkeletonSha256": "7f3eb762eb97b27c2170014be66bfca0c232e35b2f8cdbefea912736fb681cc3",
+    "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+    "ReferenceProjectSha256": "65c5a727b053528525eed6639257503693952b717a399ab02e18165bdcbeb8b7",
+    "SourceArchiveSha256": "e99ee95c0e1e65b1585d663f1b01486b0c15a2808d38f48c046e5670ff49c1ed",
+    "BoundaryBlendSeconds": 0.25
+  }
 }

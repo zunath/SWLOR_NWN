@@ -11,11 +11,15 @@ are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
 
 ## Slots and existing replacements
 
-Pistol appearances use item class **WBwSh**. Logical pistol base item **11** and
-the production native-sling base item **61** share these resources. Player
-pistols use **61**, as enforced by `PistolBaseItemCompatibility`; native item 11
+Modern pistol appearances use item class **WBwSh**. Logical pistol base item **11** and
+the production native-sling base item **61** share these resources. Modern
+production pistols use **61**, as enforced by `PistolBaseItemCompatibility`; native item 11
 hardcodes the bow attachment and suppresses the off-hand weapon. Use the current
-production blueprint and item types when building client fixtures. Native middle slots encode
+production blueprint and item types when building client fixtures. Recognized
+legacy resrefs instead use `BaseItem.LegacyPistol` (**514**), as returned by
+`PistolBaseItemCompatibility.GetCanonicalBaseItem`; preserve that canonical type
+in legacy fixtures so their attachment and animation behavior is retained.
+Native middle slots encode
 `model * 10 + color`; the toolset shows `model-color`; the in-game appearance
 catalog encodes `color * 100 + model`.
 

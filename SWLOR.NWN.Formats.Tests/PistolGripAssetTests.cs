@@ -36,6 +36,8 @@ public sealed class PistolGripAssetTests
             Assert.That(BitConverter.ToUInt32(data, 0), Is.Zero, $"Part #{part} must ship compiled.");
             var meshes = model.GetMeshNodes().Where(mesh => mesh.Render).ToArray();
             Assert.That(meshes, Is.Not.Empty, $"Part #{part} must contain visible geometry.");
+            Assert.That(meshes.Any(mesh => mesh.Vertices.Length > 0 && mesh.Faces.Length > 0), Is.True,
+                $"Part #{part} must contain rendered vertices and faces.");
             foreach (var mesh in meshes)
             {
                 Assert.That(mesh.Vertices.All(Finite), Is.True, $"Part #{part}/{mesh.Name} positions");

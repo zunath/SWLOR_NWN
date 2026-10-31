@@ -3368,28 +3368,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 596,
+    "Line": 598,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 610,
+    "Line": 612,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 674,
+    "Line": 676,
     "Member": "StripAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been depleted by your strip miner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 802,
+    "Line": 804,
     "Member": "ApplySupport",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
@@ -8023,42 +8023,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 220,
+    "Line": 212,
+    "Member": "StartDataAnalyzer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Cyan($\"Your droid starts slicing. Hold within {SpaceSlicingTuning.AnalyzerRange:0} m of the target and out of combat for {DroidCrewRules.SlicingSeconds} seconds.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 242,
+    "Member": "RunDroidSlicing",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Red(\"Your droid breaks off the slice: the ship left range, entered combat or lost the target. The target is untouched.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 272,
     "Member": "StartSlicing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, error)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 262,
+    "Line": 314,
     "Member": "CompleteSlicing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, \"The data core is drained. The wreck can still be salvaged.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 345,
+    "Line": 397,
     "Member": "DeliverRewardsToShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"Slicing recovered: {DescribeRewards(rewards)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 370,
+    "Line": 422,
     "Member": "GiveRewardsToPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover {DescribeRewards(rewards)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 435,
+    "Line": 487,
     "Member": "OpenLockedCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(slicer, ColorToken.Green($\"The lock gives way. You open the {GetName(cache)}: {credits} credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
-    "Line": 459,
+    "Line": 511,
     "Member": "RollSpaceLockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"

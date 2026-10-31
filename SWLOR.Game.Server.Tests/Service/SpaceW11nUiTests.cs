@@ -202,7 +202,14 @@ public class SpaceW11nUiTests
         var slicing = ReadServerSource("Service", "SpaceSlicing.cs");
         slicing.Should().Contain("GetDroidSlicingError(ship, target, source, tier, droid)");
         slicing.Should().Contain("DroidCrewRules.SlicingSucceeds(");
-        slicing.Should().Contain("OnSlicingTargetDestroyed(target, droidSource);", "a droid's miss is a failed slice, as for a player");
+        slicing.Should().Contain("OnSlicingTargetDestroyed(target, source);", "a droid's miss is a failed slice, as for a player");
+        slicing.Should().Contain("RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, DroidCrewRules.SlicingSeconds);",
+            "a droid's slice is a channel the pilot waits out");
+        var step = slicing[slicing.IndexOf("private static void RunDroidSlicing(", System.StringComparison.Ordinal)..];
+        step.IndexOf("SpaceSlicingRules.IsInAnalyzerRange(", System.StringComparison.Ordinal).Should()
+            .BeLessThan(step.IndexOf("CompleteSlicing(ship, target, source, tier);", System.StringComparison.Ordinal),
+                "leaving range breaks the slice off before any result");
+        step.Should().Contain("IsShipInCombat(ship) || GetIsInCombat(ship)");
 
         ReadServerSource("Service", "SpaceDroidCrew.cs").Should().Contain("RunDroidDataAnalyzer(pilot, slots, posted, target)");
     }

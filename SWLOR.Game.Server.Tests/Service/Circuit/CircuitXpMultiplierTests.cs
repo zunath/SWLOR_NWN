@@ -97,7 +97,7 @@ public class CircuitXpMultiplierTests
         var session = lifecycle.Start(FakeCraftSessionWorld.PlayerHandle, player, request).Session;
         var success = lifecycle.SucceedAtPace(world, FakeCraftSessionWorld.PlayerHandle, player, session, new MinigameMeter(50, 100));
         lifecycle.Start(FakeCraftSessionWorld.PlayerHandle, player, request);
-        var failure = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, player, CraftSessionEndReason.Broken);
+        var failure = lifecycle.FailAtPace(world, FakeCraftSessionWorld.PlayerHandle, player, CraftSessionEndReason.Broken);
 
         success!.Outcome.Xp.Should().Be(CraftOutcomeRules.CalculateXp(scaledBaseXp, 0, true, 0.5f));
         failure.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(scaledBaseXp, 0));

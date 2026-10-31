@@ -698,6 +698,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            // The saved craft counts its actions, so a craft settled with no window (a logout, a death, a restart) is held to the same pace.
+            if (result.Status == MinigameStatus.InProgress)
+                CraftSessionService.RecordActions(Player, _session, _engine.Turn);
+
             SetStatus($"{action.Name}: {result.Outcome.Label}.", GuiColor.Green);
             LastResultText = KitchenText.ResultText(result.Outcome);
             if (result.Status == MinigameStatus.Succeeded)

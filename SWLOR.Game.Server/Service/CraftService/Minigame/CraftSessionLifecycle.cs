@@ -204,9 +204,10 @@ public sealed class CraftSessionLifecycle
     /// chance, and the attempt still grants 15% of the base XP. Items that do not fit the inventory are held on the player until
     /// there is room. Does nothing when no craft is saved.
     /// <para>
-    /// A caller that played the craft passes the <paramref name="actionsTaken"/>, and the XP is held to the modeled pace as
-    /// <see cref="Succeed"/> holds it. A settlement with no window (a death, a login, a restart, a craft replaced by a new one) does not
-    /// know them and passes null: the XP is then not scaled, because nothing was resolved at a pace to measure.
+    /// The XP is held to the modeled pace as <see cref="Succeed"/> holds it, on every path: a window passes its engine's
+    /// <paramref name="actionsTaken"/>, and a settlement with no window (a death, a login, a restart, a craft replaced by a new one)
+    /// passes null and uses the count the craft saved (<see cref="RecordActions"/>). A craft with no actions earns no XP, so ending one
+    /// another way never pays more than closing its window.
     /// </para>
     /// </summary>
     public CraftSettlement Fail(uint player, Player dbPlayer, CraftSessionEndReason reason, int? actionsTaken = null)
@@ -223,9 +224,7 @@ public sealed class CraftSessionLifecycle
             _random,
             enhancements.Count,
             record.Components.Count,
-            actionsTaken.HasValue
-                ? PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken.Value)
-                : CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
+            PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken ?? record.ActionsTaken),
             record.BlueprintLevel);
 
         var kept = new List<string>();
@@ -269,6 +268,19 @@ public sealed class CraftSessionLifecycle
         _world.LogCraft(player, $"failed to craft '{record.Recipe}' ({reason}).");
 
         return new CraftSettlement(true, total - kept.Count, kept.Count, failure.Xp);
+    }
+
+    /// <summary>
+    /// Saves the actions the craft has resolved on its record, so a settlement with no window (<see cref="Fail"/> with no count) holds the
+    /// XP to the same pace as the window would. Does nothing when the session is no longer the player's saved craft.
+    /// </summary>
+    public void RecordActions(Player dbPlayer, CraftSession session, int actionsTaken)
+    {
+        if (!IsActive(dbPlayer, session))
+            return;
+
+        dbPlayer.ActiveCraftSession.ActionsTaken = actionsTaken;
+        _world.SaveRecord(dbPlayer);
     }
 
     /// <summary>

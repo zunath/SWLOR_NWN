@@ -168,7 +168,7 @@ public class KitchenSessionTests
         foreach (var (resref, quantity) in _recipe.Components)
             _world.Inventory[resref] = quantity;
         Start(lifecycle);
-        var failure = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
+        var failure = lifecycle.FailAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
         failure.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(scaled, 0));
     }

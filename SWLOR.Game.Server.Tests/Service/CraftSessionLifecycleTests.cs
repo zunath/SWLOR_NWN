@@ -57,6 +57,15 @@ public class CraftSessionLifecycleTests
         return result.Session;
     }
 
+    /// <summary>Starts a craft and plays some of its actions at the modeled pace, so its failure earns the full failure XP.</summary>
+    private CraftSession PlayedSession(CraftSessionLifecycle lifecycle, uint blueprint = NoItem, params uint[] enhancements)
+    {
+        var session = StartSession(lifecycle, blueprint, enhancements);
+        lifecycle.RecordActions(_player, session, CraftSessionTestPace.Actions);
+        _world.AdvanceByActions(CraftSessionTestPace.Actions);
+        return session;
+    }
+
     private int BaseXp => CraftMinigameXp.BaseXp(_recipe, 10);
 
     [Test]
@@ -186,7 +195,9 @@ public class CraftSessionLifecycleTests
     public void Start_SettlesAnOlderSavedCraftFirst()
     {
         var lifecycle = Lifecycle(100, 100, 100, 100);
-        StartSession(lifecycle, NoItem, FakeCraftSessionWorld.FirstEnhancement);
+        var first = StartSession(lifecycle, NoItem, FakeCraftSessionWorld.FirstEnhancement);
+        lifecycle.RecordActions(_player, first, 3);
+        _world.AdvanceByActions(3);
         _world.Inventory["ore"] = 3;
         _world.Inventory["wire"] = 2;
         var firstId = _player.ActiveCraftSession.SessionId;
@@ -194,7 +205,7 @@ public class CraftSessionLifecycleTests
         var second = StartSession(lifecycle);
 
         second.SessionId.Should().NotBe(firstId);
-        _world.XpGiven.Should().ContainSingle("the replaced craft settled as a failure");
+        _world.XpGiven.Should().ContainSingle("the replaced craft settled as a failure, paid for its saved actions");
         _world.Returned.Should().HaveCount(3, "every roll kept an item");
     }
 
@@ -379,15 +390,76 @@ public class CraftSessionLifecycleTests
         settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(BaseXp, 2));
     }
 
-    [Test]
-    public void Fail_WithNoWindowToCountTheActions_DoesNotScaleTheXp()
+    [TestCase(CraftSessionEndReason.Interrupted)]
+    [TestCase(CraftSessionEndReason.Died)]
+    [TestCase(CraftSessionEndReason.Replaced)]
+    public void Fail_WithNoWindow_AndNoActionsSaved_PaysNoXp(CraftSessionEndReason reason)
     {
         var lifecycle = Lifecycle(100, 100);
         StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
 
+        _world.AdvanceByActions(6);
+        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, reason);
+
+        settlement.Settled.Should().BeTrue();
+        settlement.Xp.Should().Be(0, "a craft left with no actions earns no XP, however it ends");
+        _world.XpGiven.Should().BeEmpty();
+    }
+
+    [TestCase(CraftSessionEndReason.Interrupted)]
+    [TestCase(CraftSessionEndReason.Died)]
+    [TestCase(CraftSessionEndReason.Replaced)]
+    public void Fail_WithNoWindow_HoldsTheSavedActionsToTheSamePaceAsTheWindow(CraftSessionEndReason reason)
+    {
+        var lifecycle = Lifecycle(100, 100);
+        var session = StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+        lifecycle.RecordActions(_player, session, 6);
+
+        _world.Advance(6 * CraftMinigameXp.ActionSeconds / 2);
+        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, reason);
+
+        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(CraftMinigameXp.ScaleBaseXp(BaseXp, 0.5), 2),
+            "six actions in half their modeled time pay what the window's settlement would");
+    }
+
+    [Test]
+    public void Fail_WithNoWindow_AtTheModeledPace_PaysTheFullFailureXp()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        var session = StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+        lifecycle.RecordActions(_player, session, 6);
+
+        _world.AdvanceByActions(6);
         var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
 
         settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(BaseXp, 2));
+    }
+
+    [Test]
+    public void Fail_ASecondRecovery_SettlesNothingAndPaysNoMoreXp()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        var session = StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+        lifecycle.RecordActions(_player, session, 6);
+        _world.AdvanceByActions(6);
+        lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
+
+        var again = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
+
+        again.Settled.Should().BeFalse();
+        _world.XpGiven.Should().ContainSingle();
+    }
+
+    [Test]
+    public void RecordActions_SavesTheCountOnTheActiveCraftOnly()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        var session = StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+
+        lifecycle.RecordActions(_player, session, 4);
+        lifecycle.RecordActions(_player, new CraftSession("another", TestRecipe, null), 9);
+
+        _player.ActiveCraftSession.ActionsTaken.Should().Be(4);
     }
 
     [Test]
@@ -473,7 +545,7 @@ public class CraftSessionLifecycleTests
     {
         // Rolls: enhancement 1 kept (66), enhancement 2 lost (65), ore kept (100), wire lost (1).
         var lifecycle = Lifecycle(66, 65, 100, 1);
-        StartSession(lifecycle, NoItem, FakeCraftSessionWorld.FirstEnhancement, FakeCraftSessionWorld.SecondEnhancement);
+        PlayedSession(lifecycle, NoItem, FakeCraftSessionWorld.FirstEnhancement, FakeCraftSessionWorld.SecondEnhancement);
 
         var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
@@ -490,7 +562,7 @@ public class CraftSessionLifecycleTests
     public void Fail_StillGivesFifteenPercentOfTheBaseXp()
     {
         var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+        PlayedSession(lifecycle, FakeCraftSessionWorld.Blueprint);
 
         var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
@@ -502,7 +574,7 @@ public class CraftSessionLifecycleTests
     public void Fail_WhileThePlayerIsDead_KeepsTheXpOnTheRecordInsteadOfLosingIt()
     {
         var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+        PlayedSession(lifecycle, FakeCraftSessionWorld.Blueprint);
         _world.PlayerAlive = false;
 
         var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died);
@@ -536,7 +608,7 @@ public class CraftSessionLifecycleTests
     public void Fail_ForALivingPlayer_SavesTheXpEntitlementWithTheSettlement_ThenGrantsItFromThere()
     {
         var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle);
+        PlayedSession(lifecycle);
         _world.SavedRecords.Clear();
 
         var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
@@ -580,7 +652,7 @@ public class CraftSessionLifecycleTests
     public void Fail_WhenTheServerStopsAfterTheSettlementSaveAndBeforeTheAward_GivesTheXpExactlyOnceLater()
     {
         var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle);
+        PlayedSession(lifecycle);
         _world.StopBeforeXpGrant = true;
 
         var stop = () => lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
@@ -605,7 +677,7 @@ public class CraftSessionLifecycleTests
     public void GrantPendingXp_GivesTheWaitingXpOnceThePlayerIsAlive_AndNeverTwice()
     {
         var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle);
+        PlayedSession(lifecycle);
         _world.PlayerAlive = false;
         var xp = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
 
@@ -628,11 +700,11 @@ public class CraftSessionLifecycleTests
         var lifecycle = Lifecycle(100, 100, 100, 100);
         _world.PlayerAlive = false;
 
-        StartSession(lifecycle);
+        PlayedSession(lifecycle);
         var first = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
         _world.Inventory["ore"] = 5;
         _world.Inventory["wire"] = 2;
-        StartSession(lifecycle);
+        PlayedSession(lifecycle);
         var second = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
 
         _world.PlayerAlive = true;
@@ -703,7 +775,7 @@ public class CraftSessionLifecycleTests
     public void Fail_AfterTheWindowAlreadySettled_DoesNotSettleTwice()
     {
         var lifecycle = Lifecycle(100, 100);
-        var session = StartSession(lifecycle);
+        var session = PlayedSession(lifecycle);
 
         lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died);
         var again = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
@@ -719,7 +791,7 @@ public class CraftSessionLifecycleTests
     public void ASavedCraft_SurvivesALogoutAndSettlesAsAFailureAtTheNextLogin()
     {
         var firstRun = Lifecycle();
-        var session = StartSession(firstRun, FakeCraftSessionWorld.Blueprint, FakeCraftSessionWorld.FirstEnhancement);
+        var session = PlayedSession(firstRun, FakeCraftSessionWorld.Blueprint, FakeCraftSessionWorld.FirstEnhancement);
         CraftSessionLifecycle.IsActive(_player, session).Should().BeTrue();
 
         // The server stops and starts: the player record is all that survives.
@@ -788,7 +860,7 @@ public class CraftSessionLifecycleTests
     public void Fail_WritesTheCharacterFile_WhenComponentsCameBack_AndNotWhenNothingDid()
     {
         var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle);
+        PlayedSession(lifecycle);
         _world.PersistedAtSave.Clear();
 
         lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
@@ -800,7 +872,7 @@ public class CraftSessionLifecycleTests
         var lost = Lifecycle(0, 0);
         _world.Inventory["ore"] = 5;
         _world.Inventory["wire"] = 2;
-        StartSession(lost);
+        PlayedSession(lost);
         _world.PersistedAtSave.Clear();
 
         lost.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
@@ -811,7 +883,7 @@ public class CraftSessionLifecycleTests
     [Test]
     public void SettleLeftover_AtLogin_WritesTheCharacterFileAfterTheRefund()
     {
-        StartSession(Lifecycle());
+        PlayedSession(Lifecycle());
         var restored = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(_player));
         _world.PersistedAtSave.Clear();
 

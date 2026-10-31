@@ -18,6 +18,12 @@ namespace SWLOR.Game.Server.Entity
         public DateTime StartedUtc { get; set; }
 
         /// <summary>
+        /// The actions the craft has resolved, saved after each one, so a craft settled with no window (a logout, a death, a restart, a
+        /// replacement) is held to the same XP pace as one settled by its window. A craft with none earns no failure XP.
+        /// </summary>
+        public int ActionsTaken { get; set; }
+
+        /// <summary>
         /// The craft file sequence the debit was made at. A character file below it still holds the components, enhancements and blueprint
         /// charge, so a login whose file is that old discards the session without returning anything. Zero (records saved before this
         /// field) means the file is trusted to be current.

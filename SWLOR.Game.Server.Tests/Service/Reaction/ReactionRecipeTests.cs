@@ -233,7 +233,7 @@ public class ReactionRecipeTests
             new CraftSessionStartRequest(RecipeType.TrapKit2, OBJECT_INVALID, Array.Empty<uint>()))
             .Succeeded.Should().BeTrue();
 
-        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, player, CraftSessionEndReason.Broken);
+        var settlement = lifecycle.FailAtPace(world, FakeCraftSessionWorld.PlayerHandle, player, CraftSessionEndReason.Broken);
 
         var baseXp = CraftMinigameXp.BaseXp(recipe, rank);
         settlement.Settled.Should().BeTrue();

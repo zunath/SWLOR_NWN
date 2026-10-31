@@ -118,6 +118,7 @@ Build this first, because every minigame depends on it. It is a dependency, not 
 These rules apply to every item craft, in every minigame.
 
 - **Success.** The craft succeeds when its progress meter completes, and the item is created at once. The action that would complete it shows a "Finishes the item" warning. Each minigame names its own progress meter.
+- **Completion before breakage.** When one action both completes the progress meter and empties integrity, the craft succeeds: every item minigame checks completion first (`MinigameEngineBase.EvaluateStatus`; the Fabricator checks its final assembly the same way). The preview projects the action through the same check, so its "Finishes the item" or "Breaks the item" warning names the outcome the settlement applies.
 - **Quality.** Every craft ends with a quality percentage.
 - **Enhancements.** Each enhancement slot has a visible quality threshold.
   - Meeting the threshold guarantees the transfer. *Starting values:* first slot 50%, second slot 85%. A third slot (research level 10 adds one) needs its own value, set with the gate below.
@@ -128,9 +129,10 @@ These rules apply to every item craft, in every minigame.
 - **Food.** Duration scales across the whole quality range, up to today's 100% bonus. This replaces the `(int)qualityPercent` branch that only paid at 100%.
 - **XP and sale value.** Both keep today's formulas (`CraftViewModel.cs:1393-1432`), which scale with quality.
   - XP: base XP from recipe level against rank (`Skill.XPChart.cs`; Espionage's practice XP through `Craft.GetBaseRecipeXP`), +20% on a recipe's first craft, +50% per blueprint level, then +quality%.
-  - Pace: the XP of a craft in the Forge, Circuit, Fabricator, Kitchen and Reaction windows, a failed one included, is scaled by `min(1, seconds since the craft began / (actions taken x CraftMinigameXp.ActionSeconds))` (8 s an action, the CraftSim scenarios' value), so resolving actions faster than the modeled pace earns proportionally less and never more XP per hour than the gates assume. A craft settled with no window to count its actions (a death, a login, a restart, a craft replaced by a new one) is not scaled.
+  - Pace: the XP of a craft in the Forge, Circuit, Fabricator, Kitchen and Reaction windows, a failed one included, is scaled by `min(1, seconds since the craft began / (actions taken x CraftMinigameXp.ActionSeconds))` (8 s an action, the CraftSim scenarios' value), so resolving actions faster than the modeled pace earns proportionally less and never more XP per hour than the gates assume. Every settlement uses the same rule. Each action saves the craft's action count on its record (`CraftSessionRecord.ActionsTaken`), so a craft settled with no window (a death, a login, a restart, a craft replaced by a new one) is scaled by the saved count, and a craft with no actions earns no XP however it ends. Recovery keeps the XP a craft earned and never adds to it.
+    - Consequence: the rule caps XP per hour, not per action. A player who resolves actions faster than 8 s each earns less, and earns the full amount back by waiting before the last action. The pacing exists so a fast player cannot out-earn the XP-per-hour gate; waiting gives no more than playing at the modeled pace. Client testing should note how often players notice the reduction.
   - Vendor value: `max(round(levelBonus × quality%), max(25, round(1.6 × level))) × 1.225`, with `levelBonus = 48 × (level / 10 + 1) + 9 × level`.
-- **Failure.** The piece breaks when the minigame's integrity meter reaches 0. Each component stack and each selected enhancement then has today's 65% loss chance, and the window shows this rule before the materials are committed. A failed craft still gives 15% of the base XP, as today.
+- **Failure.** The piece breaks when the minigame's integrity meter reaches 0. Each component stack and each selected enhancement then has today's 65% loss chance, and the window shows this rule before the materials are committed. A failed craft still gives 15% of the base XP, as today, held to the pace rule above.
 - **Blueprints.** Fees, licensed runs and blueprint bonuses behave as today.
 
 ### Gear stats
@@ -180,7 +182,7 @@ Every recipe gets its own minigame parameters.
 
 ### Balance gates and tooling
 
-Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It drives the real rules engines rather than a copy of them, with repeatable seeds. A minigame ships only when all of these pass:
+Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It drives the real rules engines rather than a copy of them, with repeatable seeds. A minigame ships only when all of these pass, with one exception: gate 1 is open for the Circuit, the Fabricator and perked builds (owner decision, October 2026; see gate 1 below). It is the only gate that may fail at release, and it is judged from player feedback after release. Release notes claim that each craft now has its own minigame, not that fixed rotations no longer win.
 
 1. **No single rotation** (owner decision, October 2026; CraftSim still names the gate "No fixed rotation").
    - The player complaint was one rotation winning across every craft. A solver searches for the best single fixed action sequence per recipe band and gear level, searched across the band's sampled recipes (an action that is unavailable when its turn comes is skipped).
@@ -219,7 +221,8 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
 **Baselines.**
 - **Legacy model.** CraftSim ports today's rules as a legacy baseline, checked formula by formula against the code: the old minigame (`CraftViewModel.cs`), harvesting, scavenging, refining and the fishing catch roll. Build it in Foundation, before Closeout deletes the old minigame.
 - **Attributes.** Today's yields depend on Might (harvest bonus item), Perception (scavenge attempts and success) and Willpower (catch chance). Parity matches the median of active characters, measured once from a production data copy: Might and Perception among characters with Gathering rank 10 or more, Willpower among those with Agriculture rank 10 or more. Record the method and medians (aggregates only) in `design/testing/`, and delete every production-derived copy afterward.
-  - The agent environment refused to load the production copy (October 2026), so the medians are not measured yet. Until the owner runs the measurement, report parity across an attribute sweep, and get the owner's reference value before workstream 9 ships.
+  - The agent environment refused to load the production copy (October 2026), so the medians were never measured. **Reference in force** (owner decision, October 2026): a character with no attribute investment, Might and Perception modifier 0 and Willpower 10. Every gathering and fishing parity result in this plan and in `design/testing/` means parity with that character, not with today's invested gatherers.
+  - Invested characters lose their attribute bonus. Today a harvest gives a bonus item at 25% per Might modifier point, so a Might 18 (+4) harvester gets two items per harvest; Quick Harvest gives the reference character's one, half as many. Perception's second scavenge attempt (+5% per modifier point) and success roll (+1 per point), and Willpower's catch chance (+2% per Willpower point), go the same way. Gathering rank milestones and tool tier replace them for everyone. Release notes say this plainly.
 
 Report inputs, seeds, results and limitations as `SkillPerkStandards.md` requires, and keep the reports under `design/testing/` (new folder).
 
@@ -238,7 +241,7 @@ You keep the piece within its metal's thermal working range while shaping and fi
   - **Hydro-Press:** large Shape gain that rises with Thermal across the range. Below the range it does little and cracks Integrity; above it, it works more but cracks Integrity harder.
   - **Vibro-Hone:** Finish, best in the cool half of the range and weak outside it.
   - **Rebond:** molecular rebond that restores Integrity at a Thermal and CP cost.
-  - **Cryo-Quench:** once per craft. A large Finish bonus if Thermal is in range, more near the center. Afterward the piece is set: Ramp Plasma and Hydro-Press are disabled, and Vibro-Hone works at a flat rate.
+  - **Cryo-Quench:** once per craft, and only when the piece is at least 80% shaped (`ForgeRules.QuenchMinimumShapePercent`). A large Finish bonus if Thermal is in range, more near the center. Afterward the piece is set: Ramp Plasma and Hydro-Press are disabled, and Vibro-Hone works at a flat rate whatever the Thermal, adding both Finish and Shape (`PostQuenchHoneFinish` 84 and `PostQuenchHoneShape` 48 before the recipe's scales), so honing trims the set piece to size and completes it. A quench never leaves a craft with no way to finish.
 - **Telegraphed opportunity:** **Stable Containment** next turn: the next Hydro-Press or Vibro-Hone gets +50%.
 - **Per-recipe parameters:**
   - Working range center and width, cooling rate, starting Thermal.

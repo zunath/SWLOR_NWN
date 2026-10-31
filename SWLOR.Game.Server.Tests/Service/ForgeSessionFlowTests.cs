@@ -127,7 +127,7 @@ public class ForgeSessionFlowTests
             hot.Perform(ForgeActionIds.HydroPress);
         hot.Status.Should().Be(MinigameStatus.Failed);
 
-        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
+        var settlement = lifecycle.FailAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
         settlement.Settled.Should().BeTrue();
         settlement.ItemsLost.Should().Be(1);

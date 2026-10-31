@@ -24,4 +24,17 @@ internal static class CraftSessionTestPace
         world.AdvanceByActions(actions);
         return lifecycle.Succeed(player, dbPlayer, session, quality, actions);
     }
+
+    /// <summary>Breaks a craft the way a window does after playing its actions at the modeled pace, so the failure XP is the full amount.</summary>
+    public static CraftSettlement FailAtPace(
+        this CraftSessionLifecycle lifecycle,
+        FakeCraftSessionWorld world,
+        uint player,
+        Player dbPlayer,
+        CraftSessionEndReason reason,
+        int actions = Actions)
+    {
+        world.AdvanceByActions(actions);
+        return lifecycle.Fail(player, dbPlayer, reason, actions);
+    }
 }

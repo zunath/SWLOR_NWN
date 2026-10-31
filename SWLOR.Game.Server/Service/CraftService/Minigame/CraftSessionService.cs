@@ -32,12 +32,21 @@ public static class CraftSessionService
 
     /// <summary>
     /// Ends the player's saved craft as a failure. Does nothing when no craft is saved. A window passes the engine's
-    /// <paramref name="actionsTaken"/> so the failure XP is held to the modeled pace; null (a settlement with no window) leaves it unscaled.
+    /// <paramref name="actionsTaken"/>; null (a settlement with no window) uses the count the craft saved. Either way the failure XP is
+    /// held to the modeled pace.
     /// </summary>
     public static CraftSettlement Fail(uint player, CraftSessionEndReason reason, int? actionsTaken = null)
     {
         var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
         return dbPlayer == null ? CraftSettlement.None : Lifecycle.Fail(player, dbPlayer, reason, actionsTaken);
+    }
+
+    /// <summary>Saves the actions the player's craft has resolved, so a settlement with no window holds its XP to the same pace.</summary>
+    public static void RecordActions(uint player, CraftSession session, int actionsTaken)
+    {
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        if (dbPlayer != null)
+            Lifecycle.RecordActions(dbPlayer, session, actionsTaken);
     }
 
     /// <summary>Settles a craft nothing is playing and returns held items that now fit. Call at login and when a crafting window opens.</summary>

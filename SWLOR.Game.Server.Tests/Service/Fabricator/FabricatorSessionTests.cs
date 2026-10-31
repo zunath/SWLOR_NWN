@@ -125,7 +125,7 @@ public class FabricatorSessionTests
         var (engine, breaking) = WearToTheBreak();
         engine.Perform(breaking);
 
-        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
+        var settlement = lifecycle.FailAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
         engine.Status.Should().Be(MinigameStatus.Failed);
         settlement.Settled.Should().BeTrue();
@@ -176,7 +176,7 @@ public class FabricatorSessionTests
         _world.Enhancements[FakeCraftSessionWorld.FirstEnhancement] = "enh-a";
         _world.Enhancements[FakeCraftSessionWorld.SecondEnhancement] = "enh-b";
         StartSession(lifecycle);
-        var failure = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
+        var failure = lifecycle.FailAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
         failure.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(scaled, 0));
     }

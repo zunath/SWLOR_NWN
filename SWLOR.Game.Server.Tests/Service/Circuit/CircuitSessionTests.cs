@@ -124,7 +124,7 @@ public class CircuitSessionTests
         while (engine.Status == MinigameStatus.InProgress)
             engine.Perform(CircuitActionIds.Wire);
 
-        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
+        var settlement = lifecycle.FailAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
         engine.Status.Should().Be(MinigameStatus.Failed);
         settlement.Settled.Should().BeTrue();

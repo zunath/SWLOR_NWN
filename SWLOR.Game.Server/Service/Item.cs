@@ -80,8 +80,9 @@ namespace SWLOR.Game.Server.Service
         };
         private static readonly IReadOnlyList<BaseItem> _rangedStatMappedBaseItems = new[]
         {
-            BaseItem.Cannon,
+            BaseItem.HeavyRifle,
             BaseItem.Rifle,
+            BaseItem.Cannon,
             BaseItem.Longbow,
             BaseItem.Pistol,
             BaseItem.LegacyPistol,
@@ -756,9 +757,10 @@ namespace SWLOR.Game.Server.Service
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
             BaseItem.Dart,
-            BaseItem.Cannon,
+            BaseItem.HeavyRifle,
             BaseItem.Longbow,
             BaseItem.Rifle,
+            BaseItem.Cannon,
         };
 
         /// <summary>
@@ -950,6 +952,14 @@ namespace SWLOR.Game.Server.Service
         {
             BaseItem.Longbow,
             BaseItem.Rifle,
+            BaseItem.HeavyRifle
+        };
+
+        /// <summary>
+        /// Retrieves the list of Cannon base item types.
+        /// </summary>
+        public static List<BaseItem> CannonBaseItemTypes { get; } = new List<BaseItem>
+        {
             BaseItem.Cannon
         };
 

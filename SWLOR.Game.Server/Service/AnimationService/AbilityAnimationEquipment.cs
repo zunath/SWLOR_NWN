@@ -27,7 +27,7 @@ public static class AbilityAnimationEquipment
 
     public static AnimationWeaponHold ResolveHold(BaseItem type, AnimationWeaponGrip grip)
     {
-        if (type is BaseItem.Rifle or BaseItem.Cannon) return AnimationWeaponHold.Rifle;
+        if (type is BaseItem.Rifle or BaseItem.HeavyRifle or BaseItem.Cannon) return AnimationWeaponHold.Rifle;
         return grip is AnimationWeaponGrip.TwoHanded or AnimationWeaponGrip.Polearm
             ? AnimationWeaponHold.Shoulder : AnimationWeaponHold.None;
     }

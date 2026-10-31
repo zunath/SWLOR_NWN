@@ -540,6 +540,10 @@ namespace SWLOR.Game.Server.Native
                    attackResultType == AttackResultCriticalHit;
         }
 
+        private static bool IgnoresRangePenalty(CNWSItem weapon) =>
+            Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+            Item.CannonBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
+
         private static int CalculateRangeModifiers(uint attackType, CNWSCreature attacker, CNWSCreature defender, CNWSItem weapon)
         {
             if (attackType != (uint)AttackType.Ranged)
@@ -562,7 +566,7 @@ namespace SWLOR.Game.Server.Native
             // Long range (over 40.0)
             else if (range > LongRange)
             {
-                if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                if (weapon != null && !IgnoresRangePenalty(weapon))
                     return LongRangePenalty;
                 else
                     return MediumRangePenalty;
@@ -570,13 +574,13 @@ namespace SWLOR.Game.Server.Native
             // Medium range (30.0 - 40.0)
             else if (range > MediumRange)
             {
-                if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                if (weapon != null && !IgnoresRangePenalty(weapon))
                     return MediumRangePenalty;
                 else
                     return ShortRangePenalty;
             }
             // Short range (20.0 - 30.0)
-            else if (weapon != null && range > ShortRange && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            else if (weapon != null && range > ShortRange && !IgnoresRangePenalty(weapon))
             {
                 return ShortRangePenalty;
             }

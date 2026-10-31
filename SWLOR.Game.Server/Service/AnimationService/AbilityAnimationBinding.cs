@@ -90,7 +90,7 @@ public static class AbilityAnimationBinding
                 ability.IsChanneled || ability.CanBeUsedInSpace || ability.PreservesStealthDuringActivation ||
                 ability.PreservesNativeAnimationChoreography ||
                 ability.AnimationType == Animation.ThrowGrenade ||
-                ability.SkillType is SkillType.Pistol or SkillType.Rifle or SkillType.Throwing ||
+                ability.SkillType is SkillType.Pistol or SkillType.Rifle or SkillType.Cannon or SkillType.Throwing ||
                 !string.IsNullOrEmpty(ability.AnimationReplacementAnimationName) ||
                 ability.ActivationType != AbilityActivationType.Weapon &&
                 (ability.ImpactAnimationType != Animation.Invalid ||

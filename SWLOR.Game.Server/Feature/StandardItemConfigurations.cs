@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.Grenade,
                     BaseItem.Halberd,
                     BaseItem.HandAxe,
+                    BaseItem.HeavyRifle,
                     BaseItem.Cannon,
                     BaseItem.HeavyFlail,
                     BaseItem.Helmet,

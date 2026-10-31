@@ -9,7 +9,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         BastardSword = 3,
         LightFlail = 4,
         WarHammer = 5,
-        Cannon = 6,
+        HeavyRifle = 6,
         Rifle = 7,
         Longbow = 8,
         LightMace = 9,
@@ -134,6 +134,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
 
         PowerGlove = 541,
         CompanionPowerGlove = 543,
+        Cannon = 544,
 
     }
 }

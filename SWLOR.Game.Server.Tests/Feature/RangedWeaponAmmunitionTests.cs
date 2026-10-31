@@ -16,7 +16,7 @@ public class RangedWeaponAmmunitionTests
     public void ModuleBlasters_HaveUnlimitedAmmunition(string folder)
     {
         var root = FindRepositoryRoot();
-        var blasterTypes = Item.RifleBaseItemTypes.Concat(Item.PistolBaseItemTypes)
+        var blasterTypes = Item.RifleBaseItemTypes.Concat(Item.CannonBaseItemTypes).Concat(Item.PistolBaseItemTypes)
             .Select(type => (int)type)
             .ToHashSet();
         var failures = new List<string>();

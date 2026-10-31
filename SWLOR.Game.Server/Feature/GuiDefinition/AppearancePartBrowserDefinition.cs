@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>
     /// Part browser opened from the Appearance Editor's part picture: view buttons, a grid of
     /// pictures and a pager. The grid is a partial per size, swapped in to fit the window. The
-    /// worn part is outlined.
+    /// worn part is outlined. Only the pictures scroll.
     /// </summary>
     public class AppearancePartBrowserDefinition : IGuiWindowDefinition
     {
@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public const float WindowWidth = 620f;
         public const float WindowHeight = 590f;
         private const float TileSize = AppearanceEditorDefinition.TileSize;
+        /// <summary>The group that scrolls the pictures; the views and pager sit outside it.</summary>
+        public const string PicturesGroupId = "ae_browser_pictures";
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -27,12 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Part Browser")
-                .AddColumn(root => root.AddRow(row => row.AddGroup(group =>
-                {
-                    // A window smaller than the smallest grid scrolls its content instead of cutting it off.
-                    group.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
-                    group.AddColumn(col => col.AddRow(slot => slot.AddPartialView(AppearancePartBrowserViewModel.GridElement)));
-                })));
+                .AddColumn(root => root.AddRow(row => row.AddPartialView(AppearancePartBrowserViewModel.GridElement)));
             for (var columns = AppearancePartBrowserViewModel.MinColumns; columns <= AppearancePartBrowserViewModel.MaxColumns; columns++)
             {
                 for (var rows = 1; rows <= AppearancePartBrowserViewModel.MaxRows; rows++)
@@ -80,19 +77,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                 });
 
-                for (var row = 0; row < rows; row++)
+                // Only the pictures scroll in a window smaller than the smallest grid: a combo box
+                // inside a scrolled group does not open, so the pager stays below it.
+                col.AddRow(pictures => pictures.AddGroup(group =>
                 {
-                    var first = row * columns;
-                    col.AddRow(tiles =>
+                    group.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
+                    group.AddColumn(grid =>
                     {
-                        tiles.AddSpacer();
-                        for (var column = 0; column < columns; column++)
-                            AddTile(tiles, first + column);
-                        tiles.AddSpacer();
-                    });
-                }
+                        for (var row = 0; row < rows; row++)
+                        {
+                            var first = row * columns;
+                            grid.AddRow(tiles =>
+                            {
+                                tiles.AddSpacer();
+                                for (var column = 0; column < columns; column++)
+                                    AddTile(tiles, first + column);
+                                tiles.AddSpacer();
+                            });
+                        }
 
-                col.AddRow(fill => fill.AddSpacer());
+                        grid.AddRow(fill => fill.AddSpacer());
+                    });
+                }).SetId(PicturesGroupId));
                 if (narrow)
                 {
                     col.AddRow(row =>

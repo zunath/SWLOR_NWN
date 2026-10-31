@@ -1166,6 +1166,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(2, columns.Length, $"{stage}: body map and colours share one row");
             ctx.AssertEqual(AppearanceEditorDefinition.MapWidth, columns[0]["width"]?.Value<float>(), $"{stage}: body map width");
             ctx.Assert(columns[1]["width"] == null, $"{stage}: the colour column takes the width a resized window gives it.");
+            ctx.AssertEqual((int)NuiScrollbars.Auto, colours["scrollbars"]?.Value<int>(),
+                $"{stage}: a colour column narrower than its swatches and palette scrolls sideways.");
             ctx.Assert(ReferenceEquals(columns[1], colours), $"{stage}: the part picture belongs to the colours panel.");
             ctx.Assert(!objects.Any(node => node["id"]?.Value<string>()?.StartsWith("ae_tile_", StringComparison.Ordinal) == true),
                 $"{stage}: the part pictures are browsed in their own window.");

@@ -422,7 +422,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void BuildColours(GuiGroup<AppearanceEditorViewModel> group,
             System.Action<GuiColumn<AppearanceEditorViewModel>> buildSwatches, float swatchesHeight = 0f)
         {
-            group.SetShowBorder(true).SetScrollbars(NuiScrollbars.Y);
+            // A window narrower than the swatches and palette scrolls them sideways instead of cutting them off.
+            group.SetShowBorder(true).SetScrollbars(NuiScrollbars.Auto);
             group.AddColumn(col =>
             {
                 col.AddRow(row =>

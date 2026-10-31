@@ -335,6 +335,18 @@ public class AppearanceEditorLayoutTests
         }
     }
 
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    public void ANarrowWindowScrollsTheColoursSideways(string partialName)
+    {
+        var partial = _partials[partialName];
+        var preview = Walk(partial).Single(widget => widget.Id == "ae_part_preview");
+        var colours = PathTo(partial, preview).OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
+        Width(colours).Should().Be(0f, "the colour pane takes the width a resized window gives it");
+        ReadProperty<NuiScrollbars>(colours, "Scrollbars").Should().Be(NuiScrollbars.Auto,
+            "a pane narrower than its swatches and palette scrolls instead of cutting them off");
+    }
+
     [Test]
     public void QuickOutfitRowIsOnlyOnTheEquipmentMap()
     {
@@ -661,6 +673,9 @@ public class AppearanceEditorLayoutTests
                 (typeof(AppearancePreviewView), (AppearancePreviewView)index));
 
         var pager = Walk(browser).Single(widget => widget.GetType().Name.StartsWith("GuiComboBox"));
+        PathTo(browser, pager).Where(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal))
+            .Should().OnlyContain(group => ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
+                "a combo box inside a scrolled group does not open in the client");
         ReadProperty<string>(pager, "OptionsBindName").Should().Be(nameof(AppearancePartBrowserViewModel.PageOptions));
         ReadProperty<string>(pager, "SelectedIndexBindName").Should().Be(nameof(AppearancePartBrowserViewModel.PageIndex));
         AssertBrowserHandler(Walk(browser).Single(widget => widget.Id == "ae_browser_previous"),
@@ -682,7 +697,11 @@ public class AppearanceEditorLayoutTests
         ReadProperty<NuiScrollbars>(browser, "Scrollbars").Should().Be(NuiScrollbars.None);
         var tiles = Walk(browser).Where(widget => widget.Id?.StartsWith("ae_tile_") == true).ToArray();
         tiles.Should().HaveCount(columns * rows);
-        var tileRows = browser.Elements.Single().Elements
+        var pictures = Walk(browser).Single(widget => widget.Id == AppearancePartBrowserDefinition.PicturesGroupId);
+        ReadProperty<NuiScrollbars>(pictures, "Scrollbars").Should().Be(NuiScrollbars.Auto,
+            "a window smaller than the smallest grid scrolls the pictures instead of cutting them off");
+        tiles.Should().OnlyContain(tile => PathTo(browser, tile).Contains(pictures));
+        var tileRows = ((GuiGroup<AppearancePartBrowserViewModel>)pictures).Elements.Single().Elements
             .Where(row => Walk(row).Any(widget => widget.Id?.StartsWith("ae_tile_") == true)).ToArray();
         tileRows.Should().HaveCount(rows);
         foreach (var row in tileRows)
@@ -743,14 +762,14 @@ public class AppearanceEditorLayoutTests
         window.InitialGeometry.Height.Should().Be(AppearancePartBrowserDefinition.WindowHeight);
         IsResizable(new AppearancePartBrowserDefinition()).Should().BeTrue();
 
-        // The grid partial sits in a group that scrolls when the window is smaller than the smallest grid.
+        // The grid partial fills the window; only its pictures scroll (checked per grid above).
         var authored = AuthoredWindow(new AppearancePartBrowserDefinition());
         var partials = (IReadOnlyDictionary<string, IGuiWidget>)authored.GetType().GetProperty("PartialViews")!
             .GetValue(authored)!;
         var content = partials[WindowMain];
         var slot = Walk(content).Single(widget => widget.Id == AppearancePartBrowserViewModel.GridElement);
-        PathTo(content, slot).Should().Contain(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal) &&
-            ReadProperty<NuiScrollbars>(widget, "Scrollbars") == NuiScrollbars.Auto);
+        PathTo(content, slot).Should().NotContain(widget => widget.GetType().Name.StartsWith("GuiGroup", StringComparison.Ordinal) &&
+            ReadProperty<NuiScrollbars>(widget, "Scrollbars") != NuiScrollbars.None, "the pager inside the grid must not scroll");
         partials.Keys.Should().Contain(BrowserGridNames());
     }
 

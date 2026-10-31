@@ -418,12 +418,5 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             new ShipModuleStep { Family = ShipModuleFamily.CapacitorRegulator, Rank = 50, Tag = "sm_capr_50", Name = "Dynamo Capacitor Regulator", ShortName = "Dynamo", Row = ShipModulePowerType.Low, Skill = SkillType.Piloting, Activation = ShipModuleActivation.Invalid, CycleSeconds = 0, CapacitorCost = 0, Range = 0, Capital = false, Named = true, Texture = "iit_smfueltank", Description = "+1.69 capacitor per second (scales with hull size).", RecipeType = RecipeType.ShipCapacitorRegulator50, RecipeLevel = 52, CapacitorRegen = 1.69, Components = new[] { ("sc_reactor_5", 2), ("ref_gostian", 2), ("sc_thorcore", 1), ("sc_aurplate", 1) } },
             new ShipModuleStep { Family = ShipModuleFamily.Thrusters, Rank = 50, Tag = "sm_thrust_50", Name = "Comet Thrusters", ShortName = "Comet", Row = ShipModulePowerType.Low, Skill = SkillType.Piloting, Activation = ShipModuleActivation.Invalid, CycleSeconds = 0, CapacitorCost = 0, Range = 0, Capital = false, Named = true, Texture = "iit_smevaboost", Description = "+93 Evasion and +5% speed. Only your best Thrusters' Evasion counts.", RecipeType = RecipeType.ShipThrusters50, RecipeLevel = 52, ModuleEvasion = 93, SpeedPercent = 5, Components = new[] { ("sc_thruster_5", 2), ("ref_gostian", 2), ("sc_thorcore", 1), ("sc_aurplate", 1) } },
         };
-
-        /// <summary>Tags of retired steps and the step each becomes (a family that now starts at a higher rank).</summary>
-        public static readonly IReadOnlyDictionary<string, string> RetiredTags = new Dictionary<string, string>
-        {
-            ["sm_paint_00"] = "sm_paint_10",
-            ["sm_paint_05"] = "sm_paint_10",
-        };
     }
 }

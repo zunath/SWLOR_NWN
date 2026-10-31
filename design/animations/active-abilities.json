@@ -2483,7 +2483,7 @@
   },
   {
     "Id": "GuardiansChallenge",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Guardian's Challenge",
     "DisplayName": "Guardian's Challenge",
     "InternalName": "sw_guar_chal",
@@ -2524,7 +2524,7 @@
   },
   {
     "Id": "ImmovableStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Immovable Stance",
     "DisplayName": "Immovable Stance",
     "InternalName": "sw_immovstn",
@@ -2544,7 +2544,7 @@
   },
   {
     "Id": "Reprisal",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Reprisal",
     "DisplayName": "Reprisal",
     "InternalName": "sw_reprisal",
@@ -2590,7 +2590,7 @@
   },
   {
     "Id": "ShatteringStrike",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Shattering Strike",
     "DisplayName": "Shattering Strike",
     "InternalName": "sw_shat_stri",
@@ -2611,7 +2611,7 @@
   },
   {
     "Id": "SunderingSweep",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Sundering Sweep",
     "DisplayName": "Sundering Sweep",
     "InternalName": "sw_sund_swee",
@@ -4023,7 +4023,7 @@
   },
   {
     "Id": "DisarmingShot",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Disarming Shot",
     "DisplayName": "Disarming Shot",
     "InternalName": "sw_disa_shot",
@@ -4046,7 +4046,7 @@
   },
   {
     "Id": "DoubleShot",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Double Shot",
     "DisplayName": "Double Shot",
     "InternalName": "sw_doub_shot",
@@ -4068,7 +4068,7 @@
   },
   {
     "Id": "FanTheHammer",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Fan the Hammer",
     "DisplayName": "Fan the Hammer",
     "InternalName": "sw_fanhammer",
@@ -4109,7 +4109,7 @@
   },
   {
     "Id": "InterruptingShot",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Interrupting Shot",
     "DisplayName": "Interrupting Shot",
     "InternalName": "sw_intr_shot",
@@ -4131,7 +4131,7 @@
   },
   {
     "Id": "LastWord",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Last Word",
     "DisplayName": "Last Word",
     "InternalName": "sw_lastword",
@@ -4151,7 +4151,7 @@
   },
   {
     "Id": "PointBlankBurst",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Point Blank Burst",
     "DisplayName": "Point Blank Burst",
     "InternalName": "sw_ptblkbst",
@@ -4172,7 +4172,7 @@
   },
   {
     "Id": "QuickDraw",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Quick Draw",
     "DisplayName": "Quick Draw",
     "InternalName": "sw_quickdraw",
@@ -4195,7 +4195,7 @@
   },
   {
     "Id": "SkirmisherStance",
-    "EquipmentRequirement": "Pistol",
+    "EquipmentRequirement": "PistolWithOffHand",
     "Name": "Skirmisher Stance",
     "DisplayName": "Skirmisher Stance",
     "InternalName": "sw_skirmstn",
@@ -5506,7 +5506,7 @@
   },
   {
     "Id": "BerserkerStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Berserker Stance",
     "DisplayName": "Berserker Stance",
     "InternalName": "sw_berse_stn",
@@ -5548,7 +5548,7 @@
   },
   {
     "Id": "DefensiveStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Defensive Stance",
     "DisplayName": "Defensive Stance",
     "InternalName": "sw_defstn",
@@ -5588,7 +5588,7 @@
   },
   {
     "Id": "RendingStrike",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Rending Strike",
     "DisplayName": "Rending Strike",
     "InternalName": "sw_rendingst",
@@ -5609,7 +5609,7 @@
   },
   {
     "Id": "RiotBlade",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Riot Blade",
     "DisplayName": "Riot Blade",
     "InternalName": "sw_riotblade",
@@ -5632,7 +5632,7 @@
   },
   {
     "Id": "SavageCleave",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Savage Cleave",
     "DisplayName": "Savage Cleave",
     "InternalName": "sw_savagecle",
@@ -5718,7 +5718,7 @@
   },
   {
     "Id": "Backstab",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Backstab",
     "DisplayName": "Backstab",
     "InternalName": "sw_backstab",
@@ -5739,7 +5739,7 @@
   },
   {
     "Id": "CripplingSlice",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Crippling Slice",
     "DisplayName": "Crippling Slice",
     "InternalName": "sw_crip_slic",
@@ -5804,7 +5804,7 @@
   },
   {
     "Id": "ShadowflowStance",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Shadowflow",
     "DisplayName": "Shadowflow",
     "InternalName": "sw_shadf_stn",
@@ -5847,7 +5847,7 @@
   },
   {
     "Id": "ViralCascade",
-    "EquipmentRequirement": "OneHanded",
+    "EquipmentRequirement": "OneHandedWithOffHand",
     "Name": "Viral Cascade",
     "DisplayName": "Viral Cascade",
     "InternalName": "sw_vira_casc",

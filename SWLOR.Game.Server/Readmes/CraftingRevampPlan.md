@@ -753,6 +753,7 @@ The owner reviewed these in October 2026 and declined them. Do not reintroduce t
 - Quick craft at recipe level (it stays at level + 5).
 - Batch crafting several copies of one recipe in one minigame.
 - A beginner gate requiring a simple policy to finish at-level crafts.
+- Joint crafting: a second crafter working on the same item to lower its difficulty or the risk to expensive materials (player feedback, October 2026). Each minigame is turn-based with no timer, shows every action's cost and risk before the click, and has a repair action, so a careful crafter already controls that risk alone.
 
 Taking crafting skills out of the 400-rank skill cap, or capping how many crafts a character may train, is outside this revamp's scope.
 

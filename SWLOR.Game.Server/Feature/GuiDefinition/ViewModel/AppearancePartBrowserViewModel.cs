@@ -11,13 +11,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     /// <summary>
     /// Pages of part pictures for the Appearance Editor's selected slot. The editor sends the parts
     /// with <see cref="ShowParts"/> whenever its slot or part changes; a picked picture is worn
-    /// through the editor, which then sends the new current part back.
+    /// through the editor, which then sends the new current part back. The grid fits as many
+    /// columns and rows of pictures as the window holds.
     /// </summary>
     public class AppearancePartBrowserViewModel : GuiViewModelBase<AppearancePartBrowserViewModel, GuiPayloadBase>
     {
-        public const int Columns = 5;
-        public const int Rows = 3;
-        public const int PageSize = Columns * Rows;
+        public const string GridElement = "AE_PART_BROWSER_GRID";
+        public const int MinColumns = 2;
+        public const int MaxColumns = 8;
+        public const int MaxRows = 5;
+        public const int TileCount = MaxColumns * MaxRows;
+
+        /// <summary>Grid partial for a size; narrow grids stack their pager on two rows.</summary>
+        public static string Grid(int columns, int rows) => $"AE_PART_BROWSER_GRID_{columns}X{rows}";
+
+        // Measured in the client at the default 620x590, which holds five columns and three rows.
+        private const float TileColumnWidth = AppearanceEditorDefinition.TileSize + 14f;
+        private const float TileRowHeight = AppearanceEditorDefinition.TileSize + 42f;
+        private const float WindowWidthOverhead = 70f;
+        private const float WindowHeightOverhead = 176f;
+        /// <summary>The second pager row of a grid with <see cref="MinColumns"/> columns.</summary>
+        private const float StackedPagerHeight = 40f;
+
+        private int _columns = 5;
+        private int _rows = 3;
+        private int _resizeGeneration;
+        private bool _compactPageLabels;
 
         private AppearanceEditorViewModel _editor;
         private List<int> _ids = new();
@@ -28,7 +47,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _frontOnly;
         private AppearancePreviewView _view = AppearancePreviewView.Front;
 
+        private int PageSize => _columns * _rows;
         private int PageCount => Math.Max(1, (_ids.Count + PageSize - 1) / PageSize);
+
+        /// <summary>Picture columns that fit a window this wide; a narrower window scrolls.</summary>
+        internal static int ColumnsForWidth(float windowWidth) =>
+            Math.Clamp((int)((windowWidth - WindowWidthOverhead) / TileColumnWidth), MinColumns, MaxColumns);
+
+        /// <summary>Picture rows that fit a window this tall; a shorter window scrolls.</summary>
+        internal static int RowsForHeight(float windowHeight, int columns)
+        {
+            var available = windowHeight - WindowHeightOverhead - (columns <= MinColumns ? StackedPagerHeight : 0f);
+            return Math.Clamp((int)(available / TileRowHeight), 1, MaxRows);
+        }
 
         public bool IsPreviewViewChoiceVisible { get => Get<bool>(); set => Set(value); }
         public bool IsFrontViewSelected { get => Get<bool>(); set => Set(value); }
@@ -68,6 +99,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Tile12Image { get => Get<string>(); set => Set(value); }
         public string Tile13Image { get => Get<string>(); set => Set(value); }
         public string Tile14Image { get => Get<string>(); set => Set(value); }
+        public string Tile15Image { get => Get<string>(); set => Set(value); }
+        public string Tile16Image { get => Get<string>(); set => Set(value); }
+        public string Tile17Image { get => Get<string>(); set => Set(value); }
+        public string Tile18Image { get => Get<string>(); set => Set(value); }
+        public string Tile19Image { get => Get<string>(); set => Set(value); }
+        public string Tile20Image { get => Get<string>(); set => Set(value); }
+        public string Tile21Image { get => Get<string>(); set => Set(value); }
+        public string Tile22Image { get => Get<string>(); set => Set(value); }
+        public string Tile23Image { get => Get<string>(); set => Set(value); }
+        public string Tile24Image { get => Get<string>(); set => Set(value); }
+        public string Tile25Image { get => Get<string>(); set => Set(value); }
+        public string Tile26Image { get => Get<string>(); set => Set(value); }
+        public string Tile27Image { get => Get<string>(); set => Set(value); }
+        public string Tile28Image { get => Get<string>(); set => Set(value); }
+        public string Tile29Image { get => Get<string>(); set => Set(value); }
+        public string Tile30Image { get => Get<string>(); set => Set(value); }
+        public string Tile31Image { get => Get<string>(); set => Set(value); }
+        public string Tile32Image { get => Get<string>(); set => Set(value); }
+        public string Tile33Image { get => Get<string>(); set => Set(value); }
+        public string Tile34Image { get => Get<string>(); set => Set(value); }
+        public string Tile35Image { get => Get<string>(); set => Set(value); }
+        public string Tile36Image { get => Get<string>(); set => Set(value); }
+        public string Tile37Image { get => Get<string>(); set => Set(value); }
+        public string Tile38Image { get => Get<string>(); set => Set(value); }
+        public string Tile39Image { get => Get<string>(); set => Set(value); }
         public string Tile0Label { get => Get<string>(); set => Set(value); }
         public string Tile1Label { get => Get<string>(); set => Set(value); }
         public string Tile2Label { get => Get<string>(); set => Set(value); }
@@ -83,6 +139,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Tile12Label { get => Get<string>(); set => Set(value); }
         public string Tile13Label { get => Get<string>(); set => Set(value); }
         public string Tile14Label { get => Get<string>(); set => Set(value); }
+        public string Tile15Label { get => Get<string>(); set => Set(value); }
+        public string Tile16Label { get => Get<string>(); set => Set(value); }
+        public string Tile17Label { get => Get<string>(); set => Set(value); }
+        public string Tile18Label { get => Get<string>(); set => Set(value); }
+        public string Tile19Label { get => Get<string>(); set => Set(value); }
+        public string Tile20Label { get => Get<string>(); set => Set(value); }
+        public string Tile21Label { get => Get<string>(); set => Set(value); }
+        public string Tile22Label { get => Get<string>(); set => Set(value); }
+        public string Tile23Label { get => Get<string>(); set => Set(value); }
+        public string Tile24Label { get => Get<string>(); set => Set(value); }
+        public string Tile25Label { get => Get<string>(); set => Set(value); }
+        public string Tile26Label { get => Get<string>(); set => Set(value); }
+        public string Tile27Label { get => Get<string>(); set => Set(value); }
+        public string Tile28Label { get => Get<string>(); set => Set(value); }
+        public string Tile29Label { get => Get<string>(); set => Set(value); }
+        public string Tile30Label { get => Get<string>(); set => Set(value); }
+        public string Tile31Label { get => Get<string>(); set => Set(value); }
+        public string Tile32Label { get => Get<string>(); set => Set(value); }
+        public string Tile33Label { get => Get<string>(); set => Set(value); }
+        public string Tile34Label { get => Get<string>(); set => Set(value); }
+        public string Tile35Label { get => Get<string>(); set => Set(value); }
+        public string Tile36Label { get => Get<string>(); set => Set(value); }
+        public string Tile37Label { get => Get<string>(); set => Set(value); }
+        public string Tile38Label { get => Get<string>(); set => Set(value); }
+        public string Tile39Label { get => Get<string>(); set => Set(value); }
         public bool Tile0Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile1Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile2Selected { get => Get<bool>(); set => Set(value); }
@@ -98,6 +179,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool Tile12Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile13Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile14Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile15Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile16Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile17Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile18Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile19Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile20Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile21Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile22Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile23Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile24Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile25Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile26Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile27Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile28Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile29Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile30Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile31Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile32Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile33Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile34Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile35Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile36Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile37Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile38Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile39Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile0Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile1Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile2Visible { get => Get<bool>(); set => Set(value); }
@@ -113,6 +219,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool Tile12Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile13Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile14Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile15Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile16Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile17Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile18Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile19Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile20Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile21Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile22Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile23Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile24Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile25Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile26Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile27Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile28Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile29Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile30Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile31Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile32Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile33Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile34Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile35Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile36Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile37Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile38Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile39Visible { get => Get<bool>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -128,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PageOptions = new GuiBindingList<GuiComboEntry> { new("Page 1 of 1", 0) };
             PageIndex = 0;
             PartNumberText = string.Empty;
-            for (var tile = 0; tile < PageSize; tile++)
+            for (var tile = 0; tile < TileCount; tile++)
             {
                 Set(string.Empty, $"Tile{tile}Image");
                 Set(string.Empty, $"Tile{tile}Label");
@@ -138,6 +269,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.PageIndex);
             WatchOnClient(model => model.PartNumberText);
+            FitGrid(force: true);
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName != nameof(Geometry))
+                return;
+            // Rebuild once the drag settles, not on every step of it.
+            var generation = ++_resizeGeneration;
+            DelayCommand(0.3f, () =>
+            {
+                if (generation == _resizeGeneration)
+                    FitGrid();
+            });
+        }
+
+        /// <summary>
+        /// Shows the grid that fits the window. The page keeps the worn part in view, or else the
+        /// first picture that was shown.
+        /// </summary>
+        internal void FitGrid(bool force = false)
+        {
+            if (Geometry == null)
+                return;
+            var columns = ColumnsForWidth(Geometry.Width);
+            var rows = RowsForHeight(Geometry.Height, columns);
+            if (!force && columns == _columns && rows == _rows)
+                return;
+
+            var firstShown = _page * PageSize;
+            var currentIndex = _ids.IndexOf(_current);
+            var currentShown = currentIndex >= firstShown && currentIndex < firstShown + PageSize;
+            _columns = columns;
+            _rows = rows;
+            _page = (currentShown ? currentIndex : firstShown) / PageSize;
+            ChangePartialView(GridElement, Grid(columns, rows));
+            Publish();
+
+            // A layout swap rebuilds the controls, and input values are not re-sent (NuiLayoutRules R7).
+            OnPropertyChanged(nameof(IsFrontViewSelected));
+            OnPropertyChanged(nameof(IsBackViewSelected));
+            OnPropertyChanged(nameof(IsAngleViewSelected));
+            OnPropertyChanged(nameof(PageIndex));
+            OnPropertyChanged(nameof(PartNumberText));
         }
 
         /// <summary>
@@ -165,10 +340,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Publish()
         {
             _page = Math.Clamp(_page, 0, PageCount - 1);
-            for (var tile = 0; tile < PageSize; tile++)
+            for (var tile = 0; tile < TileCount; tile++)
             {
                 var position = _page * PageSize + tile;
-                var visible = position < _ids.Count;
+                var visible = tile < PageSize && position < _ids.Count;
                 var id = visible ? _ids[position] : -1;
                 SetIfChanged($"Tile{tile}Visible", visible);
                 SetIfChanged($"Tile{tile}Image", visible ? AppearancePreview.Picture(_key(id), _view) : string.Empty);
@@ -182,11 +357,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetIfChanged(nameof(IsAngleViewSelected), _view == AppearancePreviewView.Angle);
 
             var pages = PageCount;
-            if (PageOptions == null || PageOptions.Count != pages)
+            var compact = _columns <= MinColumns;
+            if (PageOptions == null || PageOptions.Count != pages || compact != _compactPageLabels)
             {
+                // A narrow grid has a narrow page box: "3 / 20" instead of "Page 3 of 20".
+                _compactPageLabels = compact;
                 var options = new GuiBindingList<GuiComboEntry>();
                 for (var page = 0; page < pages; page++)
-                    options.Add(new GuiComboEntry($"Page {page + 1} of {pages}", page));
+                    options.Add(new GuiComboEntry(compact ? $"{page + 1} / {pages}" : $"Page {page + 1} of {pages}", page));
                 PageOptions = options;
             }
             SetIfChanged(nameof(PageIndex), _page);

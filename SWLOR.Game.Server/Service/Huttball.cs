@@ -24,6 +24,10 @@ namespace SWLOR.Game.Server.Service
         private const string BallTag = "HUTTBALL_BALL";
         private const string MarkerResref = "plc_invisobj";
         private const string MarkerTag = "HUTTBALL_MARKER";
+
+        // A plain human in the Commoner faction with no AI scripts, so test players never wander or fight.
+        private const string TestPlayerResref = "colonisthuman1";
+        public const string TestPlayerTag = "HUTTBALL_TEST_PLAYER";
         private const string CarrierEffectTag = "HUTTBALL_CARRIER";
         private const string KnockedDownEffectTag = "HUTTBALL_DOWN";
 
@@ -39,6 +43,7 @@ namespace SWLOR.Game.Server.Service
             public uint Ball { get; set; } = OBJECT_INVALID;
             public HuttballSquare? BallSquare { get; set; }
             public List<uint> Markers { get; } = new();
+            public List<uint> TestPlayers { get; } = new();
         }
 
         private static readonly Dictionary<uint, MatchEntry> _matches = new();
@@ -97,6 +102,8 @@ namespace SWLOR.Game.Server.Service
             DestroyBall(entry);
             foreach (var marker in entry.Markers)
                 DestroyObject(marker);
+            foreach (var testPlayer in entry.TestPlayers.Where(GetIsObjectValid))
+                DestroyObject(testPlayer);
             _matches.Remove(area);
             Announce(area, new[] { "The Huttball match has ended." });
             RefreshWindows();
@@ -107,37 +114,98 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public const string PitchKey =
             "Blue rings and flags: the Home end zone (south). Red rings and flags: the Away end zone (north). " +
-            "White rings: the halfway line. Home scores in the red end zone, Away in the blue.";
+            "White rings and gold flags: the halfway line. Home scores in the red end zone, Away in the blue.";
 
         /// <summary>
-        /// Rings every square of both end zones in its team's color, rings the halfway line in white, and plants
-        /// a team flag at each corner, so players can read the pitch at a glance.
+        /// Rings every square of both end zones in its team's color and the halfway line in white, and plants flags
+        /// a square outside the pitch: team flags off each corner and gold flags off each end of the halfway line,
+        /// so players can read the pitch and its edges at a glance.
         /// </summary>
         private static void MarkPitch(uint area, MatchEntry entry)
         {
             var pitch = entry.Pitch;
             var ringScale = pitch.SquareSize / 2f;
-            var halfway = pitch.Length / 2;
+            var halfway = pitch.Length / 2f;
 
             for (var x = 0; x < pitch.Width; x++)
             {
                 AddMarker(area, entry, pitch.GetSquareCenter(new HuttballSquare(x, 0)), VisualEffect.Vfx_Dur_Aura_Blue, ringScale);
                 AddMarker(area, entry, pitch.GetSquareCenter(new HuttballSquare(x, pitch.Length - 1)), VisualEffect.Vfx_Dur_Aura_Red, ringScale);
-
-                // The halfway line runs along the edge between the two halves, half a square south of the first
-                // northern row.
-                var line = pitch.GetSquareCenter(new HuttballSquare(x, halfway));
-                AddMarker(area, entry, line with { Y = line.Y - pitch.SquareSize / 2f }, VisualEffect.Vfx_Dur_Aura_White, ringScale);
+                AddMarker(area, entry, pitch.GetPoint(x + 0.5f, halfway), VisualEffect.Vfx_Dur_Aura_White, ringScale);
             }
 
-            var southWest = pitch.GetSquareCenter(new HuttballSquare(0, 0));
-            var southEast = pitch.GetSquareCenter(new HuttballSquare(pitch.Width - 1, 0));
-            var northWest = pitch.GetSquareCenter(new HuttballSquare(0, pitch.Length - 1));
-            var northEast = pitch.GetSquareCenter(new HuttballSquare(pitch.Width - 1, pitch.Length - 1));
-            AddMarker(area, entry, southWest, VisualEffect.Vfx_Dur_Flag_Blue, 1f);
-            AddMarker(area, entry, southEast, VisualEffect.Vfx_Dur_Flag_Blue, 1f);
-            AddMarker(area, entry, northWest, VisualEffect.Vfx_Dur_Flag_Red, 1f);
-            AddMarker(area, entry, northEast, VisualEffect.Vfx_Dur_Flag_Red, 1f);
+            AddMarker(area, entry, pitch.GetPoint(-1f, -1f), VisualEffect.Vfx_Dur_Flag_Blue, 1f);
+            AddMarker(area, entry, pitch.GetPoint(pitch.Width + 1f, -1f), VisualEffect.Vfx_Dur_Flag_Blue, 1f);
+            AddMarker(area, entry, pitch.GetPoint(-1f, pitch.Length + 1f), VisualEffect.Vfx_Dur_Flag_Red, 1f);
+            AddMarker(area, entry, pitch.GetPoint(pitch.Width + 1f, pitch.Length + 1f), VisualEffect.Vfx_Dur_Flag_Red, 1f);
+            AddMarker(area, entry, pitch.GetPoint(-1f, halfway), VisualEffect.Vfx_Dur_Flag_Gold_Fixed, 1f);
+            AddMarker(area, entry, pitch.GetPoint(pitch.Width + 1f, halfway), VisualEffect.Vfx_Dur_Flag_Gold_Fixed, 1f);
+        }
+
+        /// <summary>
+        /// Fills both teams for testing: one of each role per side, named like "Test Catcher Home", lined up a
+        /// couple of squares back from the halfway line. Only allowed while the teams set up.
+        /// </summary>
+        public static void SpawnTestTeams(uint area, uint actor)
+        {
+            if (!_matches.TryGetValue(area, out var entry))
+                return;
+
+            var match = entry.Match;
+            if (match.Phase != HuttballPhase.Setup)
+            {
+                DMPresence.SendMessage(actor, ColorToken.Red("Spawn test teams between drives."));
+                return;
+            }
+
+            var result = new HuttballActionResult();
+            var roles = new[] { HuttballRole.Bruiser, HuttballRole.Catcher, HuttballRole.Thrower, HuttballRole.Blocker };
+            foreach (var team in new[] { HuttballTeam.Home, HuttballTeam.Away })
+            {
+                for (var index = 0; index < roles.Length; index++)
+                {
+                    var square = FindFormationSquare(match, team, index);
+                    if (square == null)
+                    {
+                        result.Messages.Add($"No free square left in the {team} half for a test player.");
+                        break;
+                    }
+
+                    var facing = team == HuttballTeam.Home ? 90f : 270f;
+                    var creature = CreateObject(ObjectType.Creature, TestPlayerResref,
+                        Location(area, entry.Pitch.GetSquareCenter(square.Value), facing), false, TestPlayerTag);
+                    if (!GetIsObjectValid(creature))
+                        continue;
+
+                    var name = $"Test {roles[index]} {team}";
+                    SetName(creature, name);
+                    SetPlotFlag(creature, true);
+                    entry.TestPlayers.Add(creature);
+                    result.Messages.AddRange(match.AddPlayer(creature, name, team, roles[index]).Messages);
+                    match.Place(creature, square.Value);
+                }
+            }
+
+            Apply(area, result, actor);
+        }
+
+        /// <summary>
+        /// The square for the <paramref name="index"/>th test player of a team: every other square across the
+        /// middle of a row two squares back from the halfway line, or the nearest free square of the team's half.
+        /// </summary>
+        private static HuttballSquare? FindFormationSquare(HuttballMatch match, HuttballTeam team, int index)
+        {
+            var row = team == HuttballTeam.Home ? match.Length / 2 - 2 : match.Length / 2 + 1;
+            var preferred = new HuttballSquare(match.Width / 2 - 3 + index * 2, row);
+            if (match.IsOnPitch(preferred) && match.GetPlayerAt(preferred) == null)
+                return preferred;
+
+            return Enumerable.Range(0, match.Length)
+                .SelectMany(y => Enumerable.Range(0, match.Width).Select(x => new HuttballSquare(x, y)))
+                .Where(square => match.IsInOwnHalf(team, square) && match.GetPlayerAt(square) == null)
+                .OrderBy(square => square.DistanceTo(preferred))
+                .Cast<HuttballSquare?>()
+                .FirstOrDefault();
         }
 
         private static void AddMarker(uint area, MatchEntry entry, Vector3 position, VisualEffect visual, float scale)

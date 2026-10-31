@@ -85,6 +85,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsEnabled(model => model.HasNoMatch);
                                 AddDMButton(r, "End Match", "End the match and clear the ball and effects.", model => model.OnEndMatch())
                                     .BindIsEnabled(model => model.HasMatch);
+                                AddDMButton(r, "Spawn Test Teams", "For testing: add one test player of each role to each team, lined up in their own halves.", model => model.OnSpawnTestTeams())
+                                    .BindIsEnabled(model => model.IsSetup);
                                 r.AddSpacer();
                             });
                             content.AddRow(r =>

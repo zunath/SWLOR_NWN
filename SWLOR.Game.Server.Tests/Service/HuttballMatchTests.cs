@@ -452,12 +452,14 @@ public class HuttballMatchTests
     {
         var pitch = HuttballPitch.FromGrid(new Vector3(100f, 50f, 2f), new BattleGridSettings(2f, 1, 1, 0.2f));
 
-        pitch.Width.Should().Be(20);
+        // 15 x 20 around the grid center (100, 50): 7 squares west, 8 east, 10 south and 10 north, on grid lines.
+        pitch.Width.Should().Be(15);
         pitch.Length.Should().Be(20);
-        pitch.GetSquareCenter(new HuttballSquare(0, 0)).Should().Be(new Vector3(81f, 31f, 2f));
-        pitch.GetSquareCenter(new HuttballSquare(19, 19)).Should().Be(new Vector3(119f, 69f, 2f));
-        pitch.GetSquare(new Vector3(81.9f, 31.1f, 0f)).Should().Be(new HuttballSquare(0, 0));
-        pitch.GetSquare(new Vector3(100.1f, 49.9f, 0f)).Should().Be(new HuttballSquare(10, 9));
-        pitch.GetSquare(new Vector3(70f, 50f, 0f)).X.Should().BeNegative("positions off the pitch map off it");
+        pitch.GetSquareCenter(new HuttballSquare(0, 0)).Should().Be(new Vector3(87f, 31f, 2f));
+        pitch.GetSquareCenter(new HuttballSquare(14, 19)).Should().Be(new Vector3(115f, 69f, 2f));
+        pitch.GetPoint(pitch.Width, pitch.Length).Should().Be(new Vector3(116f, 70f, 2f));
+        pitch.GetSquare(new Vector3(86.1f, 30.1f, 0f)).Should().Be(new HuttballSquare(0, 0));
+        pitch.GetSquare(new Vector3(100.1f, 49.9f, 0f)).Should().Be(new HuttballSquare(7, 9));
+        pitch.GetSquare(new Vector3(80f, 50f, 0f)).X.Should().BeNegative("positions off the pitch map off it");
     }
 }

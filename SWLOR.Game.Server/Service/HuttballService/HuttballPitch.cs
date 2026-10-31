@@ -4,32 +4,38 @@ using System.Numerics;
 namespace SWLOR.Game.Server.Service.HuttballService
 {
     /// <summary>
-    /// Where a Huttball pitch lies in the area: the battle grid it was laid on, captured when the match was created
-    /// so moving the grid later does not move the squares under the players.
+    /// Where a Huttball pitch lies in the area: a fixed-size pitch laid over the battle grid's squares around its
+    /// center, captured when the match was created so moving the grid later does not move the squares under the
+    /// players.
     /// </summary>
     public readonly record struct HuttballPitch(Vector3 Center, float SquareSize, int Width, int Length)
     {
         /// <summary>
-        /// Lays a pitch over a battle grid, one Huttball square per grid square.
+        /// Lays a <see cref="HuttballRules.PitchWidth"/> x <see cref="HuttballRules.PitchLength"/> pitch over a
+        /// battle grid, one Huttball square per grid square. Even a one-section grid (20 x 20) holds it.
         /// </summary>
         public static HuttballPitch FromGrid(Vector3 center, BattleGridSettings settings)
         {
-            return new HuttballPitch(
-                center,
-                settings.SquareSize,
-                settings.SectionsWide * BattleGrid.SquaresPerSection,
-                settings.SectionsLong * BattleGrid.SquaresPerSection);
+            return new HuttballPitch(center, settings.SquareSize, HuttballRules.PitchWidth, HuttballRules.PitchLength);
         }
 
-        private float West => Center.X - Width * SquareSize / 2f;
-        private float South => Center.Y - Length * SquareSize / 2f;
+        // The grid's center sits on a square corner, so the pitch edges stay on grid lines even when a side has
+        // an odd number of squares.
+        private float West => Center.X - Width / 2 * SquareSize;
+        private float South => Center.Y - Length / 2 * SquareSize;
 
         public Vector3 GetSquareCenter(HuttballSquare square)
         {
-            return new Vector3(
-                West + (square.X + 0.5f) * SquareSize,
-                South + (square.Y + 0.5f) * SquareSize,
-                Center.Z);
+            return GetPoint(square.X + 0.5f, square.Y + 0.5f);
+        }
+
+        /// <summary>
+        /// Returns the world point at a position measured in squares from the pitch's south-west corner, so 0 is
+        /// the west or south edge and <see cref="Width"/> or <see cref="Length"/> the far edge.
+        /// </summary>
+        public Vector3 GetPoint(float squaresEast, float squaresNorth)
+        {
+            return new Vector3(West + squaresEast * SquareSize, South + squaresNorth * SquareSize, Center.Z);
         }
 
         /// <summary>
@@ -43,11 +49,12 @@ namespace SWLOR.Game.Server.Service.HuttballService
         }
 
         /// <summary>
-        /// A bench spot beside the pitch: west of it for Home, east of it for Away, one per bench slot.
+        /// A bench spot beside the pitch, clear of the sideline flags: west of it for Home, east of it for Away,
+        /// one per bench slot.
         /// </summary>
         public Vector3 GetBenchPosition(HuttballTeam team, int slot)
         {
-            var column = team == HuttballTeam.Home ? -2 : Width + 1;
+            var column = team == HuttballTeam.Home ? -3 : Width + 2;
             var row = Length / 2 - 3 + slot % Math.Max(1, Length);
             return GetSquareCenter(new HuttballSquare(column, row));
         }

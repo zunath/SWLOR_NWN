@@ -330,7 +330,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _selectedUnit = OBJECT_INVALID;
                 Huttball.ClearEffects(target);
                 Run(match => match.RemovePlayer(target));
+
+                // Test players exist only for the match.
+                if (GetTag(target) == Huttball.TestPlayerTag)
+                    DestroyObject(target);
             });
+        };
+
+        public Action OnSpawnTestTeams() => () =>
+        {
+            if (!UserIsDM)
+                return;
+
+            Huttball.SpawnTestTeams(MatchArea, Player);
+            Refresh();
         };
 
         public Action OnSetRole() => () =>

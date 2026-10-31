@@ -37,6 +37,16 @@ namespace SWLOR.Game.Server.Service.HuttballService
         /// </summary>
         public const int RefereeTarget = 15;
 
+        /// <summary>
+        /// Squares across the pitch, west to east. A Bloodbowl pitch is 15 x 26; Huttball shortens it to 20.
+        /// </summary>
+        public const int PitchWidth = 15;
+
+        /// <summary>
+        /// Squares from the south end zone to the north end zone.
+        /// </summary>
+        public const int PitchLength = 20;
+
         public const int TurnsPerHalf = 10;
         public const int Halves = 2;
         public const int DefaultBribes = 1;

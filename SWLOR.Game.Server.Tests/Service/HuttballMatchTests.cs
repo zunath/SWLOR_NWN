@@ -427,6 +427,26 @@ public class HuttballMatchTests
         match.LooseBall.Should().Be(new HuttballSquare(4, 9));
     }
 
+    [TestCase(1f, 0f, 0f)]
+    [TestCase(0f, 1f, 90f)]
+    [TestCase(-1f, 0f, 180f)]
+    [TestCase(0f, -1f, 270f)]
+    [TestCase(1f, 1f, 45f)]
+    public void PlayersFaceTheWayTheyLastRan(float dx, float dy, float expected)
+    {
+        var from = new Vector3(10f, 10f, 0f);
+
+        Huttball.GetFacingAlong(from, from + new Vector3(dx, dy, 0f), 123f).Should().BeApproximately(expected, 0.01f);
+    }
+
+    [Test]
+    public void AStandingStillPlayerKeepsTheirFacing()
+    {
+        var point = new Vector3(4f, 4f, 0f);
+
+        Huttball.GetFacingAlong(point, point, 123f).Should().Be(123f);
+    }
+
     [Test]
     public void SquaresLineUpWithTheBattleGrid()
     {

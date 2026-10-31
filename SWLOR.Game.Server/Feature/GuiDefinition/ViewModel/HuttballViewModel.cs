@@ -157,7 +157,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return text;
         }
 
-        private void Run(System.Func<HuttballMatch, HuttballActionResult> command, uint mover = OBJECT_INVALID)
+        private void Run(
+            System.Func<HuttballMatch, HuttballActionResult> command,
+            uint mover = OBJECT_INVALID,
+            uint striker = OBJECT_INVALID,
+            uint struck = OBJECT_INVALID)
         {
             var match = Match;
             if (match == null)
@@ -166,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            Huttball.Apply(MatchArea, command(match), Player, mover);
+            Huttball.Apply(MatchArea, command(match), Player, mover, striker, struck);
             Refresh();
         }
 
@@ -233,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             PickCreature($"Click an opponent next to {unit.Name} to block.",
-                target => Run(match => match.Block(unit.Creature, target)));
+                target => Run(match => match.Block(unit.Creature, target), striker: unit.Creature, struck: target));
         };
 
         public Action OnPass() => () =>
@@ -251,7 +255,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             PickCreature("Click a downed opponent next to you. The referee may be watching...",
-                target => Run(match => match.DirtyMove(unit.Creature, target)));
+                target => Run(match => match.DirtyMove(unit.Creature, target), striker: unit.Creature, struck: target));
         };
 
         public Action OnStandUp() => () =>

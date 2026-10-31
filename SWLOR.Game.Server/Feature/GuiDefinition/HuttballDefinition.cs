@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.HuttballService;
@@ -51,6 +52,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundLabel(content, model => model.ScoreText);
                             AddBoundLabel(content, model => model.TurnText);
                             AddBoundLabel(content, model => model.BallText);
+                            content.AddRow(r => r.AddText()
+                                .SetText(Huttball.PitchKey)
+                                .BindIsVisible(model => model.HasMatch)
+                                .SetHeight(56f));
 
                             AddSectionLabel(content, "Player", model => model.HasMatch);
                             content.AddRow(r => r.AddText()

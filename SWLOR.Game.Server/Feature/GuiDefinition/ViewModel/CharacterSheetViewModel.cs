@@ -1288,7 +1288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshPortrait()
         {
-            PortraitResref = GuiPortrait.GetLarge(_target);
+            PortraitResref = GetPortraitResRef(_target) + "l";
         }
 
         private void LoadData()

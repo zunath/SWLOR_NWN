@@ -1,6 +1,8 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
@@ -91,6 +93,77 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var reloadedNative = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(reloaded).AsNWSCreature();
                 ctx.AssertEqual(0, reloadedNative.m_bMagicalArrowsEquipped, "Reloaded unequip leaves no generated arrows");
                 ctx.AssertEqual(0, reloadedNative.m_bMagicalBulletsEquipped, "Reloaded unequip clears regenerated bullets");
+            });
+        }
+
+        [EngineTest("Legacy pistol ammo repair preserves a real equipped bullet stack", Category = "PistolPresentation")]
+        public static async Task RepairLegacyPistolPreservesEquippedBullets(EngineTestContext ctx)
+        {
+            const string AmmoMarker = "PISTOL_PRESENTATION_REAL_AMMO";
+            ctx.SeedRandom(20260721);
+            var originalCreature = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var originalAmmo = await ctx.EquipItemAsync(originalCreature, "blaster_bullets", InventorySlot.Bullets);
+            var originalWeapon = await ctx.EquipItemAsync(originalCreature, "b_longsword", InventorySlot.RightHand);
+            var originalQuantity = GetItemStackSize(originalAmmo);
+
+            var serialized = string.Empty;
+            await ctx.ExecuteInCreatureContextAsync(originalCreature, () =>
+            {
+                SetLocalString(originalAmmo, AmmoMarker, "preserve");
+                AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), originalWeapon);
+                serialized = ObjectPlugin.Serialize(originalCreature);
+            });
+
+            var creature = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(originalCreature,
+                () => creature = ObjectPlugin.Deserialize(WithLegacyWeaponBaseItem(serialized)));
+            ctx.Assert(GetIsObjectValid(creature), "Legacy pistol ammunition fixture deserializes");
+            ctx.Track(creature);
+            ObjectPlugin.AddToArea(creature, ctx.Arena, GetPositionFromLocation(ctx.GetArenaLocation(0f, 0f)));
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(ctx.Arena, GetArea(creature), "Loaded creature is placed in the test arena");
+            await ctx.ExecuteInCreatureContextAsync(originalCreature, () => DestroyObject(originalCreature));
+            await ctx.WaitFrameAsync();
+
+            var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
+            ctx.Assert(GetIsObjectValid(weapon), "Loaded creature retains its equipped legacy weapon");
+            ctx.AssertEqual(BaseItem.Pistol, GetBaseItemType(weapon), "The saved legacy base loads unchanged");
+            var ammo = FindMarkedAmmo(creature, AmmoMarker);
+            ctx.Assert(GetIsObjectValid(ammo), "The saved real bullet stack is still present");
+            var ammoPointerBeforeRepair = ammo;
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSCreature();
+            var initialAmmoFlags = $"arrows={native.m_bMagicalArrowsEquipped} bullets={native.m_bMagicalBulletsEquipped}";
+
+            await ctx.ExecuteInCreatureContextAsync(creature, () =>
+            {
+                var needsRepair = native.m_bMagicalArrowsEquipped != 0 && native.m_bMagicalBulletsEquipped == 0;
+                ctx.Assert(needsRepair || (native.m_bMagicalArrowsEquipped == 0 && native.m_bMagicalBulletsEquipped != 0),
+                    $"Saved pistol has stale or already-repaired ammunition ({initialAmmoFlags}; real ammo={ObjectToString(ammo)})");
+                ctx.AssertEqual(needsRepair, PistolBaseItemCompatibility.Normalize(weapon),
+                    "The normalizer repairs stale ammunition and leaves an already-repaired load unchanged");
+            });
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(creature, () =>
+            {
+                ctx.AssertEqual(0, native.m_bMagicalArrowsEquipped, "Repair clears generated arrows");
+                ctx.AssertEqual(1, native.m_bMagicalBulletsEquipped, "Repair supplies generated bullets");
+                ctx.AssertEqual(creature, GetItemPossessor(ammo), "The real bullet stack remains owned by the creature");
+                ctx.AssertEqual(originalQuantity, GetItemStackSize(ammo), "The real bullet stack keeps its complete quantity");
+                ctx.AssertEqual(ammoPointerBeforeRepair, FindMarkedAmmo(creature, AmmoMarker),
+                    "The repair preserves the original real bullet item");
+
+                var equippedAmmo = GetItemInSlot(InventorySlot.Bullets, creature);
+                if (equippedAmmo != ammo)
+                {
+                    var nativeAmmo = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(ammo).AsNWSItem();
+                    ctx.Assert(native.m_pcItemRepository.GetItemInRepository(nativeAmmo) != 0,
+                        "A displaced real bullet stack is preserved in the creature's inventory repository");
+                }
+
+                ctx.SetResultDetail($"initial=[{initialAmmoFlags}] realAmmo={ObjectToString(ammo)} " +
+                                    $"quantity={GetItemStackSize(ammo)} equipped={equippedAmmo == ammo} " +
+                                    $"arrows={native.m_bMagicalArrowsEquipped} bullets={native.m_bMagicalBulletsEquipped}");
             });
         }
 
@@ -190,6 +263,73 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         DB.Delete<Player>(playerId);
                 }
             }
+        }
+
+        private static string WithLegacyWeaponBaseItem(string serialized)
+        {
+            var data = Convert.FromBase64String(serialized);
+            uint Read(int offset) => BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(offset, 4));
+            var structs = (int)Read(8);
+            var fields = (int)Read(16);
+            var labels = (int)Read(24);
+            var fieldIndices = (int)Read(40);
+            var listIndices = (int)Read(48);
+
+            int FindField(int node, string name)
+            {
+                var first = Read(structs + node * 12 + 4);
+                var count = Read(structs + node * 12 + 8);
+                for (var index = 0; index < count; index++)
+                {
+                    var fieldIndex = count == 1
+                        ? first
+                        : Read(fieldIndices + (int)first + (int)index * 4);
+                    var field = fields + (int)fieldIndex * 12;
+                    var label = Encoding.ASCII.GetString(data, labels + (int)Read(field + 4) * 16, 16)
+                        .TrimEnd('\0');
+                    if (label == name)
+                        return field;
+                }
+
+                throw new InvalidOperationException($"Legacy pistol fixture is missing field {name}.");
+            }
+
+            var listField = FindField(0, "Equip_ItemList");
+            var list = listIndices + (int)Read(listField + 8);
+            var rightHandMask = 1u << (int)InventorySlot.RightHand;
+            for (var index = 0; index < Read(list); index++)
+            {
+                var node = (int)Read(list + 4 + (int)index * 4);
+                if (Read(structs + node * 12) != rightHandMask)
+                    continue;
+
+                BinaryPrimitives.WriteUInt32LittleEndian(
+                    data.AsSpan(FindField(node, "BaseItem") + 8, 4),
+                    (uint)BaseItem.Pistol);
+                return Convert.ToBase64String(data);
+            }
+
+            throw new InvalidOperationException("Legacy pistol fixture has no right-hand equipment entry.");
+        }
+
+        private static uint FindMarkedAmmo(uint creature, string marker)
+        {
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (GetIsObjectValid(item) && GetLocalString(item, marker) == "preserve")
+                    return item;
+            }
+
+            for (var item = GetFirstItemInInventory(creature);
+                 GetIsObjectValid(item);
+                 item = GetNextItemInInventory(creature))
+            {
+                if (GetLocalString(item, marker) == "preserve")
+                    return item;
+            }
+
+            return OBJECT_INVALID;
         }
 
         [NWNEventHandler(ScriptName.OnBroadcastSafeProjectileBefore)]

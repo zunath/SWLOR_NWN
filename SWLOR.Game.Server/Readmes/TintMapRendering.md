@@ -842,6 +842,17 @@ Preserve the engine's authored specular and roughness maps, material overrides,
 palette alpha, and hair cutouts. Disabling specularity globally or editing each
 NPC would hide the initialization error and remove intentional material detail.
 
+One exception is listed in `PALETTE_SPECULAR_MAPS` (`GenerateTintMapAssets.py`):
+the Republic Trooper body parts (chest 99, pelvis 156, shoulders 197, biceps,
+forearms and hands 101, thighs 121, shins 102, feet 186). A bound specular map
+replaces the palette's metal reflectance, and these maps (about 0.1 to 0.3 on
+metal) make dyed metal a pale nonmetallic sheen; players reported the thighs and
+arms as washed out next to other parts with the same metal color. The generator
+writes `texture2 null` and `texture3 null` for those maps and keeps the normal
+maps; material profile signatures still see the authored maps, so scoped alias
+names do not change. `TestPaletteSpecularMaps.py` guards the rule and the
+checked-in materials.
+
 Match the engine's color-space ordering as well: blend the legacy reflection
 gray into the palette RGB **before** `ApplyColorSpace`, then perform the optional
 environment-map blend in linear space. Mixing gray into already-linear RGB

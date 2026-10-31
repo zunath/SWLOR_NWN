@@ -267,10 +267,27 @@ class NamingParityTests(unittest.TestCase):
 
         self.assertIn("wswls_t_011", keys)
         self.assertIn("ashlw_011", keys)
+        for gender in "fm":
+            self.assertIn(f"p{gender}h0_chest350", keys, "Wookiee body choices are separate from armor")
+            for side in "rl":
+                self.assertIn(f"p{gender}h0_hand{side}262", keys, "inherited bare hands are separate from armor")
         for key in keys:
             self.assertRegex(key, r"^(p[fm]h0_[a-z]+\d{3}|helm_\d{3}|w[a-z]+_[tmb]_\d{3}|w[a-z]+_\d{3}|ashlw_\d{3})$")
             for view in VIEWS:
                 preview_resref(key, view)  # raises when a key cannot fit a resref
+
+    def test_species_body_choices_override_inherited_defaults(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "Base.cs").write_text(
+                "class Base : Interface { public virtual int[] Torsos { get; } = { 1, 2 }; "
+                "public virtual int[] LeftHand { get; } = { 1, 262 }; }")
+            (root / "HumanBase.cs").write_text(
+                "class HumanBase : Base { public override int[] Torsos { get; } = { 3 }; }")
+            species = root / "Species.cs"
+            species.write_text(
+                "class Species : HumanBase { public override int[] LeftHand { get; } = { }; }")
+            self.assertEqual(jobs.racial_lists(species), {"Torsos": [3], "LeftHand": []})
 
     def build_jobs(self, root: Path):
         """Run jobs.build against a tiny 2DA set: every species uses body letter h."""

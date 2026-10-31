@@ -365,8 +365,9 @@ from the reference `a_ba.plpause1` at time zero; the client still plays its nati
 Horns hold the instrument at the mouth with the bell forward and down. Both use the item
 attachment at `rhand` like the fishing rod, so check them with real instruments equipped.
 
-The slitherhorn mouthpiece is fitted to the same horn contact as the kloo horn. Its hand grips
-and bell keep their original coordinates. The editable model is
+The slitherhorn mouthpiece is fitted in item-local coordinates from close male and female
+client views. The lower stem, grips and bell keep their original coordinates (vertices at or
+below original Y=0.04). The editable model is
 `SWLOR_Haks/sw_item_source/wmgfs_m_221.mdl.ascii`; copy it to
 `SWLOR_Haks/sw_weapon/wmgfs_m_221.mdl`, then compile with
 `python -B SWLOR_Haks/tools/CompileModels.py --model wmgfs_m_221 --apply`.

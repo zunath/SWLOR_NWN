@@ -91,6 +91,27 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if (key == null)
                 return RiftRunRefusal.UnknownKey;
+
+            var entry = GetEntryRefusal(piloting, cloaked, inCombat, inRun);
+            return entry != RiftRunRefusal.None ? entry : GetOpenRefusal(key, openRuns);
+        }
+
+        /// <summary>Why the key cannot open a pocket now, whoever holds it: an unknown key, or no room for another pocket.</summary>
+        public static RiftRunRefusal GetOpenRefusal(RiftKeyDetail key, int openRuns)
+        {
+            if (key == null)
+                return RiftRunRefusal.UnknownKey;
+            if (openRuns >= RiftRunTuning.MaxRuns)
+                return RiftRunRefusal.TooManyRuns;
+
+            return RiftRunRefusal.None;
+        }
+
+        /// <summary>
+        /// Why a ship cannot go into a pocket now: the checks the key user and every party ship entering with them pass.
+        /// </summary>
+        public static RiftRunRefusal GetEntryRefusal(bool piloting, bool cloaked, bool inCombat, bool inRun)
+        {
             if (!piloting)
                 return RiftRunRefusal.NotPiloting;
             if (inRun)
@@ -99,8 +120,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 return RiftRunRefusal.Cloaked;
             if (inCombat)
                 return RiftRunRefusal.InCombat;
-            if (openRuns >= RiftRunTuning.MaxRuns)
-                return RiftRunRefusal.TooManyRuns;
 
             return RiftRunRefusal.None;
         }
@@ -120,15 +139,38 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Who enters with the key user: the nearest party ships within <see cref="RiftRunTuning.JoinMeters"/>, up to
         /// <see cref="RiftRunTuning.MaxShips"/> ships in all, the user first.
         /// </summary>
-        public static List<T> PickParty<T>(T user, IEnumerable<(T Ship, float Distance)> partyShips)
+        public static List<T> PickParty<T>(T user, IEnumerable<(T Ship, float Distance)> partyShips) =>
+            PickParty(user, partyShips, _ => string.Empty).Party;
+
+        /// <summary>
+        /// Who enters with the key user, as <see cref="PickParty{T}(T, IEnumerable{ValueTuple{T, float}})"/>, but a
+        /// ship that fails its entry check (<paramref name="refusal"/> gives the reason, or empty) stays behind and the
+        /// next nearest takes its place. Returns the ships left out with their reasons, the nearest first.
+        /// </summary>
+        public static (List<T> Party, List<(T Ship, string Refusal)> LeftOut) PickParty<T>(
+            T user,
+            IEnumerable<(T Ship, float Distance)> partyShips,
+            Func<T, string> refusal)
         {
             var party = new List<T> { user };
-            party.AddRange(partyShips
+            var leftOut = new List<(T Ship, string Refusal)>();
+            var nearby = partyShips
                 .Where(x => !EqualityComparer<T>.Default.Equals(x.Ship, user) && x.Distance <= RiftRunTuning.JoinMeters)
-                .OrderBy(x => x.Distance)
-                .Take(RiftRunTuning.MaxShips - 1)
-                .Select(x => x.Ship));
-            return party;
+                .OrderBy(x => x.Distance);
+
+            foreach (var (ship, _) in nearby)
+            {
+                if (party.Count >= RiftRunTuning.MaxShips)
+                    break;
+
+                var reason = refusal(ship);
+                if (string.IsNullOrEmpty(reason))
+                    party.Add(ship);
+                else
+                    leftOut.Add((ship, reason));
+            }
+
+            return (party, leftOut);
         }
 
         /// <summary>

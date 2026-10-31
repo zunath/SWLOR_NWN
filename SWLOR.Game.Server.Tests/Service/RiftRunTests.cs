@@ -239,6 +239,48 @@ public class RiftRunTests
         RiftRunRules.Message(RiftRunRefusal.InCombat).Should().NotBeEmpty();
     }
 
+    [Test]
+    public void PartyShips_PassTheKeyUsersEntryChecks()
+    {
+        // The entry checks are the key user's own, without the key and the pocket count, which only the user answers for.
+        RiftRunRules.GetEntryRefusal(true, false, false, false).Should().Be(RiftRunRefusal.None);
+        RiftRunRules.GetEntryRefusal(false, false, false, false).Should().Be(RiftRunRefusal.NotPiloting);
+        RiftRunRules.GetEntryRefusal(true, false, false, true).Should().Be(RiftRunRefusal.AlreadyInRun);
+        RiftRunRules.GetEntryRefusal(true, true, false, false).Should().Be(RiftRunRefusal.Cloaked);
+        RiftRunRules.GetEntryRefusal(true, false, true, false).Should().Be(RiftRunRefusal.InCombat);
+        RiftRunRules.GetOpenRefusal(null, 0).Should().Be(RiftRunRefusal.UnknownKey);
+        RiftRunRules.GetOpenRefusal(RiftRunRules.KeyForTier(2), RiftRunTuning.MaxRuns).Should().Be(RiftRunRefusal.TooManyRuns);
+        RiftRunRules.GetOpenRefusal(RiftRunRules.KeyForTier(2), 0).Should().Be(RiftRunRefusal.None);
+
+        // A refused ship stays behind with its reason and the next nearest takes its place; ships past the cap are
+        // never checked, so their pilots hear nothing.
+        var refusals = new Dictionary<uint, string> { [4] = "held", [5] = "fighting" };
+        var checkedShips = new List<uint>();
+        var (party, leftOut) = RiftRunRules.PickParty(1u,
+            new (uint, float)[] { (2, 10f), (3, 31f), (4, 5f), (5, 20f), (6, 25f), (7, 28f), (1, 0f) },
+            ship =>
+            {
+                checkedShips.Add(ship);
+                return refusals.GetValueOrDefault(ship, string.Empty);
+            });
+
+        party.Should().Equal(1u, 2u, 6u);
+        leftOut.Should().Equal((4u, "held"), (5u, "fighting"));
+        checkedShips.Should().Equal(4u, 2u, 5u, 6u);
+
+        // Opening checks every ship that enters, not only the key user.
+        var runs = ReadSource("Service", "SpaceRiftRuns.cs").Replace("\r\n", "\n");
+        runs.Should().Contain("var (pilots, leftOut) = RiftRunRules.PickParty(user, nearby, GetRiftEntryRefusal);")
+            .And.Contain("SendMessageToPC(pilot, ColorToken.Red(refusal));")
+            .And.NotContain("RiftRunRules.PickParty(user, nearby);");
+        var open = runs.Substring(runs.IndexOf("private static string GetRiftOpenRefusal(", StringComparison.Ordinal));
+        open.Substring(0, open.IndexOf("\n        }", StringComparison.Ordinal))
+            .Should().Contain("GetRiftEntryRefusal(user)", "the key user and the party ships share one set of entry checks");
+        var entry = runs.Substring(runs.IndexOf("private static string GetRiftEntryRefusal(", StringComparison.Ordinal));
+        entry.Substring(0, entry.IndexOf("\n        }", StringComparison.Ordinal))
+            .Should().Contain("GetInterdictionRefusal(pilot)").And.Contain("Enmity.HasEnmity(pilot)");
+    }
+
     // Chambers
 
     [Test]

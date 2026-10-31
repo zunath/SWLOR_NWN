@@ -209,7 +209,8 @@ public class SpaceElectronicWarfareTests
         ReadSource("Feature", "DialogDefinition", "StarportDockDialog.cs").Should().Contain("Space.RefuseWhileInterdicted(player)");
         ReadSource("Service", "SpaceDocking.cs").Should().Contain("if (RefuseWhileInterdicted(player))");
         ReadSource("Service", "SpaceDerelicts.cs").Should().Contain("if (RefuseWhileInterdicted(player))");
-        ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain("var hold = GetInterdictionRefusal(user);");
+        ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain("var hold = GetInterdictionRefusal(pilot);")
+            .And.Contain("var (pilots, leftOut) = RiftRunRules.PickParty(user, nearby, GetRiftEntryRefusal);");
         ReadSource("Service", "SpaceCloak.cs").Should().Contain("if (status.IsInterdicted(DateTime.UtcNow))");
     }
 

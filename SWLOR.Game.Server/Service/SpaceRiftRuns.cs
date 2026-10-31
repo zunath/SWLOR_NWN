@@ -44,18 +44,28 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Why a pocket of this key's tier cannot open for this user now, or empty.</summary>
         private static string GetRiftOpenRefusal(uint user, RiftKeyDetail key)
         {
-            // An Interdictor's hold keeps a ship from opening a pocket (W11k).
-            var hold = GetInterdictionRefusal(user);
+            var entry = GetRiftEntryRefusal(user);
+            return string.IsNullOrEmpty(entry)
+                ? RiftRunRules.Message(RiftRunRules.GetOpenRefusal(key, _riftRuns.Count))
+                : entry;
+        }
+
+        /// <summary>
+        /// Why a ship cannot go into a pocket now, or empty. The key user and every party ship entering with them pass
+        /// these checks, so a party member never pulls a ship out of an Interdictor's hold or a fight.
+        /// </summary>
+        private static string GetRiftEntryRefusal(uint pilot)
+        {
+            // An Interdictor's hold keeps a ship from opening or entering a pocket (W11k).
+            var hold = GetInterdictionRefusal(pilot);
             if (!string.IsNullOrEmpty(hold))
                 return hold;
 
-            var refusal = RiftRunRules.GetStartRefusal(
-                key,
-                IsPlayerInSpaceMode(user),
-                GetCloakPhase(user) != ShipCloakPhase.Off,
-                Enmity.HasEnmity(user),
-                FindRiftRun(user) != null || IsRiftPocket(GetArea(user)),
-                _riftRuns.Count);
+            var refusal = RiftRunRules.GetEntryRefusal(
+                IsPlayerInSpaceMode(pilot),
+                GetCloakPhase(pilot) != ShipCloakPhase.Off,
+                Enmity.HasEnmity(pilot),
+                FindRiftRun(pilot) != null || IsRiftPocket(GetArea(pilot)));
             return RiftRunRules.Message(refusal);
         }
 
@@ -93,7 +103,7 @@ namespace SWLOR.Game.Server.Service
                 nearby.Add((member, GetDistanceBetween(member, user)));
             }
 
-            var pilots = RiftRunRules.PickParty(user, nearby);
+            var (pilots, leftOut) = RiftRunRules.PickParty(user, nearby, GetRiftEntryRefusal);
             var area = Area.CreateInstance(key.Template, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
             if (!GetIsObjectValid(area))
             {
@@ -104,6 +114,11 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsObjectValid(item))
                 Item.ReduceItemStack(item, 1);
+
+            // A party ship that fails an entry check stays where it is, and its pilot hears why.
+            foreach (var (pilot, refusal) in leftOut)
+                SendMessageToPC(pilot, ColorToken.Red(refusal));
+
             var now = DateTime.UtcNow;
             var run = new RiftRun
             {

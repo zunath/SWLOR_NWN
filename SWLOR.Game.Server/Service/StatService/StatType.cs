@@ -6418,11 +6418,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// grant it; hostile ground abilities never do.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceHostileAbilityUsedEvasionPercentAdjustment = 1222,
+        SpaceHostileAbilityUsedEvasionPercentAdjustment = 1451,
 
         /// <summary>Seconds SpaceHostileAbilityUsedEvasionPercentAdjustment lasts.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceHostileAbilityUsedEvasionDurationSeconds = 1223,
+        SpaceHostileAbilityUsedEvasionDurationSeconds = 1452,
 
         /// <summary>
         /// Movement speed percent a ship gains after its pilot uses a hostile space ability.
@@ -6432,133 +6432,133 @@ namespace SWLOR.Game.Server.Service.StatService
 
         /// <summary>Seconds SpaceHostileAbilityUsedMovementSpeedPercentAdjustment lasts.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceHostileAbilityUsedMovementSpeedDurationSeconds = 1171,
+        SpaceHostileAbilityUsedMovementSpeedDurationSeconds = 1400,
 
         /// <summary>
         /// Flat DMG a ship's energy weapon shots gain per consecutive hit against the same target. Ground
         /// weapons never read it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceEnergyRepeatedTargetDamageBonusPerHit = 1172,
+        SpaceEnergyRepeatedTargetDamageBonusPerHit = 1401,
 
         /// <summary>Maximum flat DMG from consecutive energy weapon hits against the same target in space.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceEnergyRepeatedTargetDamageBonusMax = 1173,
+        SpaceEnergyRepeatedTargetDamageBonusMax = 1402,
 
         /// <summary>Seconds without an energy weapon hit before the space consecutive-hit stacks expire.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceEnergyRepeatedTargetDamageDurationSeconds = 1174,
+        SpaceEnergyRepeatedTargetDamageDurationSeconds = 1403,
 
         /// <summary>
         /// Percent a ship's launcher damage changes when the shot is the weapon's own cycle or a single-target
         /// ability (the Ordnance Stance's penalty). Ground weapons never read it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceLauncherSingleTargetDamagePercentAdjustment = 1175,
+        SpaceLauncherSingleTargetDamagePercentAdjustment = 1404,
 
         /// <summary>Percent a ship's launcher damage changes when the shot belongs to an area ability.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceLauncherAreaAbilityDamagePercentAdjustment = 1176,
+        SpaceLauncherAreaAbilityDamagePercentAdjustment = 1405,
 
         /// <summary>Chance, in percent, that a landed launcher weapon cycle splashes nearby ships (Proximity Warheads).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceLauncherSplashChance = 1177,
+        SpaceLauncherSplashChance = 1406,
 
         /// <summary>Damage the launcher splash deals to the target and the ships near it.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceLauncherSplashDamage = 1178,
+        SpaceLauncherSplashDamage = 1407,
 
         /// <summary>Damage per pulse of the fragmentation an area launcher ability leaves on every ship it hits.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceLauncherAreaFragmentationDamage = 1179,
+        SpaceLauncherAreaFragmentationDamage = 1408,
 
         /// <summary>Seconds between fragmentation pulses.</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceLauncherAreaFragmentationPulseSeconds = 1180,
+        SpaceLauncherAreaFragmentationPulseSeconds = 1409,
 
         /// <summary>Seconds the fragmentation lasts.</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceLauncherAreaFragmentationDurationSeconds = 1181,
+        SpaceLauncherAreaFragmentationDurationSeconds = 1410,
 
         /// <summary>Damage an area launcher ability deals to one additional ship near its target (Cluster Warheads).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceLauncherAreaClusterDamageBonus = 1182,
+        SpaceLauncherAreaClusterDamageBonus = 1411,
 
         /// <summary>How many additional ships the cluster damage reaches.</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceLauncherAreaClusterMaximumTargets = 1183,
+        SpaceLauncherAreaClusterMaximumTargets = 1412,
 
         /// <summary>Area launcher abilities that must hit a ship within the window to leave it Exposed (Saturation Fire).</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceLauncherAreaHitSequenceCountRequired = 1184,
+        SpaceLauncherAreaHitSequenceCountRequired = 1413,
 
         /// <summary>Seconds the area launcher hits count together.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceLauncherAreaHitSequenceWindowSeconds = 1185,
+        SpaceLauncherAreaHitSequenceWindowSeconds = 1414,
 
         /// <summary>Seconds the Exposed status lasts.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceLauncherAreaHitSequenceExposedDurationSeconds = 1186,
+        SpaceLauncherAreaHitSequenceExposedDurationSeconds = 1415,
 
         /// <summary>Enemies an area launcher ability must hit to restore Stamina (Bombardier's Rhythm).</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceLauncherAreaMinTargetsStaminaRestoreThreshold = 1187,
+        SpaceLauncherAreaMinTargetsStaminaRestoreThreshold = 1416,
 
         /// <summary>Stamina restored when an area launcher ability hits enough enemies.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceLauncherAreaMinTargetsStaminaRestore = 1188,
+        SpaceLauncherAreaMinTargetsStaminaRestore = 1417,
 
         /// <summary>
         /// Percent adjustment to a ship's Defense, read only by ship combat. The ground Defense statuses are typed
         /// Physical, which a ship does not read, so the statuses a space ability applies set this as well.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceDefensePercentAdjustment = 1189,
+        SpaceDefensePercentAdjustment = 1418,
 
         /// <summary>
         /// Percent adjustment to the damage a ship takes, read only by ship combat. Positive values increase damage
         /// taken; negative values reduce it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        SpaceDamageTakenPercentAdjustment = 1190,
+        SpaceDamageTakenPercentAdjustment = 1419,
 
         /// <summary>Extra threat a Defiance hit generates (Anger Strike).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceDefianceEnmityBonus = 1191,
+        SpaceDefianceEnmityBonus = 1420,
 
         /// <summary>DMG the next weapon hit after a Defiance hit deals (Anger Strike).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceDefianceNextAttackDamageBonus = 1192,
+        SpaceDefianceNextAttackDamageBonus = 1421,
 
         /// <summary>Seconds after using Defiance that the next-hit bonus can be used.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceDefianceNextAttackDamageDurationSeconds = 1193,
+        SpaceDefianceNextAttackDamageDurationSeconds = 1422,
 
         /// <summary>
         /// Non-zero turns an incoming critical hit on a ship into a normal hit that rolls minimum damage (Critical Ward).
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceIncomingCriticalHitDowngradeToMinimumDamage = 1194,
+        SpaceIncomingCriticalHitDowngradeToMinimumDamage = 1423,
 
         /// <summary>Cooldown in milliseconds for SpaceIncomingCriticalHitDowngradeToMinimumDamage.</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceIncomingCriticalHitDowngradeCooldownMilliseconds = 1195,
+        SpaceIncomingCriticalHitDowngradeCooldownMilliseconds = 1424,
 
         /// <summary>Hull percent a ship must be reduced below to gain its low hull Defense (Unbreakable).</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceLowHullDefenseThresholdPercent = 1196,
+        SpaceLowHullDefenseThresholdPercent = 1425,
 
         /// <summary>Percent Defense gained when the hull drops below the threshold.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceLowHullDefensePercentAdjustment = 1197,
+        SpaceLowHullDefensePercentAdjustment = 1426,
 
         /// <summary>Seconds the low hull Defense lasts.</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceLowHullDefenseDurationSeconds = 1198,
+        SpaceLowHullDefenseDurationSeconds = 1427,
 
         /// <summary>Seconds before the low hull Defense can trigger again.</summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SpaceLowHullDefenseCooldownSeconds = 1199,
+        SpaceLowHullDefenseCooldownSeconds = 1428,
 
         /// <summary>
         /// Percent adjustment to a ship's Accuracy, read only by ship combat. The ground Accuracy statuses are typed
@@ -6566,94 +6566,94 @@ namespace SWLOR.Game.Server.Service.StatService
         /// set this as well.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceAccuracyPercentAdjustment = 1200,
+        SpaceAccuracyPercentAdjustment = 1429,
 
         /// <summary>
         /// Percent adjustment to the damage a ship takes from a Leadership reduction aura (Formation), read only by
         /// ship combat. Negative values reduce it; the strongest of this and the typed Leadership reduction applies.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        SpaceLeadershipDamageTakenPercentAdjustment = 1201,
+        SpaceLeadershipDamageTakenPercentAdjustment = 1430,
 
         /// <summary>Percent by which the repairs a ship's modules and abilities make are stronger (Repair Efficiency).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceRepairEfficiencyPercentAdjustment = 1202,
+        SpaceRepairEfficiencyPercentAdjustment = 1431,
 
         /// <summary>Percent by which the crew aboard a ship work their stations better (Crew Morale).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceCrewEffectivenessPercentAdjustment = 1203,
+        SpaceCrewEffectivenessPercentAdjustment = 1432,
 
         /// <summary>Space meters added to a ship's command range (Command Presence).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceCommandRangeBonusMeters = 1204,
+        SpaceCommandRangeBonusMeters = 1433,
 
         /// <summary>Base seconds added to the duration of non-capstone orders (Command Presence).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceCommandDurationBonusBaseSeconds = 1205,
+        SpaceCommandDurationBonusBaseSeconds = 1434,
 
         /// <summary>Seconds the order duration bonus reaches at full Social.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceCommandDurationBonusMaximumSeconds = 1206,
+        SpaceCommandDurationBonusMaximumSeconds = 1435,
 
         /// <summary>Party damage bonus a hostile space ability triggers (Mark Target).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetDamagePercent = 1207,
+        SpaceMarkTargetDamagePercent = 1436,
 
         /// <summary>Maximum Mark Target damage bonus after Social scaling.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetMaximumDamagePercent = 1208,
+        SpaceMarkTargetMaximumDamagePercent = 1437,
 
         /// <summary>Party Accuracy bonus a hostile space ability triggers (Mark Target).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetAccuracyPercent = 1209,
+        SpaceMarkTargetAccuracyPercent = 1438,
 
         /// <summary>Maximum Mark Target Accuracy bonus after Social scaling.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetMaximumAccuracyPercent = 1210,
+        SpaceMarkTargetMaximumAccuracyPercent = 1439,
 
         /// <summary>Base duration of the Mark Target buff, before the order duration bonus.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetDurationSeconds = 1211,
+        SpaceMarkTargetDurationSeconds = 1440,
 
         /// <summary>Seconds before Mark Target can trigger again.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetCooldownSeconds = 1212,
+        SpaceMarkTargetCooldownSeconds = 1441,
 
         /// <summary>Displayed name of the Mark Target buff.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetNameStrRef = 1213,
+        SpaceMarkTargetNameStrRef = 1442,
 
         /// <summary>Displayed effect icon of the Mark Target buff.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        SpaceMarkTargetIcon = 1214,
+        SpaceMarkTargetIcon = 1443,
 
         /// <summary>Percent added to the ore of every mining laser or strip miner cycle on an asteroid, the fraction carried (Prospector).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceMiningYieldBonus = 1215,
+        SpaceMiningYieldBonus = 1444,
 
         /// <summary>Percentage points added to the rare-metal chance of an asteroid's ore (Deep Core), as a separate rare roll.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceRareMetalChance = 1216,
+        SpaceRareMetalChance = 1445,
 
         /// <summary>Percent by which a mining laser or strip miner cycle is shorter (Rapid Extraction).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceMiningCycleSpeedPercent = 1217,
+        SpaceMiningCycleSpeedPercent = 1446,
 
         /// <summary>Tibanna Gas added to every Gas Harvester cycle on a gas cloud (Gas Siphoning).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceGasYieldBonus = 1218,
+        SpaceGasYieldBonus = 1447,
 
         /// <summary>Items added to every Salvager cycle on a wreck (Salvage Expert).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceSalvageYieldBonus = 1219,
+        SpaceSalvageYieldBonus = 1448,
 
         /// <summary>Percentage points added to the chance a salvaged component's trait is rare (Trait Hunter).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceRareTraitChance = 1220,
+        SpaceRareTraitChance = 1449,
 
         /// <summary>Percent added to a Probe Launcher's scan strength on a ship (space system environments).</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SpaceScanStrengthPercent = 1221,
+        SpaceScanStrengthPercent = 1450,
 
         /// <summary>
         /// Percent adjustment to the shield points a ship loses per point of damage its shield absorbs, read only by

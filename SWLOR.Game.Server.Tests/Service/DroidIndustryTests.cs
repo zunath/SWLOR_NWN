@@ -205,7 +205,7 @@ public class DroidIndustryTests
     {
         using var perks = new DroidPerkCacheScope();
         var protocols = new[] { PerkType.EfficiencyProtocol, PerkType.DamageControlProtocol, PerkType.SurveyProtocol, PerkType.ProspectingProtocol };
-        protocols.Select(x => (int)x).Should().Equal(900, 901, 902, 903);
+        protocols.Select(x => (int)x).Should().Equal(1056, 1057, 1058, 1059);
         DroidIndustryTuning.ProtocolValues.Keys.Should().BeEquivalentTo(protocols);
 
         foreach (var protocol in protocols)

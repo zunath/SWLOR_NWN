@@ -144,13 +144,13 @@ def parts():
 # ---------------------------------------------------------------------------------------------------------------
 PROTOCOLS = {
     # enum: (PerkType id, name, {rank: value}, effect)
-    "EfficiencyProtocol": (900, "Efficiency Protocol", {1: 20, 2: 40},
+    "EfficiencyProtocol": (1056, "Efficiency Protocol", {1: 20, 2: 40},
                            "+{v}% Industry for output: droid-bay yields, holdings and drills"),
-    "DamageControlProtocol": (901, "Damage Control Protocol", {1: 5, 2: 10},
+    "DamageControlProtocol": (1057, "Damage Control Protocol", {1: 5, 2: 10},
                               "+{v}% repairs from repairers it runs at the Engineer station, or from a Logistics droid bay"),
-    "SurveyProtocol": (902, "Survey Protocol", {1: 20, 2: 40},
+    "SurveyProtocol": (1058, "Survey Protocol", {1: 20, 2: 40},
                        "+{v}% scan strength on a Probe Launcher at its station, which it switches on"),
-    "ProspectingProtocol": (903, "Prospecting Protocol", {1: 5, 2: 10},
+    "ProspectingProtocol": (1059, "Prospecting Protocol", {1: 5, 2: 10},
                             "+{v} to the rare-find chance of mining and salvage, from a droid bay"),
 }
 PROTOCOL_SLOTS = {1: 1, 2: 2}

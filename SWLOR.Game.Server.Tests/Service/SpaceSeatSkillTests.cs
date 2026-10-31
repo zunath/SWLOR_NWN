@@ -192,13 +192,13 @@ public class SpaceSeatSkillTests
             .ToDictionary(x => x.GetProperty("id").GetInt32(), x => x.TryGetProperty("text", out var t) ? t.GetString() : string.Empty);
 
         var bonus = $"Engineering rank makes this gain larger: 0.5% per rank, up to {ShipSeatSkillRules.EngineeringRoutingMaximumPercent}% larger at rank {ShipSeatSkillRules.MaximumRank}. The penalties do not change.";
-        foreach (var id in new[] { 192899, 192901, 192903 })
+        foreach (var id in new[] { 193137, 193139, 193141 })
         {
             text[id].Should().Contain(bonus, id.ToString());
             text[id].All(c => c < 128).Should().BeTrue("game text is ASCII");
         }
 
-        text[192897].Should().NotContain("Engineering rank", "Balanced has no gain");
+        text[193135].Should().NotContain("Engineering rank", "Balanced has no gain");
     }
 
     // Cloak reveal

@@ -118,10 +118,10 @@ public class PowerRoutingRulesTests
 
         var expected = new[]
         {
-            (FeatType.ShipPowerBalanced, 192896, "ife_pwrbal", "Route Power: Balanced"),
-            (FeatType.ShipPowerWeapons, 192898, "ife_pwrwep", "Route Power: Weapons"),
-            (FeatType.ShipPowerShields, 192900, "ife_pwrshd", "Route Power: Shields"),
-            (FeatType.ShipPowerEngines, 192902, "ife_pwreng", "Route Power: Engines"),
+            (FeatType.ShipPowerBalanced, 193134, "ife_pwrbal", "Route Power: Balanced"),
+            (FeatType.ShipPowerWeapons, 193136, "ife_pwrwep", "Route Power: Weapons"),
+            (FeatType.ShipPowerShields, 193138, "ife_pwrshd", "Route Power: Shields"),
+            (FeatType.ShipPowerEngines, 193140, "ife_pwreng", "Route Power: Engines"),
         };
 
         foreach (var (feat, tlkId, icon, name) in expected)
@@ -140,8 +140,8 @@ public class PowerRoutingRulesTests
                 File.Exists(Path.Combine(directory.FullName, "SWLOR_Haks", "sw_ability", file + ".tga")).Should().BeTrue(file);
         }
 
-        text[192899].Should().Contain($"{PowerRoutingRules.WeaponsCapacitorSavingPercent}% less capacitor");
-        text[192901].Should().Contain($"rises by {PowerRoutingRules.ShieldRegenBonusPercent}%");
-        text[192903].Should().Contain($"rises by {PowerRoutingRules.SpeedBonusPercent}%");
+        text[193137].Should().Contain($"{PowerRoutingRules.WeaponsCapacitorSavingPercent}% less capacitor");
+        text[193139].Should().Contain($"rises by {PowerRoutingRules.ShieldRegenBonusPercent}%");
+        text[193141].Should().Contain($"rises by {PowerRoutingRules.SpeedBonusPercent}%");
     }
 }

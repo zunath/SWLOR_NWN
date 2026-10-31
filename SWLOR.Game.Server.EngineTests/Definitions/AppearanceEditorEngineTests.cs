@@ -456,8 +456,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void AssertPaletteOutline(EngineTestContext ctx, AppearanceEditorViewModel editor, int colorId, string stage)
         {
-            var left = colorId % 16 * AppearanceEditorViewModel.PaletteCellWidth + 1f;
-            var top = colorId / 16 * AppearanceEditorViewModel.PaletteCellHeight + 1f;
+            var left = AppearanceEditorViewModel.PaletteHeaderWidth + colorId % 16 * AppearanceEditorViewModel.PaletteCellWidth + 1f;
+            var top = AppearanceEditorViewModel.PaletteHeaderHeight + colorId / 16 * AppearanceEditorViewModel.PaletteCellHeight + 1f;
             var right = left + AppearanceEditorViewModel.PaletteCellWidth - 2f;
             var bottom = top + AppearanceEditorViewModel.PaletteCellHeight - 2f;
             var expected = new[] { left, top, right, top, right, bottom, left, bottom, left, top };
@@ -1111,8 +1111,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var originalPanel = JObject.Parse(JsonDump(AppearanceEditorDefinition.BuildEditorPanel(partialName).ToJson()));
                     AssertStaticPanelLayout(ctx, originalPanel, isArmor, partialName);
 
-                    // The editor has a fixed size; a geometry report (a move, or a stale saved size)
-                    // must not rebuild or republish anything.
+                    // The panels follow a resize on their own; a geometry report (a move or a
+                    // resize) must not rebuild or republish anything.
                     foreach (var (width, height) in new[]
                     {
                         (1240f, 720f), (1600f, 900f), (900f, 600f)
@@ -1147,7 +1147,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                 }
             });
-            ctx.SetResultDetail("Six actual Geometry completion callbacks at 1240x720, 1600x900 and 900x600 published no bindings and retained cached inputs. Static native panel JSON/event IDs stayed identical: fixed map and colour columns with the part picture, bound body-map slots, palette and swatches. All 19 armor models, 120 armor colors, 4 creature colors, APC markers, TMP baselines and pending tint locals stayed unchanged. Headless coverage excludes client Geometry transport and rendered layout.");
+            ctx.SetResultDetail("Six actual Geometry completion callbacks at 1240x720, 1600x900 and 900x600 published no bindings and retained cached inputs. Static native panel JSON/event IDs stayed identical: a fixed map column and a flexible colour column with the part picture, bound body-map slots, palette and swatches. All 19 armor models, 120 armor colors, 4 creature colors, APC markers, TMP baselines and pending tint locals stayed unchanged. Headless coverage excludes client Geometry transport and rendered layout.");
         }
 
         private static void AssertStaticPanelLayout(EngineTestContext ctx, JObject panel, bool isArmor, string stage)
@@ -1158,14 +1158,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ids = objects.Where(node => node["id"] != null).Select(node => node["id"].Value<string>()).ToArray();
             ctx.Assert(ids.Length > 0 && ids.Distinct().Count() == ids.Length, $"{stage}: native control IDs must be unique.");
 
-            // Body map | colours, both fixed; the selected part's picture sits in the colours panel.
+            // Body map (fixed) | colours (takes the rest); the part picture sits in the colours panel.
             var preview = objects.Single(node => node["id"]?.Value<string>() == "ae_part_preview");
             var colours = preview.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "group");
             var contentRow = colours.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "row");
             var columns = contentRow["children"].OfType<JObject>().ToArray();
             ctx.AssertEqual(2, columns.Length, $"{stage}: body map and colours share one row");
             ctx.AssertEqual(AppearanceEditorDefinition.MapWidth, columns[0]["width"]?.Value<float>(), $"{stage}: body map width");
-            ctx.AssertEqual(AppearanceEditorDefinition.ColoursWidth, columns[1]["width"]?.Value<float>(), $"{stage}: colour column width");
+            ctx.Assert(columns[1]["width"] == null, $"{stage}: the colour column takes the width a resized window gives it.");
+            ctx.AssertEqual((int)NuiScrollbars.Auto, colours["scrollbars"]?.Value<int>(),
+                $"{stage}: a colour column narrower than its swatches and palette scrolls sideways.");
             ctx.Assert(ReferenceEquals(columns[1], colours), $"{stage}: the part picture belongs to the colours panel.");
             ctx.Assert(!objects.Any(node => node["id"]?.Value<string>()?.StartsWith("ae_tile_", StringComparison.Ordinal) == true),
                 $"{stage}: the part pictures are browsed in their own window.");
@@ -1240,17 +1242,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(false, outline["fill"]?.Value<bool>(), $"{stage}/{name}: outline is not filled");
             ctx.AssertEqual(10, (outline["points"] as JArray)?.Count, $"{stage}/{name}: closed rectangle outline");
 
-            ctx.Assert(!swatch.Parent.Children<JObject>().Any(node => (node["value"] as JObject)?["bind"]?.Value<string>() == name + "Code"),
-                $"{stage}/{name}: no palette code label beside the swatch; the palette outline shows the colour.");
+            if (!name.StartsWith("SelectedPart", StringComparison.Ordinal))
+                return;
+            var row = swatch.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "row");
+            var rows = row.Parent.Children<JObject>().ToList();
+            var codeRow = rows[rows.IndexOf(row) - 1];
+            ctx.Assert(codeRow.Descendants().OfType<JObject>().Any(node => (node["value"] as JObject)?["bind"]?.Value<string>() == name + "Code"),
+                $"{stage}/{name}: the palette code or RGB label sits over the swatch.");
         }
 
         private static void AssertAppearancePaletteJson(EngineTestContext ctx, JObject palette, string stage)
         {
+            const float headerWidth = AppearanceEditorViewModel.PaletteHeaderWidth;
+            const float headerHeight = AppearanceEditorViewModel.PaletteHeaderHeight;
             const float cellWidth = AppearanceEditorViewModel.PaletteCellWidth;
             const float cellHeight = AppearanceEditorViewModel.PaletteCellHeight;
             ctx.AssertEqual("group", palette["type"]?.Value<string>(), $"{stage}: palette is a button group");
-            ctx.AssertEqual(16 * cellWidth, palette["width"]?.Value<float>(), $"{stage}: palette grid width");
-            ctx.AssertEqual(11 * cellHeight, palette["height"]?.Value<float>(), $"{stage}: palette grid height");
+            ctx.AssertEqual(headerWidth + 16 * cellWidth, palette["width"]?.Value<float>(), $"{stage}: palette grid width");
+            ctx.AssertEqual(headerHeight + 11 * cellHeight, palette["height"]?.Value<float>(), $"{stage}: palette grid height");
             ctx.AssertEqual(nameof(AppearanceEditorViewModel.IsColorPickerVisible), palette["visible"]?["bind"]?.Value<string>(),
                 $"{stage}: palette visibility");
 
@@ -1264,18 +1273,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var column = palette["children"].OfType<JObject>().Single();
             ctx.AssertEqual("col", column["type"]?.Value<string>(), $"{stage}: palette has one column of rows");
             var rows = column["children"].OfType<JObject>().ToArray();
-            ctx.AssertEqual(11, rows.Length, $"{stage}: eleven colour rows with no letter or number headers");
+            ctx.AssertEqual(12, rows.Length, $"{stage}: one letter header and eleven colour rows");
+
+            var header = rows[0];
+            ctx.AssertEqual(headerHeight, header["height"]?.Value<float>(), $"{stage}: header height");
+            var headerCells = header["children"].OfType<JObject>().ToArray();
+            ctx.AssertEqual(17, headerCells.Length, $"{stage}: number-column spacer and sixteen letters");
+            ctx.AssertEqual("spacer", headerCells[0]["type"]?.Value<string>(), $"{stage}: header starts above the row numbers");
+            ctx.AssertEqual(headerWidth, headerCells[0]["width"]?.Value<float>(), $"{stage}: header spacer width");
+            ctx.Assert(headerCells.Skip(1).Select(label => label["value"]?.Value<string>())
+                    .SequenceEqual(Enumerable.Range(0, 16).Select(index => ((char)('A' + index)).ToString())),
+                $"{stage}: column letters A-P.");
 
             var buttonIndex = 0;
             for (var y = 0; y < 11; y++)
             {
-                var row = rows[y];
+                var row = rows[y + 1];
                 ctx.AssertEqual("row", row["type"]?.Value<string>(), $"{stage}: palette row type");
                 ctx.AssertEqual(cellHeight, row["height"]?.Value<float>(), $"{stage}: palette row height");
                 ctx.AssertEqual(0f, row["margin"]?.Value<float>(), $"{stage}: palette row has no hidden margins");
                 var cells = row["children"].OfType<JObject>().ToArray();
-                ctx.AssertEqual(16, cells.Length, $"{stage}: sixteen colours");
-                foreach (var button in cells)
+                ctx.AssertEqual(17, cells.Length, $"{stage}: row number and sixteen colours");
+                ctx.AssertEqual((y + 1).ToString(), cells[0]["value"]?.Value<string>(), $"{stage}: row number {y + 1}");
+                ctx.AssertEqual(headerWidth, cells[0]["width"]?.Value<float>(), $"{stage}: row number width");
+                foreach (var button in cells.Skip(1))
                 {
                     var index = buttonIndex++;
                     ctx.AssertEqual("button", button["type"]?.Value<string>(), $"{stage}/{index}: preset is independently clickable");

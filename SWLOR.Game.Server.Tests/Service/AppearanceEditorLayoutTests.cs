@@ -840,9 +840,10 @@ public class AppearanceEditorLayoutTests
         var row = PathTo(root, swatch).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
         row.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>()
             .Should().NotContain(label => ReadProperty<string>(label, "TextBindName") != null, "codes sit over the swatches, not beside them");
-        if (name.StartsWith("Body", StringComparison.Ordinal))
+        if (!name.StartsWith("SelectedPart", StringComparison.Ordinal))
         {
-            typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull("body colours show no codes");
+            typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull(
+                "only part swatches show codes; the item and body rows stay compact");
             return;
         }
 

@@ -248,13 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool SelectedPartMetal1Selected { get => Get<bool>(); set => Set(value); }
         public bool SelectedPartMetal2Selected { get => Get<bool>(); set => Set(value); }
 
-        // Palette code ("P4") or "RGB" over each item and part swatch.
-        public string GlobalLeather1Code { get => Get<string>(); set => Set(value); }
-        public string GlobalLeather2Code { get => Get<string>(); set => Set(value); }
-        public string GlobalCloth1Code { get => Get<string>(); set => Set(value); }
-        public string GlobalCloth2Code { get => Get<string>(); set => Set(value); }
-        public string GlobalMetal1Code { get => Get<string>(); set => Set(value); }
-        public string GlobalMetal2Code { get => Get<string>(); set => Set(value); }
+        // Palette code ("P4") or "RGB" over each part swatch.
         public string SelectedPartLeather1Code { get => Get<string>(); set => Set(value); }
         public string SelectedPartLeather2Code { get => Get<string>(); set => Set(value); }
         public string SelectedPartCloth1Code { get => Get<string>(); set => Set(value); }
@@ -304,7 +298,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(false, $"SelectedPart{channel}Custom");
                 Set(false, $"SelectedPart{channel}Selected");
                 Set(string.Empty, $"SelectedPart{channel}Code");
-                Set(string.Empty, $"Global{channel}Code");
             }
             foreach (var (name, _, _) in BodyColorSwatches)
             {
@@ -665,11 +658,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void OnSwatchUpdated(ColorTarget target, AppearanceArmorColor channel)
         {
-            if (target == ColorTarget.Global)
-            {
-                var name = $"Global{channel}";
-                SetIfChanged(name + "Code", SwatchCode(Get<GuiRectangle>(name + "Region"), Get<bool>(name + "Custom")));
-            }
             if (target != ColorTarget.Global && target == ToColorTarget(_selectedSlot))
                 MirrorPartSwatch(channel);
             RefreshPaletteSelection();

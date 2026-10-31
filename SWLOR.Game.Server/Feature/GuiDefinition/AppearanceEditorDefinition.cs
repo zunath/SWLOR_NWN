@@ -43,10 +43,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float SwatchRowLabelWidth = 20f;
         private const float SwatchCodeHeight = 16f;
         /// <summary>
-        /// The item swatches with their codes and the selected part's rows: heading, four code
-        /// and swatch rows, and the gap, measured in the client.
+        /// The item swatches and the selected part's rows: heading, two item swatch rows, and two
+        /// part code and swatch rows.
         /// </summary>
-        public const float ItemSwatchesHeight = 262f;
+        public const float ItemSwatchesHeight = 208f;
         /// <summary>A body colour's name ("Tattoo 1") is wider than its swatch.</summary>
         private const float BodySwatchColumnWidth = 72f;
         private const float PickerWidth = 196f;
@@ -529,12 +529,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AppearanceArmorColor.Metal1, partRow: false);
             AddItemSwatchRow(col, null, "Global", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
                 AppearanceArmorColor.Metal2, partRow: false);
-            // A gap sets the selected part's rows apart from the item's; the body map names the part.
-            col.AddRow(row =>
-            {
-                row.BindIsVisible(model => model.IsPartColorsVisible);
-                row.AddSpacer().SetHeight(8f);
-            });
             AddItemSwatchRow(col, "1", "SelectedPart", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
                 AppearanceArmorColor.Metal1, partRow: true);
             AddItemSwatchRow(col, "2", "SelectedPart", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
@@ -545,23 +539,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void AddItemSwatchRow(GuiColumn<AppearanceEditorViewModel> col, string label, string prefix,
             AppearanceArmorColor leather, AppearanceArmorColor cloth, AppearanceArmorColor metal, bool partRow)
         {
-            // Each swatch's palette code (P4) or "RGB", over the swatch.
-            col.AddRow(row =>
-            {
-                if (partRow)
-                    row.BindIsVisible(model => model.IsPartColorsVisible);
-                row.AddSpacer().SetWidth(SwatchRowLabelWidth);
-                foreach (var channel in new[] { leather, cloth, metal })
-                {
-                    row.AddLabel()
-                        .BindText(Bind<string>($"{prefix}{channel}Code"))
-                        .SetWidth(SwatchWidth + 4f)
-                        .SetHeight(SwatchCodeHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Bottom);
-                }
-                row.AddSpacer();
-            });
+            // A part swatch's palette code (P4) or "RGB", over the swatch.
+            if (partRow)
+                AddSwatchCodeRow(col, prefix, leather, cloth, metal);
             col.AddRow(row =>
             {
                 if (partRow)
@@ -592,6 +572,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetTooltip("Colours the whole item. Parts with an empty swatch use this colour.")
                             .BindOnClicked(model => model.OnClickBaseSwatch(copy));
                     }
+                }
+                row.AddSpacer();
+            });
+        }
+
+        private static void AddSwatchCodeRow(GuiColumn<AppearanceEditorViewModel> col, string prefix,
+            AppearanceArmorColor leather, AppearanceArmorColor cloth, AppearanceArmorColor metal)
+        {
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsPartColorsVisible);
+                row.AddSpacer().SetWidth(SwatchRowLabelWidth);
+                foreach (var channel in new[] { leather, cloth, metal })
+                {
+                    row.AddLabel()
+                        .BindText(Bind<string>($"{prefix}{channel}Code"))
+                        .SetWidth(SwatchWidth + 4f)
+                        .SetHeight(SwatchCodeHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                        .SetVerticalAlign(NuiVerticalAlign.Bottom);
                 }
                 row.AddSpacer();
             });

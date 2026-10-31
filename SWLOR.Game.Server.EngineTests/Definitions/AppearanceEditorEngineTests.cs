@@ -1240,6 +1240,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(false, outline["fill"]?.Value<bool>(), $"{stage}/{name}: outline is not filled");
             ctx.AssertEqual(10, (outline["points"] as JArray)?.Count, $"{stage}/{name}: closed rectangle outline");
 
+            if (!name.StartsWith("SelectedPart", StringComparison.Ordinal))
+                return;
             var row = swatch.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "row");
             var rows = row.Parent.Children<JObject>().ToList();
             var codeRow = rows[rows.IndexOf(row) - 1];

@@ -187,6 +187,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Twin Pistol - Crossfire", true)]
         TwinPistolCrossfire = 64,
+
+        [PerkCategory("Performance - Dancing", true)]
+        PerformanceDancing = 75,
+
+        [PerkCategory("Performance - Instruments", true)]
+        PerformanceInstruments = 76,
     }
 
     public class PerkCategoryAttribute : Attribute

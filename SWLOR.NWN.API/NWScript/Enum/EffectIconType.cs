@@ -486,6 +486,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         OpeningStatusEffect = 508,
         FinishStatusEffect = 509,
         PaybackStatusEffect = 510,
+        InspiredStatusEffect = 525,
         SlipAwayStatusEffect = 486,
         PressForwardStatusEffect = 487,
         RetaliationStatusEffect = 488,

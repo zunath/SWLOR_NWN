@@ -518,6 +518,16 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             CombatPointCategoryType.Weapon)]
         TwinPistol = 52,
+
+        [Skill(SkillCategoryType.Utility,
+            "Performance",
+            50,
+            true,
+            "Ability to entertain an audience through dance and music, inspiring those who stay to watch.",
+            true,
+            false,
+            false)]
+        Performance = 60,
     }
 
     public class SkillAttribute : Attribute

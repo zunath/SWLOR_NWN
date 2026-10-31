@@ -779,7 +779,30 @@ namespace SWLOR.Game.Server.Service.PerkService
         TwinPistolFollowThrough = 841,
         TwinPistolSecondWind = 842,
         FinalSalvo = 843,
+        Dance = 950,
+        LightFeet = 951,
+        CrowdPleaser = 952,
+        PowerStep = 953,
+        Encore = 954,
+        Quickstep = 955,
+        VigorReel = 956,
+        PartnerDance = 957,
+        StandingOvation = 958,
+        PeakForm = 959,
+        Showstopper = 960,
+        PlayInstrument = 961,
+        SteadyHands = 962,
+        Harmony = 963,
+        KeenEar = 964,
+        Resonance = 965,
+        AnglersLullaby = 966,
+        StillWaters = 967,
+        Duet = 968,
+        Requiem = 969,
+        SilverTongue = 970,
+        PerfectPitch = 971,
+        Virtuoso = 972,
 
-        // IDs 650 and 844+ are free.
+        // IDs 650, 844-949, and 973+ are free.
     }
 }

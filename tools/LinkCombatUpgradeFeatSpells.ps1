@@ -6,7 +6,7 @@ param(
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 3267,
+    [int]$GeneratedFeatEnd = 3435,
     [int]$ManualHotbarClassFeatRowLimit = 1024
 )
 
@@ -160,6 +160,14 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
 }
 
 $selfTargetingLabels = @(
+    "Dance1",
+    "Dance2",
+    "Dance3",
+    "Dance4",
+    "PlayInstrument1",
+    "PlayInstrument2",
+    "PlayInstrument3",
+    "PlayInstrument4",
     "FlurryStance1",
     "GamblerStance1",
     "LaceratorStance1",

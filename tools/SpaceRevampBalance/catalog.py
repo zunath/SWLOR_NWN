@@ -338,7 +338,8 @@ def rare_items():
 
 
 # Capital parts (W11o, components.CAPITAL_PARTS): their recipes follow the highest RecipeType in use (the W11k E-War and
-# Afterburner ranks end at 7792), so no earlier value moves.
+# Afterburner ranks ended at 7792 before the Target Painter lost its rank 0 and 5 steps; they now end at 7790), so no
+# earlier value moves.
 CAPITAL_RECIPE_START = 7793
 
 
@@ -430,21 +431,8 @@ SINGLE_STEP_FAMILIES = {"DataAnalyzer"}
 
 # Families whose line starts above rank 0 (review decision 2026-10-30). The Target Painter starts at rank 10: the server
 # rounds damage taken up, so any paint added at least 1 damage to tier 1's small hits (checks.py P: 119% of the
-# Targeting Computer fit at any paint from 1%). A dropped step keeps its recipe ID reserved, and its tag converts to the
-# family's first step wherever a saved item or fitted module carries it (RevampModuleCatalog.RetiredTags, read by
-# LegacySpaceItemCatalog).
+# Targeting Computer fit at any paint from 1%). The revamp has not shipped, so no saved item carries the dropped steps.
 FIRST_RANK = {"TargetPainter": 10}
-
-
-def retired_step_tags():
-    """Each dropped step's tag -> the tag of its family's first step."""
-    out = {}
-    for (key, _name, _short, prefix, *_rest) in FAMILIES:
-        first = FIRST_RANK.get(key, 0)
-        for r in m.STEPS:
-            if r < first:
-                out[f"{prefix}_{r:02d}"] = f"{prefix}_{first:02d}"
-    return out
 
 # The numbers a named rank-50 module raises past its family's rank-45 step by a share of the rank 40 -> 45 step
 # (rewards.named_value), Attack and Accuracy included; flags, multipliers, penalties and tiers stay as they are.
@@ -492,6 +480,8 @@ def module_steps(late_recipe_start=None, component_late_start=None, reward_late_
     for (key, name, short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) in FAMILIES:
         single = key in SINGLE_STEP_FAMILIES
         for r in ([0] if single else CAPITAL_STEPS if capital else m.STEPS):
+            if r < FIRST_RANK.get(key, 0):
+                continue
             mk = ROMAN[r // 5]
             s = stats(r)
             base, model_part, texture = ART[art]
@@ -501,8 +491,7 @@ def module_steps(late_recipe_start=None, component_late_start=None, reward_late_
             after_cloak = key in CLOAK_LATE_FAMILIES
             after_droids = key in CARGO_LATE_FAMILIES
             after_cargo = key in EWAR_LATE_FAMILIES
-            dropped = r < FIRST_RANK.get(key, 0)
-            step = dict(
+            steps.append(dict(
                 Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=name if single else f"{name} Mk {mk}",
                 ShortName=(short if single else f"{short} {mk}")[:14],
                 Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
@@ -511,10 +500,7 @@ def module_steps(late_recipe_start=None, component_late_start=None, reward_late_
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
                 Components=module_bill(key, r, row, capital),
-                Cost=100 + 30 * r + (2000 if capital else 0), **s)
-            if not dropped:
-                steps.append(step)
-            # A dropped step still takes its recipe ID, so no later value moves.
+                Cost=100 + 30 * r + (2000 if capital else 0), **s))
             if after_cargo:
                 ewar_recipe = None if ewar_recipe is None else ewar_recipe + 1
             elif after_droids:
@@ -658,11 +644,7 @@ def module_catalog_cs(steps):
             "using SWLOR.Game.Server.Service.SpaceService;\n\nnamespace SWLOR.Game.Server.Feature.ShipModuleDefinition\n{\n"
             "    public static class RevampModuleCatalog\n    {\n"
             "        public static readonly IReadOnlyList<ShipModuleStep> Steps = new List<ShipModuleStep>\n        {\n"
-            f"{rows}\n        }};\n\n"
-            "        /// <summary>Tags of retired steps and the step each becomes (a family that now starts at a higher rank).</summary>\n"
-            "        public static readonly IReadOnlyDictionary<string, string> RetiredTags = new Dictionary<string, string>\n        {\n"
-            + "".join(f'            ["{old}"] = "{new}",\n' for old, new in retired_step_tags().items())
-            + "        };\n    }\n}\n")
+            f"{rows}\n        }};\n    }}\n}}\n")
 
 
 def ship_catalog_cs(hulls):
@@ -1398,13 +1380,6 @@ def main():
         if not check:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, encoding="utf-8", newline="\r\n" if rel.startswith("Module/") or rel in CRLF_FILES else "\n")
-    # Blueprints of retired steps are no longer generated: remove them (their items convert, see FIRST_RANK).
-    for tag in retired_step_tags():
-        path = out_root / "Module" / "uti" / f"{tag}.uti.json"
-        if path.exists():
-            stale.append(str(path.relative_to(out_root)))
-            if not check:
-                path.unlink()
     print(f"{len(steps)} module items, {len(hulls)} ship deeds, {len(stale)} file(s) {'out of date' if check else 'written'}")
     if check and stale:
         sys.exit(1)

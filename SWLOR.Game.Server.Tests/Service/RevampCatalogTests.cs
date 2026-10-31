@@ -47,7 +47,7 @@ public class RevampCatalogTests
         {
             var first = family.First();
             var ladder = family.Key == ShipModuleFamily.DataAnalyzer ? new[] { 0 } : first.Capital ? CapitalRanks : StandardRanks;
-            // The Target Painter starts at rank 10 (review decision 2026-10-30; RevampModuleCatalog.RetiredTags).
+            // The Target Painter starts at rank 10 (review decision 2026-10-30).
             if (family.Key == ShipModuleFamily.TargetPainter)
                 ladder = ladder.Where(x => x >= 10).ToArray();
             if (family.Any(x => x.Named))
@@ -159,7 +159,7 @@ public class RevampCatalogTests
         // The modules and hulls take 7000-7357; the Probe Launcher (W12a) follows the component recipes (7358-7487); the
         // named modules (W9b) open the next block (7498-7531, with the rare components and ammo); the Data Analyzer (W12b)
         // follows it, then the Cloaking Device ranks (7533-7542); the Cargo Expander ranks (W11d) follow the industrial
-        // droid recipes (7733-7742); the W11k E-War and Afterburner ranks follow them (7743-7792).
+        // droid recipes (7733-7742); the W11k E-War and Afterburner ranks follow them (7743-7790).
         all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x) && x != RecipeType.ShipDataAnalyzer00 &&
                        steps.All(s => s.Family is not (ShipModuleFamily.CloakingDevice or ShipModuleFamily.CargoExpander or
                            ShipModuleFamily.IonWeb or ShipModuleFamily.Interdictor or ShipModuleFamily.Jammer or
@@ -169,12 +169,10 @@ public class RevampCatalogTests
         ((int)RecipeType.ShipDataAnalyzer00).Should().Be(7532);
         steps.Where(x => x.Family == ShipModuleFamily.CloakingDevice).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7533, 10));
         steps.Where(x => x.Family == ShipModuleFamily.CargoExpander).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7733, 10));
-        // The Target Painter's dropped rank 0 and 5 steps keep their IDs (7773, 7774) reserved, so no later value moves.
+        // The Target Painter starts at rank 10, so the block holds 48 ranks.
         steps.Where(x => x.Family is ShipModuleFamily.IonWeb or ShipModuleFamily.Interdictor or ShipModuleFamily.Jammer or
                          ShipModuleFamily.TargetPainter or ShipModuleFamily.Afterburner)
-            .Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7743, 50).Where(x => x is not (7773 or 7774)));
-        Enum.IsDefined(typeof(RecipeType), 7773).Should().BeFalse();
-        Enum.IsDefined(typeof(RecipeType), 7774).Should().BeFalse();
+            .Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7743, 48));
     }
 
     [Test]

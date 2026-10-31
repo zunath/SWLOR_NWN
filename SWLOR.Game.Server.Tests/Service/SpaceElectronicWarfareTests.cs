@@ -45,7 +45,7 @@ public class SpaceElectronicWarfareTests
         foreach (var (family, (prefix, cycle, capacitor, texture)) in expected)
         {
             var steps = Steps(family);
-            // The Target Painter starts at rank 10 (review decision 2026-10-30); its rank 0 and 5 tags convert to Mk III.
+            // The Target Painter starts at rank 10 (review decision 2026-10-30).
             steps.Select(x => x.Rank).Should().Equal(family == ShipModuleFamily.TargetPainter
                 ? new[] { 10, 15, 20, 25, 30, 35, 40, 45 }
                 : new[] { 0, 5, 10, 15, 20, 25, 30, 35, 40, 45 });
@@ -75,8 +75,8 @@ public class SpaceElectronicWarfareTests
     public void Recipes_FollowTheCargoExpander_SoNoValueMoves()
     {
         var recipes = Families.SelectMany(Steps).Select(x => (int)x.RecipeType).ToList();
-        // The Target Painter's dropped rank 0 and 5 steps keep 7773 and 7774 reserved.
-        recipes.Should().Equal(Enumerable.Range(7743, 50).Where(x => x is not (7773 or 7774)));
+        // The Target Painter starts at rank 10, so the block holds 48 ranks.
+        recipes.Should().Equal(Enumerable.Range(7743, 48));
         Enum.GetValues<RecipeType>().Select(x => (int)x).Where(recipes.Contains).Should().HaveCount(48);
         ((int)RecipeType.ShipCargoExpander45).Should().Be(7742);
         Families.SelectMany(Steps).Should().OnlyContain(x => x.RecipeLevel == Math.Max(2, x.Rank));

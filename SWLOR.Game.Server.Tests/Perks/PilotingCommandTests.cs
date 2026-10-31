@@ -323,6 +323,29 @@ public class PilotingCommandTests
         SpaceCommand.IsMarkTargetReady(readyAt, readyAt.AddSeconds(30)).Should().BeTrue();
     }
 
+    [Test]
+    public void EmergencyRepair_SavesTheShipItRepaired()
+    {
+        // Piloting abilities run outside FireShipModule, which is what saves a module's changes to a player's ship
+        // status; Emergency Repair changes one directly (hull), so it saves the ship it repaired.
+        var repair = ReadServerSource("Feature", "AbilityDefinition", "Piloting", "EmergencyRepairAbilityDefinition.cs");
+        var heal = repair.IndexOf("ShipModuleActions.RepairHull(activator, activatorStatus, target, targetStatus, amount);", StringComparison.Ordinal);
+        var repaired = repair.IndexOf("var repaired = ShipModuleActions.GetSupportTarget(activator, target);", StringComparison.Ordinal);
+        var save = repair.IndexOf("Space.SaveShipStatus(repaired, repaired == target ? targetStatus : activatorStatus);", StringComparison.Ordinal);
+        heal.Should().BeGreaterThan(0);
+        repaired.Should().BeGreaterThan(heal);
+        save.Should().BeGreaterThan(repaired);
+        ReadServerSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs")
+            .Should().Contain("if (GetSupportTarget(activator, target) != target)", "the repair and the save agree on the ship");
+
+        // It is the only Piloting ability that loads and changes a ship status itself; the rest change ships through
+        // helpers that save (damage, riders, statuses).
+        static int Count(string text, string value) => (text.Length - text.Replace(value, string.Empty).Length) / value.Length;
+        var all = ReadServerSource("Feature", "AbilityDefinition", "Piloting");
+        Count(all, "Space.GetShipStatus(").Should().Be(Count(repair, "Space.GetShipStatus("));
+        Count(all, "ShipModuleActions.Repair").Should().Be(1);
+    }
+
     private static string ReadServerSource(params string[] path)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

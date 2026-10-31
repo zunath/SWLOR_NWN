@@ -758,6 +758,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 "capacitor charge", Space.RestoreCapacitor, () => ConsumeAmmo(activator, FuelCapsuleResref));
         }
 
+        /// <summary>
+        /// The ship a support module or ability reaches: the target, or the activator's own when the target is gone or
+        /// hostile.
+        /// </summary>
+        public static uint GetSupportTarget(uint activator, uint target) =>
+            !GetIsObjectValid(target) || Space.IsShipHostile(activator, target) ? activator : target;
+
         private static void ApplySupport(
             uint activator,
             ShipStatus activatorStatus,
@@ -770,7 +777,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             System.Action beforeEffect,
             System.Func<ShipStatus, int> pool = null)
         {
-            if (!GetIsObjectValid(target) || Space.IsShipHostile(activator, target))
+            if (GetSupportTarget(activator, target) != target)
             {
                 target = activator;
                 targetStatus = activatorStatus;

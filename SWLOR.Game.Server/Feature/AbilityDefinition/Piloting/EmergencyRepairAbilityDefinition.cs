@@ -52,6 +52,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
 
             var amount = GetRepairAmount(heal, targetStatus.MaxHull, GetAbilityScore(SpaceCrew.GetAbilityUser(activator), AbilityType.Willpower));
             ShipModuleActions.RepairHull(activator, activatorStatus, target, targetStatus, amount);
+
+            // An ability runs outside a module's cycle, whose end saves a player's ship status, so the repaired ship is
+            // saved here: the target, or the activator's own when the repair fell back to it.
+            var repaired = ShipModuleActions.GetSupportTarget(activator, target);
+            Space.SaveShipStatus(repaired, repaired == target ? targetStatus : activatorStatus);
+            ExecuteScript("pc_target_upd", repaired);
         }
     }
 }

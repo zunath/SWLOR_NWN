@@ -511,6 +511,12 @@ namespace SWLOR.NWN.API.NWScript.Enum
         OrdinaryAttackHasteStatusEffect5 = 492,
         LastBastionBarrierStatusEffect = 493,
         UnnervedStatusEffect = 485,
+        OverclockStatusEffect = 511,
+        SafeModeStatusEffect = 512,
+        HotForgingStatusEffect = 513,
+        ColdWorkingStatusEffect = 514,
+        StripMiningStatusEffect = 519,
+        CarefulHandsStatusEffect = 520,
         // End custom status effect icons
 
         // Retain the legacy name for the same icon row.

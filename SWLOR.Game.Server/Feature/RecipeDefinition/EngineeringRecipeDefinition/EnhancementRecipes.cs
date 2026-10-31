@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 1)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Control - Engineering I
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Control - Fabrication I
@@ -52,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Control - Agriculture I
@@ -63,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Craftsmanship - Smithery I
@@ -74,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 1)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Craftsmanship - Engineering I
@@ -85,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Craftsmanship - Fabrication I
@@ -96,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Craftsmanship - Agriculture I
@@ -107,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Defense - Physical I
@@ -118,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Defense - Force I
@@ -129,6 +138,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Resistance - Poison I
@@ -140,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - Resistance - Fire I
@@ -151,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 8, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - Resistance - Ice I
@@ -162,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Resistance - Electrical I
@@ -173,6 +186,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Resistance - Mind I
@@ -184,6 +198,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - Resistance - Mobility I
@@ -195,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Armor Enhancement - Resistance - Trauma I
@@ -206,6 +222,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Resistance - Disruption I
@@ -217,6 +234,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Evasion I
@@ -228,6 +246,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
             // Armor Enhancement - Attack I
@@ -239,6 +258,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 5)
                 .Component("ref_veldite", 3)
                 .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 38)
                 ;
 
             // Armor Enhancement - Force Attack I
@@ -250,6 +270,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 5)
                 .Component("ref_veldite", 3)
                 .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 36)
                 ;
 
             // Armor Enhancement - FP I
@@ -261,6 +282,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - HP I
@@ -272,6 +294,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Combat Readiness I
@@ -283,6 +306,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - STM I
@@ -294,6 +318,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Weapon Enhancement - Attack Bonus I
@@ -305,6 +330,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
             // Weapon Enhancement - Force Attack I
@@ -316,6 +342,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 5)
                 .Component("ref_veldite", 3)
                 .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 39)
                 ;
 
 			// Weapon Enhancement - Control - Smithery I
@@ -327,6 +354,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 40)
 				;
 
 			// Weapon Enhancement - Control - Engineering I
@@ -338,6 +366,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Weapon Enhancement - Control - Fabrication I
@@ -349,6 +378,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 8, assemblySharePercent: 42)
 				;
 
 			// Weapon Enhancement - Control - Agriculture I
@@ -360,6 +390,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 1)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Smithery I
@@ -371,6 +402,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 41)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Engineering I
@@ -382,6 +414,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Fabrication I
@@ -393,6 +426,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 1)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Agriculture I
@@ -404,6 +438,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - DMG I
@@ -415,6 +450,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 35)
 				;
 
             // Weapon Enhancement - Evasion I
@@ -426,6 +462,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 7, assemblySharePercent: 42)
 				;
 
 			// Weapon Enhancement - FP I
@@ -437,6 +474,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 7, assemblySharePercent: 39)
 				;
 
 			// Weapon Enhancement - HP I
@@ -448,6 +486,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - STM I
@@ -459,6 +498,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
             // Weapon Enhancement - Accuracy I
@@ -470,6 +510,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 5)
                 .Component("ref_veldite", 3)
                 .Component("elec_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 36)
                 ;
 
             // Structure Enhancement - Structure Bonus I
@@ -481,6 +522,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 39)
 				;
 
 			// Starship Enhancement - Accuracy I
@@ -492,6 +534,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 42)
 				;
 
 			// Starship Enhancement - Armor I
@@ -503,6 +546,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 42)
 				;
 
 			// Starship Enhancement - Capacitor I
@@ -514,6 +558,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 1)
 				.Component("ref_veldite", 1)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Starship Enhancement - EM Damage I
@@ -525,6 +570,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 40)
 				;
 
 			// Starship Enhancement - EM Defense I
@@ -536,6 +582,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Starship Enhancement - Evasion I
@@ -547,6 +594,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Explosive Damage I
@@ -558,6 +606,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 39)
 				;
 
 			// Starship Enhancement - Explosive Defense I
@@ -569,6 +618,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Shield I
@@ -580,6 +630,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Starship Enhancement - Shield Recharge Rate I
@@ -591,6 +642,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 			// Starship Enhancement - Thermal Damage I
@@ -602,6 +654,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 4)
 				.Component("ref_veldite", 2)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
 			// Starship Enhancement - Thermal Defense I
@@ -613,6 +666,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Module Enhancement - Module Bonus I
@@ -624,6 +678,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 
@@ -640,6 +695,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 1)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Control - Engineering II
@@ -651,6 +707,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Control - Fabrication II
@@ -662,6 +719,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Control - Agriculture II
@@ -673,6 +731,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 40)
 				;
 
 			// Armor Enhancement - Craftsmanship - Smithery II
@@ -684,6 +743,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 1)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 39)
 				;
 
 			// Armor Enhancement - Craftsmanship - Engineering II
@@ -695,6 +755,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 39)
 				;
 
 			// Armor Enhancement - Craftsmanship - Fabrication II
@@ -706,6 +767,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Craftsmanship - Agriculture II
@@ -717,6 +779,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Defense - Physical II
@@ -728,6 +791,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Defense - Force II
@@ -739,6 +803,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Resistance - Poison II
@@ -750,6 +815,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Resistance - Fire II
@@ -761,6 +827,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Resistance - Ice II
@@ -772,6 +839,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Resistance - Electrical II
@@ -783,6 +851,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Resistance - Mind II
@@ -794,6 +863,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Resistance - Mobility II
@@ -805,6 +875,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Resistance - Trauma II
@@ -816,6 +887,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Resistance - Disruption II
@@ -827,6 +899,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Armor Enhancement - Evasion II
@@ -838,6 +911,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 35)
 				;
 
             // Armor Enhancement - Attack II
@@ -849,6 +923,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 5)
                 .Component("ref_scordspar", 3)
                 .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 37)
                 ;
 
             // Armor Enhancement - Force Attack II
@@ -860,6 +935,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 5)
                 .Component("ref_scordspar", 3)
                 .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 36)
                 ;
 
             // Armor Enhancement - FP II
@@ -871,6 +947,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - HP II
@@ -882,6 +959,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Combat Readiness II
@@ -893,6 +971,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - STM II
@@ -904,6 +983,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Attack Bonus II
@@ -915,6 +995,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
             // Weapon Enhancement - Force Attack II
@@ -926,6 +1007,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 5)
                 .Component("ref_scordspar", 3)
                 .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 44)
                 ;
 
             // Weapon Enhancement - Control - Smithery II
@@ -937,6 +1019,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - Control - Engineering II
@@ -948,6 +1031,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - Control - Fabrication II
@@ -959,6 +1043,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - Control - Agriculture II
@@ -970,6 +1055,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 1)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 45)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Smithery II
@@ -981,6 +1067,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Engineering II
@@ -992,6 +1079,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Fabrication II
@@ -1003,6 +1091,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 1)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Agriculture II
@@ -1014,6 +1103,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Weapon Enhancement - Poison Damage I
@@ -1025,6 +1115,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - Fire Damage I
@@ -1036,6 +1127,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - Ice Damage I
@@ -1047,6 +1139,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Weapon Enhancement - Electrical Damage I
@@ -1058,6 +1151,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 			// Weapon Enhancement - Evasion II
@@ -1069,6 +1163,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - FP II
@@ -1080,6 +1175,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Weapon Enhancement - HP II
@@ -1091,6 +1187,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 40)
 				;
 
 			// Weapon Enhancement - STM II
@@ -1102,6 +1199,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
             // Weapon Enhancement - Accuracy II
@@ -1113,6 +1211,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 5)
                 .Component("ref_scordspar", 3)
                 .Component("elec_flawed", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 45)
                 ;
 
             // Structure Enhancement - Structure Bonus II
@@ -1124,6 +1223,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - Accuracy II
@@ -1135,6 +1235,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Armor II
@@ -1146,6 +1247,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Starship Enhancement - Capacitor II
@@ -1157,6 +1259,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 1)
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - EM Damage II
@@ -1168,6 +1271,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - EM Defense II
@@ -1179,6 +1283,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 40)
 				;
 
 			// Starship Enhancement - Evasion II
@@ -1190,6 +1295,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
 			// Starship Enhancement - Explosive Damage II
@@ -1201,6 +1307,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 37)
 				;
 
 			// Starship Enhancement - Explosive Defense II
@@ -1212,6 +1319,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 37)
 				;
 
 			// Starship Enhancement - Shield II
@@ -1223,6 +1331,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Starship Enhancement - Shield Recharge Rate II
@@ -1234,6 +1343,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 36)
 				;
 
 			// Starship Enhancement - Thermal Damage II
@@ -1245,6 +1355,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 4)
 				.Component("ref_scordspar", 2)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Starship Enhancement - Thermal Defense II
@@ -1256,6 +1367,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Module Enhancement - Module Bonus II
@@ -1267,6 +1379,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 
@@ -1283,6 +1396,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 1)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Control - Engineering III
@@ -1294,6 +1408,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Control - Fabrication III
@@ -1305,6 +1420,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Control - Agriculture III
@@ -1316,6 +1432,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - Craftsmanship - Smithery III
@@ -1327,6 +1444,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 1)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Armor Enhancement - Craftsmanship - Engineering III
@@ -1338,6 +1456,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Craftsmanship - Fabrication III
@@ -1349,6 +1468,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Craftsmanship - Agriculture III
@@ -1360,6 +1480,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Armor Enhancement - Defense - Physical III
@@ -1371,6 +1492,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Defense - Force III
@@ -1382,6 +1504,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Resistance - Poison III
@@ -1393,6 +1516,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Resistance - Fire III
@@ -1404,6 +1528,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Resistance - Ice III
@@ -1415,6 +1540,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Resistance - Electrical III
@@ -1426,6 +1552,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 40)
 				;
 
 			// Armor Enhancement - Resistance - Mind III
@@ -1437,6 +1564,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Resistance - Mobility III
@@ -1448,6 +1576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Resistance - Trauma III
@@ -1459,6 +1588,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Resistance - Disruption III
@@ -1470,6 +1600,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 35)
 				;
 
 			// Armor Enhancement - Evasion III
@@ -1481,6 +1612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 35)
 				;
 
             // Armor Enhancement - Attack III
@@ -1492,6 +1624,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 5)
                 .Component("ref_plagionite", 3)
                 .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 37)
                 ;
 
             // Armor Enhancement - Force Attack III
@@ -1503,6 +1636,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 5)
                 .Component("ref_plagionite", 3)
                 .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 41)
                 ;
 
             // Armor Enhancement - FP III
@@ -1514,6 +1648,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - HP III
@@ -1525,6 +1660,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Combat Readiness III
@@ -1536,6 +1672,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - STM III
@@ -1547,6 +1684,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - Attack Bonus III
@@ -1558,6 +1696,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 39)
 				;
 
             // Weapon Enhancement - Force Attack III
@@ -1569,6 +1708,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 5)
                 .Component("ref_plagionite", 3)
                 .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 35)
                 ;
 
             // Weapon Enhancement - Control - Smithery III
@@ -1580,6 +1720,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Weapon Enhancement - Control - Engineering III
@@ -1591,6 +1732,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Control - Fabrication III
@@ -1602,6 +1744,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - Control - Agriculture III
@@ -1613,6 +1756,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 1)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Smithery III
@@ -1624,6 +1768,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 40)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Engineering III
@@ -1635,6 +1780,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Fabrication III
@@ -1646,6 +1792,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 1)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Agriculture III
@@ -1657,6 +1804,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 40)
 				;
 
 			// Weapon Enhancement - DMG II
@@ -1668,6 +1816,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - Evasion III
@@ -1679,6 +1828,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - FP III
@@ -1690,6 +1840,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - HP III
@@ -1701,6 +1852,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Weapon Enhancement - STM III
@@ -1712,6 +1864,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
             // Weapon Enhancement - Accuracy III
@@ -1723,6 +1876,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 5)
                 .Component("ref_plagionite", 3)
                 .Component("elec_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 40)
                 ;
 
             // Structure Enhancement - Structure Bonus III
@@ -1734,6 +1888,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 37)
 				;
 
 			// Starship Enhancement - Accuracy III
@@ -1745,6 +1900,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Starship Enhancement - Armor III
@@ -1756,6 +1912,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Starship Enhancement - Capacitor III
@@ -1767,6 +1924,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 1)
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - EM Damage III
@@ -1778,6 +1936,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 37)
 				;
 
 			// Starship Enhancement - EM Defense III
@@ -1789,6 +1948,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 40)
 				;
 
 			// Starship Enhancement - Evasion III
@@ -1800,6 +1960,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 43)
 				;
 
 			// Starship Enhancement - Explosive Damage III
@@ -1811,6 +1972,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Starship Enhancement - Explosive Defense III
@@ -1822,6 +1984,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 42)
 				;
 
 			// Starship Enhancement - Shield III
@@ -1833,6 +1996,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Starship Enhancement - Shield Recharge Rate III
@@ -1844,6 +2008,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
 			// Starship Enhancement - Thermal Damage III
@@ -1855,6 +2020,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 4)
 				.Component("ref_plagionite", 2)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Thermal Defense III
@@ -1866,6 +2032,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 39)
 				;
 
 			// Module Enhancement - Module Bonus III
@@ -1877,6 +2044,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
 
@@ -1893,6 +2061,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 1)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Control - Engineering IV
@@ -1904,6 +2073,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Control - Fabrication IV
@@ -1915,6 +2085,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 35)
 				;
 
 			// Armor Enhancement - Control - Agriculture IV
@@ -1926,6 +2097,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Craftsmanship - Smithery IV
@@ -1937,6 +2109,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 1)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Craftsmanship - Engineering IV
@@ -1948,6 +2121,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Craftsmanship - Fabrication IV
@@ -1959,6 +2133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Craftsmanship - Agriculture IV
@@ -1970,6 +2145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Defense - Physical IV
@@ -1981,6 +2157,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Defense - Force IV
@@ -1992,6 +2169,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Resistance - Poison IV
@@ -2003,6 +2181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Resistance - Fire IV
@@ -2014,6 +2193,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 40)
 				;
 
 			// Armor Enhancement - Resistance - Ice IV
@@ -2025,6 +2205,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Resistance - Electrical IV
@@ -2036,6 +2217,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Resistance - Mind IV
@@ -2047,6 +2229,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - Resistance - Mobility IV
@@ -2058,6 +2241,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 40)
 				;
 
 			// Armor Enhancement - Resistance - Trauma IV
@@ -2069,6 +2253,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Resistance - Disruption IV
@@ -2080,6 +2265,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Evasion IV
@@ -2091,6 +2277,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
             // Armor Enhancement - Attack IV
@@ -2102,6 +2289,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 5)
                 .Component("ref_keromber", 3)
                 .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 43)
                 ;
 
             // Armor Enhancement - Force Attack IV
@@ -2113,6 +2301,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 5)
                 .Component("ref_keromber", 3)
                 .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 40)
                 ;
 
             // Armor Enhancement - FP IV
@@ -2124,6 +2313,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - HP IV
@@ -2135,6 +2325,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Combat Readiness IV
@@ -2146,6 +2337,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - STM IV
@@ -2157,6 +2349,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Weapon Enhancement - Attack Bonus IV
@@ -2168,6 +2361,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
             // Weapon Enhancement - Force Attack IV
@@ -2179,6 +2373,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 5)
                 .Component("ref_keromber", 3)
                 .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 42)
                 ;
 
             // Weapon Enhancement - Control - Smithery IV
@@ -2190,6 +2385,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - Control - Engineering IV
@@ -2201,6 +2397,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Weapon Enhancement - Control - Fabrication IV
@@ -2212,6 +2409,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Weapon Enhancement - Control - Agriculture IV
@@ -2223,6 +2421,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 1)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Smithery IV
@@ -2234,6 +2433,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Engineering IV
@@ -2245,6 +2445,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Fabrication IV
@@ -2256,6 +2457,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 1)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Agriculture IV
@@ -2267,6 +2469,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 			// Weapon Enhancement - Poison Damage II
@@ -2278,6 +2481,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Fire Damage II
@@ -2289,6 +2493,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - Ice Damage II
@@ -2300,6 +2505,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Electrical Damage II
@@ -2311,6 +2517,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - Evasion IV
@@ -2322,6 +2529,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 42)
 				;
 
 			// Weapon Enhancement - FP IV
@@ -2333,6 +2541,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 39)
 				;
 
 			// Weapon Enhancement - HP IV
@@ -2344,6 +2553,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 36)
 				;
 
 			// Weapon Enhancement - STM IV
@@ -2355,6 +2565,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 42)
 				;
 
             // Weapon Enhancement - Accuracy IV
@@ -2366,6 +2577,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 5)
                 .Component("ref_keromber", 3)
                 .Component("elec_imperfect", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 35)
                 ;
 
             // Structure Enhancement - Structure Bonus IV
@@ -2377,6 +2589,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - Accuracy IV
@@ -2388,6 +2601,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Armor IV
@@ -2399,6 +2613,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
 			// Starship Enhancement - Capacitor IV
@@ -2410,6 +2625,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 1)
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 43)
 				;
 
 			// Starship Enhancement - EM Damage IV
@@ -2421,6 +2637,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Starship Enhancement - EM Defense IV
@@ -2432,6 +2649,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - Evasion IV
@@ -2443,6 +2661,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Starship Enhancement - Explosive Damage IV
@@ -2454,6 +2673,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - Explosive Defense IV
@@ -2465,6 +2685,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
 			// Starship Enhancement - Shield IV
@@ -2476,6 +2697,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 37)
 				;
 
 			// Starship Enhancement - Shield Recharge Rate IV
@@ -2487,6 +2709,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Thermal Damage IV
@@ -2498,6 +2721,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 4)
 				.Component("ref_keromber", 2)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Starship Enhancement - Thermal Defense IV
@@ -2509,6 +2733,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Module Enhancement - Module Bonus IV
@@ -2520,6 +2745,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 
@@ -2536,6 +2762,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 1)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Control - Engineering V
@@ -2547,6 +2774,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Control - Fabrication V
@@ -2558,6 +2786,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Control - Agriculture V
@@ -2569,6 +2798,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - Craftsmanship - Smithery V
@@ -2580,6 +2810,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 1)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
 			// Armor Enhancement - Craftsmanship - Engineering V
@@ -2591,6 +2822,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Craftsmanship - Fabrication V
@@ -2602,6 +2834,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Craftsmanship - Agriculture V
@@ -2613,6 +2846,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Defense - Physical V
@@ -2624,6 +2858,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Defense - Force V
@@ -2635,6 +2870,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Armor Enhancement - Resistance - Poison V
@@ -2646,6 +2882,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 39)
 				;
 
 			// Armor Enhancement - Resistance - Fire V
@@ -2657,6 +2894,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Resistance - Ice V
@@ -2668,6 +2906,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 37)
 				;
 
 			// Armor Enhancement - Resistance - Electrical V
@@ -2679,6 +2918,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Resistance - Mind V
@@ -2690,6 +2930,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Armor Enhancement - Resistance - Mobility V
@@ -2701,6 +2942,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
 			// Armor Enhancement - Resistance - Trauma V
@@ -2712,6 +2954,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 40)
 				;
 
 			// Armor Enhancement - Resistance - Disruption V
@@ -2723,6 +2966,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Armor Enhancement - Evasion V
@@ -2734,6 +2978,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
             // Armor Enhancement - Attack V
@@ -2745,6 +2990,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("ref_jasioclase", 3)
                 .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 38)
                 ;
 
             // Armor Enhancement - Force Attack V
@@ -2756,6 +3002,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("ref_jasioclase", 3)
                 .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 45)
                 ;
 
             // Armor Enhancement - FP V
@@ -2767,6 +3014,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 			// Armor Enhancement - HP V
@@ -2778,6 +3026,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 42)
 				;
 
 			// Armor Enhancement - Combat Readiness V
@@ -2789,6 +3038,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Armor Enhancement - STM V
@@ -2800,6 +3050,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Weapon Enhancement - Attack Bonus V
@@ -2811,6 +3062,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 35)
 				;
 
             // Weapon Enhancement - Force Attack V
@@ -2822,6 +3074,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("ref_jasioclase", 3)
                 .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 45)
                 ;
 
             // Weapon Enhancement - Control - Smithery V
@@ -2833,6 +3086,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 40)
 				;
 
 			// Weapon Enhancement - Control - Engineering V
@@ -2844,6 +3098,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 37)
 				;
 
 			// Weapon Enhancement - Control - Fabrication V
@@ -2855,6 +3110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Weapon Enhancement - Control - Agriculture V
@@ -2866,6 +3122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 1)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 40)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Smithery V
@@ -2877,6 +3134,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 41)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Engineering V
@@ -2888,6 +3146,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 38)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Fabrication V
@@ -2899,6 +3158,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 1)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
 			// Weapon Enhancement - Craftsmanship - Agriculture V
@@ -2910,6 +3170,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 41)
 				;
 
 			// Weapon Enhancement - DMG III
@@ -2921,6 +3182,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 38)
 				;
 
             // Weapon Enhancement - Evasion V
@@ -2932,6 +3194,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 43)
 				;
 
 			// Weapon Enhancement - FP V
@@ -2943,6 +3206,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Weapon Enhancement - HP V
@@ -2954,6 +3218,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 35)
 				;
 
 			// Weapon Enhancement - STM V
@@ -2965,6 +3230,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
             // Weapon Enhancement - Accuracy V
@@ -2976,6 +3242,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("ref_jasioclase", 3)
                 .Component("elec_high", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 38)
                 ;
 
             // Structure Enhancement - Structure Bonus V
@@ -2987,6 +3254,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 39)
 				;
 
 			// Starship Enhancement - Accuracy V
@@ -2998,6 +3266,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Armor V
@@ -3009,6 +3278,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 41)
 				;
 
 			// Starship Enhancement - Capacitor V
@@ -3020,6 +3290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 1)
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 36)
 				;
 
 			// Starship Enhancement - EM Damage V
@@ -3031,6 +3302,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 8, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - EM Defense V
@@ -3042,6 +3314,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
 			// Starship Enhancement - Evasion V
@@ -3053,6 +3326,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 36)
 				;
 
 			// Starship Enhancement - Explosive Damage V
@@ -3064,6 +3338,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 7, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - Explosive Defense V
@@ -3075,6 +3350,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 40)
 				;
 
 			// Starship Enhancement - Shield V
@@ -3086,6 +3362,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 9, loadBoostPercent: 8, assemblySharePercent: 42)
 				;
 
 			// Starship Enhancement - Shield Recharge Rate V
@@ -3097,6 +3374,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 8, assemblySharePercent: 35)
 				;
 
 			// Starship Enhancement - Thermal Damage V
@@ -3108,6 +3386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 4)
 				.Component("ref_jasioclase", 2)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 38)
 				;
 
 			// Starship Enhancement - Thermal Defense V
@@ -3119,6 +3398,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 39)
 				;
 
 			// Module Enhancement - Module Bonus V
@@ -3130,6 +3410,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
+				.CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 44)
 				;
 
 

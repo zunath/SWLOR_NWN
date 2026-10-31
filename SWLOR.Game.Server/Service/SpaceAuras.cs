@@ -18,6 +18,10 @@ namespace SWLOR.Game.Server.Service
     /// Command range is <see cref="SpaceRadii.CommandRange"/> (30 m) plus the ground command-radius bonus scaled
     /// by <see cref="SpaceRadii.GroundToSpaceFactor"/> plus any bonus registered with
     /// <see cref="RegisterRangeBonus"/>, for example the Command Presence trait.
+    ///
+    /// A crew member who switches an aura on from a station is its user: the aura stays the ship's (one per ship, the
+    /// ship is the status source, and removing it by the ship clears it), but its limit, range, strength and the
+    /// strongest-copy comparison read the user, and it ends when the user leaves the seat.
     /// </summary>
     public static class SpaceAuras
     {
@@ -25,6 +29,9 @@ namespace SWLOR.Game.Server.Service
         {
             public Type StatusEffect { get; init; }
             public bool TargetsSelf { get; init; }
+
+            /// <summary>The crew member who switched it on from a station, or OBJECT_INVALID for the pilot's own.</summary>
+            public uint User { get; init; } = OBJECT_INVALID;
             public HashSet<uint> Recipients { get; } = new();
             public HashSet<uint> AnnouncedTo { get; } = new();
         }
@@ -47,12 +54,15 @@ namespace SWLOR.Game.Server.Service
             _rangeBonuses.Add(bonusMeters);
         }
 
-        /// <summary>The ship's command range in meters.</summary>
+        /// <summary>
+        /// The ship's command range in meters, from the stats of whoever commands from it: the crew member using an
+        /// ability from a station, otherwise the pilot (<see cref="SpaceCrew.GetAbilityUser"/>).
+        /// </summary>
         public static float GetCommandRange(uint ship)
         {
             var extra = _rangeBonuses.Sum(bonus => bonus(ship));
             return SpaceRadii.GetCommandRange(
-                Stat.GetStatAdjustment(ship, StatType.LeadershipCommandRadiusBonusMeters),
+                Stat.GetStatAdjustment(SpaceCrew.GetAbilityUser(ship), StatType.LeadershipCommandRadiusBonusMeters),
                 extra);
         }
 
@@ -72,14 +82,21 @@ namespace SWLOR.Game.Server.Service
             if (auras.Any(x => x.StatusEffect == statusEffect))
                 return true;
 
-            var limit = SpaceAuraRules.MaxAuras(GetAbilityScore(source, AbilityType.Social));
+            // A crew member switching it on from a station is its user, and their Social sets the limit.
+            var user = SpaceCrew.GetAbilityUser(source);
+            var limit = SpaceAuraRules.MaxAuras(GetAbilityScore(user, AbilityType.Social));
             while (auras.Count >= limit)
             {
                 RemoveRecipients(source, auras[0]);
                 auras.RemoveAt(0);
             }
 
-            var aura = new SpaceAura { StatusEffect = statusEffect, TargetsSelf = targetsSelf };
+            var aura = new SpaceAura
+            {
+                StatusEffect = statusEffect,
+                TargetsSelf = targetsSelf,
+                User = SpaceAuraRules.RecordedUser(source, user),
+            };
             auras.Add(aura);
             Reconcile(source, aura);
             return true;
@@ -115,6 +132,16 @@ namespace SWLOR.Game.Server.Service
             _auras.Remove(source);
         }
 
+        /// <summary>Ends the auras a crew member switched on from a ship's station. Leaving the seat calls it.</summary>
+        public static void RemoveUserAuras(uint ship, uint user)
+        {
+            if (!_auras.TryGetValue(ship, out var auras))
+                return;
+
+            foreach (var aura in auras.Where(x => x.User == user).ToList())
+                RemoveAura(ship, aura.StatusEffect);
+        }
+
         /// <summary>Whether a commander's ship projects this aura.</summary>
         public static bool HasAura(uint source, Type statusEffect)
         {
@@ -137,6 +164,14 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var aura in auras.ToList())
                 {
+                    // A station user's aura ends once they leave the seat (logged out, left the ship or the station).
+                    var seated = SpaceCrew.TryGetSeat(aura.User, out var seatShip, out _) && seatShip == source;
+                    if (SpaceAuraRules.UserLeft(aura.User, seated))
+                    {
+                        RemoveAura(source, aura.StatusEffect);
+                        continue;
+                    }
+
                     try
                     {
                         Reconcile(source, aura);
@@ -151,6 +186,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void Reconcile(uint source, SpaceAura aura)
         {
+            // The refresh runs outside the ability's use, so the user's station use is set up again for it: range,
+            // Social and Leadership then read the user (SpaceCrew.GetAbilityUser), while the ship stays the source.
+            using var userScope = BeginUserScope(source, aura);
             // A ship whose copy of this aura is gone (a stronger commander's copy replaced it) is given it again below
             // once it can be, so it keeps the buff in this aura after the stronger one ends.
             foreach (var ship in SpaceAuraRules.LostCopies(aura.Recipients, x => StatusEffect.HasStatusEffect(x, aura.StatusEffect, source)))
@@ -179,11 +217,13 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffect(ship, aura.StatusEffect, source))
                 return true;
 
-            var sourceSocial = GetAbilityScore(source, AbilityType.Social);
+            var sourceSocial = GetAbilityScore(GetCommander(source, aura.StatusEffect), AbilityType.Social);
             var others = StatusEffect.GetCreatureStatusEffects(ship)
                 .GetAllEffects()
                 .Where(effect => effect.GetType() == aura.StatusEffect && effect.Source != source)
-                .Select(effect => GetIsObjectValid(effect.Source) ? GetAbilityScore(effect.Source, AbilityType.Social) : 0)
+                .Select(effect => GetIsObjectValid(effect.Source)
+                    ? GetAbilityScore(GetCommander(effect.Source, aura.StatusEffect), AbilityType.Social)
+                    : 0)
                 .ToList();
             if (SpaceAuraRules.HasEqualOrStrongerCopy(sourceSocial, others))
                 return false;
@@ -197,6 +237,31 @@ namespace SWLOR.Game.Server.Service
 
             aura.AnnouncedTo.Add(ship);
             return true;
+        }
+
+        /// <summary>Whose stats a ship's copy of an aura carries: the aura's recorded user, otherwise the ship.</summary>
+        private static uint GetCommander(uint ship, Type statusEffect)
+        {
+            var aura = _auras.TryGetValue(ship, out var auras) ? auras.FirstOrDefault(x => x.StatusEffect == statusEffect) : null;
+            return SpaceAuraRules.Commander(ship, aura?.User ?? OBJECT_INVALID);
+        }
+
+        /// <summary>The user's station use, set up again while their aura refreshes; nothing for the pilot's own aura.</summary>
+        private static SpaceCrewFireScope BeginUserScope(uint ship, SpaceAura aura)
+        {
+            if (SpaceAuraRules.Commander(ship, aura.User) == ship ||
+                !SpaceCrew.TryGetSeat(aura.User, out var seatShip, out var seat) || seatShip != ship)
+            {
+                return SpaceCrew.BeginStationFire(null);
+            }
+
+            return SpaceCrew.BeginStationFire(new SpaceCrewFireContext
+            {
+                Ship = ship,
+                CrewMember = aura.User,
+                Seat = seat,
+                IsAbility = true,
+            });
         }
 
         private static void RemoveRecipients(uint source, SpaceAura aura)

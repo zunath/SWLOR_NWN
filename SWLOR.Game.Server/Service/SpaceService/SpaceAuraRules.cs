@@ -33,6 +33,24 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// The user an aura records when it is switched on: the crew member who used it from a station, or
+        /// OBJECT_INVALID when the ship's own pilot did (<paramref name="abilityUser"/> is the ship then).
+        /// </summary>
+        public static uint RecordedUser(uint ship, uint abilityUser) =>
+            abilityUser == ship || abilityUser == 0 ? OBJECT_INVALID : abilityUser;
+
+        /// <summary>
+        /// The creature whose Social, Leadership and command range an aura reads: its recorded user, or the ship for
+        /// an aura with none (the pilot's own, or one switched on before auras recorded their user).
+        /// </summary>
+        public static uint Commander(uint ship, uint recordedUser) =>
+            recordedUser == OBJECT_INVALID || recordedUser == 0 ? ship : recordedUser;
+
+        /// <summary>Whether an aura's station user has left it: one is recorded and no longer holds a seat on the ship.</summary>
+        public static bool UserLeft(uint recordedUser, bool seatedOnShip) =>
+            recordedUser != OBJECT_INVALID && recordedUser != 0 && !seatedOnShip;
+
+        /// <summary>
         /// The recipients that no longer hold this commander's copy of the aura, for example because a stronger
         /// commander's copy replaced it. They leave the recipient list so the next refresh gives them the aura again
         /// once nothing stronger holds them, instead of the ship losing the buff when the stronger aura ends.

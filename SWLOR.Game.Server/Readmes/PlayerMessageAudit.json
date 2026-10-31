@@ -6840,21 +6840,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 643,
+    "Line": 645,
     "Member": "LeaveCrewStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, $\"{PlayerName.GetDisplayName(pilot, player)} leaves the {ShipCrewSeats.GetSeatName(assignment.Seat)} station.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 655,
+    "Line": 657,
     "Member": "LeaveCrewStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 763,
+    "Line": 767,
     "Member": "CrewMemberDisconnected",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(assignment.Pilot, $\"{PlayerName.GetDisplayName(assignment.Pilot, player)} leaves the {ShipCrewSeats.GetSeatName(assignment.Seat)} station.\")"

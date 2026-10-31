@@ -320,6 +320,71 @@ public class SpaceAbilityEngineTests
         diff.Should().BeGreaterThan(lost, "a recipient that lost its copy must be a ship to add again in the same pass");
     }
 
+    [Test]
+    public void AuraUser_AStationUsersAuraReadsThem_AndThePilotsOwnOrAnOldAuraReadsTheShip()
+    {
+        const uint ship = 7, gunner = 9;
+        const uint invalid = SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID;
+
+        SpaceAuraRules.RecordedUser(ship, gunner).Should().Be(gunner, "a crew member switched it on from a station");
+        SpaceAuraRules.RecordedUser(ship, ship).Should().Be(invalid, "the pilot's own aura records no user");
+        SpaceAuraRules.Commander(ship, gunner).Should().Be(gunner);
+        SpaceAuraRules.Commander(ship, invalid).Should().Be(ship, "an aura with no user, the pilot's or an older one, reads the ship");
+        SpaceAuraRules.Commander(ship, 0).Should().Be(ship);
+
+        SpaceAuraRules.UserLeft(gunner, seatedOnShip: true).Should().BeFalse();
+        SpaceAuraRules.UserLeft(gunner, seatedOnShip: false).Should().BeTrue("the user left the seat or logged out");
+        SpaceAuraRules.UserLeft(invalid, seatedOnShip: false).Should().BeFalse("the pilot's own aura has no seat to leave");
+
+        // The strongest-copy comparison is between commanders: a SOC 20 gunner's copy on a SOC 10 pilot's ship beats a
+        // SOC 16 commander's.
+        var social = new Dictionary<uint, int> { [ship] = 10, [gunner] = 20, [3] = 16 };
+        SpaceAuraRules.HasEqualOrStrongerCopy(social[SpaceAuraRules.Commander(3, invalid)],
+            new[] { social[SpaceAuraRules.Commander(ship, gunner)] }).Should().BeTrue();
+        SpaceAuraRules.HasEqualOrStrongerCopy(social[SpaceAuraRules.Commander(ship, gunner)],
+            new[] { social[SpaceAuraRules.Commander(3, invalid)] }).Should().BeFalse();
+    }
+
+    [Test]
+    public void SpaceAuras_ReadTheStationUser_AndEndWithTheirSeat()
+    {
+        var root = RepositoryRoot();
+        var auras = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "SpaceAuras.cs")).Replace("\r\n", "\n");
+
+        // Switching on records the user, whose Social sets the limit.
+        var apply = auras[auras.IndexOf("public static bool ApplyAura(", StringComparison.Ordinal)..];
+        apply.Should().Contain("var user = SpaceCrew.GetAbilityUser(source);")
+            .And.Contain("SpaceAuraRules.MaxAuras(GetAbilityScore(user, AbilityType.Social))")
+            .And.Contain("User = SpaceAuraRules.RecordedUser(source, user),");
+
+        // Range reads the commander (Leadership radius here, Command Presence and the Leadership bonus in SpaceCommand).
+        auras.Should().Contain("Stat.GetStatAdjustment(SpaceCrew.GetAbilityUser(ship), StatType.LeadershipCommandRadiusBonusMeters)");
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "SpaceCommand.cs"))
+            .Should().Contain("Stat.GetStatAdjustment(SpaceCrew.GetAbilityUser(ship), StatType.SpaceCommandRangeBonusMeters)");
+
+        // Each refresh sets the user's station use up again before it measures range and gives the status, so the
+        // status's Social and Leadership scaling read the user; the ship stays the status source.
+        var reconcile = auras[auras.IndexOf("private static void Reconcile(uint source, SpaceAura aura)", StringComparison.Ordinal)..];
+        reconcile.IndexOf("using var userScope = BeginUserScope(source, aura);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(reconcile.IndexOf("GetCommandRange(source)", StringComparison.Ordinal));
+        auras.Should().Contain("StatusEffect.ApplyStatusEffect(source, ship, statusEffect, 0f)")
+            .And.Contain("StatusEffect.RemoveStatusEffect(ship, aura.StatusEffect, source, false);")
+            .And.Contain("GetAbilityScore(GetCommander(source, aura.StatusEffect), AbilityType.Social)")
+            .And.Contain("GetAbilityScore(GetCommander(effect.Source, aura.StatusEffect), AbilityType.Social)");
+
+        // The aura ends with the user's seat: on the refresh, and at once when they leave or disconnect.
+        var refresh = auras[auras.IndexOf("public static void Refresh()", StringComparison.Ordinal)..];
+        refresh.IndexOf("SpaceAuraRules.UserLeft(aura.User, seated)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(refresh.IndexOf("Reconcile(source, aura);", StringComparison.Ordinal));
+        var stations = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "SpaceCrewStations.cs")).Replace("\r\n", "\n");
+        var leave = stations[stations.IndexOf("public static void LeaveCrewStation(", StringComparison.Ordinal)..];
+        leave.Should().Contain("SpaceAuras.RemoveUserAuras(pilot, player);");
+        var disconnect = stations[stations.IndexOf("private static void CrewMemberDisconnected(", StringComparison.Ordinal)..];
+        disconnect.Should().Contain("SpaceAuras.RemoveUserAuras(assignment.Pilot, player);");
+    }
+
     /// <summary>One refresh of a commander's aura as SpaceAuras runs it, with a non-stacking status.</summary>
     private static void ReconcileAura(uint source, IReadOnlyDictionary<uint, int> social, Dictionary<uint, uint> held,
         HashSet<uint> recipients, params uint[] inRange)

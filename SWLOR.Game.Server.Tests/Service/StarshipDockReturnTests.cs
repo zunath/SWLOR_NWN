@@ -21,10 +21,26 @@ public class StarshipDockReturnTests
 
     private static bool IsShipOnly(string areaResref) => ShipOnlyAreas.Contains(areaResref);
 
+    // The Abandoned Station, Veles and Viscara's orbit all belong to Viscara, as Property.GetPlanetStarport resolves
+    // them (an orbit through its planet's orbit waypoint, ModuleOrbits_ResolveToTheirPlanets).
     private static (PropertyLocation Landing, PropertyLocation Orbit)? ViscaraStarport(string areaResref) =>
-        areaResref.StartsWith("zomb_abanstati", StringComparison.Ordinal)
+        areaResref.StartsWith("zomb_abanstati", StringComparison.Ordinal) || areaResref is Veles or StationOrbit
             ? (At(Veles, 1f), At(StationOrbit, 2f))
             : null;
+
+    private static (PropertyLocation Landing, PropertyLocation Orbit)? ViscaraOrTatooineStarport(string areaResref) =>
+        areaResref is Tatooine or TatooineOrbit
+            ? (At(Tatooine, 7f), At(TatooineOrbit, 8f))
+            : ViscaraStarport(areaResref);
+
+    private static void ShouldBeAtVeles(Dictionary<PropertyLocationType, PropertyLocation> positions)
+    {
+        positions[PropertyLocationType.DockPosition].Should().BeEquivalentTo(At(Veles, 1f));
+        positions[PropertyLocationType.SpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
+        positions[PropertyLocationType.LastNPCDockPosition].Should().BeEquivalentTo(At(Veles, 1f));
+        positions[PropertyLocationType.LastNPCSpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
+        positions[PropertyLocationType.DockPosition].InstancePropertyId.Should().BeNullOrEmpty();
+    }
 
     private static PropertyLocation At(string areaResref, float x) =>
         new() { AreaResref = areaResref, X = x, Y = x + 1f, Z = x + 2f, Orientation = x * 10f };
@@ -56,9 +72,23 @@ public class StarshipDockReturnTests
     };
 
     [Test]
-    public void ShipLeftAtShipOnlyLocation_ReturnsToLastSafeDockAndOrbit()
+    public void ShipLeftAtShipOnlyLocation_ReturnsToItsOwnPlanetsStarport_NotItsSafeDockInAnotherSystem()
+    {
+        // A restart must never carry a ship (and what it holds) from Viscara to the Tatooine dock it last used.
+        var positions = DockedAtStationAfterTatooine();
+
+        StarshipDockReturn.ReturnToSafeDock(positions, IsShipOnly, _ => true, ViscaraOrTatooineStarport)
+            .Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
+
+        ShouldBeAtVeles(positions);
+    }
+
+    [Test]
+    public void ShipLeftAtShipOnlyLocation_KeepsASafeDockOnThatPlanet()
     {
         var positions = DockedAtStationAfterTatooine();
+        positions[PropertyLocationType.LastNPCDockPosition] = At(Veles, 7f);
+        positions[PropertyLocationType.LastNPCSpacePosition] = At(StationOrbit, 8f);
         var safeDock = positions[PropertyLocationType.LastNPCDockPosition];
         var safeOrbit = positions[PropertyLocationType.LastNPCSpacePosition];
 
@@ -71,7 +101,7 @@ public class StarshipDockReturnTests
     }
 
     [Test]
-    public void ShipInSpaceFromShipOnlyLocation_ReturnsToLastSafeDock()
+    public void ShipInSpaceFromShipOnlyLocation_ReturnsToItsPlanetsStarport()
     {
         var positions = DockedAtStationAfterTatooine();
         positions[PropertyLocationType.CurrentPosition] = At(StationOrbit, 9f);
@@ -79,8 +109,7 @@ public class StarshipDockReturnTests
         Restart(positions).Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
 
         positions.Should().NotContainKey(PropertyLocationType.CurrentPosition);
-        positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
-        positions[PropertyLocationType.SpacePosition].AreaResref.Should().Be(TatooineOrbit);
+        ShouldBeAtVeles(positions);
     }
 
     [Test]
@@ -118,7 +147,7 @@ public class StarshipDockReturnTests
     }
 
     [Test]
-    public void ShipAtDeletedPlayerStarport_ReturnsToLastSafeDock()
+    public void ShipAtDeletedPlayerStarport_ReturnsToTheStarportOfThePlanetItDockedAt()
     {
         var positions = new Dictionary<PropertyLocationType, PropertyLocation>
         {
@@ -128,11 +157,10 @@ public class StarshipDockReturnTests
             [PropertyLocationType.LastNPCSpacePosition] = At(TatooineOrbit, 8f),
         };
 
+        // The player starport was in Viscara's orbit; its owner removing it must not send the ship to Tatooine.
         Restart(positions, _ => false).Should().Be(StarshipDockReturnResult.ReturnedFromMissingStarport);
 
-        ShouldBeAt(positions[PropertyLocationType.DockPosition], positions[PropertyLocationType.LastNPCDockPosition]);
-        positions[PropertyLocationType.DockPosition].InstancePropertyId.Should().BeEmpty();
-        ShouldBeAt(positions[PropertyLocationType.SpacePosition], positions[PropertyLocationType.LastNPCSpacePosition]);
+        ShouldBeAtVeles(positions);
     }
 
     [Test]
@@ -160,8 +188,7 @@ public class StarshipDockReturnTests
         StarshipDockReturn.ReturnToSafeDock(other, IsShipOnly, starportExists, ViscaraStarport)
             .Should().Be(StarshipDockReturnResult.Unchanged);
 
-        ShouldBeAt(retrieved[PropertyLocationType.DockPosition], retrieved[PropertyLocationType.LastNPCDockPosition]);
-        ShouldBeAt(retrieved[PropertyLocationType.SpacePosition], retrieved[PropertyLocationType.LastNPCSpacePosition]);
+        ShouldBeAtVeles(retrieved);
         other[PropertyLocationType.DockPosition].Should().BeSameAs(otherDock);
     }
 
@@ -192,27 +219,29 @@ public class StarshipDockReturnTests
     {
         // Ships that have not docked at a regular starport since safe orbits were recorded.
         var positions = DockedAtStationAfterTatooine();
+        positions[PropertyLocationType.LastNPCDockPosition] = At(Veles, 7f);
         positions.Remove(PropertyLocationType.LastNPCSpacePosition);
-        var tatooineOrbit = At(TatooineOrbit, 9f);
-        (PropertyLocation Landing, PropertyLocation Orbit)? PlanetStarport(string areaResref) =>
-            areaResref == Tatooine ? (At(Tatooine, 7f), tatooineOrbit) : ViscaraStarport(areaResref);
 
-        StarshipDockReturn.ReturnToSafeDock(positions, IsShipOnly, _ => true, PlanetStarport)
-            .Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
+        Restart(positions).Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
 
-        positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
-        ShouldBeAt(positions[PropertyLocationType.SpacePosition], tatooineOrbit);
-        ShouldBeAt(positions[PropertyLocationType.LastNPCSpacePosition], tatooineOrbit);
+        positions[PropertyLocationType.DockPosition].Should().BeEquivalentTo(At(Veles, 7f));
+        positions[PropertyLocationType.SpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
+        positions[PropertyLocationType.LastNPCSpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
     }
 
     [Test]
-    public void ShipWithoutSafeOrbitOnAnUnknownPlanet_ReturnsToSafeDockAndKeepsItsOrbit()
+    public void ShipAtAnUnknownPlanet_ReturnsToSafeDockAndKeepsItsOrbit()
     {
-        var positions = DockedAtStationAfterTatooine();
-        positions.Remove(PropertyLocationType.LastNPCSpacePosition);
-        var orbit = positions[PropertyLocationType.SpacePosition];
+        // Where the ship is cannot be resolved, so its safe dock is the only place known to be safe.
+        var orbit = At("unknown_orbit", 6f);
+        var positions = new Dictionary<PropertyLocationType, PropertyLocation>
+        {
+            [PropertyLocationType.DockPosition] = AtStarport(PlayerStarportId),
+            [PropertyLocationType.SpacePosition] = orbit,
+            [PropertyLocationType.LastNPCDockPosition] = At(Tatooine, 7f),
+        };
 
-        Restart(positions).Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
+        Restart(positions, _ => false).Should().Be(StarshipDockReturnResult.ReturnedFromMissingStarport);
 
         positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
         positions[PropertyLocationType.SpacePosition].Should().BeSameAs(orbit);
@@ -361,6 +390,31 @@ public class StarshipDockReturnTests
         var regularStarports = areas.Where(area => area.Value.WaypointTags.Overlaps(landingTags)).Select(area => area.Key).ToList();
         regularStarports.Should().Contain("velesinterior");
         regularStarports.Should().NotIntersectWith(shipOnly, "docking at a regular starport must record it as the safe dock");
+    }
+
+    [Test]
+    public void ModuleOrbits_ResolveToTheirPlanets()
+    {
+        // A ship's saved orbit is the space area it docked from. Planet.GetPlanetType leaves space areas unresolved, so
+        // the dock return matches the orbit against each planet's orbit waypoint.
+        var root = FindRepositoryRoot();
+        var areas = Directory.EnumerateFiles(Path.Combine(root, "Module", "git"), "*.git.json")
+            .ToDictionary(path => Path.GetFileName(path)[..^".git.json".Length], ReadArea);
+        var planetOrbits = Enum.GetValues<PlanetType>()
+            .Where(planet => planet != PlanetType.Invalid && planet.GetAttribute<PlanetType, PlanetAttribute>().IsActive)
+            .Select(planet => (planet, areas.Single(area => area.Value.WaypointTags.Contains(
+                planet.GetAttribute<PlanetType, PlanetAttribute>().SpaceOrbitWaypointTag)).Key))
+            .ToList();
+
+        StarshipDockReturn.FindOrbitPlanet(StationOrbit, planetOrbits).Should().Be(PlanetType.Viscara);
+        StarshipDockReturn.FindOrbitPlanet(TatooineOrbit, planetOrbits).Should().Be(PlanetType.Tatooine);
+        StarshipDockReturn.FindOrbitPlanet(Veles, planetOrbits).Should().Be(PlanetType.Invalid, "a landing area is no orbit");
+        StarshipDockReturn.FindOrbitPlanet("", planetOrbits).Should().Be(PlanetType.Invalid);
+
+        var property = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Property.cs"));
+        var lookup = property[property.IndexOf("GetPlanetStarport(string areaResref)", StringComparison.Ordinal)..];
+        lookup.IndexOf("StarshipDockReturn.FindOrbitPlanet", StringComparison.Ordinal)
+            .Should().BeLessThan(lookup.IndexOf("Planet.GetPlanetByType", StringComparison.Ordinal), "an orbit resolves before the planet is read");
     }
 
     private static (Dictionary<string, int> Variables, HashSet<string> WaypointTags) ReadArea(string path)

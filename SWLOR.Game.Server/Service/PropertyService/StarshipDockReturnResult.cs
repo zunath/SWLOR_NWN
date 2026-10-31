@@ -8,23 +8,24 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Unchanged = 0,
 
         /// <summary>
-        /// The ship was docked in a ship-only location and returned to its safe dock.
+        /// The ship was docked in a ship-only location and returned to the starport of the planet it was at.
         /// </summary>
         ReturnedFromShipOnlyLocation = 1,
 
         /// <summary>
-        /// The ship was docked at a player starport that no longer exists and returned to its safe dock.
+        /// The ship was docked at a player starport that no longer exists and returned to the starport of the planet
+        /// it was at.
         /// </summary>
         ReturnedFromMissingStarport = 2,
 
         /// <summary>
-        /// The ship had no dock recorded and was given its safe dock.
+        /// The ship had no dock recorded and was given the starport of the planet it was at, or its safe dock.
         /// </summary>
         RestoredMissingDock = 3,
 
         /// <summary>
         /// The ship had to return but had no usable safe dock recorded. It returned to the starport of the planet
-        /// its ship-only location (or the caller's fallback area) belongs to, which is now its safe dock.
+        /// it was at, which is now its safe dock.
         /// </summary>
         ReturnedToPlanetStarport = 4,
 

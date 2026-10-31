@@ -1402,8 +1402,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Starships left in a ship-only location, at a player starport that no longer exists (probably destroyed
-        /// by the previous cleanup) or is being retrieved, or without a dock return to the last regular starport
-        /// they docked at and its orbit. The caller saves the property.
+        /// by the previous cleanup) or is being retrieved, or without a dock return to the regular starport of the
+        /// planet they are at, or to the last regular starport they docked at when it is on that planet.
+        /// The caller saves the property.
         /// </summary>
         /// <param name="property">The starship property to update.</param>
         /// <param name="retrievedStarportId">A player starport interior being retrieved. Ships docked there return even though it still exists.</param>
@@ -1433,15 +1434,15 @@ namespace SWLOR.Game.Server.Service
             switch (result)
             {
                 case StarshipDockReturnResult.ReturnedFromShipOnlyLocation:
-                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at the ship-only location '{previousDock?.AreaResref}'. It has been returned to the last NPC dock position at '{destination}'.");
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at the ship-only location '{previousDock?.AreaResref}'. It has been returned to the NPC starport at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.ReturnedFromMissingStarport:
                     Log.Write(LogGroup.Property, previousDock?.InstancePropertyId == retrievedStarportId
-                        ? $"Starship '{property.CustomName}' ({property.Id}) was docked at the retrieved player starport ({retrievedStarportId}). It has been relocated to the last NPC dock position at '{destination}'."
-                        : $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{destination}'.");
+                        ? $"Starship '{property.CustomName}' ({property.Id}) was docked at the retrieved player starport ({retrievedStarportId}). It has been relocated to the NPC starport at '{destination}'."
+                        : $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the NPC starport at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.RestoredMissingDock:
-                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had no dock position. It has been placed at the last NPC dock position at '{destination}'.");
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had no dock position. It has been placed at the NPC starport at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.ReturnedToPlanetStarport:
                     Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had to leave '{previousDock?.AreaResref}{previousDock?.InstancePropertyId}' without a last NPC dock position. It has been returned to the planet's starport at '{destination}'.");
@@ -1462,6 +1463,16 @@ namespace SWLOR.Game.Server.Service
         private static (PropertyLocation Landing, PropertyLocation Orbit)? GetPlanetStarport(string areaResref)
         {
             var planetType = Planet.GetPlanetType(Area.GetAreaByResref(areaResref));
+
+            // Planet.GetPlanetType leaves space areas unresolved, but a ship's saved orbit still names the planet it
+            // docked at: match it against each planet's orbit waypoint.
+            if (planetType == PlanetType.Invalid)
+            {
+                var orbits = Planet.GetAllPlanets()
+                    .Select(planet => (planet.Key, GetResRef(GetArea(GetWaypointByTag(planet.Value.SpaceOrbitWaypointTag)))));
+                planetType = StarshipDockReturn.FindOrbitPlanet(areaResref, orbits);
+            }
+
             if (planetType == PlanetType.Invalid)
                 return null;
 

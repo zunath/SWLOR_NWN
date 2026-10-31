@@ -135,7 +135,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetId($"ae_tile_{tile}")
                         .BindImageResref(Bind<string>($"Tile{tile}Image"))
                         .BindIsVisible(Bind<bool>($"Tile{tile}Visible"))
-                        .BindTooltip(Bind<string>($"Tile{tile}Tooltip"))
                         .BindIsEncouraged(selected)
                         .SetWidth(TileSize)
                         .SetHeight(TileSize)
@@ -149,13 +148,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddPoint(1.5f, 1.5f)
                             .BindIsEnabled(selected)
                             .SetColor(AppearanceEditorDefinition.Highlight)
-                            .SetLineThickness(3f)));
+                            .SetLineThickness(3f))
+                            // The part number, which the Part # box takes; tooltips do not show in this window.
+                            .AddText(number => number
+                                .BindText(Bind<string>($"Tile{tile}Number"))
+                                .SetBounds(5f, 3f, TileSize - 10f, 16f)
+                                .SetColor(220, 220, 220)));
                 });
                 cell.AddRow(labelRow =>
                 {
                     labelRow.AddLabel()
                         .BindText(Bind<string>($"Tile{tile}Label"))
-                        .BindTooltip(Bind<string>($"Tile{tile}Tooltip"))
                         .BindIsVisible(Bind<bool>($"Tile{tile}Visible"))
                         .SetWidth(TileSize)
                         .SetHeight(18f)

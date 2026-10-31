@@ -165,46 +165,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Tile38Label { get => Get<string>(); set => Set(value); }
         public string Tile39Label { get => Get<string>(); set => Set(value); }
 
-        public string Tile0Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile1Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile2Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile3Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile4Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile5Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile6Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile7Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile8Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile9Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile10Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile11Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile12Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile13Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile14Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile15Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile16Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile17Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile18Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile19Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile20Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile21Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile22Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile23Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile24Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile25Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile26Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile27Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile28Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile29Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile30Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile31Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile32Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile33Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile34Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile35Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile36Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile37Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile38Tooltip { get => Get<string>(); set => Set(value); }
-        public string Tile39Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile0Number { get => Get<string>(); set => Set(value); }
+        public string Tile1Number { get => Get<string>(); set => Set(value); }
+        public string Tile2Number { get => Get<string>(); set => Set(value); }
+        public string Tile3Number { get => Get<string>(); set => Set(value); }
+        public string Tile4Number { get => Get<string>(); set => Set(value); }
+        public string Tile5Number { get => Get<string>(); set => Set(value); }
+        public string Tile6Number { get => Get<string>(); set => Set(value); }
+        public string Tile7Number { get => Get<string>(); set => Set(value); }
+        public string Tile8Number { get => Get<string>(); set => Set(value); }
+        public string Tile9Number { get => Get<string>(); set => Set(value); }
+        public string Tile10Number { get => Get<string>(); set => Set(value); }
+        public string Tile11Number { get => Get<string>(); set => Set(value); }
+        public string Tile12Number { get => Get<string>(); set => Set(value); }
+        public string Tile13Number { get => Get<string>(); set => Set(value); }
+        public string Tile14Number { get => Get<string>(); set => Set(value); }
+        public string Tile15Number { get => Get<string>(); set => Set(value); }
+        public string Tile16Number { get => Get<string>(); set => Set(value); }
+        public string Tile17Number { get => Get<string>(); set => Set(value); }
+        public string Tile18Number { get => Get<string>(); set => Set(value); }
+        public string Tile19Number { get => Get<string>(); set => Set(value); }
+        public string Tile20Number { get => Get<string>(); set => Set(value); }
+        public string Tile21Number { get => Get<string>(); set => Set(value); }
+        public string Tile22Number { get => Get<string>(); set => Set(value); }
+        public string Tile23Number { get => Get<string>(); set => Set(value); }
+        public string Tile24Number { get => Get<string>(); set => Set(value); }
+        public string Tile25Number { get => Get<string>(); set => Set(value); }
+        public string Tile26Number { get => Get<string>(); set => Set(value); }
+        public string Tile27Number { get => Get<string>(); set => Set(value); }
+        public string Tile28Number { get => Get<string>(); set => Set(value); }
+        public string Tile29Number { get => Get<string>(); set => Set(value); }
+        public string Tile30Number { get => Get<string>(); set => Set(value); }
+        public string Tile31Number { get => Get<string>(); set => Set(value); }
+        public string Tile32Number { get => Get<string>(); set => Set(value); }
+        public string Tile33Number { get => Get<string>(); set => Set(value); }
+        public string Tile34Number { get => Get<string>(); set => Set(value); }
+        public string Tile35Number { get => Get<string>(); set => Set(value); }
+        public string Tile36Number { get => Get<string>(); set => Set(value); }
+        public string Tile37Number { get => Get<string>(); set => Set(value); }
+        public string Tile38Number { get => Get<string>(); set => Set(value); }
+        public string Tile39Number { get => Get<string>(); set => Set(value); }
         public bool Tile0Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile1Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile2Selected { get => Get<bool>(); set => Set(value); }
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(string.Empty, $"Tile{tile}Image");
                 Set(string.Empty, $"Tile{tile}Label");
-                Set(string.Empty, $"Tile{tile}Tooltip");
+                Set(string.Empty, $"Tile{tile}Number");
                 Set(false, $"Tile{tile}Selected");
                 Set(false, $"Tile{tile}Visible");
             }
@@ -390,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetIfChanged($"Tile{tile}Visible", visible);
                 SetIfChanged($"Tile{tile}Image", visible ? AppearancePreview.Picture(_key(id), _view) : string.Empty);
                 SetIfChanged($"Tile{tile}Label", visible ? _label(id) : string.Empty);
-                SetIfChanged($"Tile{tile}Tooltip", visible ? AppearanceEditorViewModel.PartNumberTooltip(id) : string.Empty);
+                SetIfChanged($"Tile{tile}Number", visible && id > 0 ? id.ToString() : string.Empty);
                 SetIfChanged($"Tile{tile}Selected", visible && id == _current);
             }
 

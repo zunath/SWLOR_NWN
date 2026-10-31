@@ -121,6 +121,16 @@ python -B -m unittest discover -s tools/tests -p test_generate_weapon_models.py
 
 ### Import Meshy weapon and shield sources
 
+Local TRELLIS.2 remains the default generation path. Meshy is opt-in. Before
+submitting paid Meshy generation, remeshing, retexturing or other credit-consuming
+jobs, obtain the project owner's approval for the work and its credit budget.
+Stay within that approved scope and budget. An available balance or API key does
+not authorize spending, and approval for one batch does not authorize unrelated
+future work.
+
+The Meshy import tools below only convert already-downloaded local GLBs. They do
+not submit Meshy API jobs, spend credits or add a paid fallback to local generation.
+
 Keep paid generation jobs, budget journals, reference images and downloaded GLBs
 in private staging. Review the source silhouette and PBR maps before fitting.
 `tools/MeshyWeaponExport.py --mode prepare` accepts the same explicit uniform-fit

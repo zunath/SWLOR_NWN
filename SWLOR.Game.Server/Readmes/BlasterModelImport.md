@@ -138,6 +138,14 @@ positions, UVs, face winding and draw indices are validated; shaded seams are
 never averaged. The older `authored_tangents` policy keeps its stricter immutable
 native-normal behavior. Client qualification is required for either policy.
 
+The seam-restoration helper also compacts its static rigid RAW buffers. It drops
+unreferenced compiler buffers and vertices, shares identical blocks, and merges
+only vertices whose complete position/UV/normal/tangent/sign bytes match. Every
+surviving shaded corner is checked byte for byte. `NativeTangentSeams.compact_model`
+can apply the same pass to an existing compatible model; animated, skinned,
+emitter and unsupported draw layouts are rejected without writing the file.
+This reduces storage without changing the rendered triangles or silhouette.
+
 For composite items, run `tools/MeshyWeaponParts.py` on the prepared manifest.
 Declare `parts` using measured native Y cuts; `clip_ranges: [[lower, upper], ...]`
 supports paired staff/twinblade roles, with `null` for an unbounded end. Supply
@@ -537,6 +545,15 @@ Compare textured previews before reducing larger maps;
 filter color in linear light and reconstruct/renormalize tangent normals. Constant
 material maps can use 4x4 DDS with full mipmaps. Avoid allocating large maps to solid
 colors. Preserve approved fit and silhouette when optimizing.
+`TrellisNwnMaterial.trim_dds_mips` can lower a reviewed material's resolution by
+retaining an existing complete BC mip chain from a smaller level onward, without
+recompression. It preserves the filtering already encoded in those levels; it
+does reduce detail. Compare identical views before and after, retain larger maps
+where highlights or seams degrade, and qualify the final material in the client.
+Share maps and whole material bundles only when their content and shader roles
+match. Keep the compiled bitmap fallback consistent with the MTR base color, and
+prove resources have no remaining HAK or stock-resource consumers before deleting
+retired assets.
 For opaque blaster maps, use these explicit options with `-fileformat dds
 -unflip -yflip -dropEmptyAlpha -dxtQuality uber`:
 

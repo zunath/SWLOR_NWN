@@ -142,6 +142,43 @@ class NativeTangentSeamTests(unittest.TestCase):
             self.preserve()
         self.assertEqual(data, self.path.read_bytes())
 
+    def test_compaction_discards_old_streams_but_keeps_every_shaded_corner_exact(self):
+        self.preserve()
+        before = normals.native_meshes(self.path)
+        data = self.path.read_bytes() + b'unreferenced old buffers' * 100
+        data = bytearray(data);struct.pack_into('<I',data,8,len(data)-12-struct.unpack_from('<I',data,4)[0])
+        self.path.write_bytes(data)
+        report = seams.compact_model(self.path)
+        self.assertGreater(report['bytes_saved'],2000)
+        after = normals.native_meshes(self.path)
+        for a,b in zip(before,after):
+            for key in ('positions','uv','normals','tangents','signs'):
+                self.assertEqual(a[key].tobytes(),b[key].tobytes())
+        self.assertEqual(0,seams.compact_model(self.path)['bytes_saved'])
+
+    def test_compaction_merges_identical_vertices_without_averaging_shading_seams(self):
+        # Two source positions coincide, but only an identical complete frame may merge.
+        data=bytearray(self.original);raw=12+struct.unpack_from('<I',data,4)[0]
+        _,headers=seams.mesh_headers(data);header=headers[0]['header']
+        for field,columns in seams.STREAMS:
+            start=raw+struct.unpack_from('<I',data,header+field)[0]
+            data[start+3*columns*4:start+4*columns*4]=data[start:start+columns*4]
+        self.path.write_bytes(data);before=normals.native_meshes(self.path)[0]
+        report=seams.compact_model(self.path);after=normals.native_meshes(self.path)[0]
+        self.assertEqual(1,report['meshes'][0]['identical_vertices_merged'])
+        for key in ('positions','uv','normals','tangents','signs'):
+            self.assertEqual(before[key].tobytes(),after[key].tobytes())
+        # A tangent/sign seam at the coincident position must remain independent.
+        struct.pack_into('<f',data,raw+struct.unpack_from('<I',data,header+496)[0]+3*4,-1)
+        self.path.write_bytes(data)
+        self.assertEqual(0,seams.compact_model(self.path)['meshes'][0]['identical_vertices_merged'])
+
+    def test_compaction_rejects_animated_or_unsupported_models_without_writing(self):
+        for offset,value in [(136,1),(12+344+108,5),(12+456+456,0)]:
+            data=bytearray(self.original);struct.pack_into('<I',data,offset,value);self.path.write_bytes(data)
+            with self.assertRaises(ValueError):seams.compact_model(self.path)
+            self.assertEqual(data,self.path.read_bytes())
+
 
 if __name__ == '__main__':
     unittest.main()

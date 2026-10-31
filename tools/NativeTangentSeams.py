@@ -97,6 +97,77 @@ def mesh_headers(data):
     return raw, result
 
 
+def compact_model_bytes(before):
+    """Discard unreferenced raw buffers and merge only bit-identical rigid vertices.
+
+    The strict static-mesh reader rejects animation, emitters, skinning and any
+    additional vertex streams. All surviving corner attributes remain byte exact.
+    Model data keeps its offsets; only raw offsets/counts and face indices change.
+    """
+    raw, headers = mesh_headers(before)
+    after = bytearray(before[:raw])
+    allowed = set(range(8, 12))
+    blocks, reports = {}, []
+
+    def append(data):
+        if data not in blocks:
+            after.extend(bytes((-len(after)) % 4))
+            blocks[data] = len(after) - raw
+            after.extend(data)
+        return blocks[data]
+
+    for info in headers:
+        used = np.unique(info['faces'])
+        keys = np.concatenate([info['streams'][field][used] for field, _ in STREAMS], axis=1)
+        owners, retained = {}, []
+        remap = np.zeros(info['count'], dtype='<u2')
+        for vertex, values in zip(used, keys):
+            key = values.tobytes()
+            if key not in owners:
+                owners[key] = len(retained)
+                retained.append(int(vertex))
+            remap[vertex] = owners[key]
+        faces = remap[info['faces']]
+        header = info['header']
+        for field, _ in STREAMS:
+            offset = append(info['streams'][field][retained].tobytes())
+            struct.pack_into('<I', after, header + field, offset)
+            allowed.update(range(header + field, header + field + 4))
+        struct.pack_into('<H', after, header + 448, len(retained))
+        allowed.update(range(header + 448, header + 450))
+        struct.pack_into('<I', after, info['draw_pointer'], append(faces.tobytes()))
+        allowed.update(range(info['draw_pointer'], info['draw_pointer'] + 4))
+        for index, vertices in enumerate(faces):
+            offset = info['face_offset'] + index * 32 + 26
+            struct.pack_into('<3H', after, offset, *vertices)
+            allowed.update(range(offset, offset + 6))
+        reports.append({'vertices_before': info['count'], 'vertices_after': len(retained),
+                        'unused_vertices_removed': info['count'] - len(used),
+                        'identical_vertices_merged': len(used) - len(retained)})
+    struct.pack_into('<I', after, 8, len(after) - raw)
+    changed = {i for i, (a, b) in enumerate(zip(before[:raw], after[:raw])) if a != b}
+    if not changed <= allowed:
+        raise ValueError('Raw compaction changed unrelated native metadata')
+    _, compacted = mesh_headers(after)
+    for old, new in zip(headers, compacted):
+        for field, _ in STREAMS:
+            if old['streams'][field][old['faces']].tobytes() != new['streams'][field][new['faces']].tobytes():
+                raise ValueError('Raw compaction changed a rendered corner attribute')
+    if len(after) > len(before):
+        return before, {'bytes_saved': 0, 'corner_streams_bit_identical': True, 'meshes': []}
+    return bytes(after), {'bytes_saved': len(before) - len(after),
+                          'corner_streams_bit_identical': True, 'meshes': reports}
+
+
+def compact_model(path):
+    path = Path(path)
+    before = path.read_bytes()
+    after, report = compact_model_bytes(before)
+    if after != before:
+        path.write_bytes(after)
+    return report
+
+
 def preserve_authored_tangent_seams(path, sources, normal_helper):
     path = Path(path)
     before = path.read_bytes()
@@ -195,9 +266,11 @@ def preserve_authored_tangent_seams(path, sources, normal_helper):
     if not changed <= allowed:
         raise ValueError('Tangent seam splitting changed unrelated native metadata')
     mesh_headers(after)
+    after, compaction = compact_model_bytes(after)
     path.write_bytes(after)
     return {'model': path.name, 'policy': 'authored_tangent_seams', 'producer_sha256': producer_sha256(),
             'before_sha256': hashlib.sha256(before).hexdigest(), 'after_sha256': hashlib.sha256(after).hexdigest(),
             'rendered_position_uv_corners_preserved': True, 'authored_normal_corners_restored': True,
             'native_draw_indices_updated': True,
-            'tangent_seams_averaged': False, 'native_close_view_verification_required': True, 'meshes': reports}
+            'tangent_seams_averaged': False, 'native_close_view_verification_required': True,
+            'raw_compaction': compaction, 'meshes': reports}

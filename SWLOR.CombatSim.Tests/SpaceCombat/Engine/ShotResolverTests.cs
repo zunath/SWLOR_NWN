@@ -174,12 +174,86 @@ public class ShotResolverTests
 
         for (var shot = 0; shot < 7; shot++)
             resolver.Fire(attacker, weapon, 0, first);
-        attacker.RepeatedHitStacks.Should().Be(5);
+        attacker.RepeatedHits[weapon].Stacks.Should().Be(5);
         SpaceShotMath.RegisterRepeatedHit(attacker, weapon, first).Should().Be(15);
 
         resolver.Fire(attacker, weapon, 0, second);
-        attacker.RepeatedHitTarget.Should().BeSameAs(second);
-        attacker.RepeatedHitStacks.Should().Be(1);
+        attacker.RepeatedHits[weapon].Target.Should().BeSameAs(second);
+        attacker.RepeatedHits[weapon].Stacks.Should().Be(1);
+    }
+
+    [Test]
+    public void SustainedFire_EachWeaponOwnsItsStacksAndThreeWeaponsShareTwoWeaponsWorth()
+    {
+        var lasers = new[] { SpaceTestShips.Laser("Laser 1"), SpaceTestShips.Laser("Laser 2"), SpaceTestShips.Laser("Laser 3") };
+        var spec = SpaceTestShips.Ship(weapons: lasers);
+        spec.EnergyRepeatedHitDmg = 3;
+        spec.EnergyRepeatedHitMaxDmg = 15;
+        var attacker = ShipState.Create(spec, "Attacker", 0);
+        var target = ShipState.Create(SpaceTestShips.Ship(hull: 100000), "Target", 1);
+
+        // The first laser's own run: 3, 6 ... 15 DMG, each x 2 / 3 weapons.
+        SpaceShotMath.RegisterRepeatedHit(attacker, lasers[0], target).Should().Be(2);
+        SpaceShotMath.RegisterRepeatedHit(attacker, lasers[0], target).Should().Be(4);
+        // The second laser starts its own run.
+        SpaceShotMath.RegisterRepeatedHit(attacker, lasers[1], target).Should().Be(2);
+        attacker.RepeatedHits[lasers[0]].Stacks.Should().Be(2);
+        attacker.RepeatedHits[lasers[1]].Stacks.Should().Be(1);
+    }
+
+    [Test]
+    public void SustainedFire_TwoEnergyWeaponsKeepTheFullBonus()
+    {
+        var lasers = new[] { SpaceTestShips.Laser("Laser 1"), SpaceTestShips.Laser("Laser 2") };
+        var spec = SpaceTestShips.Ship(weapons: lasers);
+        spec.EnergyRepeatedHitDmg = 3;
+        spec.EnergyRepeatedHitMaxDmg = 15;
+        var attacker = ShipState.Create(spec, "Attacker", 0);
+        var target = ShipState.Create(SpaceTestShips.Ship(hull: 100000), "Target", 1);
+
+        SpaceShotMath.RegisterRepeatedHit(attacker, lasers[0], target).Should().Be(3);
+        SpaceShotMath.RegisterRepeatedHit(attacker, lasers[0], target).Should().Be(6);
+    }
+
+    [Test]
+    public void Fire_ABlindedShipMissesSomeLandedShots()
+    {
+        var weapon = SpaceTestShips.Laser();
+        var spec = SpaceTestShips.Ship(weapons: weapon);
+        spec.Accuracy = 1000;
+        var hits = 0;
+        for (var seed = 1; seed <= 200; seed++)
+        {
+            var attacker = ShipState.Create(spec, "Attacker", 0);
+            attacker.BlindedUntil = 10;
+            var target = ShipState.Create(SpaceTestShips.Ship(hull: 100000), "Target", 1);
+            var resolver = new ShotResolver(new SpaceScenarioSpec(), new System.Random(seed)) { Now = 5 };
+            if (resolver.Fire(attacker, weapon, 0, target).Hit)
+                hits++;
+        }
+
+        hits.Should().BeInRange(60, 140, "about half of the landed shots miss while blinded");
+    }
+
+    [Test]
+    public void Fire_ProximityWarheadsSplashOnlyFromALaunchersOwnCycle()
+    {
+        var launcher = SpaceTestShips.Laser("Missile");
+        launcher.Family = ModuleFamily.Launcher;
+        var spec = SpaceTestShips.Ship(weapons: launcher);
+        spec.Accuracy = 1000;
+        spec.LauncherSplashChance = 100;
+        spec.LauncherSplashDamage = 8;
+
+        var attacker = ShipState.Create(spec, "Attacker", 0);
+        var target = ShipState.Create(SpaceTestShips.Ship(hull: 100000), "Target", 1);
+        var shot = new ShotResolver(new SpaceScenarioSpec(), new System.Random(1)).Fire(attacker, launcher, 0, target);
+        (100000 - target.Hull).Should().Be(shot.Damage + 8);
+
+        var abilityAttacker = ShipState.Create(spec, "Attacker", 0);
+        var abilityTarget = ShipState.Create(SpaceTestShips.Ship(hull: 100000), "Target", 1);
+        var abilityShot = new ShotResolver(new SpaceScenarioSpec(), new System.Random(1)).Fire(abilityAttacker, launcher, 0, abilityTarget, isAbility: true);
+        (100000 - abilityTarget.Hull).Should().Be(abilityShot.Damage);
     }
 
     [Test]

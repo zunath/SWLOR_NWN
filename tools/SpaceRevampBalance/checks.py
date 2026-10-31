@@ -44,8 +44,8 @@ def table(head, rows):
     Path(m.HERE / "checks.partial.md").write_text("\n".join(out))
 
 
-def fight(players, npcs, passive=False):
-    return m.run(m.scenario(players, npcs, passive), runs=RUNS)
+def fight(players, npcs, passive=False, runs=None):
+    return m.run(m.scenario(players, npcs, passive), runs=runs or RUNS)
 
 
 def cell(r):
@@ -133,16 +133,16 @@ out.append("Fits (`model.FIT`): every High slot a weapon (Laser Cannons, Missile
            "Shield Booster and Targeting Computer then Shield Booster or Shield Repairer, Low Hull Plating and Thrusters "
            "then Capacitor Regulator or more plating. Non-combat hulls are fitted to fight here; a working fit (mining "
            "lasers, scanners, cloaks, cargo expanders) gives up those slots. Each build flies its weapon style at the "
-           "tier's rank (section R: Ace for A and D, Ordnance for B and C; Ordnance's area, burn and fragmentation damage "
-           "is not modeled, so its rows are a floor). Packs run on build A only. "
+           "tier's rank (section R: Ace for A and D, Ordnance for B and C). Packs run on build A only. "
            f"Solo target (plan section 4: one weapon style solos all normal content and most elites in any hull the rank "
            f"allows), flown solo (Large and Capital Helm slots only). All normal content, judged on the worst of the four "
            f"builds on every hull: a same-level Normal Fighter and Normal Gunship at least 90% of the time (worst "
            f"{worst_normal[0]:.0%}, {worst_normal[1]}: "
            f"{band('B', 'solo: every hull and build with its style beats a Normal Fighter and Gunship >= 90%', f'{worst_normal[0]:.0%} ({worst_normal[1]})', worst_normal[0] >= 0.9)}). "
-           f"Most elites, judged on the dedicated builds (A + Ace, B + Ordnance) in every combat hull: an Elite Fighter at "
-           f"least half the time (worst {worst_elite[0]:.0%}, {worst_elite[1]}: "
-           f"{band('B', 'solo: A + Ace and B + Ordnance beat an Elite Fighter >= 50% in every combat hull', f'{worst_elite[0]:.0%} ({worst_elite[1]})', worst_elite[0] >= 0.5)}). "
+           f"Most elites, solo, in combat hulls ({', '.join(COMBAT_HULLS)}; the other eight roles are exempt), judged on "
+           f"each style's dedicated build (A + Ace, B + Ordnance): an Elite Fighter at least half the time (worst "
+           f"{worst_elite[0]:.0%}, {worst_elite[1]}: "
+           f"{band('B', 'most elites, solo, in combat hulls: A + Ace and B + Ordnance beat an Elite Fighter >= 50%', f'{worst_elite[0]:.0%} ({worst_elite[1]})', worst_elite[0] >= 0.5)}). "
            "No band, reported: the worst Elite Fighter result " + "; ".join(f"for {k} {v[0]:.0%} ({v[1]})" for k, v in sorted(other_elite.items()))
            + ". Non-combat hulls have no kill-time band.\n")
 
@@ -228,19 +228,21 @@ out.append(f"Hit penalty {m.T['size_hit_penalty']} points per step a weapon is l
 out.append("## G. Crewed capital vs separate ships (T5)\n")
 cr = m.player_ship("Cruiser", 45, m.FIT["Cruiser"])
 fi = m.player_ship("Fighter", 45, m.FIT["Fighter"])
-r1 = fight([cr], [m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0)])
-r5 = fight([dict(fi, count=5)], [m.npc_ship("Gunship", 45, "Boss", size="Capital")])
+G_RUNS = max(300, RUNS)  # the crewed-capital band sits near its limit, so it runs on 300 seeds
+r1 = fight([cr], [m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0)], runs=G_RUNS)
+r5 = fight([dict(fi, count=5)], [m.npc_ship("Gunship", 45, "Boss", size="Capital")], runs=G_RUNS)
 table(["Side", "Hull+shield", "vs Boss capital"], [["1 Cruiser, 5 crew seats", round(cr["maxHull"] + cr["maxShield"]), cell(r1)],
                                                   ["5 Fighters", 5 * round(fi["maxHull"] + fi["maxShield"]), cell(r5)]])
 # Crew Morale and Leadership raise crew effectiveness, capped at 105% (the crew update, W8a).
 cr_cap = m.player_ship("Cruiser", 45, m.FIT["Cruiser"], crew=m.CREW_CAP)
-r_cap = fight([cr_cap], [m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0)])
+r_cap = fight([cr_cap], [m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0)], runs=G_RUNS)
 g_ratio = r_cap["mean"] / r5["mean"]
+g_text = f"{g_ratio:.3f} ({r_cap['mean']:.1f} s against {r5['mean']:.1f} s)"
 out.append(f"Crew effectiveness is capped at {m.CREW_CAP:.0%} (Crew Morale and Leadership); at the cap the Cruiser takes "
            f"{cell(r_cap)} (hull+shield {round(cr_cap['maxHull'] + cr_cap['maxShield'])}). Crew seats add only the crew's own perks "
            "and seat-skill bonuses (W8), so a crewed capital must stay at or below N separate ships (build A on every ship; "
-           f"at the cap the Cruiser's kill time is {g_ratio:.2f} of the 5 Fighters', 0.98 allowed for noise: "
-           f"{band('G', 'crewed Cruiser at the cap kills no faster than 5 Fighters (build A)', f'{g_ratio:.2f}', g_ratio >= 0.98)}).\n")
+           f"at the cap the Cruiser's kill time is {g_ratio:.3f} of the 5 Fighters' over {G_RUNS} runs, 0.98 allowed for noise: "
+           f"{band('G', 'crewed Cruiser at the cap kills no faster than 5 Fighters (build A, 300 runs)', g_text, g_ratio >= 0.98)}).\n")
 
 # H. Weapon families
 out.append("## H. Weapon families on a Fighter (3 of one family), mean kill time\n")
@@ -742,15 +744,42 @@ for L in TIERS:
 table(["Tier", "Style", "Build", "Modeled at this rank", "Normal roles: no style -> style (mean kill time)",
        "Elite Fighter: no style -> style"], rows)
 out.append("Each style at the tier's Piloting rank, with every row it has by then (Appendix A unlock ranks); abilities fire "
-           "whenever they are off cooldown and the pilot's STM pays (build STM, no gear). Modeled: Ace's Disabling Shot "
-           "(its Attack penalty on the target as always on: 30 s on an 18 s cooldown), Double Shot (two shots) and Sustained "
-           "Fire; Ordnance's Volley and Flare Missile as single-target shots; Bulwark's Bulwark trait (+Defense %); "
-           "Command's Focus Fire (+damage dealt, 30 s on a 24 s cooldown, so always on). Not modeled, so style output there "
-           "is unvalidated: area hits on other ships, Burn and fragmentation damage over time, Blind, Dazed, Exposed, "
-           "Proximity Warheads, crit STM refunds, High Noon, the stances, Evasive Reload, Mobile Footwork, Defiance and "
-           "Shield Ram riders, Critical Ward, Unbreakable, Invincible, goads and threat, Emergency Repair, Mark Target, "
-           "Break Formation, Formation and the capstones. No band: the plan sets none for style output beyond the solo "
-           "target (section B is its no-style floor).\n")
+           "whenever they are off cooldown and the pilot's STM pays (build STM, no gear), in the listed order. Modeled: "
+           "Ace's Disabling Shot (its Attack penalty on the target as always on: 30 s on an 18 s cooldown), Double Shot (two "
+           "shots), Point Blank Burst (on the target only) and Sustained Fire (each weapon's own stacks, shared as "
+           "SpaceRepeatedHits.GetShare does); Ordnance's Volley with its Burn (2-3 + MGT modifier x 2 every 6 s) and "
+           "Shrapnel Warheads fragmentation (3 / 5 / 7 every 3 s), Flare Missile with its 15 s Blind (half the target's "
+           "landed shots miss), Concussion Barrage (on the target only, with fragmentation), Proximity Warheads (15% of "
+           "launcher cycle hits add 8 damage) and Saturation Fire (the second area launcher hit within 30 s leaves the "
+           "target Exposed, -15% Defense, for 30 s); Bulwark's Bulwark trait (+Defense %); Command's Focus Fire (+damage "
+           "dealt, 30 s on a 24 s cooldown, so always on). Not modeled, so style output there is unvalidated: area hits on "
+           "other ships, Cluster Warheads, Dazed, Point Blank Burst's Evasion, crit STM refunds, High Noon, the stances, "
+           "Evasive Reload, Mobile Footwork, Bombardier's Rhythm, Defiance and Shield Ram riders, Critical Ward, "
+           "Unbreakable, Invincible, goads and threat, Emergency Repair, Mark Target, Break Formation, Formation and the "
+           "capstones.\n")
+
+# R2. Ace against the other styles at T5 on the three Small combat hulls (the review's Sustained Fire band)
+out.append("### R2. Style kill speed at T5 on the Small combat hulls (mean Normal kill time over the eight roles)\n")
+rows, ace_worst, ace_slower = [], 0.0, []
+for hull in ("Fighter", "Interceptor", "Bomber"):
+    times = {}
+    for style, build in (("Ace", "A"), ("Ordnance", "B"), ("Bulwark", "A"), ("Command", "A")):
+        ship = styles.apply(style, m.player_ship(hull, 45, build_fit(build, m.FIT[hull]), build=build), 45)
+        times[style] = sum(fight([ship], [styles.debuff(style, m.npc_ship(role, 45), 45)])["mean"] for role in m.NORMAL_ROLES) / len(m.NORMAL_ROLES)
+    others = {k: v for k, v in times.items() if k != "Ace"}
+    nearest = min(others, key=others.get)
+    gap = abs(times["Ace"] / others[nearest] - 1)
+    ace_worst = max(ace_worst, gap)
+    if times["Ace"] > max(others.values()):
+        ace_slower.append(hull)
+    rows.append([hull] + [f"{times[k]:.1f}s" for k in ("Ace", "Ordnance", "Bulwark", "Command")]
+                + [f"{nearest} {times['Ace'] / others[nearest] - 1:+.0%}"])
+table(["Hull", "Ace (A)", "Ordnance (B)", "Bulwark (A)", "Command (A)", "Ace against the fastest other style"], rows)
+out.append(f"Sustained Fire stacks belong to each weapon, and a ship firing three or more energy weapons gives each its "
+           f"stacks' DMG x 2 / that number (SpaceRepeatedHits.GetShare). Band (review decision): Ace within 15% of the "
+           f"fastest other style on each hull (worst {ace_worst:.0%}: "
+           f"{band('R', 'Ace within 15% of the fastest other style at T5 (Fighter, Interceptor, Bomber)', f'{ace_worst:.0%}', ace_worst <= 0.15)}) "
+           f"and never the slowest style ({band('R', 'Ace is not the slowest style at T5', ', '.join(ace_slower) or 'none slower', not ace_slower)}).\n")
 
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

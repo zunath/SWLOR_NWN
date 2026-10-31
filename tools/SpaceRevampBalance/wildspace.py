@@ -100,7 +100,7 @@ ENVIRONMENTS = {
     "Pulsar": [("SpaceShieldDamageTakenPercentAdjustment", -12), ("SpaceCapacitorRegenPercentAdjustment", -25)],
     "BlackHole": [("MovementSpeedPercentAdjustment", 25), ("SpaceAccuracyPercentAdjustment", -4)],
     "IonStorm": [("SpaceEmDamagePercentAdjustment", 25), ("SpaceShieldDamageTakenPercentAdjustment", 15)],
-    "Magnetar": [("DamageDealtPercentAdjustment", 4), ("EvasionPercentAdjustment", -3)],
+    "Magnetar": [("DamageDealtPercentAdjustment", 4), ("EvasionPercentAdjustment", -1)],
     "RedGiant": [("SpaceAbilityDamagePercentAdjustment", 20), ("SpaceCapacitorCostPercentAdjustment", 20)],
     "ShipGraveyard": [("SpaceSalvageYieldBonus", 1), ("SpaceRareTraitChance", 5), ("SpaceScanStrengthPercent", -25)],
 }

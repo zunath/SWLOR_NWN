@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Service
             bool setGlobalRecast)
         {
             // The module's component traits apply while its action runs; Yield traits add to its Module Bonus.
-            using (ShipModuleTraitContext.Begin(shipModule.Traits))
+            using (ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber))
             {
                 shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus,
                     ShipTraitRules.ModuleBonus(shipModule.ModuleBonus, shipModule.Traits));

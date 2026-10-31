@@ -250,6 +250,11 @@ public class RiftRunTests
         RiftRunRules.RoomWaves(key, 1, 3)[0].Should().Equal("sniper", "ewar", "interceptor", "interceptor");
         RiftRunRules.RoomWaves(key, 2, 2).Single().Should().Equal("platform", "gunship");
         RiftRunRules.WaveTags(key, 2, 0, 1).Should().Equal("t4platform");
+        var tierTwo = RiftRunRules.KeyForTier(2);
+        RiftRunRules.RoomWaves(tierTwo, 2, 1).Single().Should().Equal(new[] { "gunship", "gunship" },
+            "tier 2's Rift Heart is a gunship pair: its Elite platform beat the solo legal T2 pilot too often");
+        RiftRunRules.RoomWaves(tierTwo, 2, 2).Single().Should().Equal("gunship", "gunship", "gunship");
+        RiftRunRules.WaveTags(tierTwo, 2, 0, 1).Should().Equal("t2gunship", "t2gunship");
         var raiders = RiftRunRules.KeyForTier(6);
         RiftRunRules.RoomWaves(raiders, 0, 1).Should().HaveCount(4).And.OnlyContain(x => x.Count == 1, "Rift Raiders come one at a time");
         RiftRunRules.WaveTags(raiders, 2, 1, 2).Should().Equal("rrlogistics", "rrgunship");

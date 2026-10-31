@@ -4,10 +4,11 @@ using SpaceCombatMath = SWLOR.Game.Server.Service.SpaceService.SpaceCombatMath;
 namespace SWLOR.CombatSim.SpaceCombat.Engine;
 
 /// <summary>
-/// Resolves one shot in the server's order (Space.RollWeaponShot): hit, critical, Sustained Fire DMG, damage roll,
-/// critical damage percent, damage-dealt percent, then size penalty x (1 + damage bonus %) x (1 - resistance %),
-/// rounded half away from zero with a 1-damage minimum, then the target's damage-taken percent, then shield and hull.
-/// Each shot draws the random numbers in that order (hit, critical, damage), and a miss draws only the first.
+/// Resolves one shot in the server's order (Space.RollWeaponShot): hit (and Blind's extra miss), critical, Sustained
+/// Fire DMG, damage roll, critical damage percent, damage-dealt percent, then size penalty x (1 + damage bonus %) x
+/// (1 - resistance %), rounded half away from zero with a 1-damage minimum, then the target's damage-taken percent,
+/// then shield and hull. A launcher's own cycle hit may then add Proximity Warheads' splash (SpaceOrdnance). Each shot
+/// draws the random numbers in that order, and a miss draws only the first.
 /// </summary>
 public sealed class ShotResolver
 {
@@ -20,9 +21,18 @@ public sealed class ShotResolver
         _random = random;
     }
 
-    public ShotResult Fire(ShipState attacker, WeaponModuleSpec weapon, int bonusDmg, ShipState target)
+    /// <summary>The fight time of the step being resolved (for Blind).</summary>
+    public double Now { get; set; }
+
+    public System.Random Random => _random;
+
+    public ShotResult Fire(ShipState attacker, WeaponModuleSpec weapon, int bonusDmg, ShipState target, bool isAbility = false)
     {
         if (_random.Next(1, 101) > SpaceShotMath.HitChance(_scenario, attacker, weapon, target))
+            return new ShotResult(false, false, 0, 0);
+
+        // A blinded ship's landed shot misses half the time (SpaceCombatMath.BlindMissChance).
+        if (attacker.BlindedUntil > Now && _random.Next(1, 101) <= SpaceCombatMath.BlindMissChance)
             return new ShotResult(false, false, 0, 0);
 
         var critical = _random.Next(1, 101) <= SpaceShotMath.CriticalChance(_scenario, attacker, weapon, target);
@@ -46,6 +56,15 @@ public sealed class ShotResolver
 
         var applied = target.TakeDamage(damage, weapon.ShieldBypass, weapon.ShieldDamageMultiplier);
         attacker.DamageDealt += applied;
+
+        // Proximity Warheads: only a launcher's own cycles splash.
+        if (!isAbility && weapon.Family == ModuleFamily.Launcher && attacker.Spec.LauncherSplashChance > 0 &&
+            attacker.Spec.LauncherSplashDamage > 0 && target.IsAlive &&
+            _random.Next(1, 101) <= attacker.Spec.LauncherSplashChance)
+        {
+            attacker.DamageDealt += target.TakeDamage(attacker.Spec.LauncherSplashDamage, false, 1.0);
+        }
+
         return new ShotResult(true, critical, damage, applied);
     }
 }

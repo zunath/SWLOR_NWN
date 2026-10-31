@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The hull's capacitor regen per second, before the pilot's WIL is added.</summary>
         public double CapacitorRegenPerSecond { get; set; } = 1.0;
 
-        /// <summary>Critical rate bonus from the hull. Stored for the critical hit rules; nothing reads it yet.</summary>
+        /// <summary>Critical rate bonus from the hull, added to every shot's critical rate (SpaceCombatMath.CriticalRateModifier).</summary>
         public int CriticalBonus { get; set; }
 
         /// <summary>The movement multiplier while piloting this ship (1.0 is today's speed).</summary>

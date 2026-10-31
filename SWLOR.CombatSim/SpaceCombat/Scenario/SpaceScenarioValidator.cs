@@ -121,6 +121,13 @@ public static class SpaceScenarioValidator
             RequireNotNegative(name, "stmCost", ability.StmCost);
             if (ability.Shots < 1)
                 throw Invalid($"{name} needs shots of at least 1.");
+            RequireNotNegative(name, "blindSeconds", ability.BlindSeconds);
+            foreach (var dot in ability.Dots)
+            {
+                if (string.IsNullOrWhiteSpace(dot?.Name) || dot.Damage < 0 || dot.DamageSpread < 0 ||
+                    !(dot.PeriodSeconds >= MinimumCycleSeconds) || !(dot.DurationSeconds >= 0))
+                    throw Invalid($"{name} has a dot that needs a name, damage and damageSpread of at least 0, and a period of at least {MinimumCycleSeconds} s.");
+            }
         }
     }
 

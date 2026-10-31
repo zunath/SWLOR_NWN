@@ -636,7 +636,7 @@ public class ShipComponentTests
     [TestCase("Service/ShipComponents.cs", "if (CarriesTraits(GetResRef(component)))")]
     [TestCase("Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs", "Traits = ShipComponents.GetTraitsOrNull(item),")]
     [TestCase("Service/SpaceRevamp.cs", "Step = detail.Step, Traits = module.Traits")]
-    [TestCase("Service/SpaceToggles.cs", "using (ShipModuleTraitContext.Begin(shipModule.Traits))")]
+    [TestCase("Service/SpaceToggles.cs", "using (ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber))")]
     [TestCase("Service/SpaceToggles.cs", "ShipTraitRules.ModuleBonus(shipModule.ModuleBonus, shipModule.Traits)")]
     [TestCase("Service/SpacePowerRouting.cs", "ShipTraitRules.CapacitorCost(")]
     [TestCase("Feature/ShipModuleDefinition/RevampModuleDefinition.cs", "ShipTraitRules.Apply(step, ShipModuleTraitContext.Current)")]

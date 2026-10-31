@@ -84,9 +84,10 @@ public static class SpaceShotMath
         1.0 + attacker.Spec.DamageBonusPercent.Get(type) / 100.0;
 
     /// <summary>
-    /// Sustained Fire (SpaceSustainedFire.RegisterHit): an energy hit on the same target as the ship's last one adds a
-    /// stack, a hit on another target starts again at one, and the shot gets stacks x DMG per hit, up to the maximum.
-    /// Shots in a fight never pause the 30 s the stacks last, so they do not expire here.
+    /// Sustained Fire (SpaceSustainedFire.RegisterHit): each weapon owns its stacks. A weapon's energy hit on the same
+    /// target as its last one adds a stack, a hit on another target starts again at one, and the shot gets the stacks'
+    /// DMG (up to the maximum) shared between the ship's energy weapons (SpaceRepeatedHits.GetShare). Shots in a fight
+    /// never pause the 30 s the stacks last, so they do not expire here.
     /// </summary>
     public static int RegisterRepeatedHit(ShipState attacker, WeaponModuleSpec weapon, ShipState target)
     {
@@ -95,9 +96,11 @@ public static class SpaceShotMath
         if (weapon.Family != ModuleFamily.Energy || perHit <= 0 || maximum <= 0)
             return 0;
 
-        var stacks = attacker.RepeatedHitTarget == target ? attacker.RepeatedHitStacks : 0;
-        attacker.RepeatedHitTarget = target;
-        attacker.RepeatedHitStacks = Math.Min(stacks + 1, SpaceRepeatedHits.GetMaximumStacks(perHit, maximum));
-        return SpaceRepeatedHits.GetBonus(attacker.RepeatedHitStacks, perHit, maximum);
+        if (!attacker.RepeatedHits.TryGetValue(weapon, out var state))
+            attacker.RepeatedHits[weapon] = state = new RepeatedHitState();
+        var stacks = state.Target == target ? state.Stacks : 0;
+        state.Target = target;
+        state.Stacks = Math.Min(stacks + 1, SpaceRepeatedHits.GetMaximumStacks(perHit, maximum));
+        return SpaceRepeatedHits.GetShare(SpaceRepeatedHits.GetBonus(state.Stacks, perHit, maximum), attacker.EnergyWeaponCount);
     }
 }

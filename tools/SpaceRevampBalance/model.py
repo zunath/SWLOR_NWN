@@ -607,7 +607,7 @@ SHIPS = [
     ("Striker", "Fighter", "Corellian", False, 10057, "Weapon cycles 5% faster.", {"dmg": 5}),
     ("Republic Striker", "Fighter", "Republic", False, 10071, "+15% shield regen.", {"shieldregen": 15}),
     ("Davaab", "Fighter", "Mandalorian", False, 10155, "+10% max hull and +5% missile damage.", {"hull": 10, "explosive": 5}),
-    ("Aurek Strikefighter", "Fighter", "Republic", True, 10074, "+20% max shield and +20% shield regen; Point-Defense fires as Medium.", {"shield": 20, "shieldregen": 20}),
+    ("Aurek Strikefighter", "Fighter", "Republic", True, 10074, "+25% max shield and +20% shield regen; Point-Defense fires as Medium.", {"shield": 25, "shieldregen": 20}),
     ("Sith Fighter", "Fighter", "Sith", True, 10092, "+10% Critical Rate and +10% weapon damage; critical hits restore 1 capacitor.", {"crit": 10, "dmg": 10}),
     ("Cutlass", "Fighter", "Corellian", True, 10161, "+1 Mid slot.", {"M": 1}),
     ("Condor", "Interceptor", "Corellian", False, 10055, "+10% speed.", {"speed": 10}),

@@ -176,6 +176,59 @@ public class SpaceFightTests
     }
 
     [Test]
+    public void SpaceFight_ADotTicksEveryPeriodAndARefreshKeepsItsSchedule()
+    {
+        for (var seed = 1; seed < 100; seed++)
+        {
+            var attacker = SpaceTestShips.Ship("Bomber", capacitor: 100, weapons: SpaceTestShips.Laser(dmg: 1, cycleSeconds: 1000));
+            attacker.Accuracy = 1000;
+            attacker.Abilities.Add(new BurstAbilitySpec
+            {
+                Name = "Volley", Weapon = "Laser", CooldownSeconds = 16,
+                Dots = { new DotSpec { Name = "Burn", Damage = 10, PeriodSeconds = 6, DurationSeconds = 30 } }
+            });
+            var fight = new SpaceFight(SpaceTestShips.Scenario(attacker, SpaceTestShips.Ship("Target", hull: 1000000), durationSeconds: 60), seed);
+            var target = fight.Ships[1];
+            fight.Step(0);
+            if (target.Dots.Count == 0)
+                continue;
+
+            var hull = target.Hull;
+            for (var step = 1; step <= 130; step++)
+                fight.Step(step * 0.1);
+            (hull - target.Hull).Should().Be(20, "ticks at 6 and 12 s");
+
+            for (var step = 131; step <= 170; step++)
+                fight.Step(step * 0.1);
+            var dot = target.Dots.Single();
+            dot.NextTickAt.Should().BeApproximately(18, 1e-6, "a refresh at 16 s keeps the 6 s schedule");
+            dot.ExpiresAt.Should().BeOneOf(30, 46);
+            return;
+        }
+
+        Assert.Fail("No seed landed the first ability shot.");
+    }
+
+    [Test]
+    public void SpaceFight_SaturationFireExposesOnTheSecondAreaHitWithinTheWindow()
+    {
+        var laser = SpaceTestShips.Laser(dmg: 1, cycleSeconds: 1000);
+        var attacker = SpaceTestShips.Ship("Bomber", capacitor: 100, weapons: laser);
+        attacker.Accuracy = 1000;
+        attacker.SaturationExposedDefensePercent = 15;
+        attacker.Abilities.Add(new BurstAbilitySpec { Name = "Volley", Weapon = "Laser", CooldownSeconds = 18, AreaLauncher = true });
+        var fight = new SpaceFight(SpaceTestShips.Scenario(attacker, SpaceTestShips.Ship("Target", hull: 1000000), durationSeconds: 20), seed: 1);
+
+        fight.Step(0);
+        fight.Ships[1].Defense.Should().Be(100, "one area hit is not enough");
+        for (var step = 1; step <= 180; step++)
+            fight.Step(step * 0.1);
+
+        fight.Ships[1].Defense.Should().Be(SWLOR.Game.Server.Service.SpaceService.SpaceCombatMath.AdjustRating(100, 0, -15),
+            "the second area hit within 30 s leaves the target Exposed");
+    }
+
+    [Test]
     public void SpaceFight_SameSeed_GivesTheSameResult()
     {
         var scenario = SpaceTestShips.Scenario(

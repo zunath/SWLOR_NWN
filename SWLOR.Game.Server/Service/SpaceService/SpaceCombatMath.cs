@@ -58,6 +58,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static int CriticalRate(int per, int targetVit, int moduleRank, int modifier) =>
             Combat.CalculateCriticalRate(per, targetVit, moduleRank, modifier);
 
+        /// <summary>
+        /// The critical formula's modifier for a shot: the pilot's Critical Rate %, the weapon Critical Rate % for a
+        /// weapon's own cycle (not an ability shot), and the hull's critical bonus (ShipStatus.CriticalBonus) on every shot.
+        /// </summary>
+        public static int CriticalRateModifier(int criticalRatePercent, int weaponCriticalRatePercent, bool isAbility, int hullCriticalBonus) =>
+            criticalRatePercent + (isAbility ? 0 : weaponCriticalRatePercent) + hullCriticalBonus;
+
         /// <summary>Combat.CalculateDamageRange with one Attack against one Defense and the target's VIT as defender stat.</summary>
         public static (int Minimum, int Maximum) DamageRange(
             int attack, int dmg, int damageAttribute, int defense, int targetVit, bool critical, int moduleRank) =>

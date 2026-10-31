@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AceSustainedFireTrait)
-                .Description("Each consecutive energy-weapon hit against the same target grants +1 DMG, up to five stacks. Stacks expire after 30 s.")
+                .Description("Each consecutive energy-weapon hit against the same target grants that weapon +1 DMG, up to five stacks. A ship firing three or more energy weapons shares two weapons' worth between them. Stacks expire after 30 s.")
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageBonusPerHit, 1)
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageBonusMax, 5)
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageDurationSeconds, 30)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Piloting, 8)
 
                 .AddPerkLevel()
-                .Description("Each consecutive energy-weapon hit against the same target grants +2 DMG, up to five stacks. Stacks expire after 30 s.")
+                .Description("Each consecutive energy-weapon hit against the same target grants that weapon +2 DMG, up to five stacks. A ship firing three or more energy weapons shares two weapons' worth between them. Stacks expire after 30 s.")
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageBonusPerHit, 2)
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageBonusMax, 10)
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageDurationSeconds, 30)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Piloting, 22)
 
                 .AddPerkLevel()
-                .Description("Each consecutive energy-weapon hit against the same target grants +3 DMG, up to five stacks. Stacks expire after 30 s.")
+                .Description("Each consecutive energy-weapon hit against the same target grants that weapon +3 DMG, up to five stacks. A ship firing three or more energy weapons shares two weapons' worth between them. Stacks expire after 30 s.")
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageBonusPerHit, 3)
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageBonusMax, 15)
                 .IncreasesStat(StatType.SpaceEnergyRepeatedTargetDamageDurationSeconds, 30)

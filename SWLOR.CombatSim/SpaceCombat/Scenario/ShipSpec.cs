@@ -43,6 +43,18 @@ public sealed class ShipSpec
 
     /// <summary>The most DMG Sustained Fire adds (StatType.SpaceEnergyRepeatedTargetDamageBonusMax).</summary>
     public int EnergyRepeatedHitMaxDmg { get; set; }
+
+    /// <summary>Proximity Warheads: the chance (percent) a launcher's own cycle hit adds flat damage to its target.</summary>
+    public int LauncherSplashChance { get; set; }
+
+    /// <summary>Proximity Warheads: the flat damage of that splash.</summary>
+    public int LauncherSplashDamage { get; set; }
+
+    /// <summary>
+    /// Saturation Fire: a target hit by two of this ship's area launcher abilities within 30 s becomes Exposed (this
+    /// percent off its Defense) for 30 s, and the count starts again; 0 for none.
+    /// </summary>
+    public int SaturationExposedDefensePercent { get; set; }
     public PilotSpec Pilot { get; set; } = new();
     public List<WeaponModuleSpec> Weapons { get; set; } = new();
     public List<RepairerModuleSpec> Repairers { get; set; } = new();

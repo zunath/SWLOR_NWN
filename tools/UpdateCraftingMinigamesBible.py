@@ -45,6 +45,7 @@ PERKS = SERVER / "Feature" / "PerkDefinition"
 SOURCE_FILES = {
     "fabricator": MINIGAME / "Fabricator" / "FabricatorRules.cs",
     "fabricator_heads": MINIGAME / "Fabricator" / "FabricatorHead.cs",
+    "fabricator_parts": MINIGAME / "Fabricator" / "SubAssembly.cs",
     "kitchen": MINIGAME / "Kitchen" / "KitchenTuning.cs",
     "kitchen_axis": MINIGAME / "Kitchen" / "KitchenAxis.cs",
     "kitchen_heat": MINIGAME / "Kitchen" / "KitchenHeat.cs",
@@ -249,11 +250,11 @@ def recipe_bands(source: Source, names) -> list[tuple[str, float]]:
 
 
 def fabricator_entry(src: dict[str, Source]) -> str:
-    rules, heads = src["fabricator"], src["fabricator_heads"]
-    parts = heads.enum_names("SubAssembly")
+    rules, heads, sub_assemblies = src["fabricator"], src["fabricator_heads"], src["fabricator_parts"]
+    parts = sub_assemblies.enum_names("SubAssembly")
     tools = heads.enum_names("FabricatorHead")
     if len(parts) != 3 or len(tools) != 3:
-        raise ValueError("FabricatorHead.cs: the Fabricator is expected to have three sub-assemblies and three heads")
+        raise ValueError("SubAssembly.cs, FabricatorHead.cs: the Fabricator is expected to have three sub-assemblies and three heads")
     bands = recipe_bands(rules, ("XpMultiplierLevels1To10", "XpMultiplierLevels11To20", "XpMultiplierLevels21To30",
                                  "XpMultiplierLevels31To40", "XpMultiplierLevels41Up"))
     worked = ", ".join(f"the {part} by the {tool}" for part, tool in zip(parts, tools))

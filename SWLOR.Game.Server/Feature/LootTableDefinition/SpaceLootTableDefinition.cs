@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Tier3();
             Tier4();
             Tier5();
+            WildSpace();
 
             return _builder.Build();
         }
@@ -175,9 +176,27 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("zinsiam", 1, 1, true)
                 .AddItem("ref_arda", 2, 1, true);
 
+            // Module Schematics for the named rank-50 modules drop at weight 1 each; the table's own entries are
+            // weighted x150 so their odds stay as they were.
             _builder.Create("SPACE_BOSS_T5")
-                .AddGold(10000, 1)
-                .AddItem("zinsiam", 1, 2);
+                .AddGold(10000, 150)
+                .AddItem("zinsiam", 150, 2)
+                .AddItem("recipe_laser50", 1)
+                .AddItem("recipe_ion50", 1)
+                .AddItem("recipe_beam50", 1)
+                .AddItem("recipe_missl50", 1)
+                .AddItem("recipe_torp50", 1)
+                .AddItem("recipe_pdef50", 1)
+                .AddItem("recipe_shbst50", 1)
+                .AddItem("recipe_shrep50", 1)
+                .AddItem("recipe_hard50", 1)
+                .AddItem("recipe_capb50", 1)
+                .AddItem("recipe_tcomp50", 1)
+                .AddItem("recipe_plate50", 1)
+                .AddItem("recipe_hrep50", 1)
+                .AddItem("recipe_resall50", 1)
+                .AddItem("recipe_capr50", 1)
+                .AddItem("recipe_thrust50", 1);
 
             _builder.Create("SPACE_BASIC_T6")
                 .AddItem("elec_high", 8, 2)
@@ -206,43 +225,142 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("zinsiam", 2, 1, true)
                 .AddItem("ref_arda", 3, 1, true);
 
+            // Module Schematics at weight 1 each; the table's own entries are weighted x10 so their odds stay as they were.
             _builder.Create("SPACE_BOSS_T6")
-                .AddGold(15000, 1)
-                .AddItem("zinsiam", 1, 2)
-                .AddItem("recipe_modacmiss", 1)
-                .AddItem("recipe_modacml", 1)
-                .AddItem("recipe_modbulwar", 1)
-                .AddItem("recipe_capmodcpu", 1)
-                .AddItem("recipe_capreact", 1)
-                .AddItem("recipe_capthrust", 1)
-                .AddItem("recipe_capconst", 1)
-                .AddItem("recipe_cappwrlay", 1)
-                .AddItem("recipe_capshgen", 1)
-                .AddItem("recipe_modadvthr", 1)
-                .AddItem("recipe_capmodtec", 1)
-                .AddItem("recipe_corv", 1)
-                .AddItem("recipe_corveng", 1)
-                .AddItem("recipe_corvhull", 1)
-                .AddItem("recipe_corvpsys", 1)
-                .AddItem("recipe_corvrebay", 1)
-                .AddItem("recipe_conind", 1)
-                .AddItem("recipe_modlasbat", 1)
-                .AddItem("recipe_modquadlz", 1)
-                .AddItem("recipe_modredsgn", 1)
-                .AddItem("recipe_modreplat", 1)
-                .AddItem("recipe_modrepfld", 1)
-                .AddItem("recipe_conskrm", 1)
-                .AddItem("recipe_modstmcan", 1)
-                .AddItem("recipe_modtarget", 1)
-                .AddItem("recipe_modturbo", 1)
-                .AddItem("recipe_conwar", 1)
-                .AddItem("recipe_modsmin", 1)
-                .AddItem("recipe_wcomp", 1)
-                .AddItem("recipe_diverter", 1)
-                .AddItem("recipe_ewar", 1);
+                .AddGold(15000, 10)
+                .AddItem("zinsiam", 10, 2)
+                .AddItem("recipe_modacmiss", 10)
+                .AddItem("recipe_modacml", 10)
+                .AddItem("recipe_modbulwar", 10)
+                .AddItem("recipe_capmodcpu", 10)
+                .AddItem("recipe_capreact", 10)
+                .AddItem("recipe_capthrust", 10)
+                .AddItem("recipe_capconst", 10)
+                .AddItem("recipe_cappwrlay", 10)
+                .AddItem("recipe_capshgen", 10)
+                .AddItem("recipe_modadvthr", 10)
+                .AddItem("recipe_capmodtec", 10)
+                .AddItem("recipe_corv", 10)
+                .AddItem("recipe_corveng", 10)
+                .AddItem("recipe_corvhull", 10)
+                .AddItem("recipe_corvpsys", 10)
+                .AddItem("recipe_corvrebay", 10)
+                .AddItem("recipe_conind", 10)
+                .AddItem("recipe_modlasbat", 10)
+                .AddItem("recipe_modquadlz", 10)
+                .AddItem("recipe_modredsgn", 10)
+                .AddItem("recipe_modreplat", 10)
+                .AddItem("recipe_modrepfld", 10)
+                .AddItem("recipe_conskrm", 10)
+                .AddItem("recipe_modstmcan", 10)
+                .AddItem("recipe_modtarget", 10)
+                .AddItem("recipe_modturbo", 10)
+                .AddItem("recipe_conwar", 10)
+                .AddItem("recipe_modsmin", 10)
+                .AddItem("recipe_wcomp", 10)
+                .AddItem("recipe_diverter", 10)
+                .AddItem("recipe_ewar", 10)
+                .AddItem("recipe_laser50", 1)
+                .AddItem("recipe_ion50", 1)
+                .AddItem("recipe_beam50", 1)
+                .AddItem("recipe_missl50", 1)
+                .AddItem("recipe_torp50", 1)
+                .AddItem("recipe_pdef50", 1)
+                .AddItem("recipe_shbst50", 1)
+                .AddItem("recipe_shrep50", 1)
+                .AddItem("recipe_hard50", 1)
+                .AddItem("recipe_capb50", 1)
+                .AddItem("recipe_tcomp50", 1)
+                .AddItem("recipe_plate50", 1)
+                .AddItem("recipe_hrep50", 1)
+                .AddItem("recipe_resall50", 1)
+                .AddItem("recipe_capr50", 1)
+                .AddItem("recipe_thrust50", 1);
 
             _builder.Create("THORILIDE")
                 .AddItem("thor_crys", 1);
+        }
+
+        /// <summary>
+        /// The Rift Raiders' tables (Wild Space, plan section 23): tier 5 goods with Aurodium, and as rare drops Thorilide,
+        /// Prototype Tech, the tier 5.5 Rift Key, the Rift Raider ships' Design and Ship Schematics (Wild Space only) and
+        /// the Module Schematics of the named rank-50 modules. tools/SpaceRevampBalance/wildspace.py --sim prices them
+        /// against tier 5 combat.
+        /// </summary>
+        private void WildSpace()
+        {
+            _builder.Create("SPACE_BASIC_WS")
+                .AddItem("elec_high", 7, 1)
+                .AddItem("ref_gostian", 5, 1)
+                .AddGold(1350, 1)
+                .AddItem("ref_jasioclase", 3, 1)
+                .AddItem("aurodium", 2, 2)
+                .AddItem("ship_fuelcapsule", 1, 5)
+                .AddItem("ship_missile", 2, 12);
+
+            _builder.Create("SPACE_BASIC_WS_RARES")
+                .IsRare()
+                .AddItem("diamond", 2, 1, true)
+                .AddItem("emerald", 2, 1, true)
+                .AddItem("thor_crys", 3, 1, true)
+                .AddItem("proto_tech", 2, 1, true)
+                .AddItem("rift_key_t55", 1, 1, true);
+
+            _builder.Create("SPACE_ELITE_WS")
+                .AddItem("elec_high", 3, 1)
+                .AddItem("ref_gostian", 3, 1)
+                .AddGold(2400, 1)
+                .AddItem("ref_jasioclase", 3, 1)
+                .AddItem("lth_high", 3, 2)
+                .AddItem("diamond", 1, 1)
+                .AddItem("emerald", 1, 1)
+                .AddItem("hyphae_wood", 3, 2)
+                .AddItem("fiberp_high", 3, 2)
+                .AddItem("aurodium", 3, 2)
+                .AddItem("proton_bomb", 1, 1, true)
+                .AddItem("zinsiam", 1, 1, true)
+                .AddItem("ref_arda", 2, 1, true)
+                .AddItem("thor_crys", 2, 1, true)
+                .AddItem("proto_tech", 2, 1, true)
+                .AddItem("rift_key_t55", 1, 1, true)
+                .AddItem("dsgn_10114", 1, 1, true)
+                .AddItem("dsgn_10221", 1, 1, true)
+                .AddItem("dsgn_10222", 1, 1, true)
+                .AddItem("dsgn_10195", 1, 1, true)
+                .AddItem("dsgn_10133", 1, 1, true)
+                .AddItem("schm_raiderprowl", 1, 1, true)
+                .AddItem("schm_raidermarau", 1, 1, true);
+
+            _builder.Create("SPACE_BOSS_WS")
+                .AddGold(12000, 150)
+                .AddItem("zinsiam", 150, 2)
+                .AddItem("thor_crys", 40, 2)
+                .AddItem("proto_tech", 40)
+                .AddItem("aurodium", 40, 5)
+                .AddItem("rift_key_t55", 20)
+                .AddItem("recipe_laser50", 3)
+                .AddItem("recipe_ion50", 3)
+                .AddItem("recipe_beam50", 3)
+                .AddItem("recipe_missl50", 3)
+                .AddItem("recipe_torp50", 3)
+                .AddItem("recipe_pdef50", 3)
+                .AddItem("recipe_shbst50", 3)
+                .AddItem("recipe_shrep50", 3)
+                .AddItem("recipe_hard50", 3)
+                .AddItem("recipe_capb50", 3)
+                .AddItem("recipe_tcomp50", 3)
+                .AddItem("recipe_plate50", 3)
+                .AddItem("recipe_hrep50", 3)
+                .AddItem("recipe_resall50", 3)
+                .AddItem("recipe_capr50", 3)
+                .AddItem("recipe_thrust50", 3)
+                .AddItem("dsgn_10114", 4)
+                .AddItem("dsgn_10221", 4)
+                .AddItem("dsgn_10222", 4)
+                .AddItem("dsgn_10195", 4)
+                .AddItem("dsgn_10133", 4)
+                .AddItem("schm_raiderprowl", 5)
+                .AddItem("schm_raidermarau", 5);
         }
     }
 }

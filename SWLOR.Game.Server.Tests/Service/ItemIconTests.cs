@@ -143,6 +143,14 @@ public class ItemIconTests
         foreach (var row in ReadCsv("ItemIconBindings.csv").Concat(ReadCsv("ShipItemIconBindings.csv")))
         {
             var resref = row["ResRef"];
+            if (row.GetValueOrDefault("NewBlueprint") == "true")
+            {
+                // Created with the reviewed artwork: there is no old icon, and the migration must leave it alone.
+                row["OldIcon"].Should().BeEmpty(resref);
+                ItemIconMigration.GetUpdatedIcon(resref, row["InventoryIcon"]).Should().Be(row["InventoryIcon"]);
+                continue;
+            }
+
             ItemIconMigration.GetUpdatedIcon(resref.ToUpperInvariant(), row["OldIcon"].ToUpperInvariant()).Should().Be(row["InventoryIcon"]);
             ItemIconMigration.GetUpdatedIcon(resref, row["InventoryIcon"]).Should().Be(row["InventoryIcon"]);
             ItemIconMigration.GetUpdatedIcon(resref, "custom_icon").Should().Be("custom_icon");

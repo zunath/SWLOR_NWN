@@ -117,6 +117,17 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            // Derelict boarders - a boarder who logged out aboard a derelict still being worked returns to it.
+            if (Space.TryGetDerelictLoginRedirect(player, out var derelictLocation))
+            {
+                AssignCommand(player, () =>
+                {
+                    ClearAllActions();
+                    ActionJumpToLocation(derelictLocation);
+                });
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
             var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);

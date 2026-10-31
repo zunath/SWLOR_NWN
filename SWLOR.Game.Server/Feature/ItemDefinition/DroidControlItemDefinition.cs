@@ -4,9 +4,11 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -89,9 +91,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return $"This item can be used in {timeToWait}.";
                         }
 
-                        if (GetIsObjectValid(droid))
+                        // A droid posted at a ship's station or a holding stays there and does not count toward the follow limit.
+                        if (HoldingRules.IsDroidPosting(Droid.GetPostedShipId(item)))
                         {
-                            return "Only one droid may be activated at a time.";
+                            return "This droid works a Planetary Holding. Recall it in the Holdings window first.";
+                        }
+
+                        var activationError = DroidCrewRules.GetActivationError(Droid.IsPosted(item), GetIsObjectValid(droid) ? 1 : 0);
+                        if (!string.IsNullOrEmpty(activationError))
+                        {
+                            return activationError;
                         }
 
                         var companionSlotError = BeastMastery.GetCompanionSlotValidationError(user);
@@ -124,11 +133,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
                         }
 
-                        var perkLevel = Perk.GetPerkLevel(user, PerkType.DroidAssembly);
-
-                        if (perkLevel < droidDetails.Tier)
+                        if (Droid.IsPosted(item))
                         {
-                            return $"Your Droid Assembly perk is too low to configure this droid's AI. (Required: {droidDetails.Tier})";
+                            return "Droid AI cannot be adjusted while the droid is posted at a ship's station or a holding.";
+                        }
+
+                        if (CraftRankMilestones.GetDroidAssemblyTier(user) < droidDetails.Tier)
+                        {
+                            return $"Your Engineering rank is too low to configure this droid's AI. (Required rank: {CraftRankMilestones.RequiredRankForTier(droidDetails.Tier)})";
                         }
                     }
 

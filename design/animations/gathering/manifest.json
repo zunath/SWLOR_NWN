@@ -1,0 +1,307 @@
+{
+  "Version": 1,
+  "Workbook": "",
+  "Sheet": "Animations",
+  "Model": "a_ba",
+  "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
+  "RecipeSha256": "df8983c579e6e5ae3315818376ba541f4773f0556e0cf33898344816ea6cb0c1",
+  "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
+  "Animations": [
+    {
+      "Id": "Survey",
+      "Name": "Survey",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A prospector sweeps a handheld scanner across a vein or tree to find what is hidden in it.",
+      "Interpretation": "Planted feet; the scanner comes up in the right hand while the left taps its screen, the torso turns to sweep right, then left, and a last steady ping before the arm lowers.",
+      "Activity": "Gathering",
+      "Status": "Draft: visual review required",
+      "Project": "Survey.swlanim",
+      "Duration": 3,
+      "Keyframes": 61,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Raise the scanner"
+        },
+        {
+          "Time": 0.95,
+          "Label": "Sweep right"
+        },
+        {
+          "Time": 1.75,
+          "Label": "Sweep left"
+        },
+        {
+          "Time": 2.2,
+          "Label": "Ping the target"
+        },
+        {
+          "Time": 2.6,
+          "Label": "Lower the scanner"
+        },
+        {
+          "Time": 3,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "19d6c67d422d55fc3e053016f5b19f0a9e2477a3a7a8abffb897c4e6864ea9f7"
+    },
+    {
+      "Id": "Strike",
+      "Name": "Strike",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A single two-handed pick swing into a vein or a trunk.",
+      "Interpretation": "The tool goes up behind the right shoulder, drops through a quick overhead arc with the body leaning into it, rebounds off the impact and recovers.",
+      "Activity": "Gathering",
+      "Status": "Draft: visual review required",
+      "Project": "Strike.swlanim",
+      "Duration": 1.9,
+      "Keyframes": 41,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.485637E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.62,
+          "Label": "Swing"
+        },
+        {
+          "Time": 0.82,
+          "Label": "Impact"
+        },
+        {
+          "Time": 1,
+          "Label": "Rebound"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Recover"
+        },
+        {
+          "Time": 1.9,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "4368910ec29aa465fc904d685e036d49f4caddba43a36cad1f14a7369a9a4d2d"
+    },
+    {
+      "Id": "HvyStrike",
+      "Name": "Heavy strike",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "A full overhead slam with a heavy tool, using the whole body.",
+      "Interpretation": "A wider stance and a slow lift above the head, a held beat at the top, then a hard drop with the torso folding over and the knees taking the impact. It reads heavier and slower than Strike.",
+      "Activity": "Gathering",
+      "Status": "Draft: visual review required",
+      "Project": "HvyStrike.swlanim",
+      "Duration": 2.7,
+      "Keyframes": 55,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.9085905E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.55,
+          "Label": "Gather"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Lift overhead"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Hold at the top"
+        },
+        {
+          "Time": 1.55,
+          "Label": "Slam"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Impact"
+        },
+        {
+          "Time": 2.25,
+          "Label": "Straighten"
+        },
+        {
+          "Time": 2.7,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "19ae79dbba76a8d258e6d3e28e1c6d87689104fc5f89f0df5f7ba9d731ed90ed"
+    },
+    {
+      "Id": "Extract",
+      "Name": "Extract",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Prying a revealed seam out of the rock or wood.",
+      "Interpretation": "The prospector crouches, grips the seam with both hands, then heaves back with a twist and lifts the find to chest height to check it before standing.",
+      "Activity": "Gathering",
+      "Status": "Draft: visual review required",
+      "Project": "Extract.swlanim",
+      "Duration": 2.8,
+      "Keyframes": 57,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.7476383E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Crouch to the seam"
+        },
+        {
+          "Time": 0.95,
+          "Label": "Grip the seam"
+        },
+        {
+          "Time": 1.5,
+          "Label": "Heave back"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Lift the find"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Straighten"
+        },
+        {
+          "Time": 2.8,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "e8be77dd9d2d2c26187eeb2b281d9a6c9c80a02efc7372f5c68753211fc6973d"
+    },
+    {
+      "Id": "Search",
+      "Name": "Search",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Bending over a scavenge site and sifting its surface with a hand.",
+      "Interpretation": "A half crouch with the left hand braced on the knee while the right sweeps across the surface twice, then lifts something up to inspect.",
+      "Activity": "Gathering",
+      "Status": "Draft: visual review required",
+      "Project": "Search.swlanim",
+      "Duration": 3,
+      "Keyframes": 61,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.5,
+          "Label": "Crouch over the site"
+        },
+        {
+          "Time": 0.95,
+          "Label": "Sweep right"
+        },
+        {
+          "Time": 1.45,
+          "Label": "Sweep left"
+        },
+        {
+          "Time": 1.85,
+          "Label": "Sweep right again"
+        },
+        {
+          "Time": 2.3,
+          "Label": "Lift a find"
+        },
+        {
+          "Time": 2.65,
+          "Label": "Straighten"
+        },
+        {
+          "Time": 3,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "9972f537f8ead5969d995306dde6f522dbf1bfc398eff3112358b302c8bb509d"
+    },
+    {
+      "Id": "Dig",
+      "Name": "Dig",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Digging deeper into the same spot of a scavenge site with both hands.",
+      "Interpretation": "A low crouch. The right hand claws down and flings the dirt aside, the left hand follows on the other side, then both lift a find clear before standing.",
+      "Activity": "Gathering",
+      "Status": "Draft: visual review required",
+      "Project": "Dig.swlanim",
+      "Duration": 3.2,
+      "Keyframes": 65,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.6663977E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Crouch to dig"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Right hand claws back"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Fling it aside"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Left hand claws back"
+        },
+        {
+          "Time": 1.75,
+          "Label": "Fling it aside"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Both hands in"
+        },
+        {
+          "Time": 2.5,
+          "Label": "Lift the find"
+        },
+        {
+          "Time": 2.85,
+          "Label": "Straighten"
+        },
+        {
+          "Time": 3.2,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "9c6b157062fb21c07647aa55356afe63f4cde5a38542bbd3cc2c3aecf0a03432"
+    }
+  ]
+}

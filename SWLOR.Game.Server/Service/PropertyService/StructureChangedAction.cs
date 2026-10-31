@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         {
             // Structure position changed actions
             Assign(StructureType.CityHall, StructureChangeType.PositionChanged, ChangeCityHall());
+            Assign(StructureType.StationCore, StructureChangeType.PositionChanged, ChangeCityHall());
             Assign(StructureType.Bank, StructureChangeType.PositionChanged, ChangeBank());
             Assign(StructureType.MedicalCenter, StructureChangeType.PositionChanged, ChangeMedicalCenter());
             Assign(StructureType.Starport, StructureChangeType.PositionChanged, ChangeStarport());
@@ -35,9 +36,13 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.LargeHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
             Assign(StructureType.LargeHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
             Assign(StructureType.LabStyle1, StructureChangeType.PositionChanged, ChangeLab());
+            Assign(StructureType.Shipyard, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
+            Assign(StructureType.AsteroidDrill, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
+            Assign(StructureType.JumpBeacon, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.StationCore, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.Bank, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.MedicalCenter, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.Starport, StructureChangeType.Retrieved, RetrieveStarport());
@@ -55,6 +60,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.LargeHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.LargeHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.LabStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.Shipyard, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
+            Assign(StructureType.AsteroidDrill, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
+            Assign(StructureType.JumpBeacon, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
 
             return _actions;
         }
@@ -172,6 +180,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 // The dock point needs to be unregistered from the space service so it no longer displays in the list
                 // of docking points.
                 Space.RemoveLandingPointByPropertyId(interiorId);
+                Station.RemoveDockPoint(interiorId);
 
                 var dbInterior = DB.Get<WorldProperty>(interiorId);
                 if (dbInterior == null)
@@ -194,7 +203,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                         // Returns the ship to its last NPC dock and that dock's orbit, so it launches from the
                         // starport it is docked at rather than from the retrieved starport's orbit.
                         // A ship with no safe dock goes to the starport of the planet the city is on.
-                        Property.ReturnStarshipToSafeDock(dbStarship, dbInterior.Id, dbCity?.ParentPropertyId ?? string.Empty);
+                        Property.ReturnStarshipToSafeDock(dbStarship, dbInterior.Id, dbCity == null ? string.Empty : Station.GetCityPlanetAreaResref(dbCity));
 
                         DB.Set(dbStarship);
                     }

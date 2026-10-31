@@ -7,7 +7,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Service.FactionAgentService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -17,6 +19,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
@@ -84,6 +87,16 @@ namespace SWLOR.Game.Server.Entity
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
+            CraftMinigameHelpSeen = new Dictionary<CraftMinigameType, DateTime>();
+            SelectedCraftingStyles = new Dictionary<SkillType, PerkType>();
+            HeldCraftItems = new List<string>();
+            PendingCraftReturns = new List<PendingCraftReturn>();
+            PendingCraftXp = new Dictionary<SkillType, int>();
+            PaidExperimentJobs = new HashSet<string>();
+            PendingScavengeFinds = new Dictionary<string, int>();
+            ScavengeFindsAwaitingRoom = new Dictionary<string, int>();
+            PendingHarvestReturns = new List<PendingHarvestReturn>();
+            HarvestAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
@@ -110,6 +123,7 @@ namespace SWLOR.Game.Server.Entity
             UndisguisedDescription = string.Empty;
             HasUndisguisedDescriptionSnapshot = false;
             PlayerListFlags = new List<PlayerListFlagType>();
+            PaidShipSaleIds = new List<string>();
         }
 
 
@@ -146,6 +160,12 @@ namespace SWLOR.Game.Server.Entity
         public float RespawnLocationOrientation { get; set; }
         [Indexed]
         public string RespawnAreaResref { get; set; }
+
+        /// <summary>
+        /// A player city's Medical Center the player registered at. Its instance takes priority over
+        /// <see cref="RespawnAreaResref"/>, which stays as the fallback when the building is gone or not loaded.
+        /// </summary>
+        public string RespawnPropertyId { get; set; }
         public int UnallocatedXP { get; set; }
         public int UnallocatedSP { get; set; }
         public int UnallocatedAP { get; set; }
@@ -166,6 +186,18 @@ namespace SWLOR.Game.Server.Entity
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public string ActiveShipId { get; set; }
+
+        /// <summary>
+        /// Why a ship this player flew was lost while they were logged out (a failed Rift Run, or leaving a Wild Space
+        /// fight), or empty: the XP debt a pilot destroyed online takes is applied, with this message, at the next login.
+        /// </summary>
+        public string PendingShipLossMessage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The ship whose crew station or viewport the character is at, or empty. Saved so a character who
+        /// disconnects at a station is put back on their feet at the next login. Older records read as empty.
+        /// </summary>
+        public string ActiveCrewShipId { get; set; } = string.Empty;
         [Indexed]
         public string UnknownDisplayName { get; set; }
         // Account details recorded at each login so staff tools can show them for offline characters.
@@ -178,6 +210,13 @@ namespace SWLOR.Game.Server.Entity
         public float MovementRate { get; set; }
         public int CombatReadiness { get; set; }
         public int MarketTill { get; set; }
+
+        /// <summary>
+        /// Ship sales whose proceeds are already in <see cref="MarketTill"/>, saved with the till so a sale that a
+        /// restart left owed is paid once. An entry goes once the ship record no longer owes it. Older records load
+        /// with none.
+        /// </summary>
+        public List<string> PaidShipSaleIds { get; set; }
         public int OutfitSlotLimit { get; set; }
         public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }
@@ -205,6 +244,22 @@ namespace SWLOR.Game.Server.Entity
         // Player list flags for the undisguised identity; each disguise keeps its own.
         public List<PlayerListFlagType> PlayerListFlags { get; set; }
 
+        /// <summary>The freight contracts the player holds (plan section 13). Older records load with none.</summary>
+        public List<FreightContract> FreightContracts { get; set; } = new();
+
+        /// <summary>The freight offers the player took this hour and the last, so one offer cannot be taken twice.</summary>
+        public List<string> FreightOffersTaken { get; set; } = new();
+
+        /// <summary>The faction agent missions the player holds (plan section 29), with their terms. Older records load with none.</summary>
+        public List<AgentMission> AgentMissions { get; set; } = new();
+
+        /// <summary>The agent offers the player took today and yesterday, so one offer cannot be taken twice.</summary>
+        public List<string> AgentOffersTaken { get; set; } = new();
+
+        /// <summary>Agent intel from sliced data cans: each opens one intel lead on a faction agent's board.</summary>
+        public int AgentIntel { get; set; }
+
+
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }
         public Dictionary<SkillType, int> Craftsmanship { get; set; }
@@ -225,6 +280,57 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
+
+        /// <summary>
+        /// The Hull Designs this character unlocked with Design Schematics (plan section 7), keyed
+        /// "ship deed tag:appearance" (<c>HullDesignRules.Key</c>). Older records load empty.
+        /// </summary>
+        public Dictionary<string, DateTime> UnlockedHullDesigns { get; set; } = new();
+
+        /// <summary>
+        /// Keys of the retired space item records already refunded to this character's market till by server migration
+        /// #30 (<c>LegacySpaceItemSweep.Pay</c>). A refund is written here with the credits in one save, before the
+        /// record it came from is converted, so a migration that stops partway never pays a record twice or loses it.
+        /// </summary>
+        public List<string> RetiredSpaceRefunds { get; set; } = new();
+        // The craft in progress, with the materials it took. Null when the player is not crafting.
+        public CraftSessionRecord ActiveCraftSession { get; set; }
+        // Serialized items a settled craft could not return because the inventory was full.
+        public List<string> HeldCraftItems { get; set; }
+        // Items a craft put in the inventory that the character file may not hold yet, each with the file sequence it needs.
+        // See CraftSessionLifecycle for how a login settles them.
+        public List<PendingCraftReturn> PendingCraftReturns { get; set; }
+        // Station fees (a Shipyard's, space revamp) the player paid whose station treasury is not credited yet. See CraftSessionLifecycle.
+        public List<PendingStationFee> PendingStationFees { get; set; }
+        // Skill XP a settled craft earned while its player was dead, by skill. It is given once the player is alive again, at a
+        // respawn, a login or the next crafting window.
+        public Dictionary<SkillType, int> PendingCraftXp { get; set; }
+        // The ids of research jobs whose experiment XP has been added to PendingCraftXp, saved in the same write as the XP. This is the
+        // record that the XP is paid; the job's own XpGranted flag only follows it. An id leaves the set when its job is deleted.
+        // See ResearchExperimentPayout.
+        public HashSet<string> PaidExperimentJobs { get; set; }
+        // What a Search board found, by item resref and quantity, while its visit has not ended. A server restart loses the board and its
+        // site, so the next login gives these to the player. Empty when no board is in progress.
+        public Dictionary<string, int> PendingScavengeFinds { get; set; }
+        // The craft file sequence of the return that gave PendingScavengeFinds to the player, kept until a character file holds it; 0 when
+        // the finds have not been given yet.
+        public int PendingScavengeReturnSequence { get; set; }
+        // Search finds that could not be given to the player because their inventory had no room, by item resref and quantity. They are
+        // kept apart from PendingScavengeFinds (which a board in progress overwrites and which carries the return stamp) and are tried
+        // again at a respawn, a login and the start of the next visit. Records saved before this existed hold null, which means none.
+        public Dictionary<string, int> ScavengeFindsAwaitingRoom { get; set; }
+        // Prospecting harvest units paid out that the character file may not hold yet, each with the file sequence it needs.
+        // See HarvestReturnJournal for how a login settles them.
+        public List<PendingHarvestReturn> PendingHarvestReturns { get; set; }
+        // Prospecting harvest units that had no room in the inventory, by resref. They wait here, never on the ground, and are given
+        // at the next harvest or login that has room.
+        public Dictionary<string, int> HarvestAwaitingRoom { get; set; }
+        // When the player first opened each crafting minigame, which is when its help page opened by itself.
+        public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
+        // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is
+        // applied again from this after a death or a login, and a refunded or rebuilt perk clears its entry. Records saved before
+        // styles were remembered have no entry.
+        public Dictionary<SkillType, PerkType> SelectedCraftingStyles { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }

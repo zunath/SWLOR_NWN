@@ -6,5 +6,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         High = 1,
         Low = 2,
         Config = 3,
+        Mid = 4,
     }
 }

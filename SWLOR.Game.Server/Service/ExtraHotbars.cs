@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -484,6 +485,13 @@ namespace SWLOR.Game.Server.Service
             var offHandChanges = currentOffHand != newOffHand;
             var mainHandChanges = currentMainHand != newMainHand || (offHandChanges && IsHandCompanion(currentOffHand));
 
+            // A craft holds the player's gear, so nothing comes off either hand while any crafting window is open.
+            if (CraftMinigameRouting.IsAnyCraftWindowOpen(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("Items cannot be equipped while crafting."));
+                return;
+            }
+
             // Nothing comes off until everything going on is known to be usable.
             foreach (var (changes, item) in new[] { (mainHandChanges, newMainHand), (offHandChanges, newOffHand) })
             {
@@ -567,9 +575,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static string GetEquipError(uint player, uint item)
         {
-            if (Gui.IsWindowOpen(player, GuiWindowType.Craft))
-                return "Items cannot be equipped while crafting.";
-
             if (Item.ForceSensitiveWeaponBaseItemTypes.Contains(GetBaseItemType(item)) &&
                 !Item.CanEquipForceSensitiveWeapon(player))
                 return "Only Force Sensitive characters may equip that item.";

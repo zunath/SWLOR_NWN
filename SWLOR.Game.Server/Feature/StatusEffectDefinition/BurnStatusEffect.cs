@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
 
             var source = GetIsObjectValid(Source) ? Source : creature;
-            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature));
+            StatusEffect.ApplyDamageOverTime(source, creature, amount, DamageType.Fire);
         }
     }
 }

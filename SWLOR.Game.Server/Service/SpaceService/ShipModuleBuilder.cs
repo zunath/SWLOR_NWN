@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -123,6 +121,32 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Makes this module a toggle: its hotbar feat switches it on and off, and while on it fires itself
+        /// each time the cycle ends. The module's recast is its cycle.
+        /// </summary>
+        /// <param name="cycleSeconds">The number of seconds between shots while the toggle is on.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder Toggle(float cycleSeconds)
+        {
+            _activeShipModule.Activation = ShipModuleActivation.Toggle;
+            _activeShipModule.CalculateRecastAction = (activator, shipStatus, moduleBonus) => cycleSeconds;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Makes this module a one-press module: each press fires once and then the module recasts
+        /// (see <see cref="Recast(float)"/>).
+        /// </summary>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder OnePress()
+        {
+            _activeShipModule.Activation = ShipModuleActivation.OnePress;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the action to run when this module's capacitor usage is calculated.
         /// </summary>
         /// <param name="action">The action to take.</param>
@@ -231,30 +255,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Indicates a player must have the perk at a specific level in order to equip and use it.
-        /// </summary>
-        /// <param name="perkType">The type of perk to require.</param>
-        /// <param name="requiredLevel">The required level of the perk.</param>
-        /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder RequirePerk(PerkType perkType, int requiredLevel)
-        {
-            if (requiredLevel < 0)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be less than zero.");
-                return this;
-            }
-            if (requiredLevel > 100)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be greater than 100.");
-                return this;
-            }
-
-            _activeShipModule.RequiredPerks[perkType] = requiredLevel;
-
-            return this;
-        }
-
-        /// <summary>
         /// Runs an action to determine the maximum distance the ship module can be used.
         /// </summary>
         /// <param name="action">The action to run when max distance is calculated.</param>
@@ -274,6 +274,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleBuilder MaxDistance(float distance)
         {
             _activeShipModule.ModuleMaxDistanceAction = (activator, status, target, shipStatus, bonus) => distance;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Attaches the revamp module step this module is built from.
+        /// </summary>
+        /// <param name="step">The module step.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder Step(ShipModuleStep step)
+        {
+            _activeShipModule.Step = step;
 
             return this;
         }

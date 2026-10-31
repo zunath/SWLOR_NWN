@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -96,6 +97,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static float GetSourceSocialProgress(uint source)
         {
+            // A crew member's own order from a ship's station scales with the crew member's Social (plan section 10).
+            source = SpaceCrew.GetAbilityUser(source);
             var social = source != 0 && source != OBJECT_INVALID && GetIsObjectValid(source)
                 ? GetAbilityScore(source, AbilityType.Social)
                 : ScalingBaselineStat;

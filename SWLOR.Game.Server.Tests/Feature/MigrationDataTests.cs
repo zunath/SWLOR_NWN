@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 23 and server migration 28.
+    // Production has run player migration 23 and server migration 28. Player migration 25 is the crafting perk
+    // conversion; at release it folds into the newest player version production has not run.
     private const int ReleasedPlayerVersion = 23;
     private const int ReleasedServerVersion = 28;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
@@ -25,10 +26,15 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers") });
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConvertCraftingPerksToRanks"),
+                CharacterMigrations.Named("_26_ConvertSpaceItems") });
+        // 24 ships in the next release; 25 is the crafting revamp's release; 26 is the space revamp's, which follows it.
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_24_CorrectCarapaceBracers") }, "the next release must receive one combined player-item pass");
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConvertCraftingPerksToRanks"),
+                    CharacterMigrations.Named("_26_ConvertSpaceItems") },
+                "each unreleased release receives one combined player-item pass, and the crafting perk conversion ships before the space revamp");
         CharacterMigrations.VersionOf("_24_CorrectCarapaceBracers").Should().Be(ReleasedPlayerVersion + 1);
+        CharacterMigrations.VersionOf("_25_ConvertCraftingPerksToRanks").Should().Be(ReleasedPlayerVersion + 2);
     }
 
     [Test]
@@ -119,8 +125,9 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_29_CorrectStoredCarapaceBracers) },
-            "the next release must receive one combined stored-item pass");
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_29_CorrectStoredCarapaceBracers), typeof(_30_ConvertSpaceItems) },
+            "each unreleased release (29 next, 30 the space revamp) receives one combined stored-item pass");
+        new _30_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _29_CorrectStoredCarapaceBracers().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _29_CorrectStoredCarapaceBracers().Version.Should().Be(ReleasedServerVersion + 1);
     }

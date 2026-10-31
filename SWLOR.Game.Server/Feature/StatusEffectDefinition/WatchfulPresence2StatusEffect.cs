@@ -20,10 +20,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var reduction = -ScaleBySourceSocial(6, 7);
             StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction;
             StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction;
+
+            // A ship takes Leadership's "other" damage and reads its own reduction stat.
+            StatGroup.Stats[StatType.SpaceLeadershipDamageTakenPercentAdjustment] = reduction;
             LeadershipDamageReductionStats = new Dictionary<StatType, int>
             {
                 [StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction,
                 [StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction,
+                [StatType.SpaceLeadershipDamageTakenPercentAdjustment] = reduction,
             };
         }
     }

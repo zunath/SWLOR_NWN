@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         StarshipExplosiveDefense = 56,
         [EnhancementSubType("Starship - EM Defense")]
         StarshipEMDefense = 57,
-        [EnhancementSubType("Starship - Agility")]
+        [EnhancementSubType("Agility")]
         Agility = 58,
         // 59 is free
         [EnhancementSubType("Food Bonus - Attack")]

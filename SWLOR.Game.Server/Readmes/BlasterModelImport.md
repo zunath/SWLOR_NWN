@@ -8,6 +8,8 @@ staging such as `.tmp/blaster/`. The normal game/HAK build uses the committed ga
 resources directly; it must not require those authoring files. Delete each
 intermediate once used and empty the staging folder after the finished resources
 are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
+Crafting stations and other placeables follow the same generation workflow with their own fit, walkmesh and
+appearance steps: see [Placeables](#placeables-crafting-stations-with-trellis2).
 
 ## Slots and existing replacements
 
@@ -407,6 +409,128 @@ and image checks execute as well as the pure Python checks:
 & $blender -b --factory-startup --python-exit-code 1 --python tools/tests/test_trellis_weapon_export.py
 & $blender -b --factory-startup --python-exit-code 1 --python tools/tests/test_import_blaster_model.py
 ```
+## Placeables: crafting stations with TRELLIS.2
+
+The same image-to-GLB workflow makes placeables. `tools/TrellisPlaceableExport.py` is the placeable counterpart of the
+weapon adapter: it reuses its GLB, material, normal-reprojection, compile and DDS code and replaces the grip fit, icons
+and composite parts with a ground fit, a PWK walkmesh and a placeables.2da row. The seven crafting stations (Smithery,
+Engineering, Fabrication, Cooking, Espionage, Research, Refinery) are made this way; `tools/StationModels.json` lists
+each finished station (blueprint, model resref, 2DA label and sound type) and gains an entry as each one lands. Keep concept images, manifests, GLBs, renders and review scenes in
+task-owned staging outside Git, as for weapons; only the finished MDL, PWK, MTR and DDS files go into `SWLOR_Haks/sw_plc/`.
+
+### Concept images and generation
+
+TRELLIS.2 needs one concept image per object. Any local image model works; the stations used SDXL
+(`juggernautXL_v8Rundiffusion`) through the same ComfyUI service's core text-to-image nodes (add the checkpoint folder to
+the service's `extra_model_paths`), at 1024 pixels, with a prompt for one object on a plain light background seen from a
+three-quarter high angle, no people and no shadow. Generate several candidates and choose by eye. Pick a silhouette whose
+plan proportions already match the footprint to fill: the fit scales uniformly, so a tall round forge cannot become a wide
+bench. Prefer solid, chunky bodies standing directly on the floor; thin legs, grilles and wheels reconstruct poorly.
+
+Generate with the unchanged runner and workflow (the weapon graph is family-neutral; only the manifest budgets differ).
+Stations used shape resolution 512, texture size 1024 and 8,000-9,000 target faces:
+
+```powershell
+python -B tools/GenerateWeaponModels.py "$env:TEMP/stations/manifest.json" --output "$env:TEMP/stations/generated" --url http://127.0.0.1:8011 --preflight
+python -B tools/GenerateWeaponModels.py "$env:TEMP/stations/manifest.json" --output "$env:TEMP/stations/generated" --url http://127.0.0.1:8011 --timeout 1800
+```
+
+Start your own ComfyUI on a free loopback port for the task (never restart a shared one) and stop it by PID afterwards.
+ComfyUI 0.39 passed the weapon preflight. A generation takes about four minutes on the RTX 3080 Ti. Do not run an image
+model and TRELLIS at once: both want the GPU and the runner's lock only covers its own jobs. A job that sits at step
+0/12 "Model Initializing" with the GPU at 100 percent and about 11 GB used is starved by another process holding the VRAM
+(`nvidia-smi`, then the process list); it never recovers on its own. Stop your own service, wait for or ask about the other
+job (it is not yours to kill), move the stalled asset's folder aside (its journal names a prompt that no longer exists) and
+rerun the command.
+
+### Inspect, fit, export and package
+
+```powershell
+$blender = 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe'
+& $blender -b --factory-startup --python-exit-code 1 --python tools/TrellisPlaceableExport.py -- `
+  --mode inspect --manifest "$env:TEMP/stations/inspect.json" --output "$env:TEMP/stations/inspect"
+& $blender -b --factory-startup --python-exit-code 1 --python tools/TrellisPlaceableExport.py -- `
+  --mode export --manifest "$env:TEMP/stations/fit.json" --output "$env:TEMP/stations/export"
+python -B tools/TrellisPlaceableExport.py --mode package --export "$env:TEMP/stations/export" `
+  --output "$env:TEMP/stations/package" --crunch '<local-nwn_crunch.exe>'
+```
+
+`inspect` needs only `asset`, `source` and `sha256` and renders the six axis views so you can choose the yaw. Export
+additionally takes `model` (resref, 16 characters), `short` (effect dummy prefix), `texture` (14 characters, so the `_n`,
+`_s`, `_r` and `_e` maps fit the 16-character limit), `texture_size`, `scalar_texture_size`, `yaw_degrees` or an explicit
+`orientation`, `fit` (exactly one of `width`, `depth`, `height` or `scale`), `center_xy`, `max_size`, `walkmesh` and the
+policies below. The export refuses a resource name that already exists in the haks (`--allow-existing` re-exports your own).
+
+- **Fit.** The model is rotated by the yaw, scaled uniformly and moved so the bottom of its bounding box rests on Z=0 with
+  its center at `center_xy`. Model space is the placement's local space: the replaced station's origin, footprint and front
+  stay where players know them, so no placed instance moves. Measure the old model and PWK, copy their center into
+  `center_xy`, set `max_size` to the old size and aim the working side at the old use node. Read the old walkmesh from the
+  haks (or `nwn_resman_extract` for base-game models) rather than guessing; some stock models are centered vertically.
+- **Materials.** Base color and normal use `texture_size`; the specular and roughness maps use `scalar_texture_size`
+  (512 saves memory). `emission` derives a glow map from bright base-color texels (`threshold`, `softness`, `gain`; add
+  `saturation_min` to pick out colored lights such as a purple hologram instead of white-hot metal) for
+  plasma, screens and furnaces; it becomes MTR `texture5`. Check the glow in the client, not only in Blender.
+- **TRELLIS output needs explicit accommodations**, each recorded in the report:
+  - ComfyUI 0.39 writes clamp-to-edge samplers, which the weapon exporter rejects. A clamped sampler is accepted only
+    after every UV is proven to lie in 0..1 (clamp and repeat then sample identically) and is rewritten to repeat.
+  - Decimated shells are never exactly closed and machines have intersecting parts, so `double_sided_policy: "near_closed"`
+    replaces the weapon exporter's exact closure proof (`closed_surface` stays available). It keeps the generated winding,
+    which agrees with the baked normals far better than a recomputed one (recalculating outward on welded topology raised
+    the wound-against-normals area from 0.1-3.6 percent to 10 percent on two stations). It requires every substantial
+    shell to have positive signed volume, at most `max_defect_fraction` (0.5 percent by default) of the edges to be open
+    or inconsistently wound, and at most `max_opposed_fraction` (3 percent) of the surface area to be wound against its
+    authored normals. A substantial inward-wound shell must be proven by ray test to be an enclosed cavity; it is then
+    deleted from the export. Non-manifold edges where parts intersect do not affect culling and are only reported. Stations
+    with real open shells (a range with legs and a thin back shield) need a larger per-asset limit and a visual check.
+  - Blender's glTF import can zero a corner normal where coincident vertices disagree; such a vertex takes the glTF
+    normal at the same position (or its face normal) and the count is reported.
+  - The 8-bit normal bake has a few grazing texels at Z of about -0.004, which are raised onto the horizon (anything
+    below -0.02 still fails).
+  - Triangles with mixed tangent handedness need `normal_basis_policy: "authored_tangents"`, and the compiler's normal
+    quantization may then need `authored_angle_limit_degrees` up to 1 (the weapon default stays 0.5). Blocky consoles with
+    hard creases measured up to 80 degrees (the package report lists the maxima), probably because the face match picks a
+    neighbouring source face at a crease; such a model needs a wide limit, so check its render before accepting it.
+- **Walkmesh.** The PWK is the convex hull of the model in plan, simplified, inset by `walkmesh.inset` and laid flat at
+  Z=0 as nonwalkable surface 7, as the old stations do. `use_nodes` (at most two) become `<4 characters>pwk_use01/02`; the
+  engine silently ignores any other name and any node left at the origin (`PlaceableWalkmeshUseNodeTests`). A node must
+  sit at least `min_use_clearance` outside the footprint. An empty list keeps the engine's default approach, which the
+  Cookpot used. Review renders show the new footprint (red), the old one (yellow), the use nodes (green) and a 1.8 m figure.
+- **Effect dummies.** The MDL carries `<short>_impact`, `_ground`, `_hand`, `_head` and `_head_hit` like the stations it
+  replaces.
+
+### Appearance row, module and haks
+
+```powershell
+python -B tools/PlaceableAppearanceTool.py install-haks --package "$env:TEMP/stations/package/runtime_resources"
+python -B tools/PlaceableAppearanceTool.py swap-module
+python -B tools/PlaceableAppearanceTool.py check
+```
+
+`install-haks` copies the package into `sw_plc` and appends one `placeables.2da` row per station (existing rows are never
+edited). **A placeable's appearance ID is the row's physical position in the file, not its first-column label**:
+`placeables.2da` has numbering gaps, so the label of the last row is about 100 higher than its ID, and the engine, the C#
+reader and the Python test helpers all index by position. Using a label gives an invisible placeable. `swap-module` writes
+the new ID into each station blueprint and into every placed instance in `Module/git` (area files copy the blueprint's
+Appearance), editing only those digits so CRLF and float formatting stay untouched. Stock rows are shared by unrelated
+decor, so a station gets its own row and the blueprint resref, tag, scripts and StructureType never change. Module changes
+need a module repack and the new resources need a hak rebuild. Player structures spawn from the blueprint, so they follow
+the new appearance after both.
+
+### Offline render of a station
+
+Verify with `tools/VerifyNwnVisuals.py` on the real area that holds the stations (`dan_crafterbase` has all but the
+Research terminal; add that blueprint to the fixture copy of the GIT). Use the real ARE/GIT/GIC, mount every module hak
+(a subset leaves the player in limbo) and add the packed `placeables.2da` and the station resources in an extra hak.
+Probe traps found on this work: NWScript `sin`/`cos` take degrees; a placeable's `GetFacing` is the direction of its model
++Y axis, so local `(x, y)` maps to the world with a rotation of `GetFacing - 90`; `SetCameraFacing` pitch is measured from
+the vertical (about 12 for top-down, 35-40 for a three-quarter view); an interior area stays black beyond line of sight
+until `ExploreAreaForPlayer`; wait about 30 seconds before the first capture. A frame that is black except for a round
+window around the player is not fog: it is the interior's wall or roof being cut open around the player because the camera
+sits behind a wall or above the roof. Use a pitch of about 30-40 and a camera yaw that looks over open floor (a
+three-quarter view from the side the station faces), and put wide stations (a research desk is 3.6 m) on open floor, since
+one placed against a wall is half hidden by it. Capture the old and the new model from the same camera, keep the native
+PNGs, and say that the in-game check with a real server is separate.
+
 ## Import a rigid, opaque GR2 blaster
 
 Use Blender **4.0** and the pinned SWTOR-Slicers GR2 importer **4.2.1**:

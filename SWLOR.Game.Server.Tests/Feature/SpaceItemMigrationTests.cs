@@ -252,8 +252,8 @@ public class SpaceItemMigrationTests
         player.UnlockedPerks.Should().BeEmpty();
         player.UnlockedRecipes.Should().ContainKey(RecipeType.ShipDeedAurekStrikefighter, "an unlocked hull recipe stays unlocked");
         player.Currencies[CurrencyType.RebuildToken].Should().Be(1);
-        player.UpgradeNotices.First().Should().Contain("Piloting now covers every space hull and module").And.Contain("Rebuild Token")
-            .And.Contain("Gathering").And.Contain("rank limits");
+        player.UpgradeNotices.First().Should().Contain("Piloting now covers every space hull and combat module").And.Contain("Rebuild Token")
+            .And.Contain("Gathering").And.Contain("rank limits").And.Contain("move ranks into Gathering");
         player.UpgradeNotices.Should().Contain("Perk 'Starships' was automatically refunded. You reclaimed 11 SP.");
         player.UpgradeNotices.Should().OnlyContain(notice => notice.All(c => c < 128), "game text is ASCII");
     }

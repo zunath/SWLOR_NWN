@@ -38,9 +38,10 @@ internal sealed class _26_ConvertSpaceItems : ICharacterMigration
     };
 
     internal const string LoginNotice =
-        "Space update: Piloting now covers every space hull and module, so the ships and modules you could fit before " +
-        "still fit; they were converted to their new equivalents. Space mining, gas harvesting and salvage moved to " +
-        "Gathering, so mining gear now needs Gathering ranks. The old Piloting perks were refunded as SP to spend on " +
+        "Space update: Piloting now covers every space hull and combat module, so the ships and combat modules you " +
+        "could fit before still fit; they were converted to their new equivalents. Space mining, gas harvesting and " +
+        "salvage moved to Gathering, so that gear now needs Gathering ranks: if your Gathering is too low for it, use " +
+        "the free Rebuild Token to move ranks into Gathering. The old Piloting perks were refunded as SP to spend on " +
         "the four new Piloting styles: Ace, Ordnance, Bulwark and Command. You also received a free Rebuild Token to " +
         "move skill ranks; you can set skill rank limits in the Skills window before you spend it.";
 

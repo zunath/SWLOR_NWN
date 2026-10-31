@@ -53,7 +53,7 @@ public class ShipTimedEffectTests
     [Test]
     public void BulwarkAura_RaisesMaxShieldOnlyWhileItLasts()
     {
-        var status = new ShipStatus { MaxShield = 200, ShieldAuraPercent = 15, ShieldAuraUntil = Now.AddSeconds(4.5) };
+        var status = new ShipStatus { MaxShield = 200, ShieldAuras = new() { [15] = Now.AddSeconds(4.5) } };
 
         status.GetEffectiveMaxShield(Now).Should().Be(230);
         status.GetEffectiveMaxShield(Now.AddSeconds(5)).Should().Be(200);

@@ -58,22 +58,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Raises an ally's max shield by a percent until the aura lapses and fills the added shield at once
-        /// the first time. Used by the Bulwark Shield Generator.
+        /// Raises an ally's max shield by a percent until the aura lapses and fills the added shield at once. With
+        /// overlapping generators the strongest aura counts, and only max shield the aura newly adds is filled
+        /// (<see cref="ShipShieldAuraRules.Refresh"/>). Used by the Bulwark Shield Generator.
         /// </summary>
         public static void ApplyShieldAura(uint ally, ShipStatus allyStatus, int percent, double seconds)
         {
             var now = DateTime.UtcNow;
-            var wasActive = now < allyStatus.ShieldAuraUntil && allyStatus.ShieldAuraPercent >= percent;
-
-            allyStatus.ShieldAuraPercent = percent;
-            allyStatus.ShieldAuraUntil = now.AddSeconds(seconds);
-
-            if (!wasActive)
-            {
-                var bonus = allyStatus.GetEffectiveMaxShield(now) - allyStatus.MaxShield;
-                RestoreShield(ally, allyStatus, bonus);
-            }
+            var added = ShipShieldAuraRules.Refresh(allyStatus, percent, now.AddSeconds(seconds), now);
+            if (added > 0)
+                RestoreShield(ally, allyStatus, added);
 
             SaveShipStatus(ally, allyStatus);
             ExecuteScript("pc_target_upd", ally);

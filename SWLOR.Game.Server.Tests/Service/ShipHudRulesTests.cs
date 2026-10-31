@@ -332,7 +332,7 @@ public class ShipHudRulesTests
             },
             DamageBonusPercent = new Dictionary<CombatDamageType, int> { [CombatDamageType.Thermal] = 15 },
             HardenedAmount = 20, HardenedUntil = Now.AddSeconds(5),
-            ShieldAuraPercent = 10, ShieldAuraUntil = Now.AddSeconds(5),
+            ShieldAuras = new() { [10] = Now.AddSeconds(5) },
         };
         status.HighPowerModules[1] = Module("laser");
         status.LowPowerModules[1] = Module("hull");

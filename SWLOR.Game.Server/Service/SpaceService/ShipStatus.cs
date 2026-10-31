@@ -151,9 +151,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The extra damage taken from a Target Painter right now, in percent (0 when unpainted).</summary>
         public int GetPaintPercent(DateTime now) => now < PaintedUntil ? PaintedPercent : 0;
 
-        /// <summary>Percent added to max shield by an allied Bulwark Shield Generator until <see cref="ShieldAuraUntil"/>.</summary>
-        public int ShieldAuraPercent { get; set; }
-        public DateTime ShieldAuraUntil { get; set; }
+        /// <summary>
+        /// The allied Bulwark Shield Generator auras on the ship: each percent added to max shield and when it lapses.
+        /// The strongest active one counts (<see cref="ShipShieldAuraRules"/>).
+        /// </summary>
+        public Dictionary<int, DateTime> ShieldAuras { get; set; } = new();
 
         /// <summary>
         /// Keeps the Shield Hardener bonus for one more cycle. With two hardeners running, the stronger bonus counts.
@@ -169,9 +171,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The Accuracy lost to an E-War Array right now (0 or negative).</summary>
         public int GetAccuracyPenalty(DateTime now) => now < AccuracyPenaltyUntil ? AccuracyPenalty : 0;
 
-        /// <summary>Max shield including any Bulwark Shield Generator bonus that is still active.</summary>
-        public int GetEffectiveMaxShield(DateTime now) =>
-            now < ShieldAuraUntil ? MaxShield + (int)Math.Round(MaxShield * ShieldAuraPercent / 100.0) : MaxShield;
+        /// <summary>Max shield including the strongest Bulwark Shield Generator bonus that is still active.</summary>
+        public int GetEffectiveMaxShield(DateTime now) => ShipShieldAuraRules.EffectiveMaxShield(MaxShield, ShieldAuras, now);
 
         /// <summary>
         /// Fractional shield and capacitor regen carried between ticks. Persisted, because a player's status is

@@ -372,6 +372,12 @@ below original Y=0.04). The editable model is
 `SWLOR_Haks/sw_weapon/wmgfs_m_221.mdl`, then compile with
 `python -B SWLOR_Haks/tools/CompileModels.py --model wmgfs_m_221 --apply`.
 
+`SlitherhornFit` adds a separate middle-part Z offset for normal Human bodies:
+0.035 m for males and -0.028 m for females, including their robe variants. Equipment
+and appearance refreshes rebase against the saved fit delta, preserving cosmetic
+transforms and removing only this offset on unequip. Other body families retain their
+authored attachment until they have a measured profile.
+
 The SWG loops retain their original duration and speed. The first and last 0.25 seconds blend to
 the shared stance, without extending or retiming the clip. Locomotion is folded into `rootdummy`
 and its net drift is removed, so it does not move the game object. Instrument tracks are mirrored

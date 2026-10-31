@@ -28,13 +28,40 @@ public sealed class ShipState
     public double Capacitor { get; set; }
     public double Stm { get; set; }
 
-    /// <summary>Ship Defense plus passives.</summary>
-    public int Defense { get; private set; }
+    /// <summary>Ship Defense plus passives, less Exposed while it lasts (SpaceCombatMath.AdjustRating).</summary>
+    public int Defense => ExposedUntil > Now
+        ? SWLOR.Game.Server.Service.SpaceService.SpaceCombatMath.AdjustRating(BaseDefense, 0, -ExposedDefensePercent)
+        : BaseDefense;
+
+    public int BaseDefense { get; private set; }
+
+    /// <summary>The fight time of the step being run (for timed statuses).</summary>
+    public double Now { get; set; }
+
+    /// <summary>Exposed (Saturation Fire): when it ends and the Defense percent it takes.</summary>
+    public double ExposedUntil { get; set; } = double.NegativeInfinity;
+
+    public int ExposedDefensePercent { get; set; }
+
+    /// <summary>Saturation Fire's count of area launcher hits on this ship, per attacker: (count, last hit time).</summary>
+    public Dictionary<ShipState, (int Count, double LastHit)> AreaHitSequences { get; } = new();
 
     /// <summary>Ship Evasion plus passives plus the pilot's AGI x 3.</summary>
     public int Evasion { get; private set; }
 
     public bool IsAlive => Hull > 0;
+
+    /// <summary>Sustained Fire, per weapon (each weapon owns its stacks).</summary>
+    public Dictionary<WeaponModuleSpec, RepeatedHitState> RepeatedHits { get; } = new();
+
+    /// <summary>Energy weapons the ship fires: Sustained Fire's bonus is shared between them.</summary>
+    public int EnergyWeaponCount => Spec.Weapons.Count(w => w.Family == ModuleFamily.Energy);
+
+    /// <summary>Damage over time effects on this ship.</summary>
+    public List<ActiveDot> Dots { get; } = new();
+
+    /// <summary>The fight time Blind ends; while it lasts, half of the ship's landed shots miss.</summary>
+    public double BlindedUntil { get; set; } = double.NegativeInfinity;
 
     /// <summary>Shield and hull points this ship's shots removed from enemies.</summary>
     public double DamageDealt { get; set; }
@@ -52,7 +79,7 @@ public sealed class ShipState
         {
             MaxHull = spec.MaxHull + spec.Passives.Sum(p => p.Hull),
             MaxShield = spec.MaxShield + spec.Passives.Sum(p => p.Shield),
-            Defense = spec.Defense + spec.Passives.Sum(p => p.Defense),
+            BaseDefense = spec.Defense + spec.Passives.Sum(p => p.Defense),
             Evasion = spec.Evasion + spec.Passives.Sum(p => p.Evasion) + spec.Pilot.Agi * 3
         };
 

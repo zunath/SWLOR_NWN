@@ -133,14 +133,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// The waves of a chamber for a party of this many ships: each extra ship adds one ship to every wave. The Rift
-        /// Raiders come one at a time.
+        /// Raiders come one at a time, and a tier can fly a chamber its own way (RiftRunTuning.TierRoomWaves).
         /// </summary>
         public static List<List<string>> RoomWaves(RiftKeyDetail key, int room, int ships)
         {
-            var detail = RiftRunTuning.Rooms[Math.Clamp(room, 0, RiftRunTuning.Rooms.Count - 1)];
+            room = Math.Clamp(room, 0, RiftRunTuning.Rooms.Count - 1);
+            var detail = RiftRunTuning.Rooms[room];
             var waves = key.CreaturePrefix == "rr"
                 ? RiftRunTuning.RiftRaiderRooms[Math.Clamp(room, 0, RiftRunTuning.RiftRaiderRooms.Count - 1)].ToList()
-                : detail.Waves.ToList();
+                : RiftRunTuning.TierRoomWaves.TryGetValue(key.TierTenths, out var tierRooms) && tierRooms.TryGetValue(room, out var tierWaves)
+                    ? tierWaves.ToList()
+                    : detail.Waves.ToList();
             var extras = detail.Extras.Take(Math.Clamp(ships, 1, RiftRunTuning.MaxShips) - 1).ToList();
             return waves.Select(w => w.Concat(extras).ToList()).ToList();
         }

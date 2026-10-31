@@ -23,6 +23,10 @@ TIBANNA = "gas_tibanna"
 # the tier's ground refined ore instead: Hull Frames from tier 3 (Large and Capital hulls), Ordnance Assemblies in tiers
 # 1-2 (Bombers), Sensor Suites in tiers 1-2 (Interceptors, Explorers) and Extraction Heads in tiers 3-4 (Mining Barge
 # Advanced, Industrials). Every hull now costs at most 1.27x its old value; the other tiers keep their gem or metal.
+# Review fix 2026-10-30 (production.py, full production cost): the Extraction Head's metal signature (aluminum 100,
+# steel 200, diamond 1,300 credits) made the Mining Lasers the dockhand sells (ranks 0-40) cost 1.9x (tiers 1-2) and
+# 3.8x (tier 5) their pre-component recipe to craft, and the salvage and gas modules with them; every tier now takes the
+# tier's ground refined ore (1.00x).
 
 
 def _durelium_or_ore(t):
@@ -55,7 +59,7 @@ FAMILIES = [
      "A shield emitter dish for shield boosters, repairers and hardeners."),
     ("sensor", "SensorSuite", "Sensor Suite", "Engineering", 235, ELECTRONICS.get, _in_tiers((1, 2), GROUND_REFINED, GEM),
      "A sensor pod for targeting computers and electronic warfare."),
-    ("extract", "ExtractionHead", "Extraction Head", "Engineering", 236, ELECTRONICS.get, _in_tiers((3, 4), GROUND_REFINED, METAL),
+    ("extract", "ExtractionHead", "Extraction Head", "Engineering", 236, ELECTRONICS.get, GROUND_REFINED.get,
      "A cutting and focusing head for mining lasers, salvagers and gas harvesters."),
     ("lifesup", "LifeSupportSystem", "Life Support System", "Agriculture", 237, FIBERPLAST.get, HERB.get,
      "A hydroponic air and water system for freighters, cruisers and command ships."),
@@ -256,6 +260,10 @@ def advanced_rare_resref(maker):
 CAPITAL_PART_MATERIAL = "ref_arda"
 CAPITAL_PART_LEVEL = 45
 CAPITAL_PART_ORE_SAVED = 5
+# Review fix 2026-10-30 (production.py): with the capital parts' own crafts counted, a Cruiser (5,025 raw, 1.274x)
+# cost 1.28x its pre-revamp recipe on full cost at the crafting revamp's success rates; a Standard Capital hull takes one
+# electronics fewer (4,762-4,962 raw, 1.21-1.26x; at most 1.26x on full cost).
+CAPITAL_ELECTRONICS_SAVED = 1
 CAPITAL_PARTS = [
     ("CapitalStructure", "capc_struc", "Capital Class Structural Components", "Smithery", "HullFrame", 2, 2,
      "A capital hull's load-bearing frame: two tier 5 Hull Frames braced with Refined Ardanium. Two go into every "

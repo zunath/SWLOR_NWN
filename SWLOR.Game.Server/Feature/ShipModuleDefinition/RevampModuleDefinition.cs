@@ -173,8 +173,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             };
         }
 
-        private static SpaceWeaponShot BuildShot(ShipModuleStep step, ShipStatus status, ShipStatus targetStatus) =>
-            ShipShotBuilder.BuildFor(step, status, targetStatus);
+        private static SpaceWeaponShot BuildShot(ShipModuleStep step, ShipStatus status, ShipStatus targetStatus)
+        {
+            var shot = ShipShotBuilder.BuildFor(step, status, targetStatus);
+            shot.WeaponSlot = ShipModuleTraitContext.CurrentSlot;
+            return shot;
+        }
 
         /// <summary>The step as the firing module's component traits make it.</summary>
         private static ShipModuleStep Effective(ShipModuleStep step) => ShipTraitRules.Apply(step, ShipModuleTraitContext.Current);

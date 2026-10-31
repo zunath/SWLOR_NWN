@@ -503,8 +503,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition
             [RecipeType.ShipStripMiner35] = new CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 52),
             [RecipeType.ShipStripMiner40] = new CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 50),
             [RecipeType.ShipStripMiner45] = new CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 60),
-            [RecipeType.ShipTargetPainter00] = new CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 52),
-            [RecipeType.ShipTargetPainter05] = new CircuitParameters(overloadLine: 3, loadBoostPercent: 10, assemblySharePercent: 54),
             [RecipeType.ShipTargetPainter10] = new CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 54),
             [RecipeType.ShipTargetPainter15] = new CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 55),
             [RecipeType.ShipTargetPainter20] = new CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 58),

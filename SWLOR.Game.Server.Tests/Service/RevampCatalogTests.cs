@@ -24,9 +24,10 @@ public class RevampCatalogTests
     {
         var steps = RevampModuleCatalog.Steps;
 
-        steps.Should().HaveCount(405, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + " +
+        steps.Should().HaveCount(403, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + " +
             "the Probe Launcher ranks (W12a) + 16 named rank-50 modules (W9b) + the Data Analyzer (W12b) + the Cloaking Device ranks + " +
-            "the Cargo Expander ranks (W11d) + the Ion Web, Interdictor, Jammer, Target Painter and Afterburner ranks (W11k)");
+            "the Cargo Expander ranks (W11d) + the Ion Web, Interdictor, Jammer, Target Painter and Afterburner ranks (W11k), less " +
+            "the Target Painter's rank 0 and 5 steps (review decision 2026-10-30)");
         steps.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
         steps.Select(x => x.Name).Should().OnlyHaveUniqueItems();
         foreach (var step in steps)
@@ -46,6 +47,9 @@ public class RevampCatalogTests
         {
             var first = family.First();
             var ladder = family.Key == ShipModuleFamily.DataAnalyzer ? new[] { 0 } : first.Capital ? CapitalRanks : StandardRanks;
+            // The Target Painter starts at rank 10 (review decision 2026-10-30; RevampModuleCatalog.RetiredTags).
+            if (family.Key == ShipModuleFamily.TargetPainter)
+                ladder = ladder.Where(x => x >= 10).ToArray();
             if (family.Any(x => x.Named))
                 ladder = ladder.Append(50).ToArray();
             family.Select(x => x.Rank).Should().Equal(ladder, family.Key.ToString());
@@ -165,9 +169,12 @@ public class RevampCatalogTests
         ((int)RecipeType.ShipDataAnalyzer00).Should().Be(7532);
         steps.Where(x => x.Family == ShipModuleFamily.CloakingDevice).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7533, 10));
         steps.Where(x => x.Family == ShipModuleFamily.CargoExpander).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7733, 10));
+        // The Target Painter's dropped rank 0 and 5 steps keep their IDs (7773, 7774) reserved, so no later value moves.
         steps.Where(x => x.Family is ShipModuleFamily.IonWeb or ShipModuleFamily.Interdictor or ShipModuleFamily.Jammer or
                          ShipModuleFamily.TargetPainter or ShipModuleFamily.Afterburner)
-            .Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7743, 50));
+            .Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7743, 50).Where(x => x is not (7773 or 7774)));
+        Enum.IsDefined(typeof(RecipeType), 7773).Should().BeFalse();
+        Enum.IsDefined(typeof(RecipeType), 7774).Should().BeFalse();
     }
 
     [Test]

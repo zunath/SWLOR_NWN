@@ -78,7 +78,13 @@ public sealed class SpaceFight
     /// </summary>
     public void Step(double now)
     {
+        _resolver.Now = now;
+        foreach (var ship in Ships)
+            ship.Now = now;
         var actors = Ships.Where(s => s.IsAlive).ToList();
+        foreach (var ship in actors)
+            RunDots(ship, now);
+
         foreach (var ship in actors)
         {
             // A ship destroyed earlier in this step still fires its shots, but cannot repair itself back.
@@ -159,6 +165,64 @@ public sealed class SpaceFight
         }
     }
 
+    /// <summary>Damage over time that is due: each tick goes to the shield, then the hull.</summary>
+    private void RunDots(ShipState ship, double now)
+    {
+        foreach (var dot in ship.Dots.ToList())
+        {
+            while (ship.IsAlive && dot.NextTickAt <= dot.ExpiresAt + 1e-9 && now >= dot.NextTickAt - 1e-9)
+            {
+                var amount = dot.Spec.Damage + (dot.Spec.DamageSpread > 0 ? _resolver.Random.Next(0, dot.Spec.DamageSpread + 1) : 0);
+                dot.Source.DamageDealt += ship.TakeDamage(Math.Max(1, amount), false, 1.0);
+                dot.NextTickAt += dot.Spec.PeriodSeconds;
+            }
+
+            if (dot.NextTickAt > dot.ExpiresAt + 1e-9)
+                ship.Dots.Remove(dot);
+        }
+    }
+
+    private static void ApplyOnHit(ShipState source, BurstAbilitySpec spec, ShipState target, double now)
+    {
+        foreach (var dotSpec in spec.Dots)
+        {
+            var dot = target.Dots.FirstOrDefault(d => d.Source == source && d.Spec.Name == dotSpec.Name);
+            if (dot == null)
+                target.Dots.Add(new ActiveDot
+                {
+                    Source = source, Spec = dotSpec, NextTickAt = now + dotSpec.PeriodSeconds, ExpiresAt = now + dotSpec.DurationSeconds
+                });
+            else
+                dot.ExpiresAt = now + dotSpec.DurationSeconds;
+        }
+
+        if (spec.BlindSeconds > 0)
+            target.BlindedUntil = Math.Max(target.BlindedUntil, now + spec.BlindSeconds);
+
+        // Saturation Fire (SpaceHitSequences): the second area launcher hit within the window exposes the target.
+        if (spec.AreaLauncher && source.Spec.SaturationExposedDefensePercent > 0)
+        {
+            var count = target.AreaHitSequences.TryGetValue(source, out var seq) && now - seq.LastHit <= SaturationWindowSeconds
+                ? seq.Count + 1
+                : 1;
+            if (count >= SaturationHitsRequired)
+            {
+                target.AreaHitSequences.Remove(source);
+                target.ExposedUntil = now + SaturationExposedSeconds;
+                target.ExposedDefensePercent = source.Spec.SaturationExposedDefensePercent;
+            }
+            else
+            {
+                target.AreaHitSequences[source] = (count, now);
+            }
+        }
+    }
+
+    // Saturation Fire's numbers (PilotingOrdnancePerkDefinition: 2 hits within 30 s, Exposed for 30 s).
+    private const int SaturationHitsRequired = 2;
+    private const double SaturationWindowSeconds = 30;
+    private const double SaturationExposedSeconds = 30;
+
     private void RunAbilities(ShipState ship, double now)
     {
         foreach (var (spec, clock) in ship.Abilities)
@@ -172,7 +236,13 @@ public sealed class SpaceFight
             ship.Stm -= spec.StmCost;
             clock.StartCooldown(now);
             clock.Fired++;
-            _resolver.Fire(ship, weapon, spec.BonusDmg, target);
+            for (var shot = 0; shot < Math.Max(1, spec.Shots); shot++)
+            {
+                if (!target.IsAlive)
+                    break;
+                if (_resolver.Fire(ship, weapon, spec.BonusDmg, target, isAbility: true).Hit && target.IsAlive)
+                    ApplyOnHit(ship, spec, target, now);
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static readonly IReadOnlyList<RiftKeyDetail> Keys = new List<RiftKeyDetail>
         {
             new RiftKeyDetail { Resref = "rift_key_t1", TierTenths = 10, Name = "Rift Key (Tier 1)", CreaturePrefix = "t1", LootTable = "SPACE_ELITE_T1", BaseCredits = 130, Template = "space_riftpkt_t1" },
-            new RiftKeyDetail { Resref = "rift_key_t2", TierTenths = 20, Name = "Rift Key (Tier 2)", CreaturePrefix = "t2", LootTable = "SPACE_ELITE_T2", BaseCredits = 290, Template = "space_riftpkt_t2" },
+            new RiftKeyDetail { Resref = "rift_key_t2", TierTenths = 20, Name = "Rift Key (Tier 2)", CreaturePrefix = "t2", LootTable = "SPACE_ELITE_T2", BaseCredits = 270, Template = "space_riftpkt_t2" },
             new RiftKeyDetail { Resref = "rift_key_t3", TierTenths = 30, Name = "Rift Key (Tier 3)", CreaturePrefix = "t3", LootTable = "SPACE_ELITE_T3", BaseCredits = 390, Template = "space_riftpkt_t3" },
             new RiftKeyDetail { Resref = "rift_key_t4", TierTenths = 40, Name = "Rift Key (Tier 4)", CreaturePrefix = "t4", LootTable = "SPACE_ELITE_T4", BaseCredits = 300, Template = "space_riftpkt_t4" },
             new RiftKeyDetail { Resref = "rift_key_t5", TierTenths = 50, Name = "Rift Key (Tier 5)", CreaturePrefix = "t5", LootTable = "SPACE_ELITE_T5", BaseCredits = 330, Template = "space_riftpkt_t5" },
@@ -63,6 +63,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>The Rift Raiders' chambers (tier 5.5): one ship at a time, and no defense platform.</summary>
         public static readonly IReadOnlyList<IReadOnlyList<IReadOnlyList<string>>> RiftRaiderRooms = new[] { new[] { new[] { "fighter" }, new[] { "interceptor" }, new[] { "fighter" }, new[] { "interceptor" } }, new[] { new[] { "sniper" }, new[] { "ewar" }, new[] { "fighter" }, new[] { "bomber" } }, new[] { new[] { "gunship" }, new[] { "logistics" } } };
+
+        /// <summary>Chambers a tier flies differently: tier tenths, then chamber index, then its waves.</summary>
+        public static readonly IReadOnlyDictionary<int, IReadOnlyDictionary<int, IReadOnlyList<IReadOnlyList<string>>>> TierRoomWaves = new Dictionary<int, IReadOnlyDictionary<int, IReadOnlyList<IReadOnlyList<string>>>>
+        {
+            [20] = new Dictionary<int, IReadOnlyList<IReadOnlyList<string>>> { [2] = new[] { new[] { "gunship", "gunship" } } },
+        };
 
         /// <summary>Percent of an elite or boss wreck's rare finds that are its tier's Rift Key, after every other share.</summary>
         public static readonly IReadOnlyDictionary<WreckDifficulty, int> SalvageKeyPercent = new Dictionary<WreckDifficulty, int> { [WreckDifficulty.Elite] = 5, [WreckDifficulty.Boss] = 10 };

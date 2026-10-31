@@ -422,6 +422,10 @@ ROOMS = [
 RIFT_RAIDER_ROOMS = [[["fighter"], ["interceptor"], ["fighter"], ["interceptor"]],
                      [["sniper"], ["ewar"], ["fighter"], ["bomber"]],
                      [["gunship"], ["logistics"]]]
+# Chambers a tier flies differently (tier tenths -> room -> waves). Tier 2's defense platform is an Elite at the elite
+# curves' level-15 peak: the solo legal T2 pilot (checks.py section O, build A) beat it 82% of the time, so its Rift Heart
+# is a gunship pair (99-100%).
+TIER_ROOMS = {20: {2: [["gunship", "gunship"]]}}
 HULL_DIFFICULTY = {"platform": "Elite", "carrier": "Boss", "capital": "Boss"}
 
 # Payout on finishing in time: credits x (MIN_MULTIPLIER + TIME_SLOPE x the fraction of the timer left) and RUN_PULLS
@@ -449,6 +453,8 @@ def room_waves(tier_tenths, room, ships):
     _, waves, extras = ROOMS[room]
     if key_prefix(tier_tenths) == "rr":
         waves = RIFT_RAIDER_ROOMS[room]
+    elif room in TIER_ROOMS.get(tier_tenths, {}):
+        waves = TIER_ROOMS[tier_tenths][room]
     added = extras[:max(0, ships - 1)]
     return [list(w) + added for w in waves]
 
@@ -786,6 +792,15 @@ def rift_cs():
              "        public static readonly IReadOnlyList<IReadOnlyList<IReadOnlyList<string>>> RiftRaiderRooms = new[] { "
              + ", ".join("new[] { " + ", ".join(cs_strings(w) for w in room) + " }" for room in RIFT_RAIDER_ROOMS) + " };",
              "",
+             "        /// <summary>Chambers a tier flies differently: tier tenths, then chamber index, then its waves.</summary>",
+             "        public static readonly IReadOnlyDictionary<int, IReadOnlyDictionary<int, IReadOnlyList<IReadOnlyList<string>>>> TierRoomWaves = "
+             "new Dictionary<int, IReadOnlyDictionary<int, IReadOnlyList<IReadOnlyList<string>>>>",
+             "        {",
+             *[f"            [{tenths}] = new Dictionary<int, IReadOnlyList<IReadOnlyList<string>>> {{ "
+               + ", ".join(f"[{room}] = new[] {{ " + ", ".join(cs_strings(w) for w in waves) + " }" for room, waves in rooms.items()) + " },"
+               for tenths, rooms in TIER_ROOMS.items()],
+             "        };",
+             "",
              "        /// <summary>Percent of an elite or boss wreck's rare finds that are its tier's Rift Key, after every other share.</summary>",
              "        public static readonly IReadOnlyDictionary<WreckDifficulty, int> SalvageKeyPercent = new Dictionary<WreckDifficulty, int> { "
              + ", ".join(f"[WreckDifficulty.{k}] = {v}" for k, v in SALVAGE_KEY_PERCENT.items()) + " };",
@@ -949,7 +964,9 @@ def events_tab(Sheet):
          "of an elite or boss wreck's rare finds"],
     ])
     s.table(["Chamber", "Waves (solo)", "", "", "", "", "", "Each extra ship adds"],
-            [[n, " / ".join("+".join(w) for w in waves), "", "", "", "", "", ", ".join(extras)] for n, waves, extras in ROOMS])
+            [[n, " / ".join("+".join(w) for w in waves)
+              + "".join(f" (tier {t // 10}: {' / '.join('+'.join(w) for w in rooms[i])})" for t, rooms in TIER_ROOMS.items() if i in rooms),
+              "", "", "", "", "", ", ".join(extras)] for i, (n, waves, extras) in enumerate(ROOMS)])
     rows = []
     for tenths, resref, model in KEYS:
         rate = combat_rate(tenths) / 60

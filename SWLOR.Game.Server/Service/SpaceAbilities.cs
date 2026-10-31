@@ -336,6 +336,7 @@ namespace SWLOR.Game.Server.Service
         {
             var step = weapon.Fitted.Step;
             var shot = ShipShotBuilder.BuildFor(step, status, targetStatus);
+            shot.WeaponSlot = weapon.Slot;
             shot.Dmg += bonusDmg;
             shot.IsAbility = options.IsAbility;
             shot.IsArea = options.IsArea;

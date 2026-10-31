@@ -13,6 +13,18 @@ public sealed class BurstAbilitySpec
     public string Weapon { get; set; }
 
     public int BonusDmg { get; set; }
+
+    /// <summary>Shots the press fires, each rolled on its own (Double Shot fires two).</summary>
+    public int Shots { get; set; } = 1;
+
+    /// <summary>Damage over time left on the target by each hit (Volley's Burn, Shrapnel Warheads' fragmentation).</summary>
+    public List<DotSpec> Dots { get; set; } = new();
+
+    /// <summary>Seconds of Blind a hit leaves on the target (Flare Missile): half its landed shots miss meanwhile.</summary>
+    public double BlindSeconds { get; set; }
+
+    /// <summary>An area launcher ability: its hits count toward Saturation Fire (SpaceOrdnance.ApplyHitSequence).</summary>
+    public bool AreaLauncher { get; set; }
     public double CooldownSeconds { get; set; } = 20;
     public double CapacitorCost { get; set; }
     public double StmCost { get; set; }

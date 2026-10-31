@@ -45,7 +45,10 @@ public class SpaceElectronicWarfareTests
         foreach (var (family, (prefix, cycle, capacitor, texture)) in expected)
         {
             var steps = Steps(family);
-            steps.Select(x => x.Rank).Should().Equal(0, 5, 10, 15, 20, 25, 30, 35, 40, 45);
+            // The Target Painter starts at rank 10 (review decision 2026-10-30); its rank 0 and 5 tags convert to Mk III.
+            steps.Select(x => x.Rank).Should().Equal(family == ShipModuleFamily.TargetPainter
+                ? new[] { 10, 15, 20, 25, 30, 35, 40, 45 }
+                : new[] { 0, 5, 10, 15, 20, 25, 30, 35, 40, 45 });
             steps.Select(x => x.Tag).Should().Equal(steps.Select(x => $"{prefix}_{x.Rank:00}"));
             steps.Should().OnlyContain(x => x.Row == ShipModulePowerType.Mid && x.Skill == SkillType.Piloting &&
                                             x.Activation == ShipModuleActivation.Toggle && !x.Capital &&
@@ -61,7 +64,7 @@ public class SpaceElectronicWarfareTests
         Steps(ShipModuleFamily.IonWeb).Should().OnlyContain(x => x.Range == 20);
         Steps(ShipModuleFamily.Interdictor).Select(x => x.InterdictRange).Should().Equal(15, 16, 17, 18, 19, 20, 21, 22, 23, 24);
         Steps(ShipModuleFamily.Jammer).Select(x => x.TargetAccuracy).Should().Equal(-4, -6, -8, -10, -12, -14, -16, -18, -20, -22);
-        Steps(ShipModuleFamily.TargetPainter).Select(x => x.PaintPercent).Should().Equal(5, 5, 6, 6, 7, 7, 8, 8, 9, 10);
+        Steps(ShipModuleFamily.TargetPainter).Select(x => x.PaintPercent).Should().Equal(6, 6, 7, 7, 8, 8, 9, 10);
         Steps(ShipModuleFamily.Afterburner).Select(x => x.AfterburnerPercent).Should().Equal(25, 26, 28, 30, 31, 33, 35, 36, 38, 40);
         Steps(ShipModuleFamily.Jammer).Concat(Steps(ShipModuleFamily.TargetPainter)).Should().OnlyContain(x => x.Range == 30,
             "the draft gives them no range, so they take the E-War Array's 30 m");
@@ -72,8 +75,9 @@ public class SpaceElectronicWarfareTests
     public void Recipes_FollowTheCargoExpander_SoNoValueMoves()
     {
         var recipes = Families.SelectMany(Steps).Select(x => (int)x.RecipeType).ToList();
-        recipes.Should().Equal(Enumerable.Range(7743, 50));
-        Enum.GetValues<RecipeType>().Select(x => (int)x).Where(recipes.Contains).Should().HaveCount(50);
+        // The Target Painter's dropped rank 0 and 5 steps keep 7773 and 7774 reserved.
+        recipes.Should().Equal(Enumerable.Range(7743, 50).Where(x => x is not (7773 or 7774)));
+        Enum.GetValues<RecipeType>().Select(x => (int)x).Where(recipes.Contains).Should().HaveCount(48);
         ((int)RecipeType.ShipCargoExpander45).Should().Be(7742);
         Families.SelectMany(Steps).Should().OnlyContain(x => x.RecipeLevel == Math.Max(2, x.Rank));
         Steps(ShipModuleFamily.Jammer).First().Components.Should().Contain(("sc_sensor_1", 1));

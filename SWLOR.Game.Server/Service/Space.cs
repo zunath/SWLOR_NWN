@@ -294,6 +294,14 @@ namespace SWLOR.Game.Server.Service
                         _shipModuleItemTags.Add(moduleType);
                 }
             }
+
+            // A retired revamp step (the Target Painter's rank 0 and 5) still fitted to a ship works as the step it
+            // became; the item itself converts when it reaches an inventory (LegacySpaceItemCatalog).
+            foreach (var (retired, replacement) in SWLOR.Game.Server.Feature.ShipModuleDefinition.RevampModuleCatalog.RetiredTags)
+            {
+                if (_shipModules.TryGetValue(replacement, out var replacementDetail))
+                    _shipModules.TryAdd(retired, replacementDetail);
+            }
         }
 
         /// <summary>
@@ -2103,8 +2111,11 @@ namespace SWLOR.Game.Server.Service
         public static int GetShipCriticalRate(uint attacker, ShipStatus attackerStatus)
         {
             var per = GetPilotScore(attacker, attackerStatus, AbilityType.Perception);
-            var modifier = Stat.GetStatAdjustment(attacker, StatType.CriticalRatePercentAdjustment) +
-                           Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalRatePercentAdjustment);
+            var modifier = SpaceCombatMath.CriticalRateModifier(
+                Stat.GetStatAdjustment(attacker, StatType.CriticalRatePercentAdjustment),
+                Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalRatePercentAdjustment),
+                false,
+                attackerStatus?.CriticalBonus ?? 0);
             return SpaceCombatMath.CriticalRate(per, per, 0, modifier);
         }
 
@@ -2195,10 +2206,13 @@ namespace SWLOR.Game.Server.Service
             result.IsHit = true;
 
             // The weapon critical rate stat belongs to the weapon's own cycles, as "weapon cycles have +N% Critical
-            // Rate" reads; an ability shot takes only the general critical rate stat.
-            var criticalRate = Stat.GetStatAdjustment(source, StatType.CriticalRatePercentAdjustment);
-            if (!shot.IsAbility)
-                criticalRate += Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment);
+            // Rate" reads; an ability shot takes only the general critical rate stat. The hull's critical bonus (a
+            // Sith signature) applies to every shot the ship fires.
+            var criticalRate = SpaceCombatMath.CriticalRateModifier(
+                Stat.GetStatAdjustment(source, StatType.CriticalRatePercentAdjustment),
+                Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment),
+                shot.IsAbility,
+                activatorStatus.CriticalBonus);
             result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(per, targetVit, shot.Rank, criticalRate);
 
             // A warded ship takes a critical hit as a normal hit that rolls minimum damage.
@@ -2210,7 +2224,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Consecutive energy weapon hits against one target add their stacks' DMG to this same shot.
-            var shotDmg = shot.Dmg + SpaceSustainedFire.RegisterHit(activator, target, shot.Family, source);
+            var shotDmg = shot.Dmg + SpaceSustainedFire.RegisterHit(
+                activator, target, shot.Family, source, shot.WeaponSlot ?? 0,
+                SpaceSustainedFire.CountFiringEnergyWeapons(activator, activatorStatus));
 
             var (minimum, maximum) = SpaceCombatMath.DamageRange(
                 attack, shotDmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);

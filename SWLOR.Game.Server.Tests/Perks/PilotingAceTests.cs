@@ -236,10 +236,16 @@ public class PilotingAceTests
     public void TheSpaceCode_ReadsTheAceTraitsFromTheRightPlaces()
     {
         var space = ReadServerSource("Service", "Space.cs");
-        space.Should().Contain("if (!shot.IsAbility)\n                criticalRate += Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment);",
-            "weapon cycles, not ability shots, take the weapon critical rate");
-        space.Should().Contain("SpaceSustainedFire.RegisterHit(activator, target, shot.Family, source)",
-            "a crew member's station shot reads their own Sustained Fire perk");
+        space.Should().Contain("Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment),\n                shot.IsAbility,\n                activatorStatus.CriticalBonus);",
+            "weapon cycles, not ability shots, take the weapon critical rate, and every shot takes the hull's critical bonus");
+        space.Should().Contain("SpaceSustainedFire.RegisterHit(\n                activator, target, shot.Family, source, shot.WeaponSlot ?? 0,\n                SpaceSustainedFire.CountFiringEnergyWeapons(activator, activatorStatus))",
+            "a crew member's station shot reads their own Sustained Fire perk, and each weapon owns its stacks");
+        ReadServerSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs").Should().Contain(
+            "shot.WeaponSlot = ShipModuleTraitContext.CurrentSlot;", "a weapon's own cycle names its slot");
+        ReadServerSource("Service", "SpaceAbilities.cs").Should().Contain(
+            "shot.WeaponSlot = weapon.Slot;", "an ability shot names the weapon that fired it");
+        ReadServerSource("Service", "SpaceToggles.cs").Should().Contain(
+            "ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber)", "a module's action knows its slot");
         space.Should().Contain("StatSource = source,", "a missile's proc reads the perks of the crew member who fired it");
         ReadServerSource("Service", "SpaceOrdnance.cs").Should().Contain("Stat.GetStatAdjustment(e.StatSource, StatType.SpaceLauncherSplashChance)");
         space.Should().Contain("SpaceHostileAbilityRewards.Clear(player);");

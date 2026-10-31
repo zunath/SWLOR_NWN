@@ -100,7 +100,7 @@ ENVIRONMENTS = {
     "Pulsar": [("SpaceShieldDamageTakenPercentAdjustment", -12), ("SpaceCapacitorRegenPercentAdjustment", -25)],
     "BlackHole": [("MovementSpeedPercentAdjustment", 25), ("SpaceAccuracyPercentAdjustment", -4)],
     "IonStorm": [("SpaceEmDamagePercentAdjustment", 25), ("SpaceShieldDamageTakenPercentAdjustment", 15)],
-    "Magnetar": [("DamageDealtPercentAdjustment", 4), ("EvasionPercentAdjustment", -3)],
+    "Magnetar": [("DamageDealtPercentAdjustment", 4), ("EvasionPercentAdjustment", -1)],
     "RedGiant": [("SpaceAbilityDamagePercentAdjustment", 20), ("SpaceCapacitorCostPercentAdjustment", 20)],
     "ShipGraveyard": [("SpaceSalvageYieldBonus", 1), ("SpaceRareTraitChance", 5), ("SpaceScanStrengthPercent", -25)],
 }
@@ -148,17 +148,15 @@ def apply_environment(players, npcs, env):
             elif stat == "EvasionPercentAdjustment":
                 ship["evasion"] += round(amount / 100 * (ship["evasion"] + 3 * ship["pilot"]["agi"]))
             elif stat == "SpaceEmDamagePercentAdjustment":
-                # Every EM shot does more: the same as every target resisting EM that much less.
-                ship["resistances"] = dict(ship["resistances"], em=ship["resistances"]["em"] - amount)
+                # Every EM shot does more: WildSpaceRules.EnvironmentDamagePercent joins the ship's EM damage bonus.
+                bonus = ship.get("damageBonusPercent", {"em": 0, "thermal": 0, "explosive": 0})
+                ship["damageBonusPercent"] = dict(bonus, em=bonus["em"] + amount)
+            elif stat == "DamageDealtPercentAdjustment":
+                # Every ship's damage-dealt stat, applied to its rolled damage (SpaceCombatMath.ApplyDamageDealt).
+                ship["damageDealtPercent"] = ship.get("damageDealtPercent", 0) + amount
             elif stat == "SpaceCapacitorCostPercentAdjustment":
                 ship["weapons"] = [dict(w, capacitorPerCycle=max(1, int(w["capacitorPerCycle"] * factor + 0.5))
                                         if w["capacitorPerCycle"] else 0) for w in ship["weapons"]]
-        if stat == "DamageDealtPercentAdjustment":
-            # The model folds the player's outgoing damage % into its targets' resistances (model.apply_outgoing); the
-            # NPCs' outgoing damage % goes onto the players' resistances.
-            for p in players:
-                p["_dmg"] = p.get("_dmg", 0) + amount
-                p["resistances"] = {k: v - amount for k, v in p["resistances"].items()}
     return players, npcs
 
 
@@ -170,13 +168,13 @@ FIGHT_BAND = 10  # percent: an environment may move a same-level fight by about 
 
 def environment_rows(runs=150):
     """
-    Each environment's change to fight length: a named-fit Fighter (rank 45 pilot, every module at its named numbers)
+    Each environment's change to fight length: a named-fit Fighter (build A at rank 45, every module at its named numbers)
     against each level 52 Normal role, the environment on both ships. Returns (baseline means, rows by environment).
     """
     import model as m
     import npc_catalog
     npc_catalog.extend_presets(RIFT_RAIDER_LEVEL)
-    player = m.player_ship("Fighter", 45, m.FIT["Fighter"], pilot=m.pilot_for(45), named=True)
+    player = m.player_ship("Fighter", 45, m.FIT["Fighter"], build="A", named=True)
     base = {role: m.run(m.scenario([player], [m.npc_ship(role, RIFT_RAIDER_LEVEL)]), runs=runs)["mean"]
             for role in m.NORMAL_ROLES}
     rows = {}

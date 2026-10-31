@@ -55,4 +55,22 @@ public class SpaceRepeatedHitsTests
         Hit(state, 1u, 1, 5, 31).Stacks.Should().Be(3, "a hit 30 s after the last still continues the run");
         Hit(state, 1u, 1, 5, 32).Stacks.Should().Be(1, "a hit more than 30 s after the last starts a new run");
     }
+
+    [Test]
+    public void GetShare_KeepsTheFullBonusForOneOrTwoEnergyWeapons()
+    {
+        SpaceRepeatedHits.GetShare(15, 1).Should().Be(15);
+        SpaceRepeatedHits.GetShare(15, 2).Should().Be(15);
+        SpaceRepeatedHits.GetShare(15, 0).Should().Be(15, "a ship with no counted weapon is treated as one");
+    }
+
+    [Test]
+    public void GetShare_HoldsSeveralEnergyWeaponsToTwoWeaponsWorth()
+    {
+        // Three lasers at full stacks: 15 x 2 / 3 = 10 each, 30 in all, as two ground weapons would.
+        SpaceRepeatedHits.GetShare(15, 3).Should().Be(10);
+        SpaceRepeatedHits.GetShare(3, 3).Should().Be(2);
+        SpaceRepeatedHits.GetShare(5, 4).Should().Be(3, "2.5 rounds half away from zero");
+        SpaceRepeatedHits.GetShare(1, 6).Should().Be(0);
+    }
 }

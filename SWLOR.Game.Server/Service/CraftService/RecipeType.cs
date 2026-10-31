@@ -4133,8 +4133,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipJammer35 = 7770,
         ShipJammer40 = 7771,
         ShipJammer45 = 7772,
-        ShipTargetPainter00 = 7773,
-        ShipTargetPainter05 = 7774,
         ShipTargetPainter10 = 7775,
         ShipTargetPainter15 = 7776,
         ShipTargetPainter20 = 7777,

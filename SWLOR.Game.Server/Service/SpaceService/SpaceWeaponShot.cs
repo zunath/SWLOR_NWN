@@ -45,6 +45,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Whether the shot, once it lands, consumes pending riders (see <see cref="SpaceShotRider"/>).</summary>
         public bool ConsumesRiders { get; set; } = true;
 
+        /// <summary>The hotbar slot of the weapon module that fired (Sustained Fire stacks belong to each weapon).</summary>
+        public int? WeaponSlot { get; set; }
+
         /// <summary>A copy of the shot with more DMG.</summary>
         public SpaceWeaponShot WithBonusDmg(int bonus)
         {

@@ -535,12 +535,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         }
 
         /// <summary>
-        /// One ore pick from an asteroid's table. The pilot's Deep Core (Gathering) adds percentage points to the
-        /// rare-metal chance, as a separate roll before the normal weighted pick; so do the module's RareFind traits.
+        /// One ore pick from an asteroid's table. The pilot's Deep Core (Gathering), the module's RareFind traits and a
+        /// bay droid's Prospecting Protocol add their points to the weight of the table's rare metal, as Treasure Hunter
+        /// does on the ground (review fix 2026-10-30: a separate percent roll made Deep Core II's rare metal 20% of
+        /// picks, several times combat income at tier 5; the asteroid tables are weighted for this, mining.py).
         /// </summary>
         private static LootTableItem GetAsteroidOre(uint pilot, LootTable lootTable, int traitRareFind)
         {
-            return lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance) + traitRareFind);
+            return lootTable.GetRandomItemWithRareBonus(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance) + traitRareFind);
         }
 
         /// <summary>The firing module's RareFind traits, read while its action runs.</summary>

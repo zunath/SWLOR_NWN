@@ -168,49 +168,49 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void AsteroidMining()
         {
             _builder.Create("ASTEROID_TILARIUM")
-                .AddItem("ore_tilarium", 30)
-                .AddItem("ore_durelium", 4)
-                .AddItem("aluminum", 2)
-                .AddItem("quadrenium", 1, isRare: true);
+                .AddItem("ore_tilarium", 3090)
+                .AddItem("ore_durelium", 412)
+                .AddItem("aluminum", 206, isRare: true)
+                .AddItem("quadrenium", 103);
 
             _builder.Create("ASTEROID_CURRIAN")
-                .AddItem("ore_currian", 30)
-                .AddItem("ore_durelium", 4)
-                .AddItem("steel", 2)
-                .AddItem("vintrium", 1, isRare: true);
+                .AddItem("ore_currian", 3390)
+                .AddItem("ore_durelium", 452)
+                .AddItem("steel", 226, isRare: true)
+                .AddItem("vintrium", 113);
 
             // Durelium asteroids of the Viscara Asteroid Belt (W6c): Durelium is the main ore beside the tier's own.
             _builder.Create("ASTEROID_DURELIUM_1")
-                .AddItem("ore_durelium", 30)
-                .AddItem("ore_tilarium", 10)
-                .AddItem("aluminum", 2)
-                .AddItem("quadrenium", 1, isRare: true);
+                .AddItem("ore_durelium", 2310)
+                .AddItem("ore_tilarium", 770)
+                .AddItem("aluminum", 154, isRare: true)
+                .AddItem("quadrenium", 77);
 
             _builder.Create("ASTEROID_DURELIUM_2")
-                .AddItem("ore_durelium", 30)
-                .AddItem("ore_currian", 10)
-                .AddItem("steel", 2)
-                .AddItem("vintrium", 1, isRare: true);
+                .AddItem("ore_durelium", 3420)
+                .AddItem("ore_currian", 1140)
+                .AddItem("steel", 228, isRare: true)
+                .AddItem("vintrium", 114);
 
             _builder.Create("ASTEROID_IDAILIA")
-                .AddItem("ore_idailia", 240)
-                .AddItem("obsidian", 2)
-                .AddItem("ionite", 1, isRare: true);
+                .AddItem("ore_idailia", 12000)
+                .AddItem("obsidian", 100, isRare: true)
+                .AddItem("ionite", 50);
 
             _builder.Create("ASTEROID_BARINIUM")
-                .AddItem("ore_barinium", 480)
-                .AddItem("crystal", 2)
-                .AddItem("katrium", 1, isRare: true);
+                .AddItem("ore_barinium", 12960)
+                .AddItem("crystal", 54, isRare: true)
+                .AddItem("katrium", 27);
 
             _builder.Create("ASTEROID_GOSTIAN")
-                .AddItem("ore_gostian", 960)
-                .AddItem("diamond", 2)
-                .AddItem("zinsiam", 1, isRare: true);
+                .AddItem("ore_gostian", 16320)
+                .AddItem("diamond", 34)
+                .AddItem("zinsiam", 17, isRare: true);
 
             _builder.Create("ASTEROID_ARDANIUM")
-                .AddItem("ore_arda", 32)
-                .AddItem("ore_gostian", 256)
-                .AddItem("zinsiam", 1, isRare: true);
+                .AddItem("ore_arda", 1312)
+                .AddItem("ore_gostian", 10496)
+                .AddItem("zinsiam", 41, isRare: true);
         }
 
         /// <summary>Gas clouds (plan section 12): Tibanna Gas, harvested by the Gas Harvester.</summary>
@@ -223,48 +223,48 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void StripMining()
         {
             _builder.Create("ASTEROID_TILARIUM_STRIP")
-                .AddItem("ore_tilarium", 30)
-                .AddItem("ore_durelium", 4)
-                .AddItem("aluminum", 2)
-                .AddItem("quadrenium", 1, isRare: true);
+                .AddItem("ore_tilarium", 7410)
+                .AddItem("ore_durelium", 988)
+                .AddItem("aluminum", 494, isRare: true)
+                .AddItem("quadrenium", 247);
 
             _builder.Create("ASTEROID_CURRIAN_STRIP")
-                .AddItem("ore_currian", 30)
-                .AddItem("ore_durelium", 4)
-                .AddItem("steel", 2)
-                .AddItem("vintrium", 1, isRare: true);
+                .AddItem("ore_currian", 8190)
+                .AddItem("ore_durelium", 1092)
+                .AddItem("steel", 546, isRare: true)
+                .AddItem("vintrium", 273);
 
             _builder.Create("ASTEROID_DURELIUM_1_STRIP")
-                .AddItem("ore_durelium", 30)
-                .AddItem("ore_tilarium", 10)
-                .AddItem("aluminum", 2)
-                .AddItem("quadrenium", 1, isRare: true);
+                .AddItem("ore_durelium", 5550)
+                .AddItem("ore_tilarium", 1850)
+                .AddItem("aluminum", 370, isRare: true)
+                .AddItem("quadrenium", 185);
 
             _builder.Create("ASTEROID_DURELIUM_2_STRIP")
-                .AddItem("ore_durelium", 30)
-                .AddItem("ore_currian", 10)
-                .AddItem("steel", 2)
-                .AddItem("vintrium", 1, isRare: true);
+                .AddItem("ore_durelium", 8220)
+                .AddItem("ore_currian", 2740)
+                .AddItem("steel", 548, isRare: true)
+                .AddItem("vintrium", 274);
 
             _builder.Create("ASTEROID_IDAILIA_STRIP")
-                .AddItem("ore_idailia", 240)
-                .AddItem("obsidian", 6)
-                .AddItem("ionite", 3, isRare: true);
+                .AddItem("ore_idailia", 20880)
+                .AddItem("obsidian", 522, isRare: true)
+                .AddItem("ionite", 261);
 
             _builder.Create("ASTEROID_BARINIUM_STRIP")
-                .AddItem("ore_barinium", 480)
-                .AddItem("crystal", 6)
-                .AddItem("katrium", 3, isRare: true);
+                .AddItem("ore_barinium", 25440)
+                .AddItem("crystal", 318, isRare: true)
+                .AddItem("katrium", 159);
 
             _builder.Create("ASTEROID_GOSTIAN_STRIP")
-                .AddItem("ore_gostian", 960)
-                .AddItem("diamond", 6)
-                .AddItem("zinsiam", 3, isRare: true);
+                .AddItem("ore_gostian", 32640)
+                .AddItem("diamond", 204)
+                .AddItem("zinsiam", 102, isRare: true);
 
             _builder.Create("ASTEROID_ARDANIUM_STRIP")
-                .AddItem("ore_arda", 32)
-                .AddItem("ore_gostian", 256)
-                .AddItem("zinsiam", 3, isRare: true);
+                .AddItem("ore_arda", 2720)
+                .AddItem("ore_gostian", 21760)
+                .AddItem("zinsiam", 255, isRare: true);
         }
     }
 }

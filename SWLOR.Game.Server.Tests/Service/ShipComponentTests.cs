@@ -164,15 +164,18 @@ public class ShipComponentTests
     }
 
     // W11e: where a hull recipe takes these components, the gem or metal signature is the tier's ground refined ore, so
-    // no hull costs more than 1.3x its pre-component material value; the other tiers keep the gem or metal.
+    // no hull costs more than 1.3x its pre-component material value; the other tiers keep the gem or metal. Review fix
+    // 2026-10-30 (production.py): every Extraction Head takes the ground ore, so the dockhand's Mining Lasers cost what
+    // their pre-component recipe did.
     [TestCase(ShipComponentFamily.HullFrame, 4, "ref_keromber")]
     [TestCase(ShipComponentFamily.OrdnanceAssembly, 1, "ref_veldite")]
     [TestCase(ShipComponentFamily.OrdnanceAssembly, 3, "obsidian")]
     [TestCase(ShipComponentFamily.SensorSuite, 2, "ref_scordspar")]
     [TestCase(ShipComponentFamily.SensorSuite, 5, "emerald")]
-    [TestCase(ShipComponentFamily.ExtractionHead, 2, "steel")]
+    [TestCase(ShipComponentFamily.ExtractionHead, 1, "ref_veldite")]
+    [TestCase(ShipComponentFamily.ExtractionHead, 2, "ref_scordspar")]
     [TestCase(ShipComponentFamily.ExtractionHead, 3, "ref_plagionite")]
-    [TestCase(ShipComponentFamily.ExtractionHead, 5, "diamond")]
+    [TestCase(ShipComponentFamily.ExtractionHead, 5, "ref_jasioclase")]
     public void HullPathComponents_UseGroundOreInTheTiersHullsTakeThem(ShipComponentFamily family, int tier, string signature)
     {
         Recipe(family, tier).Components.Select(x => x.Resref).Should().Contain(signature);
@@ -487,12 +490,14 @@ public class ShipComponentTests
     public void StandardCapitalHulls_KeepTheirMaterialValue()
     {
         // The W11e balance pass held every Capital hull at 4,825-5,025 credits of material (at most 1.27x its
-        // pre-component 3,945); the capital parts' Ardanium (500) replaces five Refined Gostian (100) per part.
+        // pre-component 3,945); the capital parts' Ardanium (500) replaces five Refined Gostian (100) per part. Review fix
+        // 2026-10-30 (production.py): with the parts' own crafts a Cruiser cost 1.28x on full cost, so a Standard
+        // Capital hull takes one High Quality Electronics (63) fewer: 4,762-4,962 (1.21-1.26x).
         foreach (var part in RevampComponentCatalog.CapitalPartRecipes)
             Cost(part.Resref).Should().Be(Value(part.Components), part.Resref);
 
         foreach (var hull in RevampShipCatalog.Hulls.Where(x => x.Size == ShipSize.Capital && !x.Advanced))
-            Value(hull.Components).Should().BeInRange(4825, 5025, hull.Tag);
+            Value(hull.Components).Should().BeInRange(4762, 4962, hull.Tag);
     }
 
     // The rare-trait slot and stand-in (Appendix D): a salvaged component with a rare trait.
@@ -614,7 +619,10 @@ public class ShipComponentTests
                         .Select(c => c.Resref == "ref_arda" ? ("ref_gostian", 5 * x.Quantity) : (c.Resref, c.Quantity * x.Quantity))
                     : new[] { x })
                 .ToArray();
-            Units(bill).Should().Be(before[hull.Size], $"{hull.Tag}: the W3 bill was 8 / 12 / 18 / 30 ore plus half that in electronics");
+            // Review fix 2026-10-30 (production.py): a Standard Capital hull takes one electronics fewer, so its full
+            // production cost stays inside the hull cost band.
+            var saved = hull.Size == ShipSize.Capital ? 1 : 0;
+            Units(bill).Should().Be(before[hull.Size] - saved, $"{hull.Tag}: the W3 bill was 8 / 12 / 18 / 30 ore plus half that in electronics");
             hull.Components.Should().OnlyContain(x => x.Quantity > 0, hull.Tag);
         }
     }
@@ -629,7 +637,7 @@ public class ShipComponentTests
     [TestCase("Service/ShipComponents.cs", "if (CarriesTraits(GetResRef(component)))")]
     [TestCase("Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs", "Traits = ShipComponents.GetTraitsOrNull(item),")]
     [TestCase("Service/SpaceRevamp.cs", "Step = detail.Step, Traits = module.Traits")]
-    [TestCase("Service/SpaceToggles.cs", "using (ShipModuleTraitContext.Begin(shipModule.Traits))")]
+    [TestCase("Service/SpaceToggles.cs", "using (ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber))")]
     [TestCase("Service/SpaceToggles.cs", "ShipTraitRules.ModuleBonus(shipModule.ModuleBonus, shipModule.Traits)")]
     [TestCase("Service/SpacePowerRouting.cs", "ShipTraitRules.CapacitorCost(")]
     [TestCase("Feature/ShipModuleDefinition/RevampModuleDefinition.cs", "ShipTraitRules.Apply(step, ShipModuleTraitContext.Current)")]

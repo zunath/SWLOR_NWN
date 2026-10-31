@@ -161,13 +161,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             [SignatureType.CombatSite] = new[] { 0, 100, 200, 300, 250, 50, 600 },
             [SignatureType.CacheSite] = new[] { 0, 100, 225, 300, 225, 275, 825 },
             [SignatureType.GasSite] = new[] { 0, 25, 225, 375, 275, 400, 1425 },
-            [SignatureType.Derelict] = new[] { 0, 125, 400, 475, 275, 125, 2175 },
-            [SignatureType.DataSite] = new[] { 0, 300, 525, 575, 450, 200, 1900 },
+            [SignatureType.Derelict] = new[] { 0, 125, 400, 475, 275, 175, 2225 },
+            [SignatureType.DataSite] = new[] { 0, 325, 550, 575, 450, 350, 2075 },
         };
 
         // Payout model (scanning.py --sim): minutes and credits per site and the combat rate it is measured against.
         public const double ExplorePremium = 1.15;
-        public static readonly double[] CombatCreditsPerHour = { 0, 4055.12, 6269.68, 8500.17, 7557.0, 9347.41, 22212.36 };
+        public static readonly double[] CombatCreditsPerHour = { 0, 4055.12, 6269.68, 8500.17, 7557.0, 9314.73, 22212.36 };
         public static readonly double[] ElitePullCredits = { 0, 64.75, 50.01, 73.41, 89.86, 122.17, 201.44 };
         public static readonly double[] OverheadMinutes = { 0, 1.75, 1.75, 1.75, 1.75, 1.75, 1.9167 };
         public static readonly IReadOnlyDictionary<SignatureType, double[]> SiteMinutes = new Dictionary<SignatureType, double[]>
@@ -180,18 +180,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         };
         public static readonly IReadOnlyDictionary<SignatureType, double[]> SiteOwnCredits = new Dictionary<SignatureType, double[]>
         {
-            [SignatureType.CombatSite] = new[] { 0.0, 202.76, 313.48, 566.68, 503.8, 1052.78, 2145.56 },
+            [SignatureType.CombatSite] = new[] { 0.0, 202.76, 313.48, 566.68, 503.8, 1049.97, 2145.56 },
             [SignatureType.CacheSite] = new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
             [SignatureType.GasSite] = new[] { 0.0, 243.0, 243.0, 243.0, 243.0, 243.0, 243.0 },
-            [SignatureType.Derelict] = new[] { 0.0, 293.5, 302.55, 475.09, 553.58, 1254.48, 1238.93 },
-            [SignatureType.DataSite] = new[] { 0.0, 167.53, 268.51, 482.46, 483.1, 937.89, 937.89 },
+            [SignatureType.Derelict] = new[] { 0.0, 290.1, 295.75, 475.09, 553.58, 1202.36, 1187.93 },
+            [SignatureType.DataSite] = new[] { 0.0, 157.34, 248.12, 482.46, 483.1, 784.89, 784.89 },
         };
 
         // Locked caches (space slicing, slicing.py): this share of cache sites must be sliced open; their credits, time and
         // slicing reward replace a plain cache's.
         public const int LockedCachePercent = 40;
-        public static readonly int[] LockedCacheCredits = { 0, 175, 300, 350, 250, 150, 1075 };
+        public static readonly int[] LockedCacheCredits = { 0, 175, 300, 350, 250, 200, 1125 };
         public static readonly double[] LockedCacheMinutes = { 0.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0 };
-        public static readonly double[] LockedCacheOwnCredits = { 0.0, 63.38, 99.65, 176.26, 192.58, 390.35, 390.35 };
+        public static readonly double[] LockedCacheOwnCredits = { 0.0, 60.66, 94.21, 176.26, 192.58, 349.55, 349.55 };
     }
 }

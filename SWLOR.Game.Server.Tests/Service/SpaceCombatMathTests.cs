@@ -206,4 +206,13 @@ public class SpaceCombatMathTests
         SpaceCombatMath.CapacitorRegenPerSecond(2.0, 25).Should().BeApproximately(3.25, 1e-9);
         SpaceCombatMath.CapacitorRegenPerSecond(1.0, 0).Should().BeApproximately(1.0, 1e-9);
     }
+
+    [Test]
+    public void CriticalRateModifier_AddsTheHullBonusToEveryShot()
+    {
+        SpaceCombatMath.CriticalRateModifier(4, 6, isAbility: false, hullCriticalBonus: 13).Should().Be(23);
+        SpaceCombatMath.CriticalRateModifier(4, 6, isAbility: true, hullCriticalBonus: 13).Should().Be(17,
+            "an ability shot takes the general and hull rates but not the weapon-cycle rate");
+        SpaceCombatMath.CriticalRateModifier(0, 0, isAbility: false, hullCriticalBonus: 0).Should().Be(0);
+    }
 }

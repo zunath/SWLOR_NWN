@@ -202,7 +202,13 @@ def author(manifest,output,repo):
         if set(models)=={'b','m','t'}:
             assemblies.append({'base_item':asset['base_item'],'bottom':models['b'],'middle':models['m'],'top':models['t'],'icon_bounds':frame})
         reports.append({'asset':asset['asset'],'source_sha256':asset['sha256'],'parts':part_reports,'joint_envelopes':joints})
-    result={'schema_version':1,'assets':assets,'composite_assemblies':assemblies}
+    input_assemblies=copy.deepcopy(config.get('composite_assemblies',[]))
+    input_base_items={assembly['base_item'] for assembly in input_assemblies}
+    result={key:copy.deepcopy(value) for key,value in config.items()
+            if key not in ('assets','composite_assemblies')}
+    result['assets']=assets
+    result['composite_assemblies']=input_assemblies+[
+        assembly for assembly in assemblies if assembly['base_item'] not in input_base_items]
     (output/'fit.json').write_text(json.dumps(result,indent=2)+'\n')
     (output/'authoring.json').write_text(json.dumps({'producer_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'assets':reports},indent=2)+'\n')
     print('MESHY_PARTS_COMPLETE '+str(output/'fit.json'))

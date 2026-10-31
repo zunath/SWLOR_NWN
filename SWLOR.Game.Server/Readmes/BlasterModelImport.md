@@ -150,6 +150,26 @@ across roles. Node selectors cannot overlap or be combined with clipping.
 Shields keep one complete model and use the preparation output directly; retain
 their measured grip, clearance and impact dummies.
 
+Preparation and part authoring both require Blender's Python (`bpy`). For example,
+with `$blender` set to the Blender executable and fresh staging output folders:
+
+```powershell
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/MeshyWeaponExport.py -- --mode prepare `
+  --manifest "$env:TEMP/weapon-sources/manifest.json" `
+  --output "$env:TEMP/weapon-sources/prepared"
+
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/MeshyWeaponParts.py -- `
+  --manifest "$env:TEMP/weapon-sources/prepared/fit.json" `
+  --output "$env:TEMP/weapon-sources/parts"
+```
+
+Both entrypoints accept an optional `--repo` path. Part authoring preserves
+manifest-level settings, including `empty_parts` and explicit
+`composite_assemblies`. Explicit assemblies take precedence over generated
+assemblies for their base item, including assemblies using partial hilt sources.
+
 Run `MeshyWeaponExport.py --mode export` inside Blender on the resulting
 `fit.json`, then `--mode package` with ordinary Python and the pinned compiler
 and Crunch arguments described below. All stage outputs must be empty folders

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
@@ -13,8 +15,21 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             FishingGuildQuests();
             PartyRoomForPedro();
+            ClearTheSmugglersLane();
 
             return _builder.Build();
+        }
+
+        private void ClearTheSmugglersLane()
+        {
+            _builder.Create("mon_starlane", "Clear the Smuggler's Lane")
+                .AddState()
+                .SetStateJournalText("Nera Venn, the route broker beside the dockhand in Mon Cala's Elite Hotel, needs the Krakenborne pirates driven off her shipping route. Destroy 10 Krakenborne ships in Mon Cala orbit, then return to her for a permanent Smuggler's Moon Starlane Pass.")
+                .AddKillObjective(NPCGroupType.MonCala_Krakenborne, 10)
+
+                .AddState()
+                .SetStateJournalText("You have destroyed 10 Krakenborne ships. Return to Nera Venn beside the dockhand in Mon Cala's Elite Hotel to collect your Smuggler's Moon Starlane Pass. It opens the new route at the south edge of Mon Cala orbit and the return route at the east edge of Smuggler's Moon orbit.")
+                .AddKeyItemReward(KeyItemType.SmugglersMoonStarlanePass, false);
         }
 
         private void FishingGuildQuests()

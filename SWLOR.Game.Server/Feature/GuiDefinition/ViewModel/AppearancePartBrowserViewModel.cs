@@ -164,6 +164,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Tile37Label { get => Get<string>(); set => Set(value); }
         public string Tile38Label { get => Get<string>(); set => Set(value); }
         public string Tile39Label { get => Get<string>(); set => Set(value); }
+
+        public string Tile0Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile1Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile2Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile3Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile4Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile5Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile6Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile7Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile8Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile9Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile10Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile11Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile12Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile13Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile14Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile15Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile16Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile17Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile18Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile19Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile20Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile21Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile22Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile23Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile24Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile25Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile26Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile27Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile28Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile29Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile30Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile31Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile32Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile33Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile34Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile35Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile36Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile37Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile38Tooltip { get => Get<string>(); set => Set(value); }
+        public string Tile39Tooltip { get => Get<string>(); set => Set(value); }
         public bool Tile0Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile1Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile2Selected { get => Get<bool>(); set => Set(value); }
@@ -263,6 +304,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(string.Empty, $"Tile{tile}Image");
                 Set(string.Empty, $"Tile{tile}Label");
+                Set(string.Empty, $"Tile{tile}Tooltip");
                 Set(false, $"Tile{tile}Selected");
                 Set(false, $"Tile{tile}Visible");
             }
@@ -348,6 +390,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetIfChanged($"Tile{tile}Visible", visible);
                 SetIfChanged($"Tile{tile}Image", visible ? AppearancePreview.Picture(_key(id), _view) : string.Empty);
                 SetIfChanged($"Tile{tile}Label", visible ? _label(id) : string.Empty);
+                SetIfChanged($"Tile{tile}Tooltip", visible ? AppearanceEditorViewModel.PartNumberTooltip(id) : string.Empty);
                 SetIfChanged($"Tile{tile}Selected", visible && id == _current);
             }
 

@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetId($"ae_tile_{tile}")
                         .BindImageResref(Bind<string>($"Tile{tile}Image"))
                         .BindIsVisible(Bind<bool>($"Tile{tile}Visible"))
+                        .BindTooltip(Bind<string>($"Tile{tile}Tooltip"))
                         .BindIsEncouraged(selected)
                         .SetWidth(TileSize)
                         .SetHeight(TileSize)
@@ -154,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     labelRow.AddLabel()
                         .BindText(Bind<string>($"Tile{tile}Label"))
+                        .BindTooltip(Bind<string>($"Tile{tile}Tooltip"))
                         .BindIsVisible(Bind<bool>($"Tile{tile}Visible"))
                         .SetWidth(TileSize)
                         .SetHeight(18f)

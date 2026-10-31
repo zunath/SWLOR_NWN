@@ -476,6 +476,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 row.AddLabel()
                     .BindText(model => model.PartPreviewLabel)
+                    .BindTooltip(model => model.PartPreviewNumber)
                     .SetHeight(18f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Center);
             });

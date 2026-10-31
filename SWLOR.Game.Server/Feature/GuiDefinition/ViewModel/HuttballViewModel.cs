@@ -168,8 +168,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ScoreText = "No Huttball match in this area.";
                 TurnText = UserIsDM
-                    ? "Place a battle grid (/battlegrid), then create a match."
-                    : "Create Match lays a pitch centred on you, with you as Home captain.";
+                    ? "Place a battle grid, then create a match."
+                    : "Create Match lays a pitch here. You captain Home.";
                 BallText = string.Empty;
                 UnitText = string.Empty;
                 LogText = string.Empty;
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             $"Away {match.GetCaptain(HuttballTeam.Away)?.Name ?? "none"}";
             TurnText = match.Phase switch
             {
-                HuttballPhase.Setup => $"Half {match.Half}, turn {match.Turn}: take your places. The {match.ActiveTeam} team moves first.",
+                HuttballPhase.Setup => $"Half {match.Half}, turn {match.Turn}: set up. {match.ActiveTeam} moves first.",
                 HuttballPhase.Playing => $"Half {match.Half}, turn {match.Turn} of {HuttballRules.TurnsPerHalf}: the {match.ActiveTeam} team's move.",
                 _ => "Full time.",
             };

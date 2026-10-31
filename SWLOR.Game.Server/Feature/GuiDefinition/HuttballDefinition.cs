@@ -19,12 +19,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private readonly GuiWindowBuilder<HuttballViewModel> _builder = new();
 
         private const float TabRowHeight = 28f;
-        private const float TabPanelHeight = 48f;
+        private const float TabPanelHeight = 52f;
         private const float TabWidth = 120f;
-        private const float PanelWidth = 440f;
+        private const float PanelWidth = 400f;
         private const float LabelHeight = 20f;
-        private const float ButtonWidth = 136f;
-        private const float ComboWidth = 208f;
+        private const float ButtonWidth = 124f;
+        private const float ComboWidth = 190f;
         private const float StepLabelWidth = 100f;
         private const float StepButtonWidth = 40f;
         private const float LogHeight = 360f;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Huttball)
-                .SetInitialGeometry(0f, 0f, 480f, 520f)
+                .SetInitialGeometry(0f, 0f, 540f, 520f)
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddSectionLabel(content, "Team Resources");
                 content.AddRow(r => r.AddText()
                     .BindText(model => model.ResourcesText)
-                    .SetHeight(44f));
+                    .SetHeight(64f));
                 content.AddRow(r =>
                 {
                     AddTeamCombo(r);
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>
-        /// A tab's fixed-width borderless panel (rule R5). Scrolling comes from the standard layout's host group.
+        /// A tab's fixed-width borderless panel (rule R5). Players resize the window to see a whole tab.
         /// </summary>
         private static void AddPanel(GuiGroup<HuttballViewModel> host, Action<GuiColumn<HuttballViewModel>> build)
         {

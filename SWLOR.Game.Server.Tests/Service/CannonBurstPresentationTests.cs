@@ -26,10 +26,9 @@ public class CannonBurstPresentationTests
         CannonBurstPresentation.IsBurstWeapon(null).Should().BeFalse();
 
     [Test]
-    public void ABurstIsTheNativeBoltAndTwoTrailingReplays()
+    public void ABurstHasTwoTrailingProjectilesAtOneHundredMillisecondIntervals()
     {
-        CannonBurstPresentation.FollowUpDelays.Should().HaveCount(2);
-        CannonBurstPresentation.FollowUpDelays.Should().BeInAscendingOrder();
-        CannonBurstPresentation.FollowUpDelays.Should().OnlyContain(delay => delay > TimeSpan.Zero);
+        CannonBurstPresentation.FollowUpDelays.Should().Equal(
+            TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(200));
     }
 }

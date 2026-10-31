@@ -122,6 +122,19 @@ namespace SWLOR.Game.Server.Service
             return _itemToSkillMapping[baseItem];
         }
 
+        /// <summary>
+        /// Retrieves the skill an attack made with an item of this base type trains and rolls against.
+        /// Arms-slot gloves and bracers are the engine's attack item for bare-handed attacks, so they
+        /// resolve to Unarmed here while their stored requirement skill stays unchanged.
+        /// </summary>
+        public static SkillType GetAttackSkillTypeByBaseItem(BaseItem baseItem)
+        {
+            if (baseItem is BaseItem.Gloves or BaseItem.Bracer)
+                return SkillType.Unarmed;
+
+            return GetSkillTypeByBaseItem(baseItem);
+        }
+
         /// <summary>Resolves equipped attack identity without rewriting a weapon's stored requirements.</summary>
         public static SkillType GetWeaponSkill(uint creature, uint weapon, SkillType? explicitOverride = null)
         {
@@ -134,7 +147,7 @@ namespace SWLOR.Game.Server.Service
             var off = GetItemInSlot(InventorySlot.LeftHand, creature);
             if ((weapon == main || weapon == off) && TwinPistolEquipment.IsActivePair(creature))
                 return SkillType.TwinPistol;
-            return weaponType == BaseItem.CompanionPistol ? SkillType.Invalid : GetSkillTypeByBaseItem(weaponType);
+            return weaponType == BaseItem.CompanionPistol ? SkillType.Invalid : GetAttackSkillTypeByBaseItem(weaponType);
         }
     }
 }

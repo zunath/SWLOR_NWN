@@ -58,16 +58,20 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool TargetsEnemy(ShipModuleType type) =>
             IsOffensive(type) || ShipElectronicWarfareRules.IsHostile(type);
 
-        /// <summary>Whether a module of this type restores shield (an NPC ship runs it while shield is missing).</summary>
+        /// <summary>
+        /// Whether a module of this type restores shield (an NPC ship runs it while shield is missing). The Repair Field
+        /// restores allies' shields.
+        /// </summary>
         public static bool RepairsShield(ShipModuleType type)
         {
-            return type == ShipModuleType.ShieldRepairer || type == ShipModuleType.BulwarkShieldGenerator;
+            return type == ShipModuleType.ShieldRepairer || type == ShipModuleType.BulwarkShieldGenerator ||
+                   type == ShipModuleType.RepairFieldGenerator;
         }
 
         /// <summary>Whether a module of this type restores hull (an NPC ship runs it while hull is missing).</summary>
         public static bool RepairsHull(ShipModuleType type)
         {
-            return type == ShipModuleType.HullRepairer || type == ShipModuleType.RepairFieldGenerator;
+            return type == ShipModuleType.HullRepairer;
         }
 
         /// <summary>An NPC ship turns a repairer on once this share of its maximum is missing.</summary>

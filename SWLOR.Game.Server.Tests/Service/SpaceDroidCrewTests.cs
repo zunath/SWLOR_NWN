@@ -168,7 +168,7 @@ public class SpaceDroidCrewTests
         DroidCrewRules.GetTask(ShipModuleType.ShieldHardener, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.ShieldSupport);
         DroidCrewRules.GetTask(ShipModuleType.BulwarkShieldGenerator, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.ShieldSupport);
         DroidCrewRules.GetTask(ShipModuleType.HullRepairer, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.HullSupport);
-        DroidCrewRules.GetTask(ShipModuleType.RepairFieldGenerator, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.HullSupport);
+        DroidCrewRules.GetTask(ShipModuleType.RepairFieldGenerator, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.ShieldSupport);
 
         DroidCrewRules.GetTask(ShipModuleType.MiningLaser, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.None);
         DroidCrewRules.GetTask(ShipModuleType.HypermatterInjector, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.None);

@@ -225,7 +225,8 @@ public class ShipToggleRulesTests
         ShipToggleRules.RepairsShield(ShipModuleType.ShieldRepairer).Should().BeTrue();
         ShipToggleRules.RepairsShield(ShipModuleType.BulwarkShieldGenerator).Should().BeTrue();
         ShipToggleRules.RepairsHull(ShipModuleType.HullRepairer).Should().BeTrue();
-        ShipToggleRules.RepairsHull(ShipModuleType.RepairFieldGenerator).Should().BeTrue();
+        ShipToggleRules.RepairsShield(ShipModuleType.RepairFieldGenerator).Should().BeTrue("the field restores allies' shields");
+        ShipToggleRules.RepairsHull(ShipModuleType.RepairFieldGenerator).Should().BeFalse();
         ShipToggleRules.RepairsShield(ShipModuleType.HullRepairer).Should().BeFalse();
         ShipToggleRules.RepairsHull(ShipModuleType.CombatLaser).Should().BeFalse();
     }

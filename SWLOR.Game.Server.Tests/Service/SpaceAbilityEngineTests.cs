@@ -93,6 +93,16 @@ public class SpaceAbilityEngineTests
         SpaceCrew.IsSeatCrewed(77001u, new ShipStatus(), 1).Should().BeFalse();
     }
 
+    [Test]
+    public void AbilityWeapons_NeedTheStationRankLikeSwitchingTheModuleOn()
+    {
+        var abilities = File.ReadAllText(Path.Combine(RepositoryRoot(), "SWLOR.Game.Server", "Service", "SpaceAbilities.cs"));
+        var candidates = abilities[abilities.IndexOf("BuildCandidates(", StringComparison.Ordinal)..];
+        candidates.Should().Contain("SpaceCrew.CanActingSeatFire(ship, status, weapon.Slot) &&")
+            .And.Contain("Space.GetStationSlotEffectiveness(ship, status, weapon.Slot) > 0",
+                "a crew member below the module's rank works it at 0 effectiveness and cannot switch it on");
+    }
+
     // Riders
 
     [Test]

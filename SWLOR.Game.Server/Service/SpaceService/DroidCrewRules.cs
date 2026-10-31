@@ -129,9 +129,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             return type switch
             {
-                ShipModuleType.ShieldRepairer or ShipModuleType.BulwarkShieldGenerator or ShipModuleType.ShieldHardener
-                    => DroidCrewTask.ShieldSupport,
-                ShipModuleType.HullRepairer or ShipModuleType.RepairFieldGenerator => DroidCrewTask.HullSupport,
+                // The Repair Field restores allies' shields (RevampModuleDefinition.RepairField).
+                ShipModuleType.ShieldRepairer or ShipModuleType.BulwarkShieldGenerator or ShipModuleType.ShieldHardener or
+                    ShipModuleType.RepairFieldGenerator => DroidCrewTask.ShieldSupport,
+                ShipModuleType.HullRepairer => DroidCrewTask.HullSupport,
                 ShipModuleType.ProbeLauncher => DroidCrewTask.Survey,
                 ShipModuleType.CapitalEwar => DroidCrewTask.ElectronicWarfare,
                 _ => DroidCrewTask.None,

@@ -108,8 +108,10 @@ namespace SWLOR.Game.Server.Service
         {
             return weapons.Select(weapon =>
             {
-                // The pilot's abilities fire Helm slots only; crew stations fire for their crew (plan section 10).
-                var usable = SpaceCrew.CanActingSeatFire(ship, status, weapon.Slot);
+                // The pilot's abilities fire Helm slots only; crew stations fire for their crew (plan section 10), and only
+                // weapons whose rank the crew member meets, as switching the module on requires ("Gear rank on stations").
+                var usable = SpaceCrew.CanActingSeatFire(ship, status, weapon.Slot) &&
+                             Space.GetStationSlotEffectiveness(ship, status, weapon.Slot) > 0;
 
                 // The module's own checks (ammo, a launcher too large for the target) decide whether it can fire at the target.
                 if (usable && GetIsObjectValid(target) && targetStatus != null)

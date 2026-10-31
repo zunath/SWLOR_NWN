@@ -125,11 +125,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public int PowerRoutingBonusPercent { get; set; }
 
-        /// <summary>A Shield Hardener keeps this resistance bonus to every type until this time.</summary>
-        public DateTime HardenedUntil { get; set; }
-
-        /// <summary>The resistance bonus a Shield Hardener grants while hardened.</summary>
-        public int HardenedAmount { get; set; }
+        /// <summary>
+        /// The ship's running Shield Hardeners: each resistance bonus to every type and when it lapses. The strongest
+        /// active one counts (<see cref="ShipTimedStrengthRules"/>).
+        /// </summary>
+        public Dictionary<int, DateTime> Hardeners { get; set; } = new();
 
         /// <summary>
         /// Accuracy lost to enemy Jammers and E-War Arrays: each penalty (a negative number) and when it lapses. The
@@ -168,15 +168,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public Dictionary<int, DateTime> ShieldAuras { get; set; } = new();
 
         /// <summary>
-        /// Keeps the Shield Hardener bonus for one more cycle. With two hardeners running, the stronger bonus counts.
+        /// Keeps a Shield Hardener's bonus for one more cycle. With two hardeners running, the stronger bonus counts, and
+        /// a weaker one cycling never keeps a stronger one alive once it stops.
         /// </summary>
         public void Harden(int amount, double cycleSeconds, DateTime now)
         {
-            HardenedAmount = HardenedUntil > now ? Math.Max(HardenedAmount, amount) : amount;
-            var until = now.AddSeconds(cycleSeconds + 0.5);
-            if (until > HardenedUntil)
-                HardenedUntil = until;
+            Hardeners ??= new Dictionary<int, DateTime>();
+            ShipTimedStrengthRules.Refresh(Hardeners, amount, now.AddSeconds(cycleSeconds + 0.5), now);
         }
+
+        /// <summary>The resistance bonus the strongest running Shield Hardener grants right now (0 when none runs).</summary>
+        public int GetHardenedAmount(DateTime now) => ShipTimedStrengthRules.Strongest(Hardeners, now);
 
         /// <summary>The Accuracy lost to an E-War Array right now (0 or negative).</summary>
         public int GetAccuracyPenalty(DateTime now) => ShipTimedStrengthRules.Strongest(AccuracyPenalties, now, lowestWins: true);

@@ -2273,7 +2273,7 @@ namespace SWLOR.Game.Server.Service
 
             var resistance = 0;
             targetStatus.Resistances?.TryGetValue(GetShipResistanceType(shot.DamageType), out resistance);
-            resistance = SpaceCombatMath.HardenedResistance(resistance, targetStatus.HardenedAmount, targetStatus.HardenedUntil, DateTime.UtcNow);
+            resistance = SpaceCombatMath.HardenedResistance(resistance, targetStatus.GetHardenedAmount(DateTime.UtcNow));
 
             var damage = rolled
                          * SpaceCombatMath.SizeDamageMultiplier(weaponSize, targetSize, shot.IgnoreSizePenalty)

@@ -18,26 +18,30 @@ public class ShipTimedEffectTests
 
         status.Harden(15, 4.0, Now);
 
-        status.HardenedUntil.Should().Be(Now.AddSeconds(4.5));
-        SpaceCombatMath.HardenedResistance(20, status.HardenedAmount, status.HardenedUntil, Now.AddSeconds(4.4)).Should().Be(35);
-        SpaceCombatMath.HardenedResistance(20, status.HardenedAmount, status.HardenedUntil, Now.AddSeconds(4.6)).Should().Be(20);
-        SpaceCombatMath.HardenedResistance(20, 0, Now.AddSeconds(10), Now).Should().Be(20, "no hardener, no bonus");
+        status.Hardeners[15].Should().Be(Now.AddSeconds(4.5));
+        SpaceCombatMath.HardenedResistance(20, status.GetHardenedAmount(Now.AddSeconds(4.4))).Should().Be(35);
+        SpaceCombatMath.HardenedResistance(20, status.GetHardenedAmount(Now.AddSeconds(4.6))).Should().Be(20);
+        SpaceCombatMath.HardenedResistance(20, 0).Should().Be(20, "no hardener, no bonus");
+        new ShipStatus { Hardeners = null }.GetHardenedAmount(Now).Should().Be(0, "saved data without hardeners reads as none");
     }
 
     [Test]
-    public void ShieldHardener_RunningTwiceKeepsTheStrongerBonusAndTheLaterEnd()
+    public void ShieldHardener_RunningTwiceKeepsTheStrongerBonus_AndAWeakerOneNeverExtendsIt()
     {
         var status = new ShipStatus();
 
         status.Harden(19, 4.0, Now);
         status.Harden(11, 2.0, Now.AddSeconds(1));
+        status.GetHardenedAmount(Now.AddSeconds(2)).Should().Be(19);
 
-        status.HardenedAmount.Should().Be(19);
-        status.HardenedUntil.Should().Be(Now.AddSeconds(4.5));
+        // The weaker hardener keeps cycling every 2 s; the stronger one stopped after its cycle at 0 s.
+        status.Harden(11, 2.0, Now.AddSeconds(3));
+        status.GetHardenedAmount(Now.AddSeconds(4)).Should().Be(19, "the stronger cycle still runs until 4.5 s");
+        status.Hardeners[19].Should().Be(Now.AddSeconds(4.5), "the weaker hardener did not extend it");
 
         status.Harden(11, 2.0, Now.AddSeconds(5));
-        status.HardenedAmount.Should().Be(11, "a lapsed hardener no longer holds the old bonus");
-        status.HardenedUntil.Should().Be(Now.AddSeconds(7.5));
+        status.GetHardenedAmount(Now.AddSeconds(5)).Should().Be(11, "a lapsed hardener no longer holds the old bonus");
+        status.GetHardenedAmount(Now.AddSeconds(8)).Should().Be(0);
     }
 
     [Test]

@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             var resistance = 0;
             status.Resistances?.TryGetValue(type, out resistance);
-            return SpaceCombatMath.HardenedResistance(resistance, status.HardenedAmount, status.HardenedUntil, now);
+            return SpaceCombatMath.HardenedResistance(resistance, status.GetHardenedAmount(now));
         }
 
         private static int DamagePercent(ShipStatus status, CombatDamageType type)

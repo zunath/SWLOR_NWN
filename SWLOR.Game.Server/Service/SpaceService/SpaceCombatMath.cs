@@ -81,9 +81,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static double ResistanceMultiplier(int resistancePercent) =>
             1.0 - Math.Clamp(resistancePercent, MinimumResistance, MaximumResistance) / 100.0;
 
-        /// <summary>A target's resistance plus its Shield Hardener bonus while the hardener is still cycling.</summary>
-        public static int HardenedResistance(int resistancePercent, int hardenedAmount, DateTime hardenedUntil, DateTime now) =>
-            hardenedAmount > 0 && now < hardenedUntil ? resistancePercent + hardenedAmount : resistancePercent;
+        /// <summary>
+        /// A target's resistance plus the bonus of its strongest Shield Hardener still cycling
+        /// (<see cref="ShipStatus.GetHardenedAmount"/>).
+        /// </summary>
+        public static int HardenedResistance(int resistancePercent, int activeHardenedAmount) =>
+            activeHardenedAmount > 0 ? resistancePercent + activeHardenedAmount : resistancePercent;
 
         /// <summary>
         /// Applies damage that has been through every other stage. It goes to the shield first (the shield loses the

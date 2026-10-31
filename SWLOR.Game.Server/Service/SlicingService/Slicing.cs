@@ -43,6 +43,16 @@ namespace SWLOR.Game.Server.Service.SlicingService
             return rankBonus + statBonus;
         }
 
+        /// <summary>How long a slicing claim on a target lasts untouched before another slicer may take it.</summary>
+        public const int ClaimTimeoutSeconds = 180;
+
+        /// <summary>
+        /// Whether someone other than <paramref name="claimant"/> holds a live claim on a target: a claim they touched
+        /// within <see cref="ClaimTimeoutSeconds"/>. A lapsed claim, or the claimant's own, does not block.
+        /// </summary>
+        public static bool IsClaimHeldByOther(string owner, int ownerAt, string claimant, int now) =>
+            !string.IsNullOrWhiteSpace(owner) && owner != claimant && now - ownerAt < ClaimTimeoutSeconds;
+
         public static int GetDestructionChance(int failedAttempts)
         {
             return failedAttempts switch

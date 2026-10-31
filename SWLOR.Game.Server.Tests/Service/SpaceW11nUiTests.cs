@@ -203,7 +203,7 @@ public class SpaceW11nUiTests
         slicing.Should().Contain("GetDroidSlicingError(ship, target, source, tier, droid)");
         slicing.Should().Contain("DroidCrewRules.SlicingSucceeds(");
         slicing.Should().Contain("OnSlicingTargetDestroyed(target, source);", "a droid's miss is a failed slice, as for a player");
-        slicing.Should().Contain("RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, DroidCrewRules.SlicingSeconds);",
+        slicing.Should().Contain("RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, claim, DroidCrewRules.SlicingSeconds);",
             "a droid's slice is a channel the pilot waits out");
         var step = slicing[slicing.IndexOf("private static void RunDroidSlicing(", System.StringComparison.Ordinal)..];
         step.IndexOf("SpaceSlicingRules.IsInAnalyzerRange(", System.StringComparison.Ordinal).Should()

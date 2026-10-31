@@ -145,6 +145,12 @@ namespace SWLOR.Game.Server.Service
         /// <summary>How often a droid's slice checks that the ship still holds range and stays out of combat.</summary>
         private const int DroidSlicingCheckSeconds = 2;
 
+        /// <summary>
+        /// The id a ship's slicing droid claims a target under (SlicingSession's exclusive claim). It is never a player's
+        /// id, so neither another ship nor the pilot can slice the target while the droid works it.
+        /// </summary>
+        private static string DroidClaimId(uint ship) => "droid:" + GetObjectUUID(ship);
+
         /// <summary>Why the Data Analyzer cannot start on the target, or empty.</summary>
         public static string DataAnalyzerError(uint ship, uint target)
         {
@@ -188,7 +194,24 @@ namespace SWLOR.Game.Server.Service
             if (GetArea(ship) != GetArea(target) || !SpaceSlicingRules.IsInAnalyzerRange(GetDistanceBetween(ship, target)))
                 return $"The target is out of your Data Analyzer's range ({SpaceSlicingTuning.AnalyzerRange:0} m).";
 
+            var claimError = SlicingSession.GetClaimError(DroidClaimId(ship), target);
+            if (!string.IsNullOrEmpty(claimError))
+                return claimError;
+
             return GetSourceTargetError(ship, ship, target, source);
+        }
+
+        /// <summary>
+        /// Why a target a droid is slicing no longer holds what the slice was for, or empty: a data core drained, a site
+        /// closed or a cache already opened by someone else.
+        /// </summary>
+        private static string GetDroidSliceTargetError(uint ship, uint target, SlicingSourceType source)
+        {
+            var error = GetSourceTargetError(ship, ship, target, source);
+            if (!string.IsNullOrEmpty(error))
+                return error;
+
+            return GetAnalyzerTarget(target).Source == source ? string.Empty : "The target can no longer be sliced.";
         }
 
         /// <summary>
@@ -205,12 +228,19 @@ namespace SWLOR.Game.Server.Service
             if (droidContext?.Droid != null)
             {
                 var (droidSource, droidTier) = GetAnalyzerTarget(target);
+                var claim = DroidClaimId(ship);
+                if (!SlicingSession.TryClaimTarget(claim, target, droidSource, droidTier, out var claimError))
+                {
+                    SendMessageToPC(ship, ColorToken.Red(claimError));
+                    return;
+                }
+
                 var succeeds = DroidCrewRules.SlicingSucceeds(droidContext.Effectiveness, Random.Next(100));
                 var channel = Guid.NewGuid().ToString();
                 SetLocalString(ship, DroidSlicingChannelVariable, channel);
                 SetLocalInt(ship, DroidSlicingReadyVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + DroidCrewRules.SlicingSeconds);
                 SendMessageToPC(ship, ColorToken.Cyan($"Your droid starts slicing. Hold within {SpaceSlicingTuning.AnalyzerRange:0} m of the target and out of combat for {DroidCrewRules.SlicingSeconds} seconds."));
-                RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, DroidCrewRules.SlicingSeconds);
+                RunDroidSlicing(ship, target, droidSource, droidTier, succeeds, channel, claim, DroidCrewRules.SlicingSeconds);
                 return;
             }
 
@@ -224,12 +254,19 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// One step of a droid's slice: every <see cref="DroidSlicingCheckSeconds"/> the ship must still fly the same slice,
-        /// hold in range of the target and stay out of combat. Breaking off ends the slice with the target untouched and
-        /// the droid free at once; the last step resolves it.
+        /// hold in range of the target and stay out of combat, and the target must still hold what the slice is for.
+        /// Breaking off ends the slice with the target untouched, the droid free at once and the target's claim
+        /// released; the last step resolves it.
         /// </summary>
-        private static void RunDroidSlicing(uint ship, uint target, SlicingSourceType source, int tier, bool succeeds, string channel, int secondsLeft)
+        private static void RunDroidSlicing(uint ship, uint target, SlicingSourceType source, int tier, bool succeeds, string channel, string claim, int secondsLeft)
         {
-            if (!GetIsObjectValid(ship) || GetLocalString(ship, DroidSlicingChannelVariable) != channel)
+            if (!GetIsObjectValid(ship))
+            {
+                SlicingSession.ReleaseClaim(claim, target);
+                return;
+            }
+
+            if (GetLocalString(ship, DroidSlicingChannelVariable) != channel)
                 return;
 
             var broken = !GetIsObjectValid(target) || !IsPlayerInSpaceMode(ship) ||
@@ -238,30 +275,45 @@ namespace SWLOR.Game.Server.Service
                          IsShipInCombat(ship) || GetIsInCombat(ship);
             if (broken)
             {
-                EndDroidSlicing(ship);
+                EndDroidSlicing(ship, target, claim);
                 SendMessageToPC(ship, ColorToken.Red("Your droid breaks off the slice: the ship left range, entered combat or lost the target. The target is untouched."));
+                return;
+            }
+
+            // Another ship may have opened the target or drained its core meanwhile; then the slice has nothing to take.
+            var gone = GetDroidSliceTargetError(ship, target, source);
+            if (!string.IsNullOrEmpty(gone))
+            {
+                EndDroidSlicing(ship, target, claim);
+                SendMessageToPC(ship, ColorToken.Red($"Your droid stops slicing. {gone}"));
                 return;
             }
 
             if (secondsLeft > 0)
             {
+                SlicingSession.TouchClaim(claim, target);
                 var step = Math.Min(DroidSlicingCheckSeconds, secondsLeft);
-                DelayCommand(step, () => RunDroidSlicing(ship, target, source, tier, succeeds, channel, secondsLeft - step));
+                DelayCommand(step, () => RunDroidSlicing(ship, target, source, tier, succeeds, channel, claim, secondsLeft - step));
                 return;
             }
 
             DeleteLocalString(ship, DroidSlicingChannelVariable);
+            SlicingSession.ReleaseClaim(claim, target);
             if (succeeds)
                 CompleteSlicing(ship, target, source, tier);
             else
                 OnSlicingTargetDestroyed(target, source);
         }
 
-        /// <summary>Ends a droid's slice in progress without a result, so the droid can start again at once.</summary>
-        private static void EndDroidSlicing(uint ship)
+        /// <summary>
+        /// Ends a droid's slice in progress without a result and releases the target's claim, so the droid, or anyone
+        /// else, can start again at once.
+        /// </summary>
+        private static void EndDroidSlicing(uint ship, uint target, string claim)
         {
             DeleteLocalString(ship, DroidSlicingChannelVariable);
             DeleteLocalInt(ship, DroidSlicingReadyVariable);
+            SlicingSession.ReleaseClaim(claim, target);
         }
 
         /// <summary>Starts the slicing mini-game for a space target and opens its window, or tells the slicer why not.</summary>
@@ -285,6 +337,13 @@ namespace SWLOR.Game.Server.Service
             if (source == SlicingSourceType.CustomsScan)
             {
                 Trade.ResolveCustomsSpoof(slicer, true);
+                return;
+            }
+
+            // A data core drained since the slice began gives nothing: there is one core to take.
+            if (source == SlicingSourceType.WreckDataCore && GetWreck(target)?.HasDataCore != true)
+            {
+                SendMessageToPC(slicer, ColorToken.Red("This wreck has no data core left."));
                 return;
             }
 

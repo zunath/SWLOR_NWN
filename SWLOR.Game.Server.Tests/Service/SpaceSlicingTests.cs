@@ -411,6 +411,77 @@ public class SpaceSlicingTests
         SpaceSlicingRules.CanSliceDataCore(new HashSet<string>(), new[] { "outsider" }, Now, Now).Should().BeTrue("an unclaimed wreck is open");
     }
 
+    [Test]
+    public void SlicingClaims_BlockOnlyALiveClaimHeldBySomeoneElse()
+    {
+        const int now = 1_000_000;
+
+        Slicing.IsClaimHeldByOther("droid:ship-a", now - 5, "droid:ship-b", now).Should().BeTrue("a second ship's droid is refused");
+        Slicing.IsClaimHeldByOther("droid:ship-a", now - 5, "player-b", now).Should().BeTrue("so is a player, the droid's own pilot included");
+        Slicing.IsClaimHeldByOther("player-a", now - 5, "droid:ship-b", now).Should().BeTrue("a droid cannot take a player's live claim");
+        Slicing.IsClaimHeldByOther("droid:ship-a", now - 5, "droid:ship-a", now).Should().BeFalse("the claimant's own claim");
+        Slicing.IsClaimHeldByOther("droid:ship-a", now - Slicing.ClaimTimeoutSeconds, "player-b", now).Should().BeFalse("a lapsed claim");
+        Slicing.IsClaimHeldByOther("", now, "player-b", now).Should().BeFalse("no claim");
+    }
+
+    [Test]
+    public void DroidSlicing_TakesTheSharedClaimAndRevalidatesBeforeItResolves()
+    {
+        var source = ServerSource("Service", "SpaceSlicing.cs").Replace("\r\n", "\n");
+        var session = ServerSource("Service", "SlicingService", "SlicingSession.cs").Replace("\r\n", "\n");
+
+        // One claim mechanism: a player's attempt and a droid's slice both claim through TryClaim, with one busy message.
+        session.Should().Contain("TryClaim(GetObjectUUID(player), target, source, tier, out error);")
+            .And.Contain("public static bool TryClaimTarget(string claimant, uint target, SlicingSourceType source, int tier, out string error) =>\n            TryClaim(claimant, target, source, tier, out error);")
+            .And.Contain("if (Slicing.IsClaimHeldByOther(owner, ownerAt, playerId, now))")
+            .And.Contain("ReleaseClaim(playerId, session.Target);");
+
+        // A second slicer is refused before the droid starts, and the start itself claims the target.
+        var validate = Between(source, "private static string GetDroidSlicingError(", "private static string GetDroidSliceTargetError(");
+        validate.Should().Contain("SlicingSession.GetClaimError(DroidClaimId(ship), target)");
+        var start = Between(source, "public static void StartDataAnalyzer(", "private static void RunDroidSlicing(");
+        start.IndexOf("SlicingSession.TryClaimTarget(claim, target, droidSource, droidTier, out var claimError)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(start.IndexOf("SetLocalString(ship, DroidSlicingChannelVariable, channel);", StringComparison.Ordinal));
+
+        // Every way the channel ends releases the claim, and the target is revalidated before the slice resolves.
+        var run = Between(source, "private static void RunDroidSlicing(", "private static void EndDroidSlicing(");
+        run.Should().Contain("SlicingSession.ReleaseClaim(claim, target);\n                return;", "a ship gone mid-slice frees the target")
+            .And.Contain("SlicingSession.TouchClaim(claim, target);");
+        var broken = run.IndexOf("EndDroidSlicing(ship, target, claim);", StringComparison.Ordinal);
+        var revalidate = run.IndexOf("var gone = GetDroidSliceTargetError(ship, target, source);", StringComparison.Ordinal);
+        var stops = run.IndexOf("Your droid stops slicing. {gone}", StringComparison.Ordinal);
+        var release = run.LastIndexOf("SlicingSession.ReleaseClaim(claim, target);", StringComparison.Ordinal);
+        var resolve = run.IndexOf("CompleteSlicing(ship, target, source, tier);", StringComparison.Ordinal);
+        broken.Should().BeGreaterThan(0);
+        revalidate.Should().BeGreaterThan(broken);
+        stops.Should().BeGreaterThan(revalidate);
+        release.Should().BeGreaterThan(stops);
+        resolve.Should().BeGreaterThan(release);
+        Between(source, "private static void EndDroidSlicing(", "public static bool StartSlicing(")
+            .Should().Contain("SlicingSession.ReleaseClaim(claim, target);");
+
+        // The revalidation covers each source's own state: the core, the site and the cache still being what was sliced.
+        var sliceTarget = Between(source, "private static string GetDroidSliceTargetError(", "/// <summary>\n        /// A Data Analyzer press");
+        sliceTarget.Should().Contain("GetSourceTargetError(ship, ship, target, source)")
+            .And.Contain("GetAnalyzerTarget(target).Source == source");
+
+        // A single data core pays once, whoever's completion comes second.
+        var complete = Between(source, "public static void CompleteSlicing(", "public static void OnSlicingTargetDestroyed(");
+        complete.IndexOf("source == SlicingSourceType.WreckDataCore && GetWreck(target)?.HasDataCore != true", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(complete.IndexOf("SlicingReward.RollSpace(", StringComparison.Ordinal));
+    }
+
+    private static string Between(string source, string start, string end)
+    {
+        var from = source.IndexOf(start, StringComparison.Ordinal);
+        from.Should().BeGreaterThanOrEqualTo(0, start);
+        var to = source.IndexOf(end, from + start.Length, StringComparison.Ordinal);
+        to.Should().BeGreaterThan(from, end);
+        return source[from..to];
+    }
+
     // Space lockboxes
 
     [Test]

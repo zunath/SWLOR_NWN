@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public const string ToolTypeVariable = "SLICING_TOOL_TYPE";
         public const string ToolTierVariable = "SLICING_TOOL_TIER";
 
-        private const int ClaimTimeoutSeconds = 180;
+        private const string ClaimBusyMessage = "Another slicer currently has control of this target.";
         private static readonly Dictionary<string, ActiveSlicingSession> _sessions = new();
 
         public sealed class ActiveSlicingSession
@@ -483,19 +483,30 @@ namespace SWLOR.Game.Server.Service.SlicingService
             uint target,
             SlicingSourceType source,
             int tier,
+            out string error) =>
+            TryClaim(GetObjectUUID(player), target, source, tier, out error);
+
+        /// <summary>
+        /// Takes the exclusive claim on a target under <paramref name="playerId"/>: a player's id, or the id a slicer with
+        /// no session (a ship's slicing droid) works under. A second slicer is refused while the claim is live.
+        /// </summary>
+        private static bool TryClaim(
+            string playerId,
+            uint target,
+            SlicingSourceType source,
+            int tier,
             out string error)
         {
             error = string.Empty;
             var now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            var playerId = GetObjectUUID(player);
             var owner = GetLocalString(target, OwnerVariable);
             var ownerAt = GetLocalInt(target, OwnerTimestampVariable);
 
             if (!string.IsNullOrWhiteSpace(owner) && owner != playerId)
             {
-                if (now - ownerAt < ClaimTimeoutSeconds)
+                if (Slicing.IsClaimHeldByOther(owner, ownerAt, playerId, now))
                 {
-                    error = "Another slicer currently has control of this target.";
+                    error = ClaimBusyMessage;
                     return false;
                 }
 
@@ -707,13 +718,40 @@ namespace SWLOR.Game.Server.Service.SlicingService
         {
             var playerId = GetObjectUUID(session.Player);
             RemoveSession(session);
+            ReleaseClaim(playerId, session.Target);
+        }
 
-            if (GetIsObjectValid(session.Target) &&
-                IsClaimOwner(playerId, GetLocalString(session.Target, OwnerVariable)))
+        // Claims for a slicer with no session (a ship's slicing droid): the same exclusive claim a player's attempt takes.
+
+        /// <summary>Why another slicer holds the target, or empty (<see cref="Slicing.IsClaimHeldByOther"/>).</summary>
+        public static string GetClaimError(string claimant, uint target) =>
+            Slicing.IsClaimHeldByOther(
+                GetLocalString(target, OwnerVariable),
+                GetLocalInt(target, OwnerTimestampVariable),
+                claimant,
+                (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                ? ClaimBusyMessage
+                : string.Empty;
+
+        /// <summary>Takes the exclusive claim on a target for <paramref name="claimant"/>, or says why not.</summary>
+        public static bool TryClaimTarget(string claimant, uint target, SlicingSourceType source, int tier, out string error) =>
+            TryClaim(claimant, target, source, tier, out error);
+
+        /// <summary>Keeps a claim the claimant still holds from lapsing.</summary>
+        public static void TouchClaim(string claimant, uint target)
+        {
+            if (GetIsObjectValid(target) && IsClaimOwner(claimant, GetLocalString(target, OwnerVariable)))
+                SetLocalInt(target, OwnerTimestampVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        }
+
+        /// <summary>Gives up a claim the claimant still holds, so another slicer can start at once.</summary>
+        public static void ReleaseClaim(string claimant, uint target)
+        {
+            if (GetIsObjectValid(target) && IsClaimOwner(claimant, GetLocalString(target, OwnerVariable)))
             {
-                DeleteLocalString(session.Target, OwnerVariable);
-                DeleteLocalInt(session.Target, OwnerTimestampVariable);
-                DeleteLocalInt(session.Target, CommittedVariable);
+                DeleteLocalString(target, OwnerVariable);
+                DeleteLocalInt(target, OwnerTimestampVariable);
+                DeleteLocalInt(target, CommittedVariable);
             }
         }
 

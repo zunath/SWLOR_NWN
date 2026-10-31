@@ -15,7 +15,10 @@ name (imp_shield_1/2), position and unit XYZW quaternion in fitted root space.
 Transforms refer
 to imported Blender WORLD coordinates, after glTF axis conversion. Composite
 exports require bottom/middle/top coverage in parts or composite_assemblies.
-Parts support plane_y/clip_side or clip_min_y/clip_max_y interval bounds.
+Parts support plane_y/clip_side, clip_min_y/clip_max_y, or disjoint clip_ranges
+[[lower,upper],...] (null means unbounded) for paired staff/twinblade roles.
+Alternatively, source_nodes selects disjoint, fully covering authored mesh nodes;
+all parts of that source then use node selection instead of clipping.
 Optional aliases:[] and
 empty_parts[{model,base_item,icon_size}] can clear explicitly audited simple-model
 IDs only. Composite weapons require real bottom, middle and top geometry.
@@ -23,6 +26,11 @@ normal_basis_policy defaults to 'reproject'. Explicit 'authored_tangents' patche
 only uniquely owned native tangent/sign streams and keeps staged map pixels;
 mixed-sign glTF triangles have undefined shading, so this selects NWN's native
 smooth-W-to-sign convention and requires close native visual qualification.
+'authored_tangent_seams' restores exact source normals before ASCII export and
+the source normal/tangent/sign fields after compilation, splitting welded native
+vertices as needed while preserving every compiled position and UV.
+double_sided_policy='duplicate_backfaces' requires that seam policy and emits
+explicit reversed faces with the complete mapped normal direction negated.
 double_sided_policy='closed_surface' explicitly permits culling conversion only
 after exact position-welded shells prove closed and consistently wound, with
 any inward shell enclosed by a nonintersecting outward shell. Source normals are preserved and opposed-normal diagnostics are reported.
@@ -794,28 +802,73 @@ def mesh_preview(mesh,name,material):
     return ob
 
 
+def part_intervals(part):
+    if 'source_nodes' in part:
+        nodes=part['source_nodes']
+        if not isinstance(nodes,list) or not nodes or any(not isinstance(n,str) or not n for n in nodes) or len(set(nodes))!=len(nodes):
+            raise ValueError('Nonempty unique source_nodes required')
+        if any(key in part for key in ('plane_y','clip_side','clip_min_y','clip_max_y','clip_ranges')):
+            raise ValueError('source_nodes cannot be combined with a clipping selector')
+        return [(-math.inf,math.inf)]
+    if 'clip_ranges' in part:
+        if any(key in part for key in ('plane_y','clip_side','clip_min_y','clip_max_y')):
+            raise ValueError('clip_ranges cannot be combined with another split')
+        ranges=part['clip_ranges']
+        if not isinstance(ranges,list) or not ranges:raise ValueError('Nonempty clip_ranges required')
+        intervals=[]
+        for pair in ranges:
+            if not isinstance(pair,list) or len(pair)!=2 or any(v is not None and not number(v) for v in pair):
+                raise ValueError('clip_ranges require finite bounds or null')
+            low,high=(-math.inf if pair[0] is None else pair[0],math.inf if pair[1] is None else pair[1])
+            if low>=high:raise ValueError('clip_ranges must have positive width')
+            intervals.append((low,high))
+        intervals.sort()
+        if any(a[1]>b[0] for a,b in zip(intervals,intervals[1:])):
+            raise ValueError('clip_ranges must not overlap')
+        return intervals
+    if ('clip_side' in part)!=('plane_y' in part):raise ValueError('Split requires plane_y and clip_side')
+    if 'clip_side' in part and (part['clip_side'] not in ('above','below') or not number(part['plane_y'])):
+        raise ValueError('Invalid part split')
+    bounds=[key for key in ('clip_min_y','clip_max_y') if key in part]
+    if bounds and ('clip_side' in part or any(not number(part[key]) for key in bounds)):
+        raise ValueError('Use finite clip bounds without plane_y/clip_side')
+    low,high=part.get('clip_min_y',-math.inf),part.get('clip_max_y',math.inf)
+    if part.get('clip_side')=='above':low=part['plane_y']
+    elif part.get('clip_side')=='below':high=part['plane_y']
+    if low>=high:raise ValueError('clip_min_y must be below clip_max_y')
+    return [(low,high)]
+
+
 def clip_part_mesh(mesh, part):
-    planes=[]
-    if 'clip_side' in part:planes.append((float(part['plane_y']),part['clip_side']))
-    if 'clip_min_y' in part:planes.append((float(part['clip_min_y']),'above'))
-    if 'clip_max_y' in part:planes.append((float(part['clip_max_y']),'below'))
-    result=mesh
-    # Keep linear corner attributes through every plane; normalize only the final field.
-    for plane,side in planes:result=clip_mesh_y(result,plane,side,normalize_normals=False)
-    return normalize_clipped_normals(result) if planes else result
+    intervals=part_intervals(part)
+    if intervals==[(-math.inf,math.inf)]:return mesh
+    merged=([],[],[],[])
+    for low,high in intervals:
+        result=mesh
+        # Retain linear corner attributes through both cuts before normalization.
+        if math.isfinite(low):result=clip_mesh_y(result,low,'above',normalize_normals=False)
+        if math.isfinite(high):result=clip_mesh_y(result,high,'below',normalize_normals=False)
+        offset=len(merged[0])
+        for index in (0,1,3):merged[index].extend(result[index])
+        merged[2].extend(tuple(v+offset for v in face) for face in result[2])
+    return normalize_clipped_normals(merged)
 
 
-def write_parts(config,resources,helpers,mesh_data,mesh_names,materials):
+def write_parts(config,resources,helpers,mesh_data,mesh_names,materials,backface_helper=None,mesh_sources=None):
     default=config["model"]
     parts=config.get('parts',[{'model':default}]);objects=[];reports=[]
     for part in parts:
         model=part['model']
         validate_model_name(model,config['_item_class'],config['_model_type'])
         selected=[];textures=[]
-        for mesh,texture in zip(mesh_data,mesh_names):
+        if 'source_nodes' in part and not set(part['source_nodes'])<=set(mesh_sources or []):
+            raise ValueError('Missing selected source node for '+model)
+        for mesh,texture,node in zip(mesh_data,mesh_names,mesh_sources or [None]*len(mesh_data)):
+            if 'source_nodes' in part and node not in part['source_nodes']:continue
             result=clip_part_mesh(mesh,part)
             if result[2]:
-                selected.append(result);textures.append(texture)
+                native=backface_helper.duplicate_backfaces(result) if backface_helper and texture in config['_duplicate_backface_materials'] else result
+                selected.append(native);textures.append(texture)
                 ob=mesh_preview(result,model+'_'+str(len(selected)),materials[texture]);ob['weapon_part']=model;objects.append(ob)
         if not selected:raise ValueError('Empty selected part '+model)
         mdl=resources/(model+'.mdl');helpers.write_mdl(mdl,model,'material_pending',selected)
@@ -843,6 +896,8 @@ def drop_clipped_materials(resources,names,material_dims,mapdims,retained,basis_
             kept={key:arrays[key] for key in arrays.files if key.rsplit('__',1)[0] not in dropped.values()}
         np.savez_compressed(basis_path,**kept)
         basis.update(sha256=hashlib.sha256(basis_path.read_bytes()).hexdigest(),materials=[m for m in basis['materials'] if m not in dropped.values()])
+        if 'explicit_backface_materials' in basis:
+            basis['explicit_backface_materials']=[m for m in basis['explicit_backface_materials'] if m not in dropped.values()]
     return sorted(dropped.values())
 
 
@@ -897,8 +952,8 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
     # Label and tag materials only in the import copy; source bytes stay untouched.
     source_materials=json.loads(json.dumps(doc.get('materials',[])))
     policy=config.get('double_sided_policy','reject')
-    if policy not in ('reject','closed_surface'):raise ValueError('Unknown double_sided_policy')
-    if mode=='export':validate_glb_geometry(doc,policy=='closed_surface')
+    if policy not in ('reject','closed_surface','duplicate_backfaces'):raise ValueError('Unknown double_sided_policy')
+    if mode=='export':validate_glb_geometry(doc,policy in ('closed_surface','duplicate_backfaces'))
     imported=json.loads(json.dumps(doc))
     tag_import_materials(imported)
     import_path=cache/'import.glb';write_glb(import_path,imported,binary)
@@ -910,10 +965,14 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         if ob.modifiers or (mode=='export' and not ob.data.uv_layers):raise ValueError('Modifiers or missing export UVs require explicit handling')
         if ob.matrix_world.to_3x3().determinant()<=0:raise ValueError('Mirrored source transform requires explicit winding review')
         ob.data.calc_loop_triangles()
-    surface_conversion=None
+    surface_conversion=None;double_sided=set();backface_helper=None
     if mode=='export' and any(mat.get('doubleSided',False) for mat in doc['materials']):
         double_sided={i for i,mat in enumerate(doc['materials']) if mat.get('doubleSided',False)}
-        surface_conversion=closed_surface_report(objects,double_sided,len(doc['materials']))
+        if policy=='duplicate_backfaces':
+            backface_helper=load_module_snapshot('meshy_weapon_export',Path(__file__).with_name('MeshyWeaponExport.py'))
+            surface_conversion={'conversion':'Explicit reversed backfaces preserve glTF double-sided normal directions',
+                                'producer_sha256':backface_helper.SNAPSHOT_SHA256,'source_geometry_preserved':True}
+        else:surface_conversion=closed_surface_report(objects,double_sided,len(doc['materials']))
         for mat in doc['materials']:mat['doubleSided']=False
     points,lo,hi=bounds(objects)
     report={'name':config.get('name',source.stem),'source':str(source),'sha256':source_sha,'mode':mode,'coordinate_system':'Blender imported world XYZ; glTF importer axis conversion already included','source_bounds_min':list(lo),'source_bounds_max':list(hi),'dimensions':list(hi-lo),'materials':source_materials,'surface_conversion':surface_conversion,'components':component_reports(objects),'objects':[{'name':ob.name,'vertices':len(ob.data.vertices),'triangles':len(ob.data.loop_triangles),'materials':[m.name if m else None for m in ob.data.materials],'world_matrix':[list(row) for row in ob.matrix_world]} for ob in objects]}
@@ -933,7 +992,10 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         if limit not in (512,1024):raise ValueError('texture_size must be512 or1024')
         resources=out/'resources';resources.mkdir();names={};previews={};mapdims={};material_dims={}
         material_count=len(doc['materials'])
-        mesh_data=[];mesh_names=[];removed=0
+        mesh_data=[];mesh_names=[];mesh_sources=[];removed=0
+        node_selection=any('source_nodes' in part for part in config.get('parts',[]))
+        if node_selection and {ob.name for ob in objects}!={node for part in config['parts'] for node in part['source_nodes']}:
+            raise ValueError('Selected native parts must cover exactly the imported mesh nodes')
         for ob in objects:
             exported=helpers.export_mesh(ob.data,ob.matrix_world)
             for mat_slot in sorted({t.material_index for t in ob.data.loop_triangles}):
@@ -945,18 +1007,27 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
                     dims,maps=material_maps(doc,binary,index,source,cache,resources,name,limit)
                     names[index]=name;mapdims.update(dims);material_dims[index]=dims;previews[index]=preview_material(resources,name,maps)
                 mesh,zero=compact_subset(exported,ob.data.loop_triangles,mat_slot);removed+=zero
-                mesh_data.append(mesh);mesh_names.append(names[index])
+                mesh_data.append(mesh);mesh_names.append(names[index]);mesh_sources.append(ob.name if node_selection else None)
         # Collapse static subsets sharing a material without welding UV/normal seams.
         merged={}
-        for mesh,name in zip(mesh_data,mesh_names):
-            target=merged.setdefault(name,([],[],[],[]));offset=len(target[0])
+        for mesh,name,node in zip(mesh_data,mesh_names,mesh_sources):
+            target=merged.setdefault((name,node),([],[],[],[]));offset=len(target[0])
             target[0].extend(mesh[0]);target[1].extend(mesh[1]);target[2].extend(tuple(i+offset for i in f) for f in mesh[2]);target[3].extend(mesh[3])
-        mesh_names=list(merged);mesh_data=list(merged.values())
+        mesh_names=[key[0] for key in merged];mesh_sources=[key[1] for key in merged];mesh_data=list(merged.values())
         normal_helper=load_module_snapshot('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
         report['source_normal_basis']=normal_helper.source_basis(doc,binary,config,names,out/'source_basis.npz')
+        if backface_helper:
+            config['_duplicate_backface_materials']=[names[index] for index in double_sided if index in names]
+            backface_helper.expand_source_basis(out/'source_basis.npz',config['_duplicate_backface_materials'],report['source_normal_basis'])
+        if config.get('normal_basis_policy')=='authored_tangent_seams':
+            seam_helper=load_module_snapshot('native_source_normals',Path(__file__).with_name('NativeTangentSeams.py'))
+            with np.load(out/'source_basis.npz',allow_pickle=False) as data:
+                source_fields={name:{key:data[name+'__'+key] for key in ('positions','uv','normals','tangents','signs')} for name in mesh_names}
+            mesh_data=[seam_helper.restore_source_normals(mesh,source_fields[name],normal_helper) for mesh,name in zip(mesh_data,mesh_names)]
+            report['source_corner_normal_producer_sha256']=seam_helper.SNAPSHOT_SHA256
         model=config['model']
         old_objects=objects
-        objects,part_reports=write_parts(config,resources,helpers,mesh_data,mesh_names,{names[i]:previews[i] for i in names})
+        objects,part_reports=write_parts(config,resources,helpers,mesh_data,mesh_names,{names[i]:previews[i] for i in names},backface_helper,mesh_sources)
         for ob in old_objects:bpy.data.objects.remove(ob,do_unlink=True)
         # Normal reprojection needs a native UV surface for every recorded material.
         report['clipped_away_materials']=drop_clipped_materials(resources,names,material_dims,mapdims,{m for part in part_reports for m in part['materials']},out/'source_basis.npz',report['source_normal_basis'])
@@ -1010,11 +1081,14 @@ def validate_manifest(config, repo, manifest, mode):
     seen=set();asset_names=set();composites=[];outputs={};output_assets={};output_selections={}
     for item in config['assets']:
         item.pop('_shared_icon_bounds',None)
+        item.pop('_duplicate_backface_materials',None)
         asset=item.get('asset','')
         if not re.fullmatch(r'[a-z][a-z0-9_]{0,47}',asset) or asset in asset_names:
             raise ValueError('Asset identifiers must be unique lowercase names')
         asset_names.add(asset)
-        if item.get('normal_basis_policy','reproject') not in ('reproject','authored_tangents'):raise ValueError('Unknown normal_basis_policy')
+        if item.get('normal_basis_policy','reproject') not in ('reproject','authored_tangents','authored_tangent_seams'):raise ValueError('Unknown normal_basis_policy')
+        if item.get('double_sided_policy')=='duplicate_backfaces' and item.get('normal_basis_policy')!='authored_tangent_seams':
+            raise ValueError('Explicit backfaces require normal_basis_policy authored_tangent_seams')
         source=(manifest.parent/item['source']).resolve()
         if source.suffix.lower()!='.glb' or not source.is_file():raise ValueError('Missing source GLB: '+str(source))
         if not re.fullmatch(r'[0-9a-f]{64}',item.get('sha256','')) or hashlib.sha256(source.read_bytes()).hexdigest()!=item['sha256']:
@@ -1041,29 +1115,21 @@ def validate_manifest(config, repo, manifest, mode):
             raise ValueError('Composite top-level aliases are not allowed; use role-preserving part aliases')
         declared=list(item.get('aliases',[]))
         for part in parts:
-            if item['_item_class']=='ashlw' and any(key in part for key in ('clip_min_y','clip_max_y','plane_y','clip_side')):
+            if item['_item_class']=='ashlw' and any(key in part for key in ('clip_min_y','clip_max_y','plane_y','clip_side','clip_ranges','source_nodes')):
                 raise ValueError('Shields require the complete surface; clipping is not allowed')
-            if ('clip_side' in part)!=('plane_y' in part):raise ValueError('Split requires plane_y and clip_side')
-            if 'clip_side' in part and (part['clip_side'] not in ('above','below') or not number(part['plane_y'])):
-                raise ValueError('Invalid part split')
-            bounds=[key for key in ('clip_min_y','clip_max_y') if key in part]
-            if bounds and ('clip_side' in part or any(not number(part[key]) for key in bounds)):
-                raise ValueError('Use finite clip bounds without plane_y/clip_side')
-            if len(bounds)==2 and part['clip_min_y']>=part['clip_max_y']:
-                raise ValueError('clip_min_y must be below clip_max_y')
+            part_intervals(part)
             if item['_model_type']==2 and any(alias.rsplit('_',2)[-2]!=part['model'].rsplit('_',2)[-2] for alias in part.get('aliases',[])):
                 raise ValueError('Part aliases must preserve the native part role')
             declared += [part['model']]+part.get('aliases',[])
         if item['_model_type']==2 and len(parts)>1:
-            intervals=[]
-            for part in parts:
-                low=part.get('clip_min_y',-math.inf);high=part.get('clip_max_y',math.inf)
-                if part.get('clip_side')=='above':low=part['plane_y']
-                elif part.get('clip_side')=='below':high=part['plane_y']
-                intervals.append((low,high))
-            intervals.sort()
-            if intervals[0][0]!=-math.inf or intervals[-1][1]!=math.inf or any(a[1]!=b[0] for a,b in zip(intervals,intervals[1:])):
-                raise ValueError('Multi-part source regions must partition the Y axis without gaps or overlaps')
+            if any('source_nodes' in part for part in parts):
+                if not all('source_nodes' in part for part in parts):raise ValueError('All parts must use source_nodes together')
+                nodes=[node for part in parts for node in part['source_nodes']]
+                if len(set(nodes))!=len(nodes):raise ValueError('Native parts must not reuse source nodes')
+            else:
+                intervals=sorted(interval for part in parts for interval in part_intervals(part))
+                if intervals[0][0]!=-math.inf or intervals[-1][1]!=math.inf or any(a[1]!=b[0] for a,b in zip(intervals,intervals[1:])):
+                    raise ValueError('Multi-part source regions must partition the Y axis without gaps or overlaps')
         for model in declared:
             validate_model_name(model,item['_item_class'],item['_model_type'])
             if model in seen:raise ValueError('Repeated output resource '+model)
@@ -1074,10 +1140,9 @@ def validate_manifest(config, repo, manifest, mode):
                 clean=lambda value:0. if abs(value)<1e-12 else round(float(value),12)
                 matrix=[[clean(item['scale']*v) for v in row] for row in item['orientation']]
                 translation=[clean(item['target_grip'][i]-sum(matrix[i][j]*item['source_grip'][j] for j in range(3))) for i in range(3)]
-                low=source_part.get('clip_min_y');high=source_part.get('clip_max_y')
-                if source_part.get('clip_side')=='above':low=source_part['plane_y']
-                elif source_part.get('clip_side')=='below':high=source_part['plane_y']
-                selection={'sha256':item['sha256'],'matrix':matrix,'translation':translation,'clip':[None if low is None else clean(low),None if high is None else clean(high)]}
+                ranges=[[None if not math.isfinite(low) else clean(low),None if not math.isfinite(high) else clean(high)] for low,high in part_intervals(source_part)]
+                selection={'sha256':item['sha256'],'matrix':matrix,'translation':translation,'ranges':ranges}
+                if 'source_nodes' in source_part:selection['nodes']=sorted(source_part['source_nodes'])
                 output_selections[model]=json.dumps(selection,sort_keys=True)
         attachment_dummy_nodes(item,item['model'])
         if item['_model_type']==2:
@@ -1111,10 +1176,15 @@ def validate_manifest(config, repo, manifest, mode):
                 covered.add(model)
             source_groups={}
             for selected in geometry_sources:
-                identity=json.dumps({k:v for k,v in selected.items() if k!='clip'},sort_keys=True)
+                identity=json.dumps({k:v for k,v in selected.items() if k not in ('ranges','nodes')},sort_keys=True)
                 source_groups.setdefault(identity,[]).append(selected)
             for group in source_groups.values():
-                intervals=sorted((-math.inf if selected['clip'][0] is None else selected['clip'][0],math.inf if selected['clip'][1] is None else selected['clip'][1]) for selected in group)
+                if any('nodes' in selected for selected in group):
+                    nodes=[node for selected in group for node in selected.get('nodes',[])]
+                    if not all('nodes' in selected for selected in group) or len(nodes)!=len(set(nodes)):
+                        raise ValueError('Grouped parts must use disjoint source nodes')
+                    continue
+                intervals=sorted((-math.inf if pair[0] is None else pair[0],math.inf if pair[1] is None else pair[1]) for selected in group for pair in selected['ranges'])
                 if any(a[1]>b[0] for a,b in zip(intervals,intervals[1:])):
                     raise ValueError('Grouped parts from one fitted source must not overlap')
                 if len(group)==3 and (intervals[0][0]!=-math.inf or intervals[-1][1]!=math.inf or any(a[1]!=b[0] for a,b in zip(intervals,intervals[1:]))):
@@ -1372,13 +1442,19 @@ def package(args, repo, out):
         require(manifest['sources'].get(record['asset'])==record['source_sha256'],'Source tangent GLB hash mismatch')
         # Arrays are interpreted by the current helper, so they must have been produced by these same bytes.
         require_basis_producer(record,helper.SNAPSHOT_SHA256)
+        if record.get('double_sided_basis_producer_sha256'):
+            backface_helper=load_module_snapshot('meshy_weapon_export',Path(__file__).with_name('MeshyWeaponExport.py'))
+            require(record['double_sided_basis_producer_sha256']==backface_helper.SNAPSHOT_SHA256,'Explicit backface producer changed; re-export')
         with np.load(io.BytesIO(metadata_bytes),allow_pickle=False) as arrays:
             policy=record.get('normal_basis_policy','reproject')
-            require(policy in ('reproject','authored_tangents'),'Unknown normal basis policy')
+            require(policy in ('reproject','authored_tangents','authored_tangent_seams'),'Unknown normal basis policy')
             authored_reports=[]
-            if policy=='authored_tangents':
+            if policy in ('authored_tangents','authored_tangent_seams'):
                 sources={material:{key:arrays[material+'__'+key] for key in ('positions','normals','tangents','signs','uv')} for material in record['materials']}
-                for model in record['models']+record.get('aliases',[]):authored_reports.append(helper.preserve_authored_tangents(runtime/(model+'.mdl'),sources,float(record.get('authored_angle_limit_degrees',.5))))
+                seam_helper=load_module_snapshot('native_tangent_seams',Path(__file__).with_name('NativeTangentSeams.py')) if policy=='authored_tangent_seams' else None
+                for model in record['models']+record.get('aliases',[]):
+                    target_model=runtime/(model+'.mdl')
+                    authored_reports.append(seam_helper.preserve_authored_tangent_seams(target_model,sources,helper) if seam_helper else helper.preserve_authored_tangents(target_model,sources,float(record.get('authored_angle_limit_degrees',.5))))
             native=[mesh for model in record['models'] for mesh in helper.native_meshes(runtime/(model+'.mdl'))]
             for material in record['materials']:
                 group={key:arrays[material+'__'+key] for key in ('positions','normals','tangents','signs','uv')}
@@ -1388,7 +1464,7 @@ def package(args, repo, out):
                 name=match[1];sources=[p for p in paths.values() if p.name==name+'.tga']
                 require(len(sources)==1 and name not in normal_paths,'Normal map has ambiguous material ownership '+name)
                 target=corrected/(name+'.tga')
-                if policy=='authored_tangents':
+                if policy in ('authored_tangents','authored_tangent_seams'):
                     shutil.copy2(sources[0],target)
                     normal_reports.append({'asset':record['asset'],'material':material,'basis_sha256':record['sha256'],'policy':policy,'normal_tga_preserved_sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'stream_proofs':authored_reports,'native_visual_review_required':True})
                 else:normal_reports.append({'asset':record['asset'],'material':material,'basis_sha256':record['sha256'],'policy':policy,**helper.reproject_texture(group,matches,sources[0],target)})

@@ -121,6 +121,88 @@ adapter below, then complete native verification. Focused runner tests use no GP
 python -B -m unittest discover -s tools/tests -p test_generate_weapon_models.py
 ```
 
+### Import Meshy weapon and shield sources
+
+Local TRELLIS.2 remains the default generation path. Meshy is opt-in. Before
+submitting paid Meshy generation, remeshing, retexturing or other credit-consuming
+jobs, obtain the project owner's approval for the work and its credit budget.
+Stay within that approved scope and budget. An available balance or API key does
+not authorize spending, and approval for one batch does not authorize unrelated
+future work.
+
+The Meshy import tools below only convert already-downloaded local GLBs. They do
+not submit Meshy API jobs, spend credits or add a paid fallback to local generation.
+
+Keep paid generation jobs, budget journals, reference images and downloaded GLBs
+in private staging. Review the source silhouette and PBR maps before fitting.
+`tools/MeshyWeaponExport.py --mode prepare` accepts the same explicit uniform-fit
+manifest as the GLB adapter. It snapshots each source, applies the reviewed fit,
+and emits a native-coordinate GLB with explicit tangents and a new `fit.json`.
+It rejects nonuniform source transforms, modifiers and missing UVs.
+
+Meshy can intentionally produce open, double-sided surfaces. The explicit
+`double_sided_policy: "duplicate_backfaces"` preserves them by adding reversed
+faces with negated normals and tangent frames. It requires
+`normal_basis_policy: "authored_tangent_seams"`. This policy restores the
+source's corner normals before ASCII export, then restores authored normal,
+tangent and sign seams after compilation by splitting welded vertices. Native
+positions, UVs, face winding and draw indices are validated; shaded seams are
+never averaged. The older `authored_tangents` policy keeps its stricter immutable
+native-normal behavior. Client qualification is required for either policy.
+
+The seam-restoration helper also compacts its static rigid RAW buffers. It drops
+unreferenced compiler buffers and vertices, shares identical blocks, and merges
+only vertices whose complete position/UV/normal/tangent/sign bytes match. Every
+surviving shaded corner is checked byte for byte. `NativeTangentSeams.compact_model`
+can apply the same pass to an existing compatible model; animated, skinned,
+emitter and unsupported draw layouts are rejected without writing the file.
+This reduces storage without changing the rendered triangles or silhouette.
+
+For composite items, run `tools/MeshyWeaponParts.py` on the prepared manifest.
+Declare `parts` using measured native Y cuts; `clip_ranges: [[lower, upper], ...]`
+supports paired staff/twinblade roles, with `null` for an unbounded end. Supply
+`joint_envelopes` entries with `y`, `center_xz`, `radii_xz` and `depth`, measured
+from the existing native connectors, plus the complete assembly's
+`part_icon_bounds`. The authoring step closes the new cuts, adds inward-extending
+joint sleeves, and preserves the source surface UVs and corner frames. Its
+output selects complete authored `source_nodes` for each part and shares maps
+across roles. Node selectors cannot overlap or be combined with clipping.
+Shields keep one complete model and use the preparation output directly; retain
+their measured grip, clearance and impact dummies.
+
+Preparation and part authoring both require Blender's Python (`bpy`). For example,
+with `$blender` set to the Blender executable and fresh staging output folders:
+
+```powershell
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/MeshyWeaponExport.py -- --mode prepare `
+  --manifest "$env:TEMP/weapon-sources/manifest.json" `
+  --output "$env:TEMP/weapon-sources/prepared"
+
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/MeshyWeaponParts.py -- `
+  --manifest "$env:TEMP/weapon-sources/prepared/fit.json" `
+  --output "$env:TEMP/weapon-sources/parts"
+```
+
+Both entrypoints accept an optional `--repo` path. Part authoring preserves
+manifest-level settings, including `empty_parts` and explicit
+`composite_assemblies`. Explicit assemblies take precedence over generated
+assemblies for their base item, including assemblies using partial hilt sources.
+
+Run `MeshyWeaponExport.py --mode export` inside Blender on the resulting
+`fit.json`, then `--mode package` with ordinary Python and the pinned compiler
+and Crunch arguments described below. All stage outputs must be empty folders
+outside the repository. Review renders, compiled resource validation, mixed
+assemblies, actual hand/arm fit and native inventory selection before copying
+finished resources into the HAK.
+
+This path accepts static rigid models only. Animated projectile MDLs require a
+separate animation-preserving rebuild: retain their native root, mesh names,
+emitters and controller tracks, then compare those fields after compilation.
+Do not replace a projectile with the static held-item export or bypass the
+static seam patcher's animation/emitter rejection.
+
 ### Generate closed shield surfaces
 
 Use `tools/workflows/trellis2_shield.json` for thin shield sources. It adds a
@@ -597,6 +679,15 @@ Compare textured previews before reducing larger maps;
 filter color in linear light and reconstruct/renormalize tangent normals. Constant
 material maps can use 4x4 DDS with full mipmaps. Avoid allocating large maps to solid
 colors. Preserve approved fit and silhouette when optimizing.
+`TrellisNwnMaterial.trim_dds_mips` can lower a reviewed material's resolution by
+retaining an existing complete BC mip chain from a smaller level onward, without
+recompression. It preserves the filtering already encoded in those levels; it
+does reduce detail. Compare identical views before and after, retain larger maps
+where highlights or seams degrade, and qualify the final material in the client.
+Share maps and whole material bundles only when their content and shader roles
+match. Keep the compiled bitmap fallback consistent with the MTR base color, and
+prove resources have no remaining HAK or stock-resource consumers before deleting
+retired assets.
 For opaque blaster maps, use these explicit options with `-fileformat dds
 -unflip -yflip -dropEmptyAlpha -dxtQuality uber`:
 

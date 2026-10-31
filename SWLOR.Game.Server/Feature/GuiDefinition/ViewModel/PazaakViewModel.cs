@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshTable()
         {
             var match = Pazaak.GetMatch(Player);
-            SignButtonText = _playNegative ? "Play +/- as -" : "Play +/- as +";
+            SignButtonText = _playNegative ? "Sign: -" : "Sign: +";
 
             if (match == null)
             {
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsTurnActionEnabled = false;
                 IsForfeitEnabled = false;
                 IsChallengeVisible = true;
-                ChallengeText = "Challenge a player within 10 meters to start a match.";
+                ChallengeText = "Challenge a nearby player to start a match.";
                 return;
             }
 
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsTurnActionEnabled = isMyTurn;
             IsForfeitEnabled = !match.IsFinished;
             IsChallengeVisible = match.IsFinished;
-            ChallengeText = "Challenge a player within 10 meters to play again.";
+            ChallengeText = "Challenge a nearby player to play again.";
         }
 
         private static string BuildHeader(string name, PazaakSeat seat)
@@ -374,7 +374,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickToggleSign() => () =>
         {
             _playNegative = !_playNegative;
-            SignButtonText = _playNegative ? "Play +/- as -" : "Play +/- as +";
+            SignButtonText = _playNegative ? "Sign: -" : "Sign: +";
         };
 
         public Action OnClickEndTurn() => () =>

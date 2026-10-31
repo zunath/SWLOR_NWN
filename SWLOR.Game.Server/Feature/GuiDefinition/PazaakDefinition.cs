@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Pazaak)
-                .SetInitialGeometry(0, 0, 440f, 480f)
+                .SetInitialGeometry(0, 0, 440f, 560f)
                 .SetTitle("Pazaak")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindText(model => model.SignButtonText)
                         .SetTooltip("The sign used when you play a +/- or tiebreaker card.")
                         .BindOnClicked(model => model.OnClickToggleSign())
-                        .SetWidth(90f)
+                        .SetWidth(70f)
                         .SetHeight(TableCardHeight);
                     row.AddSpacer();
                 });
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.BindIsVisible(model => model.IsChallengeVisible);
                     row.AddLabel()
                         .BindText(model => model.ChallengeText)
-                        .SetHeight(40f)
+                        .SetHeight(20f)
                         .SetHorizontalAlign(NuiHorizontalAlign.Center);
                 });
 

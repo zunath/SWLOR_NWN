@@ -9,144 +9,222 @@ using SWLOR.Game.Server.Service.HuttballService;
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
-    /// The staff Huttball panel: score, turn, the player being commanded, its actions, the DM's match controls,
-    /// and the play-by-play. Opened with /huttball by staff.
+    /// The staff Huttball window, opened with /huttball by staff. Like the Appearance Editor it is split into tabs:
+    /// Match (score, drives, turns, team resources), Players (adding players and acting for the selected one), and
+    /// Play-by-Play. Each tab is a fixed-width panel; the window scrolls when it is smaller than the panel.
     /// </summary>
-    /// <remarks>
-    /// The rows sit in one group that scrolls up and down only. A group that may also scroll sideways lays its
-    /// content out with no width limit, so nothing in it stretches; scrolling only vertically keeps the content as
-    /// wide as the window, and the buttons, which have no set width, share each row.
-    /// </remarks>
     public class HuttballDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<HuttballViewModel> _builder = new();
 
+        private const float TabRowHeight = 28f;
+        private const float TabPanelHeight = 48f;
+        private const float TabWidth = 120f;
+        private const float PanelWidth = 440f;
         private const float LabelHeight = 20f;
+        private const float ButtonWidth = 136f;
+        private const float ComboWidth = 208f;
+        private const float StepLabelWidth = 100f;
         private const float StepButtonWidth = 40f;
-        private const float LogHeight = 200f;
+        private const float LogHeight = 440f;
 
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.Huttball)
-                .SetInitialGeometry(0f, 0f, 460f, 760f)
+            var window = _builder.CreateWindow(GuiWindowType.Huttball)
+                .SetInitialGeometry(0f, 0f, 490f, 600f)
                 .SetTitle("Huttball")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .AddColumn(col => col.AddRow(row => row.AddGroup(group =>
+                .DefinePartialView(HuttballViewModel.MatchTabPartial, AddMatchTab)
+                .DefinePartialView(HuttballViewModel.PlayersTabPartial, AddPlayersTab)
+                .DefinePartialView(HuttballViewModel.LogTabPartial, AddLogTab);
+
+            window.AddStandardLayout(layout =>
+            {
+                layout.SetTabPanelHeight(TabPanelHeight);
+                layout.AddTabRow(row =>
                 {
-                    group.SetShowBorder(false);
-                    group.SetScrollbars(NuiScrollbars.Y);
-                    group.AddColumn(AddMainContent);
-                })));
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("Match")
+                        .AddOption("Players")
+                        .AddOption("Play-by-Play")
+                        .BindSelectedValue(model => model.TabToggleValue)
+                        .SetWidth(TabWidth * 3)
+                        .SetHeight(TabRowHeight);
+                });
+                layout.SetContentPartialElement(HuttballViewModel.TabContentElement);
+            });
 
             return _builder.Build();
         }
 
-        private static void AddMainContent(GuiColumn<HuttballViewModel> content)
+        /// <summary>
+        /// Score, turn, and ball; creating and ending the match; drives and turns; and each team's resources.
+        /// </summary>
+        private static void AddMatchTab(GuiGroup<HuttballViewModel> host)
         {
-            AddBoundLabel(content, model => model.ScoreText);
-            AddBoundLabel(content, model => model.TurnText);
-            AddBoundLabel(content, model => model.BallText);
-            AddMatchText(content, model => model.ResourcesText, 44f);
-            content.AddRow(r =>
+            AddPanel(host, content =>
             {
-                r.BindIsVisible(model => model.HasMatch);
-                r.AddText()
+                AddBoundLabel(content, model => model.ScoreText);
+                AddBoundLabel(content, model => model.TurnText);
+                AddBoundLabel(content, model => model.BallText);
+                content.AddRow(r => r.AddText()
                     .SetText(Huttball.PitchKey)
-                    .SetHeight(56f);
-            });
+                    .SetHeight(56f));
 
-            AddSectionLabel(content, "Player", model => model.HasMatch);
-            AddMatchText(content, model => model.UnitText, 56f);
-            content.AddRow(r =>
-            {
-                r.BindIsVisible(model => model.HasMatch);
-                AddActionButton(r, "Move", "Click a square. In setup, take any free square in your half.",
-                    model => model.OnMove(), model => model.CanMove);
-                AddActionButton(r, "Block", "Opposed strength roll against an adjacent opponent.",
-                    model => model.OnBlock(), model => model.CanBlock);
-                AddActionButton(r, "Pass", $"Throw the ball to a teammate up to {HuttballRules.PassRange} squares away.",
-                    model => model.OnPass(), model => model.CanPass);
-            });
-            content.AddRow(r =>
-            {
-                r.BindIsVisible(model => model.HasMatch);
-                AddActionButton(r, "Dirty Move", "Kick a downed opponent: another injury roll, but the referee may send you off.",
-                    model => model.OnDirtyMove(), model => model.CanDirtyMove);
-                AddActionButton(r, "Stand Up", "Get back on your feet. Uses this turn's movement.",
-                    model => model.OnStandUp(), model => model.CanStandUp);
-                AddActionButton(r, "Done", "Finish this player's turn.",
-                    model => model.OnDone(), model => model.CanFinish);
-            });
-            content.AddRow(r =>
-            {
-                r.BindIsVisible(model => model.HasMatch);
-                AddActionButton(r, "Re-roll", "Right after one of your team's rolls: undo it and roll again. You keep the new result.",
-                    model => model.OnReroll(), model => model.CanReroll);
-                AddActionButton(r, "Medic", "Click an injured teammate on the bench: their injury drops one step.",
-                    model => model.OnMedic(), model => model.CanUseMedic);
-            });
+                AddSectionLabel(content, "Match");
+                content.AddRow(r =>
+                {
+                    AddButton(r, "Create Match", "Lay a 15 x 20 pitch over this area's battle grid.", model => model.OnCreateMatch())
+                        .BindIsEnabled(model => model.HasNoMatch);
+                    AddButton(r, "End Match", "End the match and clear the pitch, ball, and effects.", model => model.OnEndMatch())
+                        .BindIsEnabled(model => model.HasMatch);
+                    AddButton(r, "Test Teams", "For testing: add one test player of each role to each team, lined up in their own halves.", model => model.OnSpawnTestTeams())
+                        .BindIsEnabled(model => model.IsSetup);
+                    r.AddSpacer();
+                });
+                content.AddRow(r =>
+                {
+                    AddButton(r, "Start Drive", "Click where the ball lands to kick off.", model => model.OnStartDrive())
+                        .BindIsEnabled(model => model.IsSetup);
+                    AddButton(r, "End Turn", "End the active team's turn now.", model => model.OnEndTeamTurn())
+                        .BindIsEnabled(model => model.IsPlaying);
+                    r.AddSpacer();
+                });
 
-            AddSectionLabel(content, "DM Controls", model => model.IsDM);
-            AddDMRow(content, r =>
-            {
-                AddDMButton(r, "Create Match", "Lay a 15 x 20 pitch over this area's battle grid.", model => model.OnCreateMatch())
-                    .BindIsEnabled(model => model.HasNoMatch);
-                AddDMButton(r, "End Match", "End the match and clear the pitch, ball, and effects.", model => model.OnEndMatch())
-                    .BindIsEnabled(model => model.HasMatch);
-                AddDMButton(r, "Test Teams", "For testing: add one test player of each role to each team, lined up in their own halves.", model => model.OnSpawnTestTeams())
-                    .BindIsEnabled(model => model.IsSetup);
-            });
-            AddDMRow(content, r =>
-            {
-                r.AddComboBox()
-                    .AddOption("Home team", 0)
-                    .AddOption("Away team", 1)
-                    .BindSelectedIndex(model => model.TeamSelection);
-                r.AddComboBox()
-                    .AddOption("Bruiser", 0)
-                    .AddOption("Catcher", 1)
-                    .AddOption("Thrower", 2)
-                    .AddOption("Blocker", 3)
-                    .BindSelectedIndex(model => model.RoleSelection);
-            });
-            AddDMRow(content, r =>
-            {
-                AddDMButton(r, "Add Player", "Click a creature to add it to the chosen team and role.", model => model.OnAddPlayer())
-                    .BindIsEnabled(model => model.HasMatch);
-                AddDMButton(r, "Remove Player", "Click a player to take out of the match.", model => model.OnRemovePlayer())
-                    .BindIsEnabled(model => model.HasMatch);
-                AddDMButton(r, "Set Role", "Give the selected player the chosen role (between drives).", model => model.OnSetRole())
-                    .BindIsEnabled(model => model.IsSetup);
-            });
-            AddDMRow(content, r =>
-            {
-                AddDMButton(r, "Select Player", "Click a player to command with the buttons above.", model => model.OnSelectUnit())
-                    .BindIsEnabled(model => model.HasMatch);
-                AddDMButton(r, "Start Drive", "Click where the ball lands to kick off.", model => model.OnStartDrive())
-                    .BindIsEnabled(model => model.IsSetup);
-                AddDMButton(r, "End Turn", "End the active team's turn now.", model => model.OnEndTeamTurn())
-                    .BindIsEnabled(model => model.IsPlaying);
-            });
-            AddDMRow(content, r =>
-            {
-                AddResourceStepper(r, "Re-rolls", "re-roll", model => model.OnRerollDown(), model => model.OnRerollUp());
-                AddResourceStepper(r, "Medics", "medic", model => model.OnMedicDown(), model => model.OnMedicUp());
-                AddResourceStepper(r, "Bribes", "bribe (one is spent automatically when a dirty move is spotted)",
+                AddSectionLabel(content, "Team Resources");
+                content.AddRow(r => r.AddText()
+                    .BindText(model => model.ResourcesText)
+                    .SetHeight(44f));
+                content.AddRow(r =>
+                {
+                    AddTeamCombo(r);
+                    r.AddSpacer();
+                });
+                AddResourceStepper(content, "Re-rolls", "re-roll", model => model.OnRerollDown(), model => model.OnRerollUp());
+                AddResourceStepper(content, "Medics", "medic", model => model.OnMedicDown(), model => model.OnMedicUp());
+                AddResourceStepper(content, "Bribes", "bribe (one is spent automatically when a dirty move is spotted)",
                     model => model.OnBribeDown(), model => model.OnBribeUp());
             });
+        }
 
-            AddSectionLabel(content, "Play-by-Play", model => model.HasMatch);
-            content.AddRow(r =>
+        /// <summary>
+        /// Adding and removing players, picking the one to command, and that player's actions.
+        /// </summary>
+        private static void AddPlayersTab(GuiGroup<HuttballViewModel> host)
+        {
+            AddPanel(host, content =>
             {
-                r.BindIsVisible(model => model.HasMatch);
-                // A set height: in a group that scrolls vertically, a box with none would collapse.
-                r.AddText()
+                AddBoundLabel(content, model => model.TurnText);
+
+                AddSectionLabel(content, "Roster");
+                content.AddRow(r =>
+                {
+                    AddTeamCombo(r);
+                    r.AddComboBox()
+                        .AddOption("Bruiser", 0)
+                        .AddOption("Catcher", 1)
+                        .AddOption("Thrower", 2)
+                        .AddOption("Blocker", 3)
+                        .BindSelectedIndex(model => model.RoleSelection)
+                        .SetWidth(ComboWidth);
+                    r.AddSpacer();
+                });
+                content.AddRow(r =>
+                {
+                    AddButton(r, "Add Player", "Click a creature to add it to the chosen team and role.", model => model.OnAddPlayer())
+                        .BindIsEnabled(model => model.HasMatch);
+                    AddButton(r, "Remove Player", "Click a player to take out of the match.", model => model.OnRemovePlayer())
+                        .BindIsEnabled(model => model.HasMatch);
+                    AddButton(r, "Set Role", "Give the selected player the chosen role (between drives).", model => model.OnSetRole())
+                        .BindIsEnabled(model => model.IsSetup);
+                    r.AddSpacer();
+                });
+
+                AddSectionLabel(content, "Selected Player");
+                content.AddRow(r =>
+                {
+                    AddButton(r, "Select Player", "Click a player to command with the buttons below.", model => model.OnSelectUnit())
+                        .BindIsEnabled(model => model.HasMatch);
+                    r.AddSpacer();
+                });
+                content.AddRow(r => r.AddText()
+                    .BindText(model => model.UnitText)
+                    .SetHeight(56f));
+                content.AddRow(r =>
+                {
+                    AddActionButton(r, "Move", "Click a square. In setup, take any free square in your half.",
+                        model => model.OnMove(), model => model.CanMove);
+                    AddActionButton(r, "Block", "Opposed strength roll against an adjacent opponent.",
+                        model => model.OnBlock(), model => model.CanBlock);
+                    AddActionButton(r, "Pass", $"Throw the ball to a teammate up to {HuttballRules.PassRange} squares away.",
+                        model => model.OnPass(), model => model.CanPass);
+                    r.AddSpacer();
+                });
+                content.AddRow(r =>
+                {
+                    AddActionButton(r, "Dirty Move", "Kick a downed opponent: another injury roll, but the referee may send you off.",
+                        model => model.OnDirtyMove(), model => model.CanDirtyMove);
+                    AddActionButton(r, "Stand Up", "Get back on your feet. Uses this turn's movement.",
+                        model => model.OnStandUp(), model => model.CanStandUp);
+                    AddActionButton(r, "Done", "Finish this player's turn.",
+                        model => model.OnDone(), model => model.CanFinish);
+                    r.AddSpacer();
+                });
+                content.AddRow(r =>
+                {
+                    AddActionButton(r, "Re-roll", "Right after one of this team's rolls: undo it and roll again. The new result stands.",
+                        model => model.OnReroll(), model => model.CanReroll);
+                    AddActionButton(r, "Medic", "Click an injured teammate on the bench: their injury drops one step.",
+                        model => model.OnMedic(), model => model.CanUseMedic);
+                    r.AddSpacer();
+                });
+            });
+        }
+
+        /// <summary>
+        /// The match's play-by-play, newest first.
+        /// </summary>
+        private static void AddLogTab(GuiGroup<HuttballViewModel> host)
+        {
+            AddPanel(host, content =>
+            {
+                content.AddRow(r => r.AddText()
                     .BindText(model => model.LogText)
                     .SetShowBorder(true)
                     .SetScrollbars(NuiScrollbars.Auto)
-                    .SetHeight(LogHeight);
+                    .SetHeight(LogHeight));
             });
+        }
+
+        /// <summary>
+        /// A tab's fixed-width borderless panel (rule R5). Scrolling comes from the standard layout's host group.
+        /// </summary>
+        private static void AddPanel(GuiGroup<HuttballViewModel> host, Action<GuiColumn<HuttballViewModel>> build)
+        {
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(panel =>
+                    {
+                        panel.SetShowBorder(false);
+                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.AddColumn(build);
+                    })
+                        .SetWidth(PanelWidth);
+                });
+            });
+        }
+
+        private static void AddTeamCombo(GuiRow<HuttballViewModel> row)
+        {
+            row.AddComboBox()
+                .AddOption("Home team", 0)
+                .AddOption("Away team", 1)
+                .BindSelectedIndex(model => model.TeamSelection)
+                .SetWidth(ComboWidth);
         }
 
         private static void AddBoundLabel(GuiColumn<HuttballViewModel> content, Expression<Func<HuttballViewModel, string>> text)
@@ -157,63 +235,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
         }
 
-        private static void AddMatchText(
-            GuiColumn<HuttballViewModel> content,
-            Expression<Func<HuttballViewModel, string>> text,
-            float height)
+        private static void AddSectionLabel(GuiColumn<HuttballViewModel> content, string text)
         {
-            content.AddRow(r =>
-            {
-                r.BindIsVisible(model => model.HasMatch);
-                r.AddText()
-                    .BindText(text)
-                    .SetHeight(height);
-            });
-        }
-
-        private static void AddSectionLabel(
-            GuiColumn<HuttballViewModel> content,
-            string text,
-            Expression<Func<HuttballViewModel, bool>> isVisible)
-        {
-            content.AddRow(r =>
-            {
-                r.BindIsVisible(isVisible);
-                r.AddLabel()
-                    .SetText(text)
-                    .SetHeight(LabelHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
-        }
-
-        /// <summary>
-        /// A player action, greyed out whenever the commanded player cannot take it right now. It shares its row's
-        /// width with the other buttons in the row.
-        /// </summary>
-        private static void AddActionButton(
-            GuiRow<HuttballViewModel> row,
-            string text,
-            string tooltip,
-            Expression<Func<HuttballViewModel, Action>> onClick,
-            Expression<Func<HuttballViewModel, bool>> isEnabled)
-        {
-            row.AddButton()
+            content.AddRow(r => r.AddLabel()
                 .SetText(text)
-                .SetTooltip(tooltip)
-                .BindOnClicked(onClick)
-                .BindIsEnabled(isEnabled);
+                .SetHeight(LabelHeight)
+                .SetHorizontalAlign(NuiHorizontalAlign.Left));
         }
 
-        private static void AddDMRow(GuiColumn<HuttballViewModel> content, Action<GuiRow<HuttballViewModel>> build)
-        {
-            content.AddRow(r =>
-            {
-                r.BindIsVisible(model => model.IsDM);
-                build(r);
-            });
-        }
-
-        private static GuiButton<HuttballViewModel> AddDMButton(
+        private static GuiButton<HuttballViewModel> AddButton(
             GuiRow<HuttballViewModel> row,
             string text,
             string tooltip,
@@ -222,36 +252,55 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return row.AddButton()
                 .SetText(text)
                 .SetTooltip(tooltip)
+                .SetWidth(ButtonWidth)
                 .BindOnClicked(onClick);
         }
 
         /// <summary>
-        /// A resource name with buttons that take one from, or give one to, the team chosen in the team box. The
-        /// name stretches; the buttons stay small.
+        /// An action for the selected player, greyed out whenever that player cannot take it right now.
+        /// </summary>
+        private static void AddActionButton(
+            GuiRow<HuttballViewModel> row,
+            string text,
+            string tooltip,
+            Expression<Func<HuttballViewModel, Action>> onClick,
+            Expression<Func<HuttballViewModel, bool>> isEnabled)
+        {
+            AddButton(row, text, tooltip, onClick)
+                .BindIsEnabled(isEnabled);
+        }
+
+        /// <summary>
+        /// A resource name with buttons that take one from, or give one to, the team chosen in the team box.
         /// </summary>
         private static void AddResourceStepper(
-            GuiRow<HuttballViewModel> row,
+            GuiColumn<HuttballViewModel> content,
             string label,
             string noun,
             Expression<Func<HuttballViewModel, Action>> onDown,
             Expression<Func<HuttballViewModel, Action>> onUp)
         {
-            row.AddLabel()
-                .SetText(label)
-                .SetHorizontalAlign(NuiHorizontalAlign.Right)
-                .SetVerticalAlign(NuiVerticalAlign.Middle);
-            row.AddButton()
-                .SetText("-")
-                .SetTooltip($"Take a {noun} from the chosen team.")
-                .SetWidth(StepButtonWidth)
-                .BindOnClicked(onDown)
-                .BindIsEnabled(model => model.HasMatch);
-            row.AddButton()
-                .SetText("+")
-                .SetTooltip($"Give the chosen team a {noun}.")
-                .SetWidth(StepButtonWidth)
-                .BindOnClicked(onUp)
-                .BindIsEnabled(model => model.HasMatch);
+            content.AddRow(r =>
+            {
+                r.AddLabel()
+                    .SetText(label)
+                    .SetWidth(StepLabelWidth)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                r.AddButton()
+                    .SetText("-")
+                    .SetTooltip($"Take a {noun} from the chosen team.")
+                    .SetWidth(StepButtonWidth)
+                    .BindOnClicked(onDown)
+                    .BindIsEnabled(model => model.HasMatch);
+                r.AddButton()
+                    .SetText("+")
+                    .SetTooltip($"Give the chosen team a {noun}.")
+                    .SetWidth(StepButtonWidth)
+                    .BindOnClicked(onUp)
+                    .BindIsEnabled(model => model.HasMatch);
+                r.AddSpacer();
+            });
         }
     }
 }

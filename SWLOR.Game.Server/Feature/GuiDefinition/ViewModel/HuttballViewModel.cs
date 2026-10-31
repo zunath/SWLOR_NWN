@@ -1,4 +1,5 @@
 using System.Linq;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,15 +14,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class HuttballViewModel : GuiViewModelBase<HuttballViewModel, GuiPayloadBase>,
         IGuiRefreshable<HuttballRefreshEvent>
     {
+        private const int MatchTabId = 0;
+        private const int PlayersTabId = 1;
+        private const int LogTabId = 2;
+        public const string TabContentElement = "huttball_tab_content";
+        public const string MatchTabPartial = "HUTTBALL_TAB_MATCH";
+        public const string PlayersTabPartial = "HUTTBALL_TAB_PLAYERS";
+        public const string LogTabPartial = "HUTTBALL_TAB_LOG";
+
+        private static readonly GuiTabGroup<HuttballViewModel, GuiPayloadBase> Tabs =
+            new GuiTabGroup<HuttballViewModel, GuiPayloadBase>()
+                .AddTab(MatchTabId, MatchTabPartial)
+                .AddTab(PlayersTabId, PlayersTabPartial)
+                .AddTab(LogTabId, LogTabPartial);
+
+        private static readonly GuiToggleGroupSync TabToggles = new(MatchTabId, PlayersTabId, LogTabId);
+
         private uint _selectedUnit = OBJECT_INVALID;
         private bool _isStaff;
+
+        public int SelectedTabId { get => Get<int>(); set => Set(value); }
+
+        public int TabToggleValue
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                TabToggles.HandleClientChange(value, SelectTab);
+            }
+        }
 
         public string ScoreText { get => Get<string>(); set => Set(value); }
         public string TurnText { get => Get<string>(); set => Set(value); }
         public string BallText { get => Get<string>(); set => Set(value); }
         public string UnitText { get => Get<string>(); set => Set(value); }
         public string LogText { get => Get<string>(); set => Set(value); }
-        public bool IsDM { get => Get<bool>(); set => Set(value); }
         public bool HasMatch { get => Get<bool>(); set => Set(value); }
         public bool HasNoMatch { get => Get<bool>(); set => Set(value); }
         public bool CanMove { get => Get<bool>(); set => Set(value); }
@@ -44,15 +72,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            // The window has no swappable partial: its layout is already on screen, so the combo values set here
-            // reach controls that exist.
             _isStaff = CheckIsStaff();
             TeamSelection = 0;
             RoleSelection = 0;
+            TabToggleValue = 0;
             Refresh();
             WatchOnClient(model => model.TeamSelection);
             WatchOnClient(model => model.RoleSelection);
+            WatchOnClient(model => model.TabToggleValue);
+
+            SelectTab(MatchTabId);
         }
+
+        private void SelectTab(int tabId)
+        {
+            SelectedTabId = tabId;
+            TabToggles.SyncTo(tabId, value => TabToggleValue = value);
+
+            // Combo values are input binds, which the client drops when they arrive before the tab that shows them.
+            Tabs.Select(this, TabContentElement, tabId, onAfterApply: () =>
+            {
+                TeamSelection = TeamSelection;
+                RoleSelection = RoleSelection;
+            });
+        }
+
+        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
 
         public void Refresh(HuttballRefreshEvent payload)
         {
@@ -84,14 +129,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Refresh()
         {
             var match = Match;
-            IsDM = UserIsDM;
             HasMatch = match != null;
             HasNoMatch = match == null;
 
             if (match == null)
             {
                 ScoreText = "No Huttball match in this area.";
-                TurnText = IsDM ? "Place a battle grid (/battlegrid), then create a match." : "Ask a DM to set up a match.";
+                TurnText = UserIsDM ? "Place a battle grid (/battlegrid), then create a match." : "Ask a DM to set up a match.";
                 BallText = string.Empty;
                 UnitText = string.Empty;
                 LogText = string.Empty;
@@ -149,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string DescribeUnit(HuttballMatch match, HuttballPlayer unit)
         {
             if (unit == null)
-                return IsDM ? "No player selected. Use Select Player." : "You are not in this match.";
+                return UserIsDM ? "No player selected. Use Select Player." : "You are not in this match.";
 
             var where = unit.Square != null ? $"at {unit.Square.Value}" : "off the pitch";
             var state = unit.Status == HuttballPlayerStatus.Standing ? "standing" : HuttballMatch.DescribeStatus(unit.Status);

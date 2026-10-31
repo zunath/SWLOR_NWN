@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.SkillService;
@@ -96,16 +97,51 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static string GetPostName(ShipCrewSeat seat) =>
             seat == ShipCrewSeat.DroidBay ? "the droid bay" : $"the {GetSeatName(seat)} station";
 
-        /// <summary>
-        /// The rank a module needs: the highest of its RequiresSkill ranks, or 0 when it has none. At a crew station
-        /// this rank is checked against the seat's skill, whichever skill the module itself names.
-        /// </summary>
+        /// <summary>The Czerka Armored Transport's tag: its signature makes crew stations 10% and droid crew 20% more effective.</summary>
+        public const string CzerkaArmoredTransportTag = "sd_czerkaarmored";
+
+        /// <summary>The crew effectiveness percent a hull's signature adds for player crew, or for droid crew when <paramref name="droid"/>.</summary>
+        public static int GetHullCrewBonusPercent(string hullTag, bool droid) =>
+            hullTag == CzerkaArmoredTransportTag ? (droid ? 20 : 10) : 0;
+
+        /// <summary>The rank a module needs: the highest of its RequiresSkill ranks, or 0 when it has none.</summary>
         public static int GetRequiredRank(IReadOnlyDictionary<SkillType, int> requiredSkills) =>
             requiredSkills == null || requiredSkills.Count == 0 ? 0 : requiredSkills.Values.Max();
 
-        /// <summary>Whether a crew member with this rank in the seat's skill can switch the module on.</summary>
-        public static bool MeetsRank(IReadOnlyDictionary<SkillType, int> requiredSkills, int seatSkillRank) =>
-            GetRequiredRank(requiredSkills) <= seatSkillRank;
+        /// <summary>
+        /// Whether the seat's skill stands in for a module's required skill at a crew station: the ship skills
+        /// (Piloting, Engineering, Espionage) do, so an Engineer works a Piloting-ranked module on Engineering. Any
+        /// other skill a module names, such as Gathering on mining gear, is checked against the crew member's own rank.
+        /// </summary>
+        public static bool SeatSkillStandsIn(SkillType moduleSkill) =>
+            moduleSkill is SkillType.Piloting or SkillType.Engineering or SkillType.Espionage;
+
+        /// <summary>
+        /// The first requirement a crew member at a seat does not meet, or null when they meet them all. A ship-skill
+        /// requirement is checked against the seat's skill (<see cref="SeatSkillStandsIn"/>), any other against that
+        /// skill itself.
+        /// </summary>
+        public static (SkillType Skill, int Rank)? GetUnmetRequirement(
+            IReadOnlyDictionary<SkillType, int> requiredSkills,
+            SkillType seatSkill,
+            Func<SkillType, int> crewRank)
+        {
+            if (requiredSkills == null)
+                return null;
+
+            foreach (var (skill, rank) in requiredSkills)
+            {
+                var checkedSkill = SeatSkillStandsIn(skill) ? seatSkill : skill;
+                if (crewRank(checkedSkill) < rank)
+                    return (checkedSkill, rank);
+            }
+
+            return null;
+        }
+
+        /// <summary>Whether a crew member at a seat meets every rank the module needs (<see cref="GetUnmetRequirement"/>).</summary>
+        public static bool MeetsRank(IReadOnlyDictionary<SkillType, int> requiredSkills, SkillType seatSkill, Func<SkillType, int> crewRank) =>
+            GetUnmetRequirement(requiredSkills, seatSkill, crewRank) == null;
 
         /// <summary>
         /// The most any seat works at, after Crew Morale and Leadership. A ship crewed by N players must not beat N

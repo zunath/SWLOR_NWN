@@ -378,6 +378,16 @@ public class IncursionTests
 
         IncursionRules.RepairPoints(IncursionTuning.FighterPool[3], 3).Should().BeApproximately(IncursionTuning.RepairPerPool, 1e-9);
         IncursionRules.RepairPoints(0, 3).Should().Be(0);
+    }
+
+    [Test]
+    public void RepairContribution_CountsOnlyDamageIncursionShipsDealt_AndOnlyOnce()
+    {
+        var ledger = IncursionRules.AddDamageTaken(0, 300);
+        IncursionRules.CreditableRepair(ledger, 500).Should().Be(300, "only the 300 incursion damage counts");
+        IncursionRules.CreditableRepair(ledger - 300, 500).Should().Be(0, "a repeated repair of the same damage earns nothing");
+        IncursionRules.CreditableRepair(0, 500).Should().Be(0, "damage from players or anything else earns nothing");
+        IncursionRules.CreditableRepair(ledger, 120).Should().Be(120);
 
         var aboard = IncursionRules.ShareAboard(3.0, new[] { "pilot", "gunner", "gunner", "engineer" });
         aboard.Should().HaveCount(3).And.OnlyContain(x => Math.Abs(x.Value - 1.0) < 1e-9);

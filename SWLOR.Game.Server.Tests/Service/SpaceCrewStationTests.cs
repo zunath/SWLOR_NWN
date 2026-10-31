@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
@@ -125,13 +126,37 @@ public class SpaceCrewStationTests
     public void RankGate_ComparesTheModulesRankWithTheSeatSkillRank()
     {
         var rank30 = new Dictionary<SkillType, int> { [SkillType.Piloting] = 30 };
+        Func<SkillType, int> engineering(int rank) => skill => skill == SkillType.Engineering ? rank : 0;
 
-        ShipCrewSeats.MeetsRank(null, 0).Should().BeTrue("a module with no requirement works for anyone");
-        ShipCrewSeats.MeetsRank(new Dictionary<SkillType, int>(), 0).Should().BeTrue();
-        ShipCrewSeats.MeetsRank(rank30, 29).Should().BeFalse();
-        ShipCrewSeats.MeetsRank(rank30, 30).Should().BeTrue("an Engineer with Engineering 30 can work a rank-30 module");
+        ShipCrewSeats.MeetsRank(null, SkillType.Engineering, engineering(0)).Should().BeTrue("a module with no requirement works for anyone");
+        ShipCrewSeats.MeetsRank(new Dictionary<SkillType, int>(), SkillType.Engineering, engineering(0)).Should().BeTrue();
+        ShipCrewSeats.MeetsRank(rank30, SkillType.Engineering, engineering(29)).Should().BeFalse();
+        ShipCrewSeats.MeetsRank(rank30, SkillType.Engineering, engineering(30)).Should().BeTrue("an Engineer with Engineering 30 can work a rank-30 module");
         ShipCrewSeats.GetRequiredRank(new Dictionary<SkillType, int> { [SkillType.Piloting] = 20, [SkillType.Gathering] = 35 })
             .Should().Be(35);
+    }
+
+    [Test]
+    public void RankGate_ChecksGatheringGearAgainstTheCrewMembersOwnGathering()
+    {
+        var miningLaser = new Dictionary<SkillType, int> { [SkillType.Gathering] = 30 };
+        Func<SkillType, int> gunner(int piloting, int gathering) =>
+            skill => skill switch { SkillType.Piloting => piloting, SkillType.Gathering => gathering, _ => 0 };
+
+        ShipCrewSeats.MeetsRank(miningLaser, SkillType.Piloting, gunner(50, 0))
+            .Should().BeFalse("Piloting does not stand in for Gathering at a Gunner seat");
+        ShipCrewSeats.GetUnmetRequirement(miningLaser, SkillType.Piloting, gunner(50, 29))
+            .Should().Be((SkillType.Gathering, 30));
+        ShipCrewSeats.MeetsRank(miningLaser, SkillType.Piloting, gunner(0, 30)).Should().BeTrue();
+    }
+
+    [Test]
+    public void TheCzerkaArmoredTransportsSignature_RaisesCrewTenPercentAndDroidCrewTwenty()
+    {
+        ShipCrewSeats.GetHullCrewBonusPercent(ShipCrewSeats.CzerkaArmoredTransportTag, false).Should().Be(10);
+        ShipCrewSeats.GetHullCrewBonusPercent(ShipCrewSeats.CzerkaArmoredTransportTag, true).Should().Be(20);
+        ShipCrewSeats.GetHullCrewBonusPercent("sd_terminuscorsa", true).Should().Be(0);
+        ShipCrewSeats.GetHullCrewBonusPercent(null, false).Should().Be(0);
     }
 
     // Effectiveness

@@ -121,7 +121,10 @@ namespace SWLOR.Game.Server.Service
                 var pilot = pilots[index];
                 run.Origins[pilot] = GetLocation(pilot);
                 if (TryGetFlownShip(pilot, out var flown))
+                {
                     run.ShipIds[pilot] = flown.Id;
+                    run.PilotIds[flown.Id] = GetObjectUUID(pilot);
+                }
                 JumpIntoRiftRoom(run, pilot, index);
                 foreach (var player in GetShipCrewPlayers(pilot))
                 {
@@ -171,6 +174,8 @@ namespace SWLOR.Game.Server.Service
             var run = FindRejoinableRiftRun(shipId);
             if (run == null || GetArea(pilot) != run.Area || !RiftRunRules.Rejoin(run, pilot, shipId))
                 return;
+
+            run.PilotIds[shipId] = GetObjectUUID(pilot);
 
             var left = RiftRunRules.FormatTimer(RiftRunRules.SecondsLeft(run.StartedAt, DateTime.UtcNow));
             SendMessageToPC(pilot, ColorToken.Cyan(
@@ -377,6 +382,50 @@ namespace SWLOR.Game.Server.Service
                 "Rift Run spoils", "RIFT RUN PAYOUT"));
         }
 
+        /// <summary>
+        /// A logged-out pilot's ship in a failed run takes what a ship destroyed online takes (<see cref="ApplyDeath"/>):
+        /// its cargo spills into the dying pocket, it is left at 1 hull and no shield for the repair bill, and its pilot
+        /// takes the XP debt at their next login. Modules stay installed, as no player destroyed it.
+        /// </summary>
+        private static void ForfeitAwayShip(RiftRun run, PlayerShip ship, Location location)
+        {
+            Trade.SpillCargo(ship, location);
+            ship.Status.PendingRiders?.Clear();
+            ship.Status.Hull = 1;
+            ship.Status.Shield = 0;
+            DB.Set(ship);
+
+            var dbPlayer = run.PilotIds.TryGetValue(ship.Id, out var pilotId) ? DB.Get<Player>(pilotId) : null;
+            if (dbPlayer != null)
+            {
+                dbPlayer.PendingShipLossDebt = true;
+                DB.Set(dbPlayer);
+            }
+
+            Log.Write(LogGroup.Space, $"RIFT RUN - away ship {ship.Id} lost in a failed run; pilot {pilotId ?? "unknown"} owes the XP debt at login");
+        }
+
+        /// <summary>A pilot whose ship was lost while they were logged out takes the XP debt now.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyPendingShipLossDebt()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null || !dbPlayer.PendingShipLossDebt)
+                return;
+
+            // The flag clears in the same write as the debt, so a restart neither repeats nor loses it.
+            dbPlayer.PendingShipLossDebt = false;
+            DB.Set(dbPlayer);
+            var debt = Death.ApplyPenalties(player);
+            DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
+                $"The Rift Run failed while you were away. Your ship was wrecked in the collapsing pocket and towed home at 1 hull, its cargo lost. You take {debt} XP debt.")));
+        }
+
         private static void ReturnFromRiftPocket(RiftRun run, uint pilot)
         {
             if (!GetIsObjectValid(pilot) || GetArea(pilot) != run.Area)
@@ -411,7 +460,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Removes a finished pocket once no player is in it. Ships left in it by pilots who logged out are sent back to
-        /// their docks.
+        /// their docks; when the run failed they first take the losses of a ship destroyed in the collapse
+        /// (<see cref="ForfeitAwayShip"/>).
         /// </summary>
         private static void CloseRiftPocket(RiftRun run)
         {
@@ -428,8 +478,10 @@ namespace SWLOR.Game.Server.Service
             foreach (var (shipId, clone) in _shipClones.Where(x => GetIsObjectValid(x.Value) && GetArea(x.Value) == run.Area).ToList())
             {
                 _shipClones.Remove(shipId);
-                DestroyObject(clone);
                 var dbShip = DB.Get<PlayerShip>(shipId);
+                if (run.Failed && dbShip != null)
+                    ForfeitAwayShip(run, dbShip, GetLocation(clone));
+                DestroyObject(clone);
                 var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
                 if (dbProperty != null && dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition))
                     DB.Set(dbProperty);

@@ -37,6 +37,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// to. Their pilot rejoins at the current chamber on taking the controls again while the run is open.
         /// </summary>
         public Dictionary<string, Location> AwayShips { get; set; } = new();
+
+        /// <summary>The player ID of the pilot flying each ship in the run, by ship ID, so an away ship's losses find them.</summary>
+        public Dictionary<string, string> PilotIds { get; set; } = new();
+
+        /// <summary>
+        /// The run collapsed or was abandoned unfinished. Ships whose pilots logged out then take the same losses as
+        /// ships destroyed in the collapse, so logging out never escapes a failing run.
+        /// </summary>
+        public bool Failed { get; set; }
         public List<uint> Enemies { get; set; } = new();
     }
 }

@@ -313,10 +313,12 @@ public class RiftRunTests
         fighting.Phase = RiftRunPhase.Fighting;
         RiftRunRules.Step(fighting, 3, 2, Start.AddSeconds(RiftRunTuning.TimerSeconds)).Should().Be(RiftRunAction.Collapse);
         fighting.Phase.Should().Be(RiftRunPhase.Closing);
+        fighting.Failed.Should().BeTrue("ships whose pilots logged out take the collapse's losses too");
 
         var empty = Run();
         RiftRunRules.Step(empty, 0, 0, Start.AddSeconds(2)).Should().NotBe(RiftRunAction.Abandon, "ships are still arriving");
         RiftRunRules.Step(empty, 0, 0, Start.AddSeconds(RiftRunRules.ArrivalGraceSeconds)).Should().Be(RiftRunAction.Abandon);
+        empty.Failed.Should().BeTrue("a run every pilot left unfinished has failed");
 
         var runs = ReadSource("Service", "SpaceRiftRuns.cs");
         var collapse = runs.Substring(runs.IndexOf("private static void CollapseRiftPocket", StringComparison.Ordinal));

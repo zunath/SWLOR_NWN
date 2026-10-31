@@ -57,6 +57,10 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, string> _incursionLastHit = new();
         private static readonly Dictionary<string, string> _incursionPilotNames = new();
 
+        // Damage incursion ships dealt to each player ship and no repair has restored yet: only this counts as repair
+        // contribution, so damage from players, hazards or anything else cannot be repaired for points.
+        private static readonly Dictionary<uint, int> _incursionDamageTaken = new();
+
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleIncursions()
         {
@@ -543,6 +547,7 @@ namespace SWLOR.Game.Server.Service
             _incursionDamage.Clear();
             _incursionLastHit.Clear();
             _incursionPilotNames.Clear();
+            _incursionDamageTaken.Clear();
             _incursionSpawned = false;
         }
 
@@ -709,8 +714,15 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Called by both ship damage paths: a player ship's damage to an incursion ship counts toward its kill.</summary>
         private static void RecordIncursionDamage(uint attacker, uint target, int amount)
         {
-            if (amount <= 0 || !GetIsPC(attacker))
+            if (amount <= 0)
                 return;
+
+            if (!GetIsPC(attacker))
+            {
+                if (IncursionRecord.Active != null && GetIsPC(target) && !string.IsNullOrEmpty(GetLocalString(attacker, IncursionRoleVariable)))
+                    _incursionDamageTaken[target] = IncursionRules.AddDamageTaken(_incursionDamageTaken.GetValueOrDefault(target), amount);
+                return;
+            }
 
             // A capital battle ship (W11p) is tracked apart from the incursion's ships, so neither event clears the other's book.
             if (_capitalBattleArea != null && GetLocalInt(target, CapitalBattleVariable) == 1)
@@ -783,13 +795,19 @@ namespace SWLOR.Game.Server.Service
             if (area == null)
                 return;
 
+            // Only damage incursion ships dealt counts, and each point of it only once.
+            var credited = IncursionRules.CreditableRepair(_incursionDamageTaken.GetValueOrDefault(repaired), restored);
+            if (credited <= 0)
+                return;
+
+            _incursionDamageTaken[repaired] -= credited;
             var aboard = GetShipCrewPlayers(ship);
-            var points = IncursionRules.RepairPoints(restored, area.Tier);
+            var points = IncursionRules.RepairPoints(credited, area.Tier);
             foreach (var player in aboard)
             {
                 var contribution = GetContribution(incursion, player);
                 IncursionRules.AddPoints(contribution, area.Tier, points / aboard.Count);
-                contribution.Repairs += restored / aboard.Count;
+                contribution.Repairs += credited / aboard.Count;
             }
 
             _incursionDirty = true;

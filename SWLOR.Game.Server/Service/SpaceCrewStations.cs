@@ -117,19 +117,18 @@ namespace SWLOR.Game.Server.Service
             SpaceCombatMath.ScaleByPercent(amount, GetSeatSkillBonusPercent(ship, type));
 
         /// <summary>
-        /// Why a crew member cannot switch a station module on, or an empty string. The module's rank is checked
-        /// against the seat's skill (plan section 10, "Gear rank on stations").
+        /// Why a crew member cannot switch a station module on, or an empty string. A ship-skill rank is checked
+        /// against the seat's skill and any other skill, such as Gathering, against that skill (plan section 10,
+        /// "Gear rank on stations").
         /// </summary>
         private static string GetStationRankError(uint crewMember, ShipCrewSeat seat, ShipStatus.ShipStatusModule module)
         {
-            var required = ShipCrewSeats.GetRequiredRank(module?.RequiredSkills);
-            if (required <= 0)
+            var unmet = ShipCrewSeats.GetUnmetRequirement(module?.RequiredSkills, ShipCrewSeats.GetSeatSkill(seat),
+                skill => GetPlayerSkillRank(crewMember, skill));
+            if (unmet == null)
                 return string.Empty;
 
-            var skill = ShipCrewSeats.GetSeatSkill(seat);
-            if (GetPlayerSkillRank(crewMember, skill) >= required)
-                return string.Empty;
-
+            var (skill, required) = unmet.Value;
             return $"You need {Skill.GetSkillDetails(skill).Name} rank {required} to work this module at the {ShipCrewSeats.GetSeatName(seat)} station.";
         }
 
@@ -156,7 +155,7 @@ namespace SWLOR.Game.Server.Service
 
             var meetsRank = crewed &&
                             (!TryGetFittedModule(status, slotNumber, out var module) ||
-                             ShipCrewSeats.MeetsRank(module.RequiredSkills, GetPlayerSkillRank(crewMember, ShipCrewSeats.GetSeatSkill(seat))));
+                             ShipCrewSeats.MeetsRank(module.RequiredSkills, ShipCrewSeats.GetSeatSkill(seat), skill => GetPlayerSkillRank(crewMember, skill)));
 
             return ShipCrewSeats.SeatEffectiveness(crewed, meetsRank, crewed ? SpaceCrew.GetCrewEffectiveness(ship) : 0.0);
         }

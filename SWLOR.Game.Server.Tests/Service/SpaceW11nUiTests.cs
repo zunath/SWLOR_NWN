@@ -105,7 +105,8 @@ public class SpaceW11nUiTests
     [TestCase(0.25, 25, false)]
     [TestCase(0.75, 74, true)]
     [TestCase(0.75, 75, false)]
-    [TestCase(1.05, 99, true)]
+    [TestCase(1.05, 84, true)]
+    [TestCase(1.05, 85, false)]
     [TestCase(0.0, 0, false)]
     public void ADroidsSlicingChance_IsItsStationEffectiveness(double effectiveness, int roll, bool succeeds)
     {

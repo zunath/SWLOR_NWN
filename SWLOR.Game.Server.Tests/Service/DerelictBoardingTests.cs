@@ -412,6 +412,9 @@ public class DerelictBoardingTests
         }
 
         DerelictRules.StrongboxCredits(tierIndex, 10).Should().Be(DerelictRules.StrongboxCredits(tierIndex, DerelictTuning.MaximumWaves));
+        DerelictRules.IsPaidBoarder(new HashSet<string> { "fighter" }, "fighter", false).Should().BeTrue();
+        DerelictRules.IsPaidBoarder(new HashSet<string> { "fighter" }, "passenger", false).Should().BeFalse("an idle passenger is not paid");
+        DerelictRules.IsPaidBoarder(new HashSet<string>(), "opener", true).Should().BeTrue("the opener is paid");
         DerelictRules.StrongboxLockboxes(0).Should().Be(1);
         DerelictRules.StrongboxLockboxes(2).Should().Be(3);
         DerelictRules.DefenderCredits(tierIndex, 2).Should().Be((int)Math.Round(DerelictRules.StrongboxCredits(tierIndex, 2) * 0.5, MidpointRounding.AwayFromZero));

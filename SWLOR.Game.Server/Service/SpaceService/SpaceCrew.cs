@@ -35,10 +35,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static double GetCrewEffectiveness(uint ship) =>
             ShipCrewSeats.CapEffectiveness(GetCrewMultiplier(ship));
 
-        /// <summary>The ship's crew multiplier from Crew Morale and the captain's Leadership, before the cap.</summary>
-        public static double GetCrewMultiplier(uint ship) =>
+        /// <summary>
+        /// The ship's crew multiplier from Crew Morale, the hull's signature (<see cref="ShipCrewSeats.GetHullCrewBonusPercent"/>)
+        /// and the captain's Leadership, before the cap; <paramref name="droid"/> picks the hull's droid crew bonus.
+        /// </summary>
+        public static double GetCrewMultiplier(uint ship, bool droid = false) =>
             EffectivenessMultiplier(
-                Stat.GetStatAdjustment(ship, StatType.SpaceCrewEffectivenessPercentAdjustment),
+                Stat.GetStatAdjustment(ship, StatType.SpaceCrewEffectivenessPercentAdjustment) +
+                ShipCrewSeats.GetHullCrewBonusPercent(Space.GetShipStatus(ship)?.ItemTag, droid),
                 SpaceCommand.GetLeadershipCrewBonusPercent(ship));
 
         /// <summary>
@@ -48,7 +52,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static double GetDroidEffectiveness(uint ship, ShipDroidCrew droid) =>
             droid == null
                 ? 0.0
-                : DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Industry, GetCrewMultiplier(ship));
+                : DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Industry, GetCrewMultiplier(ship, true));
 
         /// <summary>
         /// What a droid's Industry rating (plan section 27) adds to its base effectiveness at its seat: up to +50% at

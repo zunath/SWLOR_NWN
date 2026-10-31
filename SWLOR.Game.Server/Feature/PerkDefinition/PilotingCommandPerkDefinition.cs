@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CommandCrewMoraleTrait)
-                .Description("Crew and droid crew aboard your ship work their stations at +10% effectiveness. Leadership rank adds +1% crew effectiveness per 10 ranks (+5% at 50). Crew effectiveness is capped at 105%, so these bonuses matter most for droid crew.")
+                .Description("Droid crew aboard your ship work their stations at +10% effectiveness. Player crew work at 100% and at most 105%, so they gain +5% at most, less what Leadership already gives (Leadership adds +1% per 10 ranks, +5% at 50).")
                 .IncreasesStat(StatType.SpaceCrewEffectivenessPercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Piloting, 15);

@@ -175,6 +175,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (shipsLeft <= 0 && (now - run.StartedAt).TotalSeconds >= ArrivalGraceSeconds)
             {
                 run.Phase = RiftRunPhase.Closing;
+                run.Failed = true;
                 return RiftRunAction.Abandon;
             }
 
@@ -206,6 +207,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (secondsLeft <= 0)
             {
                 run.Phase = RiftRunPhase.Closing;
+                run.Failed = true;
                 return RiftRunAction.Collapse;
             }
 

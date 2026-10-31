@@ -32,6 +32,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public DateTime StartedAt { get; set; }
 
+        /// <summary>
+        /// The player IDs of boarders who fought aboard: on the enmity table of an enemy that died here, or its killer.
+        /// Only they (and whoever opens the strongbox) are paid from it.
+        /// </summary>
+        public HashSet<string> Participants { get; init; } = new();
+
         /// <summary>The strongbox was opened or the salvage team finished: nothing is left to take.</summary>
         public bool Looted { get; set; }
 

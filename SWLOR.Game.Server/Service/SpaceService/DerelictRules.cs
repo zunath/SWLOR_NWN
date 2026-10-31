@@ -259,6 +259,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
             (int)Math.Round(StrongboxCredits(tierIndex, wavesCleared) * DerelictTuning.DefenderSharePercent / 100.0,
                 MidpointRounding.AwayFromZero);
 
+        /// <summary>Whether a boarder aboard when the strongbox opens is paid: one who fought aboard, or the opener.</summary>
+        public static bool IsPaidBoarder(ICollection<string> participants, string playerId, bool isOpener) =>
+            isOpener || participants.Contains(playerId);
+
         /// <summary>The ground lockboxes each boarder finds in the strongbox: one more per wave cleared.</summary>
         public static int StrongboxLockboxes(int wavesCleared) =>
             DerelictTuning.StrongboxLockboxes + Math.Clamp(wavesCleared, 0, DerelictTuning.MaximumWaves);

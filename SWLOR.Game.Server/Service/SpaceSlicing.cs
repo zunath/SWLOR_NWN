@@ -136,6 +136,9 @@ namespace SWLOR.Game.Server.Service
             return (SlicingSourceType.Lockbox, 0);
         }
 
+        /// <summary>When the ship's slicing droid can start its next target (Unix seconds).</summary>
+        private const string DroidSlicingReadyVariable = "SPACE_DROID_SLICING_READY";
+
         /// <summary>Why the Data Analyzer cannot start on the target, or empty.</summary>
         public static string DataAnalyzerError(uint ship, uint target)
         {
@@ -164,9 +167,17 @@ namespace SWLOR.Game.Server.Service
             if (SlicingSession.Get(ship) != null)
                 return "The pilot is already slicing.";
 
+            // The droid runs the pilot's own slicing routines, so the pilot needs the Slicing rank a player would.
+            if (SlicingSession.GetSlicingRank(ship) < tier)
+                return SlicingSession.GetRankRequirementError(tier);
+
             var error = DroidCrewRules.GetSlicingError(droid.Tier, tier, IsShipInCombat(ship) || GetIsInCombat(ship));
             if (!string.IsNullOrEmpty(error))
                 return error;
+
+            var secondsLeft = GetLocalInt(ship, DroidSlicingReadyVariable) - (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            if (secondsLeft > 0)
+                return $"The droid is still working the last target ({secondsLeft} s).";
 
             if (GetArea(ship) != GetArea(target) || !SpaceSlicingRules.IsInAnalyzerRange(GetDistanceBetween(ship, target)))
                 return $"The target is out of your Data Analyzer's range ({SpaceSlicingTuning.AnalyzerRange:0} m).";
@@ -185,6 +196,7 @@ namespace SWLOR.Game.Server.Service
             if (droidContext?.Droid != null)
             {
                 var (droidSource, droidTier) = GetAnalyzerTarget(target);
+                SetLocalInt(ship, DroidSlicingReadyVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + DroidCrewRules.SlicingSeconds);
                 if (DroidCrewRules.SlicingSucceeds(droidContext.Effectiveness, Random.Next(100)))
                     CompleteSlicing(ship, target, droidSource, droidTier);
                 else

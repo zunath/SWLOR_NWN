@@ -260,6 +260,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static IncursionPayout ClaimPending(Dictionary<string, IncursionPayout> pending, string playerId, bool canDeliver) =>
             canDeliver && pending.Remove(playerId, out var payout) ? payout : null;
 
+        /// <summary>A ship's ledger of damage incursion ships dealt it, after another hit.</summary>
+        public static int AddDamageTaken(int ledger, int amount) => Math.Max(0, ledger) + Math.Max(0, amount);
+
+        /// <summary>
+        /// How much of a repair counts as contribution: only damage incursion ships dealt the repaired ship and no
+        /// earlier repair has counted (<paramref name="ledger"/>), so player-dealt or repeated damage earns nothing.
+        /// </summary>
+        public static int CreditableRepair(int ledger, int restored) => Math.Max(0, Math.Min(ledger, restored));
+
         /// <summary>Points for repairing an ally in an area of this tier.</summary>
         public static double RepairPoints(int restored, int tier)
         {

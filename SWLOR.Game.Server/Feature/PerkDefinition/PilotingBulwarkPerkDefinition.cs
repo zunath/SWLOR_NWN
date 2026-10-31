@@ -76,7 +76,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.SpaceDefianceNextAttackDamageBonus, 12)
                 .IncreasesStat(StatType.SpaceDefianceNextAttackDamageDurationSeconds, 30)
                 .Price(2)
-                .RequirementSkill(SkillType.Piloting, 5);
+                .RequirementSkill(SkillType.Piloting, 10)
+                .RequirementMustHavePerk(PerkType.BulwarkDefiance);
         }
 
         private void Bulwark()

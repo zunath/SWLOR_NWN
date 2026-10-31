@@ -477,6 +477,30 @@ namespace SWLOR.Game.Server.Service
             boarding.Enemies.Add(enemy);
         }
 
+        /// <summary>
+        /// A derelict enemy's death marks the boarders who fought it as participants: every player on its enmity table
+        /// (attackers and healers both) and its killer. Passengers who never joined the fight are not paid.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
+        public static void RecordDerelictParticipants()
+        {
+            var enemy = OBJECT_SELF;
+            var signatureId = GetLocalString(enemy, DerelictInteriorVariable);
+            if (string.IsNullOrEmpty(signatureId))
+                return;
+
+            var boarding = FindDerelict(signatureId);
+            if (boarding == null)
+                return;
+
+            var fighters = Enmity.GetEnmityTable(enemy).Keys.Append(GetLastKiller());
+            foreach (var fighter in fighters)
+            {
+                if (GetIsPC(fighter) && !GetIsDM(fighter) && !GetIsDMPossessed(fighter))
+                    boarding.Participants.Add(GetObjectUUID(fighter));
+            }
+        }
+
         private static int PruneDerelictEnemies(DerelictBoarding boarding)
         {
             boarding.Enemies.RemoveAll(x => !GetIsObjectValid(x) || GetIsDead(x));
@@ -735,7 +759,10 @@ namespace SWLOR.Game.Server.Service
             var credits = DerelictRules.StrongboxCredits(boarding.TierIndex, boarding.WavesCleared);
             var lockboxes = DerelictRules.StrongboxLockboxes(boarding.WavesCleared);
             var lockbox = DerelictRules.LockboxResref(boarding.TierIndex);
-            var boarders = GetPlayersInArea(boarding.Interior);
+            // Only boarders who fought aboard, and the opener, are paid; DMs and idle passengers are not.
+            var boarders = GetPlayersInArea(boarding.Interior)
+                .Where(x => !GetIsDM(x) && !GetIsDMPossessed(x) && DerelictRules.IsPaidBoarder(boarding.Participants, GetObjectUUID(x), x == user))
+                .ToList();
             foreach (var boarder in boarders)
             {
                 GiveGoldToCreature(boarder, credits);

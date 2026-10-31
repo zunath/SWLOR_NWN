@@ -208,7 +208,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// player's does: the target is lost.
         /// </summary>
         public static bool SlicingSucceeds(double effectiveness, int roll) =>
-            roll < Math.Clamp((int)Math.Round(effectiveness * 100.0), 0, 100);
+            roll < Math.Clamp((int)Math.Round(Math.Min(effectiveness, MaximumSlicingChance) * 100.0), 0, 100);
+
+        /// <summary>A droid never slices more reliably than a matched-rank player (plan section 24: 85%).</summary>
+        public const double MaximumSlicingChance = 0.85;
+
+        /// <summary>
+        /// Seconds a droid works one target before it can start another: a matched-rank player's time on one board
+        /// (plan section 24: 1.5 minutes), so a droid saves the pilot the mini-game, not the time.
+        /// </summary>
+        public const int SlicingSeconds = 90;
 
         /// <summary>Whether a droid runs this module while shield is low.</summary>
         public static bool RunsWhenShieldLow(ShipModuleType type) =>

@@ -1,5 +1,7 @@
 using SWLOR.CombatSim.SpaceCombat.Scenario;
 using SWLOR.Game.Server.Service;
+using SpaceCombatMath = SWLOR.Game.Server.Service.SpaceService.SpaceCombatMath;
+using SpaceRepeatedHits = SWLOR.Game.Server.Service.SpaceService.SpaceRepeatedHits;
 
 namespace SWLOR.CombatSim.SpaceCombat.Engine;
 
@@ -40,19 +42,20 @@ public static class SpaceShotMath
         Math.Pow(1.0 - scenario.SizeDamagePenaltyPerStep, Math.Max(0, -SizeSteps(attacker, weapon, target)));
 
     /// <summary>
-    /// The ground critical rate with module rank / 10 as weapon rank and attacker PER against target VIT. The
+    /// The ground critical rate with module rank / 10 as weapon rank, attacker PER against target VIT, and the ship's
+    /// critical rate percent as the formula's modifier (Space.RollWeaponShot passes the pilot's Critical Rate stats). The
     /// game's 5-50 limits apply through Combat.CalculateCriticalRate unless the scenario names its own.
     /// </summary>
     public static int CriticalChance(SpaceScenarioSpec scenario, ShipState attacker, WeaponModuleSpec weapon, ShipState target)
     {
         if (scenario.CriticalRateMinimum == null && scenario.CriticalRateMaximum == null)
-            return Combat.CalculateCriticalRate(attacker.Pilot.Per, target.Pilot.Vit, weapon.Rank, 0);
+            return Combat.CalculateCriticalRate(attacker.Pilot.Per, target.Pilot.Vit, weapon.Rank, attacker.Spec.CriticalRatePercent);
 
         // Combat.CalculateCriticalRate clamps to its fixed limits, so an override clamps its unclamped sum.
         var skillBonus = Math.Max(0, weapon.Rank / 10);
         var statBonus = Math.Clamp((int)Math.Floor((attacker.Pilot.Per - target.Pilot.Vit) / 5.0f), 0, 3);
         return Math.Clamp(
-            Combat.MinimumCriticalRate + skillBonus + statBonus,
+            Combat.MinimumCriticalRate + skillBonus + statBonus + attacker.Spec.CriticalRatePercent,
             scenario.CriticalRateMinimum ?? 0,
             scenario.CriticalRateMaximum ?? 100);
     }
@@ -72,6 +75,29 @@ public static class SpaceShotMath
             critical ? Combat.StandardCriticalRating : 0,
             DeltaCap(weapon.Rank));
 
-    /// <summary>The share of damage a resistance lets through.</summary>
-    public static double ResistanceMultiplier(ShipState target, SpaceDamageType type) => 1.0 - target.Resistance(type) / 100.0;
+    /// <summary>The share of damage a resistance lets through (SpaceCombatMath.ResistanceMultiplier, limited to -100..100).</summary>
+    public static double ResistanceMultiplier(ShipState target, SpaceDamageType type) =>
+        SpaceCombatMath.ResistanceMultiplier(target.Resistance(type));
+
+    /// <summary>The ship's outgoing damage multiplier for a damage type: 1 + its damage bonus percent / 100.</summary>
+    public static double DamageBonusMultiplier(ShipState attacker, SpaceDamageType type) =>
+        1.0 + attacker.Spec.DamageBonusPercent.Get(type) / 100.0;
+
+    /// <summary>
+    /// Sustained Fire (SpaceSustainedFire.RegisterHit): an energy hit on the same target as the ship's last one adds a
+    /// stack, a hit on another target starts again at one, and the shot gets stacks x DMG per hit, up to the maximum.
+    /// Shots in a fight never pause the 30 s the stacks last, so they do not expire here.
+    /// </summary>
+    public static int RegisterRepeatedHit(ShipState attacker, WeaponModuleSpec weapon, ShipState target)
+    {
+        var perHit = attacker.Spec.EnergyRepeatedHitDmg;
+        var maximum = attacker.Spec.EnergyRepeatedHitMaxDmg;
+        if (weapon.Family != ModuleFamily.Energy || perHit <= 0 || maximum <= 0)
+            return 0;
+
+        var stacks = attacker.RepeatedHitTarget == target ? attacker.RepeatedHitStacks : 0;
+        attacker.RepeatedHitTarget = target;
+        attacker.RepeatedHitStacks = Math.Min(stacks + 1, SpaceRepeatedHits.GetMaximumStacks(perHit, maximum));
+        return SpaceRepeatedHits.GetBonus(attacker.RepeatedHitStacks, perHit, maximum);
+    }
 }

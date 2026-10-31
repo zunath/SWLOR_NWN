@@ -150,6 +150,32 @@ public class SpaceFightTests
     }
 
     [Test]
+    public void SpaceFight_BurstAbilityWithTwoShots_PaysOnceAndFiresTwice()
+    {
+        var laser = SpaceTestShips.Laser(dmg: 10, cycleSeconds: 1000);
+        var attacker = SpaceTestShips.Ship("Gunship", capacitor: 100, weapons: laser);
+        attacker.Accuracy = 1000;
+        attacker.Pilot.MaxStm = 100;
+        attacker.Abilities.Add(new BurstAbilitySpec
+        {
+            Name = "Double Shot", Weapon = "Laser", BonusDmg = 20, Shots = 2, CooldownSeconds = 100, StmCost = 10
+        });
+        var single = SpaceTestShips.Ship("Gunship", capacitor: 100, weapons: SpaceTestShips.Laser(dmg: 10, cycleSeconds: 1000));
+        single.Accuracy = 1000;
+        single.Pilot.MaxStm = 100;
+        single.Abilities.Add(new BurstAbilitySpec { Name = "Shot", Weapon = "Laser", BonusDmg = 20, CooldownSeconds = 100, StmCost = 10 });
+
+        var twice = new SpaceFight(SpaceTestShips.Scenario(attacker, SpaceTestShips.Ship("Target", hull: 1000000), durationSeconds: 5), seed: 3);
+        var once = new SpaceFight(SpaceTestShips.Scenario(single, SpaceTestShips.Ship("Target", hull: 1000000), durationSeconds: 5), seed: 3);
+        twice.Run();
+        once.Run();
+
+        twice.Ships[0].Stm.Should().Be(90);
+        twice.Ships[0].Abilities[0].Clock.Fired.Should().Be(1);
+        twice.Ships[0].DamageDealt.Should().BeGreaterThan(once.Ships[0].DamageDealt);
+    }
+
+    [Test]
     public void SpaceFight_SameSeed_GivesTheSameResult()
     {
         var scenario = SpaceTestShips.Scenario(

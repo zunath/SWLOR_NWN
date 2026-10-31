@@ -64,6 +64,8 @@ public static class SpaceScenarioValidator
         RequireNotNegative(label, "pilot.maxStm", ship.Pilot.MaxStm);
         RequireNotNegative(label, "pilot.stmRegenPerSecond", ship.Pilot.StmRegenPerSecond);
         RequireResistances(label, ship.Resistances);
+        if (ship.EnergyRepeatedHitDmg < 0 || ship.EnergyRepeatedHitMaxDmg < 0)
+            throw Invalid($"{label} needs energyRepeatedHitDmg and energyRepeatedHitMaxDmg of at least 0.");
 
         var weapons = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var weapon in ship.Weapons)
@@ -117,6 +119,8 @@ public static class SpaceScenarioValidator
                 throw Invalid($"{name} needs cooldownSeconds of at least {MinimumCycleSeconds}.");
             RequireNotNegative(name, "capacitorCost", ability.CapacitorCost);
             RequireNotNegative(name, "stmCost", ability.StmCost);
+            if (ability.Shots < 1)
+                throw Invalid($"{name} needs shots of at least 1.");
         }
     }
 

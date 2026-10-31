@@ -172,7 +172,12 @@ public sealed class SpaceFight
             ship.Stm -= spec.StmCost;
             clock.StartCooldown(now);
             clock.Fired++;
-            _resolver.Fire(ship, weapon, spec.BonusDmg, target);
+            for (var shot = 0; shot < Math.Max(1, spec.Shots); shot++)
+            {
+                if (!target.IsAlive)
+                    break;
+                _resolver.Fire(ship, weapon, spec.BonusDmg, target);
+            }
         }
     }
 }

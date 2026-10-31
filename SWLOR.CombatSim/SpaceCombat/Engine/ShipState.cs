@@ -36,6 +36,11 @@ public sealed class ShipState
 
     public bool IsAlive => Hull > 0;
 
+    /// <summary>Sustained Fire: the ship its last energy hit landed on, and the stacks built on it.</summary>
+    public ShipState RepeatedHitTarget { get; set; }
+
+    public int RepeatedHitStacks { get; set; }
+
     /// <summary>Shield and hull points this ship's shots removed from enemies.</summary>
     public double DamageDealt { get; set; }
 

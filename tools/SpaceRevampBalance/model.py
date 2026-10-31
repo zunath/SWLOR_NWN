@@ -221,13 +221,83 @@ MAKERS = {
 ADVANCED = dict(pool=10, flat=2)
 
 
-def attr(rank):
-    return round(16 + 0.2 * rank)
+# ---------------------------------------------------------------------------------------------------------------
+# Legal pilot builds
+# ---------------------------------------------------------------------------------------------------------------
+# Every attribute starts at 10. Character creation spends 15 points, at most 6 on one attribute
+# (CharacterFullRebuildViewModel.MaxAbilityIncreases); 1 AP comes with every 10 SP, 40 at the 400 SP cap
+# (Skill.ApplyAbilityPoint, Skill.APCap); one racial point (Stat.GetPlayerAttributeScore). AP buy an attribute up to 26,
+# 27 with the racial point (CharacterSheetViewModel.MaxPurchasedAttributeScore). SOC is the sixth attribute and gets
+# nothing here. So a 400 SP character has 56 points above 10 across all six attributes.
+CREATION_POINTS = 15
+CREATION_MAX = 6
+AP_CAP = 40
+RACIAL_POINTS = 1
+PURCHASED_CAP = 26
+ATTRIBUTES = ("per", "agi", "vit", "wil", "mgt")
 
 
-def pilot_for(rank, build="ranged"):
-    a = attr(rank)
-    return {"agi": a, "per": a, "vit": a, "wil": a, "mgt": a}
+def total_sp(rank):
+    """A pilot's total SP at a tier rank: 8 per rank, the pace that reaches 400 at the top of T5 (rank 45 + 5), so T5
+    pilots carry every AP. The rank is the module rank the tier flies; ground skills fill the rest of the SP."""
+    return min(400, 8 * (rank + 5))
+
+
+def attribute_points(rank):
+    """Points above 10 a character at this rank can hold: creation + AP + the racial point."""
+    return CREATION_POINTS + min(AP_CAP, total_sp(rank) // 10) + RACIAL_POINTS
+
+
+# Reference builds at 400 SP (56 points above 10). Lower tiers keep each build's shape, scaled to their points.
+BUILDS = {
+    "A": dict(label="dedicated energy pilot", family="Energy", per=17, agi=16, vit=12, wil=11, mgt=0),
+    "B": dict(label="dedicated launcher pilot", family="Launcher", mgt=17, per=16, vit=12, wil=11, agi=0),
+    "C": dict(label="ground fighter adding Piloting", family="Launcher", mgt=17, agi=15, vit=12, per=6, wil=6),
+    "D": dict(label="even spread", family="Energy", mgt=12, per=11, agi=11, vit=11, wil=11),
+}
+
+
+def build_attributes(build, rank):
+    """The build's attributes at this rank: its 400 SP shape scaled to the rank's points, largest remainder."""
+    shape = BUILDS[build]
+    full = sum(shape[a] for a in ATTRIBUTES)
+    points = attribute_points(rank)
+    exact = {a: shape[a] * points / full for a in ATTRIBUTES}
+    out = {a: int(exact[a]) for a in ATTRIBUTES}
+    for a in sorted(ATTRIBUTES, key=lambda a: (-(exact[a] - out[a]), ATTRIBUTES.index(a)))[:points - sum(out.values())]:
+        out[a] += 1
+    return {a: 10 + v for a, v in out.items()}
+
+
+def check_legal(attributes, rank):
+    """Raises if the attributes cannot be bought at this rank."""
+    above = {a: attributes[a] - 10 for a in ATTRIBUTES}
+    points = attribute_points(rank)
+    if sum(above.values()) > points:
+        raise ValueError(f"{attributes}: {sum(above.values())} points above 10, {points} at rank {rank}")
+    if min(above.values()) < 0:
+        raise ValueError(f"{attributes}: an attribute below 10")
+    capped = [a for a, v in above.items() if v > PURCHASED_CAP - 10]
+    if any(above[a] > PURCHASED_CAP - 10 + RACIAL_POINTS for a in capped) or len(capped) > RACIAL_POINTS:
+        raise ValueError(f"{attributes}: above {PURCHASED_CAP} (only the racial point goes past it)")
+    ap = min(AP_CAP, total_sp(rank) // 10)
+    # Creation points go first (at most 6 an attribute); AP and the racial point cover the rest.
+    creation = min(CREATION_POINTS, sum(min(CREATION_MAX, v) for v in above.values()))
+    if sum(above.values()) - creation > ap + RACIAL_POINTS:
+        raise ValueError(f"{attributes}: needs more than {ap} AP at rank {rank}")
+
+
+def legal_pilot(build, rank):
+    """A legal pilot for the simulator: the build's attributes at this rank, STM from MGT (Stat.GetMaxStamina: 10 + MGT x
+    3 / 2, no gear) and STM regen (NaturalRegeneration: 10 + MGT / 4 per 30 s, no gear)."""
+    a = build_attributes(build, rank)
+    check_legal(a, rank)
+    return dict(a, maxStm=10 + a["mgt"] * 3 // 2, stmRegenPerSecond=round((10 + a["mgt"] // 4) / 30, 4))
+
+
+def build_label(build, rank=45):
+    a = build_attributes(build, rank)
+    return f"{build}, {BUILDS[build]['label']} (" + " / ".join(f"{k.upper()} {a[k]}" for k in ATTRIBUTES) + ")"
 
 
 def hull_stats(role, maker=None, advanced=False, extra=None):
@@ -300,11 +370,12 @@ def routing_gain(mode, bonus=0):
 
 
 def routed(ship, mode, bonus=0):
-    """A player ship with the Engineer's power routing applied (weapon damage folds into _dmg, as hull bonuses do).
+    """A player ship with the Engineer's power routing applied (its weapon damage % joins the ship's damage bonus, as
+    PowerRoutingRules.WeaponDamagePercent does in Space.RollWeaponShot).
     bonus: the Engineer's Engineering bonus to the routing's gain (seat_skill_percent(rank, SEAT_SKILL["routing"]))."""
     r = routing_gain(mode, bonus)
     q = dict(ship)
-    q["_dmg"] = ship["_dmg"] + r["dmg"]
+    q["damageBonusPercent"] = {k: v + r["dmg"] for k, v in ship["damageBonusPercent"].items()}
     q["shieldRegenPerSecond"] = round(ship["shieldRegenPerSecond"] * (1 + r["regen"] / 100), 2)
     q["weapons"] = [dict(w, capacitorPerCycle=max(1, int(w["capacitorPerCycle"] * (1 + r["cap"] / 100) + 0.5)) if w["capacitorPerCycle"] else 0)
                     for w in ship["weapons"]]
@@ -312,13 +383,14 @@ def routed(ship, mode, bonus=0):
     return q
 
 
-def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=None, pilot=None, crew=1.0, named=False):
+def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=None, pilot=None, crew=1.0, named=False, build="A"):
     """fit: dict of module family -> count. Weapons go in High, the rest as listed. Every module at `rank`; with named,
     every module is its family's named rank-50 module (rank 45 plus a share of the rank 40 -> 45 step, rewards.py).
     crew: effectiveness of the station seats (1 = players at matching rank, 0.75 = the best droid, 0 = solo pilot).
-    Weapons fill Helm High slots first; the rest sit in Gunner slots."""
+    Weapons fill Helm High slots first; the rest sit in Gunner slots. build: the legal reference build (BUILDS) flying it,
+    unless pilot gives the attributes."""
     h = hull_stats(role, maker, advanced, extra)
-    p = pilot or pilot_for(rank)
+    p = pilot or legal_pilot(build, rank)
     size = h["size"]
     ms = T["module_size_mult"][size]
     r = min(45, (rank // 5) * 5) if named else (rank // 5) * 5
@@ -383,8 +455,11 @@ def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=No
             "attack": h["atk"], "accuracy": acc, "defense": df, "evasion": ev,
             "resistances": {"em": res, "thermal": res, "explosive": res},
             "pilot": p, "weapons": weapons, "repairers": repairers,
-            # Outgoing damage bonuses go on the target as negative resistance (see apply_outgoing).
-            "_dmg": h["dmg"] + h["crit"] * 0.25, "_explosive": h["explosive"]}
+            # ShipStatCalculator: the hull's damage percent on every type, its explosive percent on top.
+            "damageBonusPercent": {"em": h["dmg"], "thermal": h["dmg"], "explosive": h["dmg"] + h["explosive"]},
+            # The hull's critical bonus (ShipHullEntry.CriticalBonus) as Critical Rate. The server stores it on ShipStatus
+            # but does not read it yet; this models the published signature.
+            "criticalRatePercent": h["crit"]}
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -462,24 +537,13 @@ def npc_ship(role, level, difficulty="Normal", count=1, size=None, hp_scale=1.0,
             "repairers": []}
 
 
-def apply_outgoing(attacker, defender):
-    """Fold the attacker's damage % bonuses into the defender's resistances (sim has no outgoing-damage stat)."""
-    d = dict(defender)
-    res = dict(d["resistances"])
-    for k in res:
-        res[k] = round(res[k] - attacker.get("_dmg", 0))
-    res["explosive"] = round(res["explosive"] - attacker.get("_explosive", 0))
-    d["resistances"] = res
-    return d
-
-
 def clean(ship):
     return {k: v for k, v in ship.items() if not k.startswith("_")}
 
 
 def scenario(players, npcs, passive=False, duration=900):
-    a0 = players[0]
-    npcs = [apply_outgoing(a0, n) for n in npcs]
+    """Each ship carries its own outgoing damage, critical and damage-taken stats; the simulator applies them per shot
+    in Space.RollWeaponShot's order."""
     return {"name": "W0", "description": "W0 draft", "durationSeconds": duration, "timeStepSeconds": 0.1,
             "sizeHitPenaltyPerStep": T["size_hit_penalty"], "sizeDamagePenaltyPerStep": T["size_damage_penalty"],
             "attackers": {"name": "Player", "ships": [clean(p) for p in players]},
@@ -515,6 +579,25 @@ FIT = {
     "Cruiser": {"Turbolaser": 1, "Point-Defense Turret": 1, "Turbolaser#2": 3, "Point-Defense Turret#2": 1,
                 "Shield Booster": 1, "Targeting Computer": 1, "Shield Booster#2": 2, "Shield Repairer": 1,
                 "Hull Plating": 1, "Thrusters": 1, "Hull Plating#2": 2, "Capacitor Regulator": 1},
+    # Non-combat roles fitted to fight (checks B and J): every High slot a weapon, the rest as the combat hulls. A working
+    # fit (mining lasers, scanners, a cloak, cargo expanders) gives these slots up.
+    "Explorer": {"Laser Cannon": 1, "Shield Booster": 1, "Targeting Computer": 1, "Shield Repairer": 1, "Hull Plating": 1,
+                 "Thrusters": 1},
+    "Logistics": {"Laser Cannon": 2, "Shield Booster": 1, "Targeting Computer": 1, "Shield Repairer": 1, "Shield Booster#2": 1,
+                  "Hull Plating": 1, "Thrusters": 1, "Capacitor Regulator": 1},
+    "Mining Barge": {"Laser Cannon": 3, "Shield Booster": 1, "Targeting Computer": 1, "Hull Plating": 1, "Thrusters": 1,
+                     "Capacitor Regulator": 1},
+    "Light Freighter": {"Laser Cannon": 2, "Shield Booster": 1, "Targeting Computer": 1, "Hull Plating": 1, "Thrusters": 1,
+                        "Capacitor Regulator": 1},
+    "Blockade Runner": {"Laser Cannon": 2, "Shield Booster": 1, "Targeting Computer": 1, "Shield Repairer": 1, "Hull Plating": 1,
+                        "Thrusters": 1},
+    "Industrial": {"Laser Cannon": 3, "Shield Booster": 1, "Targeting Computer": 1, "Shield Booster#2": 1,
+                   "Hull Plating": 1, "Thrusters": 1, "Hull Plating#2": 1, "Capacitor Regulator": 1},
+    "Heavy Freighter": {"Laser Cannon": 2, "Shield Booster": 1, "Targeting Computer": 1, "Shield Repairer": 1,
+                        "Hull Plating": 1, "Thrusters": 1, "Hull Plating#2": 1, "Capacitor Regulator": 1},
+    "Command Ship": {"Turbolaser": 1, "Point-Defense Turret": 1, "Turbolaser#2": 2, "Point-Defense Turret#2": 1,
+                     "Shield Booster": 1, "Targeting Computer": 1, "Shield Booster#2": 3, "Shield Repairer": 1,
+                     "Hull Plating": 1, "Thrusters": 1, "Hull Plating#2": 2, "Capacitor Regulator": 1},
 }
 
 # ---------------------------------------------------------------------------------------------------------------

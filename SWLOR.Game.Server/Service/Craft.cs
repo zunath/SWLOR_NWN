@@ -1182,6 +1182,28 @@ namespace SWLOR.Game.Server.Service
             return (int)price;
         }
 
+        /// <summary>Whether the recipe is built at a station Shipyard (the space revamp's Capital hull deeds).</summary>
+        public static bool IsShipyardRecipe(RecipeDetail recipe) =>
+            recipe.Requirements.OfType<RecipeShipyardRequirement>().Any();
+
+        /// <summary>
+        /// The credits the station charges for one craft of the recipe beside the blueprint's cost: the Shipyard fee of the station whose
+        /// Shipyard the player stands at, for a Shipyard recipe. 0 for every other recipe.
+        /// </summary>
+        public static int GetStationFee(uint player, RecipeDetail recipe) =>
+            IsShipyardRecipe(recipe) ? StationBuildings.GetShipyardFee(StationBuildings.GetShipyardStation(player)) : 0;
+
+        /// <summary>Takes the station's fee for one craft of the recipe into the station's treasury. Returns false when it cannot be paid.</summary>
+        public static bool PayStationFee(uint player, RecipeDetail recipe) =>
+            !IsShipyardRecipe(recipe) || StationBuildings.PayShipyardFee(player, StationBuildings.GetShipyardStation(player));
+
+        /// <summary>
+        /// The station's bonus to a craft's progress, in percent: a droid assigned to the Shipyard speeds up Capital hull builds
+        /// (<see cref="StationService.StationDroidRules.ShipyardBuildSpeedPercent"/>). 0 for every other recipe.
+        /// </summary>
+        public static int GetStationProgressBonusPercent(uint player, RecipeDetail recipe) =>
+            IsShipyardRecipe(recipe) ? StationBuildings.GetShipyardSpeedPercent(player) : 0;
+
         /// <summary>
         /// Calculates the credit cost to craft a blueprint.
         /// </summary>

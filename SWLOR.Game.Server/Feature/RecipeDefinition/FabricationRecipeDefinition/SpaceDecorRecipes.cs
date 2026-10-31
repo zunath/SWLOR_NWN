@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 5)
-                .Component("elec_high", 5);
+                .Component("elec_high", 5)
+                .FabricatorParameters(frameSizePercent: 27, shellSizePercent: 30, frameQualityPercent: 16, shellQualityPercent: 23, wearRate: 8);
 
             // Star Map Pedestal: the bill and level of HoloDisplay
             _builder.Create(RecipeType.StarMapPedestal, SkillType.Fabrication)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 6)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 22, frameQualityPercent: 24, shellQualityPercent: 28, wearRate: 7);
 
             // Holo Star Globe: the bill and level of HoloProjector2
             _builder.Create(RecipeType.HoloStarGlobe, SkillType.Fabrication)
@@ -46,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 21, frameQualityPercent: 20, shellQualityPercent: 26, wearRate: 9);
 
             return _builder.Build();
         }

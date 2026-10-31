@@ -59,7 +59,7 @@ public static class QuickCraftService
         if (quantity < 1)
             return "You do not have the materials for this recipe.";
 
-        var batch = new QuickCraftBatch(NwnQuickCraftWorld.Instance, player, Craft.GetRecipe(recipeType), quantity);
+        var batch = new QuickCraftBatch(NwnQuickCraftWorld.Instance, player, recipeType, Craft.GetRecipe(recipeType), quantity);
         batch.OnEnded += finished =>
         {
             Batches.Remove(player);

@@ -31,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                     .Resref(step.Tag)
                     .Level(step.RecipeLevel)
                     .Quantity(1)
-                    .EnhancementSlots(RecipeEnhancementType.Module, step.Named ? NamedEnhancementSlots : 1);
+                    .EnhancementSlots(RecipeEnhancementType.Module, step.Named ? NamedEnhancementSlots : 1)
+                    .MinigameParameters(RecipeParameterTable.For(step.RecipeType));
 
                 if (step.Named)
                 {
@@ -52,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                     .Resref(hull.Tag)
                     .Level(hull.RecipeLevel)
                     .Quantity(1)
-                    .EnhancementSlots(RecipeEnhancementType.Starship, 1);
+                    .EnhancementSlots(RecipeEnhancementType.Starship, 1)
+                    .MinigameParameters(RecipeParameterTable.For(hull.RecipeType));
 
                 if (hull.Advanced)
                 {

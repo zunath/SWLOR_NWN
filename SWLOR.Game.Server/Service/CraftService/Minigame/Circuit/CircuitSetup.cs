@@ -17,6 +17,10 @@ public sealed class CircuitSetup
     /// <param name="gearCp">The CP from the crafter's gear.</param>
     /// <param name="enhancementProgressPenalty">The Assembly the selected enhancements add to what the piece needs.</param>
     /// <param name="perks">What the crafter's Engineering perks and style change; null plays without them.</param>
+    /// <param name="stationAssemblyPercent">
+    /// The crafting station's bonus to Assembly output, in percent: a droid assigned to a station Shipyard speeds up Capital hull builds
+    /// (space revamp). 0 everywhere else.
+    /// </param>
     public CircuitSetup(
         CircuitParameters parameters,
         int recipeLevel,
@@ -28,7 +32,8 @@ public sealed class CircuitSetup
         int control,
         int gearCp,
         int enhancementProgressPenalty = 0,
-        CircuitPerkStats perks = null)
+        CircuitPerkStats perks = null,
+        int stationAssemblyPercent = 0)
     {
         Parameters = parameters ?? CircuitParameters.Fallback;
         Perks = perks ?? CircuitPerkStats.None;
@@ -38,6 +43,7 @@ public sealed class CircuitSetup
         Control = Math.Max(0, control);
         GearCp = Math.Max(0, gearCp);
         EnhancementProgressPenalty = Math.Max(0, enhancementProgressPenalty);
+        StationAssemblyPercent = Math.Max(0, stationAssemblyPercent);
 
         var assemblyShare = Math.Clamp(Parameters.AssemblySharePercent, 1, 99);
         AssemblySize = Math.Max(1, (int)Math.Round(baseProgress * assemblyShare / 50.0, MidpointRounding.AwayFromZero));
@@ -63,6 +69,9 @@ public sealed class CircuitSetup
     public int Control { get; }
 
     public int GearCp { get; }
+
+    /// <summary>The crafting station's bonus to Assembly output, in percent (a station Shipyard's droid on Capital hulls).</summary>
+    public int StationAssemblyPercent { get; }
 
     /// <summary>The selected enhancements' total progress penalty, in the old window's progress units.</summary>
     public int EnhancementProgressPenalty { get; }
@@ -196,7 +205,8 @@ public sealed class CircuitSetup
     private double DischargePowerFactor() => 1.0 + Math.Max(0, Perks.DischargePowerPercent) / 100.0;
 
     private double AssemblyFactor() =>
-        (1.0 + Craftsmanship * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(CircuitRules.MaxRanksAboveRecipe);
+        (1.0 + Craftsmanship * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(CircuitRules.MaxRanksAboveRecipe) *
+        (1.0 + StationAssemblyPercent / 100.0);
 
     private double CalibrationFactor() =>
         (1.0 + Control * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(0);

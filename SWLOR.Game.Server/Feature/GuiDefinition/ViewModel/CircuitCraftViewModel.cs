@@ -139,7 +139,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Stat.CalculateControl(Player, recipe.Skill),
                 gearCp,
                 _slotPenalties.Sum(),
-                CircuitPerkStats.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
+                CircuitPerkStats.FromStats(stat => Stat.GetStatAdjustment(Player, stat)),
+                Craft.GetStationProgressBonusPercent(Player, recipe));
         }
 
         private void RefreshSetup()
@@ -150,13 +151,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var setup = BuildSetup();
             var parameters = setup.Parameters;
 
-            RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
+            RecipeName = $"Recipe: {recipe.Quantity}x {Craft.GetRecipeName(recipe)}";
             RecipeLevel = $"Recipe level {recipe.Level}  |  Your Engineering rank {setup.Rank}";
             GearSummary =
                 $"Craftsmanship {setup.Craftsmanship} (+{setup.Craftsmanship}% Assembly)  |  Control {setup.Control} (+{setup.Control}% Calibration)  |  CP {setup.MaxCp}";
             CircuitSummary =
                 $"Overload line {setup.OverloadLine}  |  Each Load point adds {setup.LoadBoostPercent}% output  |  " +
-                $"Work: {parameters.AssemblySharePercent}% Assembly, {100 - parameters.AssemblySharePercent}% Calibration";
+                $"Work: {parameters.AssemblySharePercent}% Assembly, {100 - parameters.AssemblySharePercent}% Calibration" +
+                (setup.StationAssemblyPercent > 0 ? $"  |  Shipyard droid: +{setup.StationAssemblyPercent}% Assembly" : string.Empty);
             NeedsSummary = setup.EnhancementAssembly > 0
                 ? $"Needs {setup.MaxAssembly} Assembly ({setup.EnhancementAssembly} added by enhancements) and {setup.MaxCalibration} Calibration. Integrity {setup.MaxIntegrity}."
                 : $"Needs {setup.MaxAssembly} Assembly and {setup.MaxCalibration} Calibration. Integrity {setup.MaxIntegrity}.";
@@ -370,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var name = Cache.GetItemNameByResref(recipe.Resref);
+            var name = Craft.GetRecipeName(recipe);
             ReturnToSetup(
                 $"Crafted {name} at {success.Outcome.QualityPercent}% quality. +{success.Outcome.Xp} XP.",
                 GuiColor.Green);

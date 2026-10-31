@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CraftingStyleSelection.Restore(Player);
             ForgeStyles.RemoveUnowned(Player);
 
-            var itemName = Cache.GetItemNameByResref(_recipeDetail.Resref);
+            var itemName = Craft.GetRecipeName(_recipeDetail);
             RecipeName = $"Recipe: {_recipeDetail.Quantity}x {itemName}";
             RecipeLevelText = $"Recipe level: {_recipeDetail.Level}";
             FailureRuleText =
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var outcome = success.Outcome;
-            var text = $"Crafted {Cache.GetItemNameByResref(_recipeDetail.Resref)} at {outcome.QualityPercent}% quality. {outcome.Xp} XP.";
+            var text = $"Crafted {Craft.GetRecipeName(_recipeDetail)} at {outcome.QualityPercent}% quality. {outcome.Xp} XP.";
             EndCraft(text, GuiColor.Green);
         }
 

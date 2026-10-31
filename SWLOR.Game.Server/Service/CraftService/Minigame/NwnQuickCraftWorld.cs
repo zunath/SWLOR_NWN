@@ -51,6 +51,15 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
 
     public bool HasComponents(uint player, RecipeDetail recipe)
     {
+        // A station's fee (a Shipyard's, on a Capital hull) is paid per item, so a batch stops when the credits run out.
+        var fee = Craft.GetStationFee(player, recipe);
+        if (fee > 0 && GetGold(player) < fee)
+            return false;
+
+        // Ship recipes plan rare-trait slots and stand-ins as a manual craft does (space revamp).
+        if (recipe.Category == RecipeCategoryType.Starship)
+            return NwnCraftSessionWorld.Instance.HasComponents(player, recipe);
+
         // The same test TryTakeComponents applies: the stacks of each component add up to the amount one craft needs.
         foreach (var (resref, quantity) in recipe.Components)
         {
@@ -132,7 +141,32 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
     }
 
     public bool TryConsumeComponents(uint player, RecipeDetail recipe) =>
-        NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, new List<string>());
+        TryConsumeComponents(player, RecipeType.Invalid, recipe);
+
+    public bool TryConsumeComponents(uint player, RecipeType recipeType, RecipeDetail recipe)
+    {
+        var fee = Craft.GetStationFee(player, recipe);
+        if (fee > 0 && GetGold(player) < fee)
+            return false;
+
+        var taken = new List<string>();
+        if (!NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, taken))
+            return false;
+
+        Craft.PayStationFee(player, recipe);
+
+        // The item made just before carries what the components pass on, as a manual craft's does (ship component traits).
+        if (_lastCreated.TryGetValue(player, out var last))
+        {
+            foreach (var item in last.Items)
+            {
+                if (GetIsObjectValid(item))
+                    NwnCraftSessionWorld.Instance.ApplyComponentTraits(item, recipeType, recipe, taken);
+            }
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Removes the units the player's last <see cref="CreateItem"/> made: the items it created, and for units that merged into a stack the

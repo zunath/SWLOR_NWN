@@ -35,6 +35,13 @@ public interface IQuickCraftWorld
     /// <summary>Takes exactly one craft's components. Returns false, taking nothing, when any are missing.</summary>
     bool TryConsumeComponents(uint player, RecipeDetail recipe);
 
+    /// <summary>
+    /// Takes exactly one craft's components and the station's fee for it, then gives the item just made what those components pass on
+    /// (a ship component variant's trait, or the traits a ship module or deed keeps; space revamp). Returns false, taking nothing, when
+    /// any are missing. The recipe type names the recipe the item was made from.
+    /// </summary>
+    bool TryConsumeComponents(uint player, RecipeType recipeType, RecipeDetail recipe) => TryConsumeComponents(player, recipe);
+
     /// <summary>Removes the base item <see cref="CreateItem"/> just made, when the components could not be taken after all.</summary>
     void RemoveCreatedItem(uint player, RecipeDetail recipe);
 

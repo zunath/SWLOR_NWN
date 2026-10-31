@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -65,32 +66,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public bool TryTakeComponents(uint player, RecipeDetail recipe, List<string> taken)
     {
-        var stacks = new List<uint>();
-        for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
-        {
-            if (recipe.Components.ContainsKey(GetResRef(item)))
-                stacks.Add(item);
-        }
-
-        // Plan from the last stack to the first; nothing is touched until every component is found.
-        var remaining = recipe.Components.ToDictionary(x => x.Key, y => y.Value);
-        var plan = new List<(uint Stack, int Quantity)>();
-        for (var index = stacks.Count - 1; index >= 0; index--)
-        {
-            var resref = GetResRef(stacks[index]);
-            if (!remaining.TryGetValue(resref, out var needed))
-                continue;
-
-            var quantity = Math.Min(GetItemStackSize(stacks[index]), needed);
-            plan.Add((stacks[index], quantity));
-
-            if (needed - quantity <= 0)
-                remaining.Remove(resref);
-            else
-                remaining[resref] = needed - quantity;
-        }
-
-        if (remaining.Count > 0)
+        var plan = PlanComponents(player, recipe);
+        if (plan == null)
             return false;
 
         foreach (var (stack, quantity) in plan)
@@ -111,6 +88,76 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
         return true;
     }
+
+    /// <summary>True when <see cref="TryTakeComponents"/> would find every component of one craft. Nothing is taken.</summary>
+    public bool HasComponents(uint player, RecipeDetail recipe) => PlanComponents(player, recipe) != null;
+
+    /// <summary>
+    /// Plans the units one craft takes, stack by stack, or returns null when a component is missing. Nothing is touched. Ship recipes
+    /// (space revamp) also collect the traited components that fill an Advanced deed's rare-trait slot or stand in for its rare
+    /// component, plan those first, and spend traited components where the crafted item keeps their traits
+    /// (<see cref="ShipComponents"/>); every other recipe plans exactly as before.
+    /// </summary>
+    private static List<(uint Stack, int Quantity)> PlanComponents(uint player, RecipeDetail recipe)
+    {
+        var stacks = new List<uint>();
+        for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+        {
+            if (recipe.Components.ContainsKey(GetResRef(item)) || ShipComponents.IsStandInCandidate(recipe, item))
+                stacks.Add(item);
+        }
+
+        stacks = ShipComponents.OrderForConsumption(recipe, stacks);
+
+        var remaining = recipe.Components.ToDictionary(x => x.Key, y => y.Value);
+        var plan = new List<(uint Stack, int Quantity)>();
+        var planned = new Dictionary<uint, int>();
+        foreach (var standIn in ShipComponents.ReserveRareSlot(recipe, stacks, remaining))
+        {
+            plan.Add((standIn, 1));
+            planned[standIn] = planned.GetValueOrDefault(standIn) + 1;
+        }
+
+        // Plan from the last stack to the first; nothing is touched until every component is found.
+        for (var index = stacks.Count - 1; index >= 0; index--)
+        {
+            var resref = GetResRef(stacks[index]);
+            if (!remaining.TryGetValue(resref, out var needed))
+                continue;
+
+            var available = GetItemStackSize(stacks[index]) - planned.GetValueOrDefault(stacks[index]);
+            if (available <= 0)
+                continue;
+
+            var quantity = Math.Min(available, needed);
+            plan.Add((stacks[index], quantity));
+            planned[stacks[index]] = planned.GetValueOrDefault(stacks[index]) + quantity;
+
+            if (needed - quantity <= 0)
+                remaining.Remove(resref);
+            else
+                remaining[resref] = needed - quantity;
+        }
+
+        return remaining.Count > 0 ? null : plan;
+    }
+
+    public string ValidateStationFee(uint player, RecipeDetail recipe, uint blueprintItem)
+    {
+        var fee = Craft.GetStationFee(player, recipe);
+        if (fee <= 0)
+            return string.Empty;
+
+        var blueprintCost = GetIsObjectValid(blueprintItem) ? Craft.CalculateBlueprintCraftCreditCost(blueprintItem) : 0;
+        return GetGold(player) < fee + blueprintCost
+            ? $"The Shipyard fee is {fee} credits!"
+            : string.Empty;
+    }
+
+    public void ChargeStationFee(uint player, RecipeDetail recipe) => Craft.PayStationFee(player, recipe);
+
+    public void ApplyComponentTraits(uint item, RecipeType recipeType, RecipeDetail recipe, IReadOnlyList<string> components) =>
+        ShipComponents.ApplyCraftedTraits(recipeType, recipe, item, components);
 
     public bool HasEnhancement(uint player, uint item) => GetIsObjectValid(item) && GetItemPossessor(item) == player;
 
@@ -255,6 +302,13 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint)
     {
+        // A ship module or deed blueprint's bonuses are blueprint traits (space revamp), stamped after the component traits.
+        if (ShipBlueprintRules.IsResearchable(recipe))
+        {
+            ApplyShipBlueprintTraits(player, item, recipe, blueprint);
+            return;
+        }
+
         for (var currentBonus = 1; currentBonus <= blueprint.ItemBonuses; currentBonus++)
         {
             var tier = currentBonus;
@@ -283,6 +337,27 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
         foreach (var ip in blueprint.GuaranteedBonuses)
             Craft.ApplyCraftedItemProperty(item, ip);
+
+        // Identify the blueprint level on the finished item.
+        var blueprintLevelIP = ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprint.Level);
+        BiowareXP2.IPSafeAddItemProperty(item, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+    }
+
+    /// <summary>
+    /// A ship blueprint's item bonuses and guaranteed bonuses as blueprint traits (<see cref="ShipBlueprintRules.PickItemBonuses"/>: no
+    /// repeats, capped by the recipe level's tier), added to the traits the components passed on.
+    /// </summary>
+    private static void ApplyShipBlueprintTraits(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint)
+    {
+        var traits = new List<ShipComponentTraitType>();
+        foreach (var trait in ShipBlueprintRules.PickItemBonuses(recipe, blueprint.ItemBonuses, blueprint.GuaranteedTraits, Random.Next))
+        {
+            traits.Add(trait);
+            SendMessageToPC(player, ColorToken.Green($"Blueprint Bonus applied: {ShipTraitRules.Get(trait).Name}"));
+        }
+
+        traits.AddRange(blueprint.GuaranteedTraits);
+        ShipComponents.AddTraits(item, traits);
 
         // Identify the blueprint level on the finished item.
         var blueprintLevelIP = ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprint.Level);

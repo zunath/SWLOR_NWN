@@ -24,6 +24,22 @@ public class RecipeSourceWriterRealFolderTests
         "SmitheryRecipeDefinition/SlicingCacheSmitheryRecipes.cs",
     };
 
+    /// <summary>The space revamp's loops over generated catalogs, which read their values from the parameter table instead.</summary>
+    private static readonly string[] TableDrivenFiles =
+    {
+        "EngineeringRecipeDefinition/RevampStarshipRecipes.cs",
+        "EngineeringRecipeDefinition/ShipAmmoVariantRecipes.cs",
+        "ShipComponentRecipes.cs",
+    };
+
+    /// <summary>Files whose every recipe the space revamp retired (inactive), so no profile covers them.</summary>
+    private static readonly string[] RetiredFiles =
+    {
+        "EngineeringRecipeDefinition/CapitalModuleRecipes.cs",
+        "EngineeringRecipeDefinition/ModuleRecipes.cs",
+        "EngineeringRecipeDefinition/StarshipRecipes.cs",
+    };
+
     private static readonly Regex BuilderCreate = new(@"\b_?builder\.Create\(", RegexOptions.Compiled);
 
     private static readonly Regex Plumbing = new(
@@ -68,9 +84,11 @@ public class RecipeSourceWriterRealFolderTests
         Assert.That(problems, Is.Empty, string.Join("\n", problems));
 
         var sitesWithRecipes = originals.Where(pair => BuilderCreate.IsMatch(pair.Value)).Select(pair => pair.Key).ToList();
-        Assert.That(originals.Keys.Except(sitesWithRecipes), Is.EqualTo(new[] { "SmitheryRecipeDefinition/TwinPistolRecipes.cs" }),
-            "TwinPistolRecipes is the only file that builds recipes without a RecipeBuilder");
-        Assert.That(changed, Is.EquivalentTo(sitesWithRecipes), "every file that creates recipes takes parameters");
+        Assert.That(originals.Keys.Except(sitesWithRecipes),
+            Is.EquivalentTo(new[] { RecipeParameterTableFile.FileName, "SmitheryRecipeDefinition/TwinPistolRecipes.cs" }),
+            "TwinPistolRecipes is the only file that builds recipes without a RecipeBuilder, beside the parameter table");
+        Assert.That(changed, Is.EquivalentTo(sitesWithRecipes.Except(TableDrivenFiles).Except(RetiredFiles).Append(RecipeParameterTableFile.FileName)),
+            "every file that creates recipes takes parameters, and the catalog loops take theirs through the table");
         Assert.That(LoopBuiltFiles.Except(changed), Is.Empty);
 
         var rewritten = ReadFolder(_scratch);
@@ -85,7 +103,7 @@ public class RecipeSourceWriterRealFolderTests
                 $"a second run for {profile.Skill} changes nothing");
         }
 
-        foreach (var (path, text) in rewritten)
+        foreach (var (path, text) in rewritten.Where(pair => pair.Key != RecipeParameterTableFile.FileName))
         {
             Assert.That(
                 WithoutParameters(path, text),

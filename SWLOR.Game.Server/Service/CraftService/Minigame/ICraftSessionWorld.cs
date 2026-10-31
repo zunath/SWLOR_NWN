@@ -25,6 +25,15 @@ public interface ICraftSessionWorld
     BlueprintDetail ChargeBlueprint(uint player, uint blueprintItem);
 
     /// <summary>
+    /// Returns the reason the station's fee for the recipe cannot be paid beside the blueprint's credit cost, or an empty string when it
+    /// can or there is none. A station Shipyard charges one for each Capital hull (space revamp).
+    /// </summary>
+    string ValidateStationFee(uint player, RecipeDetail recipe, uint blueprintItem);
+
+    /// <summary>Takes the station's fee for the recipe, when it has one. It is not refunded when the craft fails.</summary>
+    void ChargeStationFee(uint player, RecipeDetail recipe);
+
+    /// <summary>
     /// Takes exactly the recipe's components from the player's inventory, one serialized item per stack taken. When the
     /// inventory lacks any of them, it takes nothing and returns false.
     /// </summary>
@@ -79,6 +88,12 @@ public interface ICraftSessionWorld
 
     /// <summary>Applies the blueprint's random and guaranteed bonuses and marks the item with the blueprint level.</summary>
     void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint);
+
+    /// <summary>
+    /// Gives the crafted item what its consumed components pass on: a ship component variant stamps its trait, and a ship module, deed or
+    /// capital part keeps the traits of the components it consumed (space revamp). Other recipes are unchanged.
+    /// </summary>
+    void ApplyComponentTraits(uint item, RecipeType recipeType, RecipeDetail recipe, IReadOnlyList<string> components);
 
     /// <summary>
     /// Gives one skill's waiting craft XP and takes it off <see cref="Player.PendingCraftXp"/> in the same player save, so a stop can

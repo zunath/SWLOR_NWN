@@ -50,7 +50,8 @@ public sealed class CraftSessionLifecycle
 
     /// <summary>
     /// Commits the recipe's components, the selected enhancements and the blueprint, charging the blueprint's credits and one
-    /// licensed run as the original crafting window did. Nothing is taken when any step is refused.
+    /// licensed run as the original crafting window did, and a station Shipyard's fee for a Capital hull. Nothing is taken when any
+    /// step is refused.
     /// </summary>
     public CraftSessionStartResult Start(uint player, Player dbPlayer, CraftSessionStartRequest request)
     {
@@ -69,6 +70,11 @@ public sealed class CraftSessionLifecycle
                 return CraftSessionStartResult.Refused(problem);
         }
 
+        // A station Shipyard's fee (space revamp) must be payable beside the blueprint's credits.
+        var feeProblem = _world.ValidateStationFee(player, recipe, request.HasBlueprint ? request.BlueprintItem : OBJECT_INVALID);
+        if (!string.IsNullOrEmpty(feeProblem))
+            return CraftSessionStartResult.Refused(feeProblem);
+
         // Every check runs before anything is taken, so a refusal never has items to give back.
         if (request.EnhancementItems.Any(item => item != OBJECT_INVALID && !_world.HasEnhancement(player, item)))
             return CraftSessionStartResult.Refused("An enhancement is no longer in your inventory.");
@@ -82,6 +88,7 @@ public sealed class CraftSessionLifecycle
             .ToList();
 
         var blueprint = request.HasBlueprint ? _world.ChargeBlueprint(player, request.BlueprintItem) : null;
+        _world.ChargeStationFee(player, recipe);
         var sessionId = Guid.NewGuid().ToString();
 
         // The components, enhancements and blueprint charge are out of the inventory in memory; the file still has them until it is written.
@@ -157,6 +164,9 @@ public sealed class CraftSessionLifecycle
 
         if (recipe.Category == RecipeCategoryType.Food)
             _world.ApplyFoodBonus(item, outcome.FoodDurationBonusSeconds, outcome.FoodBonusCharges);
+
+        // What the committed components pass on (ship component traits) is stamped before the blueprint's bonuses, which add to it.
+        _world.ApplyComponentTraits(item, record.Recipe, recipe, record.Components);
 
         if (session.HasBlueprint)
             _world.ApplyBlueprintBonuses(player, item, recipe, session.Blueprint);

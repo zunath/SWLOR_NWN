@@ -359,16 +359,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         private void IndustrialProtocols()
         {
             CreateTier(10, "jade", "elec_ruined", "quadrenium",
-                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol1, "id_efficiency1"),
-                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol1, "id_dmgcontrol1"),
-                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol1, "id_survey1"),
-                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol1, "id_prospect1"));
+                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol1, "id_efficiency1", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 43)),
+                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol1, "id_dmgcontrol1", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 38)),
+                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol1, "id_survey1", Parameters: new CircuitParameters(overloadLine: 4, loadBoostPercent: 8, assemblySharePercent: 35)),
+                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol1, "id_prospect1", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 43)));
 
             CreateTier(30, "citrine", "elec_good", "ionite",
-                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol2, "id_efficiency2"),
-                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol2, "id_dmgcontrol2"),
-                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol2, "id_survey2"),
-                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol2, "id_prospect2"));
+                new DroidInstructionRecipe(RecipeType.InstructionEfficiencyProtocol2, "id_efficiency2", Parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 44)),
+                new DroidInstructionRecipe(RecipeType.InstructionDamageControlProtocol2, "id_dmgcontrol2", Parameters: new CircuitParameters(overloadLine: 7, loadBoostPercent: 7, assemblySharePercent: 37)),
+                new DroidInstructionRecipe(RecipeType.InstructionSurveyProtocol2, "id_survey2", Parameters: new CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 40)),
+                new DroidInstructionRecipe(RecipeType.InstructionProspectingProtocol2, "id_prospect2", Parameters: new CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 35)));
         }
 
         private void CreateTier(

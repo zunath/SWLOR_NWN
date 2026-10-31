@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                     .Category(RecipeCategoryType.StarshipAmmo)
                     .Resref(row.Resref)
                     .Level(row.RecipeLevel)
-                    .Quantity(row.Quantity);
+                    .Quantity(row.Quantity)
+                    .MinigameParameters(RecipeParameterTable.For(row.RecipeType));
 
                 foreach (var (resref, quantity) in row.Components)
                 {

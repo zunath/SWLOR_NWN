@@ -1,3 +1,4 @@
+using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -82,10 +83,17 @@ namespace SWLOR.CraftSim.Scenario.Circuit
                 request.Gear.Control,
                 request.Gear.CpBonus,
                 request.Enhancements.TotalProgressPenalty,
-                loadout?.StatsAt(request.Rank));
+                loadout?.StatsAt(request.Rank),
+                StationAssemblyPercent(request.Recipe));
 
             return new CircuitEngine(request.Random, setup);
         }
+
+        /// <summary>
+        /// The crafting station's Assembly bonus for the recipe, in percent (a station Shipyard's droid on Capital hulls, space revamp). The
+        /// crafting revamp's own scenarios craft at an ordinary station: 0.
+        /// </summary>
+        protected virtual int StationAssemblyPercent(RecipeEntry recipe) => 0;
 
         public IReadOnlyList<string> Limitations => new[]
         {

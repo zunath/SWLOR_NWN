@@ -144,6 +144,42 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
         }
 
+        /// <summary>
+        /// The held stacks that fill an Advanced deed's rare-trait slot or stand in for its missing rare component (W11o), one
+        /// unit each, counted against the slot or the rare component in <paramref name="remaining"/>. The slot is added to
+        /// <paramref name="remaining"/> under <see cref="ShipRareComponentRules.RareSlotKey"/>; an unfilled slot stays there, so the
+        /// craft fails like any missing component. Nothing is taken here: the crafting session takes the planned units.
+        /// </summary>
+        public static List<uint> ReserveRareSlot(RecipeDetail recipe, IReadOnlyList<uint> stacks, Dictionary<string, int> remaining)
+        {
+            var reserved = new List<uint>();
+            if (recipe.Category != RecipeCategoryType.Starship)
+                return reserved;
+
+            var rare = ShipRareComponentRules.HasRareSlot(recipe.Resref)
+                ? ShipRareComponentRules.RareSlotKey
+                : ShipRareComponentRules.RareComponentOf(recipe.Components.Keys);
+            if (rare == null)
+                return reserved;
+
+            if (rare == ShipRareComponentRules.RareSlotKey)
+                remaining[rare] = 1;
+
+            foreach (var standIn in ReserveStandIns(recipe, stacks))
+            {
+                if (!remaining.TryGetValue(rare, out var needed))
+                    break;
+
+                reserved.Add(standIn);
+                if (needed <= 1)
+                    remaining.Remove(rare);
+                else
+                    remaining[rare] = needed - 1;
+            }
+
+            return reserved;
+        }
+
         /// <summary>Adds a component's traits, or a ship deed's hull traits, to its examine text.</summary>
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineComponent()

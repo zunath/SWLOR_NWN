@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("c_unit1", 1)
-                .Component("elec_ruined", 1);
+                .Component("elec_ruined", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 37);
 
             // Logistics CPU II
             _builder.Create(RecipeType.IndustrialLogisticsCPU2, SkillType.Engineering)
@@ -34,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("c_unit2", 1)
                 .Component("steel", 1)
                 .Component("elec_flawed", 1)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 35);
 
             // Logistics CPU III
             _builder.Create(RecipeType.IndustrialLogisticsCPU3, SkillType.Engineering)
@@ -46,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 1)
                 .Component("elec_good", 1)
                 .Component("citrine", 1)
-                .Component("ionite", 1);
+                .Component("ionite", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 37);
 
             // Logistics CPU IV
             _builder.Create(RecipeType.IndustrialLogisticsCPU4, SkillType.Engineering)
@@ -58,7 +61,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 2)
                 .Component("elec_imperfect", 1)
                 .Component("ruby", 2)
-                .Component("katrium", 1);
+                .Component("katrium", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 41);
 
             // Logistics CPU V
             _builder.Create(RecipeType.IndustrialLogisticsCPU5, SkillType.Engineering)
@@ -70,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 2)
                 .Component("elec_high", 1)
                 .Component("emerald", 2)
-                .Component("zinsiam", 2);
+                .Component("zinsiam", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 40);
 
             // Survey Head I
             _builder.Create(RecipeType.IndustrialSurveyHead1, SkillType.Engineering)
@@ -79,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("elec_ruined", 1);
+                .Component("elec_ruined", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Survey Head II
             _builder.Create(RecipeType.IndustrialSurveyHead2, SkillType.Engineering)
@@ -90,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("d_brain2", 1)
                 .Component("steel", 1)
                 .Component("elec_flawed", 1)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // Survey Head III
             _builder.Create(RecipeType.IndustrialSurveyHead3, SkillType.Engineering)
@@ -102,7 +109,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 1)
                 .Component("elec_good", 1)
                 .Component("citrine", 1)
-                .Component("ionite", 1);
+                .Component("ionite", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // Survey Head IV
             _builder.Create(RecipeType.IndustrialSurveyHead4, SkillType.Engineering)
@@ -114,7 +122,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 2)
                 .Component("elec_imperfect", 1)
                 .Component("ruby", 2)
-                .Component("katrium", 1);
+                .Component("katrium", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Survey Head V
             _builder.Create(RecipeType.IndustrialSurveyHead5, SkillType.Engineering)
@@ -126,7 +135,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 2)
                 .Component("elec_high", 1)
                 .Component("emerald", 2)
-                .Component("zinsiam", 2);
+                .Component("zinsiam", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Utility Body I
             _builder.Create(RecipeType.IndustrialUtilityBody1, SkillType.Engineering)
@@ -135,7 +145,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("d_chassis1", 1)
-                .Component("elec_ruined", 1);
+                .Component("elec_ruined", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // Utility Body II
             _builder.Create(RecipeType.IndustrialUtilityBody2, SkillType.Engineering)
@@ -146,7 +157,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("d_chassis2", 1)
                 .Component("steel", 1)
                 .Component("elec_flawed", 1)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Utility Body III
             _builder.Create(RecipeType.IndustrialUtilityBody3, SkillType.Engineering)
@@ -158,7 +170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 1)
                 .Component("elec_good", 1)
                 .Component("citrine", 1)
-                .Component("ionite", 1);
+                .Component("ionite", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Utility Body IV
             _builder.Create(RecipeType.IndustrialUtilityBody4, SkillType.Engineering)
@@ -170,7 +183,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 2)
                 .Component("elec_imperfect", 1)
                 .Component("ruby", 2)
-                .Component("katrium", 1);
+                .Component("katrium", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 60);
 
             // Utility Body V
             _builder.Create(RecipeType.IndustrialUtilityBody5, SkillType.Engineering)
@@ -182,7 +196,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 2)
                 .Component("elec_high", 1)
                 .Component("emerald", 2)
-                .Component("zinsiam", 2);
+                .Component("zinsiam", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 62);
 
             // Labor Arms I
             _builder.Create(RecipeType.IndustrialLaborArms1, SkillType.Engineering)
@@ -191,7 +206,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("manip_arm1", 1)
-                .Component("elec_ruined", 1);
+                .Component("elec_ruined", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Labor Arms II
             _builder.Create(RecipeType.IndustrialLaborArms2, SkillType.Engineering)
@@ -202,7 +218,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("manip_arm2", 1)
                 .Component("steel", 1)
                 .Component("elec_flawed", 1)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // Labor Arms III
             _builder.Create(RecipeType.IndustrialLaborArms3, SkillType.Engineering)
@@ -214,7 +231,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 1)
                 .Component("elec_good", 1)
                 .Component("citrine", 1)
-                .Component("ionite", 1);
+                .Component("ionite", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 56);
 
             // Labor Arms IV
             _builder.Create(RecipeType.IndustrialLaborArms4, SkillType.Engineering)
@@ -226,7 +244,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 2)
                 .Component("elec_imperfect", 1)
                 .Component("ruby", 2)
-                .Component("katrium", 1);
+                .Component("katrium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // Labor Arms V
             _builder.Create(RecipeType.IndustrialLaborArms5, SkillType.Engineering)
@@ -238,7 +257,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 2)
                 .Component("elec_high", 1)
                 .Component("emerald", 2)
-                .Component("zinsiam", 2);
+                .Component("zinsiam", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Hauler Legs I
             _builder.Create(RecipeType.IndustrialHaulerLegs1, SkillType.Engineering)
@@ -247,7 +267,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("dmotive_sys1", 1)
-                .Component("elec_ruined", 1);
+                .Component("elec_ruined", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 56);
 
             // Hauler Legs II
             _builder.Create(RecipeType.IndustrialHaulerLegs2, SkillType.Engineering)
@@ -258,7 +279,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys2", 1)
                 .Component("steel", 1)
                 .Component("elec_flawed", 1)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 57);
 
             // Hauler Legs III
             _builder.Create(RecipeType.IndustrialHaulerLegs3, SkillType.Engineering)
@@ -270,7 +292,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 1)
                 .Component("elec_good", 1)
                 .Component("citrine", 1)
-                .Component("ionite", 1);
+                .Component("ionite", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // Hauler Legs IV
             _builder.Create(RecipeType.IndustrialHaulerLegs4, SkillType.Engineering)
@@ -282,7 +305,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 2)
                 .Component("elec_imperfect", 1)
                 .Component("ruby", 2)
-                .Component("katrium", 1);
+                .Component("katrium", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Hauler Legs V
             _builder.Create(RecipeType.IndustrialHaulerLegs5, SkillType.Engineering)
@@ -294,7 +318,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 2)
                 .Component("elec_high", 1)
                 .Component("emerald", 2)
-                .Component("zinsiam", 2);
+                .Component("zinsiam", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 51);
 
             return _builder.Build();
         }

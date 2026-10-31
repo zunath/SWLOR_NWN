@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition
                     .Category(RecipeCategoryType.ShipComponent)
                     .Resref(row.Resref)
                     .Level(row.RecipeLevel)
-                    .Quantity(1);
+                    .Quantity(1)
+                    .MinigameParameters(RecipeParameterTable.For(row.RecipeType));
 
                 var trait = ShipTraitRules.Get(row.Trait);
                 if (trait != null)
@@ -44,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition
                     .Category(RecipeCategoryType.CapitalConstruction)
                     .Resref(row.Resref)
                     .Level(row.RecipeLevel)
-                    .Quantity(1);
+                    .Quantity(1)
+                    .MinigameParameters(RecipeParameterTable.For(row.RecipeType));
 
                 foreach (var (resref, quantity) in row.Components)
                 {

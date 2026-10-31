@@ -13,13 +13,21 @@ public sealed class QuickCraftBatch
 
     private readonly IQuickCraftWorld _world;
     private readonly uint _player;
+    private readonly RecipeType _recipeType;
     private readonly RecipeDetail _recipe;
     private int _generation;
 
     public QuickCraftBatch(IQuickCraftWorld world, uint player, RecipeDetail recipe, int quantity)
+        : this(world, player, RecipeType.Invalid, recipe, quantity)
+    {
+    }
+
+    /// <param name="recipeType">The recipe the batch makes, which tells the world what the consumed components pass on to each item.</param>
+    public QuickCraftBatch(IQuickCraftWorld world, uint player, RecipeType recipeType, RecipeDetail recipe, int quantity)
     {
         _world = world ?? throw new ArgumentNullException(nameof(world));
         _player = player;
+        _recipeType = recipeType;
         _recipe = recipe ?? throw new ArgumentNullException(nameof(recipe));
         Requested = quantity;
     }
@@ -103,7 +111,7 @@ public sealed class QuickCraftBatch
             return;
         }
 
-        if (!_world.TryConsumeComponents(_player, _recipe))
+        if (!_world.TryConsumeComponents(_player, _recipeType, _recipe))
         {
             // The components were present a moment ago in the same script, so this should not happen; no item is made for free.
             _world.RemoveCreatedItem(_player, _recipe);

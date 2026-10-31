@@ -66,6 +66,40 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         return BlueprintAfterCharge;
     }
 
+    /// <summary>The station fee a craft owes (a Shipyard's, space revamp); 0 for none.</summary>
+    public int StationFee { get; set; }
+
+    /// <summary>The player's credits, read by the station fee check.</summary>
+    public int Gold { get; set; } = int.MaxValue;
+
+    /// <summary>The station fees taken, in order.</summary>
+    public List<int> StationFeesPaid { get; } = new();
+
+    /// <summary>Each call that passed the committed components on to a finished item: the recipe and the components.</summary>
+    public List<(uint Item, RecipeType Recipe, List<string> Components)> ComponentTraitCalls { get; } = new();
+
+    /// <summary>The finishing steps that stamp the item, in order: "component-traits" and "blueprint-bonuses".</summary>
+    public List<string> StampOrder { get; } = new();
+
+    public string ValidateStationFee(uint player, RecipeDetail recipe, uint blueprintItem) =>
+        StationFee > 0 && Gold < StationFee ? $"The Shipyard fee is {StationFee} credits!" : string.Empty;
+
+    public void ChargeStationFee(uint player, RecipeDetail recipe)
+    {
+        if (StationFee <= 0)
+            return;
+
+        Gold -= StationFee;
+        StationFeesPaid.Add(StationFee);
+        Events.Add("station-fee");
+    }
+
+    public void ApplyComponentTraits(uint item, RecipeType recipeType, RecipeDetail recipe, IReadOnlyList<string> components)
+    {
+        ComponentTraitCalls.Add((item, recipeType, components.ToList()));
+        StampOrder.Add("component-traits");
+    }
+
     public bool TryTakeComponents(uint player, RecipeDetail recipe, List<string> taken)
     {
         foreach (var (resref, quantity) in recipe.Components)
@@ -184,8 +218,11 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public void ApplyFoodBonus(uint item, int durationSeconds, int bonusCharges) =>
         FoodBonuses.Add((durationSeconds, bonusCharges));
 
-    public void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint) =>
+    public void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint)
+    {
         BlueprintBonusCalls++;
+        StampOrder.Add("blueprint-bonuses");
+    }
 
     /// <summary>False while the player is dead: no skill XP can be given.</summary>
     public bool PlayerAlive { get; set; } = true;

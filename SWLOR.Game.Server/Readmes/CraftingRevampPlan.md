@@ -40,7 +40,7 @@ The revamp aligns crafting with the combat upgrade:
 
 **Hard constraints**
 - **Power ceiling.** Crafted item stats do not change. Fully enhanced crafted gear stays the ceiling that `RareLootBalanceTests` measures. Research cannot grant more blueprint bonuses than today.
-- **Research.** Research keeps its base credit costs and real-time durations; only the experiment's capped Analyze cut shortens a job. Researchable types stay as today: weapons, armor and food.
+- **Research.** Research keeps its base credit costs and real-time durations; only the experiment's capped Analyze cut shortens a job. Researchable types stay as today: weapons, armor and food. The space revamp, which ships after this revamp, adds its ship module and deed recipes (see Fabrication research).
 - **Attributes.** No attributes in item crafting, gathering or fishing. Gathering rank and tool tier replace Might, Perception and Willpower.
 - **Espionage.** Espionage crafting stays tied to Espionage rank and XP.
 
@@ -371,6 +371,7 @@ Today's outcome per level (`ResearchViewModel.ClickCompleteJob`), plus a small c
    - The Research Terminal stays Lab-only furniture.
    - Blueprints stay ordinary tradable items, so Fabricators can research for others.
 7. **In-flight jobs.** Jobs started before the release finish under today's random roll.
+8. **Space revamp extension** (owner decision, 2026-10-30: this revamp ships first and the space revamp merges onto it). `Craft.IsResearchableRecipe` also takes the space revamp's ship module and deed recipes (`ShipBlueprintRules.IsResearchable`). They run this Experiment, its grants, costs and XP unchanged; only the bonuses differ: a ship blueprint's item and guaranteed bonuses are blueprint traits (`ShipBlueprintRules.PickGuaranteed`, `PickItemBonuses`), and Prototype Tech adds one guaranteed trait once per blueprint, spent when the job starts. The ceiling is the same as the ground's (3 item bonuses, 11 guaranteed, 1 enhancement slot): `SpaceRevampPlan.md` section 14, "Research ceiling", and `SpaceRewardTests.Research_StaysWithinTheGroundBlueprintCeiling`. Research XP stays under workstream 11's ceiling with the space recipes in the research cohort (`SWLOR.CraftSim progression`, re-run 2026-10-30).
 
 ### Gathering harvesting: Prospecting
 

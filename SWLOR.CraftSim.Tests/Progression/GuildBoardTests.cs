@@ -109,7 +109,11 @@ namespace SWLOR.CraftSim.Tests.Progression
 
                 plan.TasksPerTier.Keys.OrderBy(t => t).Should().Equal(0, 1, 2, 3, 4);
                 plan.TasksPerTier.Values.Should().OnlyContain(count => count > GuildBoard.TasksPerTier, "every tier has more tasks than the board keeps");
-                plan.OffersByRecipeLevel.Values.SelectMany(offers => offers).Should().OnlyContain(o => o.ChanceOnBoard > 0 && o.ChanceOnBoard < 1);
+                // A level can be certain to be on the board: the space revamp put 14 of each Engineering tier's 16 tasks on its ship
+                // modules of one level, so a board of the tier always shows that level.
+                plan.OffersByRecipeLevel.Values.SelectMany(offers => offers).Should().OnlyContain(o => o.ChanceOnBoard > 0 && o.ChanceOnBoard <= 1);
+                if (guild != GuildType.EngineeringGuild)
+                    plan.OffersByRecipeLevel.Values.SelectMany(offers => offers).Should().OnlyContain(o => o.ChanceOnBoard < 1);
             }
         }
 

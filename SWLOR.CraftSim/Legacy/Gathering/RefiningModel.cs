@@ -40,6 +40,9 @@ namespace SWLOR.CraftSim.Legacy.Gathering
             return GatheringLevels.RefiningXp(ore.XpPerUnit, ore.RequiredLevel, gatheringRank, units);
         }
 
+        /// <summary>The resref prefix of the space revamp's Ship Scrap, which the legacy baseline does not count.</summary>
+        public const string SpaceScrapPrefix = "ship_scrap_";
+
         public static IReadOnlyList<OreTier> Ores() => LoadOres();
 
         private static List<OreTier> LoadOres()
@@ -54,6 +57,10 @@ namespace SWLOR.CraftSim.Legacy.Gathering
                 var type = detail.GetType();
                 var level = (int)type.GetProperty("RequiredLevel")!.GetValue(detail)!;
                 if (level >= UnavailableLevel)
+                    continue;
+
+                // The space revamp's Ship Scrap refines in the same refinery but is not one of today's ores, so the legacy baseline leaves it out.
+                if (((string)entry.Key).StartsWith(SpaceScrapPrefix, StringComparison.Ordinal))
                     continue;
 
                 ores.Add(new OreTier(

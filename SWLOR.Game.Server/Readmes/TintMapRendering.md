@@ -1,5 +1,31 @@
 # Tint-map material lighting
 
+## Keep dye colors stable
+
+Players choose dyes and expect them to look the same after every update. Shader,
+palette, mask, and material edits have each shifted existing armor colors, so
+these rules hold for every change in `SWLOR_Haks`:
+
+- **No silent dye changes.** `SWLOR_Haks/tools/CheckDyeAppearance.py` fingerprints
+  every tint material in `sw_tint_mtr` (its directives and the exact content of
+  every texture and TXI it binds, tint masks included), the shared tint shaders
+  and palette atlas, and each existing model's rows in `tintmap.2da` and
+  `cloaktint.2da` (material and dye layers), and compares them with
+  `tools/DyeAppearanceBaseline.json`. `BuildHaks.cmd` runs it,
+  and `TestDyeAppearance.py` covers it. A failure means existing parts would take
+  dyes differently. Undo the change, or, when the change is intended, get the
+  owner's approval, capture before/after client screenshots of the affected parts
+  with the same dyes next to an unchanged part (`InEngineVisualVerification.md`),
+  run `CheckDyeAppearance.py --update`, and put the captures in the pull request.
+  New materials are additions and need no update.
+- **Dyed metal follows the palette.** A material whose mask has Metal 1 or Metal 2
+  binds no specular (`texture2`) or roughness (`texture3`) map: the engine takes
+  metal reflectance from a bound specular map instead of the palette, and dyed
+  metal turns pale and nonmetallic. Keep authored normal maps. When imported
+  armor ships such maps, add them to `PALETTE_SPECULAR_MAPS` so the generator
+  unbinds them. The 568 materials that already bound them when the baseline was
+  created are grandfathered in `legacyMetalSpecular`; `--update` never adds to it.
+
 The generated tint materials share three fragment shaders in
 `SWLOR_Haks/sw_shader`: `fs_plt_tinter`, `fs_plt_tinter_nm`, and
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
@@ -841,6 +867,17 @@ fragment specular lighting still compile.
 Preserve the engine's authored specular and roughness maps, material overrides,
 palette alpha, and hair cutouts. Disabling specularity globally or editing each
 NPC would hide the initialization error and remove intentional material detail.
+
+Dyed metal is the exception (see "Keep dye colors stable"): a bound specular map
+replaces the palette's metal reflectance. `PALETTE_SPECULAR_MAPS`
+(`GenerateTintMapAssets.py`) lists the Republic Trooper maps (chest 99, pelvis 156,
+shoulders 197, biceps, forearms and hands 101, thighs 121, shins 102, feet 186,
+helmet 37), which are about 0.1 to 0.3 on metal and made dyed metal a pale
+nonmetallic sheen; players reported the thighs and arms as washed out next to
+other parts with the same metal color. The generator writes `texture2 null` and
+`texture3 null` for listed maps and keeps the normal maps; material profile
+signatures still see the authored maps, so scoped alias names do not change.
+`TestPaletteSpecularMaps.py` guards the list and the checked-in materials.
 
 Match the engine's color-space ordering as well: blend the legacy reflection
 gray into the palette RGB **before** `ApplyColorSpace`, then perform the optional

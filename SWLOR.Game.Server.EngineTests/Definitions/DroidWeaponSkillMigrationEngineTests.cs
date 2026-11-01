@@ -187,10 +187,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 var before = DB.Get<InventoryItem>(banked.Id).Data;
-                new _29_CorrectStoredCarapaceBracers().Migrate();
+                StoredItemSweepRunner.Run();
                 var migrated = DB.Get<InventoryItem>(banked.Id).Data;
                 ctx.AssertEqual(expectChange, migrated != before, "The stored migration changes only a legacy controller");
-                new _29_CorrectStoredCarapaceBracers().Migrate();
+                StoredItemSweepRunner.Run();
                 ctx.AssertEqual(migrated, DB.Get<InventoryItem>(banked.Id).Data, "Stored migration retry is stable");
                 ctx.AssertEqual(string.Empty, Bank.WithdrawItem(owner, banked.Id), "The controller is withdrawn");
             });

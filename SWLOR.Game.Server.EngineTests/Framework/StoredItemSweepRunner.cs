@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     public static class StoredItemSweepRunner
     {
         /// <summary>The migration version the sweep labels its progress with.</summary>
-        private const int LogVersion = 28;
+        private const int LogVersion = 29;
 
         public static void Run() =>
             typeof(Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredItemSweep")!

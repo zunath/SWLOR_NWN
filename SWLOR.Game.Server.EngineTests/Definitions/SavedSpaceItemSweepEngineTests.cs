@@ -62,7 +62,7 @@ public static partial class MigrationEngineTests
                 var savedDescription = DescribeLoadedObject(ctx, saved);
                 Invoke("MigrationObject", "DestroyTemporaryObject", saved);
 
-                Check(EquipmentRequirementCompatibility.Normalize(legacy), "the live rule converts it");
+                Check(LegacySpaceItemCompatibility.Normalize(legacy), "the live rule converts it");
                 var live = OBJECT_INVALID;
                 for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
                     if (GetResRef(item) == replacement && GetLocalInt(item, "CRAFTED_QUALITY") == 27)
@@ -85,7 +85,7 @@ public static partial class MigrationEngineTests
             var tally = new LegacySpaceItemTally();
             LegacySpaceItemConversion.Migrate(ObjectPlugin.Serialize(configuration), out _, tally);
             ctx.Assert(tally.RootIsConfigurationModule && tally.Credits == 400, "a saved configuration module is refunded at its value");
-            ctx.Assert(EquipmentRequirementCompatibility.Normalize(configuration), "the live rule removes a configuration module");
+            ctx.Assert(LegacySpaceItemCompatibility.Normalize(configuration), "the live rule removes a configuration module");
         });
         await ctx.WaitFrameAsync();
         ctx.Assert(!GetIsObjectValid(configuration), "the configuration module is gone");

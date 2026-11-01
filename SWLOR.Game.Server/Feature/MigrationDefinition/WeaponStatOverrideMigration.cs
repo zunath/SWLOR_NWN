@@ -15,14 +15,6 @@ public static class WeaponStatOverrideMigration
 {
     private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
 
-    [NWNEventHandler(ScriptName.OnModuleAcquire)]
-    public static void OnAcquire()
-    {
-        var owner = GetModuleItemAcquiredBy();
-        if (GetIsPC(owner) && !GetIsDM(owner))
-            MigrateObject(GetModuleItemAcquired());
-    }
-
     /// <summary>Removes overrides from equipped and carried player weapons, including nested containers.</summary>
     public static bool MigrateObject(uint obj)
     {

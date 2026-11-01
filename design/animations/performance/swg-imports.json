@@ -1,0 +1,113 @@
+{
+  "Version": 1,
+  "SourceArchiveSha256": "e99ee95c0e1e65b1585d663f1b01486b0c15a2808d38f48c046e5670ff49c1ed",
+  "Skeleton": "appearance/skeleton/all_b.skt",
+  "SkeletonSha256": "7f3eb762eb97b27c2170014be66bfca0c232e35b2f8cdbefea912736fb681cc3",
+  "ReferenceProject": "design/animations/performance/DanceStepLeft.swlanim",
+  "BoundaryBlendSeconds": 0.25,
+  "Clips": [
+    {
+      "Id": "CantinaShuffle",
+      "Dance": "basic2",
+      "Source": "appearance/animation/all_b_dnc_goofy_base_loop.ans",
+      "SourceSha256": "7c3ce293000796e1ede7779bc4feeadd7501b5f9192ba991f1e878349fd7304f",
+      "Duration": 6.0,
+      "Name": "Cantina Shuffle"
+    },
+    {
+      "Id": "LightFeet",
+      "Dance": "popular2",
+      "Source": "appearance/animation/all_f_dnc_f_gogo_loop.ans",
+      "SourceSha256": "d0e755d21eb4460604bd3897c9056e6f0c5224347254a7cd7a08200edfa4142a",
+      "Duration": 6.8,
+      "Name": "Light Feet"
+    },
+    {
+      "Id": "PowerStep",
+      "Dance": "poplock2",
+      "Source": "appearance/animation/all_m_dnc_m_poplock_base_loop.ans",
+      "SourceSha256": "c3481a23cbc4989a7b1dccc7efe106a290721ac7107bccb5d736406720242d00",
+      "Duration": 8.2,
+      "Name": "Power Step"
+    },
+    {
+      "Id": "Quickstep",
+      "Dance": "footloose2",
+      "Source": "appearance/animation/all_m_dnc_m_african_base_loop.ans",
+      "SourceSha256": "2574642aa47c89ba27bccd5d14779755397d1cef4093e756c32be4531305a027",
+      "Duration": 5.166666666666667,
+      "Name": "Quickstep"
+    },
+    {
+      "Id": "VigorReel",
+      "Dance": "jazzy2",
+      "Source": "appearance/animation/all_b_dnc_tatooine_jazz_loop.ans",
+      "SourceSha256": "99644e96f8e7d487fbc1ca272f9acf17033c89824d8d2d5d0465db113952b9ed",
+      "Duration": 6.733333333333333,
+      "Name": "Vigor Reel"
+    },
+    {
+      "Id": "StringsLoop",
+      "Name": "StringsLoop",
+      "Dance": "",
+      "SourceLabel": "guitar playing loop",
+      "Source": "appearance/animation/all_b_dnc_musician_guitar_loop.ans",
+      "SourceSha256": "977eaab481199cfb8b50b865e611dc449fe56b895281c337e244225002226447",
+      "Duration": 5.2,
+      "ReferenceProject": "design/animations/performance/StringsLow.swlanim",
+      "Calibration": "first-frame",
+      "Mirror": true,
+      "InstrumentFamily": "Strings",
+      "ContactProjects": [
+        "design/animations/performance/StringsLow.swlanim",
+        "design/animations/performance/StringsMid.swlanim",
+        "design/animations/performance/StringsHigh.swlanim"
+      ],
+      "NativeCarry": {
+        "rbicep_g": [
+          0.042193142254618,
+          -0.02110844394293926,
+          0.04351269477532014,
+          0.9979382835297879
+        ],
+        "rforearm_g": [
+          0.8964589748893939,
+          0.019920941216683606,
+          -0.021221492627160096,
+          0.44216977586892303
+        ],
+        "rhand_g": [
+          0.2369595205570208,
+          -0.1078502703975327,
+          0.044665270221847325,
+          0.9644809580435351
+        ],
+        "rhand": [
+          0.0,
+          -0.7132505475215891,
+          0.0,
+          0.7009091642004357
+        ]
+      }
+    },
+    {
+      "Id": "HornLoop",
+      "Name": "HornLoop",
+      "Dance": "",
+      "SourceLabel": "saxophone playing loop",
+      "Source": "appearance/animation/all_b_dnc_musician_sax_loop.ans",
+      "SourceSha256": "4250913c6ff68745b73ba1a276284f6c228dc5ff54f934e08c828aa9c550c4f5",
+      "Duration": 5.2,
+      "ReferenceProject": "design/animations/performance/HornLow.swlanim",
+      "Calibration": "first-frame",
+      "Mirror": true,
+      "InstrumentFamily": "Horns",
+      "ContactProjects": [
+        "design/animations/performance/HornLow.swlanim",
+        "design/animations/performance/HornMid.swlanim",
+        "design/animations/performance/HornHigh.swlanim",
+        "design/animations/performance/HornFlourish.swlanim"
+      ]
+    }
+  ]
+}

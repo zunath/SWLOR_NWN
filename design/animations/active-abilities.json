@@ -6381,5 +6381,51 @@
     "SourceAnimation": "nwslasho",
     "Profile": "Equipped unarmed technique",
     "Duration": 1.9
+  },
+  {
+    "Id": "Dance",
+    "NativeImpactVisualEffect": "Vfx_Imp_Improve_Ability_Score",
+    "EquipmentRequirement": "Unrestricted",
+    "Name": "Dance",
+    "DisplayName": "Dance",
+    "InternalName": "sw_pf_dance",
+    "Category": "Performance",
+    "Type": "Toggle",
+    "Description": "Your audience's Inspired grants +24% skill XP, and each minute they watch clears 4% of their XP debt. SOC scaling can raise the XP bonus to +30%.",
+    "Reference": "",
+    "PerkId": "Dance",
+    "Feats": [
+      "Dance1",
+      "Dance2",
+      "Dance3",
+      "Dance4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Performance/DanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DanceHandsUp"
+  },
+  {
+    "Id": "PlayInstrument",
+    "NativeImpactVisualEffect": "Vfx_Imp_Improve_Ability_Score",
+    "EquipmentRequirement": "Unrestricted",
+    "Name": "Play Instrument",
+    "DisplayName": "Play Instrument",
+    "InternalName": "sw_pf_play",
+    "Category": "Performance",
+    "Type": "Toggle",
+    "Description": "Your audience's Inspired grants +24% skill XP, and each minute they watch clears 4% of their XP debt. SOC scaling can raise the XP bonus to +30%.",
+    "Reference": "",
+    "PerkId": "PlayInstrument",
+    "Feats": [
+      "PlayInstrument1",
+      "PlayInstrument2",
+      "PlayInstrument3",
+      "PlayInstrument4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Performance/PlayInstrumentAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PlayGuitar"
   }
 ]

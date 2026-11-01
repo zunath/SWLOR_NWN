@@ -337,6 +337,99 @@ The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, 
 bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
 playback. After installing, compile the banks and regenerate the clothing bridges as below.
 
+### Performance clips
+
+`performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
+(`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
+recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
+they end in native idle like every inventory clip. The other 22 clips are activity clips like
+Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are authored in
+`performance/recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
+
+| Group | Clips (project Id = internal name) | Length |
+|---|---|---|
+| Routine loops | CantinaShuffle `sw_dn_shufl`, LightFeet `sw_dn_light`, PowerStep `sw_dn_power`, Quickstep `sw_dn_quick`, VigorReel `sw_dn_vigor` | See source table below |
+| Dance steps | DanceStepLeft/Up/Down/Right `sw_dn_stepl/u/d/r` | 0.6 s |
+| Dance flourishes | DanceSpin `sw_dn_spin`, DanceDip `sw_dn_dip` | 1.5 s |
+| Strings | StringsLoop `sw_str_loop` (5.2 s), StringsLow/Mid/High `sw_str_low/mid/high` (0.5 s), StringsFlourish `sw_str_flour` (1.5 s) | |
+| Horns | HornLoop `sw_hrn_loop` (5.2 s), HornLow/Mid/High `sw_hrn_low/mid/high` (0.5 s), HornFlourish `sw_hrn_flour` (1.5 s) | |
+| Finale | PerformanceBow `sw_pf_bow` | 1.5 s |
+
+Every dance clip starts and ends in one relaxed dance stance (`readyBlade` in the recipe), and the
+strings and horns clips start and end in their playing hold, so loops, steps and flourishes chain
+without a seam; the installer's `_in` and `_out` phases blend to and from native idle. Strings hold
+a right-hand instrument in the engine's polearm carry grip; the free left hand plays near the
+upper soundboard or lower harp strings. The imported string loop evaluates that native carry
+layer when fitting hand contact. `NativeCarry` records the four right-arm orientation controllers
+from the reference `a_ba.plpause1` at time zero; the client still plays its native carry animation.
+Horns hold the instrument at the mouth with the bell forward and down. Both use the item
+attachment at `rhand` like the fishing rod, so check them with real instruments equipped.
+The horn recipe uses the existing `shield` facing control to set left-forearm roll, even
+without a shield equipped. `[-120, 165, 30]` keeps the left hand upright in the note and
+flourish holds; the imported saxophone loop inherits that hold. Rotate the forearm along
+its elbow-to-wrist axis so the hand follows it without moving the wrist or instrument.
+
+The slitherhorn mouthpiece is fitted in item-local coordinates from close male and female
+client views. The lower stem, grips and bell keep their original coordinates (vertices at or
+below original Y=0.04). The editable model is
+`SWLOR_Haks/sw_item_source/wmgfs_m_221.mdl.ascii`; copy it to
+`SWLOR_Haks/sw_weapon/wmgfs_m_221.mdl`, then compile with
+`python -B SWLOR_Haks/tools/CompileModels.py --model wmgfs_m_221 --apply`.
+
+`SlitherhornFit` adds a separate middle-part Z offset for normal Human bodies:
+0.035 m for males and -0.028 m for females, including their robe variants. Equipment
+and appearance refreshes rebase against the saved fit delta, preserving cosmetic
+transforms and removing only this offset on unequip. Other body families retain their
+authored attachment until they have a measured profile. The saved delta belongs to the
+item's UUID, so a native `CopyItem` with copied locals and reset transforms starts unfitted.
+
+The SWG loops retain their original duration and speed. The first and last 0.25 seconds blend to
+the shared stance, without extending or retiming the clip. Locomotion is folded into `rootdummy`
+and its net drift is removed, so it does not move the game object. Instrument tracks are mirrored
+and calibrated to the existing playing holds; the left hand stays on the strings or horn, and
+the horn's mouth contact is fitted from the existing horn accents. Native carry layers remain unchanged.
+
+| SWLOR clip | SWG performance | Source animation | Length |
+|---|---|---|---|
+| Cantina Shuffle | Basic 2 | `all_b_dnc_goofy_base_loop.ans` | 6.0 s |
+| Light Feet | Popular 2 | `all_f_dnc_f_gogo_loop.ans` | 6.8 s |
+| Power Step | Poplock 2 | `all_m_dnc_m_poplock_base_loop.ans` | 8.2 s |
+| Quickstep | Footloose 2 | `all_m_dnc_m_african_base_loop.ans` | 155/30 s |
+| Vigor Reel | Jazzy 2 | `all_b_dnc_tatooine_jazz_loop.ans` | 202/30 s |
+| Strings Loop | Guitar | `all_b_dnc_musician_guitar_loop.ans` | 5.2 s |
+| Horn Loop | Saxophone | `all_b_dnc_musician_sax_loop.ans` | 5.2 s |
+
+The original dance names come from SWG's [performance table](https://github.com/SWG-Source/dsrc/blob/master/sku.0/sys.shared/compiled/game/datatables/performance/performance.tab)
+and [logical animation table](https://github.com/SWG-Source/clientdata_OLD/blob/e345de3e1f963be3b70f99add04e14e660122ead/appearance/lat/all_m.lat).
+The importer reads CKAT 0001 and KFAT 0003 tracks and the common `all_b.skt` skeleton. Source file
+and skeleton hashes are mandatory; supply the provided `appearance.zip`, or a directory with the
+same `appearance/` resources. Source archives stay outside the repository.
+
+Generate the authored activity clips with the Fishing command, import the SWG loops, and install the whole group with
+`install-active` so each clip keeps its assigned internal name. The batch file only needs `Id`,
+`InternalName`, `Category` (`Performance`), `Type` and `Description`, and stays in the ignored
+`artifacts/animations/` folder:
+
+```powershell
+python -m pip install -r tools/requirements-swg-animation.txt
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/performance/recipe.json design/animations/performance --overwrite
+python -B tools/ImportSwgPerformanceAnimations.py --source "C:/path/to/appearance.zip" --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install-active . artifacts/animations/performance-batch.json a_ba a_fa
+python -B tools/ImportSwgPerformanceAnimations.py --source "C:/path/to/appearance.zip" --finalize-installed --overwrite
+python -B SWLOR_Haks/tools/CompileModels.py --since HEAD --apply
+python -B SWLOR_Haks/tools/GenerateRobeRgbModels.py --game-data "C:/path/to/Neverwinter Nights/data" --apply
+python -B SWLOR_Haks/tools/PruneRobeAnimationBridges.py --apply
+```
+
+Finalization verifies float32 installation values, ignoring quaternion noise below 1e-12, before
+refreshing portable provenance hashes. Use the normal versioned robe rebuild for these clips; retained bridge
+families are immutable. The cue and flourish lengths remain 0.6/0.5/1.5 seconds.
+
+A recipe pose may add `rootYaw` (degrees): the root and every hand, foot and blade target turn together
+about the vertical axis through the root, so `DanceSpin` is authored unturned and rotated by one field.
+Poses without it generate byte-identical projects. `DanceSpin` pivots on the left foot, which sits
+under the root, and turns a full revolution.
+
 ### Library layout
 
 ```text

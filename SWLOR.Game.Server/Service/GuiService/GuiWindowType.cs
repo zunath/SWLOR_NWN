@@ -89,6 +89,11 @@ namespace SWLOR.Game.Server.Service.GuiService
         CasinoSlot = 84,
         LanguageToken = 85,
 
+        PerformanceFootwork = 100,
+        PerformanceSession = 101,
+        PerformanceOptions = 102,
+        PerformanceWatching = 103,
+
         DebugEnmity = 900,
         DebugNuiGallery = 901,
         AnimationDebug = 902,

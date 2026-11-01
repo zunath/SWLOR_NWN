@@ -79,8 +79,13 @@ public sealed class NamedAnimationPlayback
         _releasePose = releasePose;
     }
 
+    /// <param name="liftShoulderHoldInPlace">
+    /// With no weaponHold, keeps the looping carrier but maps the two-handed and polearm hold to no animation, for a long
+    /// loop that poses the arm itself.
+    /// </param>
     public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false,
-        AnimationWeaponHold weaponHold = AnimationWeaponHold.None, EquipmentRequest equipmentRequest = null)
+        AnimationWeaponHold weaponHold = AnimationWeaponHold.None, EquipmentRequest equipmentRequest = null,
+        bool liftShoulderHoldInPlace = false)
     {
         ArgumentNullException.ThrowIfNull(clip);
         if (!CanStartEquipmentPlayback(creature, equipmentRequest)) return null;
@@ -89,19 +94,21 @@ public sealed class NamedAnimationPlayback
             _equipmentRequests.Remove(creature);
             _restrictedPlaybackTokens.Remove(creature);
         }
-        var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration, weaponHold);
+        var liftInPlace = liftShoulderHoldInPlace && weaponHold == AnimationWeaponHold.None;
+        var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration, weaponHold,
+            liftInPlace);
         if (equipmentRequest != null)
         {
             equipmentRequest.PlaybackToken = token;
             _restrictedPlaybackTokens[creature] = token;
         }
-        if (weaponHold != AnimationWeaponHold.None) _heldPlaybackTokens[creature] = token;
+        if (weaponHold != AnimationWeaponHold.None || liftInPlace) _heldPlaybackTokens[creature] = token;
         else _heldPlaybackTokens.Remove(creature);
         return token;
     }
 
     private string BeginMapped(uint creature, string start, string loop, string end, float duration, bool completeAtDuration,
-        AnimationWeaponHold weaponHold)
+        AnimationWeaponHold weaponHold, bool liftShoulderHoldInPlace)
     {
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
@@ -128,7 +135,7 @@ public sealed class NamedAnimationPlayback
             {
                 AnimationWeaponHold.Rifle => RifleHoldSource,
                 AnimationWeaponHold.Shoulder => NoHoldName,
-                _ => ""
+                _ => liftShoulderHoldInPlace ? NoHoldName : ""
             });
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.

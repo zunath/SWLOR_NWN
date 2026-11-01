@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             //MoveDoor();
             EnmityDebugger();
             NuiGallery();
+            PerformanceWindows();
             CasinoPreview();
             AnimationTester();
             GetObjectId();
@@ -100,6 +101,27 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugNuiGallery);
+                });
+        }
+
+        // Opens each Performance window on its own, without a performance running, to check its layout in the client.
+        private void PerformanceWindows()
+        {
+            AddPerformanceWindowCommand("perfwindowfootwork", "Footwork", GuiWindowType.PerformanceFootwork);
+            AddPerformanceWindowCommand("perfwindowsession", "Session", GuiWindowType.PerformanceSession);
+            AddPerformanceWindowCommand("perfwindowperform", "Perform", GuiWindowType.PerformanceOptions);
+            AddPerformanceWindowCommand("perfwindowwatching", "Watching", GuiWindowType.PerformanceWatching);
+        }
+
+        private void AddPerformanceWindowCommand(string command, string windowName, GuiWindowType window)
+        {
+            _builder.Create(command)
+                .Description($"Opens the Performance {windowName} window for layout checks")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, window);
                 });
         }
 

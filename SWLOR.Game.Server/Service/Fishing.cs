@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -453,7 +454,8 @@ namespace SWLOR.Game.Server.Service
             var delta = skill - fish.Level;
             var stat = GetAbilityScore(player, AbilityType.Willpower);
 
-            var chance = BaseChance + delta * 10 + stat * 2;
+            var chance = BaseChance + delta * 10 + stat * 2 +
+                         Stat.GetStatAdjustment(player, StatType.FishingCatchChancePercentAdjustment);
             if (chance > 95)
                 chance = 95;
             else if (chance < 0)

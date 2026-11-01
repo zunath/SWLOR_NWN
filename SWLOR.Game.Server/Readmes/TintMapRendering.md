@@ -7,9 +7,10 @@ palette, mask, and material edits have each shifted existing armor colors, so
 these rules hold for every change in `SWLOR_Haks`:
 
 - **No silent dye changes.** `SWLOR_Haks/tools/CheckDyeAppearance.py` fingerprints
-  every tint material in `sw_tint_mtr` (its directives and the exact content of
-  every texture and TXI it binds, tint masks included), the shared tint shaders
-  and palette atlas, and each existing model's rows in `tintmap.2da` and
+  every tint material (each `sw_tint_mtr` material and any other MTR that samples
+  the dye palette: its directives and the exact content of every texture and TXI
+  it binds, tint masks included), every custom shader those materials use, the
+  palette atlas, and each existing model's rows in `tintmap.2da` and
   `cloaktint.2da` (material and dye layers), and compares them with
   `tools/DyeAppearanceBaseline.json`. `BuildHaks.cmd` runs it,
   and `TestDyeAppearance.py` covers it. A failure means existing parts would take
@@ -23,8 +24,9 @@ these rules hold for every change in `SWLOR_Haks`:
   metal reflectance from a bound specular map instead of the palette, and dyed
   metal turns pale and nonmetallic. Keep authored normal maps. When imported
   armor ships such maps, add them to `PALETTE_SPECULAR_MAPS` so the generator
-  unbinds them. The 568 materials that already bound them when the baseline was
-  created are grandfathered in `legacyMetalSpecular`; `--update` never adds to it.
+  unbinds them. The 537 materials that still bind them from before the baseline
+  are grandfathered in `legacyMetalSpecular`; `--update` never adds to it, and a
+  fixed set leaves it (the Havoc armor did).
 
 The generated tint materials share three fragment shaders in
 `SWLOR_Haks/sw_shader`: `fs_plt_tinter`, `fs_plt_tinter_nm`, and
@@ -886,12 +888,14 @@ NPC would hide the initialization error and remove intentional material detail.
 
 Dyed metal is the exception (see "Keep dye colors stable"): a bound specular map
 replaces the palette's metal reflectance. `PALETTE_SPECULAR_MAPS`
-(`GenerateTintMapAssets.py`) lists the Republic Trooper maps (chest 99, pelvis 156,
-shoulders 197, biceps, forearms and hands 101, thighs 121, shins 102, feet 186,
-helmet 37), which are about 0.1 to 0.3 on metal and made dyed metal a pale
-nonmetallic sheen; players reported the thighs and arms as washed out next to
+(`GenerateTintMapAssets.py`) lists the maps of the two sets added in haks #529: the
+Republic Trooper (chest 99, pelvis 156, shoulders 197, biceps, forearms and hands
+101, thighs 121, shins 102, feet 186, helmet 37) and the Havoc armor (chest
+316/317, pelvis 270, shoulders 261, biceps 278, forearms 282, hands 267, thighs 269,
+shins 272, feet 272, helmet 321). They are about 0.1 to 0.3 on metal and made dyed
+metal a pale nonmetallic sheen; players reported both sets as washed out next to
 other parts with the same metal color. The generator writes `texture2 null` and
-`texture3 null` for listed maps and keeps the normal maps; material profile
+`texture3 null` for listed maps and keeps the normal and illumination maps; material profile
 signatures still see the authored maps, so scoped alias names do not change.
 `TestPaletteSpecularMaps.py` guards the list and the checked-in materials.
 

@@ -1,258 +1,294 @@
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class GatheringPerkDefinition: IPerkListDefinition
+    /// <summary>
+    /// The Gathering perk lines: Prospector (volume) and Treasure Seeker (rare finds). Every perk acts on the Prospecting session, the
+    /// Search board or refining, through the stats <see cref="ProspectingEffects"/>, <see cref="SearchEffects"/> and the refinery read.
+    /// Each line has ten purchases at Gathering ranks 5/10/15/20/25/30/35/40/45/50 priced 1/1/2/2/3/3/3/3/3/4 SP; a ranked perk spends
+    /// two or three of them, and a rank restates what the rank below it gave because only the purchased rank's bonuses apply. Neither
+    /// line touches Quick Harvest or Quick Search.
+    /// </summary>
+    public class GatheringPerkDefinition : IPerkListDefinition
     {
+        // Existing gathering icons until each perk has artwork of its own.
+        private const string ProspectorIcon = "ife_Miner";
+        private const string TreasureSeekerIcon = "ife_treas_hunt";
+
         private readonly PerkBuilder _builder = new();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            TreasureHunter();
-            Creditfinder();
-            Harvesting();
-            Refining();
-            RefineryManagement();
-            Scavenging();
-            HardLook();
+            EfficientStrikes();
+            BulkRefining();
+            RichVeins();
+            StripMiningStyle();
+            CoreSample();
+            MotherLode();
+
+            FineTrowel();
+            SharpChisel();
+            SteadyDig();
+            CarefulHandsStyle();
+            KeenEye();
+            DeepScan();
+            RichPickings();
+            Jackpot();
 
             return _builder.Build();
         }
 
+        private static string StyleDescription(GatheringStyle style, string window) =>
+            $"Gathering style, picked in the {window} window with one style active at a time. {GatheringStyles.Description(style)}";
 
-        private void TreasureHunter()
+        private static string ItemWord(int count) => count == 1 ? "item" : "items";
+
+        private static string StrikeText(int strikeTenths, int heavyTenths) =>
+            $"In Prospecting, a Strike takes {ProspectingPerkRules.SecondsText(strikeTenths)} {SecondWord(strikeTenths)} less and a Heavy Strike {ProspectingPerkRules.SecondsText(heavyTenths)} {SecondWord(heavyTenths)} less.";
+
+        private static string SecondWord(int tenths) => ProspectingPerkRules.SecondsWord(tenths);
+
+        private static string RichVeinsText(int tenths) =>
+            $"In Prospecting, claiming a rich seam with Extract takes {ProspectingPerkRules.SecondsText(tenths)} {SecondWord(tenths)} less.";
+
+        private static string TimesText(int bonus) => bonus == 1 ? "1 more" : $"{bonus} more";
+
+        private static int DigWeight(int bonus) => ScavengeLoot.DeeperWeightMultiplier + bonus;
+
+        private static string DigRiskText()
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.TreasureHunter)
-                .Name("Treasure Hunter")
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.TreasureHunterTrait)
-                .Description("Increases the chance to find rare items by 10.")
-                .Price(3)
-                .RequirementSkill(SkillType.Gathering, 15)
-
-                .AddPerkLevel()
-                .Description("Increases the chance to find rare items by 20.")
-                .Price(3)
-                .RequirementSkill(SkillType.Gathering, 30)
-
-                .AddPerkLevel()
-                .Description("Increases the chance to find rare items by 30.")
-                .Price(4)
-                .RequirementSkill(SkillType.Gathering, 45);
+            var base1 = SearchRules.DigRiskBase;
+            var lowered = (base1 * (100 - SearchPerkRules.SteadyDigRiskReductionPercent) + 50) / 100;
+            return $"a {base1}% risk becomes {lowered}%";
         }
 
-
-        private void Creditfinder()
+        private void EfficientStrikes()
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.CreditFinder)
-                .Name("Creditfinder")
+            _builder.Create(PerkCategoryType.Gathering, PerkType.EfficientStrikes)
+                .Name("Efficient Strikes")
+                .Icon(ProspectorIcon)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.CreditFinderTrait)
-                .Description("Increases the amount of credits found by 20%.")
-                .Price(3)
-                .RequirementSkill(SkillType.Gathering, 20)
-
-                .AddPerkLevel()
-                .Description("Increases the amount of credits found by 40%.")
-                .Price(3)
-                .RequirementSkill(SkillType.Gathering, 40)
-
-                .AddPerkLevel()
-                .Description("Increases the amount of credits found by 60%.")
-                .Price(4)
-                .RequirementSkill(SkillType.Gathering, 50);
-        }
-
-
-        private void Harvesting()
-        {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.Harvesting)
-                .Name("Harvesting")
-
-                .AddPerkLevel()
-                .Description("You can use tier 1 harvesters.")
+                .Description(StrikeText(ProspectingPerkRules.EfficientStrikesStrikeTenthsRank1, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank1))
                 .Price(1)
-                .GrantsFeat(FeatType.Harvesting1)
+                .RequirementSkill(SkillType.Gathering, 5)
+                .IncreasesStat(StatType.ProspectingStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesStrikeTenthsRank1)
+                .IncreasesStat(StatType.ProspectingHeavyStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank1)
 
                 .AddPerkLevel()
-                .Description("You can use tier 2 harvesters.")
+                .Description(StrikeText(ProspectingPerkRules.EfficientStrikesStrikeTenthsRank2, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank2))
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 25)
+                .IncreasesStat(StatType.ProspectingStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesStrikeTenthsRank2)
+                .IncreasesStat(StatType.ProspectingHeavyStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank2);
+        }
+
+        private void BulkRefining()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.BulkRefining)
+                .Name("Bulk Refining")
+                .Icon(ProspectorIcon)
+
+                .AddPerkLevel()
+                .Description($"Each power core refines {ProspectingPerkRules.BulkRefiningRank1} more {ItemWord(ProspectingPerkRules.BulkRefiningRank1)} than your Gathering rank allows.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(FeatType.Harvesting2)
+                .IncreasesStat(StatType.ProspectingRefineBatch, ProspectingPerkRules.BulkRefiningRank1)
 
                 .AddPerkLevel()
-                .Description("You can use tier 3 harvesters.")
-                .Price(2)
-                .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(FeatType.Harvesting3)
-
-                .AddPerkLevel()
-                .Description("You can use tier 4 harvesters.")
+                .Description($"Each power core refines {ProspectingPerkRules.BulkRefiningRank2} more {ItemWord(ProspectingPerkRules.BulkRefiningRank2)} than your Gathering rank allows.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(FeatType.Harvesting4)
+                .IncreasesStat(StatType.ProspectingRefineBatch, ProspectingPerkRules.BulkRefiningRank2)
 
                 .AddPerkLevel()
-                .Description("You can use tier 5 harvesters.")
-                .Price(4)
-                .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(FeatType.Harvesting5);
-        }
-
-
-        private void Refining()
-        {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.Refining)
-                .Name("Refining")
-
-                .AddPerkLevel()
-                .Description("You can refine Veldite and Tilarium.")
-                .Price(1)
-                .GrantsFeat(FeatType.Refining1)
-
-                .AddPerkLevel()
-                .Description("You can refine Veldite, Tilarium, Scordspar, and Currian.")
-                .Price(1)
-                .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(FeatType.Refining2)
-
-                .AddPerkLevel()
-                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, and Idailia.")
-                .Price(2)
-                .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(FeatType.Refining3)
-
-                .AddPerkLevel()
-                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, and Barinium.")
+                .Description($"Each power core refines {ProspectingPerkRules.BulkRefiningRank3} more {ItemWord(ProspectingPerkRules.BulkRefiningRank3)} than your Gathering rank allows.")
                 .Price(3)
-                .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(FeatType.Refining4)
-
-                .AddPerkLevel()
-                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, Barinium, Jasioclase, and Gostian.")
-                .Price(4)
-                .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(FeatType.Refining5);
-        }
-
-
-        private void RefineryManagement()
-        {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.RefineryManagement)
-                .Name("Refinery Management")
-
-                .AddPerkLevel()
-                .Description("Power cores refine one additional item.")
-                .Price(1)
-                .GrantsFeat(FeatType.RefineryManagement1)
-
-                .AddPerkLevel()
-                .Description("Power cores refine two additional items.")
-                .Price(1)
-                .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(FeatType.RefineryManagement2)
-
-                .AddPerkLevel()
-                .Description("Power cores refine three additional items.")
-                .Price(2)
-                .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(FeatType.RefineryManagement3)
-
-                .AddPerkLevel()
-                .Description("Power cores refine four additional items.")
-                .Price(2)
-                .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(FeatType.RefineryManagement4)
-
-                .AddPerkLevel()
-                .Description("Power cores refine five additional items.")
-                .Price(3)
-                .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(FeatType.RefineryManagement5)
-
-                .AddPerkLevel()
-                .Description("Power cores refine six additional items.")
-                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 45)
-                .GrantsFeat(FeatType.RefineryManagement6);
+                .IncreasesStat(StatType.ProspectingRefineBatch, ProspectingPerkRules.BulkRefiningRank3);
         }
 
-
-        private void Scavenging()
+        private void RichVeins()
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.Scavenging)
-                .Name("Scavenging")
+            _builder.Create(PerkCategoryType.Gathering, PerkType.RichVeins)
+                .Name("Rich Veins")
+                .Icon(ProspectorIcon)
 
                 .AddPerkLevel()
-                .Description("You can scavenge tier 1 resources.")
-                .Price(1)
-                .GrantsFeat(FeatType.Scavenging1)
-
-                .AddPerkLevel()
-                .Description("You can scavenge tier 2 resources.")
-                .Price(1)
-                .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(FeatType.Scavenging2)
-
-                .AddPerkLevel()
-                .Description("You can scavenge tier 3 resources.")
+                .Description(RichVeinsText(ProspectingPerkRules.RichVeinsTimeTenthsRank1))
                 .Price(2)
-                .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(FeatType.Scavenging3)
+                .RequirementSkill(SkillType.Gathering, 15)
+                .IncreasesStat(StatType.ProspectingRichExtractTimeReduction, ProspectingPerkRules.RichVeinsTimeTenthsRank1)
 
                 .AddPerkLevel()
-                .Description("You can scavenge tier 4 resources.")
+                .Description(RichVeinsText(ProspectingPerkRules.RichVeinsTimeTenthsRank2))
                 .Price(3)
-                .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(FeatType.Scavenging4)
+                .RequirementSkill(SkillType.Gathering, 40)
+                .IncreasesStat(StatType.ProspectingRichExtractTimeReduction, ProspectingPerkRules.RichVeinsTimeTenthsRank2);
+        }
+
+        private void StripMiningStyle()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.StripMiningStyle)
+                .Name("Strip Mining")
+                .Icon(ProspectorIcon)
+                .TriggerRefund(GatheringStyles.RemoveUnowned)
 
                 .AddPerkLevel()
-                .Description("You can scavenge tier 5 resources.")
+                .Description(StyleDescription(GatheringStyle.StripMining, "Prospecting"))
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, GatheringStyles.StyleRank);
+        }
+
+        private void CoreSample()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.CoreSample)
+                .Name("Core Sample")
+                .Icon(ProspectorIcon)
+
+                .AddPerkLevel()
+                .Description("In Prospecting, the window shows how many seams the node still holds and whether each is a rich seam or a gem pocket, before you find them. A Heavy Strike shows a chance to shatter a gem pocket only when one is hidden there.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 35)
+                .IncreasesStat(StatType.ProspectingSeamSightUnlocked, 1);
+        }
+
+        private void MotherLode()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.MotherLode)
+                .Name("Mother Lode")
+                .Icon(ProspectorIcon)
+
+                .AddPerkLevel()
+                .Description($"In Prospecting, the first Strike or Heavy Strike of each node takes {ProspectingPerkRules.MotherLodeTimePercent}% of its usual time.")
                 .Price(4)
-                .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(FeatType.Scavenging5);
+                .RequirementSkill(SkillType.Gathering, 50)
+                .IncreasesStat(StatType.ProspectingMotherLodeUnlocked, 1);
         }
 
-
-        private void HardLook()
+        private void FineTrowel()
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.HardLook)
-                .Name("Hard Look")
+            _builder.Create(PerkCategoryType.Gathering, PerkType.FineTrowel)
+                .Name("Fine Trowel")
+                .Icon(TreasureSeekerIcon)
 
                 .AddPerkLevel()
-                .Description("Grants a 10% chance to search a second time at each search site.")
+                .Description($"In Search, a Dig Deeper find rolls the site's rare entries with {DigWeight(SearchPerkRules.FineTrowelRank1)} times their usual weight instead of {DigWeight(0)}.")
                 .Price(1)
-                .GrantsFeat(FeatType.HardLook1)
+                .RequirementSkill(SkillType.Gathering, 5)
+                .IncreasesStat(StatType.SearchDigRareWeight, SearchPerkRules.FineTrowelRank1)
 
                 .AddPerkLevel()
-                .Description("Grants a 20% chance to search a second time at each search site.")
-                .Price(1)
-                .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(FeatType.HardLook2)
-
-                .AddPerkLevel()
-                .Description("Grants a 30% chance to search a second time at each search site.")
-                .Price(2)
-                .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(FeatType.HardLook3)
-
-                .AddPerkLevel()
-                .Description("Grants a 40% chance to search a second time at each search site.")
-                .Price(3)
-                .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(FeatType.HardLook4)
-
-                .AddPerkLevel()
-                .Description("Grants a 50% chance to search a second time at each search site.")
+                .Description($"In Search, a Dig Deeper find rolls the site's rare entries with {DigWeight(SearchPerkRules.FineTrowelRank2)} times their usual weight instead of {DigWeight(0)}.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(FeatType.HardLook5);
+                .IncreasesStat(StatType.SearchDigRareWeight, SearchPerkRules.FineTrowelRank2);
+        }
+
+        private void SharpChisel()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.SharpChisel)
+                .Name("Sharp Chisel")
+                .Icon(TreasureSeekerIcon)
+
+                .AddPerkLevel()
+                .Description($"In Prospecting, a Heavy Strike is {ProspectingPerkRules.SharpChiselRank1} points less likely to shatter a gem pocket you have not surveyed ({ProspectingRules.ShatterPercent}% becomes {ProspectingRules.ShatterPercent - ProspectingPerkRules.SharpChiselRank1}%).")
+                .Price(1)
+                .RequirementSkill(SkillType.Gathering, 10)
+                .IncreasesStat(StatType.ProspectingShatterReduction, ProspectingPerkRules.SharpChiselRank1)
+
+                .AddPerkLevel()
+                .Description($"In Prospecting, a Heavy Strike is {ProspectingPerkRules.SharpChiselRank2} points less likely to shatter a gem pocket you have not surveyed ({ProspectingRules.ShatterPercent}% becomes {ProspectingRules.ShatterPercent - ProspectingPerkRules.SharpChiselRank2}%).")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 30)
+                .IncreasesStat(StatType.ProspectingShatterReduction, ProspectingPerkRules.SharpChiselRank2);
+        }
+
+        private void SteadyDig()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.SteadyDig)
+                .Name("Steady Dig")
+                .Icon(TreasureSeekerIcon)
+
+                .AddPerkLevel()
+                .Description($"In Search, the risk that Dig Deeper ruins a spot is {SearchPerkRules.SteadyDigRiskReductionPercent}% lower ({DigRiskText()}).")
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, 15)
+                .IncreasesStat(StatType.SearchDigRiskReductionPercent, SearchPerkRules.SteadyDigRiskReductionPercent);
+        }
+
+        private void CarefulHandsStyle()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.CarefulHandsStyle)
+                .Name("Careful Hands")
+                .Icon(TreasureSeekerIcon)
+                .TriggerRefund(GatheringStyles.RemoveUnowned)
+
+                .AddPerkLevel()
+                .Description(StyleDescription(GatheringStyle.CarefulHands, "Search"))
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, GatheringStyles.StyleRank);
+        }
+
+        private void KeenEye()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.KeenEye)
+                .Name("Keen Eye")
+                .Icon(TreasureSeekerIcon)
+
+                .AddPerkLevel()
+                .Description($"In Search, a Search finds {SearchPerkRules.KeenEyePoints} point more often on every spot.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 25)
+                .IncreasesStat(StatType.SearchChancePoints, SearchPerkRules.KeenEyePoints);
+        }
+
+        private void DeepScan()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.DeepScan)
+                .Name("Deep Scan")
+                .Icon(TreasureSeekerIcon)
+
+                .AddPerkLevel()
+                .Description($"In Prospecting, a Survey reveals {TimesText(ProspectingPerkRules.DeepScanReveals)} seam than your Gathering rank allows, up to the {CraftRankMilestones.MaxProspectingSurveyReveals} a node holds, and reveals gem pockets before rich seams.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 35)
+                .IncreasesStat(StatType.ProspectingSurveyReveals, ProspectingPerkRules.DeepScanReveals)
+                .IncreasesStat(StatType.ProspectingPocketsFirstUnlocked, 1);
+        }
+
+        private void RichPickings()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.RichPickings)
+                .Name("Rich Pickings")
+                .Icon(TreasureSeekerIcon)
+
+                .AddPerkLevel()
+                .Description($"In Search, a Search that finds something rolls the site's rare entries with {(1 + SearchPerkRules.RichPickingsRareWeight)} times their usual weight.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 45)
+                .IncreasesStat(StatType.SearchFindRareWeight, SearchPerkRules.RichPickingsRareWeight);
+        }
+
+        private void Jackpot()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.Jackpot)
+                .Name("Jackpot")
+                .Icon(TreasureSeekerIcon)
+
+                .AddPerkLevel()
+                .Description($"In Search, the first Dig Deeper find of each board rolls the site's rare entries with {DigWeight(SearchPerkRules.JackpotRareWeight)} times their usual weight instead of {DigWeight(0)}, plus what Fine Trowel and Careful Hands add.")
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 50)
+                .IncreasesStat(StatType.SearchJackpotRareWeight, SearchPerkRules.JackpotRareWeight);
         }
     }
 }
-

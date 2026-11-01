@@ -6413,7 +6413,365 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         BlastDamagePercentAdjustment = 1170,
 
+        /// <summary>Percentage points of output each Load point adds to Circuit Wire, Tune and Discharge, on top of the recipe's own. A style may lower it.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitLoadBoostPercent = 1186,
 
+        /// <summary>Percent added to the size of a Circuit Discharge burst.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitDischargePowerPercent = 1187,
+
+        /// <summary>Points added to the recipe's Circuit overload line.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitOverloadLine = 1264,
+
+        /// <summary>Load a Circuit Wire or Tune adds beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitExtraLoadPerBuildAction = 1171,
+
+        /// <summary>Nonzero when the crafter has the Circuit's Cascade Discharge action.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitCascadeDischargeUnlocked = 1172,
+
+        /// <summary>Load a Circuit Boost adds beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitBoostLoad = 1173,
+
+        /// <summary>CP a Circuit Boost costs less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitBoostCpReduction = 1174,
+
+        /// <summary>Percent of the Integrity an overload would cost that a Circuit overload does not take.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitOverloadIntegrityReductionPercent = 1175,
+
+        /// <summary>Nonzero when the first Circuit overload of a craft becomes a Discharge instead of costing Integrity.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitSurgeUnlocked = 1176,
+
+        /// <summary>Integrity that Circuit Wire, Tune, Boost, Discharge and their variants cost less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitActionIntegrityReduction = 1177,
+
+        /// <summary>Percent added to the Calibration a Circuit Tune builds.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitTunePowerPercent = 1178,
+
+        /// <summary>Extra actions ahead at which a Circuit Clean Signal is announced.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitForecastTurns = 1179,
+
+        /// <summary>Points past the overload line at which a Circuit action still cannot overload.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitOverloadGrace = 1180,
+
+        /// <summary>Nonzero when the crafter has the Circuit's Micro-Tune action.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitMicroTuneUnlocked = 1181,
+
+        /// <summary>Points added to the chance that a Circuit action announces a Clean Signal.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitSignalChancePercent = 1182,
+
+        /// <summary>Integrity a Circuit Patch restores beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitPatchRestore = 1183,
+
+        /// <summary>CP a Circuit Patch costs less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitPatchCpReduction = 1184,
+
+        /// <summary>Nonzero when the first time a Circuit craft would break leaves the piece at 1 Integrity instead.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitFailsafeUnlocked = 1185,
+
+        /// <summary>Percent added to the progress each Fabricator Run makes; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorRunPowerPercent = 1188,
+
+        /// <summary>Percent added to the quality each Fabricator Precision Pass gains; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorPrecisionPowerPercent = 1189,
+
+        /// <summary>Machine Condition a Fabricator Run or Precision Pass wears less, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorWearReduction = 1190,
+
+        /// <summary>Percent off the CP a Fabricator Retool costs, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorRetoolCpReductionPercent = 1191,
+
+        /// <summary>Machine Condition a Fabricator Service restores beyond its base amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorServiceRestore = 1192,
+
+        /// <summary>CP a Fabricator Service costs less, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorServiceCpReduction = 1193,
+
+        /// <summary>Non-zero when the Fabricator offers Dual Feed.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        FabricatorDualFeedUnlocked = 1194,
+
+        /// <summary>Extra actions a Prime Feedstock waits for its head.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorPrimeWindowActions = 1195,
+
+        /// <summary>Percentage points added to the bonus a Prime Feedstock gives.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorPrimeBonusPercent = 1196,
+
+        /// <summary>Points added to how far Assemble lets the piece's quality rise above its weakest sub-assembly.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorAssembleCapPoints = 1197,
+
+        /// <summary>Trials added to every research Experiment; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentTrials = 1198,
+
+        /// <summary>Percentage points added to the chance every research Test finds evidence; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentTestChancePercent = 1199,
+
+        /// <summary>CP Refine Method costs less in a research Experiment, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentRefineCpReduction = 1200,
+
+        /// <summary>Percentage points Refine Method adds to the next Test's chance beyond its base amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentRefineChancePercent = 1201,
+
+        /// <summary>Percent of the job's time each piece of spare evidence cuts beyond its base amount; the cap stays.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentTimeCutPerEvidencePercent = 1202,
+
+        /// <summary>Non-zero when the research Experiment offers Peer Review.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ExperimentPeerReviewUnlocked = 1203,
+
+        /// <summary>Non-zero when the research Experiment offers Breakthrough.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ExperimentBreakthroughUnlocked = 1204,
+
+        /// <summary>Thermal points the Plasma Forge's working range moves up (positive) or down (negative). A Smithery style sets it.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRangeShift = 1208,
+
+        /// <summary>Percent added to every Plasma Forge Hydro-Press Shape gain, including the set piece's trim. A style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePressOutputPercent = 1209,
+
+        /// <summary>Percent added to every Plasma Forge Vibro-Hone Finish gain. A style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeHoneOutputPercent = 1210,
+
+        /// <summary>CP a Plasma Forge Ramp Plasma costs less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRampCpReduction = 1211,
+
+        /// <summary>Thermal the piece loses less after every Plasma Forge action, to a minimum of 1 lost.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeCoolingReduction = 1212,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Overdrive Press: the percent its Shape gain exceeds a Hydro-Press at the same Thermal.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeOverdrivePressPercent = 1213,
+
+        /// <summary>Percent of Shape each consecutive Plasma Forge Hydro-Press before this one adds to it, up to the perk's cap.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePressStreakPercent = 1214,
+
+        /// <summary>Percent of the Integrity a Plasma Forge Hydro-Press above the working range would crack that it does not.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePressOverheatIntegrityReductionPercent = 1215,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Surge Plasma: the Thermal it raises.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeSurgePlasmaThermal = 1216,
+
+        /// <summary>Thermal a Plasma Forge Rebond costs less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRebondThermalReduction = 1217,
+
+        /// <summary>CP a Plasma Forge Rebond costs less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRebondCpReduction = 1218,
+
+        /// <summary>How many times per craft the Plasma Forge offers the Red Line Press.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRedLineCharges = 1219,
+
+        /// <summary>Integrity a Plasma Forge Vibro-Hone costs less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeHoneIntegrityReduction = 1220,
+
+        /// <summary>Percentage points added to the chance that the Plasma Forge announces Stable Containment.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeContainmentChancePercent = 1221,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Micro-Hone: the percent of a Vibro-Hone's best Finish it gives at any Thermal.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeMicroHonePercent = 1222,
+
+        /// <summary>Percentage points of its center bonus that a Plasma Forge Cryo-Quench keeps at the edge of the working range.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeQuenchEdgePercent = 1223,
+
+        /// <summary>Percentage points of its best Finish that a Plasma Forge Vibro-Hone keeps at the hot edge of the working range.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeHoneHotEdgePercent = 1224,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Temper Hold: the actions after it during which the piece does not cool.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeTemperHoldActions = 1225,
+
+        /// <summary>Percentage points added to the bonus Stable Containment gives a Plasma Forge Vibro-Hone.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeContainmentHonePercent = 1226,
+
+        /// <summary>Percent added to the Finish of a Plasma Forge Cryo-Quench made with Thermal at the center of the working range.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePerfectTemperPercent = 1227,
+
+        /// <summary>Points added to the push of each free pantry seasoning in the Kitchen.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenPantryPush = 1228,
+
+        /// <summary>Percentage points taken off the base spread of a Kitchen push, before Control narrows it.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenPushSpreadReduction = 1229,
+
+        /// <summary>Non-zero when the cook may switch on Seasoned Palate, which halves the push of every committed ingredient Add.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenSeasonedPalate = 1230,
+
+        /// <summary>Percent by which Seasoned Palate narrows the spread of a Kitchen push, after Control, while it is switched on.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenSeasonedPalateSpreadPercent = 1231,
+
+        /// <summary>Percent added to the Doneness a Kitchen Simmer gives at Low heat.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenLowHeatDonenessPercent = 1232,
+
+        /// <summary>Percent taken off the flavor drift a Kitchen dish takes at Medium heat.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenMediumDriftReductionPercent = 1233,
+
+        /// <summary>Percent taken off the flavor drift a Kitchen dish takes at High heat.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenHighHeatDriftReductionPercent = 1234,
+
+        /// <summary>Percent of the way toward the target's center that Kitchen Reduce moves the flavor on every axis; non-zero also adds the action.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenReducePercent = 1235,
+
+        /// <summary>CP Kitchen Reduce costs less, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenReduceCpReduction = 1236,
+
+        /// <summary>Percentage points added to the chance each Kitchen turn announces Peak Aroma.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenPeakAromaChancePoints = 1237,
+
+        /// <summary>CP a Kitchen Stir costs less, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenStirCpReduction = 1238,
+
+        /// <summary>Percent of a Simmer's Doneness at the current heat that a Kitchen Stir also gives.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenStirDonenessPercent = 1239,
+
+        /// <summary>Non-zero when the Kitchen offers Signature Dish, once per dish.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenSignatureDish = 1240,
+
+        /// <summary>Tension the fishing line holds beyond its usual cap.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerTensionCap = 1241,
+
+        /// <summary>Stamina Set Hook drains from the fish beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerSetHookDrain = 1242,
+
+        /// <summary>Turns at the start of a fight in which the window shows the fish's next two moves (Fish Sense).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        AnglerForecastTurns = 1243,
+
+        /// <summary>Distance Give Line lets out less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerGiveLineDistanceReduction = 1244,
+
+        /// <summary>Distance a Reel pulls the fish in beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerReelDistance = 1245,
+
+        /// <summary>Rungs of the difficulty ladder a rare fish is moved down, which makes it easier to land.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerRareFishRungs = 1246,
+
+        /// <summary>Stability a Prospecting Strike costs less, to a minimum of 1; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingStrikeStabilityReduction = 1248,
+
+        /// <summary>Tenths of a second a Prospecting Strike takes less.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingStrikeTimeReduction = 1249,
+
+        /// <summary>Tenths of a second a Prospecting Survey and Extract take less; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingSeamWorkTimeReduction = 1250,
+
+        /// <summary>Tenths of a second a Prospecting Heavy Strike takes less.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingHeavyStrikeTimeReduction = 1251,
+
+        /// <summary>Tenths of a second a Prospecting Extract of a rich seam takes less.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingRichExtractTimeReduction = 1252,
+
+        /// <summary>Non-zero when the Prospecting window shows how many seams a node still holds and what each one is.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ProspectingSeamSightUnlocked = 1253,
+
+        /// <summary>Non-zero when the first Prospecting Strike or Heavy Strike of each node takes half the time.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ProspectingMotherLodeUnlocked = 1254,
+
+        /// <summary>Items each power core refines beyond the Gathering rank's batch.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingRefineBatch = 1255,
+
+        /// <summary>Percentage points off the chance a Prospecting Heavy Strike shatters a gem pocket that has not been surveyed.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingShatterReduction = 1256,
+
+        /// <summary>Seams a Prospecting Survey reveals beyond its Gathering rank's, never more than a node holds.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ProspectingSurveyReveals = 1257,
+
+        /// <summary>Non-zero when a Prospecting Survey reveals gem pockets before rich seams.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ProspectingPocketsFirstUnlocked = 1258,
+
+        /// <summary>Added to the multiplier a Search Dig Deeper find puts on the weight of the site's rare entries.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SearchDigRareWeight = 1259,
+
+        /// <summary>Percent off the risk that a Search Dig Deeper ruins the spot.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SearchDigRiskReductionPercent = 1260,
+
+        /// <summary>Percentage points added to the chance a Search finds something on every spot; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SearchChancePoints = 1261,
+
+        /// <summary>Added to the multiplier an ordinary Search find puts on the weight of the site's rare entries.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SearchFindRareWeight = 1262,
+
+        /// <summary>Added to the rare-entry multiplier of the first Search Dig Deeper find of each board.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SearchJackpotRareWeight = 1263,
     }
 
     public class StatTypeAttribute : Attribute

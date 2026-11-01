@@ -20,6 +20,8 @@
     <Compile Include="..\tools\PlayerMessagePolicy.cs" Link="Tools\PlayerMessagePolicy.cs" />
     <Compile Include="..\tools\SWLOR.SlicingBoardGenerator\SlicingBoardSolver.cs" Link="Tools\SlicingBoardSolver.cs" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <ProjectReference Include="..\tools\SWLOR.RecipeParameters\SWLOR.RecipeParameters.csproj"
+                      AdditionalProperties="RunPostBuildEvent=Never" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <!-- The coverage ratchets (AbilityBehaviorCoverageTests, PerkCoverageTests) assert that
          every registered ability/perk has an engine-test case, so they reference the

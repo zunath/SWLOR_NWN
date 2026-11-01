@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         ExtraHotbarSetup = 81,
         ExtraHotbarSlotPicker = 82,
         AppearancePartBrowser = 83,
+        CasinoSlot = 84,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

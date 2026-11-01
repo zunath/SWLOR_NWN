@@ -48,7 +48,7 @@ Blueprint corrections require a module repack and deployment. Migration changes 
 a C# server deployment. Player migration 23 and server migration 28 repaired model 223 on the
 affected visors during their combined artwork, type and loot-stat visit, including the Foundry
 correction and saved root icons, the appearance editor catalog moves and the Arkanian Dragon
-Breastplate revision. Production has run both; server migration 28 is retired, and characters
+Breastplate revision. Production has run both; server migrations through 29 are retired, and characters
 not yet upgraded receive migration 23 at the next boot. Saved DM creatures receive the model
 correction within their existing artwork visit, retaining authored stats and equipment slots.
 Valid custom models and the reserved NPC prop remain untouched. Keep the appearance, type and

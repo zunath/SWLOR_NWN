@@ -24,9 +24,11 @@ these rules hold for every change in `SWLOR_Haks`:
   metal reflectance from a bound specular map instead of the palette, and dyed
   metal turns pale and nonmetallic. Keep authored normal maps. When imported
   armor ships such maps, add them to `PALETTE_SPECULAR_MAPS` so the generator
-  unbinds them. The 537 materials that still bind them from before the baseline
-  are grandfathered in `legacyMetalSpecular`; `--update` never adds to it, and a
-  fixed set leaves it (the Havoc armor did).
+  unbinds them. Maps shared with nonmetal parts use `PALETTE_SPECULAR_MASK_MAPS`
+  to opt in only the affected metal mask (forearm 30 shares its maps with the
+  cloth-only forearm 103). The 532 materials that still bind them from before
+  the baseline are grandfathered in `legacyMetalSpecular`; `--update` never adds
+  to it, and fixed materials leave it (Havoc armor and forearm 30 did).
 
 The generated tint materials share three fragment shaders in
 `SWLOR_Haks/sw_shader`: `fs_plt_tinter`, `fs_plt_tinter_nm`, and

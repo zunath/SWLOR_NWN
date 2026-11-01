@@ -835,9 +835,10 @@ public class CapstoneQuestDefinitionTests
     public void SpawnPoints_StandApartInTheirDungeon()
     {
         // The random spawn bake (Walkmesh.BakeArea) keeps spawn points 6 m clear of creatures, and the general
-        // capstone spawn points were laid out at that spacing. Fixed spawns follow the same rule so enemies
-        // never spawn on top of each other.
+        // capstone spawn points were laid out at that spacing. Inner circle guards never wander from their fixed
+        // spawns, so they keep a wider gap from every other spawn point to stay spread out.
         const double MinimumSpacingMeters = 6.0;
+        const double InnerCircleSpacingMeters = 10.0;
         var spawnTables = BuildSpawnTables();
         var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
 
@@ -860,7 +861,10 @@ public class CapstoneQuestDefinitionTests
                 {
                     var (a, b) = (spawnPoints[i], spawnPoints[j]);
                     var distance = Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
-                    distance.Should().BeGreaterThanOrEqualTo(MinimumSpacingMeters,
+                    var minimum = a.Tag.EndsWith("_IC_SPAWN") || b.Tag.EndsWith("_IC_SPAWN")
+                        ? InnerCircleSpacingMeters
+                        : MinimumSpacingMeters;
+                    distance.Should().BeGreaterThanOrEqualTo(minimum,
                         $"{areaResref} {a.Tag} ({a.X:0.0},{a.Y:0.0}) and {b.Tag} ({b.X:0.0},{b.Y:0.0}) are too close");
                 }
             }

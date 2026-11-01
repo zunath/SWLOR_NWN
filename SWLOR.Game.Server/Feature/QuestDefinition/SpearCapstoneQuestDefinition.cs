@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Forcebane specialists along the tempering line of the Forge Caverns on Tatooine and secure the Forcebane Sith Tempering Matrix.")
+                    "Kill five Forcebane specialists along the tempering line deeper in the Forge Caverns on Tatooine and secure the Forcebane Sith Tempering Matrix.")
                 .AddKillObjective(NPCGroupType.Tatooine_Forcebane_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneSithTemperingMatrix)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Crippling Defense specialists in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Ring Shock Regulator that runs their rigged rings.")
+                    "Kill five Crippling Defense specialists deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Ring Shock Regulator that runs their rigged rings.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseRingShockRegulator)
 

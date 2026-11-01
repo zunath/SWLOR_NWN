@@ -267,14 +267,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void TatooineForgeCaverns()
         {
-            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS", "Korriban Forge Caverns - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS", "Korriban Forge Caverns - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_absdef_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_absdef_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -283,13 +280,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_soulasc_sp")
+                .AddSpawn(ObjectType.Creature, "cp_forcebane_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP", "Korriban Forge Caverns - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_absdef_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_forcebane_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_soulasc_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -318,14 +321,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void MonCalaSithCryptDepths()
         {
-            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS", "Korriban Sith Crypt Depths - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS", "Korriban Sith Crypt Depths - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_lightstand_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_lightstand_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -334,13 +334,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_darkhung_sp")
+                .AddSpawn(ObjectType.Creature, "cp_eclipse_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP", "Korriban Sith Crypt Depths - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_lightstand_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_eclipse_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_darkhung_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

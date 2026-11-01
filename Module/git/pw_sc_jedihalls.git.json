@@ -55923,7 +55923,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -55986,7 +55986,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -55999,11 +55999,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56049,7 +56049,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56112,7 +56112,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56125,11 +56125,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56175,7 +56175,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56238,7 +56238,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56251,11 +56251,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56301,7 +56301,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56364,7 +56364,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56377,11 +56377,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56427,7 +56427,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56440,11 +56440,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56490,7 +56490,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56503,11 +56503,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56553,7 +56553,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56616,7 +56616,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56629,11 +56629,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56679,7 +56679,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56742,7 +56742,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56755,11 +56755,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56805,7 +56805,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56818,11 +56818,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56868,7 +56868,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56931,7 +56931,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -56944,11 +56944,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56994,7 +56994,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -57057,7 +57057,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -57120,7 +57120,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {

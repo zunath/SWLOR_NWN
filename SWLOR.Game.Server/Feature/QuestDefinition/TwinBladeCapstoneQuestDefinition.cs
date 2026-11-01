@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the five Tempest Bloom specialists running the live pits in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then pull the rewired Tempest Bloom Ring Shock Regulator off the wall.")
+                    "Defeat the five Tempest Bloom specialists running the live pits deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then pull the rewired Tempest Bloom Ring Shock Regulator off the wall.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomRingShockRegulator)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the five Red Bloom specialists in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then tear the rewired Red Bloom Ring Shock Regulator off the wall.")
+                    "Defeat the five Red Bloom specialists deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then tear the rewired Red Bloom Ring Shock Regulator off the wall.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomRingShockRegulator)
 

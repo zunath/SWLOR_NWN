@@ -33363,7 +33363,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -33426,7 +33426,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -33489,7 +33489,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -33552,7 +33552,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -33565,11 +33565,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33615,7 +33615,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -33628,11 +33628,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33678,7 +33678,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -33691,11 +33691,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33741,7 +33741,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -33804,7 +33804,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -33867,7 +33867,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -33930,7 +33930,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -33943,11 +33943,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -33993,7 +33993,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -34006,11 +34006,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34056,7 +34056,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -34069,11 +34069,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34119,7 +34119,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -34182,7 +34182,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -34245,7 +34245,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -34258,11 +34258,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34308,7 +34308,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -34321,11 +34321,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34371,7 +34371,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -34384,11 +34384,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34434,7 +34434,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -34447,11 +34447,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE"
+          "value": "CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_tatcan"
+          "value": "wp_cdp_tatcan"
         },
         "XPosition": {
           "type": "float",
@@ -34497,7 +34497,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -34560,7 +34560,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - General Capstone Spawn"
+            "0": "Anchorhead Canyon Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {

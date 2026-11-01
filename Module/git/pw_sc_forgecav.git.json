@@ -50751,7 +50751,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -50814,7 +50814,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -50877,7 +50877,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -50940,7 +50940,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -50953,11 +50953,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51003,7 +51003,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51016,11 +51016,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51066,7 +51066,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51079,11 +51079,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51129,7 +51129,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -51192,7 +51192,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -51255,7 +51255,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -51318,7 +51318,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51331,11 +51331,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51381,7 +51381,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51394,11 +51394,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51444,7 +51444,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51457,11 +51457,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51507,7 +51507,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -51570,7 +51570,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -51633,7 +51633,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51646,11 +51646,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51696,7 +51696,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51709,11 +51709,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51759,7 +51759,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -51822,7 +51822,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -51885,7 +51885,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51898,11 +51898,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51948,7 +51948,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -51961,11 +51961,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",

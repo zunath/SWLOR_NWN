@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the CZ-220 Breaker Yard on CZ-220. Defeat five Worldbreaker specialists on the junkline and recover the Worldbreaker Junkline Control Relay.")
+                    "Return to the CZ-220 Breaker Yard on CZ-220. Defeat five Worldbreaker specialists on the junkline deeper inside and recover the Worldbreaker Junkline Control Relay.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerJunklineControlRelay)
 

@@ -115338,7 +115338,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115405,7 +115405,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115472,7 +115472,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115539,7 +115539,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115606,7 +115606,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115673,7 +115673,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115740,7 +115740,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115807,7 +115807,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115874,7 +115874,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -115941,7 +115941,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -115954,11 +115954,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116008,7 +116008,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -116075,7 +116075,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116088,11 +116088,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116142,7 +116142,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116155,11 +116155,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116209,7 +116209,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116222,11 +116222,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116276,7 +116276,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116289,11 +116289,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116343,7 +116343,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116356,11 +116356,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116410,7 +116410,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116423,11 +116423,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116477,7 +116477,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116490,11 +116490,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116544,7 +116544,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116557,11 +116557,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116611,7 +116611,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -116624,11 +116624,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {

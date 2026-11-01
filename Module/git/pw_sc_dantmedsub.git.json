@@ -95366,7 +95366,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -95379,11 +95379,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95429,7 +95429,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -95442,11 +95442,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95492,7 +95492,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -95505,11 +95505,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95555,7 +95555,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -95568,11 +95568,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95618,7 +95618,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -95631,11 +95631,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95681,7 +95681,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -95744,7 +95744,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -95757,11 +95757,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95807,7 +95807,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -95820,11 +95820,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95870,7 +95870,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -95933,7 +95933,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -95996,7 +95996,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -96059,7 +96059,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -96122,7 +96122,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -96185,7 +96185,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -96248,7 +96248,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -96311,7 +96311,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -96324,11 +96324,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -96374,7 +96374,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -96437,7 +96437,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -96450,11 +96450,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -96500,7 +96500,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -96513,11 +96513,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -96563,7 +96563,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
           }
         },
         "MapNote": {

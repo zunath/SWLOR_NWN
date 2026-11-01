@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Clear the range block of the Veles Militia Annex on Viscara. Defeat five Invincible specialists and secure the Invincible Militia Range Relay.")
+                    "Clear the range block of the Veles Militia Annex on Viscara. Defeat five Invincible specialists deeper inside and secure the Invincible Militia Range Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleMilitiaRangeRelay)
 

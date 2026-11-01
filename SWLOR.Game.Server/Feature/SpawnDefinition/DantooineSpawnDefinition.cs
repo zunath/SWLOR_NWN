@@ -192,14 +192,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void HutlarJediTrialHalls()
         {
-            _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS", "Dantooine Jedi Enclave Trial Halls - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS", "Dantooine Jedi Enclave Trial Halls - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_sabstorm_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_sabstorm_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -208,13 +205,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_guardmst_sp")
+                .AddSpawn(ObjectType.Creature, "cp_sabcycl_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP", "Dantooine Jedi Enclave Trial Halls - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_sabstorm_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_sabcycl_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_guardmst_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -243,14 +246,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void MonCalaMedicalSublevel()
         {
-            _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL", "Dantooine Medical Sublevel - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL", "Dantooine Medical Sublevel - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_emcocktail_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_emcocktail_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -259,13 +259,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_holdline_sp")
+                .AddSpawn(ObjectType.Creature, "cp_infconduit_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP", "Dantooine Medical Sublevel - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_emcocktail_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_infconduit_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_holdline_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

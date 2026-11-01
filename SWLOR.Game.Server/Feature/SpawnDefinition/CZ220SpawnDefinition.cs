@@ -60,14 +60,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void CZ220BreakerYard(SpawnTableBuilder builder)
         {
-            builder.Create("CAPSTONE_CZ220_BREAKER_YARD", "CZ-220 Breaker Yard - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            builder.Create("CAPSTONE_CZ220_BREAKER_YARD", "CZ-220 Breaker Yard - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_adamguard_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_adamguard_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -76,13 +73,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_scraplock_sp")
+                .AddSpawn(ObjectType.Creature, "cp_worldbrk_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            builder.Create("CAPSTONE_CZ220_BREAKER_YARD_DEEP", "CZ-220 Breaker Yard - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_adamguard_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_worldbrk_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_scraplock_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Crypt Marauders in the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Ritual Focus Shard.")
+                    "Defeat five Crypt Marauders deeper in the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.MonCala_CryptMarauder, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightRitualFocusShard)
 
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Vitae Reaver Adepts in the Sith Crypt Depths on Mon Cala and recover the Hunger of the Dark Ritual Focus Shard.")
+                    "Defeat five Vitae Reaver Adepts deeper in the Sith Crypt Depths on Mon Cala and recover the Hunger of the Dark Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.MonCala_VitaeReaverAdept, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkRitualFocusShard)
 
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Umbral Raider Adepts in the Sith Crypt Depths on Mon Cala and recover the Eclipse of Resolve Ritual Focus Shard.")
+                    "Defeat five Umbral Raider Adepts deeper in the Sith Crypt Depths on Mon Cala and recover the Eclipse of Resolve Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderAdept, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveRitualFocusShard)
 

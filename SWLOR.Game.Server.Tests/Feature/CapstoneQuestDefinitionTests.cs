@@ -735,25 +735,19 @@ public class CapstoneQuestDefinitionTests
 
         foreach (var areaGroup in CapstoneQuestDefinitionTestData.AreaGroups)
         {
-            var tableId = areaGroup.SpawnTableId;
-            spawnTables.Should().ContainKey(tableId);
-
-            var spawnResrefs = spawnTables[tableId]
-                .Spawns
-                .Select(spawn => spawn.Resref)
-                .ToArray();
             var areaLines = CapstoneQuestDefinitionTestData.Lines.Where(line => line.AreaGroup == areaGroup).ToArray();
-            var expectedGeneralResrefs = areaLines
-                .SelectMany(line => CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Select(step =>
-                    line.EnemyResrefs[step]))
-                .ToArray();
-            var excludedOnDemandResrefs = areaLines
-                .SelectMany(line => CapstoneQuestDefinitionTestData.OnDemandEncounterSteps.Select(step =>
-                    line.EnemyResrefs[step]))
-                .ToArray();
+            foreach (var step in CapstoneQuestDefinitionTestData.GeneralSpawnSteps)
+            {
+                // Each general step has its own table: adepts near the entrance, specialists deeper in.
+                var tableId = areaGroup.GetGeneralSpawnTableId(step);
+                spawnTables.Should().ContainKey(tableId);
 
-            spawnResrefs.Should().BeEquivalentTo(expectedGeneralResrefs);
-            spawnResrefs.Should().NotContain(excludedOnDemandResrefs);
+                spawnTables[tableId]
+                    .Spawns
+                    .Select(spawn => spawn.Resref)
+                    .Should()
+                    .BeEquivalentTo(areaLines.Select(line => line.EnemyResrefs[step]), $"{tableId} holds only step {step} enemies");
+            }
         }
     }
 
@@ -808,9 +802,9 @@ public class CapstoneQuestDefinitionTests
                 }
                 else if (CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Contains(step))
                 {
-                    // General steps roll from the shared table; at least one of the group is expected at any time
+                    // General steps roll from their tier's table; at least one of the group is expected at any time
                     // and later kills come from respawns.
-                    var tableId = line.AreaGroup.SpawnTableId;
+                    var tableId = line.AreaGroup.GetGeneralSpawnTableId(step);
                     var spawnPoints = waypointTags.Count(tag => tag == tableId);
                     if (HasLocal(git.RootElement, "CREATURE_SPAWN_TABLE_ID") &&
                         GetLocalString(git.RootElement, "CREATURE_SPAWN_TABLE_ID") == tableId)
@@ -941,15 +935,21 @@ public class CapstoneQuestDefinitionTests
 
         foreach (var areaGroup in CapstoneQuestDefinitionTestData.AreaGroups)
         {
-            var waypointResref = areaGroup.GeneralWaypointResref;
-            var waypointPath = Path.Combine(modulePath, "utw", $"{waypointResref}.utw.json");
+            foreach (var (waypointResref, tableId) in new[]
+                     {
+                         (areaGroup.GeneralWaypointResref, areaGroup.SpawnTableId),
+                         (areaGroup.DeepWaypointResref, areaGroup.DeepSpawnTableId),
+                     })
+            {
+                var waypointPath = Path.Combine(modulePath, "utw", $"{waypointResref}.utw.json");
 
-            File.Exists(waypointPath).Should().BeTrue($"{areaGroup.Name} needs a general spawn waypoint blueprint");
-            paletteResrefs.Should().Contain(waypointResref);
+                File.Exists(waypointPath).Should().BeTrue($"{areaGroup.Name} needs a {tableId} spawn waypoint blueprint");
+                paletteResrefs.Should().Contain(waypointResref);
 
-            using var waypointJson = JsonDocument.Parse(File.ReadAllText(waypointPath));
-            GetTypedValue(waypointJson.RootElement, "Tag").Should().Be(areaGroup.SpawnTableId);
-            GetTypedValue(waypointJson.RootElement, "TemplateResRef").Should().Be(waypointResref);
+                using var waypointJson = JsonDocument.Parse(File.ReadAllText(waypointPath));
+                GetTypedValue(waypointJson.RootElement, "Tag").Should().Be(tableId);
+                GetTypedValue(waypointJson.RootElement, "TemplateResRef").Should().Be(waypointResref);
+            }
         }
 
         foreach (var line in CapstoneQuestDefinitionTestData.Lines)

@@ -27,6 +27,10 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 
 - Training sabers, training saberstaves, lightsabers, and saberstaves never appear in loot tables of any kind, including rare, boss, chest, and steal tables. Their acquisition belongs to the progression and crafting systems. Validate loot by blueprint base item type, not display name.
 
+## Capstone dungeons
+
+- Enemy tiers spawn by depth. Each dungeon has 20 fixed general spawn points: the 10 nearest the hub entrance on foot are tagged with the adept table (`CAPSTONE_<DUNGEON>`), the 10 farthest with the specialist table (`CAPSTONE_<DUNGEON>_DEEP`). Inner circle guards keep four fixed points per line, and wardens and masters spawn on demand. Never register a capstone general table as an area-level `CREATURE_SPAWN_TABLE_ID`, since random points would mix the tiers. The engine test `Capstone adept spawn points are nearer the entrance than specialist spawn points` checks the split.
+
 ## Characters
 
 - Player characters use only the normal phenotype. The large phenotype is not available to players, so do not build, fix, or verify player assets or code paths for it. Leave the existing large-body fallbacks in the tint renderers alone. `ruleset.2da`'s `CHARGEN_ENABLED_PHENOTYPES` still lists the large phenotype, but the native character-creation controls are moved off screen; players set up their body in game, where no phenotype choice exists. Do not change that setting.

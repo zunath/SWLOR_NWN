@@ -226,14 +226,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void AnchorheadCanyonRange()
         {
-            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE", "Anchorhead Canyon Range - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE", "Anchorhead Canyon Range - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_lastword_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_lastword_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -242,13 +239,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_deadhand_sp")
+                .AddSpawn(ObjectType.Creature, "cp_unmovctr_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP", "Anchorhead Canyon Range - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_lastword_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_unmovctr_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_deadhand_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

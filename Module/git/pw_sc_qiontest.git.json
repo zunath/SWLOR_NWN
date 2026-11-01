@@ -47430,7 +47430,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47493,7 +47493,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47506,11 +47506,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47556,7 +47556,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47619,7 +47619,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47632,11 +47632,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47682,7 +47682,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47745,7 +47745,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47758,11 +47758,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47808,7 +47808,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47871,7 +47871,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47884,11 +47884,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -47934,7 +47934,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47997,7 +47997,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48010,11 +48010,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48060,7 +48060,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -48123,7 +48123,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48136,11 +48136,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48186,7 +48186,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -48249,7 +48249,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48262,11 +48262,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48312,7 +48312,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -48375,7 +48375,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48388,11 +48388,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48438,7 +48438,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -48501,7 +48501,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48514,11 +48514,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",
@@ -48564,7 +48564,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -48627,7 +48627,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site - General Capstone Spawn"
+            "0": "Hutlar Qion Test Site - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48640,11 +48640,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE"
+          "value": "CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_hutlar"
+          "value": "wp_cdp_hutlar"
         },
         "XPosition": {
           "type": "float",

@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Rain of Steel specialists in the calibration lanes of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Blast-Cell Regulator.")
+                    "Defeat five Rain of Steel specialists in the calibration lanes deeper in the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelBlastCellRegulator)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Perfect Flurry specialists on the cryo range of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Cryo-Range Regulator.")
+                    "Defeat five Perfect Flurry specialists on the cryo range deeper in the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryCryoRangeRegulator)
 

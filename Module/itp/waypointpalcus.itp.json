@@ -54,11 +54,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - General Capstone Spawn"
+                      "value": "Anchorhead Canyon Range - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_tatcan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_tatcan"
                     }
                   },
                   {
@@ -197,11 +208,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - General Capstone Spawn"
+                      "value": "CZ-220 Breaker Yard - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_czbr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_czbr"
                     }
                   },
                   {
@@ -274,11 +296,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - General Capstone Spawn"
+                      "value": "Czerka Arms Test Range - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_czerka"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_czerka"
                     }
                   },
                   {
@@ -450,11 +483,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_dantjedi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dantjedi"
                     }
                   },
                   {
@@ -593,11 +637,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - General Capstone Spawn"
+                      "value": "Mon Cala Medical Sublevel - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_dantmed"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Medical Sublevel - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dantmed"
                     }
                   },
                   {
@@ -868,11 +923,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - General Capstone Spawn"
+                      "value": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_dgrot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dgrot"
                     }
                   },
                   {
@@ -1011,11 +1077,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_dtarn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dtarn"
                     }
                   },
                   {
@@ -1088,11 +1165,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - General Capstone Spawn"
+                      "value": "Hutlar Qion Test Site - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_hutlar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_hutlar"
                     }
                   },
                   {
@@ -1374,11 +1462,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - General Capstone Spawn"
+                      "value": "Tatooine Forge Caverns - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_kforge"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine Forge Caverns - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_kforge"
                     }
                   },
                   {
@@ -1451,11 +1550,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_kcrypt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_kcrypt"
                     }
                   },
                   {
@@ -1748,11 +1858,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_smfight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_smfight"
                     }
                   },
                   {
@@ -1935,11 +2056,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - General Capstone Spawn"
+                      "value": "Veles Militia Annex - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_veles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_veles"
                     }
                   },
                   {
@@ -2276,11 +2408,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Capstone Adept Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_cap_vrepub"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Capstone Specialist Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_vrepub"
                     }
                   },
                   {

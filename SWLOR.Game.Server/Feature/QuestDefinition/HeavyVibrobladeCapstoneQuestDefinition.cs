@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Absolute Defense specialists in the Forge Caverns on Tatooine and recover the Absolute Defense Sith Tempering Matrix from the quench racks.")
+                    "Defeat 5 Absolute Defense specialists deeper in the Forge Caverns on Tatooine and recover the Absolute Defense Sith Tempering Matrix from the quench racks.")
                 .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseSithTemperingMatrix)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Soul Ascension specialists in the Forge Caverns on Tatooine and recover the Soul Ascension Sith Tempering Matrix from the quench troughs.")
+                    "Defeat 5 Soul Ascension specialists deeper in the Forge Caverns on Tatooine and recover the Soul Ascension Sith Tempering Matrix from the quench troughs.")
                 .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionSithTemperingMatrix)
 

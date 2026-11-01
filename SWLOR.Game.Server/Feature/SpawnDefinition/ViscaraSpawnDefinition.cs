@@ -524,14 +524,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void VelesMilitiaAnnex()
         {
-            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX", "Veles Militia Annex - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX", "Veles Militia Annex - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_invinc_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_invinc_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -540,13 +537,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_vitrupt_sp")
+                .AddSpawn(ObjectType.Creature, "cp_sysshut_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX_DEEP", "Veles Militia Annex - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_invinc_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_sysshut_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -575,14 +578,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void ViscaraRepublicEngineeringBunker()
         {
-            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER", "Viscara Republic Engineering Bunker - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER", "Viscara Republic Engineering Bunker - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_killbeacon_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_killbeacon_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -591,13 +591,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_embunker_sp")
+                .AddSpawn(ObjectType.Creature, "cp_deccommand_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP", "Viscara Republic Engineering Bunker - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_deccommand_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_embunker_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Kill Box specialists in the Czerka Arms Test Range on Smuggler's Moon and recover the Kill Box Blast-Cell Regulator.")
+                    "Kill five Kill Box specialists deeper in the Czerka Arms Test Range on Smuggler's Moon and recover the Kill Box Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxBlastCellRegulator)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five One Shot specialists in the Czerka Arms Test Range on Smuggler's Moon and recover the One Shot Blast-Cell Regulator.")
+                    "Kill five One Shot specialists deeper in the Czerka Arms Test Range on Smuggler's Moon and recover the One Shot Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotBlastCellRegulator)
 

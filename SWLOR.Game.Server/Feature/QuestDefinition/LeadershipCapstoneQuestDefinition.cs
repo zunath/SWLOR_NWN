@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Medical Sublevel on Mon Cala. Defeat five Hold the Line specialists at the conduit junctions and recover the Hold the Line Kolto Conduit Coupler.")
+                    "Return to the Medical Sublevel on Mon Cala. Defeat five Hold the Line specialists at the conduit junctions deeper inside and recover the Hold the Line Kolto Conduit Coupler.")
                 .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineKoltoConduitCoupler)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Viscara Republic Engineering Bunker on Viscara. Defeat five Decisive Command specialists in the shield grid chambers and recover the Decisive Command Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker on Viscara. Defeat five Decisive Command specialists deeper in the shield grid chambers and recover the Decisive Command Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandShieldGridRelay)
 

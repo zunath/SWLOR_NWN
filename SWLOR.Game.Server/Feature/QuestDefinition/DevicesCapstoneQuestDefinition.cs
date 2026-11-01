@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Thermal Detonator specialists, and recover the Thermal Detonator Cryo-Range Regulator.")
+                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Thermal Detonator specialists deeper inside, and recover the Thermal Detonator Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorCryoRangeRegulator)
 
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Overload Barrage specialists, and recover the Overload Barrage Cryo-Range Regulator.")
+                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Overload Barrage specialists deeper inside, and recover the Overload Barrage Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageCryoRangeRegulator)
 
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Killzone Beacon specialists, and recover the Killzone Beacon Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Killzone Beacon specialists deeper inside, and recover the Killzone Beacon Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconShieldGridRelay)
 
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Emergency Bunker specialists, and recover the Emergency Bunker Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Emergency Bunker specialists deeper inside, and recover the Emergency Bunker Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerShieldGridRelay)
 

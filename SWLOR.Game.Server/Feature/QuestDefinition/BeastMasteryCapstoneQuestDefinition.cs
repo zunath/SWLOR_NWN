@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Put down five Primal Overrun Specialists, the older shell-backs in the Grotto Apex Den on Dathomir, and recover the Primal Overrun Resonant Fang Charm one of them wears.")
+                    "Put down five Primal Overrun Specialists, the older shell-backs deeper in the Grotto Apex Den on Dathomir, and recover the Primal Overrun Resonant Fang Charm one of them wears.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePrimalOverrunResonantFangCharm)
 
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Put down five Untouchable Instinct Specialists, the older crystal spiders in the Grotto Apex Den on Dathomir, and recover the Untouchable Instinct Resonant Fang Charm one of them wears.")
+                    "Put down five Untouchable Instinct Specialists, the older crystal spiders deeper in the Grotto Apex Den on Dathomir, and recover the Untouchable Instinct Resonant Fang Charm one of them wears.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUntouchableInstinctResonantFangCharm)
 
@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Put down five Force-Bonded Beast Specialists, the older wyverns in the Grotto Apex Den on Dathomir, and recover the Force-Bonded Beast Resonant Fang Charm one of them wears.")
+                    "Put down five Force-Bonded Beast Specialists, the older wyverns deeper in the Grotto Apex Den on Dathomir, and recover the Force-Bonded Beast Resonant Fang Charm one of them wears.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForceBondedBeastResonantFangCharm)
 
@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Put down five Apex Bite Specialists, the older scaled brutes in the Tarn Jungle Preserve on Dathomir, and recover the Apex Bite Beast-Pen Scent Vial from their pen.")
+                    "Put down five Apex Bite Specialists, the older scaled brutes deeper in the Tarn Jungle Preserve on Dathomir, and recover the Apex Bite Beast-Pen Scent Vial from their pen.")
                 .AddKillObjective(NPCGroupType.Dathomir_ApexBite_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneApexBiteBeastPenScentVial)
 
@@ -587,7 +587,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Put down five Unbreakable Beast Specialists, the older plated burrowers in the Tarn Jungle Preserve on Dathomir, and recover the Unbreakable Beast Beast-Pen Scent Vial from their pen.")
+                    "Put down five Unbreakable Beast Specialists, the older plated burrowers deeper in the Tarn Jungle Preserve on Dathomir, and recover the Unbreakable Beast Beast-Pen Scent Vial from their pen.")
                 .AddKillObjective(NPCGroupType.Dathomir_UnbreakableBeast_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnbreakableBeastBeastPenScentVial)
 
@@ -700,7 +700,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Put down five Alpha Rhythm Specialists, the older kinrath in the Tarn Jungle Preserve on Dathomir, and recover the Alpha Rhythm Beast-Pen Scent Vial from their pen.")
+                    "Put down five Alpha Rhythm Specialists, the older kinrath deeper in the Tarn Jungle Preserve on Dathomir, and recover the Alpha Rhythm Beast-Pen Scent Vial from their pen.")
                 .AddKillObjective(NPCGroupType.Dathomir_AlphaRhythm_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAlphaRhythmBeastPenScentVial)
 

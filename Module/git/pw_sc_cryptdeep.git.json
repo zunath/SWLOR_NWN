@@ -47097,7 +47097,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47160,7 +47160,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47173,11 +47173,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47223,7 +47223,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47286,7 +47286,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47349,7 +47349,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47362,11 +47362,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47412,7 +47412,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47475,7 +47475,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47488,11 +47488,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47538,7 +47538,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47601,7 +47601,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47664,7 +47664,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -47727,7 +47727,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47740,11 +47740,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47790,7 +47790,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47803,11 +47803,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47853,7 +47853,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47866,11 +47866,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47916,7 +47916,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -47929,11 +47929,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47979,7 +47979,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -48042,7 +48042,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48055,11 +48055,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -48105,7 +48105,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -48168,7 +48168,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48181,11 +48181,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -48231,7 +48231,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -48244,11 +48244,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -48294,7 +48294,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Capstone Adept Spawn"
           }
         },
         "MapNote": {

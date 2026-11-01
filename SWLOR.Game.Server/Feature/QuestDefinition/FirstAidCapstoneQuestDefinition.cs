@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Emergency Cocktail Specialists in the Medical Sublevel on Mon Cala and recover the Emergency Cocktail Kolto Conduit Coupler.")
+                    "Defeat five Emergency Cocktail Specialists deeper in the Medical Sublevel on Mon Cala and recover the Emergency Cocktail Kolto Conduit Coupler.")
                 .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailKoltoConduitCoupler)
 

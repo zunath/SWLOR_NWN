@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew rerouted the junkline in the CZ-220 Breaker Yard on CZ-220. Defeat five Adamantine Guard specialists and recover the Adamantine Guard Junkline Control Relay.")
+                    "The wreck crew rerouted the junkline in the CZ-220 Breaker Yard on CZ-220. Defeat five Adamantine Guard specialists deeper inside and recover the Adamantine Guard Junkline Control Relay.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardJunklineControlRelay)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The crew rerouted the junkline into a stand-off grid in the CZ-220 Breaker Yard on CZ-220. Defeat five Scrapheap Lockdown specialists and recover the Scrapheap Lockdown Junkline Control Relay.")
+                    "The crew rerouted the junkline into a stand-off grid in the CZ-220 Breaker Yard on CZ-220. Defeat five Scrapheap Lockdown specialists deeper inside and recover the Scrapheap Lockdown Junkline Control Relay.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownJunklineControlRelay)
 

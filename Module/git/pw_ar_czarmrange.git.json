@@ -353391,7 +353391,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -353454,7 +353454,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -353517,7 +353517,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -353580,7 +353580,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -353643,7 +353643,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -353706,7 +353706,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -353769,7 +353769,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -353832,7 +353832,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -353845,11 +353845,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -353895,7 +353895,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -353908,11 +353908,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -353958,7 +353958,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -353971,11 +353971,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354021,7 +354021,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -354034,11 +354034,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354084,7 +354084,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -354097,11 +354097,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354147,7 +354147,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -354210,7 +354210,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -354273,7 +354273,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -354336,7 +354336,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -354349,11 +354349,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354399,7 +354399,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -354412,11 +354412,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354462,7 +354462,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -354475,11 +354475,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354525,7 +354525,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -354538,11 +354538,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",
@@ -354588,7 +354588,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range - General Capstone Spawn"
+            "0": "Czerka Arms Test Range - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -354601,11 +354601,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+          "value": "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_czerka"
+          "value": "wp_cdp_czerka"
         },
         "XOrientation": {
           "type": "float",

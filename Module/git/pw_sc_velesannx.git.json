@@ -53048,7 +53048,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53111,7 +53111,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53174,7 +53174,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53237,7 +53237,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53300,7 +53300,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53363,7 +53363,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53426,7 +53426,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53489,7 +53489,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53552,7 +53552,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -53565,11 +53565,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53615,7 +53615,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -53628,11 +53628,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53678,7 +53678,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -53691,11 +53691,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53741,7 +53741,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -53754,11 +53754,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53804,7 +53804,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -53817,11 +53817,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53867,7 +53867,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -53880,11 +53880,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -53930,7 +53930,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -53993,7 +53993,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -54056,7 +54056,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -54069,11 +54069,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -54119,7 +54119,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -54132,11 +54132,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -54182,7 +54182,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -54195,11 +54195,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",
@@ -54245,7 +54245,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - General Capstone Spawn"
+            "0": "Veles Militia Annex - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -54258,11 +54258,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VELES_MILITIA_ANNEX"
+          "value": "CAPSTONE_VELES_MILITIA_ANNEX_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_veles"
+          "value": "wp_cdp_veles"
         },
         "XPosition": {
           "type": "float",

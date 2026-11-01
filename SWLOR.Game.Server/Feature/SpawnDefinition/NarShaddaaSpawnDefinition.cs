@@ -196,14 +196,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void SmugglersMoonFightClubBackrooms()
         {
-            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS", "Smuggler's Moon Fight Club Backrooms - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS", "Smuggler's Moon Fight Club Backrooms - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_cripdef_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_cripdef_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -212,13 +209,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_tempbloom_sp")
+                .AddSpawn(ObjectType.Creature, "cp_redbloom_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP", "Smuggler's Moon Fight Club Backrooms - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_cripdef_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_redbloom_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_tempbloom_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -247,14 +250,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void CzerkaArmsTestRange()
         {
-            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE", "Czerka Arms Test Range - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE", "Czerka Arms Test Range - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_killbox_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_killbox_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -263,13 +263,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_oneshot_sp")
+                .AddSpawn(ObjectType.Creature, "cp_rainsteel_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP", "Czerka Arms Test Range - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_killbox_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_rainsteel_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_oneshot_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

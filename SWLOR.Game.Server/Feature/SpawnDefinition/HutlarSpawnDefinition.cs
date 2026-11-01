@@ -275,14 +275,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void HutlarQionTestSite()
         {
-            _builder.Create("CAPSTONE_HUTLAR_QION_TEST_SITE", "Hutlar Qion Test Site - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_HUTLAR_QION_TEST_SITE", "Hutlar Qion Test Site - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_thermdet_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_thermdet_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -291,13 +288,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_overbarr_sp")
+                .AddSpawn(ObjectType.Creature, "cp_perflurry_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_HUTLAR_QION_TEST_SITE_DEEP", "Hutlar Qion Test Site - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_thermdet_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_perflurry_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_overbarr_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

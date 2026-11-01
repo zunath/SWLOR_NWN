@@ -34,7 +34,7 @@ public class FightClubBackroomsPlacementTests
 
         GetOptionalLocalString(backrooms.RootElement, "CREATURE_SPAWN_TABLE_ID").Should().BeEmpty();
         backrooms.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
-            .Count(waypoint => GetString(waypoint, "Tag") == "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS")
+            .Count(waypoint => GetString(waypoint, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP")
             .Should().Be(20);
         GetLocalInt(backrooms.RootElement, "IS_DUNGEON").Should().Be(1);
 

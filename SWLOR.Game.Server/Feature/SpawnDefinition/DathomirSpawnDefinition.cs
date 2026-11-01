@@ -262,14 +262,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void DathomirTarnJunglePreserve()
         {
-            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE", "Dathomir Tarn Jungle Preserve - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE", "Dathomir Tarn Jungle Preserve - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_apexbite_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_apexbite_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -278,13 +275,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_unbrbeast_sp")
+                .AddSpawn(ObjectType.Creature, "cp_alpharhy_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP", "Dathomir Tarn Jungle Preserve - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_apexbite_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_alpharhy_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_unbrbeast_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -313,14 +316,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void DathomirGrottoApexDen()
         {
-            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN", "Dathomir Grotto Apex Den - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN", "Dathomir Grotto Apex Den - Capstone Adepts")
                 .AddSpawn(ObjectType.Creature, "cp_primover_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_primover_sp")
-                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -329,13 +329,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_untinst_sp")
+                .AddSpawn(ObjectType.Creature, "cp_forcebeast_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP", "Dathomir Grotto Apex Den - Capstone Specialists")
+                .AddSpawn(ObjectType.Creature, "cp_primover_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_forcebeast_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_untinst_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 

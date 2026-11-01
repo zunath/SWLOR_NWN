@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Viral Cascade specialists in the Veles Militia Annex on Viscara and secure the Viral Cascade Militia Range Relay.")
+                    "Defeat five Viral Cascade specialists deeper in the Veles Militia Annex on Viscara and secure the Viral Cascade Militia Range Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureMilitiaRangeRelay)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring down five Systemic Shutdown specialists in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Militia Range Relay.")
+                    "Bring down five Systemic Shutdown specialists deeper in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Militia Range Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownMilitiaRangeRelay)
 

@@ -3039,7 +3039,17 @@ internal static class CapstoneQuestDefinitionTestData
         string SpawnTableId,
         string LessonLootTableId,
         string BossLootTableId,
-        string DungeonAreaResref);
+        string DungeonAreaResref)
+    {
+        // Specialists spawn from their own table on the spawn points deeper in the dungeon.
+        public string DeepSpawnTableId => SpawnTableId + "_DEEP";
+        public string DeepWaypointResref => GeneralWaypointResref.Replace("wp_cap_", "wp_cdp_");
+
+        public string GetGeneralSpawnTableId(int step)
+        {
+            return step == 0 ? SpawnTableId : DeepSpawnTableId;
+        }
+    }
 
     public sealed record QuestGiver(string Name, string Resref, string DialogueResref);
 

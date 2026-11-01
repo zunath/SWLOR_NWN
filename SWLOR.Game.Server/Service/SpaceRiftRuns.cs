@@ -518,24 +518,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A logged-out pilot's host lost in a failed run takes the ships docked aboard it down with it, as a host
-        /// destroyed online does (<see cref="WreckShipsDockedInCollapse"/>). The players who came aboard with those ships
-        /// (still in the host's interior) and the players in their interiors ride escape pods to the host's dock and take
-        /// the XP debt; a docked ship's run pilot who rides no pod takes it at their next login.
+        /// A logged-out pilot's host lost in a failed run is lost with everyone aboard, as a host destroyed online is
+        /// (<see cref="ApplyDeath"/>): every player in its interior (its own crew and passengers, and those who came
+        /// aboard with a docked ship) rides an escape pod to its dock and takes the XP debt. The ships docked aboard are
+        /// wrecked with it (<see cref="WreckShipsDockedInCollapse"/>), the players in their interiors ride the pods too,
+        /// and a docked ship's run pilot who rides no pod takes the debt at their next login.
         /// </summary>
-        private static void WreckShipsDockedAboardAwayHost(RiftRun run, PlayerShip host, Location location)
+        private static void LoseAwayHostWithEveryoneAboard(RiftRun run, PlayerShip host, Location location)
         {
-            var visitors = GetDockedShips(host.Id);
-            if (visitors.Count == 0)
-                return;
-
-            // Read before the wreck clears each ship's docked state.
-            var carriedCrewIds = visitors.SelectMany(x => x.DockedCrewPlayerIds ?? new List<string>()).ToHashSet();
             var riders = new List<uint>();
             if (Property.TryGetLoadedInstance(host.PropertyId, out var hostInstance))
-                riders.AddRange(GetPlayersInArea(hostInstance.Area).Where(x => GetIsObjectValid(x) && carriedCrewIds.Contains(GetObjectUUID(x))));
+                riders.AddRange(GetPlayersInArea(hostInstance.Area).Where(GetIsObjectValid));
 
-            WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);
+            var visitors = GetDockedShips(host.Id);
+            if (visitors.Count > 0)
+                WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);
+
             if (riders.Count == 0)
                 return;
 
@@ -547,7 +545,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No dock can be found: as for a host destroyed online, the riders die.
-            Log.Write(LogGroup.Space, $"RIFT RUN - ship {host.Id} was lost in a failed run with no dock to eject its carried ships' players to.");
+            Log.Write(LogGroup.Space, $"RIFT RUN - ship {host.Id} was lost in a failed run with no dock to eject the players aboard to.");
             foreach (var rider in riders)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), rider);
@@ -579,7 +577,7 @@ namespace SWLOR.Game.Server.Service
                 if (run.Failed && dbShip != null)
                 {
                     ForfeitAwayShip(run, dbShip, GetLocation(clone));
-                    WreckShipsDockedAboardAwayHost(run, dbShip, GetLocation(clone));
+                    LoseAwayHostWithEveryoneAboard(run, dbShip, GetLocation(clone));
                 }
 
                 DestroyObject(clone);

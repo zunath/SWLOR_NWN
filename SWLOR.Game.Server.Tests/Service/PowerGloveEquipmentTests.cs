@@ -153,7 +153,7 @@ public class PowerGloveEquipmentTests
     [TestCase(BaseItem.Invalid, null, false)]
     [TestCase(null, BaseItem.PowerGlove, false)]
     [TestCase(null, null, false)]
-    public void FullTechniqueGripUsesOneRealGloveAndItsCosmeticHand(BaseItem? mainHand, BaseItem? offHand, bool expected) =>
+    public void UnarmedGripUsesOneRealGloveAndItsCosmeticHand(BaseItem? mainHand, BaseItem? offHand, bool expected) =>
         EquipmentPredicates.HasUnarmedGrip(mainHand, offHand).Should().Be(expected);
 
     [Test, NonParallelizable]

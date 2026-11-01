@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 23 and server migration 28.
-    private const int ReleasedPlayerVersion = 23;
+    // Production has run player migration 24 and server migration 28.
+    private const int ReleasedPlayerVersion = 24;
     private const int ReleasedServerVersion = 28;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
@@ -25,10 +25,10 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers") });
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_CountPowerGloveStatsPerHand") });
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_24_CorrectCarapaceBracers") }, "the next release must receive one combined player-item pass");
-        CharacterMigrations.VersionOf("_24_CorrectCarapaceBracers").Should().Be(ReleasedPlayerVersion + 1);
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_CountPowerGloveStatsPerHand") }, "the next release must receive one combined player-item pass");
+        CharacterMigrations.VersionOf("_25_CountPowerGloveStatsPerHand").Should().Be(ReleasedPlayerVersion + 1);
     }
 
     [Test]

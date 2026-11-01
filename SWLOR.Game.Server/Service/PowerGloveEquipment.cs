@@ -98,6 +98,12 @@ public static class PowerGloveEquipment
                string.IsNullOrWhiteSpace(Item.GetCreatureItemUseError(creature, main));
     }
 
+    /// <summary>
+    /// A Power Glove fills both hands, so its equipment stats count once per hand: one glove grants what two
+    /// identical Katars do. Every equipped-stat sum uses this, so equipping and removing a glove stay symmetric.
+    /// </summary>
+    public static int GetEquipmentStatCopies(BaseItem type) => type == BaseItem.PowerGlove ? 2 : 1;
+
     public static uint GetCompanion(uint creature) => IsActivePair(creature)
         ? GetItemInSlot(InventorySlot.LeftHand, creature) : OBJECT_INVALID;
 

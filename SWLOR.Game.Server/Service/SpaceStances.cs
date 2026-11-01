@@ -50,6 +50,15 @@ namespace SWLOR.Game.Server.Service
         /// (an enemy's debuff, a commander's aura) and its temporary modifiers (a Wild Space system). A status the shot's
         /// source also carries is left out, so a command order that lands on the ship and on each crew member counts once.
         /// </summary>
+        /// <summary>
+        /// A station operator's stat for work the ship does, such as extraction: the operator's own (a crew member's or
+        /// the pilot's; a droid has none) plus what covers the whole ship (a Wild Space system, an aura), counted once
+        /// when the pilot is the operator.
+        /// </summary>
+        public static int GetOperatorStatAdjustment(uint ship, uint operatorSource, StatType stat) =>
+            Stat.GetStatAdjustment(operatorSource, stat) +
+            (operatorSource != ship && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, operatorSource, stat) : 0);
+
         public static int GetShipWideAdjustment(uint ship, uint shotSource, StatType stat)
         {
             var sourceStatuses = GetIsObjectValid(shotSource)

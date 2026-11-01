@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
-            cycleSeconds = ShipModuleActions.MiningCycleSeconds(operatorSource, cycleSeconds);
+            cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
             if (GetLocalInt(target, GasCloudUnitsVariable) <= 0)
                 SetLocalInt(target, GasCloudUnitsVariable, Random.D4(1) + 2);
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 // Gas Siphoning (Gathering) adds gas to every cycle.
                 var amount = ShipSalvageRules.GasPerCycle(
-                    shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(operatorSource, StatType.SpaceGasYieldBonus));
+                    shipStatus.Industrial, moduleBonus, Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceGasYieldBonus));
 
                 remainingUnits -= SpaceCombatMath.MiningUnitsPerCycle(amount);
                 if (remainingUnits <= 0)
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
-            cycleSeconds = ShipModuleActions.MiningCycleSeconds(operatorSource, cycleSeconds);
+            cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
 
             // The salvager's RareFind traits (Precision) raise an elite or boss wreck's rare-find chance.
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // Salvage Expert (Gathering) adds items to every cycle.
                 // A droid in the ship's droid bay adds items and, with Prospecting Protocol, rare-find chance.
                 var items = DroidIndustryRules.ApplyPercent(ShipSalvageRules.SalvageItemsPerCycle(
-                        shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(operatorSource, StatType.SpaceSalvageYieldBonus)),
+                        shipStatus.Industrial, moduleBonus, Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceSalvageYieldBonus)),
                     Space.GetDroidBayYieldPercent(activator));
                 var yield = ShipSalvageRules.ScrapYield(wreck.Tier, items);
                 var rareFind = traitRareFind + Space.GetDroidBayRareFindBonus(activator);
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (ShipSalvageRules.RollsAurodium(wreck.Tier, areaAurodium, Random.Next(100)))
                     yield.Add(ShipSalvageItems.Aurodium);
 
-                var components = RollSalvagedComponents(activator, wreck);
+                var components = RollSalvagedComponents(activator, operatorSource, wreck);
 
                 var tier = wreck.Tier;
                 wreck.RemainingCycles--;
@@ -233,11 +233,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// carrying a random trait, rare more often from elite and boss wrecks and with Trait Hunter (Gathering), and maybe
         /// the manufacturer component of the maker the ship belonged to (Appendix D).
         /// </summary>
-        private static List<(string Resref, ShipComponentTraitType Trait)> RollSalvagedComponents(uint activator, ShipWreck wreck)
+        private static List<(string Resref, ShipComponentTraitType Trait)> RollSalvagedComponents(uint activator, uint operatorSource, ShipWreck wreck)
         {
             var components = new List<(string Resref, ShipComponentTraitType Trait)>();
             // Wild Space wrecks roll rare traits more often (plan section 23).
-            var rareTraitChance = Stat.GetStatAdjustment(activator, StatType.SpaceRareTraitChance) +
+            var rareTraitChance = Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceRareTraitChance) +
                                   (wreck.WildSpace ? WildSpaceTuning.RareTraitBonusPercent : 0);
             var rolled = ShipTraitRules.RollSalvagedComponent(wreck.Tier, wreck.Difficulty, rareTraitChance, Random.Next);
             if (rolled != null)

@@ -296,12 +296,12 @@ public class ShipSalvageTests
         var salvage = ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs");
 
         var cycle = ExtractMethod(salvage, "public static void SalvageWreck(");
-        cycle.Should().Contain("var components = RollSalvagedComponents(activator, wreck);");
+        cycle.Should().Contain("var components = RollSalvagedComponents(activator, operatorSource, wreck);");
         cycle.Should().Contain("ShipHold.DeliverYield(activator, yield, components);");
         cycle.Should().Contain("ShipSalvageRules.RareFindPercent(wreck.Difficulty) > 0 &&",
             "a Precision salvager never gives a normal wreck, which has no rare-find table, a rare find");
         ExtractMethod(salvage, "private static List<(string Resref, ShipComponentTraitType Trait)> RollSalvagedComponents(")
-            .Should().Contain("Stat.GetStatAdjustment(activator, StatType.SpaceRareTraitChance)");
+            .Should().Contain("Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceRareTraitChance)");
     }
 
     [Test]
@@ -359,8 +359,8 @@ public class ShipSalvageTests
         modules["sm_salv_00"].Type.Should().Be(ShipModuleType.Salvager);
         modules["sm_gas_45"].Type.Should().Be(ShipModuleType.GasHarvester);
         var source = ReadSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs");
-        ExtractMethod(source, "private void GasHarvester(").Should().Contain("ShipModuleActions.MiningCycleSeconds(SpaceCrew.GetStatSource(activator),");
-        ExtractMethod(source, "private void Salvager(").Should().Contain("ShipModuleActions.MiningCycleSeconds(SpaceCrew.GetStatSource(activator),");
+        ExtractMethod(source, "private void GasHarvester(").Should().Contain("ShipModuleActions.MiningCycleSeconds(activator, SpaceCrew.GetStatSource(activator),");
+        ExtractMethod(source, "private void Salvager(").Should().Contain("ShipModuleActions.MiningCycleSeconds(activator, SpaceCrew.GetStatSource(activator),");
         ExtractMethod(ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs"), "public static void HarvestGasCloud(")
             .Should().Contain("StatType.SpaceGasYieldBonus");
         ExtractMethod(ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs"), "public static void SalvageWreck(")

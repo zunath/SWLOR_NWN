@@ -509,17 +509,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         }
 
         /// <summary>A mining, gas or salvage cycle after the pilot's Rapid Extraction (Gathering).</summary>
-        public static float MiningCycleSeconds(uint pilot, float baseSeconds)
+        public static float MiningCycleSeconds(uint ship, uint operatorSource, float baseSeconds)
         {
             return SpaceCombatMath.MiningCycleSeconds(
                 baseSeconds,
-                Stat.GetStatAdjustment(pilot, StatType.SpaceMiningCycleSpeedPercent));
+                Space.GetOperatorStatAdjustment(ship, operatorSource, StatType.SpaceMiningCycleSpeedPercent));
         }
 
         /// <summary>The percent the pilot's Prospector (Gathering) adds to each mining cycle's ore.</summary>
-        private static int GetProspectorBonus(uint pilot)
+        private static int GetProspectorBonus(uint ship, uint operatorSource)
         {
-            return Stat.GetStatAdjustment(pilot, StatType.SpaceMiningYieldBonus);
+            return Space.GetOperatorStatAdjustment(ship, operatorSource, StatType.SpaceMiningYieldBonus);
         }
 
         /// <summary>The ship's carried fraction of an ore (hundredths) from Prospector's percent, between cycles.</summary>
@@ -531,7 +531,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private static int ApplyProspector(uint activator, uint operatorSource, int amount)
         {
             var carry = GetLocalInt(activator, MiningYieldCarryVariable);
-            var ore = SpaceCombatMath.MiningYield(amount, GetProspectorBonus(operatorSource), ref carry);
+            var ore = SpaceCombatMath.MiningYield(amount, GetProspectorBonus(activator, operatorSource), ref carry);
             SetLocalInt(activator, MiningYieldCarryVariable, carry);
             return ore;
         }
@@ -542,9 +542,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// does on the ground (review fix 2026-10-30: a separate percent roll made Deep Core II's rare metal 20% of
         /// picks, several times combat income at tier 5; the asteroid tables are weighted for this, mining.py).
         /// </summary>
-        private static LootTableItem GetAsteroidOre(uint pilot, LootTable lootTable, int traitRareFind)
+        private static LootTableItem GetAsteroidOre(uint ship, uint operatorSource, LootTable lootTable, int traitRareFind)
         {
-            return lootTable.GetRandomItemWithRareBonus(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance) + traitRareFind);
+            return lootTable.GetRandomItemWithRareBonus(
+                Space.GetOperatorStatAdjustment(ship, operatorSource, StatType.SpaceRareMetalChance) + traitRareFind);
         }
 
         /// <summary>The firing module's RareFind traits, read while its action runs.</summary>
@@ -567,7 +568,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
-            cycleSeconds = MiningCycleSeconds(operatorSource, cycleSeconds);
+            cycleSeconds = MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
             var rareFind = TraitRareFind();
@@ -634,7 +635,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var ore = new List<string>();
                 for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(operatorSource, lootTable, rareFind).Resref);
+                    ore.Add(GetAsteroidOre(activator, operatorSource, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);
@@ -648,7 +649,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
-            seconds = MiningCycleSeconds(operatorSource, seconds);
+            seconds = MiningCycleSeconds(activator, operatorSource, seconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
             var rareFind = TraitRareFind();
@@ -693,7 +694,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var ore = new List<string>();
                 for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(operatorSource, lootTable, rareFind).Resref);
+                    ore.Add(GetAsteroidOre(activator, operatorSource, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);

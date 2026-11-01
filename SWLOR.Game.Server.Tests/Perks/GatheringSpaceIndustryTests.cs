@@ -291,9 +291,9 @@ public class GatheringSpaceIndustryTests
         var mine = ExtractMethod(actions, "public static void MineAsteroid(");
         var strip = ExtractMethod(actions, "public static void StripAsteroid(");
 
-        actions.Should().Contain("Stat.GetStatAdjustment(pilot, StatType.SpaceMiningCycleSpeedPercent)");
-        actions.Should().Contain("Stat.GetStatAdjustment(pilot, StatType.SpaceMiningYieldBonus)");
-        actions.Should().Contain("lootTable.GetRandomItemWithRareBonus(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance) + traitRareFind)");
+        actions.Should().Contain("Space.GetOperatorStatAdjustment(ship, operatorSource, StatType.SpaceMiningCycleSpeedPercent)");
+        actions.Should().Contain("Space.GetOperatorStatAdjustment(ship, operatorSource, StatType.SpaceMiningYieldBonus)");
+        actions.Should().Contain("Space.GetOperatorStatAdjustment(ship, operatorSource, StatType.SpaceRareMetalChance) + traitRareFind");
         actions.Should().NotContain("PerkType.Prospector").And.NotContain("PerkType.DeepCore")
             .And.NotContain("PerkType.RapidExtraction", "space code reads stats, not perks");
 
@@ -301,9 +301,9 @@ public class GatheringSpaceIndustryTests
         {
             method.Should().Contain("var operatorSource = SpaceCrew.GetStatSource(activator);",
                 "a station operator's Gathering perks apply, read while the station's fire context is open");
-            method.Should().Contain("MiningCycleSeconds(operatorSource,");
+            method.Should().Contain("MiningCycleSeconds(activator, operatorSource,");
             method.Should().Contain("ApplyProspector(activator, operatorSource,");
-            method.Should().Contain("GetAsteroidOre(operatorSource, lootTable, rareFind)");
+            method.Should().Contain("GetAsteroidOre(activator, operatorSource, lootTable, rareFind)");
             method.Should().Contain("var rareFind = TraitRareFind();", "the Precision trait is read while the module fires");
             method.Should().NotContain("PerkType.StarshipMining", "Starship Mining was refunded and its term removed");
             method.Should().Contain("Space.GetDroidBayYieldPercent(activator)", "a droid in the droid bay adds to the ore delivered");
@@ -322,10 +322,14 @@ public class GatheringSpaceIndustryTests
 
         mining.Should().Contain("ShipSalvageActions.GiveGatheringExperience(activator, GetLocalInt(target, \"ASTEROID_TIER\"))");
         mining.Should().NotContain("SkillType.Piloting");
-        salvage.Should().Contain("cycleSeconds = ShipModuleActions.MiningCycleSeconds(operatorSource, cycleSeconds);")
-            .And.Contain("Stat.GetStatAdjustment(operatorSource, StatType.SpaceGasYieldBonus)")
-            .And.Contain("Stat.GetStatAdjustment(operatorSource, StatType.SpaceSalvageYieldBonus)",
-                "a Gunner's Salvage Expert counts when they run the Salvager");
+        salvage.Should().Contain("cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);")
+            .And.Contain("Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceGasYieldBonus)")
+            .And.Contain("Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceSalvageYieldBonus)",
+                "a Gunner's Salvage Expert counts when they run the Salvager, and so does the Ship Graveyard's bonus on the ship")
+            .And.Contain("Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceRareTraitChance)",
+                "Trait Hunter is the operator's too");
+        ReadSource("Service", "SpaceStances.cs").Should().Contain(
+            "(operatorSource != ship && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, operatorSource, stat) : 0)");
         salvage.Should().Contain("internal static void GiveGatheringExperience(uint activator, int tier)")
             .And.Contain("Skill.GiveSkillXP(activator, SkillType.Gathering, Skill.GetDeltaXP(delta));");
         ExtractMethod(actions, "public static void MineAsteroid(").Should().Contain("GiveMiningExperience(activator, target);");
@@ -337,7 +341,7 @@ public class GatheringSpaceIndustryTests
     {
         var source = ReadSource("Feature", "ShipModuleDefinition", file);
 
-        source.Should().Contain("ShipModuleActions.MiningCycleSeconds(SpaceCrew.GetStatSource(activator),");
+        source.Should().Contain("ShipModuleActions.MiningCycleSeconds(activator, SpaceCrew.GetStatSource(activator),");
     }
 
     private static string ReadSource(params string[] relativePath)

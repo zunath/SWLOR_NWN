@@ -16,9 +16,10 @@ public class PlayerMigrationTests
     // items or quickbar, so the migrations they reach read and write the file without the game engine.
     private const int RebuildTokens = 3;
 
-    // Migrations 15 (combat upgrade), 24 (Unarmed and Twin Pistol release), 25 (crafting perk conversion) and 26 (space revamp) each grant one rebuild token.
+    // Migrations 15 (combat upgrade), 24 (Unarmed and Twin Pistol release), 26 (crafting perk conversion) and 27 (space revamp) each grant one rebuild token;
+    // 25 (pelvis consolidation) grants none.
     private const int UnarmedTwinPistolTokenVersion = 24;
-    private const int PerkConversionTokenVersion = 25;
+    private const int PerkConversionTokenVersion = 26;
 
     private static int Latest => CharacterMigrations.LatestVersion;
 
@@ -77,7 +78,7 @@ public class PlayerMigrationTests
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), Record(version));
 
         upgraded.Should().NotBeNull("the record is behind the latest migration");
-        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "migrations 24, 25 and 26 each grant one");
+        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "migrations 24, 26 and 27 each grant one");
         CharacterMigrations.Upgrade(upgraded.File, upgraded.Record).Should().BeNull("a retry finds nothing left to upgrade");
         upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "each token is granted once");
     }
@@ -88,7 +89,7 @@ public class PlayerMigrationTests
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), Record(UnarmedTwinPistolTokenVersion));
 
         upgraded.Should().NotBeNull("the record is behind the latest migration");
-        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2, "migrations 25 and 26 each grant one");
+        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2, "migrations 26 and 27 each grant one");
     }
 
     [Test]
@@ -98,7 +99,7 @@ public class PlayerMigrationTests
 
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), record);
 
-        (upgraded?.Record ?? record).Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "only migration 26's token is ahead of the record");
+        (upgraded?.Record ?? record).Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "only migration 27's token is ahead of the record");
     }
 
     [Test]

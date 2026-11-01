@@ -14,8 +14,9 @@ render phenotypes are dependencies of those normal-body wearers.
   waist/hem placement, rear drape, gait, emote motion, materials and dyes. Reproduce
   the defect with the reported part combination, including bulky thigh armor.
 - Compare the actual resources for each affected body family and gender. Species
-  sharing the same resolved models may share evidence; a different family's short
-  fallback is not evidence for the human skirt. Do not claim unsupported styles
+  sharing the same resolved models, skeleton/animation chain and projection path
+  may share evidence; a different family's short fallback is not evidence for the
+  human skirt. Do not claim unsupported styles
   or untested variants were fixed.
 - Styles with similar geometry can have different rigs, UVs or dye channels.
   Consolidation needs an explicit canonical style, compatibility resources and

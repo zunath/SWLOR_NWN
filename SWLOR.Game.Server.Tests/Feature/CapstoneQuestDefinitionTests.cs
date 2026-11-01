@@ -862,6 +862,27 @@ public class CapstoneQuestDefinitionTests
                         $"{areaResref} {a.Tag} ({a.X:0.0},{a.Y:0.0}) and {b.Tag} ({b.X:0.0},{b.Y:0.0}) are too close");
                 }
             }
+
+            // Inner circle guards also keep clear of the warden altars (appearance 2174) and their activators.
+            const int WardenAltarAppearance = 2174;
+            var altars = git.RootElement.GetProperty("Placeable List").GetProperty("value")
+                .EnumerateArray()
+                .Where(placeable => placeable.GetProperty("Appearance").GetProperty("value").GetInt32() == WardenAltarAppearance ||
+                                    GetTypedValue(placeable, "Tag").EndsWith("_wd_call"))
+                .Select(placeable => (
+                    Tag: GetTypedValue(placeable, "Tag"),
+                    X: placeable.GetProperty("X").GetProperty("value").GetDouble(),
+                    Y: placeable.GetProperty("Y").GetProperty("value").GetDouble()))
+                .ToArray();
+            altars.Should().NotBeEmpty($"{areaResref} has warden altars");
+            foreach (var guard in spawnPoints.Where(point => point.Tag.EndsWith("_IC_SPAWN")))
+            {
+                foreach (var altar in altars)
+                {
+                    Math.Sqrt(Math.Pow(guard.X - altar.X, 2) + Math.Pow(guard.Y - altar.Y, 2)).Should().BeGreaterThanOrEqualTo(InnerCircleSpacingMeters,
+                        $"{areaResref} {guard.Tag} ({guard.X:0.0},{guard.Y:0.0}) is too close to warden altar {altar.Tag} ({altar.X:0.0},{altar.Y:0.0})");
+                }
+            }
         }
     }
 

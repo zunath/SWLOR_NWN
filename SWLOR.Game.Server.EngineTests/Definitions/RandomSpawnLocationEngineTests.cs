@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Area;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using Vector3 = System.Numerics.Vector3;
 
@@ -16,6 +17,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private const float PlaceableNearbyMeters = 15f;
         private const float StepMeters = 0.5f;
         private const int MaxCreaturesPerArea = 600;
+        // One bake step.
+        private const float EdgeMarginMeters = 2f;
+        // Walking creatures stop about 0.6 m short of an area edge.
+        private const float WalkableEdgeMeters = 1f;
 
         /// <summary>
         /// Creates a Thune at the baked points beside placeables in the areas with the most placeable-blocked points
@@ -165,6 +170,80 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             ctx.Log($"Created Thunes at {points.Count} baked points near placeables.");
+        }
+
+        /// <summary>
+        /// Every baked point keeps a full bake step from all four area edges. A creature on the west or south edge
+        /// stands half outside the map, past the strip players can walk on.
+        /// </summary>
+        [EngineTest("Random spawn points stay off the area edges", Category = "SpawnReachability", TimeoutSeconds = 60f)]
+        public static async Task BakedPointsStayOffTheAreaEdges(EngineTestContext ctx)
+        {
+            await Task.CompletedTask;
+            var baked = GetBakedPoints();
+            var areas = 0;
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                var resref = GetResRef(area);
+                if (!baked.TryGetValue(resref, out var points) || points.Count == 0)
+                    continue;
+
+                var width = GetAreaSize(Dimension.Width, area) * 10f;
+                var height = GetAreaSize(Dimension.Height, area) * 10f;
+                var onEdge = points
+                    .Where(p => p.X < EdgeMarginMeters || p.Y < EdgeMarginMeters ||
+                                p.X > width - EdgeMarginMeters || p.Y > height - EdgeMarginMeters)
+                    .ToList();
+                ctx.Assert(onEdge.Count == 0,
+                    $"{resref} has {onEdge.Count} spawn points within {EdgeMarginMeters} m of the area edge, e.g. " +
+                    string.Join(", ", onEdge.Take(5).Select(p => $"({p.X:0},{p.Y:0})")));
+                areas++;
+            }
+
+            ctx.Assert(areas > 100, $"baked points were checked in {areas} areas");
+        }
+
+        /// <summary>
+        /// Creates a Thune at every baked point along the Ruined Farmlands' west and south edges and checks each one
+        /// stands inside the strip creatures can walk to, not on the map's outer edge.
+        /// </summary>
+        [EngineTest("Ruined Farmlands edge spawns stand inside the map", Category = "SpawnReachability", TimeoutSeconds = 120f)]
+        public static async Task RuinedFarmlandsEdgeSpawnsStandInsideTheMap(EngineTestContext ctx)
+        {
+            var area = FindArea("dan_destroyfarm");
+            ctx.Assert(GetIsObjectValid(area), "dan_destroyfarm is loaded");
+
+            var points = GetBakedPoints()["dan_destroyfarm"]
+                .Where(p => p.X <= 2 * EdgeMarginMeters || p.Y <= 2 * EdgeMarginMeters)
+                .ToList();
+            ctx.Assert(points.Count > 50, $"the west and south edges keep spawn points ({points.Count})");
+
+            // Thunes are wide, so neighbors 2 m apart would shove each other; each batch keeps them 8 m apart.
+            foreach (var batch in points.GroupBy(p => ((int)(p.X / 2) % 4, (int)(p.Y / 2) % 4)).Select(g => g.ToList()))
+            {
+                var created = new List<uint>();
+                AssignCommand(GetModule(), () =>
+                {
+                    foreach (var point in batch)
+                        created.Add(CreateObject(ObjectType.Creature, "thune", Location(area, point, 0f)));
+                });
+                foreach (var creature in created)
+                    ctx.Track(creature);
+                await ctx.DelaySecondsAsync(0.5f);
+
+                foreach (var creature in created)
+                {
+                    var position = GetPosition(creature);
+                    ctx.Assert(position.X >= WalkableEdgeMeters && position.Y >= WalkableEdgeMeters,
+                        $"A Thune created at a baked point stands on the map edge at ({position.X:0.0},{position.Y:0.0})");
+                }
+
+                AssignCommand(GetModule(), () =>
+                {
+                    foreach (var creature in created)
+                        DestroyObject(creature);
+                });
+            }
         }
 
         private static Dictionary<string, List<Vector3>> GetBakedPoints()

@@ -35526,11 +35526,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 142.25
+          "value": 127.75
         },
         "YPosition": {
           "type": "float",
-          "value": 77.75
+          "value": 88.25
         },
         "ZPosition": {
           "type": "float",
@@ -35715,11 +35715,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 137.75
+          "value": 138.25
         },
         "YPosition": {
           "type": "float",
-          "value": 87.25
+          "value": 88.25
         },
         "ZPosition": {
           "type": "float",

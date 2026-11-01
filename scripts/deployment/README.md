@@ -142,9 +142,10 @@ The server image enables batch GDB capture automatically when
 `SWLOR_ENVIRONMENT` is `production` or `prod`. Development runs keep capture off
 so the Runner's Visual Studio debugger can still attach. GDB runs inside the image
 with the server's own libraries; no interactive debugger or separate host service
-is needed. Docker remains the only restart owner (`restart: always` on the game
-service). A normal Administration-plugin shutdown returns the server's exit code
-through the launcher, so the daily restart starts a fresh debugger as well.
+is needed. Docker remains the only restart owner. Both `always` and
+`unless-stopped` restart the game after a normal Administration-plugin shutdown;
+preserve the host's existing policy. The launcher returns the server's exit code,
+so the daily restart starts a fresh debugger as well.
 
 At entry to the NWNX fatal signal handler, the launcher records the current
 thread's native stack, other native thread stacks, loaded libraries, and memory
@@ -166,6 +167,11 @@ continuous debugger attachment can also add overhead. This bounds the pause,
 not the performance cost. A normal in-process daily shutdown does not wait for
 a crash capture.
 
+Compose gives the game service a 45-second stop grace period so the default
+30-second launcher deadline can finish before Docker force-kills the container.
+If `SWLOR_CRASH_CAPTURE_TIMEOUT_SECONDS` is increased, also set
+`stop_grace_period` longer than that deadline in the host's Compose file.
+
 Optional settings in the host's `swlor.env`:
 
 ```dotenv
@@ -179,6 +185,11 @@ to `1` to force capture or `0` to run the original server directly. Engine-test
 Compose runs disable capture explicitly. Changing these settings requires
 recreating the game container; an ordinary container restart retains its old
 environment. Keep the existing Docker restart policy enabled on production.
+
+Set `SWLOR_CRASH_CAPTURE=1` on a test or staging host to exercise capture without
+changing its `SWLOR_ENVIRONMENT`. If a host sets any of these values in the game
+service's Compose `environment` block, edit that block instead; it overrides
+`swlor.env`.
 
 Publish the new immutable image using the owner-approved workflow before
 deploying it. Existing hosts using the manual Compose setup must select the new

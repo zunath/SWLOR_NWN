@@ -98,6 +98,16 @@ public static class PowerGloveEquipment
                string.IsNullOrWhiteSpace(Item.GetCreatureItemUseError(creature, main));
     }
 
+    /// <summary>The line every Power Glove's description carries, so players can see why its bonuses count twice.</summary>
+    public const string PairDescriptionNote =
+        "One Power Glove covers both hands: each hand strikes with its DMG, and its other bonuses count once per hand, like two identical Katars.";
+
+    /// <summary>Appends <see cref="PairDescriptionNote"/> to a description that lacks it, keeping the existing text.</summary>
+    public static string GetPairDescription(string description) =>
+        description.Contains(PairDescriptionNote, StringComparison.Ordinal) ? description
+        : string.IsNullOrWhiteSpace(description) ? PairDescriptionNote
+        : $"{description.TrimEnd()}\n{PairDescriptionNote}";
+
     /// <summary>
     /// A Power Glove fills both hands, so its equipment stats count once per hand: one glove grants what two
     /// identical Katars do. Every equipped-stat sum uses this, so equipping and removing a glove stay symmetric.

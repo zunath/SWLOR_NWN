@@ -659,8 +659,9 @@ the artwork in the DDS and give each icon that has no TGA in any layer (HAKs or
 the base game) an 8x8 registration stub: `tools/FixWeaponInventoryIcons.py audit`
 lists them and `stubs` writes a bottom-left TGA thumbnail of the DDS art beside
 each one. Do not change persisted weapon appearances to dodge the check. The
-pistol and rifle icon audits (`test_pistol_inventory_icons.py`,
-`test_rifle_inventory_icons.py`) still reject a TGA beside a DDS; their icons
+pistol icon audit accepts only the exact 8x8 registration format beside a DDS
+and still rejects full-size TGA shadows. The rifle audit
+(`test_rifle_inventory_icons.py`) still rejects a TGA beside a DDS; its icons
 have no stubs yet. Broader engine background is available in the
 [texture notes](https://nwn.wiki/spaces/NWN1/pages/38174958/Textures).
 

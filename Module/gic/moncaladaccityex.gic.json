@@ -65,6 +65,20 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Nera Venn, starlane route broker beside the dockhand. Offers mon_starlane and grants the permanent pass at turn-in."
+        }
       }
     ]
   },

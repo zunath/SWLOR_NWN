@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             EnmityDebugger();
             NuiGallery();
             KitchenTester();
+            CasinoPreview();
             AnimationTester();
             GetObjectId();
             ResetBeast();
@@ -131,6 +132,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     Gui.TogglePlayerWindow(user, GuiWindowType.Kitchen, new CraftPayload(recipe, OBJECT_INVALID));
+                });
+        }
+
+        private void CasinoPreview()
+        {
+            _builder.Create("casinopreview")
+                .Description("Opens the casino window artwork preview.")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.CasinoSlot,
+                        new SWLOR.Game.Server.Feature.GuiDefinition.Payload.CasinoSlotPayload(OBJECT_INVALID));
                 });
         }
 

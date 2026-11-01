@@ -614,6 +614,10 @@ def armada_blueprints():
         d["LastName"]["value"] = {"0": ""}
         d["Description"]["value"] = {"0": ARMADA_DESCRIPTIONS[invader]}
         d["Appearance_Type"]["value"] = appearance
+        # An invader is no one's quest target: the source ship's quest kill group (master #2586 gave the tier 2 ships
+        # Mon Cala's Krakenborne group) stays on the source.
+        if "VarTable" in d:
+            d["VarTable"]["value"] = [v for v in d["VarTable"]["value"] if v["Name"]["value"] != "QUEST_NPC_GROUP_ID"]
         out[f"Module/utc/{tag}.utc.json"] = json.dumps(d, indent=2, ensure_ascii=False) + "\n"
     return out
 

@@ -177,8 +177,16 @@ public class IncursionTests
             root.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString()
                 .Should().Be(IncursionRules.ShipName(invader.Invader, hulls[code]));
             root.GetProperty("Appearance_Type").GetProperty("value").GetInt32().Should().Be(appearances[invader.Invader][code]);
-            foreach (var field in new[] { "Equip_ItemList", "VarTable", "FactionID", "ScriptSpawn", "ScriptDeath" })
+            foreach (var field in new[] { "Equip_ItemList", "FactionID", "ScriptSpawn", "ScriptDeath" })
                 root.GetProperty(field).GetRawText().Should().Be(original.RootElement.GetProperty(field).GetRawText(), $"{tag} {field}");
+
+            // The source ship's locals, without its quest kill group: an invader is no one's quest target.
+            static string[] Locals(JsonElement element) => element.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+                .Where(v => v.GetProperty("Name").GetProperty("value").GetString() != "QUEST_NPC_GROUP_ID")
+                .Select(v => v.GetRawText()).ToArray();
+            Locals(root).Should().Equal(Locals(original.RootElement), $"{tag} VarTable");
+            root.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+                .Should().NotContain(v => v.GetProperty("Name").GetProperty("value").GetString() == "QUEST_NPC_GROUP_ID", tag);
             definitions[tag].ShipItemTag.Should().Be(definitions[source].ShipItemTag);
             itemTag.Should().Be(definitions[source].ShipItemTag);
         }

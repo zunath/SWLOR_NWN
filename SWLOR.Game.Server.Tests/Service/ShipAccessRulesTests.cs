@@ -458,8 +458,10 @@ public class ShipAccessRulesTests
             back.Should().NotBeEmpty($"{lane.Area} -> {arrival.Area} has no lane back");
 
             // The ship arrives beside the lane that leads back to where it came from.
+            // Within 15 m: master's quest-gated Smuggler's Moon lane keeps its arrivals 10 m or more off the beacon
+            // (SmugglersStarlaneTests), 12 m from the lane back.
             back.Min(x => Math.Sqrt(Math.Pow(x.X - arrival.X, 2) + Math.Pow(x.Y - arrival.Y, 2)))
-                .Should().BeLessThan(10, $"{lane.Destination} should sit beside the lane back to {lane.Area}");
+                .Should().BeLessThan(15, $"{lane.Destination} should sit beside the lane back to {lane.Area}");
         }
     }
 
@@ -491,7 +493,8 @@ public class ShipAccessRulesTests
     {
         var graph = LaneGraph();
 
-        graph["narshadorbit"].Should().BeEquivalentTo(new[] { "hutlar_orbit", "tatooineorbit" });
+        graph["narshadorbit"].Should().BeEquivalentTo(new[] { "hutlar_orbit", "moncalaorbit", "tatooineorbit" }, "master #2586 adds the quest-gated Mon Cala lane");
+        graph["moncalaorbit"].Should().Contain("narshadorbit");
         graph["hutlar_orbit"].Should().Contain("narshadorbit");
         graph["tatooineorbit"].Should().Contain("narshadorbit");
 

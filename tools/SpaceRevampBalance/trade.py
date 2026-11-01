@@ -209,6 +209,13 @@ LANES = {
     "space_korrdebris": ["space_korriban"],
 }
 
+# Lanes a key item opens (the placeable's KEY_ITEM_ID local): master #2586's Mon Cala - Smuggler's Moon lane needs the
+# Smuggler's Moon Starlane Pass. Prices, routes and incursion regions follow LANES, the network every pilot can fly.
+GATED_LANES = {
+    "moncalaorbit": ["narshadorbit"],
+    "narshadorbit": ["moncalaorbit"],
+}
+
 # ---------------------------------------------------------------------------------------------------------------
 # Pricing tuning
 # ---------------------------------------------------------------------------------------------------------------
@@ -1441,9 +1448,10 @@ def trade_tab(Sheet):
     return s
 
 
-def module_lanes():
+def module_lanes(gated=False):
     """The starlane graph as Module/git holds it (tele_obj placeables whose DESTINATION is a STARLANE_LANDING waypoint),
-    read the way ShipAccessRulesTests reads it: area -> the areas its lanes land in."""
+    read the way ShipAccessRulesTests reads it: area -> the areas its lanes land in. The open lanes, or with
+    gated=True the lanes a key item opens (KEY_ITEM_ID)."""
     lanes, landings = [], {}
     for path in sorted((REPO / "Module" / "git").glob("*.git.json")):
         text = path.read_text(encoding="latin-1")
@@ -1453,7 +1461,10 @@ def module_lanes():
         for p in data["Placeable List"]["value"]:
             if p["TemplateResRef"]["value"] != "tele_obj":
                 continue
-            dest = [v["Value"]["value"] for v in p.get("VarTable", {}).get("value", []) if v["Name"]["value"] == "DESTINATION"]
+            variables = {v["Name"]["value"]: v["Value"]["value"] for v in p.get("VarTable", {}).get("value", [])}
+            dest = [variables["DESTINATION"]] if "DESTINATION" in variables else []
+            if bool(variables.get("KEY_ITEM_ID", 0)) != gated:
+                continue
             if dest and str(dest[0]).startswith("STARLANE_LANDING"):
                 lanes.append((area, dest[0]))
         for w in data["WaypointList"]["value"]:
@@ -1467,9 +1478,11 @@ def module_lanes():
 
 def check_lanes():
     """The differences between LANES and the module's starlanes (empty when they agree)."""
-    module = module_lanes()
-    return [f"{a}: LANES {sorted(LANES.get(a, []))}, module {sorted(module.get(a, set()))}"
-            for a in sorted(set(LANES) | set(module)) if set(LANES.get(a, [])) != module.get(a, set())]
+    out = []
+    for name, table, module in (("LANES", LANES, module_lanes()), ("GATED_LANES", GATED_LANES, module_lanes(gated=True))):
+        out += [f"{a}: {name} {sorted(table.get(a, []))}, module {sorted(module.get(a, set()))}"
+                for a in sorted(set(table) | set(module)) if set(table.get(a, [])) != module.get(a, set())]
+    return out
 
 
 def main():

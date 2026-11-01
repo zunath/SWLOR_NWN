@@ -159815,7 +159815,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -159833,7 +159833,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -159865,7 +159865,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -159931,7 +159931,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -159943,7 +159943,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -159955,15 +159955,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -159995,7 +159995,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -160042,7 +160042,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -160060,7 +160060,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -160092,7 +160092,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -160158,7 +160158,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -160170,7 +160170,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -160182,15 +160182,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -160222,7 +160222,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -160269,7 +160269,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -160287,7 +160287,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -160319,7 +160319,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -160385,7 +160385,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -160397,7 +160397,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -160409,15 +160409,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -160449,7 +160449,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -160496,7 +160496,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": ""
         },
         "CurrentHP": {
           "type": "short",
@@ -160514,7 +160514,7 @@
         },
         "Faction": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Fort": {
           "type": "byte",
@@ -160546,7 +160546,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Locked": {
           "type": "byte",
@@ -160612,7 +160612,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dialog_start"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -160624,7 +160624,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PortraitId": {
           "type": "word",
@@ -160636,15 +160636,15 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "train_terminal"
+          "value": "_mdrn_pl_conso17"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -160676,7 +160676,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",

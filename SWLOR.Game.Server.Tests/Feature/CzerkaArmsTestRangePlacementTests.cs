@@ -75,6 +75,7 @@ public class CzerkaArmsTestRangePlacementTests
             GetNumber(console, "Static").Should().Be(1);
             GetNumber(console, "Useable").Should().Be(0);
             GetString(console, "OnUsed").Should().BeEmpty();
+            console.GetProperty("LocName").GetRawText().Should().NotContain("Training Terminal");
         }
     }
 

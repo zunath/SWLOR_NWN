@@ -159874,7 +159874,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {
@@ -160101,7 +160101,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {
@@ -160328,7 +160328,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {
@@ -160555,7 +160555,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Training Terminal"
+            "0": "Controls, Tall /w Screen (Green)"
           }
         },
         "OnClick": {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -25,6 +26,17 @@ internal static class StoredItemSweep
         Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
     }
 
+    internal static void MigratePelvis(int version)
+    {
+        var sections = CountSections().Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray();
+        var progress = new ServerMigrationProgress(version, sections);
+        var pass = new ParallelStoredItemPass(progress);
+        var converter = PelvisStoredItemConverter.Instance;
+        var changed = Sweep(pass, converter);
+        changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Consolidated pelvis appearances in {changed} stored records.", true);
+    }
+
     private static (string Name, int Count)[] CountSections() => new[]
     {
         ServerMigrationProgress.CountRecords<InventoryItem>(),
@@ -42,14 +54,15 @@ internal static class StoredItemSweep
     /// <summary>Every stored item record and the fields holding its items.</summary>
     private static int Sweep(ParallelStoredItemPass pass, IStoredItemConverter converter)
     {
+        var legacyMetadata = converter is not PelvisStoredItemConverter;
         var changed = 0;
         changed += pass.Process<InventoryItem>(item =>
             MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
-            | RenameListing(item.Resref, item.Name, value => item.Name = value));
+            | (legacyMetadata && RenameListing(item.Resref, item.Name, value => item.Name = value)));
         changed += pass.Process<MarketItem>(item =>
         {
             return MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
-                listing => item.Category = listing.Category) | RenameListing(item.Resref, item.Name, value => item.Name = value);
+                listing => item.Category = listing.Category) | (legacyMetadata && RenameListing(item.Resref, item.Name, value => item.Name = value));
         });
         changed += pass.Process<WorldPropertyCategory>(category =>
         {
@@ -57,17 +70,18 @@ internal static class StoredItemSweep
             if (category.Items != null)
                 foreach (var item in category.Items.Values)
                     categoryChanged |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
-                        | RenameListing(item.Resref, item.Name, value => item.Name = value);
+                        | (legacyMetadata && RenameListing(item.Resref, item.Name, value => item.Name = value));
             return categoryChanged;
         });
         changed += pass.Process<WorldProperty>(property =>
             MigrateData(converter, property.SerializedItem, value => property.SerializedItem = value) |
-            FurnitureRenameMigration.RenameStructure(property));
+            (legacyMetadata && FurnitureRenameMigration.RenameStructure(property)));
         changed += pass.Process<ResearchJob>(job => MigrateData(converter, job.SerializedItem, value => job.SerializedItem = value));
         // Cosmetic chest templates retain Armor so ApplyOutfit can still load them.
         changed += pass.Process<PlayerOutfit>(outfit =>
             MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false) |
-            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value));
+            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value) |
+            (!legacyMetadata && PelvisAppearanceMigration.MigrateOutfitListing(outfit)));
         changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value));
         changed += pass.Process<PlayerShip>(ship =>
         {
@@ -91,6 +105,8 @@ internal static class StoredItemSweep
             rootIcon = listing.IconResref;
             rootChanged?.Invoke(listing);
         });
+        if (converter is PelvisStoredItemConverter)
+            return changed;
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;
@@ -114,7 +130,7 @@ internal static class StoredItemSweep
         if (items != null)
             foreach (var item in items)
                 changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
-                    | RenameListing(item.Resref, item.Name, value => item.Name = value);
+                    | (converter is not PelvisStoredItemConverter && RenameListing(item.Resref, item.Name, value => item.Name = value));
         return changed;
     }
 

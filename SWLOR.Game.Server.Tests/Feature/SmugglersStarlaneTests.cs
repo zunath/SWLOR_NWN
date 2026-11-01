@@ -59,7 +59,9 @@ public class SmugglersStarlaneTests
         var kill = quest.States[1].GetObjectives().Should().ContainSingle().Which
             .Should().BeOfType<KillTargetObjective>().Subject;
         kill.Group.Should().Be(NPCGroupType.MonCala_Krakenborne);
+        Enum.GetValues<NPCGroupType>().Count(group => group == kill.Group).Should().Be(1);
         kill.Amount.Should().Be(10);
+        kill.MaximumCreditDistance.Should().Be(55f);
         quest.States[2].GetObjectives().Should().BeEmpty();
         quest.OnAcceptActions.Should().BeEmpty("the pass must not be given on acceptance");
         quest.States.Values.Should().OnlyContain(s => s.KeyItemsGrantedOnAdvance.Count == 0);

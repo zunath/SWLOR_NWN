@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("mon_starlane", "Clear the Smuggler's Lane")
                 .AddState()
                 .SetStateJournalText("Nera Venn, the route broker beside the dockhand in Mon Cala's Elite Hotel, needs the Krakenborne pirates driven off her shipping route. Destroy 10 Krakenborne ships in Mon Cala orbit, then return to her for a permanent Smuggler's Moon Starlane Pass.")
-                .AddKillObjective(NPCGroupType.MonCala_Krakenborne, 10)
+                .AddKillObjective(NPCGroupType.MonCala_Krakenborne, 10, 55f)
 
                 .AddState()
                 .SetStateJournalText("You have destroyed 10 Krakenborne ships. Return to Nera Venn beside the dockhand in Mon Cala's Elite Hotel to collect your Smuggler's Moon Starlane Pass. It opens the new route at the south edge of Mon Cala orbit and the return route at the east edge of Smuggler's Moon orbit.")

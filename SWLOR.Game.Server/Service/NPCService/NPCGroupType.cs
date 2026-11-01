@@ -607,7 +607,7 @@ namespace SWLOR.Game.Server.Service.NPCService
         [NPCGroup("Station Horror")]
         AbandonedStation_Horror = 298,
         [NPCGroup("Krakenborne Ship")]
-        MonCala_Krakenborne = 299,
+        MonCala_Krakenborne = 311,
 
         [NPCGroup("Eshan Dire Wolves")]
         Eshan_DireWolf = 309,

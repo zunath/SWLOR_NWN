@@ -340,6 +340,25 @@ public class ShipStatCalculatorTests
     }
 
     [Test]
+    public void Apply_KeepsTheShieldAnActiveAuraAdded()
+    {
+        var result = Calculate(Hull(), wil: 0);
+        var status = new ShipStatus();
+        ShipStatCalculator.Apply(result, status, fill: true);
+        status.MaxShield.Should().Be(80);
+
+        // A 25% Bulwark aura raised the shield to 100; a crew member boarding recalculates without filling.
+        status.ShieldAuras = new Dictionary<int, DateTime> { [25] = DateTime.UtcNow.AddMinutes(1) };
+        status.Shield = 100;
+        ShipStatCalculator.Apply(result, status, fill: false);
+        status.Shield.Should().Be(100, "the aura is still active");
+
+        status.ShieldAuras = new Dictionary<int, DateTime> { [25] = DateTime.UtcNow.AddMinutes(-1) };
+        ShipStatCalculator.Apply(result, status, fill: false);
+        status.Shield.Should().Be(80, "a lapsed aura no longer raises the maximum");
+    }
+
+    [Test]
     public void Apply_CopiesTheDerivedStatsOntoTheStatus()
     {
         var hull = Hull(ShipSize.Capital, h =>

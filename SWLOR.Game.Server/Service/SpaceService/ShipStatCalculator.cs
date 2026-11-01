@@ -240,7 +240,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             else
             {
                 status.Hull = Math.Min(status.Hull, status.MaxHull);
-                status.Shield = Math.Min(status.Shield, status.MaxShield);
+                // An active Bulwark aura keeps the shield it added: crew joining or leaving does not strip it.
+                status.Shield = Math.Min(status.Shield, status.GetEffectiveMaxShield(DateTime.UtcNow));
                 status.Capacitor = Math.Min(status.Capacitor, status.MaxCapacitor);
             }
         }

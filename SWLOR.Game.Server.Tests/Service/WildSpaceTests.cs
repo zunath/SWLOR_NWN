@@ -122,8 +122,9 @@ public class WildSpaceTests
         var space = ReadServerSource("Service", "Space.cs");
         space.Should().Contain("Stat.GetStatAdjustment(target, StatType.SpaceShieldDamageTakenPercentAdjustment)");
         space.Should().Contain("Stat.GetStatAdjustment(ship, StatType.SpaceCapacitorRegenPercentAdjustment)");
-        space.Should().Contain("Stat.GetStatAdjustment(source, StatType.SpaceEmDamagePercentAdjustment)");
-        space.Should().Contain("Stat.GetStatAdjustment(source, StatType.SpaceAbilityDamagePercentAdjustment)");
+        space.Should().Contain("Stat.GetStatAdjustment(activator, StatType.SpaceEmDamagePercentAdjustment)",
+            "the environment sits on the firing ship, so a droid's or crew member's shot takes it too");
+        space.Should().Contain("Stat.GetStatAdjustment(activator, StatType.SpaceAbilityDamagePercentAdjustment)");
         ReadServerSource("Service", "SpacePowerRouting.cs").Should().Contain("StatType.SpaceCapacitorCostPercentAdjustment");
         ReadServerSource("Service", "SpaceScanning.cs").Should().Contain("Stat.GetStatAdjustment(ship, StatType.SpaceScanStrengthPercent)");
     }

@@ -2273,11 +2273,13 @@ namespace SWLOR.Game.Server.Service
             var bonusPercent = 0;
             activatorStatus.DamageBonusPercent?.TryGetValue(shot.DamageType, out bonusPercent);
             bonusPercent += PowerRoutingRules.WeaponDamagePercent(activatorStatus.PowerRouting);
+            // A Wild Space system's modifiers sit on the firing ship (ApplyWildSpaceEnvironment), so every shot the ship
+            // fires takes them: the pilot's, a crew member's and a droid's (whose stat source is invalid).
             bonusPercent += WildSpaceRules.EnvironmentDamagePercent(
                 shot.DamageType,
                 shot.IsAbility,
-                Stat.GetStatAdjustment(source, StatType.SpaceEmDamagePercentAdjustment),
-                Stat.GetStatAdjustment(source, StatType.SpaceAbilityDamagePercentAdjustment));
+                Stat.GetStatAdjustment(activator, StatType.SpaceEmDamagePercentAdjustment),
+                Stat.GetStatAdjustment(activator, StatType.SpaceAbilityDamagePercentAdjustment));
 
             var resistance = 0;
             targetStatus.Resistances?.TryGetValue(GetShipResistanceType(shot.DamageType), out resistance);

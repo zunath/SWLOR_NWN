@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -14,10 +15,19 @@ public static partial class MigrationEngineTests
     public static async Task PowerGloveStatsCountPerHand(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        fixture.Update(record => record.Skills[SkillType.Unarmed].Rank = 50);
+        fixture.Update(record =>
+        {
+            record.Skills[SkillType.Unarmed].Rank = 50;
+            // The fixture's food HP holds 1000 maximum HP, more than its one level's hit die can store.
+            record.TemporaryFoodHP = 0;
+        });
         var owner = fixture.Creature;
-        // The fixture's oversized STM pool is rebuilt from worn gear on the first equip; start from the rebuilt record.
-        await ctx.ExecuteInCreatureContextAsync(owner, () => Stat.RefreshPlayerEquipmentStats(owner));
+        // Rebuild the fixture's oversized HP and STM pools from worn gear, so the file's level hit die holds the maximum.
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            Stat.RefreshPlayerEquipmentStats(owner);
+            Stat.RefreshPlayerMaxHP(owner);
+        });
         var baseline = ReadGloveTotals(DB.Get<Player>(fixture.Id));
         var glove = await PowerGlovePairEngineTests.CreateCarriedItem(ctx, owner, "t_pglove");
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
@@ -36,15 +46,20 @@ public static partial class MigrationEngineTests
         SavedCharacterMigration.Upgraded upgraded = null;
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
-            // Before migration 25 the record counted the worn glove's stats once.
-            var legacy = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+            // Before migration 25 the record and the file's levels counted the worn glove's HP once.
+            var player = DB.Get<Player>(fixture.Id);
+            Stat.AdjustPlayerMaxHP(player, owner, -7);
+            DB.Set(player);
+            var legacy = SavedCharacterMigration.CopyRecord(player);
             legacy.Attack -= 5;
-            legacy.MaxHP -= 7;
             legacy.MaxStamina -= 9;
             legacy.CombatReadiness -= 2;
             legacy.Version = 24;
             legacy.CharacterFileVersion = 0;
             var file = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), 24);
+            var legacyMaxHP = GetMaxHitPoints(SavedCharacterMigration.Load(ctx,
+                new SavedCharacterMigration.Upgraded(file, legacy,
+                    new List<SavedCharacterMigration.UpgradedOverflowItem>(), new List<string>())));
 
             upgraded = SavedCharacterMigration.Upgrade(file, legacy);
             ctx.Assert(upgraded != null, "A character from before migration 25 is upgraded");
@@ -52,10 +67,13 @@ public static partial class MigrationEngineTests
             var character = SavedCharacterMigration.Load(ctx, upgraded);
             ctx.AssertEqual(SavedCharacterMigration.FindItem(character, "t_pglove"), GetItemInSlot(InventorySlot.RightHand, character),
                 "The glove stays worn");
+            ctx.AssertEqual(legacyMaxHP + 7, GetMaxHitPoints(character), "The upgraded file's levels hold the other hand's HP");
             ctx.Assert(SavedCharacterMigration.Upgrade(upgraded.File, upgraded.Record) == null, "An upgraded character is current");
             var restored = SavedCharacterMigration.Upgrade(file, upgraded.Record);
             ctx.Assert(restored != null, "An older file restored beside the upgraded record is upgraded");
             ctx.AssertEqual(worn, ReadGloveTotals(restored.Record), "The upgraded record does not gain the share again");
+            ctx.AssertEqual(legacyMaxHP + 7, GetMaxHitPoints(SavedCharacterMigration.Load(ctx, restored)),
+                "The restored file's levels match the upgraded record's maximum HP");
         });
 
         // The player logs in wearing the glove and swaps it off and on twice without drift.

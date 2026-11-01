@@ -21,5 +21,8 @@ internal sealed class _25_CountPowerGloveStatsPerHand : ICharacterMigration
             return;
         character.ApplyOneHandItemStats(glove, true);
         character.RefreshCombatReadinessEquipment();
+        // A record that already holds the share (an older file restored beside it) still has its maximum HP
+        // written to this file's levels.
+        character.ApplyMaxHitPointsToLevels();
     }
 }

@@ -42,16 +42,29 @@ namespace SWLOR.Game.Server.Service.CombatService
         }
 
         /// <summary>
-        /// Weapon DMG an ability adds. Unarmed abilities strike with both Power Gloves, so they count the
-        /// owned glove's DMG once per hand; auto-attacks still roll one glove per hand.
+        /// Weapon DMG an ability adds. Unarmed abilities strike with both fists, so a Power Glove pair counts its
+        /// owned glove twice and two Katars count both Katars. Any other weapons add the main hand's DMG once.
+        /// Auto-attacks still roll one weapon per hand.
         /// </summary>
         public static int GetAbilityDMG(uint creature, uint weapon, SkillType abilitySkill)
         {
             var damage = GetEffectiveDMG(creature, weapon);
-            return abilitySkill == SkillType.Unarmed && PowerGloveEquipment.IsActivePair(creature) &&
-                   GetItemInSlot(InventorySlot.RightHand, creature) == weapon
-                ? damage * 2
+            return abilitySkill == SkillType.Unarmed && GetItemInSlot(InventorySlot.RightHand, creature) == weapon &&
+                   TryGetOtherStrikingHand(creature, weapon, out var otherHand)
+                ? damage + GetEffectiveDMG(creature, otherHand)
                 : damage;
+        }
+
+        /// <summary>
+        /// The other fist: the owned glove again for a Power Glove pair, or the left Katar of two Katars. Pairs of
+        /// other weapons, whose DMG is not tuned as half of a pair, never count, so no loadout beats the fists.
+        /// </summary>
+        private static bool TryGetOtherStrikingHand(uint creature, uint mainHand, out uint weapon)
+        {
+            weapon = PowerGloveEquipment.IsActivePair(creature) ? mainHand
+                : EquipmentPredicates.HasDualWieldKatar(creature) ? GetItemInSlot(InventorySlot.LeftHand, creature)
+                : OBJECT_INVALID;
+            return GetIsObjectValid(weapon);
         }
 
         /// <summary>Damage type a weapon deals, matching native auto-attack resolution.</summary>

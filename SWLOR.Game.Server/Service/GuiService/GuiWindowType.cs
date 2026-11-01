@@ -86,6 +86,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         ExtraHotbarSetup = 81,
         ExtraHotbarSlotPicker = 82,
         AppearancePartBrowser = 83,
+        Huttball = 84,
+        HuttballPlayer = 85,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

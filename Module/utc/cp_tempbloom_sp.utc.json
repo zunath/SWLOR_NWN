@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak backroom fighter who has drilled the Tempest Bloom until it almost works, polishing one petal of it to a mirror shine. Faster and vainer than the adepts, he works the live pits with a twin blade and rotates with the others like a rehearsed finale."
+      "0": "A Zabrak pit fighter who has drilled his twin-blade routine until it almost works, polishing one flourish of it to a mirror shine. Faster and vainer than the brawlers, he works the live pits with a twin blade and rotates with the others like a rehearsed finale."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tempest Bloom Specialist"
+      "0": "Stable Pit Fighter"
     }
   },
   "fortbonus": {

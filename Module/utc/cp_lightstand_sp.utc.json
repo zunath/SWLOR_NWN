@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Wookiee marauder who roams the tomb galleries of the Sith Crypt Depths in a small band, staff in hand. The marauders carry the relics the expedition has pried loose and fight in pairs to keep them."
+      "0": "A Wookiee marauder of the relic expedition who roams the tomb galleries of the Sith Crypt Depths in a small band, staff in hand. The marauders carry the relics the expedition has pried loose and fight in pairs to keep them."
     }
   },
   "Dex": {
@@ -295,7 +295,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crypt Marauder"
+      "0": "Expedition Marauder"
     }
   },
   "fortbonus": {

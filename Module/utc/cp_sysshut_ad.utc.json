@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan in black work clothes, one of the knife cadre inside the sealed Veles Militia Annex drilling a disabling strike no one cleared them to learn. He telegraphs every move of his vibroknife, which makes him loud, not harmless."
+      "0": "A Nautolan recruit in black work clothes, one of the knife cadre inside the sealed Veles Militia Annex drilling a disabling strike no one cleared them to learn. He telegraphs every move of his vibroknife, which makes him loud, not harmless."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Systemic Shutdown Adept"
+      "0": "Holdout Recruit"
     }
   },
   "fortbonus": {

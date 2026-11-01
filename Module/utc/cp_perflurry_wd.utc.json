@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan in worn combat armor, a frost-blackened test crest on his chest and throwing blades in his hand, his off hand never quite still. The troupe's choreographer, he holds the deep range, drills stolen sequences into the others, and has added variations the original act never staged."
+      "0": "A Nautolan test supervisor in worn combat armor, a frost-blackened test crest on his chest and throwing blades in his hand, his off hand never quite still. The troupe's choreographer, he holds the deep range, drills stolen sequences into the others, and has added variations the original act never staged."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Perfect Flurry Warden"
+      "0": "Test Supervisor Ketu Ran"
     }
   },
   "fortbonus": {

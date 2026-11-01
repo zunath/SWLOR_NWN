@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak adept of the forge congregation, loud with a thirst he has not learned to hide. He swings his heavy vibroblade as if every cut it lands is a debt owed to him."
+      "0": "A Zabrak initiate of the Forgebound congregation, loud with a thirst he has not learned to hide. He swings his heavy vibroblade as if every cut it lands is a debt owed to him."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Soul Ascension Adept"
+      "0": "Forgebound Initiate"
     }
   },
   "fortbonus": {

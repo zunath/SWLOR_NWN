@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian in armor who takes every challenge from a firing line scratched into the floor beside the altar in the middle of the Anchorhead Canyon Range. He was the best duelist the range's old marshal ever passed, and he wears the marshal's crest as if he earned all of it. Patience was once his discipline; now he collects it as a toll."
+      "0": "A Rodian range warden in armor who takes every challenge from a firing line scratched into the floor beside the altar in the middle of the Anchorhead Canyon Range. He was the best duelist the range's old marshal ever passed, and he wears the marshal's crest as if he earned all of it. Patience was once his discipline; now he collects it as a toll."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Last Word Warden"
+      "0": "Range Warden Gruvo"
     }
   },
   "fortbonus": {

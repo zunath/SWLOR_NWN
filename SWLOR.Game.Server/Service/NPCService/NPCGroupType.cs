@@ -150,35 +150,35 @@ namespace SWLOR.Game.Server.Service.NPCService
         Viscara_BloodFrenzyDuelist = 70,
         [NPCGroup("Blood Frenzy King")]
         Viscara_BloodFrenzyKing = 71,
-        [NPCGroup("Invincible Adepts")]
+        [NPCGroup("Holdout Recruits")]
         Viscara_Invincible_Adept = 72,
-        [NPCGroup("Invincible Specialists")]
+        [NPCGroup("Holdout Sergeants")]
         Viscara_Invincible_Specialist = 73,
-        [NPCGroup("Invincible Warden")]
+        [NPCGroup("Holdout Lieutenant Sarn")]
         Viscara_Invincible_Warden = 74,
-        [NPCGroup("Invincible Inner Circle")]
+        [NPCGroup("Holdout Honor Guards")]
         Viscara_Invincible_InnerCircle = 75,
-        [NPCGroup("Invincible Master")]
+        [NPCGroup("Holdout Captain Haro Kel")]
         Viscara_Invincible_Master = 76,
-        [NPCGroup("Viral Cascade Adepts")]
+        [NPCGroup("Holdout Recruits")]
         Viscara_VitalRupture_Adept = 77,
-        [NPCGroup("Viral Cascade Specialists")]
+        [NPCGroup("Holdout Sergeants")]
         Viscara_VitalRupture_Specialist = 78,
-        [NPCGroup("Viral Cascade Warden")]
+        [NPCGroup("Holdout Lieutenant Korvan Tull")]
         Viscara_VitalRupture_Warden = 79,
-        [NPCGroup("Viral Cascade Inner Circle")]
+        [NPCGroup("Holdout Honor Guards")]
         Viscara_VitalRupture_InnerCircle = 80,
-        [NPCGroup("Viral Cascade Master")]
+        [NPCGroup("Holdout Captain Marek Dolan")]
         Viscara_VitalRupture_Master = 81,
-        [NPCGroup("Systemic Shutdown Adepts")]
+        [NPCGroup("Holdout Recruits")]
         Viscara_SystemicShutdown_Adept = 82,
-        [NPCGroup("Systemic Shutdown Specialists")]
+        [NPCGroup("Holdout Sergeants")]
         Viscara_SystemicShutdown_Specialist = 83,
-        [NPCGroup("Systemic Shutdown Warden")]
+        [NPCGroup("Holdout Lieutenant Vessik Rane")]
         Viscara_SystemicShutdown_Warden = 84,
-        [NPCGroup("Systemic Shutdown Inner Circle")]
+        [NPCGroup("Holdout Honor Guards")]
         Viscara_SystemicShutdown_InnerCircle = 85,
-        [NPCGroup("Systemic Shutdown Master")]
+        [NPCGroup("Holdout Captain Jorrik Vael")]
         Viscara_SystemicShutdown_Master = 86,
         [NPCGroup("Saber Storm Adepts")]
         Dantooine_SaberStorm_Adept = 87,
@@ -210,185 +210,185 @@ namespace SWLOR.Game.Server.Service.NPCService
         Dantooine_SaberCyclone_InnerCircle = 100,
         [NPCGroup("Saber Cyclone Master")]
         Dantooine_SaberCyclone_Master = 101,
-        [NPCGroup("Absolute Defense Adepts")]
+        [NPCGroup("Forgebound Initiates")]
         Tatooine_AbsoluteDefense_Adept = 102,
-        [NPCGroup("Absolute Defense Specialists")]
+        [NPCGroup("Forgebound Journeymans")]
         Tatooine_AbsoluteDefense_Specialist = 103,
-        [NPCGroup("Absolute Defense Warden")]
+        [NPCGroup("Forge Warden Ssorrak")]
         Tatooine_AbsoluteDefense_Warden = 104,
-        [NPCGroup("Absolute Defense Inner Circle")]
+        [NPCGroup("Forgebound Overseers")]
         Tatooine_AbsoluteDefense_InnerCircle = 105,
-        [NPCGroup("Absolute Defense Master")]
+        [NPCGroup("Forge Master Kassrek")]
         Tatooine_AbsoluteDefense_Master = 106,
-        [NPCGroup("Soul Ascension Adepts")]
+        [NPCGroup("Forgebound Initiates")]
         Tatooine_SoulAscension_Adept = 107,
-        [NPCGroup("Soul Ascension Specialists")]
+        [NPCGroup("Forgebound Journeymans")]
         Tatooine_SoulAscension_Specialist = 108,
-        [NPCGroup("Soul Ascension Warden")]
+        [NPCGroup("Forge Warden Dael Karrow")]
         Tatooine_SoulAscension_Warden = 109,
-        [NPCGroup("Soul Ascension Inner Circle")]
+        [NPCGroup("Forgebound Overseers")]
         Tatooine_SoulAscension_InnerCircle = 110,
-        [NPCGroup("Soul Ascension Master")]
+        [NPCGroup("Forge Master Orsen Vale")]
         Tatooine_SoulAscension_Master = 111,
-        [NPCGroup("Forcebane Adepts")]
+        [NPCGroup("Forgebound Initiates")]
         Tatooine_Forcebane_Adept = 112,
-        [NPCGroup("Forcebane Specialists")]
+        [NPCGroup("Forgebound Journeymans")]
         Tatooine_Forcebane_Specialist = 113,
-        [NPCGroup("Forcebane Warden")]
+        [NPCGroup("Forge Warden Orbek Tal")]
         Tatooine_Forcebane_Warden = 114,
-        [NPCGroup("Forcebane Inner Circle")]
+        [NPCGroup("Forgebound Overseers")]
         Tatooine_Forcebane_InnerCircle = 115,
-        [NPCGroup("Forcebane Master")]
+        [NPCGroup("Forge Master Kovath Sull")]
         Tatooine_Forcebane_Master = 116,
-        [NPCGroup("Crippling Defense Adepts")]
+        [NPCGroup("Stable Brawlers")]
         SmugglersMoon_CripplingDefense_Adept = 117,
-        [NPCGroup("Crippling Defense Specialists")]
+        [NPCGroup("Stable Pit Fighters")]
         SmugglersMoon_CripplingDefense_Specialist = 118,
-        [NPCGroup("Crippling Defense Warden")]
+        [NPCGroup("Pit Boss Ssarok")]
         SmugglersMoon_CripplingDefense_Warden = 119,
-        [NPCGroup("Crippling Defense Inner Circle")]
+        [NPCGroup("Stable Promoters")]
         SmugglersMoon_CripplingDefense_InnerCircle = 120,
-        [NPCGroup("Crippling Defense Master")]
+        [NPCGroup("Stable Champion Thrask")]
         SmugglersMoon_CripplingDefense_Master = 121,
-        [NPCGroup("Tempest Bloom Adepts")]
+        [NPCGroup("Stable Brawlers")]
         SmugglersMoon_TempestBloom_Adept = 122,
-        [NPCGroup("Tempest Bloom Specialists")]
+        [NPCGroup("Stable Pit Fighters")]
         SmugglersMoon_TempestBloom_Specialist = 123,
-        [NPCGroup("Tempest Bloom Warden")]
+        [NPCGroup("Pit Boss Dax Corvin")]
         SmugglersMoon_TempestBloom_Warden = 124,
-        [NPCGroup("Tempest Bloom Inner Circle")]
+        [NPCGroup("Stable Promoters")]
         SmugglersMoon_TempestBloom_InnerCircle = 125,
-        [NPCGroup("Tempest Bloom Master")]
+        [NPCGroup("Stable Champion Rolan Mace")]
         SmugglersMoon_TempestBloom_Master = 126,
-        [NPCGroup("Red Bloom Adepts")]
+        [NPCGroup("Stable Brawlers")]
         SmugglersMoon_RedBloom_Adept = 127,
-        [NPCGroup("Red Bloom Specialists")]
+        [NPCGroup("Stable Pit Fighters")]
         SmugglersMoon_RedBloom_Specialist = 128,
-        [NPCGroup("Red Bloom Warden")]
+        [NPCGroup("Pit Boss Kessan Pru")]
         SmugglersMoon_RedBloom_Warden = 129,
-        [NPCGroup("Red Bloom Inner Circle")]
+        [NPCGroup("Stable Promoters")]
         SmugglersMoon_RedBloom_InnerCircle = 130,
-        [NPCGroup("Red Bloom Master")]
+        [NPCGroup("Stable Champion Ven Dolo")]
         SmugglersMoon_RedBloom_Master = 131,
-        [NPCGroup("Adamantine Guard Adepts")]
+        [NPCGroup("Wreck Crew Scrappers")]
         CZ220_AdamantineGuard_Adept = 132,
-        [NPCGroup("Adamantine Guard Specialists")]
+        [NPCGroup("Wreck Crew Riggers")]
         CZ220_AdamantineGuard_Specialist = 133,
-        [NPCGroup("Adamantine Guard Warden")]
+        [NPCGroup("Crew Chief Rakkesh")]
         CZ220_AdamantineGuard_Warden = 134,
-        [NPCGroup("Adamantine Guard Inner Circle")]
+        [NPCGroup("Foreman's Hands")]
         CZ220_AdamantineGuard_InnerCircle = 135,
-        [NPCGroup("Adamantine Guard Master")]
+        [NPCGroup("Wreck Foreman Ssurgan")]
         CZ220_AdamantineGuard_Master = 136,
-        [NPCGroup("Scrapheap Lockdown Adepts")]
+        [NPCGroup("Wreck Crew Scrappers")]
         CZ220_ScrapheapLockdown_Adept = 137,
-        [NPCGroup("Scrapheap Lockdown Specialists")]
+        [NPCGroup("Wreck Crew Riggers")]
         CZ220_ScrapheapLockdown_Specialist = 138,
-        [NPCGroup("Scrapheap Lockdown Warden")]
+        [NPCGroup("Crew Chief Tobin Rask")]
         CZ220_ScrapheapLockdown_Warden = 139,
-        [NPCGroup("Scrapheap Lockdown Inner Circle")]
+        [NPCGroup("Foreman's Hands")]
         CZ220_ScrapheapLockdown_InnerCircle = 140,
-        [NPCGroup("Scrapheap Lockdown Master")]
+        [NPCGroup("Wreck Foreman Lucan Brandt")]
         CZ220_ScrapheapLockdown_Master = 141,
-        [NPCGroup("Worldbreaker Adepts")]
+        [NPCGroup("Wreck Crew Scrappers")]
         CZ220_Worldbreaker_Adept = 142,
-        [NPCGroup("Worldbreaker Specialists")]
+        [NPCGroup("Wreck Crew Riggers")]
         CZ220_Worldbreaker_Specialist = 143,
-        [NPCGroup("Worldbreaker Warden")]
+        [NPCGroup("Crew Chief Nalo Ven")]
         CZ220_Worldbreaker_Warden = 144,
-        [NPCGroup("Worldbreaker Inner Circle")]
+        [NPCGroup("Foreman's Hands")]
         CZ220_Worldbreaker_InnerCircle = 145,
-        [NPCGroup("Worldbreaker Master")]
+        [NPCGroup("Wreck Foreman Kaddo Rin")]
         CZ220_Worldbreaker_Master = 146,
-        [NPCGroup("Unmoving Center Adepts")]
+        [NPCGroup("Canyon Drifters")]
         Tatooine_UnmovingCenter_Adept = 147,
-        [NPCGroup("Unmoving Center Specialists")]
+        [NPCGroup("Canyon Sharpshooters")]
         Tatooine_UnmovingCenter_Specialist = 148,
-        [NPCGroup("Unmoving Center Warden")]
+        [NPCGroup("Range Warden Dorrim Vex")]
         Tatooine_UnmovingCenter_Warden = 149,
-        [NPCGroup("Unmoving Center Inner Circle")]
+        [NPCGroup("High Table Guns")]
         Tatooine_UnmovingCenter_InnerCircle = 150,
-        [NPCGroup("Unmoving Center Master")]
+        [NPCGroup("Range Marshal Tarek Kor")]
         Tatooine_UnmovingCenter_Master = 151,
-        [NPCGroup("Last Word Adepts")]
+        [NPCGroup("Canyon Drifters")]
         Tatooine_LastWord_Adept = 152,
-        [NPCGroup("Last Word Specialists")]
+        [NPCGroup("Canyon Sharpshooters")]
         Tatooine_LastWord_Specialist = 153,
-        [NPCGroup("Last Word Warden")]
+        [NPCGroup("Range Warden Gruvo")]
         Tatooine_LastWord_Warden = 154,
-        [NPCGroup("Last Word Inner Circle")]
+        [NPCGroup("High Table Guns")]
         Tatooine_LastWord_InnerCircle = 155,
-        [NPCGroup("Last Word Master")]
+        [NPCGroup("Range Marshal Wuun Kalo")]
         Tatooine_LastWord_Master = 156,
-        [NPCGroup("Dead Man's Hand Adepts")]
+        [NPCGroup("Canyon Drifters")]
         Tatooine_DeadMansHand_Adept = 157,
-        [NPCGroup("Dead Man's Hand Specialists")]
+        [NPCGroup("Canyon Sharpshooters")]
         Tatooine_DeadMansHand_Specialist = 158,
-        [NPCGroup("Dead Man's Hand Warden")]
+        [NPCGroup("Range Warden Silas Crowe")]
         Tatooine_DeadMansHand_Warden = 159,
-        [NPCGroup("Dead Man's Hand Inner Circle")]
+        [NPCGroup("High Table Guns")]
         Tatooine_DeadMansHand_InnerCircle = 160,
-        [NPCGroup("Dead Man's Hand Master")]
+        [NPCGroup("Range Marshal Jonas Harlan")]
         Tatooine_DeadMansHand_Master = 161,
-        [NPCGroup("Kill Box Adepts")]
+        [NPCGroup("Range Washouts")]
         SmugglersMoon_KillBox_Adept = 162,
-        [NPCGroup("Kill Box Specialists")]
+        [NPCGroup("Range Instructors")]
         SmugglersMoon_KillBox_Specialist = 163,
-        [NPCGroup("Kill Box Warden")]
+        [NPCGroup("Range Overseer Sskeer")]
         SmugglersMoon_KillBox_Warden = 164,
-        [NPCGroup("Kill Box Inner Circle")]
+        [NPCGroup("Black Cell Shooters")]
         SmugglersMoon_KillBox_InnerCircle = 165,
-        [NPCGroup("Kill Box Master")]
+        [NPCGroup("Range Director Krassek")]
         SmugglersMoon_KillBox_Master = 166,
-        [NPCGroup("One Shot Adepts")]
+        [NPCGroup("Range Washouts")]
         SmugglersMoon_OneShot_Adept = 167,
-        [NPCGroup("One Shot Specialists")]
+        [NPCGroup("Range Instructors")]
         SmugglersMoon_OneShot_Specialist = 168,
-        [NPCGroup("One Shot Warden")]
+        [NPCGroup("Range Overseer Callum Breck")]
         SmugglersMoon_OneShot_Warden = 169,
-        [NPCGroup("One Shot Inner Circle")]
+        [NPCGroup("Black Cell Shooters")]
         SmugglersMoon_OneShot_InnerCircle = 170,
-        [NPCGroup("One Shot Master")]
+        [NPCGroup("Range Director Zhessk")]
         SmugglersMoon_OneShot_Master = 171,
-        [NPCGroup("Rain of Steel Adepts")]
+        [NPCGroup("Range Washouts")]
         SmugglersMoon_RainOfSteel_Adept = 172,
-        [NPCGroup("Rain of Steel Specialists")]
+        [NPCGroup("Range Instructors")]
         SmugglersMoon_RainOfSteel_Specialist = 173,
-        [NPCGroup("Rain of Steel Warden")]
+        [NPCGroup("Range Overseer Perrin Aldous")]
         SmugglersMoon_RainOfSteel_Warden = 174,
-        [NPCGroup("Rain of Steel Inner Circle")]
+        [NPCGroup("Black Cell Shooters")]
         SmugglersMoon_RainOfSteel_InnerCircle = 175,
-        [NPCGroup("Rain of Steel Master")]
+        [NPCGroup("Range Director Daav Rhoun")]
         SmugglersMoon_RainOfSteel_Master = 176,
-        [NPCGroup("Perfect Flurry Adepts")]
+        [NPCGroup("Test Crew Technicians")]
         Hutlar_PerfectFlurry_Adept = 177,
-        [NPCGroup("Perfect Flurry Specialists")]
+        [NPCGroup("Test Crew Demolitionists")]
         Hutlar_PerfectFlurry_Specialist = 178,
-        [NPCGroup("Perfect Flurry Warden")]
+        [NPCGroup("Test Supervisor Ketu Ran")]
         Hutlar_PerfectFlurry_Warden = 179,
-        [NPCGroup("Perfect Flurry Inner Circle")]
+        [NPCGroup("Site Chief's Officers")]
         Hutlar_PerfectFlurry_InnerCircle = 180,
-        [NPCGroup("Perfect Flurry Master")]
+        [NPCGroup("Site Chief Veshan Dru")]
         Hutlar_PerfectFlurry_Master = 181,
-        [NPCGroup("Thermal Detonator Adepts")]
+        [NPCGroup("Test Crew Technicians")]
         Hutlar_ThermalDetonator_Adept = 182,
-        [NPCGroup("Thermal Detonator Specialists")]
+        [NPCGroup("Test Crew Demolitionists")]
         Hutlar_ThermalDetonator_Specialist = 183,
-        [NPCGroup("Thermal Detonator Warden")]
+        [NPCGroup("Test Supervisor Skorrik")]
         Hutlar_ThermalDetonator_Warden = 184,
-        [NPCGroup("Thermal Detonator Inner Circle")]
+        [NPCGroup("Site Chief's Officers")]
         Hutlar_ThermalDetonator_InnerCircle = 185,
-        [NPCGroup("Thermal Detonator Master")]
+        [NPCGroup("Site Chief Ssorgan")]
         Hutlar_ThermalDetonator_Master = 186,
-        [NPCGroup("Overload Barrage Adepts")]
+        [NPCGroup("Test Crew Technicians")]
         Hutlar_OverloadBarrage_Adept = 187,
-        [NPCGroup("Overload Barrage Specialists")]
+        [NPCGroup("Test Crew Demolitionists")]
         Hutlar_OverloadBarrage_Specialist = 188,
-        [NPCGroup("Overload Barrage Warden")]
+        [NPCGroup("Test Supervisor Hale Dorrin")]
         Hutlar_OverloadBarrage_Warden = 189,
-        [NPCGroup("Overload Barrage Inner Circle")]
+        [NPCGroup("Site Chief's Officers")]
         Hutlar_OverloadBarrage_InnerCircle = 190,
-        [NPCGroup("Overload Barrage Master")]
+        [NPCGroup("Site Chief Ansel Pryor")]
         Hutlar_OverloadBarrage_Master = 191,
         [NPCGroup("Last Stand of the Light Adepts")]
         Korriban_LastStandOfTheLight_Adept = 192,
@@ -420,187 +420,187 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_EclipseOfResolve_InnerCircle = 205,
         [NPCGroup("Eclipse of Resolve Master")]
         Korriban_EclipseOfResolve_Master = 206,
-        [NPCGroup("Killzone Beacon Adepts")]
+        [NPCGroup("Deserter Sappers")]
         Viscara_KillzoneBeacon_Adept = 207,
-        [NPCGroup("Killzone Beacon Specialists")]
+        [NPCGroup("Deserter Engineers")]
         Viscara_KillzoneBeacon_Specialist = 208,
-        [NPCGroup("Killzone Beacon Warden")]
+        [NPCGroup("Deserter Sergeant Orgul")]
         Viscara_KillzoneBeacon_Warden = 209,
-        [NPCGroup("Killzone Beacon Inner Circle")]
+        [NPCGroup("Quartermaster's Guards")]
         Viscara_KillzoneBeacon_InnerCircle = 210,
-        [NPCGroup("Killzone Beacon Master")]
+        [NPCGroup("Deserter Commander Kuvaz")]
         Viscara_KillzoneBeacon_Master = 211,
-        [NPCGroup("Emergency Bunker Adepts")]
+        [NPCGroup("Deserter Sappers")]
         Viscara_EmergencyBunker_Adept = 212,
-        [NPCGroup("Emergency Bunker Specialists")]
+        [NPCGroup("Deserter Engineers")]
         Viscara_EmergencyBunker_Specialist = 213,
-        [NPCGroup("Emergency Bunker Warden")]
+        [NPCGroup("Deserter Sergeant Bekko")]
         Viscara_EmergencyBunker_Warden = 214,
-        [NPCGroup("Emergency Bunker Inner Circle")]
+        [NPCGroup("Quartermaster's Guards")]
         Viscara_EmergencyBunker_InnerCircle = 215,
-        [NPCGroup("Emergency Bunker Master")]
+        [NPCGroup("Deserter Commander Mukk Dorl")]
         Viscara_EmergencyBunker_Master = 216,
-        [NPCGroup("Decisive Command Adepts")]
+        [NPCGroup("Deserter Sappers")]
         Viscara_DecisiveCommand_Adept = 217,
-        [NPCGroup("Decisive Command Specialists")]
+        [NPCGroup("Deserter Engineers")]
         Viscara_DecisiveCommand_Specialist = 218,
-        [NPCGroup("Decisive Command Warden")]
+        [NPCGroup("Deserter Sergeant Grenn Vhon")]
         Viscara_DecisiveCommand_Warden = 219,
-        [NPCGroup("Decisive Command Inner Circle")]
+        [NPCGroup("Quartermaster's Guards")]
         Viscara_DecisiveCommand_InnerCircle = 220,
-        [NPCGroup("Decisive Command Master")]
+        [NPCGroup("Deserter Commander Halden Rhee")]
         Viscara_DecisiveCommand_Master = 221,
-        [NPCGroup("Hold the Line Adepts")]
+        [NPCGroup("Ward Orderlys")]
         MonCala_HoldTheLine_Adept = 222,
-        [NPCGroup("Hold the Line Specialists")]
+        [NPCGroup("Ward Guards")]
         MonCala_HoldTheLine_Specialist = 223,
-        [NPCGroup("Hold the Line Warden")]
+        [NPCGroup("Ward Supervisor Aron Meel")]
         MonCala_HoldTheLine_Warden = 224,
-        [NPCGroup("Hold the Line Inner Circle")]
+        [NPCGroup("Matron's Attendants")]
         MonCala_HoldTheLine_InnerCircle = 225,
-        [NPCGroup("Hold the Line Master")]
+        [NPCGroup("Ward Chief Anchor")]
         MonCala_HoldTheLine_Master = 226,
-        [NPCGroup("Emergency Cocktail Adepts")]
+        [NPCGroup("Ward Orderlys")]
         MonCala_EmergencyCocktail_Adept = 227,
-        [NPCGroup("Emergency Cocktail Specialists")]
+        [NPCGroup("Ward Guards")]
         MonCala_EmergencyCocktail_Specialist = 228,
-        [NPCGroup("Emergency Cocktail Warden")]
+        [NPCGroup("Ward Supervisor Teno Barr")]
         MonCala_EmergencyCocktail_Warden = 229,
-        [NPCGroup("Emergency Cocktail Inner Circle")]
+        [NPCGroup("Matron's Attendants")]
         MonCala_EmergencyCocktail_InnerCircle = 230,
-        [NPCGroup("Emergency Cocktail Master")]
+        [NPCGroup("Ward Chief Koth Davin")]
         MonCala_EmergencyCocktail_Master = 231,
-        [NPCGroup("Infinite Conduit Adepts")]
+        [NPCGroup("Ward Orderlys")]
         MonCala_InfiniteConduit_Adept = 232,
-        [NPCGroup("Infinite Conduit Specialists")]
+        [NPCGroup("Ward Guards")]
         MonCala_InfiniteConduit_Specialist = 233,
-        [NPCGroup("Infinite Conduit Warden")]
+        [NPCGroup("Ward Supervisor Dru Salin")]
         MonCala_InfiniteConduit_Warden = 234,
-        [NPCGroup("Infinite Conduit Inner Circle")]
+        [NPCGroup("Matron's Attendants")]
         MonCala_InfiniteConduit_InnerCircle = 235,
-        [NPCGroup("Infinite Conduit Master")]
+        [NPCGroup("Ward Chief Idris Voh")]
         MonCala_InfiniteConduit_Master = 236,
-        [NPCGroup("Apex Bite Adepts")]
+        [NPCGroup("Young Preserve Beasts")]
         Dathomir_ApexBite_Adept = 237,
-        [NPCGroup("Apex Bite Specialists")]
+        [NPCGroup("Pen-Scarred Preserve Beasts")]
         Dathomir_ApexBite_Specialist = 238,
-        [NPCGroup("Apex Bite Warden")]
+        [NPCGroup("Breeder's Tukata")]
         Dathomir_ApexBite_Warden = 239,
-        [NPCGroup("Apex Bite Inner Circle")]
+        [NPCGroup("Elder Preserve Beasts")]
         Dathomir_ApexBite_InnerCircle = 240,
-        [NPCGroup("Apex Bite Master")]
+        [NPCGroup("Old Tukata")]
         Dathomir_ApexBite_Master = 241,
-        [NPCGroup("Unbreakable Beast Adepts")]
+        [NPCGroup("Young Preserve Beasts")]
         Dathomir_UnbreakableBeast_Adept = 242,
-        [NPCGroup("Unbreakable Beast Specialists")]
+        [NPCGroup("Pen-Scarred Preserve Beasts")]
         Dathomir_UnbreakableBeast_Specialist = 243,
-        [NPCGroup("Unbreakable Beast Warden")]
+        [NPCGroup("Breeder's Shyrack")]
         Dathomir_UnbreakableBeast_Warden = 244,
-        [NPCGroup("Unbreakable Beast Inner Circle")]
+        [NPCGroup("Elder Preserve Beasts")]
         Dathomir_UnbreakableBeast_InnerCircle = 245,
-        [NPCGroup("Unbreakable Beast Master")]
+        [NPCGroup("Old Shyrack")]
         Dathomir_UnbreakableBeast_Master = 246,
-        [NPCGroup("Alpha Rhythm Adepts")]
+        [NPCGroup("Young Preserve Beasts")]
         Dathomir_AlphaRhythm_Adept = 247,
-        [NPCGroup("Alpha Rhythm Specialists")]
+        [NPCGroup("Pen-Scarred Preserve Beasts")]
         Dathomir_AlphaRhythm_Specialist = 248,
-        [NPCGroup("Alpha Rhythm Warden")]
+        [NPCGroup("Breeder's Iriaz Bull")]
         Dathomir_AlphaRhythm_Warden = 249,
-        [NPCGroup("Alpha Rhythm Inner Circle")]
+        [NPCGroup("Elder Preserve Beasts")]
         Dathomir_AlphaRhythm_InnerCircle = 250,
-        [NPCGroup("Alpha Rhythm Master")]
+        [NPCGroup("Old Iriaz Bull")]
         Dathomir_AlphaRhythm_Master = 251,
-        [NPCGroup("Primal Overrun Adepts")]
+        [NPCGroup("Young Grotto Beasts")]
         Dathomir_PrimalOverrun_Adept = 252,
-        [NPCGroup("Primal Overrun Specialists")]
+        [NPCGroup("Goad-Scarred Grotto Beasts")]
         Dathomir_PrimalOverrun_Specialist = 253,
-        [NPCGroup("Primal Overrun Warden")]
+        [NPCGroup("Handler's Rancor")]
         Dathomir_PrimalOverrun_Warden = 254,
-        [NPCGroup("Primal Overrun Inner Circle")]
+        [NPCGroup("Den Elder Grotto Beasts")]
         Dathomir_PrimalOverrun_InnerCircle = 255,
-        [NPCGroup("Primal Overrun Master")]
+        [NPCGroup("Old Rancor")]
         Dathomir_PrimalOverrun_Master = 256,
-        [NPCGroup("Untouchable Instinct Adepts")]
+        [NPCGroup("Young Grotto Beasts")]
         Dathomir_UntouchableInstinct_Adept = 257,
-        [NPCGroup("Untouchable Instinct Specialists")]
+        [NPCGroup("Goad-Scarred Grotto Beasts")]
         Dathomir_UntouchableInstinct_Specialist = 258,
-        [NPCGroup("Untouchable Instinct Warden")]
+        [NPCGroup("Handler's Giant Brown Lizard")]
         Dathomir_UntouchableInstinct_Warden = 259,
-        [NPCGroup("Untouchable Instinct Inner Circle")]
+        [NPCGroup("Den Elder Grotto Beasts")]
         Dathomir_UntouchableInstinct_InnerCircle = 260,
-        [NPCGroup("Untouchable Instinct Master")]
+        [NPCGroup("Old Giant Brown Lizard")]
         Dathomir_UntouchableInstinct_Master = 261,
-        [NPCGroup("Force-Bonded Beast Adepts")]
+        [NPCGroup("Young Grotto Beasts")]
         Dathomir_ForceBondedBeast_Adept = 262,
-        [NPCGroup("Force-Bonded Beast Specialists")]
+        [NPCGroup("Goad-Scarred Grotto Beasts")]
         Dathomir_ForceBondedBeast_Specialist = 263,
-        [NPCGroup("Force-Bonded Beast Warden")]
+        [NPCGroup("Handler's Wraid")]
         Dathomir_ForceBondedBeast_Warden = 264,
-        [NPCGroup("Force-Bonded Beast Inner Circle")]
+        [NPCGroup("Den Elder Grotto Beasts")]
         Dathomir_ForceBondedBeast_InnerCircle = 265,
-        [NPCGroup("Force-Bonded Beast Master")]
+        [NPCGroup("Old Wraid")]
         Dathomir_ForceBondedBeast_Master = 266,
 
         // Retain the historical groups above for persisted enum keys and migration.
-        [NPCGroup("Storm Drill Droid")]
+        [NPCGroup("Trial Drill Droids")]
         Hutlar_StormDrillDroid = 267,
-        [NPCGroup("Storm Duelist Droid")]
+        [NPCGroup("Trial Duelist Droids")]
         Hutlar_StormDuelistDroid = 268,
-        [NPCGroup("Storm Gatekeeper Droid")]
+        [NPCGroup("Trial Gatekeeper Droid")]
         Hutlar_StormGatekeeperDroid = 269,
-        [NPCGroup("Storm Examiner Droid")]
+        [NPCGroup("Trial Examiner Droids")]
         Hutlar_StormExaminerDroid = 270,
         [NPCGroup("Tempest Training Engine")]
         Hutlar_TempestTrainingEngine = 271,
-        [NPCGroup("Guardian Patrol Droid")]
+        [NPCGroup("Trial Drill Droids")]
         Hutlar_GuardianPatrolDroid = 272,
-        [NPCGroup("Guardian Bulwark Droid")]
+        [NPCGroup("Trial Duelist Droids")]
         Hutlar_GuardianBulwarkDroid = 273,
-        [NPCGroup("Guardian Gatekeeper Droid")]
+        [NPCGroup("Trial Gatekeeper Droid")]
         Hutlar_GuardianGatekeeperDroid = 274,
-        [NPCGroup("Guardian Shield Droid")]
+        [NPCGroup("Trial Examiner Droids")]
         Hutlar_GuardianShieldDroid = 275,
         [NPCGroup("Bastion Training Engine")]
         Hutlar_BastionTrainingEngine = 276,
-        [NPCGroup("Cyclone Drill Droid")]
+        [NPCGroup("Trial Drill Droids")]
         Hutlar_CycloneDrillDroid = 277,
-        [NPCGroup("Cyclone Duelist Droid")]
+        [NPCGroup("Trial Duelist Droids")]
         Hutlar_CycloneDuelistDroid = 278,
-        [NPCGroup("Cyclone Gatekeeper Droid")]
+        [NPCGroup("Trial Gatekeeper Droid")]
         Hutlar_CycloneGatekeeperDroid = 279,
-        [NPCGroup("Cyclone Examiner Droid")]
+        [NPCGroup("Trial Examiner Droids")]
         Hutlar_CycloneExaminerDroid = 280,
         [NPCGroup("Vortex Training Engine")]
         Hutlar_VortexTrainingEngine = 281,
-        [NPCGroup("Crypt Raider")]
+        [NPCGroup("Expedition Raiders")]
         MonCala_CryptRaider = 282,
-        [NPCGroup("Crypt Marauder")]
+        [NPCGroup("Expedition Marauders")]
         MonCala_CryptMarauder = 283,
-        [NPCGroup("Crypt Breach Captain")]
+        [NPCGroup("Expedition Captain Rhaan Tolek")]
         MonCala_CryptBreachCaptain = 284,
-        [NPCGroup("Crypt Reaver")]
+        [NPCGroup("Expedition Reavers")]
         MonCala_CryptReaver = 285,
-        [NPCGroup("Crypt Expedition Leader")]
+        [NPCGroup("Expedition Leader Kaelen Dorr")]
         MonCala_CryptExpeditionLeader = 286,
-        [NPCGroup("Vitae Reaver Initiate")]
+        [NPCGroup("Expedition Raiders")]
         MonCala_VitaeReaverInitiate = 287,
-        [NPCGroup("Vitae Reaver Adept")]
+        [NPCGroup("Expedition Marauders")]
         MonCala_VitaeReaverAdept = 288,
-        [NPCGroup("Vitae Reaver Enforcer")]
+        [NPCGroup("Expedition Captain Zarrik Thane")]
         MonCala_VitaeReaverEnforcer = 289,
-        [NPCGroup("Vitae Reaver Binder")]
+        [NPCGroup("Expedition Reavers")]
         MonCala_VitaeReaverBinder = 290,
-        [NPCGroup("Vitae Reaver Chief")]
+        [NPCGroup("Expedition Leader Mordek Sull")]
         MonCala_VitaeReaverChief = 291,
-        [NPCGroup("Umbral Raider Scout")]
+        [NPCGroup("Expedition Raiders")]
         MonCala_UmbralRaiderScout = 292,
-        [NPCGroup("Umbral Raider Adept")]
+        [NPCGroup("Expedition Marauders")]
         MonCala_UmbralRaiderAdept = 293,
-        [NPCGroup("Umbral Raider Captain")]
+        [NPCGroup("Expedition Captain Tavik Orrun")]
         MonCala_UmbralRaiderCaptain = 294,
-        [NPCGroup("Umbral Raider Saboteur")]
+        [NPCGroup("Expedition Reavers")]
         MonCala_UmbralRaiderSaboteur = 295,
-        [NPCGroup("Umbral Raider Commander")]
+        [NPCGroup("Expedition Leader Lorrek Syn")]
         MonCala_UmbralRaiderCommander = 296,
         [NPCGroup("Foundry Droid")]
         Hutlar_FoundryDroid = 297,

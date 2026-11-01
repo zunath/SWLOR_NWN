@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian in stained work clothes, sleeves pushed up past injector bruises on both arms. He moves too fast and too steadily for someone who should be in pain, a blaster pistol in one hand and a loaded syringe in the other."
+      "0": "A Rodian ward orderly in stained work clothes, sleeves pushed up past injector bruises on both arms. He moves too fast and too steadily for someone who should be in pain, a blaster pistol in one hand and a loaded syringe in the other."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Cocktail Adept"
+      "0": "Ward Orderly"
     }
   },
   "fortbonus": {

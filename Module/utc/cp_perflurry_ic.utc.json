@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human woman in a close-fitted dark outfit, throwing blades ready in her hand. She is one of the four producers who turned a stolen performance into a weapons trial, and she keeps to the control block, where the site chief's override still answers to them."
+      "0": "A human woman in a close-fitted dark outfit, throwing blades ready in her hand. She is one of the site chief's four officers, the producers who turned a stolen performance into a weapons trial, and she keeps to the control block, where the site chief's override still answers to them."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Perfect Flurry Inner Circle"
+      "0": "Site Chief's Officer"
     }
   },
   "fortbonus": {

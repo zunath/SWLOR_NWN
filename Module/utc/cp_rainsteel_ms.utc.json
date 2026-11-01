@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak in worn combat armor, throwing blades leaving his hand faster than the eye can count. He quartermastered this range before Czerka pulled out and stayed behind with the stock, and from the Blast-Safe Cell he still holds Rain of Steel whole, his hand never empty."
+      "0": "A Zabrak range director in worn combat armor, throwing blades leaving his hand faster than the eye can count. He quartermastered this range before Czerka pulled out and stayed behind with the stock, and from the Blast-Safe Cell he still holds the range, his hand never empty."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rain of Steel Master"
+      "0": "Range Director Daav Rhoun"
     }
   },
   "fortbonus": {

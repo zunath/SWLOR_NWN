@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Cathar smith-guard in scorched Sith trooper armor, one of the newest sworn to the dark oath of the hidden forge. He holds his heavy vibroblade low and square across his body, a wall he has not yet learned to carry."
+      "0": "A Cathar initiate of the Forgebound in scorched Sith trooper armor, one of the newest sworn to the dark oath of the hidden forge. He holds his heavy vibroblade low and square across his body, a wall he has not yet learned to carry."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Absolute Defense Adept"
+      "0": "Forgebound Initiate"
     }
   },
   "fortbonus": {

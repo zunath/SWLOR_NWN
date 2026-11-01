@@ -284,7 +284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's a card, face-down. Yours the day you earn a look at it. Now the game. Out past town, somebody's dealing my hand in that canyon range: my old table, my marked deck, and six eager adepts learning to shoot like me and cheat like them. Fold all six and bring me the Dead Man's Hand Canyon Range Tally they keep count on. I like an honest pot.",
+          "Text": "Here's a card, face-down. Yours the day you earn a look at it. Now the game. Out past town, somebody's dealing my hand in that canyon range: my old table, my marked deck, and six Canyon Drifters learning to shoot like me and cheat like them, holding the rooms nearest the entrance. Any Canyon Drifter counts, but only if you fold him with Quick Draw, Double Shot or Fan the Hammer; any other kill isn't my game. Fold all six and bring me the Dead Man's Hand Canyon Range Tally they keep count on. I like an honest pot.",
           "Style": 0,
           "Color": null
         }
@@ -399,7 +399,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts holding low pairs and betting like aces. They'll crowd you, all smiles and spread fingers. Smile back. Then take the pot one hand at a time.",
+          "Text": "Six Canyon Drifters holding low pairs and betting like aces. They'll crowd you, all smiles and spread fingers. Smile back. Then take the pot one hand at a time.",
           "Style": 0,
           "Color": null
         }
@@ -425,7 +425,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts, one tally, and the pot's still sitting in the canyon. Hands don't fold themselves, friend.",
+          "Text": "Six Canyon Drifters, one tally, and the pot's still sitting in the canyon. Hands don't fold themselves, friend.",
           "Style": 0,
           "Color": null
         }
@@ -493,7 +493,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The adepts were the ante. Now the sharps: five specialists who turned my sightline calibrator into a stacked deck. Long lanes, patient triggers, every angle pre-dealt. Bust all five and bring me the Dead Man's Hand Sightline Calibrator before they mark the whole canyon.",
+          "Text": "The Drifters were the ante. Now the sharps: five Canyon Sharpshooters, deeper in, who turned my sightline calibrator into a stacked deck. Long lanes, patient triggers, every angle pre-dealt. Any Sharpshooter counts, but bust each one with Quick Draw, Double Shot or Fan the Hammer. Bust five and bring me the Dead Man's Hand Sightline Calibrator before they mark the whole canyon.",
           "Style": 0,
           "Color": null
         }
@@ -702,7 +702,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the house man. The warden keeps the trial altar on the east side of the range, wears the house crest, and decides who sits and who pays. Best hand at that table and he knows it, which is his tell. Break him and bring me the Dead Man's Hand Shattered Range Crest. One rule from me, house law: stake two friends and sit down as three. The house folds to a full hand. It eats a lone ace.",
+          "Text": "Now the house man. Warden Silas Crowe keeps the trial altar on the east side of the range, wears the house crest, and decides who sits and who pays. Best hand at that table and he knows it, which is his tell. Break him and bring me the Dead Man's Hand Shattered Range Crest. One rule from me, house law: stake two friends and sit down as three. The house folds to a full hand. It eats a lone ace.",
           "Style": 0,
           "Color": null
         }
@@ -911,7 +911,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left at the high table: the inner circle. They bank the whole operation, and they hold a marshal's challenge chit, the old kind, the kind that buys a seat across from the man who runs it all. Clear all four chairs and bring me the Dead Man's Hand Marshal's Challenge Chit. It's the buy-in for the last game.",
+          "Text": "Four left at the high table: the High Table Guns, the inner circle, holding the deepest part of the range. They bank the whole operation, and they hold a marshal's challenge chit, the old kind, the kind that buys a seat across from the man who runs it all. Clear four chairs, any High Table Gun, each one with Quick Draw, Double Shot or Fan the Hammer, and bring me the Dead Man's Hand Marshal's Challenge Chit. It's the buy-in for the last game.",
           "Style": 0,
           "Color": null
         }
@@ -1120,7 +1120,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Challenge posted, challenge answered. Now the truth, friend. The man up there holds the real Dead Man's Hand: the draw that comes after he's beaten. I dealt it to him myself, and he has never lost with it. He'll be in the Canyon Dueling Pit, through the door at the north end of the range. Go take it from him. And hear me plain: nobody plays the master one on one and cashes out. Bring your two. Full hand or no hand.",
+          "Text": "Challenge posted, challenge answered. Now the truth, friend. Jonas Harlan, the master up there, holds the real Dead Man's Hand: the draw that comes after he's beaten. I dealt it to him myself, and he has never lost with it. He'll be in the Canyon Dueling Pit, through the door at the north end of the range. Go take it from him. And hear me plain: nobody plays the master one on one and cashes out. Bring your two. Full hand or no hand.",
           "Style": 0,
           "Color": null
         }
@@ -1732,7 +1732,7 @@
     "reply-00004": {
       "Id": "reply-00004",
       "Text": {
-        "Text": "What are the adepts holding?",
+        "Text": "What are the Drifters holding?",
         "Style": 4,
         "Color": null
       },
@@ -1902,7 +1902,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "How do the specialists play?",
+        "Text": "How do the Sharpshooters play?",
         "Style": 4,
         "Color": null
       },

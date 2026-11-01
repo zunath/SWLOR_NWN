@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Anchor, a Bothan who held this sublevel through an outbreak year and never stopped holding it. He stands in the Protected Ward in heavy armor, vibroblade ready, as immovable as the bulkheads around him."
+      "0": "The Anchor, a Bothan ward chief who held this sublevel through an outbreak year and never stopped holding it. He stands in the Protected Ward in heavy armor, vibroblade ready, as immovable as the bulkheads around him."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hold the Line Master"
+      "0": "Ward Chief Anchor"
     }
   },
   "fortbonus": {

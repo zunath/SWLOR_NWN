@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Cathar junior officer in Republic soldier armor, blaster pistol drawn and posture parade-perfect. He serves in the mutinous garrison that sealed the abandoned bunker, and he obeys Halden Rhee's orders before they are finished."
+      "0": "A Cathar deserter sapper, a junior officer in Republic soldier armor, blaster pistol drawn and posture parade-perfect. He serves in the garrison of deserters that sealed the abandoned bunker, and he obeys Halden Rhee's orders before they are finished."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Decisive Command Adept"
+      "0": "Deserter Sapper"
     }
   },
   "fortbonus": {

@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Bothan chemist whose pockets clink with vials he mixes without looking. He holds the Protected Ward as calmly as a doctor on his rounds, blaster pistol in hand, and drinks his own work whenever a wound should have ended him."
+      "0": "A Bothan ward chief and chemist whose pockets clink with vials he mixes without looking. He holds the Protected Ward as calmly as a doctor on his rounds, blaster pistol in hand, and drinks his own work whenever a wound should have ended him."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Cocktail Master"
+      "0": "Ward Chief Koth Davin"
     }
   },
   "fortbonus": {

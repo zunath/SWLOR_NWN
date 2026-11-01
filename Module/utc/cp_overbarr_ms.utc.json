@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in bounty hunter's armor, blaster pistol held ready in the Overload Chamber at the far end of the Qion Test Site. He carries an engineer's original charge tables, handed to him by someone the engineer trusted, and fires barrages exactly as they were first drawn, with no stagger and none of the safeties added later."
+      "0": "A human site chief in bounty hunter's armor, blaster pistol held ready in the Overload Chamber at the far end of the Qion Test Site. He carries an engineer's original charge tables, handed to him by someone the engineer trusted, and fires volleys exactly as they were first drawn, with no stagger and none of the safeties added later."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Overload Barrage Master"
+      "0": "Site Chief Ansel Pryor"
     }
   },
   "fortbonus": {

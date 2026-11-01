@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human knife fighter in armored garb who has had the adepts' mistakes beaten out of him and now refines the cadre's work deeper in the annex. He tests an opponent's guard before his grip, and his vibroknife is aimed at the arteries."
+      "0": "A human knife fighter in armored garb, a holdout sergeant who has had the recruits' mistakes beaten out of him and now refines the cadre's work deeper in the annex. He tests an opponent's guard before his grip, and his vibroknife is aimed at the arteries."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viral Cascade Specialist"
+      "0": "Holdout Sergeant"
     }
   },
   "fortbonus": {

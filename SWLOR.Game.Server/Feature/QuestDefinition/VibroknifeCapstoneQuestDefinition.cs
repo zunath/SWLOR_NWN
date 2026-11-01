@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Begin Mikka Varn's trials to unlock Viral Cascade. Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Viral Cascade adepts and secure the Viral Cascade Veles Drill Ledger.")
-                .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Adept, 6)
+                    "Begin Mikka Varn's trials to unlock Viral Cascade. Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Holdout Recruits, the Annex Holdouts who hold the rooms nearest the entrance, and secure the Viral Cascade Veles Drill Ledger. Any Holdout Recruit counts, but a kill only counts while your venom festers in them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_VitalRupture_Adept, "viral_cascade", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureVelesDrillLedger)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Viral Cascade specialists deeper in the Veles Militia Annex on Viscara and secure the Viral Cascade Militia Range Relay.")
-                .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Specialist, 5)
+                    "Defeat five Holdout Sergeants, the Annex Holdouts who hold the deeper rooms of the Veles Militia Annex on Viscara, and secure the Viral Cascade Militia Range Relay. Any Holdout Sergeant counts, but a kill only counts while your venom festers in them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_VitalRupture_Specialist, "viral_cascade", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureMilitiaRangeRelay)
 
                 .AddState()
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Viral Cascade warden in the Veles Militia Annex on Viscara and secure the Viral Cascade Scored Challenge Badge.")
+                    "Defeat Holdout Lieutenant Korvan Tull in the Veles Militia Annex on Viscara and secure the Viral Cascade Scored Challenge Badge.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureScoredChallengeBadge)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Viral Cascade warden is defeated and the Viral Cascade Scored Challenge Badge is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
+                    "Holdout Lieutenant Korvan Tull is defeated and the Viral Cascade Scored Challenge Badge is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Viral Cascade inner circle in the Veles Militia Annex on Viscara and secure the Viral Cascade Captain's Challenge Chit.")
-                .AddKillObjective(NPCGroupType.Viscara_VitalRupture_InnerCircle, 4)
+                    "Defeat four Holdout Honor Guards, the Annex Holdouts who guard the deepest part of the Veles Militia Annex on Viscara, and secure the Viral Cascade Captain's Challenge Chit. Any Holdout Honor Guard counts, but a kill only counts while your venom festers in them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_VitalRupture_InnerCircle, "viral_cascade", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureCaptainsChallengeChit)
 
                 .AddState()
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Viral Cascade master in the Veles Militia Annex on Viscara.")
+                    "Defeat Holdout Captain Marek Dolan in the Veles Militia Annex on Viscara.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Viral Cascade master is defeated. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
+                    "Holdout Captain Marek Dolan is defeated. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Dalen Orso gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Bring down six Systemic Shutdown adepts and recover the Systemic Shutdown Veles Drill Ledger.")
-                .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Adept, 6)
+                    "Dalen Orso gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Bring down six Holdout Recruits, the Annex Holdouts who hold the rooms nearest the entrance, and recover the Systemic Shutdown Veles Drill Ledger. Any Holdout Recruit counts, but a kill only counts after exposing them with Crippling Slice or dropping them with Backstab.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_SystemicShutdown_Adept, "systemic_shutdown", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownVelesDrillLedger)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring down five Systemic Shutdown specialists deeper in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Militia Range Relay.")
-                .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Specialist, 5)
+                    "Bring down five Holdout Sergeants, the Annex Holdouts who hold the deeper rooms of the Veles Militia Annex on Viscara, and recover the Systemic Shutdown Militia Range Relay. Any Holdout Sergeant counts, but a kill only counts after exposing them with Crippling Slice or dropping them with Backstab.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_SystemicShutdown_Specialist, "systemic_shutdown", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownMilitiaRangeRelay)
 
                 .AddState()
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring down the Systemic Shutdown warden in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Scored Challenge Badge.")
+                    "Bring down Holdout Lieutenant Vessik Rane in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Scored Challenge Badge.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownScoredChallengeBadge)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown warden is down and the Systemic Shutdown Scored Challenge Badge has been recovered. Deliver it to Dalen Orso in the Czerka Tower in Veles on Viscara.")
+                    "Holdout Lieutenant Vessik Rane is down and the Systemic Shutdown Scored Challenge Badge has been recovered. Deliver it to Dalen Orso in the Czerka Tower in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring down the four members of the Systemic Shutdown inner circle in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Captain's Challenge Chit.")
-                .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_InnerCircle, 4)
+                    "Bring down four Holdout Honor Guards, the Annex Holdouts who guard the deepest part of the Veles Militia Annex on Viscara, and recover the Systemic Shutdown Captain's Challenge Chit. Any Holdout Honor Guard counts, but a kill only counts after exposing them with Crippling Slice or dropping them with Backstab.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_SystemicShutdown_InnerCircle, "systemic_shutdown", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownCaptainsChallengeChit)
 
                 .AddState()
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring down the Systemic Shutdown master in the Veles Militia Annex on Viscara.")
+                    "Bring down Holdout Captain Jorrik Vael in the Veles Militia Annex on Viscara.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown master is down. Report back to Dalen Orso in the Czerka Tower in Veles on Viscara.")
+                    "Holdout Captain Jorrik Vael is down. Report back to Dalen Orso in the Czerka Tower in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

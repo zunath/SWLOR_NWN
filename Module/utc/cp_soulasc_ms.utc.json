@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human swordsman in a temple master's armor, once a congregation's first witness and now swollen with everything his blade has ever drunk. He waits in the Champion Forge, calm and courteous, and takes back every stroke he gives."
+      "0": "A human swordsman in a temple master's armor, once the congregation's first witness and now its forge master, swollen with everything his blade has ever drunk. He waits in the Champion Forge, calm and courteous, and takes back every stroke he gives."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Soul Ascension Master"
+      "0": "Forge Master Orsen Vale"
     }
   },
   "fortbonus": {

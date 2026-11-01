@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Trandoshan in militia drill fatigues, vibroblade held low in a guard he has drilled every day since the Veles Militia Annex was sealed with him inside. He either washed out of Captain Renn's program or refused to leave it, and he holds the drill floor with an old, angry discipline."
+      "0": "A Trandoshan recruit in militia drill fatigues, vibroblade held low in a guard he has drilled every day since the Veles Militia Annex was sealed with him inside. He either washed out of Captain Renn's program or refused to leave it, and he holds the drill floor with an old, angry discipline."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Invincible Adept"
+      "0": "Holdout Recruit"
     }
   },
   "fortbonus": {

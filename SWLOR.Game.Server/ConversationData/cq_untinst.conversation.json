@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You stopped when I said stop. Good ear, or good luck. The Grotto Apex Den is crawling with crystal spiders. Handlers bred them there years back to strike from cover. Handlers are gone. Spiders aren't. The young ones hunt in noise, six together, loud enough to hide each other's legs. Go into the den on Dathomir. Put the six down. Bring back the Untouchable Instinct Grotto Track Slate from their webs.",
+          "Text": "You stopped when I said stop. Good ear, or good luck. The Grotto Apex Den is crawling with crystal spiders. Handlers bred them there years back to strike from cover. Handlers are gone. Spiders aren't. The Young Crystal Spiders hunt in noise, six together, loud enough to hide each other's legs. They hold the chambers nearest the way in. Go into the den on Dathomir. Put the six down. Any Young Crystal Spider will do, they're all the same brood. But it only counts if your beast did it, with Assault or a Distracting Feint. Kills your beast never touched teach you nothing. Bring back the Untouchable Instinct Grotto Track Slate from their webs.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six young spiders. One slate. Still out there.",
+          "Text": "Six Young Crystal Spiders, by your beast's Assault or Distracting Feint. One slate. Still out there.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The older spiders don't hunt loud. They wait in the crystal. Long enough to make you think the den's gone empty, then close from every side at once. Go back into the Grotto Apex Den. Put five down. Bring me the Untouchable Instinct Resonant Fang Charm. The handlers strung it on one of them. Still there.",
+          "Text": "The Goad-Scarred Crystal Spiders, the older ones deeper in, don't hunt loud. They wait in the crystal. Long enough to make you think the den's gone empty, then close from every side at once. Go back into the Grotto Apex Den. Put five down, with your beast's Assault or Distracting Feint on each; any Goad-Scarred Crystal Spider counts. Bring me the Untouchable Instinct Resonant Fang Charm. The handlers strung it on one of them. Still there.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five old spiders, still circling something. Bring the charm when they're not.",
+          "Text": "Five Goad-Scarred Crystal Spiders, still circling something. Bring the charm when they're not.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There's a warden past the spiders. Giant lizard, brown as the cave floor. Fast. Never where your strike lands, never where you expect the next one either. One blade against that just tires chasing air. Bring two who read ground the way you're learning to, spread out, cut his angles down to none. Put him down. Bring me the Untouchable Instinct Cracked Apex Totem off his harness.",
+          "Text": "Past the spiders is Handler's Giant Brown Lizard. Brown as the cave floor. Fast. Never where your strike lands, never where you expect the next one either. One blade against that just tires chasing air. Bring two who read ground the way you're learning to, spread out, cut his angles down to none. Put him down. Bring me the Untouchable Instinct Cracked Apex Totem off his harness.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's still out there, still too fast for one. Bring your two.",
+          "Text": "Handler's Giant Brown Lizard is still out there, still too fast for one. Bring your two.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. Readable again. First honest blow this den's taken in longer than I've tracked. The inner circle will have felt the ground shift.",
+          "Text": "Whole. Readable again. First honest blow this den's taken in longer than I've tracked. The Den Elder Crystal Spiders will have felt the ground shift.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left, the inner circle. Oldest spiders in the den, the first the handlers bred. They hunt in a ring, always moving, always covering each other's gaps. Bring your two back in; four of them moving is worse than one lizard. Put all four down. Bring me the Untouchable Instinct Den-Mother's Fang Token from their nest.",
+          "Text": "Four left, the Den Elder Crystal Spiders. Oldest spiders in the den, the first the handlers bred, in the deepest part of it. They hunt in a ring, always moving, always covering each other's gaps. Bring your two back in; four of them moving is worse than one lizard. Put all four down, with your beast's Assault or Distracting Feint on each; any Den Elder Crystal Spider counts. Bring me the Untouchable Instinct Den-Mother's Fang Token from their nest.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. The ring's gone quiet for the first time since I started tracking it. One beast left, and it's the one the warden learned from. You're close now.",
+          "Text": "Whole. The ring's gone quiet for the first time since I started tracking it. One beast left, and it's the one Handler's Giant Brown Lizard learned from. You're close now.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last one. The master. The warden's sire, older, bigger, faster. Doesn't run like the ring and doesn't wait like the warden; he does both, faster than either. What you're chasing all this way, moving before thought, he already has, whole. Bring your two. Alone, you're just another set of footsteps he heard coming long before you got there. Nothing to carry back for this one. Him going still is the proof.",
+          "Text": "Last one. Old Giant Brown Lizard, sire of Handler's Giant Brown Lizard, older, bigger, faster. Doesn't run like the ring and doesn't wait like his son; he does both, faster than either. What you're chasing all this way, moving before thought, he already has, whole. Bring your two. Alone, you're just another set of footsteps he heard coming long before you got there. Nothing to carry back for this one. Him going still is the proof.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ring runs. The warden waits and strikes. He does both at once and never stops doing either. That's the whole instinct, mastered and turned wrong: never still, never late, never where the ground says he should be. You've been building the same thing with your beast. He's just further along it, and pointed the wrong way.",
+          "Text": "The ring runs. Handler's Giant Brown Lizard waits and strikes. Old Giant Brown Lizard does both at once and never stops doing either. That's the whole instinct, mastered and turned wrong: never still, never late, never where the ground says he should be. You've been building the same thing with your beast. He's just further along it, and pointed the wrong way.",
           "Style": 0,
           "Color": null
         }
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring two and take the warden.",
+        "Text": "I'll bring two and take Handler's Giant Brown Lizard.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "We're going in for the master.",
+        "Text": "We're going in for Old Giant Brown Lizard.",
         "Style": 4,
         "Color": null
       },
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "What makes him different from the ring and the warden?",
+        "Text": "What makes him different from the Den Elders and Handler's Lizard?",
         "Style": 4,
         "Color": null
       },

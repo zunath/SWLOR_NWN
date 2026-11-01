@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught in rugged work clothes, staff braced, one of four who fight in tight formation on the crane deck above the drill pit. Like redundant beams under a load, each covers the others' angles, and their blows land together with a weight none of them could manage alone."
+      "0": "An Ugnaught in rugged work clothes, staff braced, one of the foreman's four hands, who fight in tight formation on the crane deck above the drill pit. Like redundant beams under a load, each covers the others' angles, and their blows land together with a weight none of them could manage alone."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Worldbreaker Inner Circle"
+      "0": "Foreman's Hand"
     }
   },
   "fortbonus": {

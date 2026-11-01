@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -137,6 +138,12 @@ namespace SWLOR.Game.Server.Service.QuestService
             Group = group;
             Amount = amount;
         }
+
+        /// <summary>Every NPC group whose kills this objective counts. Progress is always kept under <see cref="Group"/>.</summary>
+        public virtual IReadOnlyCollection<NPCGroupType> CreditedGroups => new[] { Group };
+
+        /// <summary>Whether this kill counts for this party member, beyond belonging to a credited group.</summary>
+        public virtual bool CountsKill(uint player, uint creature) => true;
 
         public void Initialize(uint player, string questId)
         {

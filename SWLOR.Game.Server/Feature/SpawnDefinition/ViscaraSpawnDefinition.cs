@@ -526,7 +526,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX", "Veles Militia Annex - Capstone Adepts")
+            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX", "Veles Militia Annex - Holdout Recruit (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_invinc_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -542,7 +542,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX_DEEP", "Veles Militia Annex - Capstone Specialists")
+            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX_DEEP", "Veles Militia Annex - Holdout Sergeant (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_invinc_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -560,17 +560,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_INVINC_IC_SPAWN", "Veles Militia Annex - Invincible Inner Circle")
+            _builder.Create("CAPSTONE_INVINC_IC_SPAWN", "Veles Militia Annex - Holdout Honor Guard (Invincible line)")
                 .AddSpawn(ObjectType.Creature, "cp_invinc_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_VITRUPT_IC_SPAWN", "Veles Militia Annex - Viral Cascade Inner Circle")
+            _builder.Create("CAPSTONE_VITRUPT_IC_SPAWN", "Veles Militia Annex - Holdout Honor Guard (Viral Cascade line)")
                 .AddSpawn(ObjectType.Creature, "cp_vitrupt_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_SYSSHUT_IC_SPAWN", "Veles Militia Annex - Systemic Shutdown Inner Circle")
+            _builder.Create("CAPSTONE_SYSSHUT_IC_SPAWN", "Veles Militia Annex - Holdout Honor Guard (Systemic Shutdown line)")
                 .AddSpawn(ObjectType.Creature, "cp_sysshut_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
@@ -580,7 +580,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER", "Viscara Republic Engineering Bunker - Capstone Adepts")
+            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER", "Viscara Republic Engineering Bunker - Deserter Sapper (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_killbeacon_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -596,7 +596,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP", "Viscara Republic Engineering Bunker - Capstone Specialists")
+            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP", "Viscara Republic Engineering Bunker - Deserter Engineer (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_killbeacon_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -614,17 +614,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_KILLBEACON_IC_SPAWN", "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle")
+            _builder.Create("CAPSTONE_KILLBEACON_IC_SPAWN", "Viscara Republic Engineering Bunker - Quartermaster's Guard (Killzone Beacon line)")
                 .AddSpawn(ObjectType.Creature, "cp_killbeacon_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_EMBUNKER_IC_SPAWN", "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle")
+            _builder.Create("CAPSTONE_EMBUNKER_IC_SPAWN", "Viscara Republic Engineering Bunker - Quartermaster's Guard (Emergency Bunker line)")
                 .AddSpawn(ObjectType.Creature, "cp_embunker_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_DECCOMMAND_IC_SPAWN", "Viscara Republic Engineering Bunker - Decisive Command Inner Circle")
+            _builder.Create("CAPSTONE_DECCOMMAND_IC_SPAWN", "Viscara Republic Engineering Bunker - Quartermaster's Guard (Decisive Command line)")
                 .AddSpawn(ObjectType.Creature, "cp_deccommand_ic")
                 .WithFrequency(1)
                 .ReturnsHome();

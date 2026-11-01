@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Halden Rhee, a human man in a Republic commander's uniform, was once a trusted adjutant and is now master of the bunker he refused to decommission. He carries a blaster pistol, but the garrison moves the instant he speaks, and that voice is the weapon to fear."
+      "0": "Halden Rhee, a human man in a Republic commander's uniform, was once a trusted adjutant and is now commander of the deserters in the bunker he refused to decommission. He carries a blaster pistol, but the garrison moves the instant he speaks, and that voice is the weapon to fear."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Decisive Command Master"
+      "0": "Deserter Commander Halden Rhee"
     }
   },
   "fortbonus": {

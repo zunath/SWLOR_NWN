@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE", "Dathomir Tarn Jungle Preserve - Capstone Adepts")
+            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE", "Dathomir Tarn Jungle Preserve - Young Scaled Brute (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_apexbite_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP", "Dathomir Tarn Jungle Preserve - Capstone Specialists")
+            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP", "Dathomir Tarn Jungle Preserve - Pen-Scarred Scaled Brute (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_apexbite_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -298,17 +298,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_APEXBITE_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Apex Bite Inner Circle")
+            _builder.Create("CAPSTONE_APEXBITE_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Elder Scaled Brute (Apex Bite line)")
                 .AddSpawn(ObjectType.Creature, "cp_apexbite_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_UNBRBEAST_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Unbreakable Beast Inner Circle")
+            _builder.Create("CAPSTONE_UNBRBEAST_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Elder Plated Burrower (Unbreakable Beast line)")
                 .AddSpawn(ObjectType.Creature, "cp_unbrbeast_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_ALPHARHY_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle")
+            _builder.Create("CAPSTONE_ALPHARHY_IC_SPAWN", "Dathomir Tarn Jungle Preserve - Elder Kinrath (Alpha Rhythm line)")
                 .AddSpawn(ObjectType.Creature, "cp_alpharhy_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN", "Dathomir Grotto Apex Den - Capstone Adepts")
+            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN", "Dathomir Grotto Apex Den - Young Shell-Back (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_primover_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP", "Dathomir Grotto Apex Den - Capstone Specialists")
+            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP", "Dathomir Grotto Apex Den - Goad-Scarred Shell-Back (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_primover_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -352,17 +352,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_PRIMOVER_IC_SPAWN", "Dathomir Grotto Apex Den - Primal Overrun Inner Circle")
+            _builder.Create("CAPSTONE_PRIMOVER_IC_SPAWN", "Dathomir Grotto Apex Den - Den Elder Shell-Back (Primal Overrun line)")
                 .AddSpawn(ObjectType.Creature, "cp_primover_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_UNTINST_IC_SPAWN", "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle")
+            _builder.Create("CAPSTONE_UNTINST_IC_SPAWN", "Dathomir Grotto Apex Den - Den Elder Crystal Spider (Untouchable Instinct line)")
                 .AddSpawn(ObjectType.Creature, "cp_untinst_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_FORCEBEAST_IC_SPAWN", "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle")
+            _builder.Create("CAPSTONE_FORCEBEAST_IC_SPAWN", "Dathomir Grotto Apex Den - Den Elder Wyvern (Force-Bonded Beast line)")
                 .AddSpawn(ObjectType.Creature, "cp_forcebeast_ic")
                 .WithFrequency(1)
                 .ReturnsHome();

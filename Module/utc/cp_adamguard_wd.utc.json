@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A hulking Trandoshan in plating scavenged from scrapped droids, katars strapped over his clawed fists. The sigil plate of the sheared bay, a bay dead for twenty years, hangs at his shoulder like a badge. He reads a fight the way a wrecker reads a hull, finds the load point, and plants himself beneath it."
+      "0": "A hulking Trandoshan crew chief in plating scavenged from scrapped droids, katars strapped over his clawed fists. The sigil plate of the sheared bay, a bay dead for twenty years, hangs at his shoulder like a badge. He reads a fight the way a wrecker reads a hull, finds the load point, and plants himself beneath it."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Adamantine Guard Warden"
+      "0": "Crew Chief Rakkesh"
     }
   },
   "fortbonus": {

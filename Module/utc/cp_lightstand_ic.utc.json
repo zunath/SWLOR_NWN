@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the expedition's senior Wookiee fighters, bound to it by pay or by debt. Crypt Reavers guard the way to the deepest vaults of the Sith Crypt Depths and turn a narrow tunnel into a wall with their staffs."
+      "0": "One of the expedition's senior Wookiee reavers, bound to it by pay or by debt. They guard the way to the deepest vaults of the Sith Crypt Depths and turn a narrow tunnel into a wall with their staffs."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crypt Reaver"
+      "0": "Expedition Reaver"
     }
   },
   "fortbonus": {

@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The oldest shyrack in the preserve, broad-winged and seamed with scars that never seem to slow him. He sired the shyrack that keeps the deep pens, and the pit-breeders hardened the endurance the Unbreakable Beast tradition teaches into something in him that will not break."
+      "0": "The oldest shyrack in the preserve, broad-winged and seamed with scars that never seem to slow him. He sired the shyrack that keeps the deep pens, and the pit-breeders beat an endurance into him that will not break."
     }
   },
   "Dex": {
@@ -175,7 +175,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unbreakable Beast Master"
+      "0": "Old Shyrack"
     }
   },
   "fortbonus": {

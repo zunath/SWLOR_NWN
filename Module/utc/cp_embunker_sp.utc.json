@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human specialist in Republic soldier armor, his gloves blackened from splicing power lines into the bunker's load-bearing supports. He carries a blaster pistol and knows exactly which cable would bring the ceiling down."
+      "0": "A human deserter engineer in Republic soldier armor, his gloves blackened from splicing power lines into the bunker's load-bearing supports. He carries a blaster pistol and knows exactly which cable would bring the ceiling down."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Bunker Specialist"
+      "0": "Deserter Engineer"
     }
   },
   "fortbonus": {

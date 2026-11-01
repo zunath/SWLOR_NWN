@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak of the promoter's inner circle, once one of Iven Brask's best students, now paid to fight and to teach the Tempest Bloom to the amateurs of the Fight Club Backrooms. He wields a twin blade and keeps the others close."
+      "0": "A Zabrak promoter of the stable's inner circle, once one of Iven Brask's best students, now paid to fight and to teach the stable's amateurs in the Fight Club Backrooms. He wields a twin blade and keeps the others close."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tempest Bloom Inner Circle"
+      "0": "Stable Promoter"
     }
   },
   "fortbonus": {

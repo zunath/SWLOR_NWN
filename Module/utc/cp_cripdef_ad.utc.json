@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A young Kel Dor in street clothes who runs sign-ups for a backroom stable in the Fight Club Backrooms and has spent months sparring bouts meant to end careers. He comes in low with his spear, works the knees, and does not stop when his opponent is down."
+      "0": "A young Kel Dor brawler in street clothes who runs sign-ups for the stable in the Fight Club Backrooms and has spent months sparring bouts meant to end careers. He comes in low with his spear, works the knees, and does not stop when his opponent is down."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crippling Defense Adept"
+      "0": "Stable Brawler"
     }
   },
   "fortbonus": {

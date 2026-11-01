@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Bothan in Republic elite armor with a blaster pistol and the guarded look of a quartermaster with something to hide. He is one of the four who signed for every piece of hardware that armed the cell, and they keep the override chip that proves it."
+      "0": "A Bothan quartermaster's guard in Republic elite armor with a blaster pistol and the guarded look of a quartermaster with something to hide. He is one of the four who signed for every piece of hardware that armed the cell, and they keep the override chip that proves it."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Killzone Beacon Inner Circle"
+      "0": "Quartermaster's Guard"
     }
   },
   "fortbonus": {

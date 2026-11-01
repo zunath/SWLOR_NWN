@@ -89373,7 +89373,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A triage barricade of gurneys and supply crates holds the heart of the sublevel. The warden who built it has not given up an inch."
+            "0": "A triage barricade of gurneys and supply crates holds the heart of the sublevel. The ward supervisor who built it has not given up an inch."
           }
         },
         "DisarmDC": {

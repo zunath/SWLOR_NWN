@@ -99,7 +99,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The command room's master targeting console glows over a map of every approach. The bunker's master runs the kill zones from here."
+            "0": "The command room's master targeting console glows over a map of every approach. The deserter commander runs the kill zones from here."
           }
         },
         "DisarmDC": {
@@ -466,7 +466,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The bunker's main shield generator hums in the command room, rebuilt by hands that know its every weakness. Its master guards it personally."
+            "0": "The bunker's main shield generator hums in the command room, rebuilt by hands that know its every weakness. The deserter commander guards it personally."
           }
         },
         "DisarmDC": {

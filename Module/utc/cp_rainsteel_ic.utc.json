@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A hard-eyed human in rough street clothes, throwing blades close at hand. He is one of the four who countersign every stolen crate and hot trial on the range from the stockrooms behind the deep range, and he throws as well as he signs."
+      "0": "A hard-eyed human Black Cell shooter in rough street clothes, throwing blades close at hand. He is one of the four who countersign every stolen crate and hot trial on the range from the stockrooms behind the deep range, and he throws as well as he signs."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rain of Steel Inner Circle"
+      "0": "Black Cell Shooter"
     }
   },
   "fortbonus": {

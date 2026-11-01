@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in a brown captain's coat, a pit champion of fourteen seasons without a loss who now keeps the deep door of the backrooms. The pit sigil he wears cracked down the middle the night his own trainer died on his twin blade."
+      "0": "A human pit boss in a brown captain's coat, a pit champion of fourteen seasons without a loss who now keeps the deep door of the backrooms. The pit sigil he wears cracked down the middle the night his own trainer died on his twin blade."
     }
   },
   "Dex": {
@@ -393,7 +393,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tempest Bloom Warden"
+      "0": "Pit Boss Dax Corvin"
     }
   },
   "fortbonus": {

@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE", "Anchorhead Canyon Range - Capstone Adepts")
+            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE", "Anchorhead Canyon Range - Canyon Drifter (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_lastword_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP", "Anchorhead Canyon Range - Capstone Specialists")
+            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE_DEEP", "Anchorhead Canyon Range - Canyon Sharpshooter (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_lastword_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -262,17 +262,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_LASTWORD_IC_SPAWN", "Anchorhead Canyon Range - Last Word Inner Circle")
+            _builder.Create("CAPSTONE_LASTWORD_IC_SPAWN", "Anchorhead Canyon Range - High Table Gun (Last Word line)")
                 .AddSpawn(ObjectType.Creature, "cp_lastword_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_DEADHAND_IC_SPAWN", "Anchorhead Canyon Range - Dead Man's Hand Inner Circle")
+            _builder.Create("CAPSTONE_DEADHAND_IC_SPAWN", "Anchorhead Canyon Range - High Table Gun (Dead Man's Hand line)")
                 .AddSpawn(ObjectType.Creature, "cp_deadhand_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_UNMOVCTR_IC_SPAWN", "Anchorhead Canyon Range - Unmoving Center Inner Circle")
+            _builder.Create("CAPSTONE_UNMOVCTR_IC_SPAWN", "Anchorhead Canyon Range - High Table Gun (Unmoving Center line)")
                 .AddSpawn(ObjectType.Creature, "cp_unmovctr_ic")
                 .WithFrequency(1)
                 .ReturnsHome();

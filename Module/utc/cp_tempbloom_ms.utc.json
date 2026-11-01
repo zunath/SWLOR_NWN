@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human who was Iven Brask's headliner in the years the Fight Club mattered, and who finishes the Tempest Bloom rather than merely knowing it. In his last main event his bloom emptied the club, and he has kept the Private Pit deep in the backrooms ever since, twin blade in hand."
+      "0": "A human stable champion who was Iven Brask's headliner in the years the Fight Club mattered. In his last main event he emptied the club, and he has kept the Private Pit deep in the backrooms ever since, twin blade in hand."
     }
   },
   "Dex": {
@@ -400,7 +400,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tempest Bloom Master"
+      "0": "Stable Champion Rolan Mace"
     }
   },
   "fortbonus": {

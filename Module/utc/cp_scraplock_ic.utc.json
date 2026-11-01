@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught in armored work garb with katars raised, one of the four true believers at the heart of the crew. He drills to hold a sealed room alone until thirst wins, eats facing the door, and has never once tripped a station sensor by accident."
+      "0": "An Ugnaught in armored work garb with katars raised, one of the foreman's four hands, the true believers at the heart of the crew. He drills to hold a sealed room alone until thirst wins, eats facing the door, and has never once tripped a station sensor by accident."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Scrapheap Lockdown Inner Circle"
+      "0": "Foreman's Hand"
     }
   },
   "fortbonus": {

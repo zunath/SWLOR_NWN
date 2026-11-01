@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught in a white Republic uniform who has made the sublevel's deepest chamber his private fortress. He carries a blaster pistol and a cracked command crest, and he has run that chamber well past what its walls were built to bear."
+      "0": "An Ugnaught deserter sergeant in a white Republic uniform who has made the sublevel's deepest chamber his private fortress. He carries a blaster pistol and a cracked command crest, and he has run that chamber well past what its walls were built to bear."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Bunker Warden"
+      "0": "Deserter Sergeant Bekko"
     }
   },
   "fortbonus": {

@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian in the promoter's inner circle, paid to keep a stolen paired-blade form profitable and lawless in the Fight Club Backrooms. He helped teach the backroom students and fights with his twin blade for pay, not pride."
+      "0": "A Rodian promoter in the stable's inner circle, paid to keep a stolen paired-blade style profitable and lawless in the Fight Club Backrooms. He helped teach the backroom brawlers and fights with his twin blade for pay, not pride."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Red Bloom Inner Circle"
+      "0": "Stable Promoter"
     }
   },
   "fortbonus": {

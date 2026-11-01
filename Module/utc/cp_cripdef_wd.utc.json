@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An old Trandoshan pit fighter in armor who holds the gate to the stable's champion pit with his spear. The pit sigil around his neck cracked the night he ended three careers in a single bout."
+      "0": "An old Trandoshan pit boss in armor who holds the gate to the stable's champion pit with his spear. The pit sigil around his neck cracked the night he ended three careers in a single bout."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crippling Defense Warden"
+      "0": "Pit Boss Ssarok"
     }
   },
   "fortbonus": {

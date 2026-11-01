@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Iven Brask gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Defeat six Tempest Bloom adepts in the Smuggler's Moon Fight Club Backrooms and recover the Tempest Bloom Backroom Bout Ledger.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Adept, 6)
+                    "Iven Brask gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Defeat six Stable Brawlers, the Backroom Stable fighters who hold the rooms nearest the entrance of the Smuggler's Moon Fight Club Backrooms, and recover the Tempest Bloom Backroom Bout Ledger. Any Stable Brawler counts, but a kill only counts with Spinning Whirl, Blade Vortex or Serrated Arc.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Adept, "tempest_bloom", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomBackroomBoutLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are dead and the Tempest Bloom Backroom Bout Ledger is in hand. Return it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
+                    "The six Stable Brawlers are dead and the Tempest Bloom Backroom Bout Ledger is in hand. Return it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the five Tempest Bloom specialists running the live pits deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then pull the rewired Tempest Bloom Ring Shock Regulator off the wall.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Specialist, 5)
+                    "Defeat five Stable Pit Fighters, the Backroom Stable fighters running the live pits deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then pull the rewired Tempest Bloom Ring Shock Regulator off the wall. Any Stable Pit Fighter counts, but a kill only counts with Spinning Whirl, Blade Vortex or Serrated Arc.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Specialist, "tempest_bloom", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomRingShockRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The specialists are finished and the Tempest Bloom Ring Shock Regulator has been torn out. Bring it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
+                    "The Stable Pit Fighters are finished and the Tempest Bloom Ring Shock Regulator has been torn out. Bring it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Tempest Bloom warden guarding the deep door in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and take the Tempest Bloom Cracked Pit Sigil. No lone fighter has ever beaten him; bring allies.")
+                    "Defeat Pit Boss Dax Corvin guarding the deep door in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and take the Tempest Bloom Cracked Pit Sigil. No lone fighter has ever beaten him; bring allies.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomCrackedPitSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is dead and the Tempest Bloom Cracked Pit Sigil is in hand. Return it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
+                    "Pit Boss Dax Corvin is dead and the Tempest Bloom Cracked Pit Sigil is in hand. Return it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four fighters of the Tempest Bloom inner circle in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and recover the Tempest Bloom Promoter's Payout Chit from the last of them.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_InnerCircle, 4)
+                    "Defeat four Stable Promoters, the Backroom Stable promoters who guard the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and recover the Tempest Bloom Promoter's Payout Chit from the last of them. Any Stable Promoter counts, but a kill only counts with Spinning Whirl, Blade Vortex or Serrated Arc.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_InnerCircle, "tempest_bloom", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomPromotersPayoutChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is broken and the Tempest Bloom Promoter's Payout Chit is in hand. Deliver it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
+                    "The Stable Promoters are broken and the Tempest Bloom Promoter's Payout Chit is in hand. Deliver it to Iven Brask at The Tilted Visor on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Tempest Bloom master in the deepest room of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon. No one has survived his final bloom alone; bring allies. His defeat is the only proof Iven Brask needs.")
+                    "Defeat Stable Champion Rolan Mace in the deepest room of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon. No one has survived his final bloom alone; bring allies. His defeat is the only proof Iven Brask needs.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Tempest Bloom master is defeated and the backroom bill is finished. Return to Iven Brask at The Tilted Visor on Smuggler's Moon.")
+                    "Stable Champion Rolan Mace is defeated and the backroom bill is finished. Return to Iven Brask at The Tilted Visor on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Nyra Tane gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Defeat six Red Bloom adepts in the Smuggler's Moon Fight Club Backrooms and recover the Red Bloom Backroom Bout Ledger.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Adept, 6)
+                    "Nyra Tane gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Defeat six Stable Brawlers, the Backroom Stable fighters who hold the rooms nearest the entrance of the Smuggler's Moon Fight Club Backrooms, and recover the Red Bloom Backroom Bout Ledger. Any Stable Brawler counts, but a kill only counts while they bleed from your blades.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Adept, "red_bloom", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomBackroomBoutLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are dead and the Red Bloom Backroom Bout Ledger is in hand. Return it to Nyra Tane at the Casino on Smuggler's Moon.")
+                    "The six Stable Brawlers are dead and the Red Bloom Backroom Bout Ledger is in hand. Return it to Nyra Tane at the Casino on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the five Red Bloom specialists deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then tear the rewired Red Bloom Ring Shock Regulator off the wall.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Specialist, 5)
+                    "Defeat five Stable Pit Fighters, the Backroom Stable fighters deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then tear the rewired Red Bloom Ring Shock Regulator off the wall. Any Stable Pit Fighter counts, but a kill only counts while they bleed from your blades.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Specialist, "red_bloom", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomRingShockRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The specialists are dead and the Red Bloom Ring Shock Regulator has been pulled. Bring it to Nyra Tane at the Casino on Smuggler's Moon.")
+                    "The Stable Pit Fighters are dead and the Red Bloom Ring Shock Regulator has been pulled. Bring it to Nyra Tane at the Casino on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Red Bloom warden at the deep gate in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and take the Red Bloom Cracked Pit Sigil. Nyra Tane's condition stands: do not face him alone; bring allies.")
+                    "Defeat Pit Boss Kessan Pru at the deep gate in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and take the Red Bloom Cracked Pit Sigil. Nyra Tane's condition stands: do not face him alone; bring allies.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomCrackedPitSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is dead and the Red Bloom Cracked Pit Sigil is in hand. Return it to Nyra Tane at the Casino on Smuggler's Moon.")
+                    "Pit Boss Kessan Pru is dead and the Red Bloom Cracked Pit Sigil is in hand. Return it to Nyra Tane at the Casino on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four fighters of the Red Bloom inner circle in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and recover the Red Bloom Promoter's Payout Chit from the last of them.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_InnerCircle, 4)
+                    "Defeat four Stable Promoters, the Backroom Stable promoters who guard the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and recover the Red Bloom Promoter's Payout Chit from the last of them. Any Stable Promoter counts, but a kill only counts while they bleed from your blades.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RedBloom_InnerCircle, "red_bloom", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomPromotersPayoutChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is dead and the Red Bloom Promoter's Payout Chit is in hand. Deliver it to Nyra Tane at the Casino on Smuggler's Moon.")
+                    "The Stable Promoters are dead and the Red Bloom Promoter's Payout Chit is in hand. Deliver it to Nyra Tane at the Casino on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Red Bloom master holding Nyra Tane's old title in the champion's room of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon. No one has left his ring alone; bring allies. His defeat is the only proof Nyra Tane needs.")
+                    "Defeat Stable Champion Ven Dolo holding Nyra Tane's old title in the champion's room of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon. No one has left his ring alone; bring allies. His defeat is the only proof Nyra Tane needs.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Red Bloom master is defeated and the backroom school is finished. Return to Nyra Tane at the Casino on Smuggler's Moon.")
+                    "Stable Champion Ven Dolo is defeated and the backroom school is finished. Return to Nyra Tane at the Casino on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

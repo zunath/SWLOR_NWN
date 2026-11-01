@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An armored Cathar, the source of the disabling technique taught in secret through the Veles Militia Annex. He was teaching shutdown work long before anyone else there learned it, and he waits in the annex command room with a vibroknife and unhurried patience."
+      "0": "An armored Cathar, now the holdouts' captain and the source of the disabling technique taught in secret through the Veles Militia Annex. He was teaching shutdown work long before anyone else there learned it, and he waits in the annex command room with a vibroknife and unhurried patience."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Systemic Shutdown Master"
+      "0": "Holdout Captain Jorrik Vael"
     }
   },
   "fortbonus": {

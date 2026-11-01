@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A trial altar on the west side of the crypt, its offerings looted and its carvings chipped by blaster fire. The crypt raiders' captain keeps watch over it."
+            "0": "A trial altar on the west side of the crypt, its offerings looted and its carvings chipped by blaster fire. The expedition's captain keeps watch over it."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A trial altar on the east side of the crypt, stained dark around its base. The Vitae Reavers' enforcer guards it like a feeding ground."
+            "0": "A trial altar on the east side of the crypt, stained dark around its base. The expedition captain guards it like a feeding ground."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A trial altar in the north-west of the crypt, half buried under umbral raider gear and forged orders. Their captain claims it as his post."
+            "0": "A trial altar in the north-west of the crypt, half buried under expedition gear and forged orders. Their captain claims it as his post."
           }
         },
         "DisarmDC": {

@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human laborer in black work coveralls with a blaster pistol and a belt of structural shims. He is one of the crew that sealed off the bunker's sublevel, and he holds his post as though the walls themselves were his cover."
+      "0": "A human sapper in black work coveralls with a blaster pistol and a belt of structural shims. He is one of the deserters who sealed off the bunker's sublevel, and he holds his post as though the walls themselves were his cover."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Bunker Adept"
+      "0": "Deserter Sapper"
     }
   },
   "fortbonus": {

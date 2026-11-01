@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the first four students of the conduit form, who grafted machinery into his own body to hold more of its current. Plating covers him from shoulder to hip, and he fights with a twin electroblade in close step with the rest of the circle."
+      "0": "One of the matron's four attendants, who grafted machinery into his own body to hold more current than flesh can. Plating covers him from shoulder to hip, and he fights with a twin electroblade in close step with the rest of the attendants."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Infinite Conduit Inner Circle"
+      "0": "Matron's Attendant"
     }
   },
   "fortbonus": {

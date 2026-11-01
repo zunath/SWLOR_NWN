@@ -15372,7 +15372,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Lockdown placards are bolted across the sheared bay's entry, each one signed with the same override code. The warden behind them keeps the bay shut against all comers."
+            "0": "Lockdown placards are bolted across the sheared bay's entry, each one signed with the same override code. The crew chief behind them keeps the bay shut against all comers."
           }
         },
         "DisarmDC": {

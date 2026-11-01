@@ -16446,7 +16446,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A pharmacy station in the Protected Ward, its shelves emptied into one overflowing mixing bench. The ward's master mixes his doses here."
+            "0": "A pharmacy station in the Protected Ward, its shelves emptied into one overflowing mixing bench. The ward chief mixes his doses here."
           }
         },
         "DisarmDC": {

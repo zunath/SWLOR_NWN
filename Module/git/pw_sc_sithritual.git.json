@@ -466,7 +466,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A ritual basin at the heart of the chamber, its stone rim worn by grasping hands. The Vitae Reavers' chief holds court beside it."
+            "0": "A ritual basin at the heart of the chamber, its stone rim worn by grasping hands. The expedition leader holds court beside it."
           }
         },
         "DisarmDC": {
@@ -833,7 +833,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A sealed ritual door within the chamber, ringed with umbral sigils painted over the old Sith marks. The raiders' commander waits on the other side."
+            "0": "A sealed ritual door within the chamber, ringed with umbral sigils painted over the old Sith marks. The expedition leader waits on the other side."
           }
         },
         "DisarmDC": {

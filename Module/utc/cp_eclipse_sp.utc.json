@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian Umbral Raider in a thug's clothes, blaster in hand. The adepts carry a stolen relic through the Sith Crypt Depths and use it to cast dread over anyone who comes too close."
+      "0": "A Rodian marauder of the expedition's Umbral Raider crew in a thug's clothes, blaster in hand. The marauders carry a stolen relic through the Sith Crypt Depths and use it to cast dread over anyone who comes too close."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Umbral Raider Adept"
+      "0": "Expedition Marauder"
     }
   },
   "fortbonus": {

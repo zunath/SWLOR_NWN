@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak in heavy sorcerer's robes who guards the Vitae Reavers' dig in the Sith Crypt Depths, staff in hand. He has drained enough from the captured survey crews to stand through wounds that would drop most fighters."
+      "0": "A Zabrak expedition captain in heavy sorcerer's robes who guards the Vitae Reaver crew's dig in the Sith Crypt Depths, staff in hand. He has drained enough from the captured survey crews to stand through wounds that would drop most fighters."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vitae Reaver Enforcer"
+      "0": "Expedition Captain Zarrik Thane"
     }
   },
   "fortbonus": {

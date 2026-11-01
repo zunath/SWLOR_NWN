@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian who has bled in the backroom pits long enough to teach the form he learned there. He fights with a twin blade and pairs with another fighter, one high and one low, both patient."
+      "0": "A Rodian pit fighter who has bled in the backroom pits long enough to teach what he learned there. He fights with a twin blade and pairs with another fighter, one high and one low, both patient."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Red Bloom Specialist"
+      "0": "Stable Pit Fighter"
     }
   },
   "fortbonus": {

@@ -56,11 +56,14 @@ namespace SWLOR.Game.Server.Service
                         {
                             if (objective is KillTargetObjective killObjective)
                             {
-                                if(!_npcsWithKillQuests.ContainsKey(killObjective.Group))
-                                    _npcsWithKillQuests[killObjective.Group] = new List<string>();
+                                foreach (var group in killObjective.CreditedGroups)
+                                {
+                                    if (!_npcsWithKillQuests.ContainsKey(group))
+                                        _npcsWithKillQuests[group] = new List<string>();
 
-                                if(!_npcsWithKillQuests[killObjective.Group].Contains(questId))
-                                    _npcsWithKillQuests[killObjective.Group].Add(questId);
+                                    if (!_npcsWithKillQuests[group].Contains(questId))
+                                        _npcsWithKillQuests[group].Add(questId);
+                                }
                             }
                         }
                     }
@@ -430,7 +433,8 @@ namespace SWLOR.Game.Server.Service
                         // Only kill target objectives matching this NPC group ID are processed.
                         if (objective is KillTargetObjective killTargetObjective)
                         {
-                            if (killTargetObjective.Group != npcGroupType) continue;
+                            if (!killTargetObjective.CreditedGroups.Contains(npcGroupType)) continue;
+                            if (!killTargetObjective.CountsKill(member, creature)) continue;
 
                             killRequiredForQuestAndState = true;
                             killTargetObjective.Advance(member, questId);

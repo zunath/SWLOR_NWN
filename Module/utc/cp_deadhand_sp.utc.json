@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan gunman in a hired tough's clothes who works the long lanes of the Anchorhead Canyon Range. He is a sharp: patient, never the first to show his hand, firing from angles that were marked out before anyone sat down to play."
+      "0": "A Nautolan sharpshooter in a hired tough's clothes who works the long lanes of the Anchorhead Canyon Range. He is a sharp: patient, never the first to show his hand, firing from angles that were marked out before anyone sat down to play."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dead Man's Hand Specialist"
+      "0": "Canyon Sharpshooter"
     }
   },
   "fortbonus": {

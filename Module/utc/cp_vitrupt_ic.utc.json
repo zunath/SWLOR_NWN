@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak instructor in dark, close-fitting clothes, one of the four who run what is left of the annex knife school and cared more for their rank than their students. He keeps apart from the cadre deep in the annex, vibroknife ready, and fights alongside the other three."
+      "0": "A Zabrak instructor in dark, close-fitting clothes, one of the four honor guards who run what is left of the annex knife school and cared more for their rank than their students. He keeps apart from the cadre deep in the annex, vibroknife ready, and fights alongside the other three."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viral Cascade Inner Circle"
+      "0": "Holdout Honor Guard"
     }
   },
   "fortbonus": {

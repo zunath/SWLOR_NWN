@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught in a Republic commander's uniform, blaster pistol in hand and beacon emitters strapped across his chest. He has taken killzone doctrine further than the Republic ever cleared it, and from this abandoned bunker he rehearses painting real targets instead of range markers."
+      "0": "An Ugnaught deserter commander in a Republic commander's uniform, blaster pistol in hand and beacon emitters strapped across his chest. He has taken fire-control doctrine further than the Republic ever cleared it, and from this abandoned bunker he rehearses painting real targets instead of range markers."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Killzone Beacon Master"
+      "0": "Deserter Commander Kuvaz"
     }
   },
   "fortbonus": {

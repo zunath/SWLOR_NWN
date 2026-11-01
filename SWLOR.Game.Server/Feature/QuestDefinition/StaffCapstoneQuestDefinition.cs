@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Marda Voss gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Unmoving Center adepts and recover the Unmoving Center Canyon Range Tally.")
-                .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Adept, 6)
+                    "Marda Voss gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Canyon Drifters, who hold the ground nearest the door, and recover the Unmoving Center Canyon Range Tally. Any Canyon Drifter counts, whichever line it was first built for, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Adept, "unmoving_center", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterCanyonRangeTally)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Unmoving Center specialists deeper in the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Sightline Calibrator.")
-                .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Specialist, 5)
+                    "Defeat five Canyon Sharpshooters deeper in the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Sightline Calibrator. Any Canyon Sharpshooter counts, whichever line it was first built for, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Specialist, "unmoving_center", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterSightlineCalibrator)
 
                 .AddState()
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Unmoving Center warden at the trial altar on the west side of the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Shattered Range Crest.")
+                    "With at least two allies, defeat the warden, Range Warden Dorrim Vex, at the trial altar on the west side of the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Shattered Range Crest.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterShatteredRangeCrest)
 
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four members of the Unmoving Center inner circle in the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Marshal's Challenge Chit.")
-                .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_InnerCircle, 4)
+                    "Defeat four High Table Guns in the deepest part of the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Marshal's Challenge Chit. Any High Table Gun counts, whichever line it was first built for, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_UnmovingCenter_InnerCircle, "unmoving_center", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterMarshalsChallengeChit)
 
                 .AddState()
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Unmoving Center master in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
+                    "With at least two allies, defeat the master, Range Marshal Tarek Kor, in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center master has been defeated. Return to Marda Voss at the Elevagii Farm on Tatooine.")
+                    "Range Marshal Tarek Kor has been defeated. Return to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Unit KX-17 gave you the CZ-220 Breaker Yard Key. Travel to the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Worldbreaker adepts and recover the Worldbreaker Breaker Yard Work Order.")
-                .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Adept, 6)
+                    "Unit KX-17 gave you the CZ-220 Breaker Yard Key. Travel to the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Wreck Crew Scrappers, who hold the floor nearest the entrance, and recover the Worldbreaker Breaker Yard Work Order. Any Scrapper counts, whichever katar line the crew drilled for, but only kills made after dazing, knocking down or disorienting them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_Worldbreaker_Adept, "worldbreaker", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerBreakerYardWorkOrder)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the CZ-220 Breaker Yard on CZ-220. Defeat five Worldbreaker specialists on the junkline deeper inside and recover the Worldbreaker Junkline Control Relay.")
-                .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Specialist, 5)
+                    "Return to the CZ-220 Breaker Yard on CZ-220. Defeat five Wreck Crew Riggers on the junkline deeper inside and recover the Worldbreaker Junkline Control Relay. Any Rigger counts, whichever katar line the crew drilled for, but only kills made after dazing, knocking down or disorienting them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_Worldbreaker_Specialist, "worldbreaker", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerJunklineControlRelay)
 
                 .AddState()
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker warden holds the sheared bay in the CZ-220 Breaker Yard on CZ-220. Bring at least two others, defeat him, and recover the Worldbreaker Sheared Bay Sigil.")
+                    "Crew Chief Nalo Ven, the warden, holds the sheared bay in the CZ-220 Breaker Yard on CZ-220. Bring at least two others, defeat him, and recover the Worldbreaker Sheared Bay Sigil.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerShearedBaySigil)
 
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Four members of the Worldbreaker inner circle hold the crane deck above the drill pit, on the north side of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip.")
-                .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_InnerCircle, 4)
+                    "Four Foreman's Hands hold the deepest part of the Breaker Bay, the crane deck above the drill pit on the north side, in the CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made after dazing, knocking down or disorienting them.")
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_Worldbreaker_InnerCircle, "worldbreaker", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerForemansOverrideChip)
 
                 .AddState()
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker master holds the deepest part of the CZ-220 Breaker Yard on CZ-220. Bring at least two others and defeat him.")
+                    "Wreck Foreman Kaddo Rin, the master, holds the deepest part of the CZ-220 Breaker Yard on CZ-220. Bring at least two others and defeat him.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You defeated the Worldbreaker master. Return to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
+                    "You defeated Wreck Foreman Kaddo Rin. Return to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

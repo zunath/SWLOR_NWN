@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jora Sel gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Cyclone Drill Droids in the Jedi Trial Halls and recover the Saber Cyclone Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Hutlar_CycloneDrillDroid, 6)
+                    "Jora Sel gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Trial Drill Droids, the ones nearest the entrance of the Jedi Trial Halls, and recover the Saber Cyclone Enclave Trial Slate. Any Trial Drill Droid counts, whichever line it was first built for, but only kills made with Circle Slash or Maelstrom Arc.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_CycloneDrillDroid, "saber_cyclone", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable five Cyclone Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Hutlar_CycloneDuelistDroid, 5)
+                    "Disable five Trial Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Kyber Focus Shard. Any Trial Duelist Droid counts, whichever line it was first built for, but only kills made with Circle Slash or Maelstrom Arc.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_CycloneDuelistDroid, "saber_cyclone", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneKyberFocusShard)
 
                 .AddState()
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Cyclone Gatekeeper Droid guarding the approach to the Saber Trial Chamber in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Fractured Trial Sigil.")
+                    "With at least two allies, disable the Trial Gatekeeper Droid guarding the approach to the Saber Trial Chamber in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Fractured Trial Sigil.")
                 .AddKillObjective(NPCGroupType.Hutlar_CycloneGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneFracturedTrialSigil)
 
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Cyclone Examiner Droids guarding the control systems at the far north-west end of the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Hutlar_CycloneExaminerDroid, 4)
+                    "Disable four Trial Examiner Droids guarding the control systems at the far north-west end of the Jedi Trial Halls on Hutlar, the deepest part, and recover the Saber Cyclone Council Trial Chit. Any Trial Examiner Droid counts, whichever line it was first built for, but only kills made with Circle Slash or Maelstrom Arc.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_CycloneExaminerDroid, "saber_cyclone", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneCouncilTrialChit)
 
                 .AddState()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Tessa Quell gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Infinite Conduit adepts there and recover the Infinite Conduit Triage Ward Ledger.")
-                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Adept, 6)
+                    "Tessa Quell gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Ward Orderlies, who hold the ward nearest the lift, and recover the Infinite Conduit Triage Ward Ledger. Any Ward Orderly counts, whichever line it was first built for, but only kills made with Focused Arc, Sever Focus or Guarded Channel.")
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_InfiniteConduit_Adept, "infinite_conduit", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Infinite Conduit specialists deeper in the Medical Sublevel on Mon Cala and recover the Infinite Conduit Kolto Conduit Coupler.")
-                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Specialist, 5)
+                    "Defeat five Ward Guards deeper in the Medical Sublevel on Mon Cala and recover the Infinite Conduit Kolto Conduit Coupler. Any Ward Guard counts, whichever line it was first built for, but only kills made with Focused Arc, Sever Focus or Guarded Channel.")
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_InfiniteConduit_Specialist, "infinite_conduit", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitKoltoConduitCoupler)
 
                 .AddState()
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Infinite Conduit warden by the bloodstained altar in the north of the Medical Sublevel on Mon Cala and recover the Infinite Conduit Fractured Ward Sigil.")
+                    "With at least two allies, defeat the warden, Ward Supervisor Dru Salin, by the bloodstained altar in the north of the Medical Sublevel on Mon Cala and recover the Infinite Conduit Fractured Ward Sigil.")
                 .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitFracturedWardSigil)
 
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Infinite Conduit inner circle in the Medical Sublevel on Mon Cala and recover the Infinite Conduit Matron's Ward Token.")
-                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_InnerCircle, 4)
+                    "Defeat four Matron's Attendants in the deepest part of the Medical Sublevel on Mon Cala and recover the Infinite Conduit Matron's Ward Token. Any Matron's Attendant counts, whichever line it was first built for, but only kills made with Focused Arc, Sever Focus or Guarded Channel.")
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_InfiniteConduit_InnerCircle, "infinite_conduit", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitMatronsWardToken)
 
                 .AddState()
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Infinite Conduit master in the Protected Ward, through the door in the north-east corner of the Medical Sublevel on Mon Cala. His defeat is all the proof Tessa Quell needs.")
+                    "With at least two allies, defeat the master, Ward Chief Idris Voh, in the Protected Ward, through the door in the north-east corner of the Medical Sublevel on Mon Cala. His defeat is all the proof Tessa Quell needs.")
                 .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit master is defeated. Return to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
+                    "Ward Chief Idris Voh is defeated. Return to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

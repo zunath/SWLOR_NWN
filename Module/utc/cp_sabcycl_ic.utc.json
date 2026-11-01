@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A humanoid examiner droid that once judged Saber Cyclone students in the hidden halls. It moves with its linked partners like spokes of one wheel, each covering the others."
+      "0": "A humanoid examiner droid that once judged trial students in the hidden halls. It moves with its linked partners like spokes of one wheel, each covering the others."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Cyclone Examiner Droid"
+      "0": "Trial Examiner Droid"
     }
   },
   "fortbonus": {

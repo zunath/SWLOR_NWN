@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Tarn Jungle Preserve's gone bad. Pit-breeders bought in, toughened young plated burrowers with beatings instead of trust, called it training, then ran when the beasts broke loose. The beasts stayed. I warded those pens once. Go in, on Dathomir. Put down six of the young ones. Bring back the Unbreakable Beast Tarn Hunt Tally the breeders kept score on. It's in their pen.",
+          "Text": "The Tarn Jungle Preserve's gone bad. Pit-breeders bought in, toughened young plated burrowers with beatings instead of trust, called it training, then ran when the beasts broke loose. The beasts stayed. I warded those pens once. Go in, on Dathomir. Put down six of the Young Plated Burrowers, the ones in the pens nearest the gate. Any Young Plated Burrower will do, the breeders beat them all the same. But it only counts if your beast was standing guard for you when it fell: your beast intercepting for you, or holding Guarding Roar, while your party puts them down. Bring back the Unbreakable Beast Tarn Hunt Tally the breeders kept score on. It's in their pen.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six young burrowers still out there. Tally's still in their pen.",
+          "Text": "Six Young Plated Burrowers still out there, your beast guarding you through every fight. Tally's still in their pen.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five old burrowers past the young ones. The breeders moved on from beatings to something quieter, a scent dosed into the pens on purpose to keep them in constant pain. That's not toughening. That's cruelty with a schedule. Put the five down. Bring me the Unbreakable Beast Beast-Pen Scent Vial from their pen.",
+          "Text": "Five Pen-Scarred Plated Burrowers past the young ones, deeper in. The breeders moved on from beatings to something quieter, a scent dosed into the pens on purpose to keep them in constant pain. That's not toughening. That's cruelty with a schedule. Put the five down while your beast intercepts for you or holds Guarding Roar; any Pen-Scarred Plated Burrower counts while that guard is fresh. Bring me the Unbreakable Beast Beast-Pen Scent Vial from their pen.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five old burrowers, still guarding that vial. Bring it back.",
+          "Text": "Five Pen-Scarred Plated Burrowers, still guarding that vial. Bring it back.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden holds the deep pens. A shyrack the breeders raised in the dark and beat for years until nothing got through his hide clean. Blades skid off him instead of biting. One blade against that just wears its edge down for nothing. Bring two friends who can take a hit themselves, not just deal one. Take him down. Bring me the Unbreakable Beast Clawed Alpha Totem off his harness.",
+          "Text": "Breeder's Shyrack holds the deep pens. A shyrack the breeders raised in the dark and beat for years until nothing got through his hide clean. Blades skid off him instead of biting. One blade against that just wears its edge down for nothing. Bring two friends who can take a hit themselves, not just deal one. Take him down. Bring me the Unbreakable Beast Clawed Alpha Totem off his harness.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's hide is still holding. Bring friends who can take a hit.",
+          "Text": "Breeder's Shyrack's hide is still holding. Bring friends who can take a hit.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them hold the deepest pens now, the inner circle. Oldest burrowers in the preserve, beaten longest, the ones that stopped feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down. Bring me the Unbreakable Beast Preserve Keeper's Token from their den.",
+          "Text": "Four of them hold the deepest pens now, the Elder Plated Burrowers. Oldest burrowers in the preserve, beaten longest, the ones that stopped feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down while your beast intercepts for you or holds Guarding Roar; any Elder Plated Burrower counts while that guard is fresh. Bring me the Unbreakable Beast Preserve Keeper's Token from their den.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. Deep pens can be run honest again. One left down there, the old shyrack the warden was bred from. You're ready for that.",
+          "Text": "Whole. Deep pens can be run honest again. One left down there, Old Shyrack, the one Breeder's Shyrack was bred from. You're ready for that.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last one. The master's the warden's sire, the oldest shyrack in the preserve. His hide doesn't just stop feeling it. It doesn't break, period. The breeders built that out of the same endurance I've spent my life teaching, and pointed it at anything that comes near. Bring your people. All of them. His hide answers to a lot of hits landing together or it doesn't answer at all. No token this time. Him going down, and staying down, is the whole proof.",
+          "Text": "Last one. Old Shyrack is the sire of Breeder's Shyrack, the oldest shyrack in the preserve. His hide doesn't just stop feeling it. It doesn't break, period. The breeders built that out of the same endurance I've spent my life teaching, and pointed it at anything that comes near. Bring your people. All of them. His hide answers to a lot of hits landing together or it doesn't answer at all. No token this time. Him going down, and staying down, is the whole proof.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden stopped feeling it. He stopped needing to feel it in the first place. That's further along the same road, and it's exactly what I've spent my whole life teaching, done right, for the wrong reasons. You've been building the true version this whole time. He's the corrupted end of the same road.",
+          "Text": "Breeder's Shyrack stopped feeling it. Old Shyrack stopped needing to feel it in the first place. That's further along the same road, and it's exactly what I've spent my whole life teaching, done right, for the wrong reasons. You've been building the true version this whole time. He's the corrupted end of the same road.",
           "Style": 0,
           "Color": null
         }
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "How's his endurance different from the warden's?",
+        "Text": "How's his endurance different from Breeder's Shyrack's?",
         "Style": 4,
         "Color": null
       },

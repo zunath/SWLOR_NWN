@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS", "Smuggler's Moon Fight Club Backrooms - Capstone Adepts")
+            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS", "Smuggler's Moon Fight Club Backrooms - Stable Brawler (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_cripdef_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP", "Smuggler's Moon Fight Club Backrooms - Capstone Specialists")
+            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP", "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_cripdef_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -232,17 +232,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_CRIPDEF_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle")
+            _builder.Create("CAPSTONE_CRIPDEF_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Stable Promoter (Crippling Defense line)")
                 .AddSpawn(ObjectType.Creature, "cp_cripdef_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_TEMPBLOOM_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle")
+            _builder.Create("CAPSTONE_TEMPBLOOM_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Stable Promoter (Tempest Bloom line)")
                 .AddSpawn(ObjectType.Creature, "cp_tempbloom_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_REDBLOOM_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle")
+            _builder.Create("CAPSTONE_REDBLOOM_IC_SPAWN", "Smuggler's Moon Fight Club Backrooms - Stable Promoter (Red Bloom line)")
                 .AddSpawn(ObjectType.Creature, "cp_redbloom_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE", "Czerka Arms Test Range - Capstone Adepts")
+            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE", "Czerka Arms Test Range - Range Washout (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_killbox_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP", "Czerka Arms Test Range - Capstone Specialists")
+            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP", "Czerka Arms Test Range - Range Instructor (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_killbox_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -286,17 +286,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_KILLBOX_IC_SPAWN", "Czerka Arms Test Range - Kill Box Inner Circle")
+            _builder.Create("CAPSTONE_KILLBOX_IC_SPAWN", "Czerka Arms Test Range - Black Cell Shooter (Kill Box line)")
                 .AddSpawn(ObjectType.Creature, "cp_killbox_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_ONESHOT_IC_SPAWN", "Czerka Arms Test Range - One Shot Inner Circle")
+            _builder.Create("CAPSTONE_ONESHOT_IC_SPAWN", "Czerka Arms Test Range - Black Cell Shooter (One Shot line)")
                 .AddSpawn(ObjectType.Creature, "cp_oneshot_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_RAINSTEEL_IC_SPAWN", "Czerka Arms Test Range - Rain of Steel Inner Circle")
+            _builder.Create("CAPSTONE_RAINSTEEL_IC_SPAWN", "Czerka Arms Test Range - Black Cell Shooter (Rain of Steel line)")
                 .AddSpawn(ObjectType.Creature, "cp_rainsteel_ic")
                 .WithFrequency(1)
                 .ReturnsHome();

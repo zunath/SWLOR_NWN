@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sarn, a Twi'lek swordsman who was Captain Renn's second for six years and stayed behind when she sealed the annex. He holds the inner gate with his vibroblade exactly the way she taught him, and the challenge badge he wears is etched with a perfect score."
+      "0": "Sarn, a Twi'lek swordsman who was Captain Renn's second for six years and stayed behind when she sealed the annex. He holds the inner gate as the holdouts' lieutenant, vibroblade ready exactly the way she taught him, and the challenge badge he wears is etched with a perfect score."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Invincible Warden"
+      "0": "Holdout Lieutenant Sarn"
     }
   },
   "fortbonus": {

@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Cathar veteran with a blaster pistol and the stillness of someone who has stood the same post for years. He was among the first to seal the bunker door with Halden Rhee, and he keeps the shield grid running exactly as he was drilled."
+      "0": "A Cathar deserter engineer, a veteran with a blaster pistol and the stillness of someone who has stood the same post for years. He was among the first to seal the bunker door with Halden Rhee, and he keeps the shield grid running exactly as he was drilled."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Decisive Command Specialist"
+      "0": "Deserter Engineer"
     }
   },
   "fortbonus": {

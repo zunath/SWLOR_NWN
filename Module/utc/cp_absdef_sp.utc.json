@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human journeyman of the forge, soot-black to the elbows from working the tempering racks. He fights with a heavy vibroblade he quenched himself, and his guard closes before you can find the gap in it."
+      "0": "A human journeyman of the Forgebound, soot-black to the elbows from working the tempering racks. He fights with a heavy vibroblade he quenched himself, and his guard closes before you can find the gap in it."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Absolute Defense Specialist"
+      "0": "Forgebound Journeyman"
     }
   },
   "fortbonus": {

@@ -99,7 +99,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A command lectern stands at the center of the room, a final grading ledger open on it to a blank page. The annex master waits for whoever comes to write on it."
+            "0": "A command lectern stands at the center of the room, a final grading ledger open on it to a blank page. The annex captain waits for whoever comes to write on it."
           }
         },
         "DisarmDC": {
@@ -466,7 +466,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A surgeon's stool and a rolled kit of blades sit beside the command table. The master of the knife cadre keeps this corner, and answers anyone who unrolls the kit."
+            "0": "A surgeon's stool and a rolled kit of blades sit beside the command table. The captain of the knife cadre keeps this corner, and answers anyone who unrolls the kit."
           }
         },
         "DisarmDC": {

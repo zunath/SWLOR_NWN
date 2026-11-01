@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human woman in armored colonist garb, blaster pistol in hand. She works the crew's cryo range and pushes its regulator toward cracking so the charges tested there can run past their rated yield."
+      "0": "A human woman demolitionist of the test crew in armored colonist garb, blaster pistol in hand. She works the crew's cryo range and pushes its regulator toward cracking so the charges tested there can run past their rated yield."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Thermal Detonator Specialist"
+      "0": "Test Crew Demolitionist"
     }
   },
   "fortbonus": {

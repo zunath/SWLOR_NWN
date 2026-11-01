@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A cyborg in kolto-stained work clothes who rides long stillness into sudden, violent bursts. Between surges he is slow, almost gentle, his twin electroblade resting low; then everything comes at once."
+      "0": "A cyborg ward guard in kolto-stained work clothes who rides long stillness into sudden, violent bursts. Between surges he is slow, almost gentle, his twin electroblade resting low; then everything comes at once."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Infinite Conduit Specialist"
+      "0": "Ward Guard"
     }
   },
   "fortbonus": {

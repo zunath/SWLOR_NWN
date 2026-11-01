@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            builder.Create("CAPSTONE_CZ220_BREAKER_YARD", "CZ-220 Breaker Yard - Capstone Adepts")
+            builder.Create("CAPSTONE_CZ220_BREAKER_YARD", "CZ-220 Breaker Yard - Wreck Crew Scrapper (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_adamguard_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            builder.Create("CAPSTONE_CZ220_BREAKER_YARD_DEEP", "CZ-220 Breaker Yard - Capstone Specialists")
+            builder.Create("CAPSTONE_CZ220_BREAKER_YARD_DEEP", "CZ-220 Breaker Yard - Wreck Crew Rigger (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_adamguard_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -96,17 +96,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            builder.Create("CAPSTONE_ADAMGUARD_IC_SPAWN", "CZ-220 Breaker Yard - Adamantine Guard Inner Circle")
+            builder.Create("CAPSTONE_ADAMGUARD_IC_SPAWN", "CZ-220 Breaker Yard - Foreman's Hand (Adamantine Guard line)")
                 .AddSpawn(ObjectType.Creature, "cp_adamguard_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            builder.Create("CAPSTONE_SCRAPLOCK_IC_SPAWN", "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle")
+            builder.Create("CAPSTONE_SCRAPLOCK_IC_SPAWN", "CZ-220 Breaker Yard - Foreman's Hand (Scrapheap Lockdown line)")
                 .AddSpawn(ObjectType.Creature, "cp_scraplock_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            builder.Create("CAPSTONE_WORLDBRK_IC_SPAWN", "CZ-220 Breaker Yard - Worldbreaker Inner Circle")
+            builder.Create("CAPSTONE_WORLDBRK_IC_SPAWN", "CZ-220 Breaker Yard - Foreman's Hand (Worldbreaker line)")
                 .AddSpawn(ObjectType.Creature, "cp_worldbrk_ic")
                 .WithFrequency(1)
                 .ReturnsHome();

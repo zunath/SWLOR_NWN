@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan in armored colonist garb, throwing blades fanned in one hand. He holds the calibration lanes, running a quartermaster's recovery patterns, cell timing, and lane discipline, all of it learned by watching through the fence."
+      "0": "A Nautolan range instructor in armored colonist garb, throwing blades fanned in one hand. He holds the calibration lanes, running a quartermaster's recovery patterns, cell timing, and lane discipline, all of it learned by watching through the fence."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rain of Steel Specialist"
+      "0": "Range Instructor"
     }
   },
   "fortbonus": {

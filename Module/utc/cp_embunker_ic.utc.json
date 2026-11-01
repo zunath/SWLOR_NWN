@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in armored colonist garb with a blaster pistol and a slate of requisition records. He is one of the four who authorized the sublevel's re-rigging, and he still guards the supply chamber that fed it."
+      "0": "A human quartermaster's guard in armored colonist garb with a blaster pistol and a slate of requisition records. He is one of the four who authorized the sublevel's re-rigging, and he still guards the supply chamber that fed it."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Bunker Inner Circle"
+      "0": "Quartermaster's Guard"
     }
   },
   "fortbonus": {

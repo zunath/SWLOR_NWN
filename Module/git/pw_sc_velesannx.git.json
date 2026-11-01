@@ -49203,7 +49203,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tape marks a challenge square at the inner gate, its edges scuffed down to bare duracrete. A cracked scoreboard above it still shows the warden's unbroken record. Anyone who steps in will be answered."
+            "0": "Tape marks a challenge square at the inner gate, its edges scuffed down to bare duracrete. A cracked scoreboard above it still shows the lieutenant's unbroken record. Anyone who steps in will be answered."
           }
         },
         "DisarmDC": {
@@ -50719,7 +50719,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A field-surgery tray lies bolted to the floor here, every slot holding a cleaned vibroknife. Fresh blood on the drain grate says the knife cadre's warden still takes all comers."
+            "0": "A field-surgery tray lies bolted to the floor here, every slot holding a cleaned vibroknife. Fresh blood on the drain grate says the knife cadre's lieutenant still takes all comers."
           }
         },
         "DisarmDC": {

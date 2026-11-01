@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan who was Nyra Tane's last student and now holds her old title in the Private Pit, throwing the Red Bloom with both cuts open and nothing held back. He wields a twin blade and reads the backrooms the way she taught him."
+      "0": "A Nautolan stable champion who was Nyra Tane's last student and now holds her old title in the Private Pit, fighting with both cuts open and nothing held back. He wields a twin blade and reads the backrooms the way she taught him."
     }
   },
   "Dex": {
@@ -400,7 +400,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Red Bloom Master"
+      "0": "Stable Champion Ven Dolo"
     }
   },
   "fortbonus": {

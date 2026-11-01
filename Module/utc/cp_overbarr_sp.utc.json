@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak woman in a Czerka employee's uniform, blaster pistol in hand. She keeps the site's cryo-range regulator running off stolen charge tables whose safety curve was stripped out, so every barrage run through it either fizzles or cooks whoever fires it."
+      "0": "A Zabrak woman demolitionist of the test crew in a Czerka employee's uniform, blaster pistol in hand. She keeps the site's cryo-range regulator running off stolen charge tables whose safety curve was stripped out, so every volley run through it either fizzles or cooks whoever fires it."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Overload Barrage Specialist"
+      "0": "Test Crew Demolitionist"
     }
   },
   "fortbonus": {

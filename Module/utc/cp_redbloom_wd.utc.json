@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan pit champion who held Nyra Tane's title for a season before losing it to her, and now guards the deep gate of the backrooms with a twin blade. He still wears the pit sigil she cracked, as a promise that no one will pass him carelessly."
+      "0": "A Nautolan pit boss who held Nyra Tane's title for a season before losing it to her, and now guards the deep gate of the backrooms with a twin blade. He still wears the pit sigil she cracked, as a promise that no one will pass him carelessly."
     }
   },
   "Dex": {
@@ -393,7 +393,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Red Bloom Warden"
+      "0": "Pit Boss Kessan Pru"
     }
   },
   "fortbonus": {

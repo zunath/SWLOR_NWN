@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A throwing range is chalked onto the frozen floor, knife-scarred targets standing at the far end. The warden here throws at anyone who steps up."
+            "0": "A throwing range is chalked onto the frozen floor, knife-scarred targets standing at the far end. The test supervisor here throws at anyone who steps up."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A blast-test pad scorched black, ringed by frost-cracked safety markers. The warden who runs the detonation trials still keeps it armed."
+            "0": "A blast-test pad scorched black, ringed by frost-cracked safety markers. The test supervisor who runs the detonation trials still keeps it armed."
           }
         },
         "DisarmDC": {

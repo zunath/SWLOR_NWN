@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A silent Trandoshan still in his old Czerka range kit, blaster rifle loose and ready, standing in the open of the Blast-Safe Cell as if open ground were cover. He never joined the crew that squatted on his range, and no one who has watched him shoot has ever seen him need a second round."
+      "0": "A silent Trandoshan, director of the range, still in his old Czerka range kit, blaster rifle loose and ready, standing in the open of the Blast-Safe Cell as if open ground were cover. He never joined the washouts who squatted on his range, and no one who has watched him shoot has ever seen him need a second round."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "One Shot Master"
+      "0": "Range Director Zhessk"
     }
   },
   "fortbonus": {

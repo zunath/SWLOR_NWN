@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A humanoid examiner droid that once graded Saber Storm students from the high ring of the hidden halls. It fights in step with its linked partners, passing every opening it sees to the others."
+      "0": "A humanoid examiner droid that once graded trial students from the high ring of the hidden halls. It fights in step with its linked partners, passing every opening it sees to the others."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Storm Examiner Droid"
+      "0": "Trial Examiner Droid"
     }
   },
   "fortbonus": {

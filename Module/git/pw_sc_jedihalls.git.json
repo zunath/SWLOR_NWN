@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A sparring circle inlaid in the hall floor, ringed by scorch marks from deflected bolts. A guardian training droid stands dormant at its edge, waiting for a challenger."
+            "0": "A sparring circle inlaid in the hall floor, ringed by scorch marks from deflected bolts. A trial gatekeeper droid stands dormant at its edge, waiting for a challenger."
           }
         },
         "DisarmDC": {

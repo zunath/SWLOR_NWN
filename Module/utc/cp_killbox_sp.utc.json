@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Twi'lek lane instructor in Czerka militia kit, his blaster rifle tracking angles rather than targets. He wrote the drills the cell's adepts run, and he fights by timing crossfire and herding intruders into a box he built before they arrived."
+      "0": "A Twi'lek range instructor in Czerka militia kit, his blaster rifle tracking angles rather than targets. He wrote the drills the washouts run, and he fights by timing crossfire and herding intruders into a box he built before they arrived."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kill Box Specialist"
+      "0": "Range Instructor"
     }
   },
   "fortbonus": {

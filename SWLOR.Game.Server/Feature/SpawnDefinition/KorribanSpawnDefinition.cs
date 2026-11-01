@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS", "Korriban Forge Caverns - Capstone Adepts")
+            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS", "Korriban Forge Caverns - Forgebound Initiate (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_absdef_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP", "Korriban Forge Caverns - Capstone Specialists")
+            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP", "Korriban Forge Caverns - Forgebound Journeyman (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_absdef_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -303,17 +303,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_ABSDEF_IC_SPAWN", "Korriban Forge Caverns - Absolute Defense Inner Circle")
+            _builder.Create("CAPSTONE_ABSDEF_IC_SPAWN", "Korriban Forge Caverns - Forgebound Overseer (Absolute Defense line)")
                 .AddSpawn(ObjectType.Creature, "cp_absdef_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_SOULASC_IC_SPAWN", "Korriban Forge Caverns - Soul Ascension Inner Circle")
+            _builder.Create("CAPSTONE_SOULASC_IC_SPAWN", "Korriban Forge Caverns - Forgebound Overseer (Soul Ascension line)")
                 .AddSpawn(ObjectType.Creature, "cp_soulasc_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_FORCEBANE_IC_SPAWN", "Korriban Forge Caverns - Forcebane Inner Circle")
+            _builder.Create("CAPSTONE_FORCEBANE_IC_SPAWN", "Korriban Forge Caverns - Forgebound Overseer (Forcebane line)")
                 .AddSpawn(ObjectType.Creature, "cp_forcebane_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
             // the line is found in its own part of the dungeon.
-            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS", "Korriban Sith Crypt Depths - Capstone Adepts")
+            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS", "Korriban Sith Crypt Depths - Expedition Raider (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_lightstand_ad")
                 .WithFrequency(70)
                 .RandomlyWalks()
@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP", "Korriban Sith Crypt Depths - Capstone Specialists")
+            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP", "Korriban Sith Crypt Depths - Expedition Marauder (Capstone Specialists)")
                 .AddSpawn(ObjectType.Creature, "cp_lightstand_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
@@ -357,17 +357,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
             // has its four kills present instead of depending on rolls from the general table.
-            _builder.Create("CAPSTONE_LIGHTSTAND_IC_SPAWN", "Korriban Sith Crypt Depths - Last Stand of the Light Inner Circle")
+            _builder.Create("CAPSTONE_LIGHTSTAND_IC_SPAWN", "Korriban Sith Crypt Depths - Expedition Reaver (Last Stand of the Light line)")
                 .AddSpawn(ObjectType.Creature, "cp_lightstand_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_DARKHUNG_IC_SPAWN", "Korriban Sith Crypt Depths - Hunger of the Dark Inner Circle")
+            _builder.Create("CAPSTONE_DARKHUNG_IC_SPAWN", "Korriban Sith Crypt Depths - Expedition Reaver (Hunger of the Dark line)")
                 .AddSpawn(ObjectType.Creature, "cp_darkhung_ic")
                 .WithFrequency(1)
                 .ReturnsHome();
 
-            _builder.Create("CAPSTONE_ECLIPSE_IC_SPAWN", "Korriban Sith Crypt Depths - Eclipse of Resolve Inner Circle")
+            _builder.Create("CAPSTONE_ECLIPSE_IC_SPAWN", "Korriban Sith Crypt Depths - Expedition Reaver (Eclipse of Resolve line)")
                 .AddSpawn(ObjectType.Creature, "cp_eclipse_ic")
                 .WithFrequency(1)
                 .ReturnsHome();

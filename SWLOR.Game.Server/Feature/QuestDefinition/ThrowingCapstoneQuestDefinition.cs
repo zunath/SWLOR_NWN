@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Varik Dane gave you the Czerka Arms Test Range Key. Enter the Czerka Arms Test Range on Smuggler's Moon through the Czerka Weapons Testing Facility door in the Corporate District, a short walk south of the GSI Tower doors. Defeat six Rain of Steel adepts and recover the Rain of Steel Czerka Test Docket.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Adept, 6)
+                    "Varik Dane gave you the Czerka Arms Test Range Key. Enter the Czerka Arms Test Range on Smuggler's Moon through the Czerka Weapons Testing Facility door in the Corporate District, a short walk south of the GSI Tower doors. Defeat six Range Washouts, the Range Washouts who hold the rooms nearest the entrance, and recover the Rain of Steel Czerka Test Docket. Any Range Washout counts, but a kill only counts with Explosive Toss or Concussive Toss.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Adept, "rain_of_steel", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelCzerkaTestDocket)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Rain of Steel specialists in the calibration lanes deeper in the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Blast-Cell Regulator.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Specialist, 5)
+                    "Defeat five Range Instructors, the Range Washouts who hold the calibration lanes deeper in the Czerka Arms Test Range on Smuggler's Moon, and recover the Rain of Steel Blast-Cell Regulator. Any Range Instructor counts, but a kill only counts with Explosive Toss or Concussive Toss.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Specialist, "rain_of_steel", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelBlastCellRegulator)
 
                 .AddState()
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Rain of Steel warden in the deep range of the Czerka Arms Test Range on Smuggler's Moon and take the Rain of Steel Scored Range Crest from him.")
+                    "Defeat Range Overseer Perrin Aldous in the deep range of the Czerka Arms Test Range on Smuggler's Moon and take the Rain of Steel Scored Range Crest from him.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelScoredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Rain of Steel Scored Range Crest from the warden. Deliver it to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
+                    "You took the Rain of Steel Scored Range Crest from Range Overseer Perrin Aldous. Deliver it to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Rain of Steel inner circle in the stockrooms of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Czerka Clearance Chit.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_InnerCircle, 4)
+                    "Defeat four Black Cell Shooters, the Range Washouts who guard the deepest part of the Czerka Arms Test Range on Smuggler's Moon, and recover the Rain of Steel Czerka Clearance Chit. Any Black Cell Shooter counts, but a kill only counts with Explosive Toss or Concussive Toss.")
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_InnerCircle, "rain_of_steel", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelCzerkaClearanceChit)
 
                 .AddState()
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Rain of Steel master in the Blast-Safe Cell at the far end of the Czerka Arms Test Range on Smuggler's Moon.")
+                    "Defeat Range Director Daav Rhoun in the Blast-Safe Cell at the far end of the Czerka Arms Test Range on Smuggler's Moon.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Rain of Steel master is defeated. Report to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
+                    "Range Director Daav Rhoun is defeated. Report to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Selka Vorn gave you the Hutlar Qion Test Site Key. Enter the Hutlar Qion Test Site on Hutlar through its gate in the Qion Box Canyon, a short walk south of where she stands. Defeat six Perfect Flurry adepts on the open range and recover the Perfect Flurry Qion Test Log.")
-                .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Adept, 6)
+                    "Selka Vorn gave you the Hutlar Qion Test Site Key. Enter the Hutlar Qion Test Site on Hutlar through its gate in the Qion Box Canyon, a short walk south of where she stands. Defeat six Test Crew Technicians, the Qion Test Crew who hold the rooms nearest the entrance of the test site, and recover the Perfect Flurry Qion Test Log. Any Test Crew Technician counts, but a kill only counts while they bleed from your throws.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Adept, "perfect_flurry", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryQionTestLog)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Perfect Flurry specialists on the cryo range deeper in the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Cryo-Range Regulator.")
-                .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Specialist, 5)
+                    "Defeat five Test Crew Demolitionists, the Qion Test Crew who hold the cryo range and other deeper rooms of the Hutlar Qion Test Site on Hutlar, and recover the Perfect Flurry Cryo-Range Regulator. Any Test Crew Demolitionist counts, but a kill only counts while they bleed from your throws.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Specialist, "perfect_flurry", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryCryoRangeRegulator)
 
                 .AddState()
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Perfect Flurry warden in the deep range of the Hutlar Qion Test Site on Hutlar and take the Perfect Flurry Frostburned Test Crest from him.")
+                    "Defeat Test Supervisor Ketu Ran in the deep range of the Hutlar Qion Test Site on Hutlar and take the Perfect Flurry Frostburned Test Crest from him.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryFrostburnedTestCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Perfect Flurry Frostburned Test Crest from the warden. Deliver it to Selka Vorn in the Qion Box Canyon on Hutlar.")
+                    "You took the Perfect Flurry Frostburned Test Crest from Test Supervisor Ketu Ran. Deliver it to Selka Vorn in the Qion Box Canyon on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Perfect Flurry inner circle in the control block of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Site Chief's Override Chip.")
-                .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_InnerCircle, 4)
+                    "Defeat four Site Chief's Officers, the Qion Test Crew who guard the deepest part of the Hutlar Qion Test Site on Hutlar, and recover the Perfect Flurry Site Chief's Override Chip. Any Site Chief's Officer counts, but a kill only counts while they bleed from your throws.")
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_PerfectFlurry_InnerCircle, "perfect_flurry", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurrySiteChiefsOverrideChip)
 
                 .AddState()
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Perfect Flurry master in the Overload Chamber at the far end of the Hutlar Qion Test Site on Hutlar.")
+                    "Defeat Site Chief Veshan Dru in the Overload Chamber at the far end of the Hutlar Qion Test Site on Hutlar.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Perfect Flurry master is defeated. Report to Selka Vorn in the Qion Box Canyon on Hutlar.")
+                    "Site Chief Veshan Dru is defeated. Report to Selka Vorn in the Qion Box Canyon on Hutlar.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

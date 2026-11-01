@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A broad human anvil-keeper in honor-guard plate, a shard of cracked anvil hung at his throat and old burn scars across both palms. He greets every challenger with quiet courtesy, then lets his heavy vibroblade drink."
+      "0": "A broad human forge warden in honor-guard plate, a shard of cracked anvil hung at his throat and old burn scars across both palms. He greets every challenger with quiet courtesy, then lets his heavy vibroblade drink."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Soul Ascension Warden"
+      "0": "Forge Warden Dael Karrow"
     }
   },
   "fortbonus": {

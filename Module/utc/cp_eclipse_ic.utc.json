@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian demolition hand hired by the Umbral Raiders to wreck tomb seals and collapse passages behind them. Saboteurs move fast through the tunnels of the Sith Crypt Depths and keep a blaster close."
+      "0": "A Rodian reaver, a demolition hand hired by the expedition's Umbral Raider crew to wreck tomb seals and collapse passages behind them. Reavers move fast through the tunnels of the Sith Crypt Depths and keep a blaster close."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Umbral Raider Saboteur"
+      "0": "Expedition Reaver"
     }
   },
   "fortbonus": {

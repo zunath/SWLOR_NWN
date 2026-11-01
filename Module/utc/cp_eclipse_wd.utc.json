@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Twi'lek mercenary in stolen Sith armor who leads the Umbral Raiders by intimidation and backs it with a blaster. He holds the trial altar in the Sith Crypt Depths against anyone who would expose their forged claim."
+      "0": "A Twi'lek mercenary captain in stolen Sith armor who leads the Umbral Raider crew by intimidation and backs it with a blaster. He holds the trial altar in the Sith Crypt Depths against anyone who would expose their forged claim."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Umbral Raider Captain"
+      "0": "Expedition Captain Tavik Orrun"
     }
   },
   "fortbonus": {

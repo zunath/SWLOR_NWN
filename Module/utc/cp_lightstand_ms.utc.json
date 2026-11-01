@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Cathar relic hunter in a bounty hunter's armor, with a blaster at his side and some training in the Force. He leads the looting of the Sith Crypt Depths and means to leave Mon Cala with the tomb's last relics."
+      "0": "A Cathar relic hunter in a bounty hunter's armor, with a blaster at his side and some training in the Force. He leads the relic expedition and its looting of the Sith Crypt Depths and means to leave Mon Cala with the tomb's last relics."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crypt Expedition Leader"
+      "0": "Expedition Leader Kaelen Dorr"
     }
   },
   "fortbonus": {

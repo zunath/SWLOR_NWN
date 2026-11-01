@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan in a trader's clothes with a blaster pistol and an easy smile. He is one of the eager students at a crooked table in the Anchorhead Canyon Range, learning an old dealer's draw and the house's cheating along with it, and he bets like he holds aces."
+      "0": "A Nautolan drifter in a trader's clothes with a blaster pistol and an easy smile. He is one of the eager gunhands at a crooked table in the Anchorhead Canyon Range, learning an old dealer's draw and the house's cheating along with it, and he bets like he holds aces."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dead Man's Hand Adept"
+      "0": "Canyon Drifter"
     }
   },
   "fortbonus": {

@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian in rough street leathers, blaster rifle warm from rounds fired faster than he aims them. He is one of the range crew squatting on the near lanes of the Czerka Arms Test Range, who copied an old marksman's target logs and now sell the result as doctrine."
+      "0": "A Rodian range washout in rough street leathers, blaster rifle warm from rounds fired faster than he aims them. He is one of the washouts squatting on the near lanes of the Czerka Arms Test Range, who copied an old marksman's target logs and now sell the result as doctrine."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "One Shot Adept"
+      "0": "Range Washout"
     }
   },
   "fortbonus": {

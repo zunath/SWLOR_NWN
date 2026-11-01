@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the Medical Sublevel on Mon Cala running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their adepts hold the arms down. Put six of them down instead, and bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine.",
+          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the Medical Sublevel on Mon Cala running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their Ward Orderlies hold the arms down, and they hold the rooms nearest the lift. Put six of them down instead. Here is the catch: my cocktail is a stabilizer you build for the people beside you, so keep your allies dosed with combat stims while your party puts the orderlies down. Any orderly counts, they all serve the same ward, but only while your stims are fresh in your allies. A kill that never needed your kit teaches you nothing. Then bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the key off that hook - the one with the red tag. It works the service lift down to the Medical Sublevel. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it, but you won't have to go far: take the sliding door off the entry hall, and the lift stands in the red-walled bay just east of the office block. Six adepts, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here.",
+          "Text": "Take the key off that hook - the one with the red tag. It works the service lift down to the Medical Sublevel. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it, but you won't have to go far: take the sliding door off the entry hall, and the lift stands in the red-walled bay just east of the office block. Six Ward Orderlies, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Chemists who stopped asking permission. The adepts are dosed on their own product - faster than they should be, numb where you'd hope they weren't. They'll come at you with blasters and injectors, and if one grabs you, count your pulse, because whatever's in the syringe works in seconds. Keep your kit stocked and your exits counted.",
+          "Text": "Chemists who stopped asking permission. The Ward Orderlies are dosed on their own product - faster than they should be, numb where you'd hope they weren't. They'll come at you with blasters and injectors, and if one grabs you, count your pulse, because whatever's in the syringe works in seconds. Keep your kit stocked and your exits counted.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger's still down there, and so are the six adepts writing in it. Every hour you spend up here, that book gains a page. Go.",
+          "Text": "The ledger's still down there, and so are the six orderlies writing in it. Keep your allies dosed while they fall. Every hour you spend up here, that book gains a page. Go.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You again. Good - hold this coupler housing while I talk, it wants a steady grip. The crew took the ledger loss badly. Their specialists have spliced feed lines straight into the sublevel's kolto conduits: raw kolto into hot batches, no filtration, straight into whoever's strapped down. Five specialists run the splice. Take them apart and bring me the fitting itself - the Emergency Cocktail Kolto Conduit Coupler. Without it their whole draw collapses, and I get proof of exactly what they tapped.",
+          "Text": "You again. Good - hold this coupler housing while I talk, it wants a steady grip. The crew took the ledger loss badly. Their Ward Guards have spliced feed lines straight into the sublevel's kolto conduits: raw kolto into hot batches, no filtration, straight into whoever's strapped down. Five Ward Guards run the splice, deeper in the sublevel than the orderlies. Take them apart with your allies dosed on combat stims the whole fight; any guard counts, and only while your stims are fresh. Then bring me the fitting itself - the Emergency Cocktail Kolto Conduit Coupler. Without it their whole draw collapses, and I get proof of exactly what they tapped.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same facility, same key. The specialists work the kolto lines all over the sublevel. Cut them away before they can vent anything at you, and bring the coupler back intact. A cracked one tells me nothing except that you were careless.",
+          "Text": "Same facility, same key. The Ward Guards work the kolto lines all over the sublevel. Cut them away before they can vent anything at you, and bring the coupler back intact. A cracked one tells me nothing except that you were careless.",
           "Style": 0,
           "Color": null
         }
@@ -536,7 +536,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "An adept holds the arm. A specialist decides what goes into it. They trained under real ward staff before they went below, which means they know dosage, timing, and precisely how much a body can take before it stops complaining. They will use all three on you.",
+          "Text": "An orderly holds the arm. A Ward Guard decides what goes into it. They trained under real ward staff before they went below, which means they know dosage, timing, and precisely how much a body can take before it stops complaining. They will use all three on you.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Rougher than last time. The specialists work in pairs and they don't panic - panic is for people who haven't already decided you're a test subject. They like to fight near the kolto lines, and whatever they throw at you isn't medicine. Go in rested. That's a prescription, not a suggestion.",
+          "Text": "Rougher than last time. The Ward Guards work in pairs and they don't panic - panic is for people who haven't already decided you're a test subject. They like to fight near the kolto lines, and whatever they throw at you isn't medicine. Go in rested. That's a prescription, not a suggestion.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, one coupler, and a kolto line bleeding into bad batches the whole time you're up here. The math doesn't pause. Neither should you.",
+          "Text": "Five Ward Guards, one coupler, your allies dosed throughout, and a kolto line bleeding into bad batches the whole time you're up here. The math doesn't pause. Neither should you.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Put the tray down and listen, because this one changes the dosage. In the sublevel's south-west wing, the crew keeps its clean room, where the real batches get made. Their warden holds it. Ward-trained, dosed to the eyes, and mean enough that the specialists knock. I want him gone and the Emergency Cocktail Fractured Ward Sigil back in my hands. And you don't go alone. That's triage math: one of you bleeds out in that room, three of you walk out. Bring two you'd trust with your airway.",
+          "Text": "Put the tray down and listen, because this one changes the dosage. In the sublevel's south-west wing, the crew keeps its clean room, where the real batches get made. Ward Supervisor Teno Barr holds it. Ward-trained, dosed to the eyes, and mean enough that the guards knock. I want him gone and the Emergency Cocktail Fractured Ward Sigil back in my hands. And you don't go alone. That's triage math: one of you bleeds out in that room, three of you walk out. Bring two you'd trust with your airway.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good answer - the plural was the part I was checking. The clean room is in the south-west wing of the sublevel. Hit the warden fast, keep someone breathing between injectors, and take the sigil off him when it's done. I'll have three stims and a strong opinion waiting.",
+          "Text": "Good answer - the plural was the part I was checking. The clean room is in the south-west wing of the sublevel. Hit Barr fast, keep someone breathing between injectors, and take the sigil off him when it's done. I'll have three stims and a strong opinion waiting.",
           "Style": 0,
           "Color": null
         }
@@ -771,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Simple sums. One fighter in that room means the warden picks when you rest, when you bleed, and when it ends. Two means someone can drag the other clear. Three means he has to choose, and choosing is where fights get lost. I've run this arithmetic on cot after cot for twenty years. Bring two companions, or don't bring yourself.",
+          "Text": "Simple sums. One fighter in that room means Barr picks when you rest, when you bleed, and when it ends. Two means someone can drag the other clear. Three means he has to choose, and choosing is where fights get lost. I've run this arithmetic on cot after cot for twenty years. Bring two companions, or don't bring yourself.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It marked that clean room as a sanctioned ward - the matron's mark, from when the sublevel still healed people. The crew cracked it when they took the room, and the warden kept the broken half like a joke. Bring it to me. I'd rather it sit broken in my drawer than in his pocket.",
+          "Text": "It marked that clean room as a sanctioned ward - the matron's mark, from when the sublevel still healed people. The crew cracked it when they took the room, and Barr kept the broken half like a joke. Bring it to me. I'd rather it sit broken in my drawer than in his pocket.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's still holding the clean room, and if you're standing here alone, you're still two people short of a survivable entry. Gather your trusted pair, then go take that sigil off him.",
+          "Text": "Barr's still holding the clean room, and if you're standing here alone, you're still two people short of a survivable entry. Gather your trusted pair, then go take that sigil off him.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, the warden's off the board, and Dac City owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
+          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, Barr's off the board, and Dac City owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit. I already poured you a stimulant - that's how you know it's serious. With the warden gone, the crew's core came up from hiding. Four of them, the inner circle, the ones who wrote the hot-batch doctrine. More implant than patient now. They're walking the sublevel like they own it, and they carry the Emergency Cocktail Matron's Ward Token, the old matron's own mark of care, pocketed like a trophy. Four names, one token. Bring it back.",
+          "Text": "Sit. I already poured you a stimulant - that's how you know it's serious. With Barr gone, the crew's core came up from hiding. Four Matron's Attendants, the ones who wrote the hot-batch doctrine, walking the deepest part of the sublevel. More implant than patient now. They're walking the sublevel like they own it, and they carry the Emergency Cocktail Matron's Ward Token, the old matron's own mark of care, pocketed like a trophy. Four names, one token. Same rule as the orderlies: keep your allies dosed with combat stims while your party puts them down, and any attendant counts while those stims are fresh. Bring it back.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Before the eco-terrorists took the facility above, the sublevel's wards answered to a matron, healing divers and isle crews nobody else would take. Whoever held her token answered for every patient below. The circle took it because holding it says the sublevel answers to them. I don't run on sentiment, but I make an exception for that piece of brass.",
+          "Text": "Before the eco-terrorists took the facility above, the sublevel's wards answered to a matron, healing divers and isle crews nobody else would take. Whoever held her token answered for every patient below. The attendants took it because holding it says the sublevel answers to them. I don't run on sentiment, but I make an exception for that piece of brass.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four practitioners who've each survived their own doctrine, wired with enough hardware to shrug off what would drop you. If they find you together, they'll stagger their injectors so one is always fresh. If your two from the warden fight are still upright, this is where you spend that trust again. Don't trade one-for-one with people who keep spares.",
+          "Text": "Four practitioners who've each survived their own doctrine, wired with enough hardware to shrug off what would drop you. If they find you together, they'll stagger their injectors so one is always fresh. If your two from the Barr fight are still upright, this is where you spend that trust again. Don't trade one-for-one with people who keep spares.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The circle is still walking the sublevel, and the token is still in the wrong pocket. Four names. I've crossed out none of them yet.",
+          "Text": "The Matron's Attendants are still walking the sublevel, and the token is still in the wrong pocket. Four names. I've crossed out none of them yet.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No tray this time. Both hands free, because you should hear this straight. The one left is the master - the chemist the circle answered to. He perfected the emergency cocktail: he can build a stabilizer from pocket vials mid-fight and pull himself back from the edge, over and over. It cost a wing full of patients to refine. He's holed up in the Protected Ward, reached from the north-east corner of the sublevel. Kill him, and I'll teach you the recipe built clean. Taken alone, his room is a lethal dose. Take your two, or take more.",
+          "Text": "No tray this time. Both hands free, because you should hear this straight. The one left is Ward Chief Koth Davin - the chemist the attendants answered to. He perfected the emergency cocktail: he can build a stabilizer from pocket vials mid-fight and pull himself back from the edge, over and over. It cost a wing full of patients to refine. He's holed up in the Protected Ward, reached from the north-east corner of the sublevel. Kill him, and I'll teach you the recipe built clean. Taken alone, his room is a lethal dose. Take your two, or take more.",
           "Style": 0,
           "Color": null
         }
@@ -1497,7 +1497,7 @@
     "reply-00007": {
       "Id": "reply-00007",
       "Text": {
-        "Text": "Back to the specialists.",
+        "Text": "Back to the Ward Guards.",
         "Style": 4,
         "Color": null
       },
@@ -1520,7 +1520,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. I'll bring you the coupler.",
+        "Text": "Five Ward Guards. I'll bring you the coupler.",
         "Style": 4,
         "Color": null
       },
@@ -1550,7 +1550,7 @@
     "reply-00009": {
       "Id": "reply-00009",
       "Text": {
-        "Text": "What makes a specialist worse than an adept?",
+        "Text": "What makes a Ward Guard worse than an orderly?",
         "Style": 4,
         "Color": null
       },
@@ -1667,7 +1667,7 @@
     "reply-00014": {
       "Id": "reply-00014",
       "Text": {
-        "Text": "Back to the warden.",
+        "Text": "Back to Barr.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll find two I trust and put the warden down.",
+        "Text": "I'll find two I trust and put Barr down.",
         "Style": 4,
         "Color": null
       },
@@ -1720,7 +1720,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Who is this warden?",
+        "Text": "Who is Teno Barr?",
         "Style": 4,
         "Color": null
       },
@@ -1807,7 +1807,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The Fractured Ward Sigil. The warden won't miss it.",
+        "Text": "The Fractured Ward Sigil. Barr won't miss it.",
         "Style": 4,
         "Color": null
       },
@@ -1837,7 +1837,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Back to the circle.",
+        "Text": "Back to the attendants.",
         "Style": 4,
         "Color": null
       },
@@ -1977,7 +1977,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The Matron's Ward Token. The circle is finished.",
+        "Text": "The Matron's Ward Token. The attendants are finished.",
         "Style": 4,
         "Color": null
       },
@@ -2007,7 +2007,7 @@
     "reply-00028": {
       "Id": "reply-00028",
       "Text": {
-        "Text": "Back to the master.",
+        "Text": "Back to Koth Davin.",
         "Style": 4,
         "Color": null
       },

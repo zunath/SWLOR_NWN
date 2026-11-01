@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human with a gambler's style who meets challengers in the open in the Canyon Dueling Pit. He once split every pot at this range with a partner, until he dealt seconds to a boy who died of it; he kept the table, the title, and the Dead Man's Hand. He has never lost with it."
+      "0": "A human range marshal with a gambler's style who meets challengers in the open in the Canyon Dueling Pit. He once split every pot at this range with a partner, until he dealt seconds to a boy who died of it; he kept the table, the title, and the draw that has never failed him."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dead Man's Hand Master"
+      "0": "Range Marshal Jonas Harlan"
     }
   },
   "fortbonus": {

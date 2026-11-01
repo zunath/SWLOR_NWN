@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Haro Kel, an armored Twi'lek whom Captain Renn trained and promoted past her own grade, and who stayed behind the sealed door because he believed the program was right. He holds the annex command room with a vibroblade and a guard that has no seam in it."
+      "0": "Haro Kel, an armored Twi'lek whom Captain Renn trained and promoted past her own grade, and who now commands the holdouts behind the sealed door because he believed the program was right. He holds the annex command room with a vibroblade and a guard that has no seam in it."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Invincible Master"
+      "0": "Holdout Captain Haro Kel"
     }
   },
   "fortbonus": {

@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The Zabrak who leads the Vitae Reavers, wrapped in the armor of a Sith lord he has no right to wear. Weeks of draining the survey crews in the Sith Crypt Depths have left him strong and starving for more."
+      "0": "The Zabrak who leads the expedition's Vitae Reaver crew, wrapped in the armor of a Sith lord he has no right to wear. Weeks of draining the survey crews in the Sith Crypt Depths have left him strong and starving for more."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vitae Reaver Chief"
+      "0": "Expedition Leader Mordek Sull"
     }
   },
   "fortbonus": {

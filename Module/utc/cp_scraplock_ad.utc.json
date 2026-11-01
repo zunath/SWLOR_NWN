@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A stocky Ugnaught in black yard coveralls with katars on both fists. He holds his corner of a sealed bay the way he was drilled: close the room around the fight and let nothing inside move without his leave. He is one of the crew's recruits, posted in the Breaker Yard's outer bays under a forged work order."
+      "0": "A stocky Ugnaught scrapper in black yard coveralls with katars on both fists. He holds his corner of a sealed bay the way he was drilled: close the room around the fight and let nothing inside move without his leave. He is one of the wreck crew's scrappers, posted in the Breaker Yard's outer bays under a forged work order."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Scrapheap Lockdown Adept"
+      "0": "Wreck Crew Scrapper"
     }
   },
   "fortbonus": {

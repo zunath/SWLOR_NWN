@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan in close-fitted armor who holds the floor of the Breaker Yard with a heavy staff. He drove his strikes past the point where body and weapon should have given out, and neither did. Whatever once held him back gave way long ago, and nothing has taken its place."
+      "0": "A Nautolan wreck foreman in close-fitted armor who holds the floor of the Breaker Yard with a heavy staff. He drove his strikes past the point where body and weapon should have given out, and neither did. Whatever once held him back gave way long ago, and nothing has taken its place."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Worldbreaker Master"
+      "0": "Wreck Foreman Kaddo Rin"
     }
   },
   "fortbonus": {

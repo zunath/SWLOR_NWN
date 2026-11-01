@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak in a hired guard's outfit, blaster rifle held close. He is one of the four founders who drew Czerka's original kill box lanes and then claimed the doctrine as their own, and he holds the sealed executive lanes alongside the others without a word passing between them."
+      "0": "A Zabrak Black Cell shooter in a hired guard's outfit, blaster rifle held close. He is one of the four founders who drew Czerka's original crossfire lanes and then claimed the doctrine as their own, and he holds the sealed executive lanes alongside the others without a word passing between them."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kill Box Inner Circle"
+      "0": "Black Cell Shooter"
     }
   },
   "fortbonus": {

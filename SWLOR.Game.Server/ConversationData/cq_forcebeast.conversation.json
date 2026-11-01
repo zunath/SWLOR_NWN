@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There. I see it now, faint but real, a thread trying to grow between you and yours. The Grotto Apex Den is full of wyverns whose threads were cut. The handlers who held that den forced bonds on them, then severed them when the beasts turned. The handlers are gone. The wyverns remain, and they tear at any thread that comes near. Go to the den on Dathomir. End six of the young ones. Bring me the Force-Bonded Beast Grotto Track Slate from their roost; it once mapped where a proper rite could be spoken.",
+          "Text": "There. I see it now, faint but real, a thread trying to grow between you and yours. The Grotto Apex Den is full of wyverns whose threads were cut. The handlers who held that den forced bonds on them, then severed them when the beasts turned. The handlers are gone. The wyverns remain, and they tear at any thread that comes near. Go to the den on Dathomir. End six of the Young Wyverns, the ones roosting nearest the way in. Any Young Wyvern will do, every wyvern in that den was cut the same way. But the thread has to be doing its work: a kill counts while your beast's Warding Howl is shielding you, or when your beast's Force Touch lands on the wyvern. Bring me the Force-Bonded Beast Grotto Track Slate from their roost; it once mapped where a proper rite could be spoken.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In the old rite, the slate marked where the ground itself remembered a bond made honestly, a place returned to, generation after generation. The handlers used it to find beasts still uncorrupted, so they could corrupt them first. The young wyverns roost on it now. Bring it back and the ground remembers correctly again.",
+          "Text": "In the old rite, the slate marked where the ground itself remembered a bond made honestly, a place returned to, generation after generation. The handlers used it to find beasts still uncorrupted, so they could corrupt them first. The Young Wyverns roost on it now. Bring it back and the ground remembers correctly again.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six young wyverns still tearing at what should be tied. The slate waits in their roost.",
+          "Text": "Six Young Wyverns still tearing at what should be tied. Let the Warding Howl shield you or the Force Touch land. The slate waits in their roost.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The older wyverns still carry forced bonds, with no one left on the other end of them. They have learned to mistake pain for devotion. That is not a knot. That is a wound wearing a knot's shape. Go back to the Grotto Apex Den. End five of them. Bring me the Force-Bonded Beast Resonant Fang Charm one of them still wears.",
+          "Text": "The Goad-Scarred Wyverns, the older ones deeper in, still carry forced bonds, with no one left on the other end of them. They have learned to mistake pain for devotion. That is not a knot. That is a wound wearing a knot's shape. Go back to the Grotto Apex Den. End five of them, with the Warding Howl shielding you or your beast's Force Touch upon each; any Goad-Scarred Wyvern counts. Bring me the Force-Bonded Beast Resonant Fang Charm one of them still wears.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five old wyverns, five wounds wearing knots. Bring the charm back true.",
+          "Text": "Five Goad-Scarred Wyverns, five wounds wearing knots. Bring the charm back true.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A warden holds the deeper weave, a wraid the handlers bound before any of the wyverns. Every forced thread in that den was tied through him, and his own bond has been forced so long it no longer looks like one. No single thread can unpick a weave that size. Bring two others, with their own honest bonds if they carry them, and cut his weave apart together. End him. Bring me the Force-Bonded Beast Cracked Apex Totem bound to his harness.",
+          "Text": "Handler's Wraid holds the deeper weave, a wraid the handlers bound before any of the wyverns. Every forced thread in that den was tied through him, and his own bond has been forced so long it no longer looks like one. No single thread can unpick a weave that size. Bring two others, with their own honest bonds if they carry them, and cut his weave apart together. End him. Bring me the Force-Bonded Beast Cracked Apex Totem bound to his harness.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden still wears a weave instead of a thread. Bring your own bonds when you go.",
+          "Text": "Handler's Wraid still wears a weave instead of a thread. Bring your own bonds when you go.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The first bond, honored again. That is a rite older than this den's corruption, spoken true for the first time in longer than I want to guess. The inner cord will have felt that.",
+          "Text": "The first bond, honored again. That is a rite older than this den's corruption, spoken true for the first time in longer than I want to guess. The Den Elder Wyverns will have felt that.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four remain at the heart of the den, the inner circle: the eldest wyverns, the first of their kind the handlers ever forced. Their threads were braided into one cord, and a cord does not fray one strand at a time; it holds until every strand is cut at once. Bring your bonds back in, all of you together. End the four. Bring me the Force-Bonded Beast Den-Mother's Fang Token from their roost.",
+          "Text": "Four remain in the deepest part of the den, the Den Elder Wyverns: the eldest wyverns, the first of their kind the handlers ever forced. Their threads were braided into one cord, and a cord does not fray one strand at a time; it holds until every strand is cut at once. Bring your bonds back in, all of you together. End the four, with the Warding Howl shielding you or your beast's Force Touch upon each; any Den Elder Wyvern counts. Bring me the Force-Bonded Beast Den-Mother's Fang Token from their roost.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The last thread is his. The master is the eldest wraid, the first beast the handlers ever forced the rite upon. His bond was forced past anything the others suffered, until it needed no one on the other end at all. That is the horror of it: it still holds, without consent, without even a handler. Bring your bonds, every one; a weave that size answers to many threads pulling as one or to nothing. There is no relic this time. His bond breaking is the whole rite completed.",
+          "Text": "The last thread is his. Old Wraid is the eldest wraid, the first beast the handlers ever forced the rite upon. His bond was forced past anything the others suffered, until it needed no one on the other end at all. That is the horror of it: it still holds, without consent, without even a handler. Bring your bonds, every one; a weave that size answers to many threads pulling as one or to nothing. There is no relic this time. His bond breaking is the whole rite completed.",
           "Style": 0,
           "Color": null
         }
@@ -1396,7 +1396,7 @@
     "reply-00004": {
       "Id": "reply-00004",
       "Text": {
-        "Text": "Why do the young wyverns tear at threads?",
+        "Text": "Why do the Young Wyverns tear at threads?",
         "Style": 4,
         "Color": null
       },

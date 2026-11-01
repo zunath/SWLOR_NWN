@@ -351,7 +351,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Guardian Patrol Droid"
+      "0": "Trial Drill Droid"
     }
   },
   "fortbonus": {

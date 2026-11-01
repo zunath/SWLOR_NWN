@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human marksman who works the long lanes of the Anchorhead Canyon Range with a blaster pistol and a great deal of patience. The old dueling sightlines there were zeroed for fair fights; his crew has dialed them into ambush angles."
+      "0": "A human sharpshooter who works the long lanes of the Anchorhead Canyon Range with a blaster pistol and a great deal of patience. The old dueling sightlines there were zeroed for fair fights; his crew has dialed them into ambush angles."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Last Word Specialist"
+      "0": "Canyon Sharpshooter"
     }
   },
   "fortbonus": {

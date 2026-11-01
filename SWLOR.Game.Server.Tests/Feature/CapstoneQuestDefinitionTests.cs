@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
@@ -368,6 +369,55 @@ public class CapstoneQuestDefinitionTests
                 .BeEmpty();
         }
     }
+
+    [Test]
+    public void KillSteps_HuntTheDungeonTierWithTheLinesOwnProof()
+    {
+        var quests = BuildCapstoneQuests();
+        var proofKeys = CapstoneProofDefinitions.All.Select(proof => proof.Key).ToArray();
+        proofKeys.Should().OnlyHaveUniqueItems();
+
+        foreach (var line in CapstoneQuestDefinitionTestData.Lines)
+        {
+            var proofKey = ToProofKey(line.DisplayName);
+            proofKeys.Should().Contain(proofKey, $"{line.DisplayName} needs a capstone proof");
+            var areaLines = CapstoneQuestDefinitionTestData.Lines.Where(other => other.AreaGroup == line.AreaGroup).ToArray();
+
+            foreach (var step in CapstoneQuestDefinitionTestData.GeneralSpawnSteps.Concat(CapstoneQuestDefinitionTestData.FixedSpawnSteps))
+            {
+                // Every line in the dungeon hunts the same tier, proving its own mechanic on each kill.
+                var objective = quests[line.GetQuestId(step)].States[1].GetObjectives()
+                    .OfType<CapstoneProofKillObjective>()
+                    .Should().ContainSingle($"{line.GetQuestId(step)} is a capstone proof kill step").Subject;
+                objective.Group.Should().Be(line.NpcGroups[step]);
+                objective.ProofKey.Should().Be(proofKey);
+                objective.CreditedGroups.Should().BeEquivalentTo(areaLines.Select(other => other.NpcGroups[step]));
+            }
+
+            foreach (var step in CapstoneQuestDefinitionTestData.OnDemandEncounterSteps)
+            {
+                quests[line.GetQuestId(step)].States[1].GetObjectives().OfType<CapstoneProofKillObjective>()
+                    .Should().BeEmpty($"{line.GetQuestId(step)} is a boss encounter");
+            }
+        }
+    }
+
+    [Test]
+    public void CapstoneProofs_NeverCountTheCapstoneItself()
+    {
+        // The quest chain unlocks the capstone, so its own ability or status can never be the proof.
+        foreach (var proof in CapstoneProofDefinitions.All)
+        {
+            var capstone = string.Concat(proof.Key.Split('_').Select(word => char.ToUpperInvariant(word[0]) + word[1..]));
+            var names = proof.EnemyStatusEffects.Concat(proof.SupportStatusEffects).Select(type => type.Name)
+                .Concat(proof.AbilityHits.Select(feat => feat.ToString()));
+            names.Should().NotContain(name => name.StartsWith(capstone, StringComparison.OrdinalIgnoreCase),
+                $"proof '{proof.Key}' must not count its own capstone");
+        }
+    }
+
+    private static string ToProofKey(string displayName) =>
+        Regex.Replace(displayName.ToLowerInvariant().Replace("'", string.Empty), "[^a-z0-9]+", "_").Trim('_');
 
     [Test]
     public void FinalQuests_UseFinalBossGroupAndGrantLineAchievement()

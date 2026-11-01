@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Twi'lek in armored colonist garb who locks into each stance like a statue, staff braced and every muscle set. He sets his footing by an old sightline calibrator instead of by feel, and mistakes that rigidity for calm."
+      "0": "A Twi'lek sharpshooter in armored colonist garb who locks into each stance like a statue, staff braced and every muscle set. He sets his footing by an old sightline calibrator instead of by feel, and mistakes that rigidity for calm."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unmoving Center Specialist"
+      "0": "Canyon Sharpshooter"
     }
   },
   "fortbonus": {

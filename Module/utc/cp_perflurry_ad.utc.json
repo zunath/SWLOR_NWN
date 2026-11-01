@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Twi'lek in a close-fitted dark outfit, throwing blades counted out in his hand. He rehearses a stolen exhibition routine on the frozen open range of the Qion Test Site as if it were a firing table, all count and no grace."
+      "0": "A Twi'lek test crew technician in a close-fitted dark outfit, throwing blades counted out in his hand. He rehearses a stolen exhibition routine on the frozen open range of the Qion Test Site as if it were a firing table, all count and no grace."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Perfect Flurry Adept"
+      "0": "Test Crew Technician"
     }
   },
   "fortbonus": {

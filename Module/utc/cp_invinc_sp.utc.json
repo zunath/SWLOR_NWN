@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Trandoshan in armored garb who earned his rank under Captain Renn by holding a guard through a full rotation without taking a scored hit. He works the open lanes of the annex range block with his vibroblade, timing how long an opponent's guard can last."
+      "0": "A Trandoshan in armored garb who earned his sergeant stripes under Captain Renn by holding a guard through a full rotation without taking a scored hit. He works the open lanes of the annex range block with his vibroblade, drilling the recruits and timing how long a guard can last."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Invincible Specialist"
+      "0": "Holdout Sergeant"
     }
   },
   "fortbonus": {

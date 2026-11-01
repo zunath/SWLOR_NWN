@@ -105,6 +105,10 @@ namespace SWLOR.Game.Server.Service.CombatService
             return (int)Math.Min(int.MaxValue, itemDamage + bonus);
         }
 
+        /// <summary>Power Gloves strike with both fists, so they use dual-wield rules rather than Single Weapon.</summary>
+        public const string PowerGloveGripDescription =
+            "Grip: Dual wield. Strikes with both fists, so the Dual Wield perk applies. Single Weapon and Doublehand bonuses do not apply.";
+
         public static string BuildSingleWeaponDescription(int itemDamage, int naturalPercent, int perkPercent, bool hasItemDamage = true)
         {
             if (!hasItemDamage)

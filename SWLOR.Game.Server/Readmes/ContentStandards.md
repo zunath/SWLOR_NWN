@@ -20,6 +20,7 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 - Every other base type, including gloves, boots, belts, rings, amulets, bracers, and non-equipment such as recipes, components, food, and furniture, reuses models and icons already on existing player items of the same base type.
 - In a batch, give every item its own appearance wherever its base type offers more than one. If the available options cannot supply enough distinct appearances, stop and ask.
 - The base item type must match what the item is. Name, description, Design Bible slot (`Equipment - Weapons` column D, `Equipment - Armor` column C), and `BaseItem` must agree: a cloak is never a glove. Run the `EquipmentTypeTests` filter after adding or changing wearables; it matches item names to base types and checks the workbook.
+- Dyeable armor and helmet imports keep existing dye colors unchanged and take metal reflectance from the palette: no specular or roughness map over Metal 1 or Metal 2, and `SWLOR_Haks/tools/CheckDyeAppearance.py` must pass (`TintMapRendering.md`, "Keep dye colors stable").
 - Item models also follow `ItemAppearanceRules.md` (reserved helmet model 223, `ModelPart1`/`xModelPart1` consistency, embedded item copies). Item blueprints follow `EconomyRestrictedItems.md` (economy flags and obtainability) and `IconStandards.md`.
 
 ## Loot

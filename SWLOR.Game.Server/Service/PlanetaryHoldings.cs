@@ -192,15 +192,36 @@ namespace SWLOR.Game.Server.Service
             var detail = HoldingRules.GetDetail(holding.Type);
             var refund = HoldingRules.GetSellBackRefund(holding);
             ReleaseDroid(holding, player);
-            DB.Delete<PlanetaryHolding>(holding.Id);
+
+            // The refund is saved in the character file with a mark naming the holding before the holding is deleted: a
+            // restart in between deletes it at the next login (SettleAbandonedHolding), never paying twice.
             if (refund > 0)
                 GiveGoldToCreature(player, refund);
+            ObjectPlugin.SetString(player, AbandonedVariable, holding.Id, true);
+            ExportSingleCharacter(player);
+            DB.Delete<PlanetaryHolding>(holding.Id);
 
             SendMessageToPC(player, $"You gave up your {detail.Name} at {GetPlanetName(detail)} and received {refund} credits.");
             Log.Write(LogGroup.Space, $"HOLDING ABANDON - {PlayerName.GetAuditName(player)} - {holding.Type} {holding.Id} - refund {refund}, upkeep owed {holding.UpkeepOwed}");
         }
 
         // Payments
+
+        /// <summary>The character-file local naming the last holding abandoned, saved with its refund.</summary>
+        private const string AbandonedVariable = "HOLDING_ABANDONED";
+
+        /// <summary>Deletes a holding whose abandonment refund the character file holds but whose deletion a restart interrupted.</summary>
+        private static void SettleAbandonedHolding(uint player)
+        {
+            var abandonedId = ObjectPlugin.GetString(player, AbandonedVariable);
+            var holding = string.IsNullOrWhiteSpace(abandonedId) ? null : DB.Get<PlanetaryHolding>(abandonedId);
+            if (holding == null || holding.OwnerPlayerId != GetObjectUUID(player))
+                return;
+
+            ReleaseDroid(holding, player);
+            DB.Delete<PlanetaryHolding>(holding.Id);
+            Log.Write(LogGroup.Space, $"HOLDING ABANDON - {PlayerName.GetAuditName(player)} - deleted {holding.Id}, whose refund was already paid, after a restart");
+        }
 
         /// <summary>The character-file local naming the last holding payment whose credits were taken.</summary>
         private const string PaymentPaidVariable = "HOLDING_PAYMENT_PAID";
@@ -972,6 +993,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            SettleAbandonedHolding(player);
             SettlePendingPayments(player);
             var holdings = LoadHoldings(player);
             foreach (var controller in Droid.GetControllers(player))

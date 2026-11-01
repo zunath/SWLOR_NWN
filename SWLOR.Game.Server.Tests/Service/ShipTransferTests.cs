@@ -151,8 +151,8 @@ public class ShipTransferTests
     public void TheRefit_OnlyOffersDesignsTheRefittingPlayerUnlocked()
     {
         var refit = ExtractMethod(ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs"),
-            "public Action OnClickRefitDesign()");
-        refit.Should().Contain("var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));");
+            "private void CompleteRefit(");
+        refit.Should().Contain("var dbPlayer = DB.Get<Player>(GetObjectUUID(player));");
         refit.Should().Contain("dbPlayer.UnlockedHullDesigns");
     }
 

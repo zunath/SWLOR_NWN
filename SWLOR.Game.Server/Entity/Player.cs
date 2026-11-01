@@ -124,6 +124,7 @@ namespace SWLOR.Game.Server.Entity
             HasUndisguisedDescriptionSnapshot = false;
             PlayerListFlags = new List<PlayerListFlagType>();
             PaidShipSaleIds = new List<string>();
+            LastAgentPurchaseId = string.Empty;
         }
 
 
@@ -217,6 +218,12 @@ namespace SWLOR.Game.Server.Entity
         /// with none.
         /// </summary>
         public List<string> PaidShipSaleIds { get; set; }
+
+        /// <summary>
+        /// The last faction agent store purchase whose tokens were taken, saved with the tokens, so a purchase whose item
+        /// the character file holds is charged once, at the next login if a restart came first. Older records load empty.
+        /// </summary>
+        public string LastAgentPurchaseId { get; set; }
         public int OutfitSlotLimit { get; set; }
         public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }

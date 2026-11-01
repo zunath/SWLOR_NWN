@@ -2676,7 +2676,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="spaceArea">The space area the anchor site is in.</param>
         /// <param name="item">The Station Core item.</param>
         /// <param name="anchor">The free anchor site.</param>
-        public static WorldProperty CreateStation(uint player, uint spaceArea, uint item, StationAnchor anchor)
+        public static WorldProperty CreateStation(uint player, uint spaceArea, uint item, StationAnchor anchor,
+            string pendingPaymentId = "", int pendingPaymentCredits = 0)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -2687,6 +2688,9 @@ namespace SWLOR.Game.Server.Service
                 property.StationAnchorId = anchor.Id;
                 InitializeNewCity(property, now);
                 property.Upgrades[PropertyUpgradeType.JumpBeaconLevel] = 1;
+                // The founding payment the station waits on is saved with it, before anything else is created.
+                property.PendingPaymentId = pendingPaymentId ?? string.Empty;
+                property.PendingPaymentCredits = pendingPaymentCredits;
             });
 
             if (!TryGetLoadedInstance(station.Id, out var deck))

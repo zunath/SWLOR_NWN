@@ -94,7 +94,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to take currency from</param>
         /// <param name="type">The type of currency to take</param>
         /// <param name="amount">The amount of currency to take</param>
-        public static void TakeCurrency(uint player, CurrencyType type, int amount)
+        /// <param name="beforeSave">Changes saved in the same write as the currency, such as a mark that it was taken. The record is saved even when the balance does not change.</param>
+        public static void TakeCurrency(uint player, CurrencyType type, int amount, Action<Player> beforeSave = null)
         {
             amount = Math.Abs(amount);
 
@@ -109,10 +110,11 @@ namespace SWLOR.Game.Server.Service
 
             var balance = dbPlayer.Currencies[type];
             var newBalance = Math.Max(0, balance - amount);
-            if (newBalance == balance)
+            if (newBalance == balance && beforeSave == null)
                 return;
 
             dbPlayer.Currencies[type] = newBalance;
+            beforeSave?.Invoke(dbPlayer);
 
             DB.Set(dbPlayer);
             Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());

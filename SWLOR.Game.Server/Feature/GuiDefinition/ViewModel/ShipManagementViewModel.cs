@@ -1607,29 +1607,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var fee = HullDesignRules.RefitFee(dbShip.Status.Size);
             var designName = HullDesignRules.DesignName(dbShip.Status.ItemTag, shipDetail.Appearance, appearance);
+            var shipId = dbShip.Id;
             ShowModal($"A refit to the {designName} design will cost you {fee} credits. Will you pay for the refit?", () =>
             {
-                var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
-                if (!HullDesignRules.CanRefitTo(dbShip.Status.ItemTag, shipDetail.Appearance, appearance, dbPlayer.UnlockedHullDesigns))
-                {
-                    FloatingTextStringOnCreature(ColorToken.Red("You have not unlocked that design."), Player, false);
-                    return;
-                }
-
-                if (GetGold(Player) < fee)
-                {
-                    FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), Player, false);
-                    return;
-                }
-
-                AssignCommand(Player, () => TakeGoldFromCreature(fee, Player, true));
-                dbShip.HullDesignAppearance = appearance == shipDetail.Appearance ? 0 : (int)appearance;
-                DB.Set(dbShip);
-
-                FloatingTextStringOnCreature(ColorToken.Green($"Ship refitted to the {designName} design!"), Player, false);
-                LoadShip();
+                var player = Player;
+                AssignCommand(player, () => CompleteRefit(player, shipId, appearance, fee, designName));
             });
         };
+
+        /// <summary>
+        /// Runs on the player's queue (TakeGoldFromCreature does nothing from a NUI handler): checks the refit again on
+        /// the ship as saved now, takes the fee with a mark naming the ship, then saves the new design with the payment's
+        /// id. A restart before that save returns the fee at the next login (<see cref="CreditPayments"/>).
+        /// </summary>
+        private void CompleteRefit(uint player, string shipId, AppearanceType appearance, int fee, string designName)
+        {
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            if (dbShip == null)
+                return;
+
+            var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (!HullDesignRules.CanRefitTo(dbShip.Status.ItemTag, shipDetail.Appearance, appearance, dbPlayer.UnlockedHullDesigns))
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("You have not unlocked that design."), player, false);
+                return;
+            }
+
+            if (GetGold(player) < fee)
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), player, false);
+                return;
+            }
+
+            var mark = CreditPayments.NewMark(CreditPaymentKind.HullRefit, dbShip.Id, fee);
+            CreditPayments.Take(player, mark);
+            dbShip.HullDesignAppearance = appearance == shipDetail.Appearance ? 0 : (int)appearance;
+            dbShip.LastPaymentId = mark.Id;
+            DB.Set(dbShip);
+            CreditPayments.Retire(player);
+
+            FloatingTextStringOnCreature(ColorToken.Green($"Ship refitted to the {designName} design!"), player, false);
+            if (Gui.IsWindowOpen(player, GuiWindowType.ShipManagement))
+                LoadShip();
+        }
 
         private void SetMidSlot(int slot, bool visible, string resref, string tooltip)
         {

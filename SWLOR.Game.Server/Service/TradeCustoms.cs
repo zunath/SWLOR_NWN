@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Service
@@ -119,27 +120,49 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var fine = outcome.Fine;
-            if (fine > 0)
-                AssignCommand(player, () => TakeGoldFromCreature(fine, player, true));
+            // The fine is taken on the pilot's own queue (TakeGoldFromCreature does nothing from the slicer's handler).
+            AssignCommand(player, () =>
+            {
+                var (fine, taken) = CollectCustomsFine(player, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);
+                if (outcome.Standing is { } standing)
+                    RecordStanding(player, scan.Authority, standing);
+                var message = taken.Count > 0
+                    ? $"The spoof is detected. The patrol fines you {fine} credits, confiscates {CustomsRules.Describe(taken)} and lets you go."
+                    : $"The spoof is detected. The patrol fines you {fine} credits and lets you go.";
+                SendMessageToPC(player, ColorToken.Red(message));
+                if (slicer != player)
+                    SendMessageToPC(slicer, ColorToken.Red("The spoof is detected."));
+                Log.Write(LogGroup.Space, $"CUSTOMS SPOOF FAILED - {PlayerName.GetAuditName(slicer)} - {scan.Authority} fined {PlayerName.GetAuditName(player)} {fine}, confiscated {CustomsRules.Describe(taken)}");
+                DismissLawfulGroup(scan.PatrolGroup, 5f);
+            });
+        }
 
+        /// <summary>
+        /// Runs on the pilot's queue: takes the fine (no more than they carry) with a mark naming their ship, then saves the
+        /// confiscation on the ship with the payment's id and retires the mark. A restart before that save returns the fine
+        /// at the next login and leaves the goods, so the patrol's encounter is undone whole (<see cref="CreditPayments"/>).
+        /// </summary>
+        private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine(uint player, TradeAuthority authority, int fine, bool confiscate)
+        {
             var ship = GetActiveShip(player);
-            var taken = ship == null || !outcome.ConfiscatesGoods
-                ? new Dictionary<CommodityType, int>()
-                : CustomsRules.Confiscate(ship.Cargo, scan.Authority);
-            if (ship != null)
-                DB.Set(ship);
+            fine = Math.Max(0, Math.Min(fine, GetGold(player)));
+            var mark = fine > 0 ? CreditPayments.NewMark(CreditPaymentKind.CustomsFine, ship?.Id, fine) : null;
+            if (mark != null)
+                CreditPayments.Take(player, mark);
 
-            if (outcome.Standing is { } standing)
-                RecordStanding(player, scan.Authority, standing);
-            var message = taken.Count > 0
-                ? $"The spoof is detected. The patrol fines you {fine} credits, confiscates {CustomsRules.Describe(taken)} and lets you go."
-                : $"The spoof is detected. The patrol fines you {fine} credits and lets you go.";
-            SendMessageToPC(player, ColorToken.Red(message));
-            if (slicer != player)
-                SendMessageToPC(slicer, ColorToken.Red("The spoof is detected."));
-            Log.Write(LogGroup.Space, $"CUSTOMS SPOOF FAILED - {PlayerName.GetAuditName(slicer)} - {scan.Authority} fined {PlayerName.GetAuditName(player)} {fine}, confiscated {CustomsRules.Describe(taken)}");
-            DismissLawfulGroup(scan.PatrolGroup, 5f);
+            var taken = ship == null || !confiscate
+                ? new Dictionary<CommodityType, int>()
+                : CustomsRules.Confiscate(ship.Cargo, authority);
+            if (ship != null)
+            {
+                if (mark != null)
+                    ship.LastPaymentId = mark.Id;
+                DB.Set(ship);
+            }
+
+            if (mark != null)
+                CreditPayments.Retire(player);
+            return (fine, taken);
         }
 
         private static void RollCustomsScan(uint player, uint area, TradeOrbitDetail orbit)
@@ -220,21 +243,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             _customsScans.Remove(player);
-            AssignCommand(player, () => TakeGoldFromCreature(scan.Fine, player, true));
-
-            var ship = GetActiveShip(player);
-            var taken = ship == null ? new Dictionary<CommodityType, int>() : CustomsRules.Confiscate(ship.Cargo, scan.Authority);
-            if (ship != null)
-                DB.Set(ship);
-
-            RecordStanding(player, scan.Authority, TradeStandingEvent.CaughtSmuggling);
-            SendMessageToPC(player, ColorToken.Green(taken.Count > 0
-                ? $"You pay {scan.Fine} credits. The patrol confiscates {CustomsRules.Describe(taken)} and lets you go."
-                : $"You pay {scan.Fine} credits and the patrol lets you go."));
-            Log.Write(LogGroup.Space, $"CUSTOMS FINE - {PlayerName.GetAuditName(player)} - paid {scan.Fine} to {scan.Authority}, confiscated {CustomsRules.Describe(taken)}");
-
-            DismissLawfulGroup(scan.PatrolGroup, 5f);
             Gui.ClosePlayerWindow(player, GuiWindowType.CustomsScan);
+
+            // The fine is taken on the pilot's own queue (TakeGoldFromCreature does nothing from a NUI handler).
+            AssignCommand(player, () =>
+            {
+                var (fine, taken) = CollectCustomsFine(player, scan.Authority, scan.Fine, true);
+                RecordStanding(player, scan.Authority, TradeStandingEvent.CaughtSmuggling);
+                SendMessageToPC(player, ColorToken.Green(taken.Count > 0
+                    ? $"You pay {fine} credits. The patrol confiscates {CustomsRules.Describe(taken)} and lets you go."
+                    : $"You pay {fine} credits and the patrol lets you go."));
+                Log.Write(LogGroup.Space, $"CUSTOMS FINE - {PlayerName.GetAuditName(player)} - paid {fine} to {scan.Authority}, confiscated {CustomsRules.Describe(taken)}");
+                DismissLawfulGroup(scan.PatrolGroup, 5f);
+            });
         }
 
         /// <summary>The pilot runs (or did not answer in time): the patrol turns hostile.</summary>

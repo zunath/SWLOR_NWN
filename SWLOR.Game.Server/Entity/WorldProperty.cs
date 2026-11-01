@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Entity
             CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
             StationAnchorId = string.Empty;
+            PendingPaymentId = string.Empty;
             ChildPropertyIds = new Dictionary<PropertyChildType, List<string>>();
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
@@ -140,5 +141,14 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         [Indexed]
         public string StationAnchorId { get; set; }
+
+        /// <summary>
+        /// The founding payment (<c>CreditPaymentMark</c>) a player station still waits on, or empty. Saved with the new
+        /// station, so a login whose character file never paid it undoes the founding. Older records load empty.
+        /// </summary>
+        public string PendingPaymentId { get; set; }
+
+        /// <summary>The credits <see cref="PendingPaymentId"/> takes.</summary>
+        public int PendingPaymentCredits { get; set; }
     }
 }

@@ -410,11 +410,40 @@ namespace SWLOR.Game.Server.Service
 
             if (item.Trait != SpaceService.ShipComponentTraitType.None)
                 ShipComponents.SetTraits(created, new[] { item.Trait });
-            Currency.TakeCurrency(player, currency, item.Tokens);
+
+            // The tokens live in the database and the item in the character file: the item is saved with a mark naming the
+            // purchase, then the tokens are taken with the purchase's id in one write. A restart in between takes them at
+            // the next login (ChargeInterruptedAgentPurchase), once.
+            var purchase = new AgentPurchaseMark { Id = Guid.NewGuid().ToString(), Currency = currency, Tokens = item.Tokens };
+            ObjectPlugin.SetString(player, AgentPurchaseVariable, purchase.Serialize(), true);
+            ExportSingleCharacter(player);
+            Currency.TakeCurrency(player, currency, item.Tokens, x => x.LastAgentPurchaseId = purchase.Id);
 
             var name = GetStoreItemName(item);
             SendMessageToPC(player, ColorToken.Green($"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}."));
             Log.Write(LogGroup.Space, $"AGENT STORE - {PlayerName.GetAuditName(player)} - {agent.Type} - {item.Quantity}x {item.Resref} for {item.Tokens} {currency}");
+        }
+
+        /// <summary>The character-file local naming the last agent store purchase (<see cref="AgentPurchaseMark"/>).</summary>
+        private const string AgentPurchaseVariable = "AGENT_STORE_PURCHASE";
+
+        /// <summary>Takes the tokens of a purchase whose item the character file holds but whose tokens a restart kept.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ChargeInterruptedAgentPurchase()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!AgentPurchaseMark.TryParse(ObjectPlugin.GetString(player, AgentPurchaseVariable), out var purchase))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null || !purchase.IsUnpaid(dbPlayer.LastAgentPurchaseId))
+                return;
+
+            Currency.TakeCurrency(player, purchase.Currency, purchase.Tokens, x => x.LastAgentPurchaseId = purchase.Id);
+            Log.Write(LogGroup.Space, $"AGENT STORE - {PlayerName.GetAuditName(player)} - charged {purchase.Tokens} {purchase.Currency} for purchase {purchase.Id} after a restart");
         }
 
         public static string GetStoreItemName(FactionTokenStoreItem item)

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StationService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -95,8 +96,20 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return;
                 }
 
-                AssignCommand(player, () => TakeGoldFromCreature(StationTuning.InitialPrice, player, true));
-                Property.CreateStation(player, area, model.Item, anchor);
+                // The station is saved waiting on its price, then the founder's queue takes the price with a mark naming
+                // it (TakeGoldFromCreature does nothing from a dialog). A login whose character file never paid it undoes
+                // the founding (CreditPayments.SettleInterruptedPayment).
+                var paymentId = Guid.NewGuid().ToString();
+                var station = Property.CreateStation(player, area, model.Item, anchor, paymentId, StationTuning.InitialPrice);
+                var mark = new CreditPaymentMark
+                {
+                    Id = paymentId,
+                    Kind = CreditPaymentKind.StationFounding,
+                    RecordId = station.Id,
+                    Credits = StationTuning.InitialPrice
+                };
+                var stationId = station.Id;
+                AssignCommand(player, () => CreditPayments.PayStationFounding(player, stationId, mark));
 
                 Close();
             });

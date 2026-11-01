@@ -494,7 +494,7 @@ public class SpaceW11nReviewFixTests
     {
         var buy = Between(ReadSource("Service", "FactionAgents.cs").Replace("\r\n", "\n"),
             "public static void Buy(uint player, uint agentNpc, int itemIndex)", "public static string GetStoreItemName(");
-        Index(buy, "if (!GetIsObjectValid(created))").Should().BeLessThan(Index(buy, "Currency.TakeCurrency(player, currency, item.Tokens);"),
+        Index(buy, "if (!GetIsObjectValid(created))").Should().BeLessThan(Index(buy, "Currency.TakeCurrency(player, currency, item.Tokens, x => x.LastAgentPurchaseId = purchase.Id);"),
             "a full inventory refuses the purchase before any tokens are spent");
     }
 

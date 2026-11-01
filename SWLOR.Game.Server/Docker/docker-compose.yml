@@ -34,6 +34,7 @@ services:
     swlor-server:
         hostname: nwnx-server
         stop_signal: SIGINT
+        stop_grace_period: 45s
         restart: always
         depends_on:
             server-home-init:

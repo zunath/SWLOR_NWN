@@ -3969,6 +3969,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/CasinoSlot.cs",
+    "Line": 99,
+    "Member": "Spin",
+    "Delivery": "Retained",
+    "Call": "SpeakString(\"Jackpot! This machine has paid out 10,000 credits!\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
     "Line": 70,
     "Member": "RunCommand",
@@ -5614,6 +5621,13 @@
     "Call": "SendMessageToPC(player, $\"[{Quest.GetQuestById(questId).Name}] {Description}: {Amount - progress.CombatProgresses[Key]} / {Amount}\")"
   },
   {
+    "File": "SWLOR.Game.Server/Service/QuestService/KillTargetObjective.cs",
+    "Line": 57,
+    "Member": "Advance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, statusMessage)"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
     "Line": 105,
     "Member": "CanAccept",
@@ -5728,13 +5742,6 @@
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
     "Line": 101,
-    "Member": "Advance",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, statusMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
-    "Line": 175,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, statusMessage)"

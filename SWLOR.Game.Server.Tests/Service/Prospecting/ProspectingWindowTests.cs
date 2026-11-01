@@ -27,7 +27,7 @@ public class ProspectingWindowTests
     [Test]
     public void TheWindowHasItsOwnId_AndNoOtherWindowSharesIt()
     {
-        ((int)GuiWindowType.Prospecting).Should().Be(91);
+        ((int)GuiWindowType.Prospecting).Should().Be(92);
         Enum.GetValues<GuiWindowType>().Count(window => window == GuiWindowType.Prospecting).Should().Be(1);
         Enum.GetValues<GuiWindowType>().Select(window => (int)window).Should().OnlyHaveUniqueItems();
     }

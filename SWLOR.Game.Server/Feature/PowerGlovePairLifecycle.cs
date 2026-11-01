@@ -100,6 +100,17 @@ public static class PowerGlovePairLifecycle
             PowerGloveEquipment.DestroyCompanion(item);
     }
 
+    /// <summary>Gloves made before the per-hand note, including ones players already own, gain it when examined.</summary>
+    [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
+    public static void OnExamine()
+    {
+        var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+        if (!PowerGloveEquipment.IsPairItem(item)) return;
+        var description = GetDescription(item);
+        var noted = PowerGloveEquipment.GetPairDescription(description);
+        if (noted != description) SetDescription(item, noted);
+    }
+
     [NWNEventHandler(ScriptName.OnModuleAcquire)]
     public static void OnAcquire()
     {

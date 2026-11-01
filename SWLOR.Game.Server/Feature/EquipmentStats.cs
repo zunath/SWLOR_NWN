@@ -145,18 +145,21 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// Adds or removes every stat an item grants its wearer, exactly as equipping or unequipping it does.
+        /// A Power Glove's stats count once per hand.
         /// </summary>
         /// <param name="creature">The wearer</param>
         /// <param name="item">The equipped item</param>
         /// <param name="isAdding">If true, the item's stats are added, if false they're removed</param>
         public static void ApplyItemStats(uint creature, uint item, bool isAdding)
         {
-            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
+            var baseItem = GetBaseItemType(item);
+            if (baseItem == BaseItem.CompanionPistol) return;
+            var copies = PowerGloveEquipment.GetEquipmentStatCopies(baseItem);
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                var type = GetItemPropertyType(ip);
-                if (!_statChangeActions.ContainsKey(type)) continue;
-                _statChangeActions[type](creature, item, ip, isAdding);
+                if (!_statChangeActions.TryGetValue(GetItemPropertyType(ip), out var action)) continue;
+                for (var copy = 0; copy < copies; copy++)
+                    action(creature, item, ip, isAdding);
             }
         }
 
@@ -171,10 +174,12 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, the amount is added, if false it's removed</param>
         public static void ApplyStatAmount(uint creature, uint item, ItemPropertyType type, int subtype, int amount, bool isAdding)
         {
-            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
+            var baseItem = GetBaseItemType(item);
+            if (baseItem == BaseItem.CompanionPistol) return;
             if (amount <= 0 || !_statChangeActions.TryGetValue(type, out var action))
                 return;
-            action(creature, item, ItemPropertyCustom(type, subtype, amount), isAdding);
+            for (var copy = 0; copy < PowerGloveEquipment.GetEquipmentStatCopies(baseItem); copy++)
+                action(creature, item, ItemPropertyCustom(type, subtype, amount), isAdding);
         }
 
         [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]

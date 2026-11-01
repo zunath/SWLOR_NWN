@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
             // Beast Mastery: the beast's actions prove the mechanic for its master.
             new CapstoneProofDefinition("primal_overrun", "with your beast's Crushing Slam or Rampage",
-                abilityHits: new[] { FeatType.CrushingSlam1, FeatType.CrushingSlam2, FeatType.CrushingSlam3, FeatType.Rampage1 }),
+                abilityHits: new[] { FeatType.CrushingSlam1, FeatType.CrushingSlam2, FeatType.CrushingSlam3, FeatType.Rampage1, FeatType.Rampage2 }),
             new CapstoneProofDefinition("untouchable_instinct", "with your beast's Assault or Distracting Feint",
                 abilityHits: new[]
                 {
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 abilityHits: new[]
                 {
                     FeatType.Claw1, FeatType.Claw2, FeatType.Claw3,
-                    FeatType.GuardedBite1, FeatType.GuardedBite2,
+                    FeatType.GuardedBite1, FeatType.GuardedBite2, FeatType.GuardedBite3,
                     FeatType.CoordinatedStrike1, FeatType.CoordinatedStrike2,
                 }),
         };

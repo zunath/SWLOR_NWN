@@ -33,6 +33,7 @@ public sealed class NamedAnimationPlayback
     private const string EndingPrefix = "ending:";
     private readonly INamedAnimationRuntime _runtime;
     private readonly Action<uint, Func<bool>> _releasePose;
+    private readonly Action<uint> _restoreEquipmentAnimations;
     private readonly Dictionary<uint, EquipmentRequest> _equipmentRequests = new();
     private readonly Dictionary<uint, string> _restrictedPlaybackTokens = new();
     // Hold mappings match the weapon equipped at start, so any equipment change releases them.
@@ -73,10 +74,12 @@ public sealed class NamedAnimationPlayback
         return true;
     }
 
-    public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint, Func<bool>> releasePose = null)
+    public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint, Func<bool>> releasePose = null,
+        Action<uint> restoreEquipmentAnimations = null)
     {
         _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
         _releasePose = releasePose;
+        _restoreEquipmentAnimations = restoreEquipmentAnimations;
     }
 
     public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false,
@@ -210,6 +213,8 @@ public sealed class NamedAnimationPlayback
         _runtime.Replace(creature, RifleHoldSource, "");
         _runtime.Replace(creature, ShoulderHoldSource, "");
         _runtime.SetToken(creature, "");
+        // Temporary aliases have been released; restore the current equipment owner last.
+        _restoreEquipmentAnimations?.Invoke(creature);
     }
 
     public void Stop(uint creature, bool cancelQueuedAnimation = false)

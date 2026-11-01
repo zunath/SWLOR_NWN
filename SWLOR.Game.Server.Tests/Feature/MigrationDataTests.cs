@@ -11,10 +11,11 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 24 and server migration 29. Player migration 25 belongs to the Unarmed
-    // Power Glove change, which ships in an earlier release; the crafting perk conversion is player migration 26.
+    // Production has run player migration 24 and server migration 29. Player migration 25 is the next release's pass
+    // (pelvis consolidation, plus the Unarmed Power Glove change), which ships before the crafting revamp; the crafting
+    // perk conversion is player migration 26.
     private const int ReleasedPlayerVersion = 24;
-    private const int UnarmedPlayerVersion = 25;
+    private const int NextReleasePlayerVersion = 25;
     private const int ReleasedServerVersion = 29;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
@@ -27,11 +28,15 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") });
-        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > UnarmedPlayerVersion).Select(migration => migration.GetType())
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
+                CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") });
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) == NextReleasePlayerVersion).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_ConsolidatePelvisAppearance") }, "the next release must receive one combined player-item pass");
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > NextReleasePlayerVersion).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") },
                 "the crafting revamp's release receives one player pass, the crafting perk conversion");
-        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(UnarmedPlayerVersion + 1);
+        CharacterMigrations.VersionOf("_25_ConsolidatePelvisAppearance").Should().Be(ReleasedPlayerVersion + 1);
+        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(NextReleasePlayerVersion + 1);
     }
 
     [Test]
@@ -122,6 +127,10 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance) },
+            "the next release must receive one combined stored-item pass");
+        new _30_ConsolidatePelvisAppearance().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _30_ConsolidatePelvisAppearance().Version.Should().Be(ReleasedServerVersion + 1);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

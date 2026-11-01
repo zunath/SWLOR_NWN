@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TradeService;
@@ -145,6 +146,22 @@ namespace SWLOR.Game.Server.Service.StationService
                 ? percent
                 : 0;
             return Math.Max(1, (int)Math.Ceiling(units * (100 - discount) / 100.0));
+        }
+
+        /// <summary>
+        /// The cargo value a jump carries (<see cref="PirateAmbushRules.GetCargoValue"/>): the ship's own cargo and sealed
+        /// freight plus those of every ship docked aboard it, which jump with it.
+        /// </summary>
+        public static int GetJumpCargoValue(PlayerShip ship, IEnumerable<PlayerShip> dockedShips)
+        {
+            if (ship == null)
+                return 0;
+
+            var value = (long)PirateAmbushRules.GetCargoValue(ship.Cargo, ship.SealedFreight);
+            foreach (var docked in (dockedShips ?? Enumerable.Empty<PlayerShip>()).Where(x => x != null && x.Id != ship.Id))
+                value += PirateAmbushRules.GetCargoValue(docked.Cargo, docked.SealedFreight);
+
+            return (int)Math.Min(int.MaxValue, value);
         }
 
         /// <summary>The cargo's share of a jump's fuel, before the hull's discount.</summary>

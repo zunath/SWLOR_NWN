@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -169,10 +170,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            AssignCommand(player, () => TakeGoldFromCreature(detail.PurchasePrice, player, true));
             var holding = HoldingRules.Create(GetObjectUUID(player), detail, dockId, DateTime.UtcNow, GetPCPublicCDKey(player));
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"Bought for {detail.PurchasePrice} credits.");
-            DB.Set(holding);
+            SaveWithPayment(player, holding, HoldingPaymentType.Purchase, detail.PurchasePrice);
 
             SendMessageToPC(player, ColorToken.Green(
                 $"You bought {WithArticle(detail.Name)} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes " +
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Service
         public static void Abandon(uint player, string holdingId)
         {
             var holding = LoadHolding(player, holdingId);
-            if (holding == null)
+            if (holding == null || HoldingPaymentRules.IsPending(holding))
                 return;
 
             var detail = HoldingRules.GetDetail(holding.Type);
@@ -200,12 +200,99 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Space, $"HOLDING ABANDON - {PlayerName.GetAuditName(player)} - {holding.Type} {holding.Id} - refund {refund}, upkeep owed {holding.UpkeepOwed}");
         }
 
+        // Payments
+
+        /// <summary>The character-file local naming the last holding payment whose credits were taken.</summary>
+        private const string PaymentPaidVariable = "HOLDING_PAYMENT_PAID";
+
+        /// <summary>
+        /// Saves the holding with the change just made to it, waiting on its payment, then takes the payment on the
+        /// player's queue (TakeGoldFromCreature does nothing from a NUI handler).
+        /// </summary>
+        private static void SaveWithPayment(uint player, PlanetaryHolding holding, HoldingPaymentType type, int credits)
+        {
+            HoldingPaymentRules.Begin(holding, type, credits, Guid.NewGuid().ToString());
+            DB.Set(holding);
+            TakePaymentOnQueue(player, holding);
+        }
+
+        private static void TakePaymentOnQueue(uint player, PlanetaryHolding holding)
+        {
+            var holdingId = holding.Id;
+            var paymentId = holding.PendingPaymentId;
+            AssignCommand(player, () => TakePayment(player, holdingId, paymentId));
+        }
+
+        /// <summary>
+        /// Takes a holding's pending payment and saves it in the character file with a mark naming the payment, then
+        /// marks the payment complete. A player who no longer has the credits has the change undone instead.
+        /// </summary>
+        private static void TakePayment(uint player, string holdingId, string paymentId)
+        {
+            var holding = DB.Get<PlanetaryHolding>(holdingId);
+            if (holding == null || holding.PendingPaymentId != paymentId)
+                return;
+
+            if (GetGold(player) < holding.PendingPaymentCredits)
+            {
+                var name = HoldingPaymentRules.GetName(holding.PendingPaymentType);
+                UndoPayment(holding);
+                SendMessageToPC(player, ColorToken.Red($"You no longer have the credits, so the {name} was undone."));
+                return;
+            }
+
+            TakeGoldFromCreature(holding.PendingPaymentCredits, player, true);
+            ObjectPlugin.SetString(player, PaymentPaidVariable, paymentId, true);
+            ExportSingleCharacter(player);
+
+            HoldingPaymentRules.Complete(holding);
+            DB.Set(holding);
+        }
+
+        /// <summary>Undoes the change a holding's payment paid for, deleting a holding whose purchase was never paid.</summary>
+        private static void UndoPayment(PlanetaryHolding holding)
+        {
+            if (HoldingPaymentRules.Undo(holding, HoldingRules.GetDetail(holding.Type), DateTime.UtcNow))
+            {
+                DB.Delete<PlanetaryHolding>(holding.Id);
+                return;
+            }
+
+            DB.Set(holding);
+        }
+
+        /// <summary>
+        /// Settles the payments a restart left pending, before the holdings catch up at login: one whose credits the
+        /// character file holds is kept, and one never taken has its change undone.
+        /// </summary>
+        private static void SettlePendingPayments(uint player)
+        {
+            var paidId = ObjectPlugin.GetString(player, PaymentPaidVariable);
+            foreach (var holding in GetHoldingRecords(GetObjectUUID(player)).Where(HoldingPaymentRules.IsPending))
+            {
+                if (holding.PendingPaymentId == paidId)
+                {
+                    HoldingPaymentRules.Complete(holding);
+                    DB.Set(holding);
+                    continue;
+                }
+
+                var name = HoldingPaymentRules.GetName(holding.PendingPaymentType);
+                var holdingName = GetHoldingName(holding);
+                var credits = holding.PendingPaymentCredits;
+                UndoPayment(holding);
+                DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
+                    $"A restart interrupted the {name} of your {holdingName} before its {credits} credits were paid, so it was undone.")));
+                Log.Write(LogGroup.Space, $"HOLDING PAYMENT UNDONE - {PlayerName.GetAuditName(player)} - {holding.Id} - {name} of {credits} credits a restart never took");
+            }
+        }
+
         // Upkeep and fines
 
         public static void PayUpkeep(uint player, string holdingId)
         {
             var holding = LoadHolding(player, holdingId);
-            if (holding == null || holding.UpkeepOwed <= 0)
+            if (holding == null || holding.UpkeepOwed <= 0 || HoldingPaymentRules.IsPending(holding))
                 return;
 
             if (GetGold(player) < holding.UpkeepOwed)
@@ -215,9 +302,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             var paid = holding.UpkeepOwed;
-            AssignCommand(player, () => TakeGoldFromCreature(paid, player, true));
             holding.UpkeepOwed = 0;
-            DB.Set(holding);
+            SaveWithPayment(player, holding, HoldingPaymentType.Upkeep, paid);
             SendMessageToPC(player, ColorToken.Green($"You paid {paid} credits of upkeep for your {GetHoldingName(holding)}."));
             Log.Write(LogGroup.Space, $"HOLDING UPKEEP - {PlayerName.GetAuditName(player)} - {holding.Id} - {paid}");
         }
@@ -225,7 +311,7 @@ namespace SWLOR.Game.Server.Service
         public static void PayFine(uint player, string holdingId)
         {
             var holding = LoadHolding(player, holdingId);
-            if (holding == null)
+            if (holding == null || HoldingPaymentRules.IsPending(holding))
                 return;
 
             var refusal = holding.CustomsFine <= 0
@@ -238,10 +324,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             var fine = holding.CustomsFine;
-            AssignCommand(player, () => TakeGoldFromCreature(fine, player, true));
             holding.CustomsFine = 0;
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"Paid the {fine} credit customs fine.");
-            DB.Set(holding);
+            SaveWithPayment(player, holding, HoldingPaymentType.Fine, fine);
             SendMessageToPC(player, ColorToken.Green($"You paid the {fine} credit customs fine. The inspectors leave your stock alone."));
             Log.Write(LogGroup.Space, $"HOLDING FINE - {PlayerName.GetAuditName(player)} - {holding.Id} - {fine}");
         }
@@ -255,7 +340,7 @@ namespace SWLOR.Game.Server.Service
         public static void Collect(uint player, string holdingId, string shipId)
         {
             var holding = LoadHolding(player, holdingId);
-            if (holding == null)
+            if (holding == null || HoldingPaymentRules.IsPending(holding))
                 return;
 
             var ship = GetDockedShip(player, holding, shipId);
@@ -273,11 +358,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // The upkeep is paid with the collection's save, pending until the player's queue takes the credits.
             var upkeep = holding.UpkeepOwed;
             if (upkeep > 0)
             {
-                AssignCommand(player, () => TakeGoldFromCreature(upkeep, player, true));
                 holding.UpkeepOwed = 0;
+                HoldingPaymentRules.Begin(holding, HoldingPaymentType.Upkeep, upkeep, Guid.NewGuid().ToString());
             }
 
             // The units leave the warehouse and are noted as a pending collection in one save, then the ship loads them.
@@ -288,6 +374,8 @@ namespace SWLOR.Game.Server.Service
             holding.PendingCollection = new Dictionary<CommodityType, int>(plan);
             DB.Set(holding);
             FinishCollection(holding, ship);
+            if (upkeep > 0)
+                TakePaymentOnQueue(player, holding);
 
             var loaded = string.Join(", ", plan.Select(x => $"{x.Value} {TradeLookup.GetCommodity(x.Key)?.Name}"));
             var left = holding.Warehouse.Values.Sum();
@@ -442,7 +530,7 @@ namespace SWLOR.Game.Server.Service
         public static void Upgrade(uint player, string holdingId)
         {
             var holding = LoadHolding(player, holdingId);
-            if (holding == null)
+            if (holding == null || HoldingPaymentRules.IsPending(holding))
                 return;
 
             var detail = HoldingRules.GetDetail(holding.Type);
@@ -454,10 +542,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             var upgrade = HoldingRules.GetNextUpgrade(holding, detail);
-            AssignCommand(player, () => TakeGoldFromCreature(upgrade.Credits, player, true));
             HoldingRules.ApplyUpgrade(holding, detail);
             HoldingRules.AddLog(holding, DateTime.UtcNow, $"Upgraded to level {holding.Level}.");
-            DB.Set(holding);
+            SaveWithPayment(player, holding, HoldingPaymentType.Upgrade, upgrade.Credits);
 
             SendMessageToPC(player, ColorToken.Green(
                 $"Your {GetHoldingName(holding)} is now level {holding.Level} and makes {HoldingRules.GetDailyUnits(holding, detail)} units a day."));
@@ -467,7 +554,7 @@ namespace SWLOR.Game.Server.Service
         public static void BuildPlant(uint player, string holdingId)
         {
             var holding = LoadHolding(player, holdingId);
-            if (holding == null)
+            if (holding == null || HoldingPaymentRules.IsPending(holding))
                 return;
 
             var detail = HoldingRules.GetDetail(holding.Type);
@@ -478,10 +565,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            AssignCommand(player, () => TakeGoldFromCreature(detail.Plant.Credits, player, true));
             HoldingRules.ApplyPlant(holding, detail);
             HoldingRules.AddLog(holding, DateTime.UtcNow, "Built a Processing Plant.");
-            DB.Set(holding);
+            SaveWithPayment(player, holding, HoldingPaymentType.Plant, detail.Plant.Credits);
 
             SendMessageToPC(player, ColorToken.Green(
                 $"Your {GetHoldingName(holding)} has a Processing Plant. Deliver {TradeLookup.GetCommodity(detail.Chain.Input)?.Name} and it turns " +
@@ -876,8 +962,8 @@ namespace SWLOR.Game.Server.Service
         // Login and droid controllers
 
         /// <summary>
-        /// At login: holdings catch up (their news goes to the owner) and a staff droid whose holding is gone, or no longer
-        /// lists it, is the owner's again.
+        /// At login: payments a restart left pending are settled, holdings catch up (their news goes to the owner) and a
+        /// staff droid whose holding is gone, or no longer lists it, is the owner's again.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void CheckHoldingsAtLogin()
@@ -886,6 +972,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            SettlePendingPayments(player);
             var holdings = LoadHoldings(player);
             foreach (var controller in Droid.GetControllers(player))
             {

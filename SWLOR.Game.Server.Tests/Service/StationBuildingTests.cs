@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition;
@@ -348,7 +349,7 @@ public class StationBuildingTests
         }).Should().Be(JumpRefusal.None);
 
         var service = ReadServer("Service", "StationBuildings.cs");
-        service.Should().Contain("CargoValue = record == null ? 0 : PirateAmbushRules.GetCargoValue(record.Cargo, record.SealedFreight)");
+        service.Should().Contain("CargoValue = record == null ? 0 : StationBuildingRules.GetJumpCargoValue(record, Space.GetDockedShips(record.Id))");
         service.Should().Contain("TradeLookup.GetHops(originAnchor.Exchange, destinationAnchor.Exchange)");
         service.Should().Contain("var fuel = StationBuildingRules.GetJumpFuel(request);");
         ReadServer("Feature", "DialogDefinition", "StationBuildingDialog.cs").Should().Contain("StationBuildingRules.GetJumpFuel(request)");
@@ -496,6 +497,30 @@ public class StationBuildingTests
     }
 
     // Files
+
+    [Test]
+    public void AJump_CountsTheCargoOfShipsDockedAboard()
+    {
+        var carrier = new PlayerShip { Id = "carrier" };
+        CargoHoldRules.AddUnits(carrier.Cargo, CommodityType.Grain, 10, 600);
+        var visitor = new PlayerShip { Id = "visitor", DockedToShipId = "carrier" };
+        CargoHoldRules.AddUnits(visitor.Cargo, CommodityType.SithRelics, 40, 40000);
+        visitor.SealedFreight.Add(new SealedFreightLot { ContractId = "c1", Volume = 30, Destination = TradeExchangeType.Tatooine });
+
+        var own = PirateAmbushRules.GetCargoValue(carrier.Cargo, carrier.SealedFreight);
+        var carried = PirateAmbushRules.GetCargoValue(visitor.Cargo, visitor.SealedFreight);
+        carried.Should().BeGreaterThan(0);
+
+        StationBuildingRules.GetJumpCargoValue(carrier, null).Should().Be(own);
+        StationBuildingRules.GetJumpCargoValue(carrier, new[] { visitor }).Should().Be(own + carried,
+            "a loaded ship docked aboard jumps with the carrier, so its cargo pays fuel too");
+        StationBuildingRules.GetJumpCargoValue(carrier, new[] { visitor, null, carrier }).Should().Be(own + carried);
+        StationBuildingRules.GetJumpCargoValue(null, new[] { visitor }).Should().Be(0);
+        StationBuildingRules.GetCargoJumpFuel(own + carried, 2).Should().BeGreaterThan(StationBuildingRules.GetCargoJumpFuel(own, 2));
+
+        ReadServer("Service", "StationBuildings.cs").Should()
+            .Contain("CargoValue = record == null ? 0 : StationBuildingRules.GetJumpCargoValue(record, Space.GetDockedShips(record.Id)),");
+    }
 
     private static string AsteroidTable(string placeableResref)
     {

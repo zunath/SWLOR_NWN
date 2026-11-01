@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Entity
             PendingCollectionShipId = string.Empty;
             PendingCollection = new Dictionary<CommodityType, int>();
             LastDeliveryId = string.Empty;
+            PendingPaymentId = string.Empty;
         }
 
         [Indexed]
@@ -120,5 +121,19 @@ namespace SWLOR.Game.Server.Entity
         /// ship is not added twice. Older records load empty.
         /// </summary>
         public string LastDeliveryId { get; set; }
+
+        /// <summary>
+        /// A payment of credits saved with the change it pays for (buying, an upgrade, the Processing Plant, upkeep or a
+        /// fine) whose credits the player's character file may not hold yet, or empty. The next login keeps the change
+        /// when the character file names the payment and undoes it otherwise (<see cref="HoldingPaymentRules"/>). Older
+        /// records load empty.
+        /// </summary>
+        public string PendingPaymentId { get; set; }
+
+        /// <summary>What <see cref="PendingPaymentId"/> pays for.</summary>
+        public HoldingPaymentType PendingPaymentType { get; set; }
+
+        /// <summary>The credits <see cref="PendingPaymentId"/> takes.</summary>
+        public int PendingPaymentCredits { get; set; }
     }
 }

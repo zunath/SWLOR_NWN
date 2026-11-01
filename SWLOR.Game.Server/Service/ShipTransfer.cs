@@ -321,7 +321,10 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(giver, $"{GetName(recipient)} declined the ship.");
         }
 
-        /// <summary>The recipient accepted: everything is checked again, the giver pays the fee and the ship changes owner.</summary>
+        /// <summary>
+        /// The recipient accepted: everything is checked again, then the giver's own queue pays the fee
+        /// (TakeGoldFromCreature does nothing from a dialog or NUI handler) and the ship changes owner.
+        /// </summary>
         public static void Accept(uint recipient)
         {
             var offer = GetOffer(recipient);
@@ -333,18 +336,27 @@ namespace SWLOR.Game.Server.Service
 
             _offersByRecipient.Remove(offer.RecipientPlayerId);
             var giver = DMPlayerDirectory.GetOnlinePlayer(offer.GiverPlayerId);
-            var ship = DB.Get<PlayerShip>(offer.ShipId);
+            if (!CanCompleteGift(giver, recipient, offer, out _))
+                return;
+
+            AssignCommand(giver, () => CompleteGift(giver, recipient, offer));
+        }
+
+        /// <summary>Whether the offered ship can still change owner now, telling the players why not.</summary>
+        private static bool CanCompleteGift(uint giver, uint recipient, ShipTransferOffer offer, out PlayerShip ship)
+        {
+            ship = DB.Get<PlayerShip>(offer.ShipId);
             if (!GetIsObjectValid(giver) || ship == null || ship.OwnerPlayerId != offer.GiverPlayerId)
             {
                 FloatingTextStringOnCreature("The offer is no longer valid.", recipient, false);
-                return;
+                return false;
             }
 
             var dockArea = GetDockArea(ship);
             if (!GetIsObjectValid(dockArea) || GetArea(giver) != dockArea || GetArea(recipient) != dockArea)
             {
                 FloatingTextStringOnCreature("You and the giver must both be at the starport where the ship is docked.", recipient, false);
-                return;
+                return false;
             }
 
             var refusal = ShipTransferRules.GetRefusal(BuildCheck(ship, offer.RecipientPlayerId), false);
@@ -353,19 +365,40 @@ namespace SWLOR.Game.Server.Service
                 var message = ShipTransferRules.GetRefusalMessage(refusal);
                 FloatingTextStringOnCreature(message, recipient, false);
                 FloatingTextStringOnCreature(message, giver, false);
-                return;
+                return false;
             }
 
             if (GetGold(giver) < offer.Fee)
             {
                 FloatingTextStringOnCreature($"The giver cannot pay the {offer.Fee} credit transfer fee.", recipient, false);
                 FloatingTextStringOnCreature($"A ship transfer costs {offer.Fee} credits.", giver, false);
-                return;
+                return false;
             }
 
+            return true;
+        }
+
+        /// <summary>
+        /// Runs on the giver's queue: checks the gift again, takes the fee and saves it in the giver's character file
+        /// with a mark naming the transfer, then saves the transfer. A restart in between returns the fee at the giver's
+        /// next login (<see cref="SettleInterruptedPayment"/>).
+        /// </summary>
+        private static void CompleteGift(uint giver, uint recipient, ShipTransferOffer offer)
+        {
+            if (!CanCompleteGift(giver, recipient, offer, out var ship))
+                return;
+
             var shipName = GetShipName(ship);
-            AssignCommand(giver, () => TakeGoldFromCreature(offer.Fee, giver, true));
+            TakeGoldFromCreature(offer.Fee, giver, true);
+            SavePayment(giver, new ShipTransferPayment
+            {
+                Id = Guid.NewGuid().ToString(),
+                ShipId = ship.Id,
+                NewOwnerPlayerId = offer.RecipientPlayerId,
+                Credits = offer.Fee
+            });
             Complete(ship, offer.RecipientPlayerId, "changed owner");
+            ClearPayment(giver);
 
             FloatingTextStringOnCreature(ColorToken.Green($"{shipName} is now yours!"), recipient, false);
             FloatingTextStringOnCreature(ColorToken.Green($"{shipName} now belongs to {GetName(recipient)}."), giver, false);
@@ -518,16 +551,30 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// The buyer bought a ship listing: the market's checks (same CD key, price) already passed. The ship is
-        /// checked again; if it can't change owner now the listing stays and nothing is paid. Otherwise the buyer
-        /// pays, the seller's proceeds minus the market tax go to their till, and the ship changes owner where it is
-        /// docked. Returns whether it sold.
+        /// checked again; if it can't change owner now the listing stays and nothing is paid. Otherwise the purchase
+        /// completes on the buyer's own queue (TakeGoldFromCreature does nothing from a NUI handler): the buyer pays,
+        /// the seller's proceeds minus the market tax go to their till, and the ship changes owner where it is docked.
+        /// Returns whether the purchase went ahead.
         /// </summary>
         public static bool Buy(uint buyer, MarketItem listing, float taxRate)
         {
-            var ship = DB.Get<PlayerShip>(listing.ShipId);
+            if (!CanBuy(buyer, listing, out _))
+                return false;
+
+            var listingId = listing.Id;
+            var price = listing.Price;
+            AssignCommand(buyer, () => CompletePurchase(buyer, listingId, price, taxRate));
+            return true;
+        }
+
+        /// <summary>Whether the listed ship can still be bought now, telling the buyer why not.</summary>
+        private static bool CanBuy(uint buyer, MarketItem listing, out PlayerShip ship)
+        {
+            ship = listing == null ? null : DB.Get<PlayerShip>(listing.ShipId);
             if (ship == null || ship.OwnerPlayerId != listing.PlayerId)
             {
-                DB.Delete<MarketItem>(listing.Id);
+                if (listing != null)
+                    DB.Delete<MarketItem>(listing.Id);
                 FloatingTextStringOnCreature("This ship is no longer available.", buyer, false);
                 return false;
             }
@@ -547,17 +594,48 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            return true;
+        }
+
+        /// <summary>
+        /// Runs on the buyer's queue: checks the purchase again, takes the price and saves it in the buyer's character
+        /// file with a mark naming the transfer, then saves the transfer with the proceeds owed. A restart before the
+        /// transfer is saved returns the price at the buyer's next login (<see cref="SettleInterruptedPayment"/>); one
+        /// after finishes the transfer and the payout at the next module load.
+        /// </summary>
+        private static void CompletePurchase(uint buyer, string listingId, int price, float taxRate)
+        {
+            var listing = DB.Get<MarketItem>(listingId);
+            if (!CanBuy(buyer, listing, out var ship))
+                return;
+
+            if (listing.Price != price)
+            {
+                FloatingTextStringOnCreature("The price of this item has been changed by the seller. Please try again.", buyer, false);
+                return;
+            }
+
+            if (GetGold(buyer) < price)
+            {
+                FloatingTextStringOnCreature("You do not have enough credits to purchase this item.", buyer, false);
+                return;
+            }
+
+            var buyerId = GetObjectUUID(buyer);
             var shipName = GetShipName(ship);
             var dockName = GetDockName(ship);
-            AssignCommand(buyer, () => TakeGoldFromCreature(listing.Price, buyer, true));
+            TakeGoldFromCreature(price, buyer, true);
+            var payment = new ShipTransferPayment { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, NewOwnerPlayerId = buyerId, Credits = price };
+            SavePayment(buyer, payment);
 
             // The proceeds owed are saved with the transfer, before anything changes hands, then paid: a restart
             // part-way through finishes the transfer and the payout at the next module load.
-            ship.SaleId = Guid.NewGuid().ToString();
+            ship.SaleId = payment.Id;
             ship.SaleSellerPlayerId = listing.PlayerId;
             ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);
             Complete(ship, buyerId, "was sold");
             PaySaleProceeds(ship);
+            ClearPayment(buyer);
 
             var seller = DMPlayerDirectory.GetOnlinePlayer(listing.PlayerId);
             if (GetIsObjectValid(seller))
@@ -565,7 +643,6 @@ namespace SWLOR.Game.Server.Service
 
             FloatingTextStringOnCreature(ColorToken.Green($"{shipName} is now yours! It is docked at {dockName}."), buyer, false);
             Log.Write(LogGroup.PlayerMarket, $"{GetName(buyer)} [{buyerId}] bought ship {ship.Id} from {listing.SellerName} for {listing.Price} credits.");
-            return true;
         }
 
         /// <summary>
@@ -617,6 +694,53 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.PlayerMarket, $"Paid owed proceeds for ship {ship.Id} after a restart.");
                 }
             }
+        }
+
+        /// <summary>The character-file local naming a ship transfer's payment until the transfer is saved (<see cref="ShipTransferPayment"/>).</summary>
+        private const string PaymentVariable = "SHIP_TRANSFER_PAYMENT";
+
+        /// <summary>Saves a payment just taken in the payer's character file, with the mark naming the transfer it buys.</summary>
+        private static void SavePayment(uint payer, ShipTransferPayment payment)
+        {
+            ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);
+            ExportSingleCharacter(payer);
+        }
+
+        /// <summary>The transfer is saved: the mark goes and is saved too, so it is never settled again later.</summary>
+        private static void ClearPayment(uint payer)
+        {
+            ObjectPlugin.DeleteString(payer, PaymentVariable);
+            ExportSingleCharacter(payer);
+        }
+
+        /// <summary>
+        /// Settles a ship transfer's payment a restart interrupted. The module load already finished any transfer that
+        /// was saved, which keeps the payment; a payment whose transfer was never saved goes back to the payer.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void SettleInterruptedPayment()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!ShipTransferPayment.TryParse(ObjectPlugin.GetString(player, PaymentVariable), out var payment))
+                return;
+
+            if (payment.IsApplied(DB.Get<PlayerShip>(payment.ShipId)))
+            {
+                Log.Write(LogGroup.Property, $"Ship {payment.ShipId} payment {payment.Id} by {PlayerName.GetAuditName(player)} was settled with its transfer.");
+            }
+            else
+            {
+                GiveGoldToCreature(player, payment.Credits);
+                var credits = payment.Credits;
+                DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
+                    $"A restart stopped a ship from changing hands after you paid {credits} credits for it. The credits were returned.")));
+                Log.Write(LogGroup.Property, $"Returned {payment.Credits} credits of ship {payment.ShipId} payment {payment.Id} to {PlayerName.GetAuditName(player)}: its transfer was never saved.");
+            }
+
+            ClearPayment(player);
         }
 
         /// <summary>The ship deed a ship listing shows when examined, or OBJECT_INVALID. The caller destroys it.</summary>

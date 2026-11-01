@@ -423,6 +423,14 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // A Rift Run pocket takes only the run's own ships: a visitor the run never enrolled stays aboard.
+            var hostArea = GetAreaFromLocation(hostLocation);
+            if (!RiftRunRules.CanUndockInto(IsRiftPocket(hostArea), FindRejoinableRiftRun(visitor.Id)?.Area == hostArea))
+            {
+                SendMessageToPC(player, ColorToken.Red($"{visitorName} is not part of this Rift Run, so it cannot undock in the pocket. It stays aboard until {hostName} leaves."));
+                return false;
+            }
+
             if (!CanShipEnterArea(player, visitor, GetAreaFromLocation(hostLocation)))
                 return false;
 

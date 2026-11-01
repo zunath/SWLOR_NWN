@@ -759,4 +759,145 @@ public class PlanetaryHoldingTests
         service.Should().Contain("NWNEventHandler(ScriptName.OnModuleUnacquire)");
         service.Should().Contain("CargoHoldRules.AddUnits(ship.Cargo");
     }
+
+    // Payments
+
+    [Test]
+    public void APayment_StaysPendingUntilTheCharacterFileHoldsIt()
+    {
+        var holding = New(HoldingType.GrainFarm);
+        holding.PendingPaymentId.Should().BeEmpty("older records owe no payment");
+        HoldingPaymentRules.IsPending(holding).Should().BeFalse();
+
+        HoldingPaymentRules.Begin(holding, HoldingPaymentType.Purchase, 5000, "pay1");
+        HoldingPaymentRules.IsPending(holding).Should().BeTrue();
+        holding.PendingPaymentType.Should().Be(HoldingPaymentType.Purchase);
+        holding.PendingPaymentCredits.Should().Be(5000);
+
+        HoldingPaymentRules.Complete(holding);
+        HoldingPaymentRules.IsPending(holding).Should().BeFalse();
+        holding.PendingPaymentCredits.Should().Be(0);
+    }
+
+    [Test]
+    public void AnUnpaidPurchase_DeletesTheHolding()
+    {
+        var holding = New(HoldingType.GrainFarm);
+        HoldingPaymentRules.Begin(holding, HoldingPaymentType.Purchase, Detail(HoldingType.GrainFarm).PurchasePrice, "pay1");
+
+        HoldingPaymentRules.Undo(holding, Detail(HoldingType.GrainFarm), Start).Should().BeTrue();
+        HoldingPaymentRules.IsPending(holding).Should().BeFalse();
+    }
+
+    [Test]
+    public void AnUnpaidUpgradeOrPlant_IsUndoneWithItsGoodsReturned()
+    {
+        var detail = Detail(HoldingType.GrainFarm);
+        var holding = New(HoldingType.GrainFarm);
+        var level2 = detail.Upgrades.Single(x => x.Level == 2);
+        foreach (var (commodity, units) in level2.Goods)
+            HoldingRules.Deliver(holding, detail, commodity, units, Start, new HoldingAdvanceResult());
+        var supplies = new Dictionary<CommodityType, int>(holding.Supplies);
+
+        HoldingRules.ApplyUpgrade(holding, detail);
+        HoldingPaymentRules.Begin(holding, HoldingPaymentType.Upgrade, level2.Credits, "up");
+        HoldingPaymentRules.Undo(holding, detail, Start).Should().BeFalse();
+        holding.Level.Should().Be(1);
+        holding.Supplies.Should().Equal(supplies, "the level's goods come back");
+        HoldingPaymentRules.IsPending(holding).Should().BeFalse();
+
+        var plantHolding = New(HoldingType.GrainFarm);
+        foreach (var (commodity, units) in detail.Plant.Goods)
+            HoldingRules.Deliver(plantHolding, detail, commodity, units, Start, new HoldingAdvanceResult());
+        var plantSupplies = new Dictionary<CommodityType, int>(plantHolding.Supplies);
+        HoldingRules.ApplyPlant(plantHolding, detail);
+        HoldingPaymentRules.Begin(plantHolding, HoldingPaymentType.Plant, detail.Plant.Credits, "plant");
+        HoldingPaymentRules.Undo(plantHolding, detail, Start).Should().BeFalse();
+        plantHolding.HasProcessingPlant.Should().BeFalse();
+        plantHolding.Supplies.Should().Equal(plantSupplies);
+        HoldingRules.GetPlantRefusal(plantHolding, detail, detail.Plant.Credits).Should().Be(HoldingRefusal.None, "it can be built again");
+    }
+
+    [Test]
+    public void AnUnpaidUpkeepOrFine_IsOwedAgain()
+    {
+        var detail = Detail(HoldingType.GrainFarm);
+        var holding = New(HoldingType.GrainFarm);
+        holding.UpkeepOwed = 0;
+        HoldingPaymentRules.Begin(holding, HoldingPaymentType.Upkeep, 300, "upkeep");
+        HoldingPaymentRules.Undo(holding, detail, Start).Should().BeFalse();
+        holding.UpkeepOwed.Should().Be(300);
+
+        holding.CustomsFine = 0;
+        HoldingPaymentRules.Begin(holding, HoldingPaymentType.Fine, 900, "fine");
+        HoldingPaymentRules.Undo(holding, detail, Start).Should().BeFalse();
+        holding.CustomsFine.Should().Be(900);
+        holding.Log.Should().Contain(x => x.EndsWith("A restart undid the unpaid customs fine payment."));
+    }
+
+    [Test]
+    public void HoldingPayments_AreTakenOnThePlayersQueueAndSavedBeforeTheyComplete()
+    {
+        var service = Source(Path.Combine("Service", "PlanetaryHoldings.cs")).Replace("\r\n", "\n");
+        service.Should().NotContain("AssignCommand(player, () => TakeGoldFromCreature",
+            "a debit left to the next export lets a restart keep both the credits and what they paid for");
+
+        foreach (var (method, payment) in new[]
+                 {
+                     ("public static bool Buy(", "SaveWithPayment(player, holding, HoldingPaymentType.Purchase, detail.PurchasePrice);"),
+                     ("public static void Upgrade(", "SaveWithPayment(player, holding, HoldingPaymentType.Upgrade, upgrade.Credits);"),
+                     ("public static void BuildPlant(", "SaveWithPayment(player, holding, HoldingPaymentType.Plant, detail.Plant.Credits);"),
+                     ("public static void PayUpkeep(", "SaveWithPayment(player, holding, HoldingPaymentType.Upkeep, paid);"),
+                     ("public static void PayFine(", "SaveWithPayment(player, holding, HoldingPaymentType.Fine, fine);"),
+                 })
+        {
+            var body = Method(service, method);
+            body.Should().Contain(payment, method);
+            if (method != "public static bool Buy(")
+                body.Should().Contain("HoldingPaymentRules.IsPending(holding)", $"{method} waits for a pending payment to settle");
+        }
+
+        var collect = Method(service, "public static void Collect(");
+        InOrder(collect, "HoldingPaymentRules.Begin(holding, HoldingPaymentType.Upkeep, upkeep, Guid.NewGuid().ToString());", "DB.Set(holding);",
+            "TakePaymentOnQueue(player, holding);");
+
+        InOrder(Method(service, "private static void SaveWithPayment("), "HoldingPaymentRules.Begin(", "DB.Set(holding);", "TakePaymentOnQueue(player, holding);");
+        Method(service, "private static void TakePaymentOnQueue(").Should().Contain("AssignCommand(player, () => TakePayment(player, holdingId, paymentId));");
+        InOrder(Method(service, "private static void TakePayment("),
+            "holding.PendingPaymentId != paymentId",
+            "TakeGoldFromCreature(holding.PendingPaymentCredits, player, true);",
+            "ObjectPlugin.SetString(player, PaymentPaidVariable, paymentId, true);",
+            "ExportSingleCharacter(player);",
+            "HoldingPaymentRules.Complete(holding);",
+            "DB.Set(holding);");
+        InOrder(Method(service, "private static void SettlePendingPayments("),
+            "if (holding.PendingPaymentId == paidId)", "HoldingPaymentRules.Complete(holding);", "UndoPayment(holding);");
+        InOrder(Method(service, "public static void CheckHoldingsAtLogin("), "SettlePendingPayments(player);", "var holdings = LoadHoldings(player);");
+    }
+
+    private static string Method(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0, signature);
+        var depth = 0;
+        for (var i = source.IndexOf('{', start); i < source.Length; i++)
+        {
+            if (source[i] == '{') depth++;
+            else if (source[i] == '}' && --depth == 0)
+                return source.Substring(start, i - start + 1);
+        }
+
+        return source[start..];
+    }
+
+    private static void InOrder(string source, params string[] parts)
+    {
+        var at = -1;
+        foreach (var part in parts)
+        {
+            var next = source.IndexOf(part, at + 1, StringComparison.Ordinal);
+            next.Should().BeGreaterThan(at, $"'{part}' comes next");
+            at = next;
+        }
+    }
 }

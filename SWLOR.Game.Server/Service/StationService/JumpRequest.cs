@@ -34,7 +34,10 @@ namespace SWLOR.Game.Server.Service.StationService
         /// <summary>Station Fuel units in the ship's cargo bay.</summary>
         public int FuelAboard { get; init; }
 
-        /// <summary>The cargo aboard as pirates value it: commodities at base price, sealed freight by volume.</summary>
+        /// <summary>
+        /// The cargo aboard as pirates value it (commodities at base price, sealed freight by volume), with the cargo of
+        /// the ships docked aboard (<see cref="StationBuildingRules.GetJumpCargoValue"/>).
+        /// </summary>
         public int CargoValue { get; init; }
 
         /// <summary>Starlane hops between the two stations' systems (their anchors' exchanges).</summary>

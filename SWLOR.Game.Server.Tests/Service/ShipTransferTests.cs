@@ -160,9 +160,15 @@ public class ShipTransferTests
     public void TransfersAndSales_AreCheckedAgainWhenTheyComplete()
     {
         var source = ReadServerSource("Service", "ShipTransfer.cs");
-        ExtractMethod(source, "public static void Accept(").Should().Contain("ShipTransferRules.GetRefusal(BuildCheck(ship, offer.RecipientPlayerId), false)");
-        ExtractMethod(source, "public static bool Buy(").Should().Contain("ShipTransferRules.GetRefusal(BuildCheck(ship, buyerId), true)");
-        ExtractMethod(source, "public static bool Buy(").Should().Contain("ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);");
+        ExtractMethod(source, "public static void Accept(").Should().Contain("CanCompleteGift(giver, recipient, offer, out _)");
+        ExtractMethod(source, "private static void CompleteGift(").Should().Contain("CanCompleteGift(giver, recipient, offer, out var ship)",
+            "the giver's queue checks the gift again before it pays");
+        ExtractMethod(source, "private static bool CanCompleteGift(").Should().Contain("ShipTransferRules.GetRefusal(BuildCheck(ship, offer.RecipientPlayerId), false)");
+        ExtractMethod(source, "public static bool Buy(").Should().Contain("CanBuy(buyer, listing, out _)");
+        ExtractMethod(source, "private static void CompletePurchase(").Should().Contain("CanBuy(buyer, listing, out var ship)",
+            "the buyer's queue checks the purchase again before it pays");
+        ExtractMethod(source, "private static bool CanBuy(").Should().Contain("ShipTransferRules.GetRefusal(BuildCheck(ship, buyerId), true)");
+        ExtractMethod(source, "private static void CompletePurchase(").Should().Contain("ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);");
         ExtractMethod(source, "public static void Offer(").Should().Contain("GetArea(recipient) != dockArea");
     }
 
@@ -170,8 +176,8 @@ public class ShipTransferTests
     public void ASaleOwesItsProceedsWithTheNewOwner_AndPaysThemOnce()
     {
         var source = ReadServerSource("Service", "ShipTransfer.cs");
-        var buy = ExtractMethod(source, "public static bool Buy(");
-        buy.IndexOf("ship.SaleId = Guid.NewGuid().ToString();", StringComparison.Ordinal)
+        var buy = ExtractMethod(source, "private static void CompletePurchase(");
+        buy.IndexOf("ship.SaleId = payment.Id;", StringComparison.Ordinal)
             .Should().BeLessThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\");", StringComparison.Ordinal),
                 "the proceeds owed are saved in the same ship record as the new owner");
         buy.IndexOf("PaySaleProceeds(ship);", StringComparison.Ordinal)
@@ -256,6 +262,72 @@ public class ShipTransferTests
         var playerShip = new PlayerShip { OwnerPlayerId = owner, PropertyId = "ship", Status = new ShipStatus() };
         playerShip.Status.LowPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "sm_cargo_00" };
         return (playerShip, records);
+    }
+
+    [Test]
+    public void APayment_RoundTripsThroughTheCharacterFileLocal()
+    {
+        var payment = new ShipTransferPayment { Id = "p1", ShipId = "s1", NewOwnerPlayerId = "buyer", Credits = 250000 };
+
+        ShipTransferPayment.TryParse(payment.Serialize(), out var parsed).Should().BeTrue();
+        parsed.Should().BeEquivalentTo(payment);
+        ShipTransferPayment.TryParse(string.Empty, out _).Should().BeFalse();
+        ShipTransferPayment.TryParse(null, out _).Should().BeFalse();
+        ShipTransferPayment.TryParse("p1|s1|buyer|x", out _).Should().BeFalse();
+        ShipTransferPayment.TryParse("p1|s1||100", out _).Should().BeFalse("a payment names the ship's new owner");
+        ShipTransferPayment.TryParse("p1|s1|buyer|-5", out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void APayment_IsKeptOnlyWhenItsTransferWasSaved()
+    {
+        var payment = new ShipTransferPayment { Id = "p1", ShipId = "s1", NewOwnerPlayerId = "buyer", Credits = 1000 };
+
+        payment.IsApplied(new PlayerShip { OwnerPlayerId = "buyer" }).Should().BeTrue("the transfer finished");
+        payment.IsApplied(new PlayerShip { OwnerPlayerId = "seller", TransferToPlayerId = "buyer" })
+            .Should().BeTrue("the saved transfer is finished at module load");
+        payment.IsApplied(new PlayerShip { OwnerPlayerId = "seller" }).Should().BeFalse("a restart came before the transfer was saved");
+        payment.IsApplied(new PlayerShip { OwnerPlayerId = "someone else" }).Should().BeFalse();
+        payment.IsApplied(null).Should().BeFalse("the ship is gone, so it never changed hands");
+    }
+
+    [Test]
+    public void TheBuyersAndGiversQueue_SavesThePaymentBeforeTheTransfer()
+    {
+        var source = ReadServerSource("Service", "ShipTransfer.cs");
+        source.Should().NotContain("AssignCommand(buyer, () => TakeGoldFromCreature", "the buyer's debit is saved with its mark, not left to the next export");
+        source.Should().NotContain("AssignCommand(giver, () => TakeGoldFromCreature");
+        ExtractMethod(source, "public static bool Buy(").Should().Contain("AssignCommand(buyer, () => CompletePurchase(buyer, listingId, price, taxRate));");
+        ExtractMethod(source, "public static void Accept(").Should().Contain("AssignCommand(giver, () => CompleteGift(giver, recipient, offer));");
+
+        var purchase = ExtractMethod(source, "private static void CompletePurchase(");
+        AssertInOrder(purchase, "if (GetGold(buyer) < price)", "TakeGoldFromCreature(price, buyer, true);", "SavePayment(buyer, payment);",
+            "ship.SaleId = payment.Id;", "Complete(ship, buyerId, \"was sold\");", "PaySaleProceeds(ship);", "ClearPayment(buyer);");
+        purchase.Should().Contain("if (listing.Price != price)");
+
+        var gift = ExtractMethod(source, "private static void CompleteGift(");
+        AssertInOrder(gift, "TakeGoldFromCreature(offer.Fee, giver, true);", "SavePayment(giver, new ShipTransferPayment",
+            "Complete(ship, offer.RecipientPlayerId, \"changed owner\");", "ClearPayment(giver);");
+
+        AssertInOrder(ExtractMethod(source, "private static void SavePayment("),
+            "ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);", "ExportSingleCharacter(payer);");
+        AssertInOrder(ExtractMethod(source, "private static void ClearPayment("),
+            "ObjectPlugin.DeleteString(payer, PaymentVariable);", "ExportSingleCharacter(payer);");
+
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
+        var settle = ExtractMethod(source, "public static void SettleInterruptedPayment(");
+        AssertInOrder(settle, "payment.IsApplied(DB.Get<PlayerShip>(payment.ShipId))", "GiveGoldToCreature(player, payment.Credits);", "ClearPayment(player);");
+    }
+
+    private static void AssertInOrder(string source, params string[] parts)
+    {
+        var at = -1;
+        foreach (var part in parts)
+        {
+            var next = source.IndexOf(part, at + 1, StringComparison.Ordinal);
+            next.Should().BeGreaterThan(at, $"'{part}' comes next");
+            at = next;
+        }
     }
 
     private static string ExtractMethod(string source, string signature)

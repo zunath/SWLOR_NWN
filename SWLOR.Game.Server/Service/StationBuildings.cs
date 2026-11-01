@@ -661,7 +661,7 @@ namespace SWLOR.Game.Server.Service
                 ShipSize = record == null ? ShipSize.Invalid : Space.GetShipSize(record),
                 HullTag = record?.Status?.ItemTag ?? string.Empty,
                 FuelAboard = record == null ? 0 : CargoHoldRules.GetUnits(record.Cargo, CommodityType.StationFuel),
-                CargoValue = record == null ? 0 : PirateAmbushRules.GetCargoValue(record.Cargo, record.SealedFreight),
+                CargoValue = record == null ? 0 : StationBuildingRules.GetJumpCargoValue(record, Space.GetDockedShips(record.Id)),
                 Hops = originAnchor == null || destinationAnchor == null
                     ? 0
                     : TradeLookup.GetHops(originAnchor.Exchange, destinationAnchor.Exchange),

@@ -20,6 +20,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             !pilotValid || !inSpace || (!betweenAreas && !inPocket);
 
         /// <summary>
+        /// Whether a ship docked aboard a host may undock where the host is: anywhere outside a pocket, and in a pocket
+        /// only when that pocket's run already counts the ship (it waits there for its pilot). Any other ship would fly
+        /// the pocket without joining the run, so it stays aboard until the host leaves.
+        /// </summary>
+        public static bool CanUndockInto(bool inPocket, bool shipWaitsInThisRun) => !inPocket || shipWaitsInThisRun;
+
+        /// <summary>
         /// A pilot logged out (their creature is gone): their ship waits in the pocket for them to rejoin while the run is
         /// open (W11k). Does nothing for a pilot the run does not know.
         /// </summary>

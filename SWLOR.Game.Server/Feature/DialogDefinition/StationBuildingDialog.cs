@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           $"Beacon level: {level} (hulls up to {StationBuildingRules.GetMaxHull(level)}; both beacons must take the hull)\n" +
                           "Station Fuel per jump, from the ship's cargo bay: " +
                           string.Join(", ", StationTuning.JumpFuel.Select(x => $"{x.Key} {x.Value}")) +
-                          $", plus 1 per {StationTuning.JumpFuelCargoValuePerHop} credits of cargo value for each starlane hop the jump skips\n" +
+                          $", plus 1 per {StationTuning.JumpFuelCargoValuePerHop} credits of cargo value (ships docked aboard count too) for each starlane hop the jump skips\n" +
                           $"Who may jump here: {DescribeAccess(state.BeaconAccess)}";
 
             page.AddResponse("Jump a docked ship", () => GoToPage(ShipPageId));

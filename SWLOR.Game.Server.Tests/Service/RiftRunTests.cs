@@ -399,4 +399,19 @@ public class RiftRunTests
         var section = plan.Substring(plan.IndexOf("## 31. Rift Runs", StringComparison.Ordinal));
         section.Substring(0, section.IndexOf("## 32.", StringComparison.Ordinal)).Should().Contain("Added by the incursions and Rift Runs update (W15b)");
     }
+
+    [Test]
+    public void AShipDockedAboard_UndocksIntoAPocketOnlyWhenTheRunCountsIt()
+    {
+        RiftRunRules.CanUndockInto(false, false).Should().BeTrue("outside a pocket any docked ship may undock");
+        RiftRunRules.CanUndockInto(true, false).Should().BeFalse("a ship the run never enrolled would fly the pocket outside the run");
+        RiftRunRules.CanUndockInto(true, true).Should().BeTrue("a ship waiting in this run rejoins it on launch");
+
+        var docking = ReadSource("Service", "SpaceDocking.cs").Replace("\r\n", "\n");
+        var undock = docking.Substring(docking.IndexOf("public static bool UndockShip(", StringComparison.Ordinal));
+        undock = undock.Substring(0, undock.IndexOf("private static void CompleteUndockLaunch(", StringComparison.Ordinal));
+        var pocket = undock.IndexOf("RiftRunRules.CanUndockInto(IsRiftPocket(hostArea), FindRejoinableRiftRun(visitor.Id)?.Area == hostArea)", StringComparison.Ordinal);
+        pocket.Should().BeGreaterThan(0);
+        pocket.Should().BeLessThan(undock.IndexOf("BeginShipLaunch(player, visitor.Id", StringComparison.Ordinal), "the pocket is refused before the launch");
+    }
 }

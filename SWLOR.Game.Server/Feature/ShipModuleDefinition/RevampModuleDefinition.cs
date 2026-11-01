@@ -294,7 +294,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, status, _, _, _) =>
                 {
-                    status.Harden(Effective(step).ResistAll, step.CycleSeconds, DateTime.UtcNow);
+                    // A station's hardener works at the effectiveness of whoever runs it, as repairs do (plan section 10).
+                    status.Harden(ShipCrewSeats.ScaleByEffectiveness(Effective(step).ResistAll, SpaceCrew.GetFireEffectiveness(activator)),
+                        step.CycleSeconds, DateTime.UtcNow);
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), activator, 1.0f);
                 });
         }
@@ -320,7 +322,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
-                    var fired = Effective(step);
+                    // A station's generator works at the effectiveness of whoever runs it, as repairs do (plan section 10).
+                    var shieldPercent = ShipCrewSeats.ScaleByEffectiveness(Effective(step).AuraShieldPercent, SpaceCrew.GetFireEffectiveness(activator));
                     var seconds = step.CycleSeconds + 0.5;
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, (float)step.CycleSeconds);
 
@@ -330,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), ally, 2.0f);
                         ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), ally, 2.0f);
 
-                        Space.ApplyShieldAura(ally, Space.GetShipStatus(ally), fired.AuraShieldPercent, seconds);
+                        Space.ApplyShieldAura(ally, Space.GetShipStatus(ally), shieldPercent, seconds);
                         supported.Add(ally);
                     }
 

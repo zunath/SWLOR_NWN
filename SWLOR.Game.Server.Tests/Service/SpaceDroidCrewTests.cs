@@ -207,6 +207,17 @@ public class SpaceDroidCrewTests
     }
 
     [Test]
+    public void DefensiveToggles_WorkAtTheirStationsEffectiveness()
+    {
+        var definitions = ReadServerSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs");
+        definitions.Should().Contain("ShipCrewSeats.ScaleByEffectiveness(Effective(step).AuraShieldPercent, SpaceCrew.GetFireEffectiveness(activator))",
+                "a droid at 25% gives a Bulwark's shield aura at 25%")
+            .And.Contain("ShipCrewSeats.ScaleByEffectiveness(Effective(step).ResistAll, SpaceCrew.GetFireEffectiveness(activator))",
+                "a hardener's resistance follows its station's effectiveness too")
+            .And.NotContain("fired.AuraShieldPercent");
+    }
+
+    [Test]
     public void AWeapon_EngagesEachPickOfTargetOnce()
     {
         const uint Enemy = 0x01000201;

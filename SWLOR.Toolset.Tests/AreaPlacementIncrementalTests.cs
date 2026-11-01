@@ -1,3 +1,6 @@
+using Nwn.Authoring.Areas.Editing;
+using Nwn.Authoring.Editing;
+using Nwn.Toolset.Avalonia.Areas;
 using Nwn.Preview.Areas.Clipboard;
 using Nwn.Authoring.Areas.Placement;
 using System.Numerics;
@@ -280,6 +283,138 @@ namespace SWLOR.Toolset.Tests
             InstanceFieldMap.GetPosition(ResourceType.Utp, saved.Placeables[0]).Z.Should().Be(8);
         }
 
+        [AvaloniaTest]
+        public async Task GroupClipboardPreservesOffsetsAndCutsAndPastesAsSingleUndoSteps()
+        {
+            AddAuthoredSourcePlacement();
+            var editor = await CreateEditorAsync();
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            var original = editor.AreaScene!.Instances.Single();
+            editor.SelectSceneInstance(original);
+            editor.CopySelectedSceneInstance().Should().BeTrue();
+            editor.PasteCopiedSceneInstance().Should().BeTrue();
+            editor.CommitPlacement(new Vector3(14, 16, 3));
+            editor.SelectSceneSelection(new AreaSelectionPick(editor.AreaScene!.Instances, Array.Empty<(int, int)>(), false));
+            editor.SelectedSceneInstances.Should().HaveCount(2);
+            editor.CutSelectedSceneInstance().Should().BeTrue();
+            var section = editor.Sections.Single(section => section.BlueprintType == ResourceType.Utp);
+            section.Rows.Should().BeEmpty();
+            editor.UndoInstancesCommand.Execute(null);
+            section.Rows.Should().HaveCount(2);
+            editor.PasteCopiedSceneInstance().Should().BeTrue();
+            editor.PlacementGhosts.Should().HaveCount(2);
+            editor.CommitPlacement(new Vector3(24, 26, 0));
+            section.Rows.Should().HaveCount(4);
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            var saved = GitDocument.Load(Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json"));
+            InstanceFieldMap.GetPosition(ResourceType.Utp, saved.Placeables[2]).Should().Be((24f, 26f, 0f));
+            InstanceFieldMap.GetPosition(ResourceType.Utp, saved.Placeables[3]).Should().Be((34f, 36f, 3f));
+            var comments = GicDocument.Load(Path.Combine(_moduleRoot, "gic", $"{AreaResRef}.gic.json"));
+            comments.Placeables.Should().HaveCount(4);
+            GicDocument.GetComment(comments.Placeables[3]).Should().Be("builder note survives copy");
+            editor.UndoInstancesCommand.Execute(null);
+            section.Rows.Should().HaveCount(2);
+        }
+
+        [AvaloniaTest]
+        public async Task TileClipboardPreservesOrientationHeightAndUndoThroughTheAreaView()
+        {
+            var path = Path.Combine(_moduleRoot, "are", $"{AreaResRef}.are.json");
+            var document = JsonGffDocument.Load(path);
+            var tiles = document.Root.Get("Tile_List").Elements!;
+            tiles[0].SetInt("Tile_Orientation", GffFieldType.Int, 3);
+            tiles[1].SetInt("Tile_Height", GffFieldType.Int, 2);
+            tiles[0].SetString("Sentinel", GffFieldType.CExoString, "authored tile data");
+            File.WriteAllBytes(path, document.ToBytes());
+            var editor = await CreateEditorAsync();
+            editor.SelectSceneSelection(new AreaSelectionPick(Array.Empty<InstanceMarker>(), new[] { (0, 0), (1, 0) }, false));
+            var view = new ShortcutAreaEditorView { DataContext = editor };
+            view.SendControlKey(Key.C).Should().BeTrue();
+            view.SendControlKey(Key.V).Should().BeTrue();
+            editor.CommitTilePlacement(2, 0);
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            var saved = JsonGffDocument.Load(path).Root.Get("Tile_List").Elements!;
+            saved[2].GetIntOrNull("Tile_Orientation").Should().Be(3);
+            saved[3].GetIntOrNull("Tile_Height").Should().Be(2);
+            saved[2].GetStringOrNull("Sentinel").Should().Be("authored tile data");
+            editor.UndoAreCommand.Execute(null);
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            var undone = JsonGffDocument.Load(path).Root.Get("Tile_List").Elements!;
+            undone[2].GetStringOrNull("Sentinel").Should().BeNull();
+            undone[3].GetIntOrNull("Tile_Height").Should().Be(0);
+        }
+
+        [AvaloniaTest]
+        public async Task PlayerStartRotationSavesModuleDirectionAndUndoesAfterSave()
+        {
+            var path = Path.Combine(_moduleRoot, "ifo", "module.ifo.json");
+            var sourcePath = Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var document = JsonGffDocument.Load(sourcePath);
+            document.Root.SetString("Mod_Entry_Area", GffFieldType.ResRef, AreaResRef);
+            document.Root.SetSingle("Mod_Entry_Dir_X", 1);
+            document.Root.SetSingle("Mod_Entry_Dir_Y", 0);
+            File.WriteAllBytes(path, document.ToBytes());
+            using var session = DocumentSession.Open(path);
+            var entry = new ModuleEntryEditor(session);
+            var editor = await CreateEditorAsync(moduleEntry: entry);
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            var start = editor.AreaScene!.Instances.Single(marker => marker.Kind == InstanceMarkerKind.StartLocation);
+            editor.SelectSceneInstance(start);
+            var properties = new SWLOR.Toolset.Editors.Module.ModulePropertiesDocumentViewModel(
+                path, _moduleRoot, new ModuleWorkspace(_moduleRoot), new OutputLogService(),
+                new StubPrompts(), moduleEntry: entry);
+            properties.Tag = "shared_module_tag";
+            editor.RotateSelectedInstance(start, Vector2.UnitY);
+            properties.Document.EntryDirectionY.Should().Be(1);
+            entry.Document.EntryDirectionY.Should().Be(1);
+            editor.IsDirty.Should().BeTrue();
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            IfoDocument.Load(path).EntryDirectionY.Should().Be(1);
+            IfoDocument.Load(path).Tag.Should().Be("shared_module_tag");
+            properties.IsDirty.Should().BeFalse();
+            properties.OnClose().Should().BeTrue("closing Module Properties must keep the borrowed session alive");
+            editor.UndoAreCommand.Execute(null);
+            entry.Document.EntryDirectionX.Should().Be(1);
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            IfoDocument.Load(path).EntryDirectionX.Should().Be(1);
+            IfoDocument.Load(path).EntryDirectionY.Should().Be(0);
+        }
+
+        [AvaloniaTest]
+        public async Task LockedModuleEntryRollsBackItsCompanionAreaSave()
+        {
+            Support.WindowsFileSharing.Require();
+            var path = Path.Combine(_moduleRoot, "ifo", "module.ifo.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var document = JsonGffDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"));
+            document.Root.SetString("Mod_Entry_Area", GffFieldType.ResRef, AreaResRef);
+            File.WriteAllBytes(path, document.ToBytes());
+            using var session = DocumentSession.Open(path);
+            var entry = new ModuleEntryEditor(session);
+            var editor = await CreateEditorAsync(moduleEntry: entry);
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            editor.RotateSelectedInstance(editor.AreaScene!.Instances.Single(marker =>
+                marker.Kind == InstanceMarkerKind.StartLocation), new Vector2(0.6f, 0.8f));
+            editor.SelectTile((0, 0));
+            editor.RaiseTileCommand.Execute(null);
+            var areaPath = Path.Combine(_moduleRoot, "are", $"{AreaResRef}.are.json");
+            var originalArea = File.ReadAllBytes(areaPath);
+            var originalModule = File.ReadAllBytes(path);
+            using (var locked = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                (await editor.TrySaveAsync()).Should().BeFalse();
+            }
+            File.ReadAllBytes(areaPath).Should().Equal(originalArea);
+            File.ReadAllBytes(path).Should().Equal(originalModule);
+            editor.IsDirty.Should().BeTrue();
+            entry.IsEntryDirty.Should().BeTrue();
+            (await editor.TrySaveAsync()).Should().BeTrue();
+        }
+
         private void AddAuthoredSourcePlacement()
         {
             var gitPath = Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json");
@@ -318,7 +453,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         private async Task<AreaEditorViewModel> CreateEditorAsync(
-            AreaInstanceClipboard? clipboard = null)
+            AreaInstanceClipboard? clipboard = null, ModuleEntryEditor? moduleEntry = null)
         {
             var log = new OutputLogService();
             var context = new WorkspaceContext(_ => throw new NotSupportedException(), log);
@@ -334,7 +469,8 @@ namespace SWLOR.Toolset.Tests
                 tileModelCache: new TileModelCache(resources),
                 resourceIndex: resources,
                 prompts: new StubPrompts(),
-                instanceClipboard: clipboard);
+                instanceClipboard: clipboard,
+                moduleEntry: moduleEntry);
         }
 
         private static void AssertFacingNorth(Vector2 orientation)

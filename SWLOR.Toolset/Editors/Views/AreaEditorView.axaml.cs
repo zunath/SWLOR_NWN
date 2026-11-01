@@ -18,17 +18,12 @@ namespace SWLOR.Toolset.Editors
         private Viewport.SwlorAreaViewportMaterialProvider? _materialProvider;
         private SelectionContextMenuState? _selectionMenuState;
         private bool _viewportStateRestored;
-        private bool _keepPlacementBrush;
         private AreaEditorSurface AreaView => SceneView.Surface;
 
         public AreaEditorView()
         {
             InitializeComponent();
             AreaView.ContextRequested += OnViewportContextRequested;
-            AreaView.AddHandler(Avalonia.Input.InputElement.PointerReleasedEvent,
-                (_, args) => _keepPlacementBrush =
-                    (args.KeyModifiers & Avalonia.Input.KeyModifiers.Shift) != 0,
-                RoutingStrategies.Tunnel);
             SceneView.RaiseTileRequested += (sender, args) => _viewModel?.RaiseTileCommand.Execute(null);
             SceneView.LowerTileRequested += (sender, args) => _viewModel?.LowerTileCommand.Execute(null);
             AreaView.Viewport.InstancePicked += OnInstancePicked;
@@ -41,6 +36,8 @@ namespace SWLOR.Toolset.Editors
             AreaView.Viewport.TileSelected += OnTileSelected;
             AreaView.Viewport.TilePlacementCancelled += OnTilePlacementCancelled;
             AreaView.Viewport.TileRotateRequested += OnTileRotateRequested;
+            AreaView.Viewport.TileVariantRequested += (column, row) => _viewModel?.CycleTileVariant(column, row);
+            AreaView.Viewport.SelectionPicked += selection => _viewModel?.SelectSceneSelection(selection);
             DataContextChanged += (_, _) => AttachViewModel();
 
             // Display switches are global, not per-area (Aurora treats them the same way), so the
@@ -127,13 +124,18 @@ namespace SWLOR.Toolset.Editors
             AreaView.Viewport.Scene = _viewModel.AreaScene;
             RestoreViewportStateWhenReady();
             AreaView.Viewport.SelectedInstance = _viewModel.SelectedSceneInstance;
+            AreaView.Viewport.SelectedInstances = _viewModel.SelectedSceneInstances;
+            AreaView.Viewport.SelectedTileCells = _viewModel.SelectedTiles;
             AreaView.Viewport.PlacementGhost = _viewModel.PlacementGhost;
+            AreaView.Viewport.PlacementGhosts = _viewModel.PlacementGhosts;
             AreaView.Viewport.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.Viewport.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             AreaView.Viewport.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
             AreaView.Viewport.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
             AreaView.Viewport.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             AreaView.Viewport.TilePlacementModels = _viewModel.TilePlacementModels;
+            AreaView.Viewport.TilePlacementOrientations = _viewModel.TilePlacementOrientations;
+            AreaView.Viewport.TilePlacementHeightOffsets = _viewModel.TilePlacementHeightOffsets;
             AreaView.Viewport.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
             AreaView.Viewport.TilePlacementEdgeValidator = _viewModel.CanPlaceArmedCrosserAt;
             AreaView.Viewport.SelectedTileCell = _viewModel.SelectedTile;
@@ -210,10 +212,17 @@ namespace SWLOR.Toolset.Editors
             }
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
                 AreaView.Viewport.SelectedInstance = _viewModel.SelectedSceneInstance;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstances))
+                AreaView.Viewport.SelectedInstances = _viewModel.SelectedSceneInstances;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedTiles))
+                AreaView.Viewport.SelectedTileCells = _viewModel.SelectedTiles;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsPlacementPending))
                 AreaView.Viewport.IsPlacementActive = _viewModel.IsPlacementPending;
             else if (e.PropertyName == nameof(AreaEditorViewModel.PlacementGhost))
+            {
                 AreaView.Viewport.PlacementGhost = _viewModel.PlacementGhost;
+                AreaView.Viewport.PlacementGhosts = _viewModel.PlacementGhosts;
+            }
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsTilePlacementPending))
                 AreaView.Viewport.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementTargetsVertex))
@@ -222,8 +231,14 @@ namespace SWLOR.Toolset.Editors
                 AreaView.Viewport.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementFootprint))
                 AreaView.Viewport.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
-            else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementModels))
+            else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementModels) ||
+                     e.PropertyName == nameof(AreaEditorViewModel.TilePlacementOrientations) ||
+                     e.PropertyName == nameof(AreaEditorViewModel.TilePlacementHeightOffsets))
+            {
                 AreaView.Viewport.TilePlacementModels = _viewModel.TilePlacementModels;
+                AreaView.Viewport.TilePlacementOrientations = _viewModel.TilePlacementOrientations;
+                AreaView.Viewport.TilePlacementHeightOffsets = _viewModel.TilePlacementHeightOffsets;
+            }
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedTile))
                 AreaView.Viewport.SelectedTileCell = _viewModel.SelectedTile;
         }
@@ -335,7 +350,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>A pending placement resolved to a viewport click.</summary>
         private void OnPlacementPointPicked(PlacementPick pick) =>
-            _viewModel?.CommitPlacement(pick.Position, pick.Orientation, _keepPlacementBrush);
+            _viewModel?.CommitPlacement(pick.Position, pick.Orientation, pick.KeepBrush);
 
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();

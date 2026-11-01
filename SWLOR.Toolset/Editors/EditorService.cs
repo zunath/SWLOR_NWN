@@ -1,3 +1,5 @@
+using Nwn.Authoring.Areas.Editing;
+using Nwn.Authoring.Editing;
 using Nwn.Preview.Areas.Clipboard;
 using System.Collections.Concurrent;
 using Dock.Model.Mvvm.Controls;
@@ -29,7 +31,7 @@ namespace SWLOR.Toolset.Editors
     /// open blueprint activates its existing tab. Types without a schema yet log a notice
     /// instead of opening until a schema for that type is available.
     /// </summary>
-    public sealed class EditorService
+    public sealed class EditorService : IDisposable
     {
         private readonly WorkspaceContext _workspaceContext;
         private readonly LookupOptionProvider _lookups;
@@ -109,6 +111,19 @@ namespace SWLOR.Toolset.Editors
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _cancelledAreaEditorLoads = new(StringComparer.OrdinalIgnoreCase);
         private readonly AreaInstanceClipboard _areaInstanceClipboard = new();
+        private ModuleEntryEditor? _moduleEntry;
+
+        private ModuleEntryEditor? ModuleEntryForWorkspace()
+        {
+            if (_moduleEntry != null) return _moduleEntry;
+            var root = _workspaceContext.Workspace?.ModuleRoot;
+            if (root == null) return null;
+            var path = Path.Combine(root, "ifo", "module.ifo.json");
+            return File.Exists(path) ? _moduleEntry = new ModuleEntryEditor(DocumentSession.Open(path)) : null;
+        }
+
+        public void Dispose() => _moduleEntry?.Session.Dispose();
+
         private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly List<WeakReference<Sources.ObjectSourceSectionViewModel>> _objectSources = new();
@@ -534,7 +549,8 @@ namespace SWLOR.Toolset.Editors
                     _gameCodeIndex,
                     _moduleCustomContent,
                     script => TryOpenEditor(ResourceType.Nss, script),
-                    actions);
+                    actions,
+                    ModuleEntryForWorkspace());
                 document.Closed += _ => _moduleProperties = null;
                 document.CloseRequested += _ => _factory.CloseDocument(document);
                 _moduleProperties = document;
@@ -3841,7 +3857,8 @@ namespace SWLOR.Toolset.Editors
                             resRef,
                             ResolveTransitionDestination,
                             ResolveTriggerChoices,
-                            ChoicePreviews()));
+                            ChoicePreviews()),
+                        ModuleEntryForWorkspace());
                     editor.Closed += _ => _openAreaEditors.Remove(resRef);
                     editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                     editor.CloseRequested += _ => _factory.CloseDocument(editor);

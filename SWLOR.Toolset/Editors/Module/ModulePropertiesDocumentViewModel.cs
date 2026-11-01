@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Editing;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -120,6 +121,7 @@ namespace SWLOR.Toolset.Editors.Module
         private CancellationTokenSource? _customReloadCts;
         private IReadOnlyList<string> _allAvailableHaks = Array.Empty<string>();
 
+        private readonly ModuleEntryEditor? _moduleEntry;
         internal IfoDocument Document { get; }
 
         public ObservableCollection<ModuleEventRowViewModel> Events { get; } = new();
@@ -135,7 +137,7 @@ namespace SWLOR.Toolset.Editors.Module
         [ObservableProperty] private string _customContentStatus = "Ready";
         [ObservableProperty] private bool _isReloadingCustomContent;
 
-        public bool IsDirty => _session.UndoStack.IsDirty;
+        public bool IsDirty => _moduleEntry?.IsDirty ?? _session.UndoStack.IsDirty;
         public bool CanUndo => _session.UndoStack.CanUndo;
         public bool CanRedo => _session.UndoStack.CanRedo;
         public string FilePath => _session.FilePath;
@@ -286,7 +288,8 @@ namespace SWLOR.Toolset.Editors.Module
             IGameCodeIndex? gameCodeIndex = null,
             ModuleCustomContentService? customContent = null,
             Action<string>? openScript = null,
-            ModulePropertiesActions? actions = null)
+            ModulePropertiesActions? actions = null,
+            ModuleEntryEditor? moduleEntry = null)
         {
             _moduleRoot = moduleRoot;
             _gameCodeIndex = gameCodeIndex;
@@ -296,7 +299,9 @@ namespace SWLOR.Toolset.Editors.Module
             _openScript = openScript;
             _actions = actions ?? new ModulePropertiesActions();
             Id = $"module-properties:{filePath}";
-            _session = DocumentSession.Open(filePath);
+            _moduleEntry = moduleEntry;
+            _session = moduleEntry?.Session ?? DocumentSession.Open(filePath);
+            if (_moduleEntry != null) _moduleEntry.Changed += OnSharedModuleChanged;
             Document = new IfoDocument(_session.Document);
             Variables = SwlorVarTablePolicy.Create(RunEdit, Document.VarTable, _gameCodeIndex);
             ScriptChoices = BuildScriptChoices(workspace, Document);
@@ -401,6 +406,7 @@ namespace SWLOR.Toolset.Editors.Module
             try
             {
                 _session.Execute(description, mutation);
+                _moduleEntry?.NotifyChanged();
                 AfterHistoryChange();
                 return true;
             }
@@ -625,6 +631,7 @@ namespace SWLOR.Toolset.Editors.Module
                     {
                         var customContentBefore = CustomContentSignature();
                         _session.ReloadFromDisk();
+                        _moduleEntry?.MarkSaved();
                         ReloadFields();
                         if (customContentBefore != CustomContentSignature())
                             QueueCustomContentReload();
@@ -645,6 +652,7 @@ namespace SWLOR.Toolset.Editors.Module
 
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState(bytes);
+                _moduleEntry?.MarkSaved();
                 AfterHistoryChange();
                 Saved?.Invoke();
                 _log.AppendLine($"Saved {_session.FilePath}.");
@@ -662,6 +670,7 @@ namespace SWLOR.Toolset.Editors.Module
         {
             var customContentBefore = CustomContentSignature();
             _session.Undo();
+            _moduleEntry?.NotifyChanged();
             ReloadFields();
             if (customContentBefore != CustomContentSignature())
                 QueueCustomContentReload();
@@ -673,6 +682,7 @@ namespace SWLOR.Toolset.Editors.Module
         {
             var customContentBefore = CustomContentSignature();
             _session.Redo();
+            _moduleEntry?.NotifyChanged();
             ReloadFields();
             if (customContentBefore != CustomContentSignature())
                 QueueCustomContentReload();
@@ -727,7 +737,8 @@ namespace SWLOR.Toolset.Editors.Module
             _disposed = true;
             _customReloadCts?.Cancel();
             _customReloadCts?.Dispose();
-            _session.Dispose();
+            if (_moduleEntry != null) _moduleEntry.Changed -= OnSharedModuleChanged;
+            else _session.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();
         }
@@ -745,6 +756,7 @@ namespace SWLOR.Toolset.Editors.Module
                 if (choice == UnsavedChangesChoice.Discard)
                 {
                     _session.ReloadFromDisk();
+                    _moduleEntry?.MarkSaved();
                     if (_customContent != null)
                     {
                         await _customContent.ReloadAsync(
@@ -759,6 +771,12 @@ namespace SWLOR.Toolset.Editors.Module
             {
                 _closePromptOpen = false;
             }
+        }
+
+        private void OnSharedModuleChanged()
+        {
+            ReloadFields();
+            AfterHistoryChange();
         }
 
         private void AfterHistoryChange()

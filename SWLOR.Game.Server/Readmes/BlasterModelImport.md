@@ -175,6 +175,12 @@ from the existing native connectors, plus the complete assembly's
 joint sleeves, and preserves the source surface UVs and corner frames. Its
 output selects complete authored `source_nodes` for each part and shares maps
 across roles. Node selectors cannot overlap or be combined with clipping.
+Keep each part's own cross-section all the way to its cut. Never taper a source
+surface down to the connector envelope near a joint: two such parts meet tip to
+tip and the staff pinches at every boundary (the October 2026 staffs did this
+over 25 mm). `tools/RepairStaffJointTransitions.py` widens such quarterstaff
+bands in compiled parts, and `tools/tests/test_repair_staff_joint_transitions.py`
+audits every shipped quarterstaff part for a pinched joint.
 Shields keep one complete model and use the preparation output directly; retain
 their measured grip, clearance and impact dummies.
 

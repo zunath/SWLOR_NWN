@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature
 
         internal static void InitializeNewCharacter(uint player, Player initializing)
         {
-            var grantStartingToken = initializing.Version == 0;
+            var grantStartingTokens = initializing.Version == 0;
             ClearInventory(player);
             AutoLevelPlayer(player);
             InitializeSkills(player);
@@ -94,8 +94,8 @@ namespace SWLOR.Game.Server.Feature
             InitializeLanguages(player, initializing);
             AssignRacialAppearance(player, initializing);
             GiveStartingItems(player);
-            if (grantStartingToken)
-                GiveStartingRebuildToken(initializing);
+            if (grantStartingTokens)
+                GiveStartingTokens(initializing);
             AssignCharacterType(player, initializing);
             RegisterDefaultRespawnPoint(initializing);
             Stat.ApplyCreatureMovementRate(player);
@@ -362,19 +362,9 @@ namespace SWLOR.Game.Server.Feature
                     break;
             }
 
-            // Fair warning: We're short-circuiting the skill system here.
-            // Languages don't level up like normal skills (no stat increases, SP, etc.)
-            // So it's safe to simply set the player's rank in the skill to max.
             foreach (var language in languages)
             {
-                var skill = Skill.GetSkillDetails(language);
-                if (!dbPlayer.Skills.ContainsKey(language))
-                    dbPlayer.Skills[language] = new PlayerSkill();
-
-                var level = skill.MaxRank;
-                dbPlayer.Skills[language].Rank = level;
-
-                dbPlayer.Skills[language].XP = Skill.GetRequiredXP(level) - 1;
+                Language.Master(dbPlayer, language);
             }
         }
 
@@ -426,15 +416,17 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Grants a new character one free rebuild token to spend on a later respec.
+        /// Grants a new character one free rebuild token to spend on a later respec
+        /// and one language token to master a language of their choice.
         /// </summary>
         /// <param name="dbPlayer">The player entity</param>
-        private static void GiveStartingRebuildToken(Player dbPlayer)
+        private static void GiveStartingTokens(Player dbPlayer)
         {
-            if (!dbPlayer.Currencies.ContainsKey(CurrencyType.RebuildToken))
-                dbPlayer.Currencies[CurrencyType.RebuildToken] = 0;
+            dbPlayer.Currencies.TryGetValue(CurrencyType.RebuildToken, out var rebuildTokens);
+            dbPlayer.Currencies[CurrencyType.RebuildToken] = rebuildTokens + 1;
 
-            dbPlayer.Currencies[CurrencyType.RebuildToken]++;
+            dbPlayer.Currencies.TryGetValue(CurrencyType.LanguageToken, out var languageTokens);
+            dbPlayer.Currencies[CurrencyType.LanguageToken] = languageTokens + 1;
         }
 
         /// <summary>

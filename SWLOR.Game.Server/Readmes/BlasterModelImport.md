@@ -628,7 +628,7 @@ python -m unittest discover -s tools/tests -p test_pistol_inventory_icons.py
 
 This requires Pillow and the initialized HAK submodule. It checks committed game
 resources without authoring inputs: model/icon presence, 64x64 dimensions,
-DXT5 encoding, transparency, distinct visible pixels and stale TGA shadows of DDS icons. Legacy
+DXT5 encoding, transparency, distinct visible pixels and invalid TGA companions of DDS icons. Legacy
 TGA-only slots are included in the artwork audit; new/replacement icons use DDS.
 Review a labeled contact sheet and provide an icon preview with the handoff.
 
@@ -655,9 +655,10 @@ the artwork in the DDS and give each icon that has no TGA in any layer (HAKs or
 the base game) an 8x8 registration stub: `tools/FixWeaponInventoryIcons.py audit`
 lists them and `stubs` writes a bottom-left TGA thumbnail of the DDS art beside
 each one. Do not change persisted weapon appearances to dodge the check. The
-pistol and rifle icon audits (`test_pistol_inventory_icons.py`,
-`test_rifle_inventory_icons.py`) still reject a TGA beside a DDS; their icons
-have no stubs yet. Broader engine background is available in the
+pistol icon audit accepts only 8x8 bottom-left registration thumbnails beside DDS
+artwork and requires them for the twelve slots without stock registrations. The
+rifle icon audit (`test_rifle_inventory_icons.py`) still rejects a TGA beside a DDS;
+its icons have no stubs yet. Broader engine background is available in the
 [texture notes](https://nwn.wiki/spaces/NWN1/pages/38174958/Textures).
 
 The inventory shows only the top-left `InvSlotWidth x InvSlotHeight * 32` pixels

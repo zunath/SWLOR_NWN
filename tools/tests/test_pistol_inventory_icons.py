@@ -43,7 +43,16 @@ class PistolInventoryIconTests(unittest.TestCase):
                     self.assertEqual(header[84:88], b"DXT5",
                                      "Native CResDDS does not support uncompressed RGBA icons; use DXT5 with alpha")
                     icon = ImageOps.flip(icon)
-                    self.assertFalse(tga.exists(), f"{stem}: stale TGA can shadow DDS artwork")
+                    if tga.exists():
+                        with Image.open(tga) as registration:
+                            self.assertEqual(registration.size, (8, 8),
+                                             f"{stem}: only a registration thumbnail may accompany DDS artwork")
+                            self.assertIsNotNone(registration.convert("RGBA").getchannel("A").getbbox())
+                        data = tga.read_bytes()
+                        self.assertEqual(len(data), 18 + 8 * 8 * 4)
+                        self.assertEqual(data[2], 2, "Registration must be an uncompressed TGA")
+                        self.assertEqual(data[16:18], bytes((32, 8)),
+                                         "Registration must use 32-bit pixels and bottom-left origin")
                 self.assertEqual(icon.size, (64, 64))
                 alpha = icon.getchannel("A")
                 self.assertIsNotNone(alpha.getbbox(), "Middle icon must contain visible artwork")
@@ -53,6 +62,14 @@ class PistolInventoryIconTests(unittest.TestCase):
                 digest = hashlib.sha256(visible.tobytes()).hexdigest()
                 self.assertNotIn(digest, seen, f"Part #{part} reuses Part #{seen.get(digest)} artwork")
                 seen[digest] = part
+
+    def test_dds_slots_without_stock_registration_have_tga_stubs(self):
+        for part in (109, 110, 111, 112, 114, 117, 118, 119, 120, 307, 308, 309):
+            with self.subTest(part=part):
+                stem = f"iwbwsh_m_{part % 100 * 10 + part // 100:03}"
+                self.assertTrue((WEAPONS / f"{stem}.dds").is_file())
+                self.assertTrue((WEAPONS / f"{stem}.tga").is_file(),
+                                f"{stem}: native inventory discovery needs a TGA registration")
 
     def test_empty_end_parts_do_not_cover_middle_artwork(self):
         for end in ("b", "t"):

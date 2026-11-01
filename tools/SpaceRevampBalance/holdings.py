@@ -178,6 +178,11 @@ HOLDINGS = [
      ["AraciaTimber"], ["CzerkaMachineParts", "MedicalSupplies"], ["HullSections"],
      (2, "NeonSalt", 1, "AgedBanthaCheese", 1), "Sickness", "MedicalSupplies", False, "holding_plains",
      "A bantha ranch and dairy on Dantooine."),
+    # Eshan (the Eshan merge, master #2344): the Grain Farm's terms on Eshan's rice.
+    (16, "RicePaddy", "Rice Paddy", "Eshan", "EshanRice",
+     ["CzerkaMachineParts"], ["ReactorCores", "PurifiedWater"], ["AraciaTimber"],
+     (1, "PurifiedWater", 1, "RationPacks", 1), "Blight", "MedicalSupplies", False, "holding_plains",
+     "Terraced rice paddies on the Eshan farmlands."),
 ]
 # Outdoor site templates (W11o): resref, name, the area each is a stripped copy of (scenery only, one entrance and the
 # Holding Office Terminal at a spot the source area's creatures or landing waypoints stood on).

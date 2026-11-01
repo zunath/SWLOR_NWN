@@ -39,5 +39,8 @@ namespace SWLOR.Game.Server.Service.TradeService
         Glitterstim = 28,
         SithHolocrons = 29,
         AgedBanthaCheese = 30,
+
+        // Eshan's export (the Eshan merge, master #2344).
+        EshanRice = 31,
     }
 }

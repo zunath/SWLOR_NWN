@@ -22,5 +22,6 @@ namespace SWLOR.Game.Server.Service.HoldingService
         HerbGrove = 13,
         GrainFarm = 14,
         BanthaRanch = 15,
+        RicePaddy = 16,
     }
 }

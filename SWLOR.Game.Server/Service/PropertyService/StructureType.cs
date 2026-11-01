@@ -2858,6 +2858,13 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0)]
         GraveyardFlagshipGenerator = 455,
+
+        [Structure("Frost-Rimed Hull Section",
+            "_mdrn_pl_shipp06",
+            "A section of a mining hauler's hull, still rimed with frost from the Eshan approach, mounted as a wall piece.",
+            true,
+            0)]
+        FrostRimedHullSection = 456,
         // END space trophies
 
         // Buildings start here (5000+)

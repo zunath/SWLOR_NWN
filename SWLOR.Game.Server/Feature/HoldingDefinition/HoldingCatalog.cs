@@ -239,6 +239,21 @@ namespace SWLOR.Game.Server.Feature.HoldingDefinition
                 CustomsInspections = false, SiteAreaResref = "holding_plains",
                 Description = "A bantha ranch and dairy on Dantooine.",
             },
+            new HoldingDetail
+            {
+                Type = HoldingType.RicePaddy, Name = "Rice Paddy", Exchange = TradeExchangeType.Eshan,
+                Output = CommodityType.EshanRice, BatchUnits = 29, PurchasePrice = 18300,
+                Upgrades = new List<HoldingUpgradeDetail>
+                {
+                    new HoldingUpgradeDetail { Level = 2, Credits = 2700, Goods = new Dictionary<CommodityType, int> { { CommodityType.CzerkaMachineParts, 29 } } },
+                    new HoldingUpgradeDetail { Level = 3, Credits = 3700, Goods = new Dictionary<CommodityType, int> { { CommodityType.ReactorCores, 8 }, { CommodityType.PurifiedWater, 21 } } },
+                },
+                Plant = new HoldingUpgradeDetail { Level = 0, Credits = 3700, Goods = new Dictionary<CommodityType, int> { { CommodityType.AraciaTimber, 23 } } },
+                Chain = new HoldingChainDetail { OwnUnits = 1, Input = CommodityType.PurifiedWater, InputUnits = 1, Refined = CommodityType.RationPacks, RefinedUnits = 1 },
+                Setback = HoldingSetbackType.Blight, RepairGood = CommodityType.MedicalSupplies, RepairUnits = 17,
+                CustomsInspections = false, SiteAreaResref = "holding_plains",
+                Description = "Terraced rice paddies on the Eshan farmlands.",
+            },
         };
     }
 }

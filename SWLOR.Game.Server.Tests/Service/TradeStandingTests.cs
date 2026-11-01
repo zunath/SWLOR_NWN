@@ -204,8 +204,10 @@ public class TradeStandingTests
     [Test]
     public void Prices_OnlyExchangesWithAFactionPayTheBonus()
     {
+        // Dathomir and Eshan (the Eshan merge) are independent ports with no faction.
         TradeLookup.GetExchange(TradeExchangeType.Dathomir)!.StandingFaction.Should().Be(FactionType.Invalid);
-        foreach (var exchange in TradeCatalog.Exchanges.Where(x => x.Type != TradeExchangeType.Dathomir))
+        TradeLookup.GetExchange(TradeExchangeType.Eshan)!.StandingFaction.Should().Be(FactionType.Invalid);
+        foreach (var exchange in TradeCatalog.Exchanges.Where(x => x.Type is not (TradeExchangeType.Dathomir or TradeExchangeType.Eshan)))
             exchange.StandingFaction.Should().NotBe(FactionType.Invalid, exchange.Name);
     }
 

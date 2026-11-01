@@ -22,7 +22,7 @@ public class StationTests
     private static readonly string[] DockedOrbits =
     {
         "viscaraorbit", "tatooineorbit", "moncalaorbit", "hutlar_orbit", "space_dathomir", "space_korriban",
-        "dantooineorbit", "narshadorbit",
+        "dantooineorbit", "narshadorbit", "eshanorbit",
     };
 
     // Anchor sites

@@ -64,6 +64,8 @@ namespace SWLOR.Game.Server.Service.StationService
             new StationAnchor { Id = "Dantooine2", Tag = "STATION_ANCHOR_DANTOOINE2", AreaResref = "dantooineorbit", SystemName = "Dantooine Orbit", X = 60.5f, Y = 90.5f, HomePlanet = PlanetType.Dantooine, Exchange = TradeExchangeType.Dantooine, IsWildSpace = false },
             new StationAnchor { Id = "SmugglersMoon1", Tag = "STATION_ANCHOR_SMUGGLERSMOON1", AreaResref = "narshadorbit", SystemName = "Smuggler's Moon Orbit", X = 240.5f, Y = 120.5f, HomePlanet = PlanetType.SmugglersMoon, Exchange = TradeExchangeType.SmugglersMoon, IsWildSpace = false },
             new StationAnchor { Id = "SmugglersMoon2", Tag = "STATION_ANCHOR_SMUGGLERSMOON2", AreaResref = "narshadorbit", SystemName = "Smuggler's Moon Orbit", X = 80.5f, Y = 110.5f, HomePlanet = PlanetType.SmugglersMoon, Exchange = TradeExchangeType.SmugglersMoon, IsWildSpace = false },
+            new StationAnchor { Id = "Eshan1", Tag = "STATION_ANCHOR_ESHAN1", AreaResref = "eshanorbit", SystemName = "Eshan Orbit", X = 60.5f, Y = 150.5f, HomePlanet = PlanetType.Eshan, Exchange = TradeExchangeType.Eshan, IsWildSpace = false },
+            new StationAnchor { Id = "Eshan2", Tag = "STATION_ANCHOR_ESHAN2", AreaResref = "eshanorbit", SystemName = "Eshan Orbit", X = 150.5f, Y = 250.5f, HomePlanet = PlanetType.Eshan, Exchange = TradeExchangeType.Eshan, IsWildSpace = false },
             new StationAnchor { Id = "VeshPulsar1", Tag = "STATION_ANCHOR_VESHPULSAR1", AreaResref = "space_wspulsar", SystemName = "Wild Space - Vesh Pulsar", X = 60.5f, Y = 150.5f, HomePlanet = PlanetType.Dathomir, Exchange = TradeExchangeType.Dathomir, IsWildSpace = true },
             new StationAnchor { Id = "VeshPulsar2", Tag = "STATION_ANCHOR_VESHPULSAR2", AreaResref = "space_wspulsar", SystemName = "Wild Space - Vesh Pulsar", X = 150.5f, Y = 250.5f, HomePlanet = PlanetType.Dathomir, Exchange = TradeExchangeType.Dathomir, IsWildSpace = true },
             new StationAnchor { Id = "TheMaw1", Tag = "STATION_ANCHOR_THEMAW1", AreaResref = "space_wsblkhole", SystemName = "Wild Space - The Maw", X = 160.5f, Y = 250.5f, HomePlanet = PlanetType.Hutlar, Exchange = TradeExchangeType.Hutlar, IsWildSpace = true },
@@ -126,6 +128,7 @@ namespace SWLOR.Game.Server.Service.StationService
         public static readonly IReadOnlyDictionary<string, (string LootTable, int Weight)[]> DrillTables = new Dictionary<string, (string LootTable, int Weight)[]>
         {
             ["dantooineorbit"] = new[] { ("ASTEROID_BARINIUM", 37), ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["eshanorbit"] = new[] { ("ASTEROID_BARINIUM", 37), ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
             ["hutlar_orbit"] = new[] { ("ASTEROID_CURRIAN", 50), ("ASTEROID_IDAILIA", 30), ("ASTEROID_BARINIUM", 5) },
             ["moncalaorbit"] = new[] { ("ASTEROID_TILARIUM", 50), ("ASTEROID_CURRIAN", 30), ("ASTEROID_IDAILIA", 5) },
             ["narshadorbit"] = new[] { ("ASTEROID_TILARIUM", 50), ("ASTEROID_CURRIAN", 5) },

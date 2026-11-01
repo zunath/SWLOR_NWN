@@ -39,16 +39,17 @@ public class FactionAgentTests
     [Test]
     public void Placement_TwoAgentsPerFactionAtDifferentDocksAndNoDockHostsMoreThanTwo()
     {
-        FactionAgentTuning.Agents.Should().HaveCount(12);
+        // The plan's twelve, and the Smugglers' third at Eshan (the Eshan merge).
+        FactionAgentTuning.Agents.Should().HaveCount(13);
         FactionAgentTuning.Agents.Select(x => x.Type).Should().OnlyHaveUniqueItems();
         Enum.GetValues<FactionAgentType>().Where(x => x != FactionAgentType.Invalid).Should().BeEquivalentTo(FactionAgentTuning.Agents.Select(x => x.Type));
 
         foreach (var faction in AgentFactions)
         {
             var agents = FactionAgentTuning.Agents.Where(x => x.Faction == faction).ToList();
-            agents.Should().HaveCount(2, faction.ToString());
-            agents[0].DockId.Should().NotBe(agents[1].DockId, faction.ToString());
-            agents[0].DockTier.Should().BeLessThanOrEqualTo(agents[1].DockTier, "a faction's first agent is at its lower-tier dock");
+            agents.Should().HaveCount(faction == FactionType.Smuggler ? 3 : 2, faction.ToString());
+            agents.Select(x => x.DockId).Should().OnlyHaveUniqueItems(faction.ToString());
+            agents.Select(x => x.DockTier).Should().BeInAscendingOrder("a faction's first agent is at its lowest-tier dock");
         }
 
         FactionAgentTuning.Agents.GroupBy(x => x.DockId).Should().OnlyContain(x => x.Count() <= 2);
@@ -71,6 +72,7 @@ public class FactionAgentTests
         Dock(FactionAgentType.MandalorianDathomir).Should().Be("dath_landingpad");
         Dock(FactionAgentType.SithDathomir).Should().Be("dath_landingpad");
         Dock(FactionAgentType.SithKorriban).Should().Be("korribanlandingp");
+        Dock(FactionAgentType.SmugglerEshan).Should().Be("pwsc_eshstarport");
     }
 
     [Test]

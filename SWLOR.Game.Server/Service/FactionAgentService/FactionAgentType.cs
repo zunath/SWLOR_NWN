@@ -18,5 +18,6 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
         MandalorianDathomir = 10,
         SithDathomir = 11,
         SithKorriban = 12,
+        SmugglerEshan = 13,
     }
 }

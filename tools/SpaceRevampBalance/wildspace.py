@@ -202,9 +202,10 @@ NETWORK_CHECK_SECONDS = 15
 REPLACEMENT_SECONDS = 300               # a collapsed connection's replacement opens this long after it
 WARNING_SECONDS = 120                   # ships in the Wild Space system(s) it serves are warned this long before
 EJECT_HULL_PERCENT = 25                 # of max hull, after the shield is stripped; never below 1 hull
-# The known orbits a rift can open in: the ten open orbits (not the Small/Medium zones, which are dead ends).
+# The known orbits a rift can open in: the eleven open orbits (not the Small/Medium zones, which are dead ends). Eshan
+# (the Eshan merge, master #2344) is last, so no earlier index moves.
 KNOWN_ORBITS = ["viscaraorbit", "moncalaorbit", "hutlar_orbit", "tatooineorbit", "narshadorbit", "space_dathomir",
-                "dantooineorbit", "space_korriban", "space_midrim1", "space_midrim2"]
+                "dantooineorbit", "space_korriban", "space_midrim1", "space_midrim2", "eshanorbit"]
 # Size class: (weight, largest hull through it, mass budget)
 SIZE_CLASSES = {
     "Small": (50, "Medium", 30),

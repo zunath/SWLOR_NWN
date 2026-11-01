@@ -361,8 +361,8 @@ public class ScanningTests
     [Test]
     public void Spawning_CoversTheOrbitsAndZones_WithMoreSignaturesInZones()
     {
-        // The 10 orbits, the 3 zones and the 6 Wild Space systems (W12c).
-        ScanningTuning.Areas.Should().HaveCount(19);
+        // The 11 orbits (Eshan's from the Eshan merge), the 3 zones and the 6 Wild Space systems (W12c).
+        ScanningTuning.Areas.Should().HaveCount(20);
         ScanningTuning.Areas.Count(x => x.WildSpace).Should().Be(6);
         ScanningTuning.Areas.Where(x => x.AreaResref is "space_viscbelt" or "space_midrimneb" or "space_korrdebris")
             .Should().OnlyContain(x => x.Signatures == 4);

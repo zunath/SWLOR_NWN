@@ -47,6 +47,7 @@ public class CapitalBattlePayoutTests
 
     [TestCase("space_dathomir", 298)]
     [TestCase("dantooineorbit", 298)]
+    [TestCase("eshanorbit", 298)]
     [TestCase("space_korriban", 817)]
     public void ASoloPilotWhoDestroysTheGroup_IsPaidItsModeledCredits(string resref, int credits)
     {
@@ -166,11 +167,12 @@ public class CapitalBattlePayoutTests
     [Test]
     public void TheCapitalBattlePicker_OffersARandomOrbitThenEachBattleOrbit()
     {
-        DmSpaceToolRules.CapitalBattleLabels.Should().Equal("Random orbit", "Dathomir Orbit (tier 5)", "Dantooine Orbit (tier 5)", "Korriban Orbit (tier 6)");
+        DmSpaceToolRules.CapitalBattleLabels.Should().Equal("Random orbit", "Dathomir Orbit (tier 5)", "Dantooine Orbit (tier 5)", "Eshan Orbit (tier 5)", "Korriban Orbit (tier 6)");
         DmSpaceToolRules.GetCapitalBattleArea(0).Should().BeEmpty("a random orbit");
         DmSpaceToolRules.GetCapitalBattleArea(1).Should().Be("space_dathomir");
-        DmSpaceToolRules.GetCapitalBattleArea(3).Should().Be("space_korriban");
-        DmSpaceToolRules.GetCapitalBattleArea(4).Should().BeEmpty();
+        DmSpaceToolRules.GetCapitalBattleArea(3).Should().Be("eshanorbit");
+        DmSpaceToolRules.GetCapitalBattleArea(4).Should().Be("space_korriban");
+        DmSpaceToolRules.GetCapitalBattleArea(5).Should().BeEmpty();
         DmSpaceToolRules.GetCapitalBattleArea(-1).Should().BeEmpty();
     }
 

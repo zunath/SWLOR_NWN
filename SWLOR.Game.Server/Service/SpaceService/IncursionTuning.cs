@@ -136,6 +136,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             new IncursionArea { Resref = "space_dathomir", Name = "Dathomir Orbit", Tier = 5 },
             new IncursionArea { Resref = "dantooineorbit", Name = "Dantooine Orbit", Tier = 5 },
+            new IncursionArea { Resref = "eshanorbit", Name = "Eshan Orbit", Tier = 5 },
             new IncursionArea { Resref = "space_korriban", Name = "Korriban Orbit", Tier = 6 },
         };
 
@@ -155,7 +156,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new IncursionRegion { Center = "narshadorbit", Name = "Smuggler's Moon", Tier = 4, Areas = new[] { new IncursionArea { Resref = "narshadorbit", Name = "Smuggler's Moon Orbit", Tier = 4 }, new IncursionArea { Resref = "hutlar_orbit", Name = "Hutlar Orbit", Tier = 3 }, new IncursionArea { Resref = "tatooineorbit", Name = "Tatooine Orbit", Tier = 4 } } },
             new IncursionRegion { Center = "space_korriban", Name = "Korriban", Tier = 6, Areas = new[] { new IncursionArea { Resref = "space_korriban", Name = "Korriban Orbit", Tier = 6 }, new IncursionArea { Resref = "space_midrim2", Name = "Mid Rim 2", Tier = 4 }, new IncursionArea { Resref = "space_korrdebris", Name = "Korriban Debris Field", Tier = 5 } } },
             new IncursionRegion { Center = "space_dathomir", Name = "Dathomir", Tier = 5, Areas = new[] { new IncursionArea { Resref = "space_dathomir", Name = "Dathomir Orbit", Tier = 5 }, new IncursionArea { Resref = "tatooineorbit", Name = "Tatooine Orbit", Tier = 4 } } },
-            new IncursionRegion { Center = "dantooineorbit", Name = "Dantooine", Tier = 5, Areas = new[] { new IncursionArea { Resref = "dantooineorbit", Name = "Dantooine Orbit", Tier = 5 }, new IncursionArea { Resref = "moncalaorbit", Name = "Mon Cala Orbit", Tier = 2 } } },
+            new IncursionRegion { Center = "dantooineorbit", Name = "Dantooine", Tier = 5, Areas = new[] { new IncursionArea { Resref = "dantooineorbit", Name = "Dantooine Orbit", Tier = 5 }, new IncursionArea { Resref = "eshanorbit", Name = "Eshan Orbit", Tier = 5 }, new IncursionArea { Resref = "moncalaorbit", Name = "Mon Cala Orbit", Tier = 2 } } },
+            new IncursionRegion { Center = "eshanorbit", Name = "Eshan", Tier = 5, Areas = new[] { new IncursionArea { Resref = "eshanorbit", Name = "Eshan Orbit", Tier = 5 }, new IncursionArea { Resref = "dantooineorbit", Name = "Dantooine Orbit", Tier = 5 } } },
         };
     }
 }

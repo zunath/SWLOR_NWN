@@ -948,6 +948,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            AddAce("ace_eshan");
         }
 
         private void DantooineOrbit()

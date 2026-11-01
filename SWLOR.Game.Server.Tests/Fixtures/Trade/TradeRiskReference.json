@@ -76,12 +76,12 @@
   ],
   "Outcome": {
     "T3Combat": 8500,
-    "ContrabandPerHour": 13194,
-    "ContrabandPercent": 155,
-    "CompartmentPerHour": 13646,
-    "CompartmentPercent": 161,
-    "LegalPerHour": 8952,
-    "LegalPercent": 105,
+    "ContrabandPerHour": 12890,
+    "ContrabandPercent": 152,
+    "CompartmentPerHour": 13426,
+    "CompartmentPercent": 158,
+    "LegalPerHour": 8673,
+    "LegalPercent": 102,
     "FreightPerHour": 6300,
     "FreightPercent": 74
   },
@@ -284,28 +284,28 @@
     "Tiers": [
       {
         "Tier": "Trusted",
-        "LegalPerHour": 9280,
+        "LegalPerHour": 9300,
         "LegalPercent": 109,
-        "ContrabandPerHour": 14151,
-        "ContrabandPercent": 166,
+        "ContrabandPerHour": 13852,
+        "ContrabandPercent": 163,
         "FreightPerHour": 7140,
         "FreightPercent": 84
       },
       {
         "Tier": "Honored",
-        "LegalPerHour": 9822,
-        "LegalPercent": 116,
-        "ContrabandPerHour": 14796,
-        "ContrabandPercent": 174,
+        "LegalPerHour": 9598,
+        "LegalPercent": 113,
+        "ContrabandPerHour": 14539,
+        "ContrabandPercent": 171,
         "FreightPerHour": 7140,
         "FreightPercent": 84
       },
       {
         "Tier": "Exalted",
-        "LegalPerHour": 10374,
-        "LegalPercent": 122,
-        "ContrabandPerHour": 15981,
-        "ContrabandPercent": 188,
+        "LegalPerHour": 10258,
+        "LegalPercent": 121,
+        "ContrabandPerHour": 15267,
+        "ContrabandPercent": 180,
         "FreightPerHour": 10185,
         "FreightPercent": 120
       }

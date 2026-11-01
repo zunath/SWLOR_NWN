@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new SpaceHazardPlacement { AreaResref = "space_korriban", WaypointTag = "SPACE_WRECK_SITE", Count = 1, Tier = 6 },
             new SpaceHazardPlacement { AreaResref = "space_midrim1", WaypointTag = "SPACE_WRECK_SITE", Count = 1, Tier = 3 },
             new SpaceHazardPlacement { AreaResref = "space_midrim2", WaypointTag = "SPACE_WRECK_SITE", Count = 1, Tier = 4 },
+            new SpaceHazardPlacement { AreaResref = "eshanorbit", WaypointTag = "SPACE_WRECK_SITE", Count = 1, Tier = 5 },
             new SpaceHazardPlacement { AreaResref = "space_viscbelt", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 1 },
             new SpaceHazardPlacement { AreaResref = "space_midrimneb", WaypointTag = "SPACE_WRECK_SITE", Count = 2, Tier = 3 },
             new SpaceHazardPlacement { AreaResref = "space_korrdebris", WaypointTag = "SPACE_WRECK_SITE", Count = 3, Tier = 5 },

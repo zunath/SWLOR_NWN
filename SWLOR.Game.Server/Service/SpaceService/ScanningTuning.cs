@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new ScanAreaDetail { AreaResref = "narshadorbit", Tier = 4, Signatures = 3 },
             new ScanAreaDetail { AreaResref = "space_dathomir", Tier = 5, Signatures = 3 },
             new ScanAreaDetail { AreaResref = "dantooineorbit", Tier = 5, Signatures = 3 },
+            new ScanAreaDetail { AreaResref = "eshanorbit", Tier = 5, Signatures = 3 },
             new ScanAreaDetail { AreaResref = "space_korriban", Tier = 6, Signatures = 3 },
             new ScanAreaDetail { AreaResref = "space_midrim1", Tier = 3, Signatures = 3 },
             new ScanAreaDetail { AreaResref = "space_midrim2", Tier = 4, Signatures = 3 },

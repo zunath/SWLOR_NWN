@@ -191,14 +191,15 @@ public class IncursionTests
     [Test]
     public void CapitalBattles_DropAnArmadaCommandGroupIntoATier5Or6Orbit()
     {
-        IncursionTuning.CapitalBattleAreas.Select(x => x.Resref).Should().Equal("space_dathomir", "dantooineorbit", "space_korriban");
+        IncursionTuning.CapitalBattleAreas.Select(x => x.Resref).Should().Equal("space_dathomir", "dantooineorbit", "eshanorbit", "space_korriban");
         IncursionTuning.CapitalBattleAreas.Should().OnlyContain(x => x.Tier >= 5);
         foreach (var area in IncursionTuning.CapitalBattleAreas)
             TradeCatalog.Orbits.Single(x => x.AreaResref == area.Resref).Tier.Should().Be(area.Tier);
-        CapitalBattleRules.PickArea(_ => 2).Resref.Should().Be("space_korriban");
+        CapitalBattleRules.PickArea(_ => 2).Resref.Should().Be("eshanorbit");
+        CapitalBattleRules.PickArea(_ => 3).Resref.Should().Be("space_korriban");
         CapitalBattleRules.PickArea(_ => 99).Resref.Should().Be("space_korriban", "a roll past the end is clamped");
 
-        var korriban = IncursionTuning.CapitalBattleAreas[2];
+        var korriban = IncursionTuning.CapitalBattleAreas[3];
         CapitalBattleRules.Ships(korriban, IncursionInvader.Sith).Select(x => x.Tag).Should().Equal("sithcap3", "t6sitharmgun", "t6sitharmgun");
         CapitalBattleRules.Ships(IncursionTuning.CapitalBattleAreas[0], IncursionInvader.Mandalorian).Select(x => x.Tag)
             .Should().Equal("t5mandoarmcmd", "t5mandoarmgun", "t5mandoarmgun");

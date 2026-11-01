@@ -615,6 +615,8 @@ namespace SWLOR.Game.Server.Service.AchievementService
         ExploreStarshipBasilisk = 248,
         [Achievement("Crewed Kill", "Destroyed a ship in space with a crewmate at a station.", true)]
         SpaceCrewedKill = 249,
+        [Achievement("Vell Downed", "Helped destroy the ace Tarsa Vell in Eshan orbit.", true)]
+        SpaceAceEshan = 250,
         // END space achievements
 	}
 

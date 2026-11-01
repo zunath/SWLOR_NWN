@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             AceKorvaxMagnetar();
             AceEmberGiant();
             AceShipGraveyard();
+            AceEshan();
 
             return _builder.Build();
         }
@@ -325,6 +326,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_hframe_5", 15, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RaiderRefitHull }))
                 .AddItem("rift_key_t55", 15, 1, true);
+        }
+
+        /// <summary>Tarsa Vell (Eshan orbit).</summary>
+        private void AceEshan()
+        {
+            _builder.Create("SPACE_ACE_ESHAN")
+                .IsRare()
+                .AddItem("dsgn_10227", 30, 1, true)
+                .AddItem("recipe_pdef50", 10, 1, true)
+                .AddItem("structure_0456", 20, 1, true)
+                .AddItem("sc_extract_5", 25, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CzerkaPattern }))
+                .AddItem("sc_extract_5", 15, 1, true)
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CzerkaIndustrialFrame }))
+                .AddItem("rift_key_t5", 15, 1, true);
         }
     }
 }

@@ -280,7 +280,7 @@ public class WildSpaceTests
         RiftRules.PickDestination("space_wspulsar", open, Rolls(99, 0)).Should().Be("space_wsredgiant");
         open["space_wspulsar"] = 0;
         RiftRules.PickDestination("space_wspulsar", open, Rolls(99, 0)).Should().NotBe("space_wspulsar", "a rift never loops back");
-        WildSpaceTuning.KnownOrbits.Should().HaveCount(10).And.OnlyContain(x => !WildSpaceRules.IsWildSpaceSystem(x));
+        WildSpaceTuning.KnownOrbits.Should().HaveCount(11).And.OnlyContain(x => !WildSpaceRules.IsWildSpaceSystem(x));
     }
 
     [Test]

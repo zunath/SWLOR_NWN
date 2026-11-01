@@ -11,7 +11,15 @@ are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
 
 ## Slots and existing replacements
 
-Pistol base item **11** uses item class **WBwSh**. Native middle slots encode
+Modern pistol appearances use item class **WBwSh**. Logical pistol base item **11** and
+the production native-sling base item **61** share these resources. Modern
+production pistols use **61**, as enforced by `PistolBaseItemCompatibility`; native item 11
+hardcodes the bow attachment and suppresses the off-hand weapon. Use the current
+production blueprint and item types when building client fixtures. Recognized
+legacy resrefs instead use `BaseItem.LegacyPistol` (**514**), as returned by
+`PistolBaseItemCompatibility.GetCanonicalBaseItem`; preserve that canonical type
+in legacy fixtures so their attachment and animation behavior is retained.
+Native middle slots encode
 `model * 10 + color`; the toolset shows `model-color`; the in-game appearance
 catalog encodes `color * 100 + model`.
 
@@ -23,8 +31,10 @@ catalog encodes `color * 100 + model`.
 These are examples, not a complete free-slot inventory. Inspect the current HAK
 resources, catalog and open asset PRs before selecting a slot. Choose another modern pistol for a new
 design unless asked to revise one of them. Replacing a shared slot also changes
-persisted items using it. Basic Pistol already uses middle 201. Do not substitute
-the native-sling compatibility base item 61 or change item stats to select a model.
+persisted items using it. Basic Pistol already uses middle 201. Preserve the
+blueprint's base item and stats when selecting a different model. In temporary
+fixtures, update both `ModelPart*` and `xModelPart*`: the extended fields take
+precedence over the byte fields.
 
 A middle slot uses `wbwsh_m_NNN.mdl` and `iwbwsh_m_NNN.dds` in
 `SWLOR_Haks/sw_weapon/`. Register its catalog ID in
@@ -655,8 +665,9 @@ the artwork in the DDS and give each icon that has no TGA in any layer (HAKs or
 the base game) an 8x8 registration stub: `tools/FixWeaponInventoryIcons.py audit`
 lists them and `stubs` writes a bottom-left TGA thumbnail of the DDS art beside
 each one. Do not change persisted weapon appearances to dodge the check. The
-pistol and rifle icon audits (`test_pistol_inventory_icons.py`,
-`test_rifle_inventory_icons.py`) still reject a TGA beside a DDS; their icons
+pistol icon audit accepts only the exact 8x8 registration format beside a DDS
+and still rejects full-size TGA shadows. The rifle audit
+(`test_rifle_inventory_icons.py`) still rejects a TGA beside a DDS; its icons
 have no stubs yet. Broader engine background is available in the
 [texture notes](https://nwn.wiki/spaces/NWN1/pages/38174958/Textures).
 
@@ -719,10 +730,40 @@ scale 9.6 is a starting point, not a batch-wide fit guarantee: source grip sizes
 vary. Refit oversized grips uniformly around the contact pivot and review both
 sides. Widen the review camera for long barrels rather than truncating the check.
 
-The actual human right-hand reference is `pmh0_handr001`. Custom pistol animation
+The male human right-hand reference is `pmh0_handr001`. Custom pistol animation
 uses **bowshot**, whose hook retains its rest orientation; generic **xbowshot**
 rotates it differently. The human `rhand` hook sits at
 `(0.0110681, 0, -0.0961281)` relative to `rhand_g`.
+
+That helper uses only the male bare hand. The female normal human bind socket
+is `(0.00101395, 0.0104238, -0.0818723)` relative to `rhand_g`; do not reuse the
+male socket for a female reference. Inspect the actual female and male hands,
+open or fingerless glove styles, both equipped hands, and the playable normal
+body families in the client. Some hand meshes have permanently open fingers.
+
+Measure each actual handle's butt, neck, width and depth. Compare sections at
+the fingers' contact positions; a sample near the butt or a single Z threshold
+does not establish palm contact. An oversized handle needs a uniform scale
+correction about its grip before seating it. Keep the weapon's proportions and
+inspect the palm, back of the hand and reverse side for gaps and penetration.
+Positive weapon-space Z raises a hanging pistol toward the wrist; choose its
+offset from those contact views rather than a common catalog-wide Z target.
+Preserve muzzle attachments and model animation tracks as well as visible
+geometry. When fitting an animated model through its root, apply the same
+transform to animated root positions and retain event timing.
+
+Fixture body parts have extended fields too: keep `BodyPart_*` and
+`xBodyPart_*` synchronized. Set the intended parts with `SetCreatureBodyPart`
+and log `GetCreatureBodyPart` with each capture, alongside gender, phenotype,
+native base items and weapon appearance parts. A blueprint label alone does not
+prove that the client rendered the intended hand. Equipped armor can override
+those body parts: reproduce and log its hand appearance too. Permanently open
+fingers cannot demonstrate a closed grasp. Compare the actual left mesh as well;
+the male human bare left hand is asymmetric, not just a mirrored right hand.
+
+When cloning a model into a temporary comparison slot, rename only its model
+header and root node. A texture can share the original model's resref; replacing
+every occurrence also renames that texture and invalidates the material check.
 
 Render a local review scene already in NWN coordinates with:
 

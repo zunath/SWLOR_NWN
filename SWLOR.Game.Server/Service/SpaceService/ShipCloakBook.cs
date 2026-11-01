@@ -18,13 +18,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public bool TryGet(uint ship, out ShipCloakState state) => _states.TryGetValue(ship, out state);
 
-        /// <summary>Starts a ship's cloak. A ship that already has one keeps it.</summary>
+        /// <summary>
+        /// Starts a ship's cloak. A ship that already has one keeps it. A decloak lock still running stays until it
+        /// expires, so cancelling the new cloak while it engages never frees the weapons early.
+        /// </summary>
         public ShipCloakState Begin(uint ship, DateTime now, ShipCloakProfile profile, int slot)
         {
             if (_states.TryGetValue(ship, out var existing))
                 return existing;
 
-            _locks.Remove(ship);
             var state = new ShipCloakState { StartedAt = now, Profile = profile, Slot = slot };
             _states[ship] = state;
             return state;
@@ -36,7 +38,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 : ShipCloakPhase.Off;
 
         /// <summary>
-        /// Ends a ship's cloak. One that had vanished locks the ship's weapons; one still engaging locks nothing.
+        /// Ends a ship's cloak. One that had vanished locks the ship's weapons; one still engaging adds no lock, but an
+        /// earlier decloak's lock still running stays.
         /// </summary>
         public ShipCloakEnd End(uint ship, DateTime now)
         {

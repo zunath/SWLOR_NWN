@@ -416,6 +416,48 @@ public class RiftRunTests
     }
 
     [Test]
+    public void ACollapsingPocket_WrecksTheShipsDockedAboardADestroyedHost()
+    {
+        var run = new RiftRun { Phase = RiftRunPhase.Fighting };
+        RiftRunRules.WrecksDockedShips(run).Should().BeFalse("a host lost in a fight lets its docked ships launch and rejoin");
+        RiftRunRules.WrecksDockedShips(null).Should().BeFalse();
+
+        run.StartedAt = DateTime.UtcNow.AddSeconds(-RiftRunTuning.TimerSeconds - 1);
+        run.NextAt = DateTime.UtcNow.AddHours(1);
+        RiftRunRules.Step(run, 3, 1, DateTime.UtcNow).Should().Be(RiftRunAction.Collapse);
+        RiftRunRules.WrecksDockedShips(run).Should().BeTrue("the collapse destroys the host while the run is already closing");
+
+        var cleared = new RiftRun { Phase = RiftRunPhase.Closing, Failed = false };
+        RiftRunRules.WrecksDockedShips(cleared).Should().BeFalse("only a failed run's collapse wrecks ships");
+
+        var docking = ReadSource("Service", "SpaceDocking.cs").Replace("\r\n", "\n");
+        var detach = docking.Substring(docking.IndexOf("public static HashSet<uint> DetachDockedShips(", StringComparison.Ordinal));
+        detach = detach.Substring(0, detach.IndexOf("private static void PlaceShipInSpace(", StringComparison.Ordinal));
+        var collapse = detach.IndexOf("var collapse = FindCollapsingRiftRun(GetArea(hostPilot));", StringComparison.Ordinal);
+        collapse.Should().BeGreaterThan(0);
+        collapse.Should().BeLessThan(detach.IndexOf("PlaceShipInSpace(visitor, visitorProperty, location);", StringComparison.Ordinal),
+            "no docked ship is launched into a collapsing pocket");
+        detach.Should().Contain("WreckShipsDockedInCollapse(collapse, visitors, hostLocation, aboardById.Keys, wreckedRiders);\n                return returned;",
+            "nobody is sent back to a wrecked ship, so the host's crew all ride its escape pods");
+
+        var runs = ReadSource("Service", "SpaceRiftRuns.cs").Replace("\r\n", "\n");
+        var wreck = runs.Substring(runs.IndexOf("private static void WreckShipsDockedInCollapse(", StringComparison.Ordinal));
+        wreck = wreck.Substring(0, wreck.IndexOf("private static void ReturnFromRiftPocket(", StringComparison.Ordinal));
+        wreck.Should().Contain("riders.Add(player);", "players in a wrecked ship's interior ride the host's pods");
+        wreck.Should().Contain("WreckShipInPocket(visitor, location);");
+        wreck.Should().Contain("ClearDockedState(visitor);");
+        wreck.Should().Contain("property.Positions.Remove(PropertyLocationType.CurrentPosition)", "the wreck is towed to its last dock");
+        wreck.Should().Contain("RiftRunRules.Forget(run, visitor.Id);");
+        wreck.Should().Contain("if (pilotId != null && !podded)\n                    OweAwayShipLoss(run, visitor.Id);",
+            "a pilot who rides no pod still takes the XP debt, once");
+
+        var death = ReadSource("Service", "SpaceDeath.cs").Replace("\r\n", "\n");
+        death.IndexOf("passengers.AddRange(wreckedRiders.Where(x => GetIsObjectValid(x) && !returnedToDockedShips.Contains(x)));", StringComparison.Ordinal)
+            .Should().BeGreaterThan(death.IndexOf("var wreckedRiders = new List<uint>();", StringComparison.Ordinal))
+            .And.BeLessThan(death.IndexOf("EscapePodRules.BuildManifest(", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void ARunsShipDockedAboard_WaitsInTheRunAndUndocksBackIntoIt()
     {
         var run = new RiftRun { Phase = RiftRunPhase.Fighting };

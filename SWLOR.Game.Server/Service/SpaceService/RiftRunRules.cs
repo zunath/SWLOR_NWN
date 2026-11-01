@@ -39,6 +39,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
             run.AwayShips[shipId] = origin;
         }
 
+        /// <summary>
+        /// Whether a ship destroyed in this run's pocket takes the ships docked aboard it down with it: the run failed
+        /// and its pocket is collapsing, so a docked ship launched beside the wreck could neither rejoin the run nor get
+        /// out. Its players ride the host's escape pods instead.
+        /// </summary>
+        public static bool WrecksDockedShips(RiftRun run) =>
+            run != null && run.Failed && run.Phase == RiftRunPhase.Closing;
+
         /// <summary>A waiting ship that left the run some other way (undocked outside the pocket) no longer rejoins it.</summary>
         public static void Forget(RiftRun run, string shipId)
         {

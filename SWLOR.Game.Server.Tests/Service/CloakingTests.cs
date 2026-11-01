@@ -348,16 +348,27 @@ public class CloakingTests
     }
 
     [Test]
-    public void StartingANewCloak_ClearsTheOldLock_AndLeavingSpaceForgetsIt()
+    public void StartingANewCloak_KeepsTheOldLockUntilItExpires_AndLeavingSpaceForgetsIt()
     {
         var book = new ShipCloakBook();
         book.Begin(Ship, Now, Profile(engage: 1), 21);
         book.End(Ship, Now.AddSeconds(2));
         book.GetLockSecondsLeft(Ship, Now.AddSeconds(2)).Should().Be(5);
 
-        book.Begin(Ship, Now.AddSeconds(3), Profile(engage: 1), 21);
-        book.GetLockSecondsLeft(Ship, Now.AddSeconds(3)).Should().Be(0);
+        // Switching the device back on and cancelling it before it engages never frees the weapons early.
+        book.Begin(Ship, Now.AddSeconds(3), Profile(engage: 4), 21);
+        book.GetLockSecondsLeft(Ship, Now.AddSeconds(3)).Should().Be(4);
+        book.End(Ship, Now.AddSeconds(4)).Should().Be(ShipCloakEnd.Cancelled);
+        book.IsFiringLocked(Ship, Now.AddSeconds(4)).Should().BeTrue("the first decloak's lock runs to its end");
+        book.GetLockSecondsLeft(Ship, Now.AddSeconds(4)).Should().Be(3);
+        book.IsFiringLocked(Ship, Now.AddSeconds(7)).Should().BeFalse();
 
+        // A new cloak that vanishes and decloaks again starts a fresh lock.
+        book.Begin(Ship, Now.AddSeconds(8), Profile(engage: 1), 21);
+        book.End(Ship, Now.AddSeconds(10)).Should().Be(ShipCloakEnd.Decloaked);
+        book.GetLockSecondsLeft(Ship, Now.AddSeconds(10)).Should().Be(5);
+
+        book.Begin(Ship, Now.AddSeconds(11), Profile(engage: 1), 21);
         book.Clear(Ship);
         book.Count.Should().Be(0);
         book.IsFiringLocked(Ship, Now.AddSeconds(3)).Should().BeFalse();

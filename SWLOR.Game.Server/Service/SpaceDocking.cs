@@ -624,8 +624,11 @@ namespace SWLOR.Game.Server.Service
         /// leave any station and go back to it, the first who can pilot it at its controls and the rest in its
         /// interior. A ship whose interior is not loaded returns to its last dock instead, and its players share the
         /// host's fate. Returns the players sent back to a docked ship, whom the destruction (and escape pods) skip.
+        /// A host destroyed in a collapsing Rift Run pocket takes its docked ships down with it instead
+        /// (<see cref="WreckShipsDockedInCollapse"/>): nobody is sent back, and the players in their interiors are added
+        /// to <paramref name="wreckedRiders"/> to ride the host's escape pods.
         /// </summary>
-        public static HashSet<uint> DetachDockedShips(uint hostPilot)
+        public static HashSet<uint> DetachDockedShips(uint hostPilot, ICollection<uint> wreckedRiders)
         {
             var returned = new HashSet<uint>();
             if (!GetIsPC(hostPilot) || !TryGetFlownShip(hostPilot, out var host))
@@ -645,6 +648,13 @@ namespace SWLOR.Game.Server.Service
                 .Where(GetIsObjectValid)
                 .GroupBy(GetObjectUUID)
                 .ToDictionary(x => x.Key, x => x.First());
+
+            var collapse = FindCollapsingRiftRun(GetArea(hostPilot));
+            if (collapse != null)
+            {
+                WreckShipsDockedInCollapse(collapse, visitors, hostLocation, aboardById.Keys, wreckedRiders);
+                return returned;
+            }
 
             var entries = visitors.Select(ToDockVisitor).ToList();
             var assignments = ShipDockingRules.AssignReturningPlayers(aboardById.Keys, entries);

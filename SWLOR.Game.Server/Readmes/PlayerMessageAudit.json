@@ -6917,21 +6917,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
-    "Line": 199,
+    "Line": 203,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), rider, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
-    "Line": 263,
+    "Line": 267,
     "Member": "ApplyPendingShipLoss",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{message} Your XP debt is now {debt}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
-    "Line": 383,
+    "Line": 387,
     "Member": "EjectEscapePods",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(rider, ColorToken.Red(message))"
@@ -7316,14 +7316,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 699,
+    "Line": 709,
     "Member": "DetachDockedShips",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, ColorToken.Red($\"{hostName} is breaking apart! You get back to {visitorName} and take its controls.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 704,
+    "Line": 714,
     "Member": "DetachDockedShips",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, ColorToken.Red($\"{hostName} is breaking apart! You get back aboard {visitorName}.\"))"
@@ -7547,7 +7547,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 507,
+    "Line": 565,
     "Member": "MessageRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

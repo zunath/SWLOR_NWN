@@ -411,20 +411,78 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ForfeitAwayShip(RiftRun run, PlayerShip ship, Location location)
         {
+            WreckShipInPocket(ship, location);
+            var pilotId = OweAwayShipLoss(run, ship.Id);
+            Log.Write(LogGroup.Space, $"RIFT RUN - away ship {ship.Id} lost in a failed run; pilot {pilotId ?? "unknown"} owes the XP debt at login");
+        }
+
+        /// <summary>A ship lost in a failed run's collapse: its cargo spills and it is left at 1 hull and no shield.</summary>
+        private static void WreckShipInPocket(PlayerShip ship, Location location)
+        {
             Trade.SpillCargo(ship, location);
             ship.Status.PendingRiders?.Clear();
             ship.Status.Hull = 1;
             ship.Status.Shield = 0;
             DB.Set(ship);
+        }
 
-            var dbPlayer = run.PilotIds.TryGetValue(ship.Id, out var pilotId) ? DB.Get<Player>(pilotId) : null;
+        /// <summary>The run's pilot of a ship lost while they were away takes the XP debt at their next login. Returns their id.</summary>
+        private static string OweAwayShipLoss(RiftRun run, string shipId)
+        {
+            var dbPlayer = run.PilotIds.TryGetValue(shipId, out var pilotId) ? DB.Get<Player>(pilotId) : null;
             if (dbPlayer != null)
             {
                 dbPlayer.PendingShipLossMessage = "The Rift Run failed while you were away. Your ship was wrecked in the collapsing pocket and towed home at 1 hull, its cargo lost.";
                 DB.Set(dbPlayer);
             }
 
-            Log.Write(LogGroup.Space, $"RIFT RUN - away ship {ship.Id} lost in a failed run; pilot {pilotId ?? "unknown"} owes the XP debt at login");
+            return pilotId;
+        }
+
+        /// <summary>The failed run whose pocket is collapsing in this area (<see cref="RiftRunRules.WrecksDockedShips"/>), or null.</summary>
+        private static RiftRun FindCollapsingRiftRun(uint area) =>
+            GetIsObjectValid(area)
+                ? _riftRuns.Values.FirstOrDefault(x => x.Area == area && RiftRunRules.WrecksDockedShips(x))
+                : null;
+
+        /// <summary>
+        /// A host destroyed in a collapsing pocket takes the ships docked aboard down with it instead of launching them
+        /// into the pocket. Each is wrecked as a ship lost in the collapse, leaves the host and returns to its last
+        /// dock, and leaves the run. The players in their interiors join <paramref name="riders"/>, who ride the host's
+        /// escape pods with its crew and take the XP debt; a ship's run pilot who rides no pod (logged out) takes it at
+        /// their next login.
+        /// </summary>
+        private static void WreckShipsDockedInCollapse(RiftRun run, List<PlayerShip> visitors, Location location,
+            ICollection<string> aboardHostIds, ICollection<uint> riders)
+        {
+            foreach (var visitor in visitors)
+            {
+                if (Property.TryGetLoadedInstance(visitor.PropertyId, out var instance))
+                {
+                    foreach (var player in GetPlayersInArea(instance.Area).Where(GetIsObjectValid))
+                    {
+                        if (!riders.Contains(player))
+                            riders.Add(player);
+                    }
+                }
+
+                WreckShipInPocket(visitor, location);
+                ClearDockedState(visitor);
+                DB.Set(visitor);
+                var property = DB.Get<WorldProperty>(visitor.PropertyId);
+                if (property != null && property.Positions.Remove(PropertyLocationType.CurrentPosition))
+                    DB.Set(property);
+                RiftRunRules.Forget(run, visitor.Id);
+
+                var pilotId = run.PilotIds.TryGetValue(visitor.Id, out var id) ? id : null;
+                var podded = pilotId != null &&
+                             (aboardHostIds.Contains(pilotId) || riders.Any(x => GetObjectUUID(x) == pilotId));
+                if (pilotId != null && !podded)
+                    OweAwayShipLoss(run, visitor.Id);
+
+                Log.Write(LogGroup.Space, $"RIFT RUN - ship {visitor.Id} docked aboard a ship destroyed in the collapsing pocket was wrecked with it; " +
+                                          $"pilot {pilotId ?? "unknown"} {(podded ? "rides the host's escape pods" : "owes the XP debt at login")}");
+            }
         }
 
         private static void ReturnFromRiftPocket(RiftRun run, uint pilot)

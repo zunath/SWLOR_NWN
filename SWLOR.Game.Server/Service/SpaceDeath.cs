@@ -60,8 +60,10 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             // Ships docked aboard detach where this one died and take back the players who belong to them. Those
-            // players are not part of the escape pods: no XP debt and no jump to the dock.
-            var returnedToDockedShips = DetachDockedShips(creature);
+            // players are not part of the escape pods: no XP debt and no jump to the dock. In a collapsing Rift Run
+            // pocket the docked ships are wrecked with this one instead, and the players in them ride its pods.
+            var wreckedRiders = new List<uint>();
+            var returnedToDockedShips = DetachDockedShips(creature, wreckedRiders);
             _shipCombatAt.Remove(creature);
 
             var playerId = GetObjectUUID(creature);
@@ -184,6 +186,8 @@ namespace SWLOR.Game.Server.Service
                 passengers.AddRange(GetPlayersInArea(instance.Area)
                     .Where(x => GetIsObjectValid(x) && !returnedToDockedShips.Contains(x)));
             }
+
+            passengers.AddRange(wreckedRiders.Where(x => GetIsObjectValid(x) && !returnedToDockedShips.Contains(x)));
 
             DestroyPilotClone(creature);
 

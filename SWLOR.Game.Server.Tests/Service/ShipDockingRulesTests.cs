@@ -228,7 +228,7 @@ public class ShipDockingRulesTests
     {
         var space = ReadServerSource("Service", "Space.cs");
         var death = ReadServerSource("Service", "SpaceDeath.cs");
-        var detach = death.IndexOf("var returnedToDockedShips = DetachDockedShips(creature);", StringComparison.Ordinal);
+        var detach = death.IndexOf("var returnedToDockedShips = DetachDockedShips(creature, wreckedRiders);", StringComparison.Ordinal);
         var crew = death.IndexOf("!returnedToDockedShips.Contains(x.Key)", StringComparison.Ordinal);
         var interior = death.IndexOf("!returnedToDockedShips.Contains(x)", StringComparison.Ordinal);
 

@@ -65,7 +65,7 @@ public class SpaceDeathWiringTests
     {
         var death = ReadServerSource("Service", "SpaceDeath.cs");
 
-        death.IndexOf("DetachDockedShips(creature)", StringComparison.Ordinal)
+        death.IndexOf("DetachDockedShips(creature, wreckedRiders)", StringComparison.Ordinal)
             .Should().BeGreaterThan(0)
             .And.BeLessThan(death.IndexOf("TakeShipKiller(creature)", StringComparison.Ordinal));
         death.Should().Contain("!returnedToDockedShips.Contains(x.Key)");

@@ -6,6 +6,7 @@ This verifies resources, not the native client's inventory discovery behavior.
 import hashlib
 from pathlib import Path
 import re
+import struct
 import unittest
 
 from PIL import Image, ImageOps
@@ -44,15 +45,15 @@ class PistolInventoryIconTests(unittest.TestCase):
                                      "Native CResDDS does not support uncompressed RGBA icons; use DXT5 with alpha")
                     icon = ImageOps.flip(icon)
                     if tga.exists():
+                        # Stock clients require TGA registration before selecting
+                        # same-name DDS art. Full-size TGA artwork remains stale.
+                        stub = tga.read_bytes()
+                        self.assertEqual(len(stub), 18 + 8 * 8 * 4, f"{stem}: expected an 8x8 registration stub")
+                        self.assertEqual(stub[2], 2, f"{stem}: stub must be uncompressed")
+                        self.assertEqual(struct.unpack_from("<HHBB", stub, 12), (8, 8, 32, 8),
+                                         f"{stem}: stub must use 32-bit bottom-left TGA pixels")
                         with Image.open(tga) as registration:
-                            self.assertEqual(registration.size, (8, 8),
-                                             f"{stem}: only a registration thumbnail may accompany DDS artwork")
                             self.assertIsNotNone(registration.convert("RGBA").getchannel("A").getbbox())
-                        data = tga.read_bytes()
-                        self.assertEqual(len(data), 18 + 8 * 8 * 4)
-                        self.assertEqual(data[2], 2, "Registration must be an uncompressed TGA")
-                        self.assertEqual(data[16:18], bytes((32, 8)),
-                                         "Registration must use 32-bit pixels and bottom-left origin")
                 self.assertEqual(icon.size, (64, 64))
                 alpha = icon.getchannel("A")
                 self.assertIsNotNone(alpha.getbbox(), "Middle icon must contain visible artwork")

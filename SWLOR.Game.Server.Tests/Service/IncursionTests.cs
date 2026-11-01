@@ -358,7 +358,12 @@ public class IncursionTests
         System.Text.RegularExpressions.Regex.Matches(freight, @"if \(IsFreightExchangeClosed\(player, exchange, dockId\)\)\n\s+return;")
             .Count.Should().Be(2, "both accepting and delivering are refused");
         freight.IndexOf("IsFreightExchangeClosed(player, exchange, dockId)", StringComparison.Ordinal)
-            .Should().BeLessThan(freight.IndexOf("TakeGoldFromCreature(offer.Deposit", StringComparison.Ordinal), "no deposit is taken first");
+            .Should().BeLessThan(freight.IndexOf("AssignCommand(player, () => PayFreightDeposit(player, contractId, offer.Deposit));", StringComparison.Ordinal),
+                "no deposit is taken first");
+        freight.Should().Contain("contract.DepositPending = true;")
+            .And.Contain("TakeGoldFromCreature(deposit, player, true);\n            ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);\n            ExportSingleCharacter(player);")
+            .And.Contain("public static void ReconcileFreightDeposits()",
+                "a contract a restart left waiting on its deposit is settled at login, never refunded unpaid");
         IncursionRules.ExchangeRefusal(IncursionInvader.Sith).Should().Contain("The exchange is closed");
     }
 

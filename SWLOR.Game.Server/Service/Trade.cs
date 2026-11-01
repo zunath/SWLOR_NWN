@@ -133,14 +133,32 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // The payment is saved in the character file with a mark naming the cargo change, then the cargo: a restart
-            // in between leaves a mark the next login applies once (ApplyPendingTrade).
+            // TakeGoldFromCreature does nothing from a NUI handler (the module runs it), so the purchase completes on the
+            // player's action queue: the payment is saved in the character file with a mark naming the cargo change, then
+            // the cargo, so a restart in between leaves a mark the next login applies once (ApplyPendingTrade).
+            var shipRecordId = ship.Id;
+            AssignCommand(player, () => CompleteBuy(player, shipRecordId, exchangeType, commodity, detail, dock, order));
+        }
+
+        private static void CompleteBuy(uint player, string shipId, TradeExchangeType exchangeType, CommodityType commodity,
+            CommodityDetail detail, TradeDock dock, TradeOrder order)
+        {
+            var ship = DB.Get<PlayerShip>(shipId);
+            if (ship == null || GetGold(player) < order.Credits)
+            {
+                SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotEnoughCredits)));
+                return;
+            }
+
             TakeGoldFromCreature(order.Credits, player, true);
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = order.Units, Credits = order.Credits };
             SaveTradeGold(player, trade);
             RecordTrade(ship, player, trade);
-            AddPressure(state, commodity, -order.Units, now);
             DB.Set(ship);
+
+            var now = DateTime.UtcNow;
+            var state = GetExchangeState(exchangeType, now);
+            AddPressure(state, commodity, -order.Units, now);
             DB.Set(state);
             PayTariff(dock, order.Tariff, player);
 

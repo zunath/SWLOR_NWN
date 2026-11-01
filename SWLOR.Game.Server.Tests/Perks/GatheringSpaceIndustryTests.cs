@@ -342,6 +342,11 @@ public class GatheringSpaceIndustryTests
         var source = ReadSource("Feature", "ShipModuleDefinition", file);
 
         source.Should().Contain("ShipModuleActions.MiningCycleSeconds(activator, SpaceCrew.GetStatSource(activator),");
+        var toggles = ReadSource("Service", "SpaceToggles.cs");
+        toggles.Should().Contain("cycle = detail.CalculateRecastAction?.Invoke(creature, status, module.ModuleBonus) ?? 0f;")
+            .And.Contain("using (SpaceCrew.BeginStationFire(fireContext))", "the recast reads the station operator, as the cycle does");
+        toggles.IndexOf("using (SpaceCrew.BeginStationFire(fireContext))", StringComparison.Ordinal)
+            .Should().BeLessThan(toggles.IndexOf("cycle = detail.CalculateRecastAction", StringComparison.Ordinal));
     }
 
     private static string ReadSource(params string[] relativePath)

@@ -48,15 +48,18 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            AssignCommand(player, () => TakeGoldFromCreature(offer.Deposit, player, true));
             // The contract is saved before the load, so a restart in between leaves a contract to abandon, never a sealed
-            // load no contract can clear.
+            // load no contract can clear. It waits on its deposit, which the player's own queue takes (TakeGoldFromCreature
+            // does nothing from a NUI handler) and saves in the character file before the contract is marked paid.
             var contract = FreightContractRules.Accept(offer, ship.Id, now);
+            contract.DepositPending = true;
             dbPlayer.FreightContracts.Add(contract);
             dbPlayer.FreightOffersTaken.Add(offer.Id);
             DB.Set(dbPlayer);
             ship.SealedFreight.Add(FreightContractRules.GetSealedLot(contract));
             DB.Set(ship);
+            var contractId = contract.Id;
+            AssignCommand(player, () => PayFreightDeposit(player, contractId, offer.Deposit));
 
             var destination = TradeLookup.GetExchange(offer.Destination)?.Name;
             SendMessageToPC(player, ColorToken.Green(
@@ -84,6 +87,60 @@ namespace SWLOR.Game.Server.Service
         /// proceeds, so a contract a restart left behind is cleared at the next login without paying again.
         /// </summary>
         private const string PaidContractVariable = "FREIGHT_CONTRACT_PAID";
+
+        /// <summary>The character-file local naming the last freight contract whose deposit was taken.</summary>
+        private const string DepositPaidVariable = "FREIGHT_DEPOSIT_PAID";
+
+        /// <summary>Takes a contract's deposit, saves it in the character file with a mark naming the contract, then marks the contract paid.</summary>
+        private static void PayFreightDeposit(uint player, string contractId, int deposit)
+        {
+            TakeGoldFromCreature(deposit, player, true);
+            ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);
+            ExportSingleCharacter(player);
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var contract = dbPlayer?.FreightContracts.FirstOrDefault(x => x.Id == contractId);
+            if (contract == null)
+                return;
+
+            contract.DepositPending = false;
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Settles contracts a restart left waiting on their deposit: one whose deposit the character file holds is marked
+        /// paid, and one whose deposit was never taken is removed with its load.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ReconcileFreightDeposits()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var pending = dbPlayer?.FreightContracts.Where(x => x.DepositPending).ToList();
+            if (pending == null || pending.Count == 0)
+                return;
+
+            var paidId = ObjectPlugin.GetString(player, DepositPaidVariable);
+            foreach (var contract in pending)
+            {
+                if (contract.Id == paidId)
+                {
+                    contract.DepositPending = false;
+                    continue;
+                }
+
+                var ship = DB.Get<PlayerShip>(contract.ShipId);
+                if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
+                    DB.Set(ship);
+                dbPlayer.FreightContracts.Remove(contract);
+                Log.Write(LogGroup.Space, $"FREIGHT ACCEPT - {PlayerName.GetAuditName(player)} - removed contract {contract.Id} whose deposit a restart never took.");
+            }
+
+            DB.Set(dbPlayer);
+        }
 
         /// <summary>Clears a contract whose proceeds the character file holds but whose clearing a restart interrupted.</summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]

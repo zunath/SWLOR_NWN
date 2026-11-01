@@ -426,7 +426,13 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
-                var cycle = detail.CalculateRecastAction?.Invoke(creature, status, module.ModuleBonus) ?? 0f;
+                // The recast and the module's action read the same operator (Rapid Extraction is the station's).
+                var fireContext = droid != null
+                    ? BuildDroidFireContext(creature, droid)
+                    : BuildCrewFireContext(creature, crewMember, seat);
+                float cycle;
+                using (SpaceCrew.BeginStationFire(fireContext))
+                    cycle = detail.CalculateRecastAction?.Invoke(creature, status, module.ModuleBonus) ?? 0f;
                 if (cycle <= 0f) cycle = (float)ShipToggleRules.LoopSeconds;
 
                 // "No extra delay" cycles (a limited weapon cycle effect) run back to back, for the weapons of whoever
@@ -439,9 +445,7 @@ namespace SWLOR.Game.Server.Service
                 var next = ShipToggleRules.NextCycleTime(active.NextCycleTime, now, cycle);
                 active.NextCycleTime = next;
 
-                using (SpaceCrew.BeginStationFire(droid != null
-                           ? BuildDroidFireContext(creature, droid)
-                           : BuildCrewFireContext(creature, crewMember, seat)))
+                using (SpaceCrew.BeginStationFire(fireContext))
                 {
                     FireShipModule(creature, status, slot, module, detail, target, targetStatus, required,
                         true, next.AddSeconds(-cycle), next, false);

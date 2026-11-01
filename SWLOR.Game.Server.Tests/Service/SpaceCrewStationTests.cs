@@ -354,7 +354,7 @@ public class SpaceCrewStationTests
 
         var toggles = ReadServerSource("Service", "SpaceToggles.cs");
         toggles.Should().Contain("? BuildDroidFireContext(creature, droid)");
-        toggles.Should().Contain(": BuildCrewFireContext(creature, crewMember, seat)))");
+        toggles.Should().Contain(": BuildCrewFireContext(creature, crewMember, seat);").And.Contain("using (SpaceCrew.BeginStationFire(fireContext))");
 
         var actions = ReadServerSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");
         actions.Should().Contain("SpaceCrew.GetStatSource(repairer)");

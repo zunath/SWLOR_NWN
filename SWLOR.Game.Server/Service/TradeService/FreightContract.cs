@@ -20,6 +20,13 @@ namespace SWLOR.Game.Server.Service.TradeService
         public int Volume { get; set; }
         public int Fee { get; set; }
         public int Deposit { get; set; }
+
+        /// <summary>
+        /// Whether the deposit has yet to be taken: set when the contract is saved, cleared once the character file holds
+        /// the payment. A contract a restart left pending is removed at the next login (Trade.ReconcileFreightDeposits).
+        /// Older records load false.
+        /// </summary>
+        public bool DepositPending { get; set; }
         public DateTime AcceptedAt { get; set; }
         public DateTime Deadline { get; set; }
 

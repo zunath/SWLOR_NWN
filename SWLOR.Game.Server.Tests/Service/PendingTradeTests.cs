@@ -48,8 +48,13 @@ public class PendingTradeTests
         var trade = ReadServerSource("Service", "Trade.cs");
         trade.Should().Contain("ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);\n            ExportSingleCharacter(player);")
             .And.Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ApplyPendingTrade()")
-            .And.NotContain("AssignCommand(player, () => TakeGoldFromCreature(order.Credits, player, true));",
-                "the payment must be in the character file before it is exported");
+            .And.Contain("AssignCommand(player, () => CompleteBuy(player, shipRecordId, exchangeType, commodity, detail, dock, order));",
+                "TakeGoldFromCreature does nothing from a NUI handler, so the purchase completes on the player's queue");
+
+        var complete = trade[trade.IndexOf("private static void CompleteBuy(", StringComparison.Ordinal)..];
+        var take = complete.IndexOf("TakeGoldFromCreature(order.Credits, player, true);", StringComparison.Ordinal);
+        take.Should().BeGreaterThan(0);
+        take.Should().BeLessThan(complete.IndexOf("SaveTradeGold(player, trade);", StringComparison.Ordinal), "the payment is taken before it is exported");
 
         trade.Should().Contain("if (ship == null || ship.OwnerPlayerId != playerId)",
                 "a former owner's mark never changes a ship that has changed owners")

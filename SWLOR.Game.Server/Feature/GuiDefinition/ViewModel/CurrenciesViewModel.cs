@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class CurrenciesViewModel: GuiViewModelBase<CurrenciesViewModel, GuiPayloadBase>,
         IGuiRefreshable<CurrencyRefreshEvent>
     {
+        private readonly List<CurrencyType> _currencyTypes = new();
 
         public GuiBindingList<string> CurrencyIcons
         {
@@ -37,6 +38,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<bool> CurrencyCanUse
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
@@ -46,12 +53,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var currencyNames = new GuiBindingList<string>();
             var currencyDescriptions = new GuiBindingList<string>();
             var currencyAmountText = new GuiBindingList<string>();
+            var currencyCanUse = new GuiBindingList<bool>();
 
-            var currencyTypes = Enum.GetValues(typeof(CurrencyType))
+            _currencyTypes.Clear();
+            _currencyTypes.AddRange(Enum.GetValues(typeof(CurrencyType))
                 .Cast<CurrencyType>()
-                .Where(type => type != CurrencyType.Invalid);
+                .Where(type => type != CurrencyType.Invalid));
 
-            foreach (var currency in currencyTypes)
+            foreach (var currency in _currencyTypes)
             {
                 var detail = Currency.GetCurrencyDetail(currency);
                 var amount = dbPlayer.Currencies.TryGetValue(currency, out var value) ? value : 0;
@@ -60,12 +69,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 currencyNames.Add(detail.Name);
                 currencyDescriptions.Add(detail.Description);
                 currencyAmountText.Add(amount.ToString("N0", CultureInfo.InvariantCulture));
+                currencyCanUse.Add(currency == CurrencyType.LanguageToken && amount > 0);
             }
 
             CurrencyIcons = currencyIcons;
             CurrencyNames = currencyNames;
             CurrencyDescriptions = currencyDescriptions;
             CurrencyAmountText = currencyAmountText;
+            CurrencyCanUse = currencyCanUse;
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -77,5 +88,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             LoadData();
         }
+
+        public Action OnClickUse() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= _currencyTypes.Count)
+                return;
+
+            if (_currencyTypes[index] == CurrencyType.LanguageToken &&
+                Currency.GetCurrency(Player, CurrencyType.LanguageToken) > 0 &&
+                !Gui.IsWindowOpen(Player, GuiWindowType.LanguageToken))
+            {
+                Gui.TogglePlayerWindow(Player, GuiWindowType.LanguageToken);
+            }
+        };
     }
 }

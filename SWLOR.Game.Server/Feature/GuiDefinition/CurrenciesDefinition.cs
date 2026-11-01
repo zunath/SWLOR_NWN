@@ -6,6 +6,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class CurrenciesDefinition: IGuiWindowDefinition
     {
+        private const float UseCellWidth = 60f;
+
         private readonly GuiWindowBuilder<CurrenciesViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -13,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Currencies)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 420f, 340f)
+                .SetInitialGeometry(0, 0, 480f, 340f)
                 .SetTitle("Currencies")
 
                 .AddColumn(col =>
@@ -35,6 +37,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(90f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Right)
                             .SetVerticalAlign(NuiVerticalAlign.Middle);
+
+                        row.AddSpacer()
+                            .SetWidth(UseCellWidth);
 
                         row.AddSpacer()
                             .SetWidth(18f);
@@ -84,6 +89,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetPadding(4f)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Right)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            });
+
+                            template.AddCell(cell =>
+                            {
+                                cell.SetWidth(UseCellWidth);
+                                cell.SetIsVariable(false);
+
+                                cell.AddButton()
+                                    .SetText("Use")
+                                    .SetTooltip("Spend a Language Token to master a language.")
+                                    .BindIsVisible(model => model.CurrencyCanUse)
+                                    .BindOnClicked(model => model.OnClickUse());
                             });
 
                             template.AddCell(cell =>

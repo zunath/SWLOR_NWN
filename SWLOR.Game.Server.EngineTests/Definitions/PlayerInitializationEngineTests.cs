@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var firstInitialization = player.Version == 0;
                         adjustStats.Invoke(null, new object[] { owner, player });
                         if (firstInitialization)
-                            initialize.GetMethod("GiveStartingRebuildToken", BindingFlags.Static | BindingFlags.NonPublic)
+                            initialize.GetMethod("GiveStartingTokens", BindingFlags.Static | BindingFlags.NonPublic)
                                 .Invoke(null, new object[] { player });
                     }),
                     (Action<Player>)(player => saved = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))),
@@ -136,7 +136,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(Stat.BaseHP, saved.MaxHP, "HP budget is initialized once across retries");
                     ctx.AssertEqual(Stat.BaseFP, saved.MaxFP, "FP budget is initialized once across retries");
                     ctx.AssertEqual(Stat.BaseSTM, saved.MaxStamina, "Stamina budget is initialized once across retries");
-                    ctx.AssertEqual(1, saved.Currencies[CurrencyType.RebuildToken], "Retries retain exactly one starting token");
+                    ctx.AssertEqual(1, saved.Currencies[CurrencyType.RebuildToken], "Retries retain exactly one starting rebuild token");
+                    ctx.AssertEqual(1, saved.Currencies[CurrencyType.LanguageToken], "Retries retain exactly one starting language token");
                     ctx.AssertEqual(failExport, saved.CharacterInitializationPending, "Completion follows a successful export");
                     if (attempt == 0) initialNativeHP = GetMaxHitPoints(owner);
                     ctx.AssertEqual(initialNativeHP, GetMaxHitPoints(owner), "Native HP does not grow on retry");

@@ -55,6 +55,31 @@ public class CzerkaArmsTestRangePlacementTests
     }
 
     [Test]
+    public void CzerkaDungeon_CantinaBoothConsolesAreStaticProps()
+    {
+        // The four consoles on the cantina booth tables behind the wall panels were live
+        // Training Terminals that players could click from across the room.
+        using var dungeon = LoadModuleJson("git", DungeonArea);
+        var placeables = dungeon.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray().ToArray();
+        placeables.Should().NotContain(p => GetString(p, "Conversation") == "train_terminal"
+            || GetString(p, "TemplateResRef") == "train_terminal" || GetString(p, "Tag") == "train_terminal");
+
+        var consoles = placeables
+            .Where(p => GetNumber(p, "X") is > 113.5 and < 115 && GetNumber(p, "Y") is > 80 and < 92.5)
+            .Where(p => GetNumber(p, "Appearance") == 20630)
+            .ToArray();
+        consoles.Should().HaveCount(4);
+        foreach (var console in consoles)
+        {
+            GetString(console, "TemplateResRef").Should().Be("_mdrn_pl_conso17");
+            GetNumber(console, "Static").Should().Be(1);
+            GetNumber(console, "Useable").Should().Be(0);
+            GetString(console, "OnUsed").Should().BeEmpty();
+            console.GetProperty("LocName").GetRawText().Should().NotContain("Training Terminal");
+        }
+    }
+
+    [Test]
     public void CzerkaDungeon_HoldsTheThreeWardenMiniBosses()
     {
         using var dungeon = LoadModuleJson("git", DungeonArea);
@@ -136,6 +161,9 @@ public class CzerkaArmsTestRangePlacementTests
     private static string GetString(JsonElement json, string name) =>
         json.TryGetProperty(name, out var p) && p.TryGetProperty("value", out var v) && v.ValueKind == JsonValueKind.String
             ? v.GetString()! : string.Empty;
+
+    private static double GetNumber(JsonElement json, string name) =>
+        json.GetProperty(name).GetProperty("value").GetDouble();
 
     private static string GetLocalString(JsonElement json, string variableName) =>
         TryGetLocal(json, variableName, out var local)

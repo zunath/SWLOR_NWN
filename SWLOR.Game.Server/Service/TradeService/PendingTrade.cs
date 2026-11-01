@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service.TradeService
     /// <summary>
     /// The cargo change of an exchange trade, saved in the character file with the trade's gold before the ship saves its
     /// cargo. A restart between the two leaves a mark whose cargo change the next login applies once: the ship records
-    /// the last trade applied to it (<c>PlayerShip.LastTradeId</c>).
+    /// the last trade applied to it (<c>PlayerShip.LastTradeIds</c>, per player).
     /// </summary>
     public sealed class PendingTrade
     {

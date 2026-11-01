@@ -138,8 +138,7 @@ namespace SWLOR.Game.Server.Service
             TakeGoldFromCreature(order.Credits, player, true);
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = order.Units, Credits = order.Credits };
             SaveTradeGold(player, trade);
-            trade.ApplyTo(ship.Cargo, ship.LastTradeId);
-            ship.LastTradeId = trade.Id;
+            RecordTrade(ship, player, trade);
             AddPressure(state, commodity, -order.Units, now);
             DB.Set(ship);
             DB.Set(state);
@@ -181,8 +180,7 @@ namespace SWLOR.Game.Server.Service
             GiveGoldToCreature(player, order.Credits);
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = -order.Units };
             SaveTradeGold(player, trade);
-            trade.ApplyTo(ship.Cargo, ship.LastTradeId);
-            ship.LastTradeId = trade.Id;
+            RecordTrade(ship, player, trade);
             AddPressure(state, commodity, order.Units, now);
             DB.Set(ship);
             DB.Set(state);
@@ -210,6 +208,15 @@ namespace SWLOR.Game.Server.Service
             ExportSingleCharacter(player);
         }
 
+        /// <summary>Applies a trade's cargo change to the bay and records it as the player's last trade on the ship.</summary>
+        private static void RecordTrade(PlayerShip ship, uint player, PendingTrade trade)
+        {
+            ship.LastTradeIds ??= new Dictionary<string, string>();
+            var playerId = GetObjectUUID(player);
+            trade.ApplyTo(ship.Cargo, ship.LastTradeIds.GetValueOrDefault(playerId));
+            ship.LastTradeIds[playerId] = trade.Id;
+        }
+
         /// <summary>One commodity's lot of a bay on its own, so a cost can be read without changing the bay.</summary>
         private static Dictionary<CommodityType, CargoLot> CopyLot(Dictionary<CommodityType, CargoLot> cargo, CommodityType commodity)
         {
@@ -230,11 +237,17 @@ namespace SWLOR.Game.Server.Service
             if (!PendingTrade.TryParse(ObjectPlugin.GetString(player, PendingTradeVariable), out var trade))
                 return;
 
+            // A ship that has since changed owners is never changed by its former owner's mark.
+            var playerId = GetObjectUUID(player);
             var ship = DB.Get<PlayerShip>(trade.ShipId);
-            if (ship == null || !trade.ApplyTo(ship.Cargo, ship.LastTradeId))
+            if (ship == null || ship.OwnerPlayerId != playerId)
                 return;
 
-            ship.LastTradeId = trade.Id;
+            ship.LastTradeIds ??= new Dictionary<string, string>();
+            if (!trade.ApplyTo(ship.Cargo, ship.LastTradeIds.GetValueOrDefault(playerId)))
+                return;
+
+            ship.LastTradeIds[playerId] = trade.Id;
             DB.Set(ship);
             Log.Write(LogGroup.Space, $"TRADE RECOVER - {PlayerName.GetAuditName(player)} - applied {trade.Units} {trade.Commodity} to ship {ship.Id} after a restart.");
         }

@@ -359,8 +359,8 @@ public class ShipSalvageTests
         modules["sm_salv_00"].Type.Should().Be(ShipModuleType.Salvager);
         modules["sm_gas_45"].Type.Should().Be(ShipModuleType.GasHarvester);
         var source = ReadSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs");
-        ExtractMethod(source, "private void GasHarvester(").Should().Contain("ShipModuleActions.MiningCycleSeconds(activator,");
-        ExtractMethod(source, "private void Salvager(").Should().Contain("ShipModuleActions.MiningCycleSeconds(activator,");
+        ExtractMethod(source, "private void GasHarvester(").Should().Contain("ShipModuleActions.MiningCycleSeconds(SpaceCrew.GetStatSource(activator),");
+        ExtractMethod(source, "private void Salvager(").Should().Contain("ShipModuleActions.MiningCycleSeconds(SpaceCrew.GetStatSource(activator),");
         ExtractMethod(ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs"), "public static void HarvestGasCloud(")
             .Should().Contain("StatType.SpaceGasYieldBonus");
         ExtractMethod(ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs"), "public static void SalvageWreck(")

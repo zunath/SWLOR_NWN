@@ -124,21 +124,45 @@ namespace SWLOR.Game.Server.Service
             var starlane = PickStarlane(area, hauler);
             if (GetIsObjectValid(starlane))
             {
-                AssignCommand(hauler, () =>
-                {
-                    ActionMoveToObject(starlane, false, 5f);
-                    ActionDoCommand(() =>
-                    {
-                        FactionAgents.OnConvoyArrived(hauler);
-                        DismissLawfulGroup(group, 0f);
-                    });
-                });
+                SetLocalObject(hauler, ConvoyDestinationVariable, starlane);
+                SendConvoyOnRoute(hauler, starlane, group);
             }
 
             foreach (var member in members)
                 DespawnWhenIdle(member, TradeTuning.ConvoyLifetimeSeconds);
 
             Log.Write(LogGroup.Space, $"CONVOY - {authority} convoy of {members.Count} ships in {areaResref} carrying {CustomsRules.Describe(cargo)}");
+        }
+
+        /// <summary>The starlane a convoy hauler flies to, kept so its route can be given again after a fight.</summary>
+        private const string ConvoyDestinationVariable = "TRADE_CONVOY_DESTINATION";
+
+        /// <summary>Sends a convoy hauler to its starlane; arriving completes an escort mission and ends the convoy.</summary>
+        private static void SendConvoyOnRoute(uint hauler, uint starlane, string group)
+        {
+            AssignCommand(hauler, () =>
+            {
+                ActionMoveToObject(starlane, false, 5f);
+                ActionDoCommand(() =>
+                {
+                    DeleteLocalObject(hauler, ConvoyDestinationVariable);
+                    FactionAgents.OnConvoyArrived(hauler);
+                    DismissLawfulGroup(group, 0f);
+                });
+            });
+        }
+
+        /// <summary>
+        /// Gives an idle convoy hauler its route again. The space AI clears a ship's actions on every combat tick, which
+        /// drops the route and its arrival, so the AI calls this once the hauler has no target left.
+        /// </summary>
+        public static void ResumeConvoyRoute(uint hauler)
+        {
+            var starlane = GetLocalObject(hauler, ConvoyDestinationVariable);
+            if (!GetIsObjectValid(starlane) || GetCurrentAction(hauler) != ActionType.Invalid)
+                return;
+
+            SendConvoyOnRoute(hauler, starlane, GetLocalString(hauler, LawfulGroupVariable));
         }
 
         /// <summary>A random starlane of the area other than the one nearest the hauler, or the nearest when it is the only one.</summary>

@@ -329,7 +329,11 @@ public class FactionAgentTests
         events.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureDeathAfter)]\n        public static void FailLostEscort()");
         events.Should().Contain("Space.PlaceSignature(signature);");
 
-        ServerSource("Service", "TradeConvoys.cs").Should().Contain("FactionAgents.OnConvoyArrived(hauler);");
+        ServerSource("Service", "TradeConvoys.cs").Should().Contain("FactionAgents.OnConvoyArrived(hauler);")
+            .And.Contain("SetLocalObject(hauler, ConvoyDestinationVariable, starlane);")
+            .And.Contain("if (!GetIsObjectValid(starlane) || GetCurrentAction(hauler) != ActionType.Invalid)",
+                "an escorted hauler flies on to its starlane after a fight clears its route");
+        ServerSource("Service", "Space.cs").Should().Contain("Trade.ResumeConvoyRoute(creature);");
         ServerSource("Service", "SpaceScanSites.cs").Should().Contain("FactionAgents.OnSiteCompleted(signature, user, cache);");
         ServerSource("Service", "SpaceScanSites.cs").Should().Contain("FactionAgents.HoldHeistSite(signature, area, center);");
         ServerSource("Service", "SpaceSlicing.cs").Should().Contain("FactionAgents.OnHeistTargetSliced(slicer, target);");

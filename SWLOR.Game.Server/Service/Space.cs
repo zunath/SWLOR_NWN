@@ -2771,7 +2771,12 @@ namespace SWLOR.Game.Server.Service
 
                 // Determine target. A cloaked ship keeps its enmity but is skipped until it can be seen again.
                 var target = Enmity.GetHighestEnmityAttackTarget(creature);
-                if (!GetIsObjectValid(target)) continue;
+                if (!GetIsObjectValid(target))
+                {
+                    // A convoy hauler whose fight cleared its route flies on once nothing is left to fight.
+                    Trade.ResumeConvoyRoute(creature);
+                    continue;
+                }
 
                 // Ships follow the same combat leash as ground enemies.
                 if (AI.TryStartCombatLeashEvade(creature, target))

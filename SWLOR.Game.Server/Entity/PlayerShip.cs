@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Entity
             TransferFromPlayerId = string.Empty;
             TransferReason = string.Empty;
             LastHoldingCollectionId = string.Empty;
-            LastTradeId = string.Empty;
+            LastTradeIds = new Dictionary<string, string>();
             PendingHoldingDeliveryId = string.Empty;
             PendingHoldingDeliveryHoldingId = string.Empty;
         }
@@ -107,11 +107,12 @@ namespace SWLOR.Game.Server.Entity
         public string LastHoldingCollectionId { get; set; }
 
         /// <summary>
-        /// The last exchange trade applied to the cargo bay, saved with the cargo, so a trade whose gold the character
-        /// file holds but whose cargo change a restart interrupted is applied once at the next login (PendingTrade).
+        /// The last exchange trade each player applied to the cargo bay (player id to trade id), saved with the cargo, so
+        /// a trade whose gold the character file holds but whose cargo change a restart interrupted is applied once at the
+        /// next login (PendingTrade). Kept per player, so another player's later trade never makes an applied one look new.
         /// Older records load empty.
         /// </summary>
-        public string LastTradeId { get; set; }
+        public Dictionary<string, string> LastTradeIds { get; set; }
 
         /// <summary>
         /// A Planetary Holding delivery taken out of the cargo bay whose holding may not have saved it yet, or empty.

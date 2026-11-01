@@ -73,7 +73,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>Harvests one cycle of a gas cloud and delivers the gas when the cycle ends.</summary>
         public static void HarvestGasCloud(uint activator, uint target, float cycleSeconds, int moduleBonus)
         {
-            cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, cycleSeconds);
+            // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
+            // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
+            var operatorSource = SpaceCrew.GetStatSource(activator);
+            cycleSeconds = ShipModuleActions.MiningCycleSeconds(operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
             if (GetLocalInt(target, GasCloudUnitsVariable) <= 0)
                 SetLocalInt(target, GasCloudUnitsVariable, Random.D4(1) + 2);
@@ -101,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 // Gas Siphoning (Gathering) adds gas to every cycle.
                 var amount = ShipSalvageRules.GasPerCycle(
-                    shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(activator, StatType.SpaceGasYieldBonus));
+                    shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(operatorSource, StatType.SpaceGasYieldBonus));
 
                 remainingUnits -= SpaceCombatMath.MiningUnitsPerCycle(amount);
                 if (remainingUnits <= 0)
@@ -157,7 +160,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>Salvages one cycle of a wreck and delivers what it yields when the cycle ends.</summary>
         public static void SalvageWreck(uint activator, uint target, float cycleSeconds, int moduleBonus)
         {
-            cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, cycleSeconds);
+            // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
+            // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
+            var operatorSource = SpaceCrew.GetStatSource(activator);
+            cycleSeconds = ShipModuleActions.MiningCycleSeconds(operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
 
             // The salvager's RareFind traits (Precision) raise an elite or boss wreck's rare-find chance.
@@ -187,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // Salvage Expert (Gathering) adds items to every cycle.
                 // A droid in the ship's droid bay adds items and, with Prospecting Protocol, rare-find chance.
                 var items = DroidIndustryRules.ApplyPercent(ShipSalvageRules.SalvageItemsPerCycle(
-                        shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(activator, StatType.SpaceSalvageYieldBonus)),
+                        shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(operatorSource, StatType.SpaceSalvageYieldBonus)),
                     Space.GetDroidBayYieldPercent(activator));
                 var yield = ShipSalvageRules.ScrapYield(wreck.Tier, items);
                 var rareFind = traitRareFind + Space.GetDroidBayRareFindBonus(activator);

@@ -51,6 +51,10 @@ public class PendingTradeTests
             .And.NotContain("AssignCommand(player, () => TakeGoldFromCreature(order.Credits, player, true));",
                 "the payment must be in the character file before it is exported");
 
+        trade.Should().Contain("if (ship == null || ship.OwnerPlayerId != playerId)",
+                "a former owner's mark never changes a ship that has changed owners")
+            .And.Contain("ship.LastTradeIds[playerId] = trade.Id;", "each player's last trade is kept apart");
+
         foreach (var method in new[] { "public static void Buy(", "public static void Sell(" })
         {
             var body = trade[trade.IndexOf(method, StringComparison.Ordinal)..];

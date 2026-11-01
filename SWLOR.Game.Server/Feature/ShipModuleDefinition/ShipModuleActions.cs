@@ -525,11 +525,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>The ship's carried fraction of an ore (hundredths) from Prospector's percent, between cycles.</summary>
         private const string MiningYieldCarryVariable = "SPACE_MINING_YIELD_CARRY";
 
-        /// <summary>A cycle's ore after Prospector, carrying the fraction on the ship (SpaceCombatMath.MiningYield).</summary>
-        private static int ApplyProspector(uint activator, int amount)
+        /// <summary>
+        /// A cycle's ore after the operator's Prospector, carrying the fraction on the ship (SpaceCombatMath.MiningYield).
+        /// </summary>
+        private static int ApplyProspector(uint activator, uint operatorSource, int amount)
         {
             var carry = GetLocalInt(activator, MiningYieldCarryVariable);
-            var ore = SpaceCombatMath.MiningYield(amount, GetProspectorBonus(activator), ref carry);
+            var ore = SpaceCombatMath.MiningYield(amount, GetProspectorBonus(operatorSource), ref carry);
             SetLocalInt(activator, MiningYieldCarryVariable, carry);
             return ore;
         }
@@ -562,7 +564,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>Mines one cycle of an asteroid and delivers the ore when the cycle ends.</summary>
         public static void MineAsteroid(uint activator, uint target, float cycleSeconds, int moduleBonus)
         {
-            cycleSeconds = MiningCycleSeconds(activator, cycleSeconds);
+            // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
+            // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
+            var operatorSource = SpaceCrew.GetStatSource(activator);
+            cycleSeconds = MiningCycleSeconds(operatorSource, cycleSeconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
             var rareFind = TraitRareFind();
@@ -587,7 +592,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // Module bonuses set the cycle's amount and the asteroid units it uses; Prospector adds its percent to
                 // the ore delivered, the fraction carried to the ship's next cycle.
                 var baseAmount = SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus);
-                var amountToMine = ApplyProspector(activator, baseAmount);
+                var amountToMine = ApplyProspector(activator, operatorSource, baseAmount);
 
                 // Refresh remaining units (could have changed since the start)
                 var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -629,7 +634,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var ore = new List<string>();
                 for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
+                    ore.Add(GetAsteroidOre(operatorSource, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);
@@ -640,7 +645,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>Strips a whole asteroid over <paramref name="seconds"/> while the ship is rooted.</summary>
         public static void StripAsteroid(uint activator, uint target, float seconds, int moduleBonus)
         {
-            seconds = MiningCycleSeconds(activator, seconds);
+            // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
+            // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
+            var operatorSource = SpaceCrew.GetStatSource(activator);
+            seconds = MiningCycleSeconds(operatorSource, seconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
             var rareFind = TraitRareFind();
@@ -665,7 +673,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     return;
 
                 // The same per-cycle ore as a mining laser, over every cycle the asteroid has left.
-                var amountToMine = ApplyProspector(activator, SpaceCombatMath.StripMinerYield(
+                var amountToMine = ApplyProspector(activator, operatorSource, SpaceCombatMath.StripMinerYield(
                     SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus),
                     remainingUnits));
 
@@ -685,7 +693,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var ore = new List<string>();
                 for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
+                    ore.Add(GetAsteroidOre(operatorSource, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);

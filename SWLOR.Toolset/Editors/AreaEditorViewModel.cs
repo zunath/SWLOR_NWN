@@ -148,7 +148,8 @@ namespace SWLOR.Toolset.Editors
             get => _areaScene;
             private set
             {
-                _areaScene = value;
+                _areaScene = value == null || _moduleEntry == null ? value :
+                    value.WithStartLocation(StartLocationMarker());
                 OnPropertyChanged(nameof(AreaScene));
             }
         }
@@ -439,6 +440,11 @@ namespace SWLOR.Toolset.Editors
             try
             {
                 SelectedSceneInstance = instance;
+                if (!_preservingMultipleSelection)
+                {
+                    SelectedSceneInstances = instance == null ? Array.Empty<InstanceMarker>() : new[] { instance };
+                    OnPropertyChanged(nameof(SelectedSceneInstances));
+                }
                 OnPropertyChanged(nameof(CanRotateSelection));
 
                 // An object and a tile are never selected together - raise/lower would have no way to
@@ -646,7 +652,7 @@ namespace SWLOR.Toolset.Editors
         /// cannot either - it does not stamp a tile, it solves for one, and the solver chooses the
         /// facing that matches the neighbours.
         /// </summary>
-        public bool CanRotatePendingTile => IsRotatable(_pendingTile);
+        public bool CanRotatePendingTile => _pendingTileCopy == null && IsRotatable(_pendingTile);
 
         /// <summary>
         /// Whether <paramref name="entry"/> is a tile a builder may turn: a single cell, and not a
@@ -681,6 +687,7 @@ namespace SWLOR.Toolset.Editors
 
             _pendingTileOrientation = _tileEditor.ArmedOrientation;
             OnPropertyChanged(nameof(PendingTileFacing));
+            OnPropertyChanged(nameof(TilePlacementOrientations));
             OnPropertyChanged(nameof(PlacementStatus));
         }
 
@@ -689,6 +696,7 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public bool ArmTilePlacement(TilePaletteEntry entry)
         {
+            _pendingTileCopy = null;
             if (entry == null || _tileEditor?.Arm(entry) != true)
                 return false;
 
@@ -715,6 +723,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Called by the view when a tile placement is cancelled from inside the viewport.</summary>
         public void CancelTilePlacement()
         {
+            _pendingTileCopy = null;
             if (_pendingTile == null)
                 return;
 
@@ -733,6 +742,13 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Commits the shared tile editor's armed stamp or terrain brush.</summary>
         public void CommitTilePlacement(int anchorColumn, int anchorRow)
         {
+            if (_pendingTileCopy is { } copy)
+            {
+                var pasteOutcome = _tileEditor!.PasteAt(copy, anchorColumn, anchorRow);
+                if (pasteOutcome != AreaTileEditOutcome.Rejected) CancelTilePlacement();
+                PublishTileClipboardEdit(pasteOutcome);
+                return;
+            }
             var entry = _pendingTile;
             if (entry == null || entry.Crosser != null || _tileEditor == null)
                 return;
@@ -775,7 +791,9 @@ namespace SWLOR.Toolset.Editors
             OnPropertyChanged(nameof(HasViewportHud));
         }
         public bool CanPlaceArmedTileAt(int column, int row) =>
-            _tileEditor?.CanPlaceAt(column, row) == true;
+            _pendingTileCopy is { } copy
+                ? _tileEditor?.CanPasteAt(copy, column, row) == true
+                : _tileEditor?.CanPlaceAt(column, row) == true;
 
         private (int Column, int Row)? _selectedTile;
 
@@ -799,6 +817,7 @@ namespace SWLOR.Toolset.Editors
 
                 _selectedTile = value;
                 _tileEditor?.SelectCell(value);
+                OnPropertyChanged(nameof(SelectedTiles));
                 OnPropertyChanged(nameof(SelectedTile));
                 OnPropertyChanged(nameof(HasTileSelection));
                 OnPropertyChanged(nameof(TileSelectionStatus));
@@ -828,7 +847,12 @@ namespace SWLOR.Toolset.Editors
         /// <summary>
         /// Called by the view when a click in the 3D view resolves to a grid cell (or to none).
         /// </summary>
-        public void SelectTile((int Column, int Row)? cell) => SelectedTile = cell;
+        public void SelectTile((int Column, int Row)? cell)
+        {
+            SelectedTile = cell;
+            _tileEditor?.SelectCell(cell);
+            OnPropertyChanged(nameof(SelectedTiles));
+        }
 
         [RelayCommand(CanExecute = nameof(HasTileSelection))]
         private void RaiseTile() => AdjustSelectedTileElevation(1);
@@ -909,6 +933,7 @@ namespace SWLOR.Toolset.Editors
             _pendingPlacementResRef = resRef;
             _pendingPlacementUsesIndexedBlueprint = source == Shell.Panels.PaletteSource.Standard;
             _pendingPlacementCopy = null;
+            _pendingPlacementCopies = null;
             PlacementGhost = BuildPlacementGhost(type, resRef, _pendingPlacementUsesIndexedBlueprint);
             NotifyPlacementChanged();
             return true;
@@ -917,22 +942,29 @@ namespace SWLOR.Toolset.Editors
         /// <summary>
         /// Copies the selected placed object as an independent GIT/GIC snapshot.
         /// </summary>
-        public bool CopySelectedSceneInstance()
+        public bool CopySelectedSceneInstance() => CopySceneSelection();
+
+        public bool CutSelectedSceneInstance()
         {
-            if (SelectedSceneInstance is not { } instance ||
-                SectionForKind(instance.Kind) is not { } section)
+            if (!CopySceneSelection()) return false;
+            if (_instanceClipboard.Tiles != null)
             {
-                return false;
+                var outcome = _tileEditor!.EraseSelection();
+                PublishTileClipboardEdit(outcome);
+                return outcome is AreaTileEditOutcome.Changed or AreaTileEditOutcome.NoChange;
             }
+            return DeleteSelectedSceneInstance();
+        }
 
-            var index = IndexWithinKind(instance);
-            var copy = index >= 0 ? section.CopyInstanceForPlacement(index, instance) : null;
-            if (copy == null)
+        public bool DropSelectedSceneInstanceToGround()
+        {
+            if (SelectedSceneInstance is not { } instance || AreaScene is not { } scene ||
+                instance.Kind == InstanceMarkerKind.Door || SectionForKind(instance.Kind) == null)
                 return false;
 
-            _instanceClipboard.Set(copy);
-            SceneStatus = $"Copied {SelectionName}. Press Ctrl+V to place a copy.";
-            return true;
+            var result = _sceneInstanceEditor.DropToGround(scene, instance);
+            PublishInstanceEdit(result);
+            return result.Outcome == AreaSceneInstanceEditOutcome.Changed;
         }
 
         /// <summary>
@@ -940,6 +972,8 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public bool PasteCopiedSceneInstance()
         {
+            if (_instanceClipboard.Tiles is { } tiles)
+                return ArmCopiedTiles(tiles);
             if (_instanceClipboard.Content is not { } copy ||
                 !string.Equals(copy.ModuleRoot, _workspace.ModuleRoot, StringComparison.OrdinalIgnoreCase) ||
                 Sections.FirstOrDefault(section => section.BlueprintType == copy.Type) is not { } section)
@@ -961,6 +995,7 @@ namespace SWLOR.Toolset.Editors
             _pendingPlacementResRef = label;
             _pendingPlacementUsesIndexedBlueprint = false;
             _pendingPlacementCopy = copy;
+            _pendingPlacementCopies = _instanceClipboard.Contents;
             PlacementGhost = copy.Preview;
             NotifyPlacementChanged();
             return true;
@@ -1098,21 +1133,23 @@ namespace SWLOR.Toolset.Editors
         /// The heading to hang the new instance at, when the viewport chose one - a door takes the
         /// heading of the doorway it snapped into. Null leaves the blueprint's own default.
         /// </param>
-        public void CommitPlacement(Vector3 position, Vector2? orientation = null)
+        public void CommitPlacement(Vector3 position, Vector2? orientation = null, bool keepBrush = false)
         {
             var section = _pendingPlacementSection;
             var resRef = _pendingPlacementResRef;
             var useIndexedBlueprint = _pendingPlacementUsesIndexedBlueprint;
             var copiedInstance = _pendingPlacementCopy;
-            _pendingPlacementSection = null;
-            _pendingPlacementResRef = null;
-            _pendingPlacementUsesIndexedBlueprint = false;
-            _pendingPlacementCopy = null;
-            PlacementGhost = null;
-            NotifyPlacementChanged();
+            var copiedInstances = _pendingPlacementCopies;
+            if (!keepBrush)
+                CancelPlacement();
 
             if (section == null || (copiedInstance == null && resRef == null))
                 return;
+            if (copiedInstances is { Count: > 1 })
+            {
+                CommitCopiedInstances(copiedInstances, position);
+                return;
+            }
 
             // Orientation goes in with the add rather than as a follow-up edit, so hanging a door in a
             // doorway is one undo step and not two. A copied object retains its authored heading when
@@ -1229,6 +1266,7 @@ namespace SWLOR.Toolset.Editors
             _pendingPlacementResRef = null;
             _pendingPlacementUsesIndexedBlueprint = false;
             _pendingPlacementCopy = null;
+            _pendingPlacementCopies = null;
             PlacementGhost = null;
             NotifyPlacementChanged();
         }
@@ -1251,6 +1289,11 @@ namespace SWLOR.Toolset.Editors
 
         public void RotateSelectedInstance(InstanceMarker instance, Vector2 newOrientation)
         {
+            if (instance.Kind == InstanceMarkerKind.StartLocation)
+            {
+                RotateStartLocation(newOrientation);
+                return;
+            }
             if (AreaScene is not { } scene)
                 return;
             PublishInstanceEdit(_sceneInstanceEditor.Rotate(scene, instance, newOrientation));
@@ -1289,7 +1332,7 @@ namespace SWLOR.Toolset.Editors
             SelectedSceneInstance is { } instance &&
             instance.Kind != InstanceMarkerKind.Sound &&
             instance.Kind != InstanceMarkerKind.Door &&
-            SectionForKind(instance.Kind) != null;
+            (instance.Kind == InstanceMarkerKind.StartLocation || SectionForKind(instance.Kind) != null);
 
         // ----- Terrain paint / rotate / raise-lower tools -----
 
@@ -1328,7 +1371,8 @@ namespace SWLOR.Toolset.Editors
             ModuleMutationLock? mutationLock = null,
             AreaInstanceClipboard? instanceClipboard = null,
             Action<uint>? openTlkRow = null,
-            Triggers.TriggerEditorServices? triggerEditorServices = null)
+            Triggers.TriggerEditorServices? triggerEditorServices = null,
+            ModuleEntryEditor? moduleEntry = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1344,6 +1388,8 @@ namespace SWLOR.Toolset.Editors
             _log = log;
             _workspace = workspace;
             _areResRef = areResRef;
+            _moduleEntry = moduleEntry;
+            if (_moduleEntry != null) _moduleEntry.Changed += OnModuleEntryChanged;
             _tilesetCatalog = tilesetCatalog;
             _tileModelCache = tileModelCache;
             _placeableAppearances = placeableAppearances;
@@ -1622,6 +1668,16 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public bool DeleteSelectedSceneInstance()
         {
+            if (SelectedSceneInstances.Count > 1)
+            {
+                var references = SelectedSceneInstances
+                    .Where(marker => MapKindToSectionType(marker.Kind) != null)
+                    .Select(marker => new AreaInstanceReference(MapKindToSectionType(marker.Kind)!.Value, IndexWithinKind(marker)))
+                    .ToArray();
+                if (!_instanceEditor.DeleteMany(references)) return false;
+                PublishBatchInstanceEdit();
+                return true;
+            }
             if (SelectedSceneInstance is not { } instance ||
                 MapKindToSectionType(instance.Kind) is not { } type)
                 return false;
@@ -1980,11 +2036,22 @@ namespace SWLOR.Toolset.Editors
                 gicPlan = SavePlan.Nothing;
             }
 
+            var modulePlan = HasModuleEntryChanges
+                ? await PlanSaveAsync(_moduleEntry!.Session, true).ConfigureAwait(true)
+                : SavePlan.Nothing;
+            if (modulePlan == SavePlan.Cancel) return false;
+            if (modulePlan == SavePlan.Reload)
+            {
+                if (!ApplySavePlan(_moduleEntry!.Session, modulePlan).Success) return false;
+                _moduleEntry.MarkSaved();
+                modulePlan = SavePlan.Nothing;
+            }
+
             // All files are staged before any replaces its file. An area is one logical document
             // split across three files, and writing them in sequence meant a locked or unwritable .git
             // left the .are already replaced on disk and its history marked clean - a half-saved area
             // that no later Discard or Close could take back.
-            if (!TryStageWrites(arePlan, gitPlan, gicPlan, out var staged))
+            if (!TryStageWrites(arePlan, gitPlan, gicPlan, modulePlan, out var staged))
                 return false;
 
             // A Reload parses external bytes and can fail - the file may be malformed or gone by
@@ -2011,9 +2078,14 @@ namespace SWLOR.Toolset.Editors
                 AfterHistoryChange();
             }
 
-            if (!CommitStagedWrites(staged, arePlan, gitPlan, gicPlan))
+            if (!CommitStagedWrites(staged, arePlan, gitPlan, gicPlan, modulePlan))
                 return false;
 
+            if (modulePlan == SavePlan.Write)
+            {
+                if (!ApplySavePlan(_moduleEntry!.Session, modulePlan).Success) return false;
+                _moduleEntry.MarkSaved();
+            }
             var areResult = ApplySavePlan(_areSession, arePlan);
             if (!areResult.Success)
                 return false;
@@ -2120,6 +2192,7 @@ namespace SWLOR.Toolset.Editors
             SavePlan arePlan,
             SavePlan gitPlan,
             SavePlan gicPlan,
+            SavePlan modulePlan,
             out List<AtomicFileGroupWriter.StagedWrite> staged)
         {
             staged = new List<AtomicFileGroupWriter.StagedWrite>(3);
@@ -2128,7 +2201,8 @@ namespace SWLOR.Toolset.Editors
                      {
                          (_areSession, arePlan),
                          (_gitSession, gitPlan),
-                         (_gicSession, gicPlan)
+                         (_gicSession, gicPlan),
+                         (_moduleEntry?.Session ?? _areSession, modulePlan)
                      })
             {
                 if (plan != SavePlan.Write)
@@ -2160,7 +2234,8 @@ namespace SWLOR.Toolset.Editors
             List<AtomicFileGroupWriter.StagedWrite> staged,
             SavePlan arePlan,
             SavePlan gitPlan,
-            SavePlan gicPlan)
+            SavePlan gicPlan,
+            SavePlan modulePlan)
         {
             try
             {
@@ -2178,7 +2253,8 @@ namespace SWLOR.Toolset.Editors
                          {
                              (_areSession, arePlan, false),
                              (_gitSession, gitPlan, true),
-                             (_gicSession, gicPlan, true)
+                             (_gicSession, gicPlan, true),
+                             (_moduleEntry?.Session ?? _areSession, modulePlan, false)
                          })
                 {
                     var mustRecheck = plan == SavePlan.Write ||
@@ -2244,6 +2320,7 @@ namespace SWLOR.Toolset.Editors
             var reselect = CaptureReselectKey();
 
             _documentEdits.UndoArea();
+            _moduleEntry?.NotifyChanged();
             _tileEditor?.InvalidatePlacementValidity();
             RefreshAreaPropertyFields();
 
@@ -2261,6 +2338,7 @@ namespace SWLOR.Toolset.Editors
             var reselect = CaptureReselectKey();
 
             _documentEdits.RedoArea();
+            _moduleEntry?.NotifyChanged();
             _tileEditor?.InvalidatePlacementValidity();
             RefreshAreaPropertyFields();
 
@@ -2396,6 +2474,7 @@ namespace SWLOR.Toolset.Editors
                 _mutationLock.Changed -= OnMutationLockChanged;
             foreach (var section in Sections)
                 section.Dispose();
+            if (_moduleEntry != null) _moduleEntry.Changed -= OnModuleEntryChanged;
             _documentEdits.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();
@@ -2411,6 +2490,11 @@ namespace SWLOR.Toolset.Editors
                 if (!approved)
                     return;
 
+                if (choice == UnsavedChangesChoice.Discard && _moduleEntry != null)
+                {
+                    _areSession.RestoreSaved();
+                    _moduleEntry.NotifyChanged();
+                }
                 _closeApproved = true;
                 CloseRequested?.Invoke(this);
             }

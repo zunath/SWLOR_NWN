@@ -63,11 +63,16 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 HasPartnerTrait = Perk.GetPerkLevel(performer, isDancer ? PerkType.PartnerDance : PerkType.Duet) > 0,
                 HasStandingOvation = isDancer && Perk.GetPerkLevel(performer, PerkType.StandingOvation) > 0,
                 HasRequiem = !isDancer && Perk.GetPerkLevel(performer, PerkType.Requiem) > 0,
-                Routine = isDancer ? session.Routine : PerformanceRoutineType.CantinaShuffle,
+                // A routine or set perk refunded mid-performance stops granting its bonus at the next tick.
+                Routine = isDancer && Performance.IsRoutineUnlocked(performer, session.Routine)
+                    ? session.Routine
+                    : PerformanceRoutineType.CantinaShuffle,
                 SecondRoutine = isDancer && hasCapstone && Performance.IsRoutineUnlocked(performer, preference.SecondRoutine)
                     ? preference.SecondRoutine
                     : PerformanceRoutineType.CantinaShuffle,
-                Set = isDancer ? PerformanceSetType.CantinaStandards : session.Set,
+                Set = !isDancer && Performance.IsSetUnlocked(performer, session.Set)
+                    ? session.Set
+                    : PerformanceSetType.CantinaStandards,
                 SecondSet = !isDancer && hasCapstone && Performance.IsSetUnlocked(performer, preference.SecondSet)
                     ? preference.SecondSet
                     : PerformanceSetType.CantinaStandards,

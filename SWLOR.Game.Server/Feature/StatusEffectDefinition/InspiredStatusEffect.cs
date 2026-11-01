@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerformanceService;
@@ -102,10 +103,31 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
+            TryStandingOvation(defender, GetCurrentHitPoints(defender), damage);
+        }
+
+        /// <summary>
+        /// Damage over time, triggered damage, Burn and Poison skip the pre-damage callback, so the damaged event checks
+        /// the same threshold after the fact. A hit the callback already answered has started the shared cooldown.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+        public static void CheckStandingOvationAfterDamage()
+        {
+            var player = OBJECT_SELF;
+            var damage = GetTotalDamageDealt();
+            if (damage <= 0 || GetCurrentHitPoints(player) <= 0)
+                return;
+
+            StatusEffect.GetStatusEffect<InspiredStatusEffect>(player)?
+                .TryStandingOvation(player, GetCurrentHitPoints(player) + damage, damage);
+        }
+
+        private void TryStandingOvation(uint defender, int hitPointsBeforeDamage, int damage)
+        {
             if (!Data.StandingOvation ||
                 !GetIsObjectValid(defender) ||
                 !PerformanceAudienceRules.StandingOvationTriggers(
-                    GetCurrentHitPoints(defender), damage, GetMaxHitPoints(defender)))
+                    hitPointsBeforeDamage, damage, GetMaxHitPoints(defender)))
                 return;
 
             var now = DateTime.UtcNow;

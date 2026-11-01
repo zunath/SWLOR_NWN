@@ -32,6 +32,17 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 OnAudienceTick, TimeSpan.FromSeconds(PerformanceAudienceRules.TickSeconds));
         }
 
+        /// <summary>
+        /// Gives a leaving watcher back the Inspired time frozen while they watched. Disconnect-before runs ahead of
+        /// module exit, where StatusEffect stores the live countdown that is reconciled when the player returns.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnClientDisconnectBefore)]
+        public static void RestoreFrozenInspiredOnDisconnect()
+        {
+            if (_states.TryGetValue(OBJECT_SELF, out var state))
+                StopWatching(state);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ForgetExitingPlayer()
         {

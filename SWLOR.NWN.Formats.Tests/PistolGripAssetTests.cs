@@ -39,6 +39,7 @@ public sealed class PistolGripAssetTests
             Assert.That(meshes.Any(mesh => mesh.Vertices.Length > 0 && mesh.Faces.Length > 0), Is.True,
                 $"Part #{part} must contain rendered vertices and faces.");
             var worldVertices = new List<Vector3>();
+            var hasVisibleTriangle = false;
             foreach (var mesh in meshes)
             {
                 Assert.That(mesh.Vertices.All(Finite), Is.True, $"Part #{part}/{mesh.Name} positions");
@@ -50,9 +51,15 @@ public sealed class PistolGripAssetTests
                 Assert.That(mesh.TextureCoordinates.All(uv => float.IsFinite(uv.X) && float.IsFinite(uv.Y)),
                     Is.True, $"Part #{part}/{mesh.Name} UVs");
                 foreach (var face in mesh.Faces)
+                {
                     Assert.That(new[] { face.VertexIndex0, face.VertexIndex1, face.VertexIndex2 },
                         Is.All.InRange(0, mesh.Vertices.Length - 1), $"Part #{part}/{mesh.Name} face");
+                    var edge1 = transformed[face.VertexIndex1] - transformed[face.VertexIndex0];
+                    var edge2 = transformed[face.VertexIndex2] - transformed[face.VertexIndex0];
+                    hasVisibleTriangle |= Vector3.Cross(edge1, edge2).LengthSquared() > 0;
+                }
             }
+            Assert.That(hasVisibleTriangle, Is.True, $"Part #{part} must contain a nonzero-area rendered triangle.");
             Assert.That(worldVertices.Any(vertex => vertex != worldVertices[0]), Is.True,
                 $"Part #{part} transforms must preserve visible geometry.");
         }

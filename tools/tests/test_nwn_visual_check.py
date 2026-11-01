@@ -9,7 +9,6 @@ import socket
 import subprocess
 import sys
 import tempfile
-import threading
 import unittest
 from unittest.mock import patch, Mock
 
@@ -172,6 +171,31 @@ class ProfileBoundaryTests(unittest.TestCase):
             self.assertEqual(captured.getpixel((1000, 360)), (255, 255, 255))
         self.assertFalse(native.exists())
 
+    def test_native_screenshot_propagates_nonsharing_delete_error(self):
+        from PIL import Image
+
+        frames = NativeFrames.__new__(NativeFrames)
+        frames.directory = self.owned/'screenshots'
+        frames.window = 1
+        frames.frame = None
+        frames.user = Mock()
+        native = frames.directory/'NWN0000.tga'
+
+        def screenshot(_, message, *_args):
+            if message == 0x101:
+                Image.new('RGB', (1280, 720), 'green').save(native)
+            return True
+
+        frames.user.PostMessageW.side_effect = screenshot
+        error = PermissionError('Access denied')
+        error.winerror = 5
+        with patch.object(Path, 'unlink', side_effect=error):
+            with self.assertRaises(PermissionError) as caught:
+                frames.wait_for_fresh()
+        self.assertIs(caught.exception, error)
+        self.assertIsNone(frames.frame)
+        self.assertEqual(frames.user.PostMessageW.call_count, 2)
+
     @unittest.skipUnless(sys.platform=='win32','Windows screenshot writer sharing semantics')
     def test_native_screenshot_waits_for_writer_delete_lock(self):
         from PIL import Image
@@ -188,7 +212,6 @@ class ProfileBoundaryTests(unittest.TestCase):
         kernel.CreateFileW.restype=ctypes.c_void_p
         kernel.CloseHandle.argtypes=[ctypes.c_void_p]
         handles=[]
-        timers=[]
         requests=[]
 
         def release(handle):
@@ -209,9 +232,6 @@ class ProfileBoundaryTests(unittest.TestCase):
                 self.assertNotIn(handle[0],(None,ctypes.c_void_p(-1).value))
                 handles.append(handle)
                 requests.append(target)
-                timer=threading.Timer(.15,release,args=(handle,))
-                timers.append(timer)
-                timer.start()
             return True
 
         frames.user.PostMessageW.side_effect=screenshot
@@ -225,16 +245,13 @@ class ProfileBoundaryTests(unittest.TestCase):
             self.assertTrue(native.exists())
             # The writer closing can update its mtime after our next request.
             # This previously consumed raw image must never become a new frame.
-            for timer in timers:
-                timer.join()
+            release(handles[0])
             second=self.owned/'second-writer-lock.png'
             frames.save(second)
             with Image.open(second) as captured:
                 self.assertEqual(captured.getpixel((100,360)),(0,128,0))
             self.assertEqual(frames.user.PostMessageW.call_count,4)
         finally:
-            for timer in timers:
-                timer.join()
             for handle in handles:
                 release(handle)
 

@@ -63,17 +63,17 @@ class NativeFrames:
                         if image.size != (1280, 720):
                             raise RuntimeError('Native screenshot is not 1280x720')
                         frame = image.convert('RGB')
-                    try:
-                        path.unlink()
-                    except PermissionError as error:
-                        if getattr(error, 'winerror', None) != 32:
-                            raise
-                        # A complete decoded frame is valid while its writer still
-                        # denies deletion. Teardown removes this owned raw file.
-                        # Ignore later close-time mtime changes to this same frame.
-                        consumed.add(path)
                 except OSError:
                     continue  # The client may still be writing this frame.
+                try:
+                    path.unlink()
+                except PermissionError as error:
+                    if getattr(error, 'winerror', None) != 32:
+                        raise
+                    # A complete decoded frame is valid while its writer still
+                    # denies deletion. Teardown removes this owned raw file.
+                    # Ignore later close-time mtime changes to this same frame.
+                    consumed.add(path)
                 self.frame = frame
                 return True
             time.sleep(.025)

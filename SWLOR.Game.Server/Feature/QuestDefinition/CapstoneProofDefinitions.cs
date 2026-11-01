@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
@@ -60,8 +61,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 enemyStatusEffects: new[] { typeof(CoveringStrikeStatusEffect) }),
 
             // Vibroknife
-            new CapstoneProofDefinition("viral_cascade", "while your venom festers in them",
-                enemyStatusEffects: new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }),
+            new CapstoneProofDefinition("viral_cascade", "after applying Venom with Virulent Blade or building Infection on them",
+                enemyStatusEffects: new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
+                enemyStatusEffectFilter: (type, ability) => type != typeof(VenomStatusEffect) || ability?.SkillType == SkillType.Vibroknife),
             new CapstoneProofDefinition("systemic_shutdown", "after exposing them with Crippling Slice or dropping them with Backstab",
                 enemyStatusEffects: new[] { typeof(ExposedStatusEffect), typeof(KnockdownStatusEffect) }),
 
@@ -106,12 +108,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             // Spear
             new CapstoneProofDefinition("forcebane", "after clouding them with Disabling Strike or Disruption Field",
                 enemyStatusEffects: new[] { typeof(FoggyMindStatusEffect), typeof(ForceDisruptionStatusEffect) }),
-            new CapstoneProofDefinition("crippling_defense", "with your heaviest spear techniques",
+            new CapstoneProofDefinition("crippling_defense", "with Disabling Strike, Disruption Field, Hampering Barrage, Interruption Strike, Sweeping Flank or Vigor Thrust",
                 abilityHits: new[]
                 {
-                    FeatType.DisablingStrike3, FeatType.DisablingStrike4, FeatType.DisruptionField2,
-                    FeatType.HamperingBarrage2, FeatType.InterruptionStrike2, FeatType.InterruptionStrike3,
-                    FeatType.SweepingFlank2, FeatType.SweepingFlank3, FeatType.VigorThrust3, FeatType.VigorThrust4,
+                    FeatType.DisablingStrike1, FeatType.DisablingStrike2, FeatType.DisablingStrike3, FeatType.DisablingStrike4,
+                    FeatType.DisruptionField1, FeatType.DisruptionField2,
+                    FeatType.HamperingBarrage1, FeatType.HamperingBarrage2,
+                    FeatType.InterruptionStrike1, FeatType.InterruptionStrike2, FeatType.InterruptionStrike3,
+                    FeatType.SweepingFlank1, FeatType.SweepingFlank2, FeatType.SweepingFlank3,
+                    FeatType.VigorThrust1, FeatType.VigorThrust2, FeatType.VigorThrust3, FeatType.VigorThrust4,
                 }),
 
             // Staff
@@ -126,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 enemyStatusEffects: new[] { typeof(DazedStatusEffect), typeof(KnockdownStatusEffect), typeof(DisorientedStatusEffect) }),
 
             // Force
-            new CapstoneProofDefinition("last_stand_of_the_light", "while you shield an ally with Force Intercept",
+            new CapstoneProofDefinition("last_stand_of_the_light", "after using Force Intercept on an ally, or granting Reflective Barrier or Courageous Resolve to yourself or an ally",
                 supportStatusEffects: new[]
                 {
                     typeof(ForceIntercept1StatusEffect), typeof(ReflectiveBarrier1StatusEffect), typeof(CourageousResolve1StatusEffect),
@@ -191,53 +196,21 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 supportStatusEffects: new[]
                 {
                     typeof(CleanseOrder1StatusEffect), typeof(CleanseOrder2StatusEffect),
-                    typeof(RousingShout1StatusEffect), typeof(RousingShout2StatusEffect), typeof(RousingShout3StatusEffect),
-                }),
+                },
+                supportAbilityHits: new[] { FeatType.RousingShout1, FeatType.RousingShout2, FeatType.RousingShout3 }),
             new CapstoneProofDefinition("decisive_command", "while your Press the Attack drives your party",
                 supportStatusEffects: new[]
                 {
                     typeof(PressTheAttack1StatusEffect), typeof(PressTheAttack2StatusEffect), typeof(PressTheAttack3StatusEffect),
                 }),
 
-            // Beast Mastery: the beast's actions prove the mechanic for its master.
-            new CapstoneProofDefinition("primal_overrun", "with your beast's Crushing Slam or Rampage",
-                abilityHits: new[] { FeatType.CrushingSlam1, FeatType.CrushingSlam2, FeatType.CrushingSlam3, FeatType.Rampage1, FeatType.Rampage2 }),
-            new CapstoneProofDefinition("untouchable_instinct", "with your beast's Assault or Distracting Feint",
-                abilityHits: new[]
-                {
-                    FeatType.Assault1, FeatType.Assault2, FeatType.Assault3,
-                    FeatType.DistractingFeint1, FeatType.DistractingFeint2, FeatType.DistractingFeint3,
-                },
-                enemyStatusEffects: new[]
-                {
-                    typeof(DistractingFeint1StatusEffect), typeof(DistractingFeint2StatusEffect), typeof(DistractingFeint3StatusEffect),
-                }),
-            new CapstoneProofDefinition("force_bonded_beast", "while your beast's Warding Howl shields you, or with its Force Touch",
-                abilityHits: new[] { FeatType.ForceTouch1, FeatType.ForceTouch2, FeatType.ForceTouch3 },
-                supportStatusEffects: new[]
-                {
-                    typeof(WardingHowl1StatusEffect), typeof(WardingHowl2StatusEffect), typeof(WardingHowl3StatusEffect),
-                }),
-            new CapstoneProofDefinition("apex_bite", "with your beast's Bite, Rending Claw, Pounce or prey strikes",
-                abilityHits: new[]
-                {
-                    FeatType.Bite1, FeatType.Bite2, FeatType.Bite3,
-                    FeatType.RendingClaw1, FeatType.RendingClaw2, FeatType.RendingClaw3,
-                    FeatType.Pounce1, FeatType.Pounce2, FeatType.ExposePrey1, FeatType.ExecutePrey1,
-                }),
-            new CapstoneProofDefinition("unbreakable_beast", "while your beast intercepts for you or holds Guarding Roar",
-                supportStatusEffects: new[]
-                {
-                    typeof(Intercept1StatusEffect), typeof(Intercept2StatusEffect),
-                    typeof(GuardingRoar1SelfStatusEffect), typeof(GuardingRoar2SelfStatusEffect), typeof(GuardingRoar3SelfStatusEffect),
-                }),
-            new CapstoneProofDefinition("alpha_rhythm", "with your beast's Claw, Guarded Bite or Coordinated Strike",
-                abilityHits: new[]
-                {
-                    FeatType.Claw1, FeatType.Claw2, FeatType.Claw3,
-                    FeatType.GuardedBite1, FeatType.GuardedBite2, FeatType.GuardedBite3,
-                    FeatType.CoordinatedStrike1, FeatType.CoordinatedStrike2,
-                }),
+            // Any owned beast can prove these lines through its normal attacks or damaging abilities.
+            new CapstoneProofDefinition("primal_overrun", "after your beast hits them", countsOwnedBeastDamage: true),
+            new CapstoneProofDefinition("untouchable_instinct", "after your beast hits them", countsOwnedBeastDamage: true),
+            new CapstoneProofDefinition("force_bonded_beast", "after your beast hits them", countsOwnedBeastDamage: true),
+            new CapstoneProofDefinition("apex_bite", "after your beast hits them", countsOwnedBeastDamage: true),
+            new CapstoneProofDefinition("unbreakable_beast", "after your beast hits them", countsOwnedBeastDamage: true),
+            new CapstoneProofDefinition("alpha_rhythm", "after your beast hits them", countsOwnedBeastDamage: true),
         };
     }
 }

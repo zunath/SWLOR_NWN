@@ -3,6 +3,9 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -39,6 +42,81 @@ public static class CapstoneProofEngineTests
         ctx.Assert(!CapstoneProof.HasProof(player, proven, "kill_box"), "Bleed does not prove another line's mechanic.");
         await KillAsync(ctx, player, proven);
         ctx.AssertEqual(5, Remaining(fixture), "The proven kill of a tier enemy counts.");
+    }
+
+    [EngineTest("Rousing Shout shielding at full health proves Hold the Line", Category = "CapstoneProof", TimeoutSeconds = 60f)]
+    public static async Task RousingShoutAtFullHealthCounts(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
+        fixture.Update(record => record.Skills[SkillType.Leadership].Rank = 50);
+        await ctx.ExecuteInCreatureContextAsync(player,
+            () => ctx.Assert(Quest.AcceptQuest(player, GetModule(), "hold_the_line_foundation"), "The quest is accepted."));
+        var enemy = ctx.SpawnCreature("cp_holdline_ad", 2f);
+        ctx.MakeHostile(enemy);
+        SetPlotFlag(enemy, false);
+        ctx.Assert(!CapstoneProof.HasProof(player, enemy, "hold_the_line"), "No support has been used yet.");
+
+        var ability = Ability.GetAbilityDetail(FeatType.RousingShout1);
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            Ability.BeginAbilityImpact(player, ability);
+            try { ability.ImpactAction(player, player, 1, GetLocation(player)); }
+            finally { Ability.EndAbilityImpact(player); }
+        });
+        ctx.Assert(!StatusEffect.HasEffect(typeof(RousingShout1StatusEffect), player), "Full-health shielding has no rescue rider.");
+        ctx.Assert(CapstoneProof.HasProof(player, enemy, "hold_the_line"), "The shield itself proves the support action.");
+        await KillAsync(ctx, player, enemy);
+        var record = JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(fixture.Id));
+        ctx.AssertEqual(5, record.Quests["hold_the_line_foundation"].KillProgresses[NPCGroupType.MonCala_WardOrderlys],
+            "A kill following ordinary shielding advances the quest.");
+    }
+
+    [EngineTest("Viral Cascade rejects item Venom and accepts Vibroknife Venom", Category = "CapstoneProof", TimeoutSeconds = 60f)]
+    public static async Task VenomRequiresVibroknifeAbility(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
+        var enemy = ctx.SpawnCreature("cp_vitrupt_ad", 2f);
+        ctx.MakeHostile(enemy);
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Unattributed Venom applies.");
+            ctx.Assert(!CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Item Venom alone does not prove the skill.");
+            var ability = Ability.GetAbilityDetail(FeatType.VirulentBlade1);
+            Ability.BeginAbilityImpact(player, ability);
+            try
+            {
+                ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Vibroknife Venom applies.");
+            }
+            finally { Ability.EndAbilityImpact(player); }
+        });
+        ctx.Assert(CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Venom from the Vibroknife ability proves the skill.");
+    }
+
+    [EngineTest("Any owned beast can prove all six Beast Mastery lines", Category = "CapstoneProof", TimeoutSeconds = 60f)]
+    public static async Task OwnedBeastDamageProvesEveryLine(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        using var otherOwner = await PlayerAbilityFixture.CreateAsync(ctx, 6f);
+        var beast = ctx.SpawnCreature("nw_rat001", 1f);
+        var enemy = SpawnTierAdept(ctx);
+        await ctx.DelaySecondsAsync(1f);
+        BeastMastery.SetBeastType(beast, BeastType.Womprat);
+        await ctx.ExecuteInCreatureContextAsync(fixture.Creature, () => AddHenchman(fixture.Creature, beast));
+        ctx.Assert(BeastMastery.IsPlayerBeast(beast), "The beast is owned by the player.");
+        var keys = new[] { "primal_overrun", "untouchable_instinct", "force_bonded_beast", "apex_bite", "unbreakable_beast", "alpha_rhythm" };
+        await ctx.ExecuteInCreatureContextAsync(fixture.Creature, () =>
+            Combat.ApplyDamageDealtEffects(fixture.Creature, enemy, 1, SkillType.Vibroblade, CombatDamageType.Physical));
+        foreach (var key in keys)
+            ctx.Assert(!CapstoneProof.HasProof(fixture.Creature, enemy, key), "The master's own hit does not prove " + key);
+        await ctx.ExecuteInCreatureContextAsync(beast, () =>
+            Combat.ApplyDamageDealtEffects(beast, enemy, 1, SkillType.BeastMastery, CombatDamageType.Physical));
+        foreach (var key in keys)
+        {
+            ctx.Assert(CapstoneProof.HasProof(fixture.Creature, enemy, key), "The beast's hit proves " + key);
+            ctx.Assert(!CapstoneProof.HasProof(otherOwner.Creature, enemy, key), "Another player's beast does not prove " + key);
+        }
     }
 
     private static uint SpawnTierAdept(EngineTestContext ctx)

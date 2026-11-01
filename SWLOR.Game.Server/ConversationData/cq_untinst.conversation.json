@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You stopped when I said stop. Good ear, or good luck. The Grotto Apex Den is crawling with crystal spiders. Handlers bred them there years back to strike from cover. Handlers are gone. Spiders aren't. The Young Crystal Spiders hunt in noise, six together, loud enough to hide each other's legs. They hold the chambers nearest the way in. Go into the den on Dathomir. Put the six down. Any Young Crystal Spider will do, they're all the same brood. But it only counts if your beast did it, with Assault or a Distracting Feint. Kills your beast never touched teach you nothing. Bring back the Untouchable Instinct Grotto Track Slate from their webs.",
+          "Text": "You stopped when I said stop. Good ear, or good luck. The Grotto Apex Den is crawling with crystal spiders. Handlers bred them there years back to strike from cover. Handlers are gone. Spiders aren't. The Young Crystal Spiders hunt in noise, six together, loud enough to hide each other's legs. They hold the chambers nearest the way in. Go into the den on Dathomir. Put the six down. Any Young Crystal Spider will do, they're all the same brood. But it only counts if your beast did it, with a normal attack or damaging ability. Kills your beast never touched teach you nothing. Bring back the Untouchable Instinct Grotto Track Slate from their webs. Any beast you own can do this, whatever its role or level. A normal attack is enough; the killing blow can come from you or your party.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Young Crystal Spiders, by your beast's Assault or Distracting Feint. One slate. Still out there.",
+          "Text": "Six Young Crystal Spiders, after a hit from your own beast. One slate. Still out there.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Goad-Scarred Crystal Spiders, the older ones deeper in, don't hunt loud. They wait in the crystal. Long enough to make you think the den's gone empty, then close from every side at once. Go back into the Grotto Apex Den. Put five down, with your beast's Assault or Distracting Feint on each; any Goad-Scarred Crystal Spider counts. Bring me the Untouchable Instinct Resonant Fang Charm. The handlers strung it on one of them. Still there.",
+          "Text": "The Goad-Scarred Crystal Spiders, the older ones deeper in, don't hunt loud. They wait in the crystal. Long enough to make you think the den's gone empty, then close from every side at once. Go back into the Grotto Apex Den. Put five down, after your own beast has struck each one; any Goad-Scarred Crystal Spider counts. Bring me the Untouchable Instinct Resonant Fang Charm. The handlers strung it on one of them. Still there.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left, the Den Elder Crystal Spiders. Oldest spiders in the den, the first the handlers bred, in the deepest part of it. They hunt in a ring, always moving, always covering each other's gaps. Bring your two back in; four of them moving is worse than one lizard. Put all four down, with your beast's Assault or Distracting Feint on each; any Den Elder Crystal Spider counts. Bring me the Untouchable Instinct Den-Mother's Fang Token from their nest.",
+          "Text": "Four left, the Den Elder Crystal Spiders. Oldest spiders in the den, the first the handlers bred, in the deepest part of it. They hunt in a ring, always moving, always covering each other's gaps. Bring your two back in; four of them moving is worse than one lizard. Put all four down, after your own beast has struck each one; any Den Elder Crystal Spider counts. Bring me the Untouchable Instinct Den-Mother's Fang Token from their nest.",
           "Style": 0,
           "Color": null
         }

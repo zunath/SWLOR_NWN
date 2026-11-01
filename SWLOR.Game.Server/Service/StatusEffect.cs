@@ -544,7 +544,8 @@ namespace SWLOR.Game.Server.Service
         private static bool RecordCapstoneProof(bool applied, IStatusEffect statusEffect, uint source, uint creature)
         {
             if (applied)
-                CapstoneProof.RecordStatusEffect(source, creature, statusEffect.GetType());
+                CapstoneProof.RecordStatusEffect(source, creature, statusEffect.GetType(),
+                    statusEffect.OriginatingAbility ?? Ability.GetActiveAbilityImpactSummary(source)?.Ability);
 
             return applied;
         }

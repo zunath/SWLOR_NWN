@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Begin Mikka Varn's trials to unlock Viral Cascade. Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Holdout Recruits, the Annex Holdouts who hold the rooms nearest the entrance, and secure the Viral Cascade Veles Drill Ledger. Any Holdout Recruit counts, but a kill only counts while your venom festers in them.")
+                    "Begin Mikka Varn's trials to unlock Viral Cascade. Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Holdout Recruits, the Annex Holdouts who hold the rooms nearest the entrance, and secure the Viral Cascade Veles Drill Ledger. Any Holdout Recruit counts, but a kill only counts after applying Venom with Virulent Blade or building Infection on them; a weapon coating alone does not count.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutRecruits, "viral_cascade", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureVelesDrillLedger)
 
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Holdout Sergeants, the Annex Holdouts who hold the deeper rooms of the Veles Militia Annex on Viscara, and secure the Viral Cascade Militia Range Relay. Any Holdout Sergeant counts, but a kill only counts while your venom festers in them.")
+                    "Defeat five Holdout Sergeants, the Annex Holdouts who hold the deeper rooms of the Veles Militia Annex on Viscara, and secure the Viral Cascade Militia Range Relay. Any Holdout Sergeant counts, but a kill only counts after applying Venom with Virulent Blade or building Infection on them; a weapon coating alone does not count.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutSergeants, "viral_cascade", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureMilitiaRangeRelay)
 
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four Holdout Honor Guards, the Annex Holdouts who guard the deepest part of the Veles Militia Annex on Viscara, and secure the Viral Cascade Captain's Challenge Chit. Any Holdout Honor Guard counts, but a kill only counts while your venom festers in them.")
+                    "Defeat four Holdout Honor Guards, the Annex Holdouts who guard the deepest part of the Veles Militia Annex on Viscara, and secure the Viral Cascade Captain's Challenge Chit. Any Holdout Honor Guard counts, but a kill only counts after applying Venom with Virulent Blade or building Infection on them; a weapon coating alone does not count.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutHonorGuards, "viral_cascade", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureCaptainsChallengeChit)
 

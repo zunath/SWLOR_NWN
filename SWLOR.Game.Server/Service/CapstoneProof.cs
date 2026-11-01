@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<Type, List<CapstoneProofDefinition>> _byEnemyStatus = new();
         private static readonly Dictionary<Type, List<CapstoneProofDefinition>> _bySupportStatus = new();
         private static readonly Dictionary<FeatType, List<CapstoneProofDefinition>> _byAbility = new();
+        private static readonly Dictionary<FeatType, List<CapstoneProofDefinition>> _bySupportAbility = new();
         private static Dictionary<AbilityDetail, FeatType> _abilityFeats;
 
         static CapstoneProof()
@@ -41,6 +42,8 @@ namespace SWLOR.Game.Server.Service
                 Add(_bySupportStatus, type, proof);
             foreach (var feat in proof.AbilityHits)
                 Add(_byAbility, feat, proof);
+            foreach (var feat in proof.SupportAbilityHits)
+                Add(_bySupportAbility, feat, proof);
             _abilityFeats = null;
         }
 
@@ -54,7 +57,7 @@ namespace SWLOR.Game.Server.Service
 
         public static IReadOnlyCollection<CapstoneProofDefinition> GetProofs() => _proofs.Values;
 
-        public static void RecordStatusEffect(uint source, uint target, Type statusEffectType)
+        public static void RecordStatusEffect(uint source, uint target, Type statusEffectType, AbilityDetail ability = null)
         {
             if (statusEffectType == null)
                 return;
@@ -71,7 +74,8 @@ namespace SWLOR.Game.Server.Service
             if (hasEnemyProof && IsEnemy(player, target))
             {
                 foreach (var proof in enemyProofs)
-                    MarkEnemy(player, target, proof);
+                    if (proof.CountsEnemyStatusEffect(statusEffectType, ability))
+                        MarkEnemy(player, target, proof);
             }
 
             if (hasSupportProof && IsAlly(player, target))
@@ -98,6 +102,33 @@ namespace SWLOR.Game.Server.Service
                 MarkEnemy(player, target, proof);
         }
 
+        public static void RecordSupportAbilityImpact(uint source, uint target, AbilityDetail ability)
+        {
+            if (ability == null || !GetAbilityFeats().TryGetValue(ability, out var feat) ||
+                !_bySupportAbility.TryGetValue(feat, out var proofs))
+                return;
+
+            var player = ResolvePlayer(source);
+            if (!GetIsObjectValid(player) || !GetIsObjectValid(target) || !IsAlly(player, target))
+                return;
+
+            foreach (var proof in proofs)
+                MarkSupport(player, proof);
+        }
+
+        public static void RecordBeastDamage(uint beast, uint target)
+        {
+            if (!GetIsObjectValid(beast) || !BeastMastery.IsPlayerBeast(beast))
+                return;
+
+            var player = ResolvePlayer(beast);
+            if (!GetIsObjectValid(player) || !IsEnemy(player, target))
+                return;
+
+            foreach (var proof in _proofs.Values.Where(proof => proof.CountsOwnedBeastDamage))
+                MarkEnemy(player, target, proof);
+        }
+
         /// <summary>
         /// Whether the player proved the mechanic on this enemy, or supported their party recently enough for a
         /// support proof.
@@ -108,7 +139,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalInt(enemy, EnemyProofKey(player, proof)) == 1)
                 return true;
 
-            if (proof.SupportStatusEffects.Count == 0)
+            if (proof.SupportStatusEffects.Count + proof.SupportAbilityHits.Count == 0)
                 return false;
 
             var stamp = GetLocalString(player, SupportProofPrefix + proof.Key);
@@ -165,7 +196,7 @@ namespace SWLOR.Game.Server.Service
                 return _abilityFeats;
 
             _abilityFeats = new Dictionary<AbilityDetail, FeatType>();
-            foreach (var feat in _byAbility.Keys.Where(Ability.IsFeatRegistered))
+            foreach (var feat in _byAbility.Keys.Concat(_bySupportAbility.Keys).Distinct().Where(Ability.IsFeatRegistered))
                 _abilityFeats[Ability.GetAbilityDetail(feat)] = feat;
 
             return _abilityFeats;

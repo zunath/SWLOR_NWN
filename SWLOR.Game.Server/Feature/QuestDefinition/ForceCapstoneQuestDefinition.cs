@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Seris Nahl gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Expedition Raiders, the thieves nearest the entrance, and recover the Last Stand of the Light Crypt Trial Tablet. Any Expedition Raider counts, whichever crew it rides with, but only kills made while you shield an ally with Force Intercept.")
+                    "Seris Nahl gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Expedition Raiders, the thieves nearest the entrance, and recover the Last Stand of the Light Crypt Trial Tablet. Any Expedition Raider counts, whichever crew it rides with, but only kills made within 30 seconds of using Force Intercept on an ally, or granting Reflective Barrier or Courageous Resolve to yourself or an ally. When alone, Courageous Resolve (Force 15) and a Sense power such as Mind Trick provide a route.")
                 .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionRaiders, "last_stand_of_the_light", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Expedition Marauders deeper in the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Ritual Focus Shard. Any Expedition Marauder counts, whichever crew it rides with, but only kills made while you shield an ally with Force Intercept.")
+                    "Defeat five Expedition Marauders deeper in the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Ritual Focus Shard. Any Expedition Marauder counts, whichever crew it rides with, but only kills made within 30 seconds of using Force Intercept on an ally, or granting Reflective Barrier or Courageous Resolve to yourself or an ally. When alone, Courageous Resolve (Force 15) and a Sense power such as Mind Trick provide a route.")
                 .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionMarauders, "last_stand_of_the_light", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightRitualFocusShard)
 
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four Expedition Reavers in the deepest part of the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Keeper's Rite Token. Any Expedition Reaver counts, whichever crew it rides with, but only kills made while you shield an ally with Force Intercept.")
+                    "Defeat four Expedition Reavers in the deepest part of the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Keeper's Rite Token. Any Expedition Reaver counts, whichever crew it rides with, but only kills made within 30 seconds of using Force Intercept on an ally, or granting Reflective Barrier or Courageous Resolve to yourself or an ally. When alone, Courageous Resolve (Force 15) and a Sense power such as Mind Trick provide a route.")
                 .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionReavers, "last_stand_of_the_light", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightKeepersRiteToken)
 

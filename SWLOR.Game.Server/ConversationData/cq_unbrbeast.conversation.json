@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Tarn Jungle Preserve's gone bad. Pit-breeders bought in, toughened young plated burrowers with beatings instead of trust, called it training, then ran when the beasts broke loose. The beasts stayed. I warded those pens once. Go in, on Dathomir. Put down six of the Young Plated Burrowers, the ones in the pens nearest the gate. Any Young Plated Burrower will do, the breeders beat them all the same. But it only counts if your beast was standing guard for you when it fell: your beast intercepting for you, or holding Guarding Roar, while your party puts them down. Bring back the Unbreakable Beast Tarn Hunt Tally the breeders kept score on. It's in their pen.",
+          "Text": "The Tarn Jungle Preserve's gone bad. Pit-breeders bought in, toughened young plated burrowers with beatings instead of trust, called it training, then ran when the beasts broke loose. The beasts stayed. I warded those pens once. Go in, on Dathomir. Put down six of the Young Plated Burrowers, the ones in the pens nearest the gate. Any Young Plated Burrower will do, the breeders beat them all the same. But your own beast has to hit each burrower before it falls. Bring back the Unbreakable Beast Tarn Hunt Tally the breeders kept score on. It's in their pen. Any beast you own can do this, whatever its role or level. A normal attack is enough; the killing blow can come from you or your party.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Pen-Scarred Plated Burrowers past the young ones, deeper in. The breeders moved on from beatings to something quieter, a scent dosed into the pens on purpose to keep them in constant pain. That's not toughening. That's cruelty with a schedule. Put the five down while your beast intercepts for you or holds Guarding Roar; any Pen-Scarred Plated Burrower counts while that guard is fresh. Bring me the Unbreakable Beast Beast-Pen Scent Vial from their pen.",
+          "Text": "Five Pen-Scarred Plated Burrowers past the young ones, deeper in. The breeders moved on from beatings to something quieter, a scent dosed into the pens on purpose to keep them in constant pain. That's not toughening. That's cruelty with a schedule. Put the five down after your own beast has struck each one; any Pen-Scarred Plated Burrower counts after your beast has hit it. Bring me the Unbreakable Beast Beast-Pen Scent Vial from their pen.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them hold the deepest pens now, the Elder Plated Burrowers. Oldest burrowers in the preserve, beaten longest, the ones that stopped feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down while your beast intercepts for you or holds Guarding Roar; any Elder Plated Burrower counts while that guard is fresh. Bring me the Unbreakable Beast Preserve Keeper's Token from their den.",
+          "Text": "Four of them hold the deepest pens now, the Elder Plated Burrowers. Oldest burrowers in the preserve, beaten longest, the ones that stopped feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down after your own beast has struck each one; any Elder Plated Burrower counts after your beast has hit it. Bring me the Unbreakable Beast Preserve Keeper's Token from their den.",
           "Style": 0,
           "Color": null
         }

@@ -410,7 +410,7 @@ public class CapstoneQuestDefinitionTests
         {
             var capstone = string.Concat(proof.Key.Split('_').Select(word => char.ToUpperInvariant(word[0]) + word[1..]));
             var names = proof.EnemyStatusEffects.Concat(proof.SupportStatusEffects).Select(type => type.Name)
-                .Concat(proof.AbilityHits.Select(feat => feat.ToString()));
+                .Concat(proof.AbilityHits.Concat(proof.SupportAbilityHits).Select(feat => feat.ToString()));
             names.Should().NotContain(name => name.StartsWith(capstone, StringComparison.OrdinalIgnoreCase),
                 $"proof '{proof.Key}' must not count its own capstone");
         }
@@ -419,22 +419,22 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void CapstoneProofs_CountEveryRankOfTheirAbilities()
     {
-        // Upgrading an ability removes its lower rank, so a proof that names one rank must name every rank players can
-        // own. Crippling Defense deliberately counts only its costliest techniques.
+        // Upgrading an ability removes its lower rank, so proofs must count every rank players can own.
         var abilitySources = string.Concat(Directory.GetFiles(
             Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition"), "*.cs",
             SearchOption.AllDirectories).Select(File.ReadAllText));
         var named = Regex.Matches(abilitySources, @"FeatType\.(\w+)").Select(match => match.Groups[1].Value).ToHashSet();
         var registered = Enum.GetValues<FeatType>().Where(feat => named.Contains(feat.ToString())).ToArray();
 
-        foreach (var proof in CapstoneProofDefinitions.All.Where(proof => proof.Key != "crippling_defense"))
+        foreach (var proof in CapstoneProofDefinitions.All)
         {
-            var families = proof.AbilityHits.Select(feat => Regex.Replace(feat.ToString(), "[0-9]+$", string.Empty)).Distinct();
+            var feats = proof.AbilityHits.Concat(proof.SupportAbilityHits).ToArray();
+            var families = feats.Select(feat => Regex.Replace(feat.ToString(), "[0-9]+$", string.Empty)).Distinct();
             foreach (var family in families)
             {
                 var ranks = registered.Where(feat => Regex.Replace(feat.ToString(), "[0-9]+$", string.Empty) == family &&
                                                      Regex.IsMatch(feat.ToString(), "[0-9]+$"));
-                proof.AbilityHits.Should().Contain(ranks, $"proof '{proof.Key}' must count every rank of {family}");
+                feats.Should().Contain(ranks, $"proof '{proof.Key}' must count every rank of {family}");
             }
         }
     }

@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Dax Rell gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Kill six Stable Brawlers, who work the floor nearest the Back Rooms door in the Smuggler's Moon Fight Club Backrooms, and secure the Crippling Defense Backroom Bout Ledger. Any Stable Brawler counts, whatever form it fights in, but only kills made with your heaviest spear techniques.")
+                    "Dax Rell gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Kill six Stable Brawlers, who work the floor nearest the Back Rooms door in the Smuggler's Moon Fight Club Backrooms, and secure the Crippling Defense Backroom Bout Ledger. Any Stable Brawler counts, whatever form it fights in, but only kills made after hitting the target with Disabling Strike, Disruption Field, Hampering Barrage, Interruption Strike, Sweeping Flank or Vigor Thrust (any rank).")
                 .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StableBrawlers, "crippling_defense", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseBackroomBoutLedger)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Stable Pit Fighters deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Ring Shock Regulator that runs their rigged rings. Any Stable Pit Fighter counts, whatever form it fights in, but only kills made with your heaviest spear techniques.")
+                    "Kill five Stable Pit Fighters deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Ring Shock Regulator that runs their rigged rings. Any Stable Pit Fighter counts, whatever form it fights in, but only kills made after hitting the target with Disabling Strike, Disruption Field, Hampering Barrage, Interruption Strike, Sweeping Flank or Vigor Thrust (any rank).")
                 .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StablePitFighters, "crippling_defense", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseRingShockRegulator)
 
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill four Stable Promoters in the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Promoter's Payout Chit. Any Stable Promoter counts, whatever form it fights in, but only kills made with your heaviest spear techniques.")
+                    "Kill four Stable Promoters in the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Promoter's Payout Chit. Any Stable Promoter counts, whatever form it fights in, but only kills made after hitting the target with Disabling Strike, Disruption Field, Hampering Barrage, Interruption Strike, Sweeping Flank or Vigor Thrust (any rank).")
                 .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StablePromoters, "crippling_defense", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefensePromotersPayoutChit)
 

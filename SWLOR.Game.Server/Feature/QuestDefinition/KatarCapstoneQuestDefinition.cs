@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Tressa Kade gave you the CZ-220 Breaker Yard Key. A wreck crew is drilling katar guard-work in the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Wreck Crew Scrappers, who hold the floor nearest the entrance, and recover the Adamantine Guard Breaker Yard Work Order. Any Scrapper counts, whichever katar line the crew drilled for, but only kills made while you guard an ally with Steel Shoulder or hold Whirling Guard or Iron Wall.")
+                    "Tressa Kade gave you the CZ-220 Breaker Yard Key. A wreck crew is drilling katar guard-work in the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Wreck Crew Scrappers, who hold the floor nearest the entrance, and recover the Adamantine Guard Breaker Yard Work Order. Any Scrapper counts, whichever katar line the crew drilled for, but only kills made within 30 seconds of using Steel Shoulder on an ally, Whirling Guard or Iron Wall Stance. Steel Shoulder cannot target you. When alone, use Whirling Guard (Katar 20) or activate Iron Wall Stance (Katar 40).")
                 .AddCapstoneProofKillObjective(NPCGroupType.CZ220_WreckCrewScrappers, "adamantine_guard", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardBreakerYardWorkOrder)
 
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew rerouted the junkline in the CZ-220 Breaker Yard on CZ-220. Defeat five Wreck Crew Riggers deeper inside and recover the Adamantine Guard Junkline Control Relay. Any Rigger counts, whichever katar line the crew drilled for, but only kills made while you guard an ally with Steel Shoulder or hold Whirling Guard or Iron Wall.")
+                    "The wreck crew rerouted the junkline in the CZ-220 Breaker Yard on CZ-220. Defeat five Wreck Crew Riggers deeper inside and recover the Adamantine Guard Junkline Control Relay. Any Rigger counts, whichever katar line the crew drilled for, but only kills made within 30 seconds of using Steel Shoulder on an ally, Whirling Guard or Iron Wall Stance. Steel Shoulder cannot target you. When alone, use Whirling Guard (Katar 20) or activate Iron Wall Stance (Katar 40).")
                 .AddCapstoneProofKillObjective(NPCGroupType.CZ220_WreckCrewRiggers, "adamantine_guard", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardJunklineControlRelay)
 
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew's inner circle holds the deepest part of the yard, the far south-east end of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat four Foreman's Hands and recover the Adamantine Guard Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made while you guard an ally with Steel Shoulder or hold Whirling Guard or Iron Wall.")
+                    "The wreck crew's inner circle holds the deepest part of the yard, the far south-east end of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat four Foreman's Hands and recover the Adamantine Guard Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made within 30 seconds of using Steel Shoulder on an ally, Whirling Guard or Iron Wall Stance. Steel Shoulder cannot target you. When alone, use Whirling Guard (Katar 20) or activate Iron Wall Stance (Katar 40).")
                 .AddCapstoneProofKillObjective(NPCGroupType.CZ220_ForemansHands, "adamantine_guard", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardForemansOverrideChip)
 

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There it is again, that wrong beat. The pit-breeders who bought into the Tarn Jungle Preserve drove its kinrath to a rhythm that isn't theirs, then ran when the packs turned. The kinrath still keep that beat. Go into the preserve on Dathomir. Put down six of the Young Kinrath, the pack nearest the gate. Any Young Kinrath will do, the whole preserve keeps the same beat, but it only counts if your beast's Claw, Guarded Bite or Coordinated Strike did the work; a kinrath your beast never struck is just noise. Bring me back the Alpha Rhythm Tarn Hunt Tally from their nest; it's got the true count scratched into it somewhere under all that noise.",
+          "Text": "There it is again, that wrong beat. The pit-breeders who bought into the Tarn Jungle Preserve drove its kinrath to a rhythm that isn't theirs, then ran when the packs turned. The kinrath still keep that beat. Go into the preserve on Dathomir. Put down six of the Young Kinrath, the pack nearest the gate. Any Young Kinrath will do, the whole preserve keeps the same beat, but it only counts after your own beast has hit the target. Any beast you own can do this, whatever its role or level. A normal attack is enough; the killing blow can come from you or your party; a kinrath your beast never struck is just noise. Bring me back the Alpha Rhythm Tarn Hunt Tally from their nest; it's got the true count scratched into it somewhere under all that noise.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Young Kinrath still keeping that wrong beat. Your beast's Claw, Guarded Bite or Coordinated Strike on every one. Tally's still with them.",
+          "Text": "Six Young Kinrath still keeping that wrong beat. Your own beast must hit every one before it falls. Tally's still with them.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Pen-Scarred Kinrath past the young ones, deeper in, still dosed on the scent the breeders poured into the pens to force a tempo they couldn't refuse. That's not leading a pack. That's playing a drum nobody agreed to march to. Go put the five down with your beast's Claw, Guarded Bite or Coordinated Strike; any Pen-Scarred Kinrath counts. Bring me the Alpha Rhythm Beast-Pen Scent Vial from their pen.",
+          "Text": "Five Pen-Scarred Kinrath past the young ones, deeper in, still dosed on the scent the breeders poured into the pens to force a tempo they couldn't refuse. That's not leading a pack. That's playing a drum nobody agreed to march to. Go put the five down after a hit from your own beast; any Pen-Scarred Kinrath counts. Bring me the Alpha Rhythm Beast-Pen Scent Vial from their pen.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left, the Elder Kinrath, in the deepest part of the preserve: the eldest kinrath, the first the breeders forced the wrong tempo into. Every pack since learned the beat from them. Bring your pack back in; four beats at once, out of sync with each other on purpose, is worse than one fast soloist. Put them down with your beast's Claw, Guarded Bite or Coordinated Strike; any Elder Kinrath counts. Bring me the Alpha Rhythm Preserve Keeper's Token from their nest.",
+          "Text": "Four left, the Elder Kinrath, in the deepest part of the preserve: the eldest kinrath, the first the breeders forced the wrong tempo into. Every pack since learned the beat from them. Bring your pack back in; four beats at once, out of sync with each other on purpose, is worse than one fast soloist. Put them down after a hit from your own beast; any Elder Kinrath counts. Bring me the Alpha Rhythm Preserve Keeper's Token from their nest.",
           "Style": 0,
           "Color": null
         }

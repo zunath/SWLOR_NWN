@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "So you did not flinch. Good, flinching gets you killed twice as fast in there. My clan lost the Grotto Apex Den three generations back to off-world handlers who broke every beast they touched instead of binding it. The handlers are bones now, but the shell-backs they bred still hold the den, bred to charge anything that moves. Go into the den on Dathomir, put down six of the Young Shell-Backs, the ones holding the chambers nearest the way in, and bring me the Primal Overrun Grotto Track Slate from their nest. Any Young Shell-Back will do, every shell-back in that den answers to the same handlers' lessons. But a kill only teaches you something if your beast made it with a Crushing Slam or a Rampage. Kills that never felt your beast's weight prove nothing. It still reads clan trails.",
+          "Text": "So you did not flinch. Good, flinching gets you killed twice as fast in there. My clan lost the Grotto Apex Den three generations back to off-world handlers who broke every beast they touched instead of binding it. The handlers are bones now, but the shell-backs they bred still hold the den, bred to charge anything that moves. Go into the den on Dathomir, put down six of the Young Shell-Backs, the ones holding the chambers nearest the way in, and bring me the Primal Overrun Grotto Track Slate from their nest. Any Young Shell-Back will do, every shell-back in that den answers to the same handlers' lessons. But a kill only teaches you something after your own beast has hit the target. Any beast you own can do this, whatever its role or level. A normal attack is enough; the killing blow can come from you or your party. Kills that never felt your beast's weight prove nothing. It still reads clan trails.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The den has not finished with you. Six Young Shell-Backs, felled by your beast's Crushing Slam or Rampage, and my slate out of their nest.",
+          "Text": "The den has not finished with you. Six Young Shell-Backs, struck by your own beast before they fall, and my slate out of their nest.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Slate came back clean. That is one debt closer to paid. The Goad-Scarred Shell-Backs, the older ones deeper in, are worse; the handlers drove them so long they charge before anything gives the word. Put down five of them in the Grotto Apex Den, again by your beast's Crushing Slam or Rampage; any Goad-Scarred Shell-Back counts. Then bring me the Primal Overrun Resonant Fang Charm. One of them still wears it on the collar the handlers bolted on.",
+          "Text": "Slate came back clean. That is one debt closer to paid. The Goad-Scarred Shell-Backs, the older ones deeper in, are worse; the handlers drove them so long they charge before anything gives the word. Put down five of them in the Grotto Apex Den, again after a hit from your own beast; any Goad-Scarred Shell-Back counts. Then bring me the Primal Overrun Resonant Fang Charm. One of them still wears it on the collar the handlers bolted on.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four are left that matter: the Den Elder Shell-Backs, the oldest in the den, the first of their kind the handlers ever broke. Every charge the young ones throw, these four threw first. They hold the deep floor together, not alone, so you do not go alone either. Put all four down in the deepest part of the den, with your beast's Crushing Slam or Rampage on each, and bring me the Primal Overrun Den-Mother's Fang Token from the deep nest they guard. Any Den Elder Shell-Back counts.",
+          "Text": "Four are left that matter: the Den Elder Shell-Backs, the oldest in the den, the first of their kind the handlers ever broke. Every charge the young ones throw, these four threw first. They hold the deep floor together, not alone, so you do not go alone either. Put all four down in the deepest part of the den, after your own beast has struck each one, and bring me the Primal Overrun Den-Mother's Fang Token from the deep nest they guard. Any Den Elder Shell-Back counts.",
           "Style": 0,
           "Color": null
         }

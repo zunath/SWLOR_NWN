@@ -39,6 +39,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _useDefaultSpot;
         private bool _hasTitleBar;
 
+        // Where the server last put the bar, so the client reporting it back is not taken for a drag.
+        private float _placedX;
+        private float _placedY;
+
         // One inventory scan shared by every equipment slot during a single refresh.
         private List<uint> _handItems;
 
@@ -367,7 +371,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsTransparent = !isUnlocked;
 
             var slotsPartial = SlotsPartial(_bar.Layout, _bar.SlotCount);
-            if (slotsPartial != _slotsPartial)
+            var isNewSize = slotsPartial != _slotsPartial;
+            if (isNewSize)
             {
                 _slotsPartial = slotsPartial;
                 ChangePartialView(SlotsElement, slotsPartial);
@@ -377,11 +382,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var slot = 0; slot < ExtraHotbars.MaxSlots; slot++)
                 RefreshSlot(slot, _bar.Slots[slot]);
 
-            ResizeToFit(isUnlocked);
+            // A bar turned on or resized in setup must not land on another bar. Title bars that appear when setup
+            // opens are cleared by ExtraHotbars once every bar has one.
+            ResizeToFit(isUnlocked, isUnlocked && isNewSize);
         }
 
         // The title bar grows the bar upward so its slots stay put while it is unlocked.
-        private void ResizeToFit(bool hasTitleBar)
+        private void ResizeToFit(bool hasTitleBar, bool keepClear)
         {
             var width = GetWidth(_bar.SlotCount, _bar.Layout);
             var height = GetHeight(_bar.SlotCount, _bar.Layout, hasTitleBar);
@@ -420,7 +427,123 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 y = System.Math.Clamp(y, 0f, System.Math.Max(0f, screenHeight - height * scale));
             }
 
-            Geometry = new GuiRectangle(x, y, width, height);
+            if (keepClear)
+                (x, y) = FindClearSpot(x, y, width * scale, height * scale, GetOtherBarBounds(scale), screenWidth, screenHeight);
+
+            Place(new GuiRectangle(x, y, width, height));
+        }
+
+        /// <summary>
+        /// NUI only sends the mouse to a window when no window drawn above it overlaps it anywhere, so a bar touched
+        /// by another bar stops responding. Returns the nearest spot that keeps the bar off the other bars and on
+        /// screen, or its own spot when it is already clear. Bounds are in screen pixels.
+        /// </summary>
+        public static (float X, float Y) FindClearSpot(float x, float y, float width, float height,
+            IReadOnlyList<GuiRectangle> others, float screenWidth, float screenHeight)
+        {
+            if (IsClear(x, y, width, height, others))
+                return (x, y);
+
+            // The nearest clear spot sits flush against another bar's edge on each axis it moves along.
+            var columns = new List<float> { x };
+            var rows = new List<float> { y };
+            foreach (var other in others)
+            {
+                columns.Add(other.X - width);
+                columns.Add(other.X + other.Width);
+                rows.Add(other.Y - height);
+                rows.Add(other.Y + other.Height);
+            }
+
+            var spot = (X: x, Y: y);
+            var bestDistance = float.MaxValue;
+            foreach (var column in columns)
+            {
+                foreach (var row in rows)
+                {
+                    var isOnScreen = screenWidth <= 0f || screenHeight <= 0f ||
+                                     column >= 0f && row >= 0f && column + width <= screenWidth && row + height <= screenHeight;
+                    var distance = (column - x) * (column - x) + (row - y) * (row - y);
+                    if (!isOnScreen || distance >= bestDistance || !IsClear(column, row, width, height, others))
+                        continue;
+
+                    spot = (column, row);
+                    bestDistance = distance;
+                }
+            }
+
+            return spot;
+        }
+
+        private static bool IsClear(float x, float y, float width, float height, IEnumerable<GuiRectangle> others)
+        {
+            foreach (var other in others)
+            {
+                if (x < other.X + other.Width && other.X < x + width &&
+                    y < other.Y + other.Height && other.Y < y + height)
+                    return false;
+            }
+
+            return true;
+        }
+
+        // Open bars numbered below barLimit, other than this one.
+        private List<GuiRectangle> GetOtherBarBounds(float scale, int barLimit = ExtraHotbars.BarCount)
+        {
+            var bounds = new List<GuiRectangle>();
+            for (var index = 0; index < barLimit; index++)
+            {
+                var windowType = ExtraHotbars.GetWindowType(index);
+                if (index == BarIndex || !Gui.IsWindowOpen(Player, windowType))
+                    continue;
+
+                var other = ((ExtraHotbarViewModel)Gui.GetPlayerWindow(Player, windowType).ViewModel).Geometry;
+                bounds.Add(new GuiRectangle(other.X, other.Y, other.Width * scale, other.Height * scale));
+            }
+
+            return bounds;
+        }
+
+        private void KeepClear(int barLimit)
+        {
+            if (_bar == null)
+                return;
+
+            var scale = GetScale();
+            var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
+            var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
+            var bar = Geometry;
+            var (x, y) = FindClearSpot(bar.X, bar.Y, bar.Width * scale, bar.Height * scale,
+                GetOtherBarBounds(scale, barLimit), screenWidth, screenHeight);
+            if (x != bar.X || y != bar.Y)
+                Place(new GuiRectangle(x, y, bar.Width, bar.Height));
+        }
+
+        /// <summary>
+        /// Moves the bar off the bars numbered below it, which stay where they are.
+        /// </summary>
+        public void KeepClearOfLowerBars() => KeepClear(BarIndex);
+
+        private void Place(GuiRectangle geometry)
+        {
+            _placedX = geometry.X;
+            _placedY = geometry.Y;
+            Geometry = geometry;
+        }
+
+        /// <summary>
+        /// A bar dragged onto another bar is pushed back out so both keep working. The client also reports the spots
+        /// the server puts bars in, sometimes before the other bars have moved, so only a spot the player chose counts.
+        /// </summary>
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName != nameof(Geometry) || !ExtraHotbars.IsUnlocked(Player))
+                return;
+
+            if (System.Math.Abs(Geometry.X - _placedX) < 0.5f && System.Math.Abs(Geometry.Y - _placedY) < 0.5f)
+                return;
+
+            KeepClear(ExtraHotbars.BarCount);
         }
 
         /// <summary>
@@ -432,11 +555,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             _hasTitleBar = false;
-            Geometry = new GuiRectangle(
+            Place(new GuiRectangle(
                 Geometry.X,
                 Geometry.Y + TitleBarHeight * GetScale(),
                 GetWidth(_bar.SlotCount, _bar.Layout),
-                GetHeight(_bar.SlotCount, _bar.Layout, false));
+                GetHeight(_bar.SlotCount, _bar.Layout, false)));
         }
 
         private float GetScale()

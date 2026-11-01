@@ -3,6 +3,10 @@
 Read this before creating or changing an item blueprint, appearance catalog, generator,
 or migration that assigns item models.
 
+Wearable mesh, skinning and animation edits also follow
+[GarmentModelRules.md](GarmentModelRules.md), including baseline preservation,
+clipping checks and dependent robe/part-skin regeneration.
+
 - Choose an existing model appropriate to the item's base type and confirm its actual
   appearance in the NWN client. A model number or an item's display name does not prove
   what it looks like. Use the relevant appearance definition under

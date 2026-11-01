@@ -40,6 +40,12 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(target) || GetIsDM(target)) return;
             if (_weaponAttackPoints.Consume(player, target, item, DateTime.UtcNow)) return;
 
+            RecordItemHitPoint(player, target, item);
+        }
+
+        /// <summary>Records one landed hit delivered by an item's on-hit event under the item's attack skill.</summary>
+        public static void RecordItemHitPoint(uint player, uint target, uint item)
+        {
             RecordWeaponAttackPoint(player, target, item, Skill.GetWeaponSkill(player, item));
         }
 

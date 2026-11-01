@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TatooineOrbit();
             KorribanOrbit();
             DathomirOrbit();
+            EshanOrbit();
             DantooineOrbit();
             MidRimNebula();
             ViscaraAsteroidBelt();
@@ -198,6 +199,21 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "asteroid_arda")
                 .WithFrequency(3);
         }
+        private void EshanOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_ESHAN_ORBIT", "Space Resources - Eshan Orbit")
+                .ResourceDespawnDelay(75) // 1.25 hours for very high-tier space asteroids
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(37)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_arda")
+                .WithFrequency(3);
+        }
+
         private void DantooineOrbit()
         {
             _builder.Create("SPACE_RESOURCES_DANTOOINE_ORBIT", "Space Resources - Dantooine Orbit")

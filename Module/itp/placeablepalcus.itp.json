@@ -38962,6 +38962,28 @@
                       "type": "resref",
                       "value": "mkt_visc_term"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veylan Greens Patch"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_grove_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silverwood Seed Bush"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_grove_seed"
+                    }
                   }
                 ]
               },

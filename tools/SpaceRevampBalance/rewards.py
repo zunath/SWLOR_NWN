@@ -401,7 +401,7 @@ def trophy_enum(name):
 # Space achievements (W9c, plan section 14), after the ground achievements (the last is 186). The notification window
 # fits about 24 characters of name.
 # ---------------------------------------------------------------------------------------------------------------
-ACHIEVEMENT_START = 188
+ACHIEVEMENT_START = 209
 TIER_KILL_ACHIEVEMENTS = [
     (1, "SpaceKillTier1", "Khanate Hunter"),
     (2, "SpaceKillTier2", "Krakenborne Hunter"),

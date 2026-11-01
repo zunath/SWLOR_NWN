@@ -506,7 +506,8 @@ public class ShipAccessRulesTests
 
         graph["dantooineorbit"].Should().NotContain("space_korriban");
         graph["space_korriban"].Should().NotContain("dantooineorbit");
-        graph["dantooineorbit"].Should().BeEquivalentTo(new[] { "moncalaorbit" });
+        graph["dantooineorbit"].Should().BeEquivalentTo(new[] { "moncalaorbit", "eshanorbit" }, "Eshan lies beyond Dantooine");
+        graph["eshanorbit"].Should().BeEquivalentTo(new[] { "dantooineorbit" });
     }
 
     [Test]

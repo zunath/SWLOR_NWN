@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service
         private const string TerminalTag = "flights_terminal";
         private const string TerminalPlanetVariable = "CURRENT_LOCATION";
         private const string EntranceWaypointTag = "PROPERTY_ENTRANCE";
+        private const string ConsoleWaypointTag = "SHUTTLE_STATUS_CONSOLE";
         private const string ExitPlaceableTag = "building_exit";
         private const string ShipComputerTag = "ShipComputer";
         private const string PilotChairTag = "pilot_chair";
@@ -577,6 +578,7 @@ namespace SWLOR.Game.Server.Service
 
             var entrancePosition = Vector3(1f, 1f, 0f);
             var entranceFacing = 0f;
+            Location consoleLocation = null;
             var pilotChair = OBJECT_INVALID;
 
             var objectsToDestroy = new List<uint>();
@@ -587,6 +589,10 @@ namespace SWLOR.Game.Server.Service
                 {
                     entrancePosition = GetPosition(obj);
                     entranceFacing = GetFacing(obj);
+                }
+                else if (tag == ConsoleWaypointTag)
+                {
+                    consoleLocation = GetLocation(obj);
                 }
                 else if (tag == ExitPlaceableTag || tag == ShipComputerTag)
                 {
@@ -607,7 +613,8 @@ namespace SWLOR.Game.Server.Service
 
             flight.EntranceLocation = Location(area, entrancePosition, entranceFacing);
 
-            var console = CreateObject(ObjectType.Placeable, TerminalTag, flight.EntranceLocation);
+            // Interiors without a console point (the legacy freighter) fall back to the boarding point.
+            var console = CreateObject(ObjectType.Placeable, TerminalTag, consoleLocation ?? flight.EntranceLocation);
             SetName(console, "Shuttle Status Console");
             SetLocalInt(console, Communication.SuppressChatAuditVariable, 1);
             SetPlotFlag(console, true);

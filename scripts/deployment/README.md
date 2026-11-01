@@ -136,6 +136,79 @@ cat /mnt/swlor-web-vol/deployment-source/scripts/deployment/server-image.txt
 /usr/local/sbin/swlor-deploy --status
 ```
 
+## Native crash capture
+
+The server image enables batch GDB capture automatically when
+`SWLOR_ENVIRONMENT` is `production` or `prod`. Development runs keep capture off
+so the Runner's Visual Studio debugger can still attach. GDB runs inside the image
+with the server's own libraries; no interactive debugger or separate host service
+is needed. Docker remains the only restart owner. Both `always` and
+`unless-stopped` restart the game after a normal Administration-plugin shutdown;
+preserve the host's existing policy. The launcher returns the server's exit code,
+so the daily restart starts a fresh debugger as well.
+
+At entry to the NWNX fatal signal handler, the launcher records the current
+thread's native stack, other native thread stacks, loaded libraries, and memory
+mappings. It then kills the already-faulting process and exits with code 139.
+This deliberately avoids returning to a recursively failing NWNX crash handler.
+The report is a native stack trace, not a full memory dump or a managed SOS trace.
+SIGKILL, host failure, and faults before NWNX loads cannot produce this report.
+
+Reports are private files under `/nwn/home/logs/crashes` (the host's
+`logs/crashes` directory). Each gets a unique UTC timestamp and PID. Startup
+retains the newest 20 reports. Do not publish raw crash reports in the public
+repository or pull requests.
+
+The parent launcher forwards SIGINT/SIGTERM to the server and bounds debugger
+startup, sustained debugger stops, crash capture, and externally requested
+shutdown to 30 seconds. If a bound expires, it ends the process and debugger so
+the container can exit. Stack capture necessarily pauses the server briefly;
+continuous debugger attachment can also add overhead. This bounds the pause,
+not the performance cost. A normal in-process daily shutdown does not wait for
+a crash capture.
+
+Compose gives the game service a 45-second stop grace period so the default
+30-second launcher deadline can finish before Docker force-kills the container.
+If `SWLOR_CRASH_CAPTURE_TIMEOUT_SECONDS` is increased, also set
+`stop_grace_period` longer than that deadline in the host's Compose file.
+
+Optional settings in the host's `swlor.env`:
+
+```dotenv
+SWLOR_CRASH_CAPTURE=1
+SWLOR_CRASH_CAPTURE_DIRECTORY=/nwn/home/logs/crashes
+SWLOR_CRASH_CAPTURE_TIMEOUT_SECONDS=30
+```
+
+The default `SWLOR_CRASH_CAPTURE=auto` uses the environment rule above. Set it
+to `1` to force capture or `0` to run the original server directly. Engine-test
+Compose runs disable capture explicitly. Changing these settings requires
+recreating the game container; an ordinary container restart retains its old
+environment. Keep the existing Docker restart policy enabled on production.
+
+Set `SWLOR_CRASH_CAPTURE=1` on a test or staging host to exercise capture without
+changing its `SWLOR_ENVIRONMENT`. If a host sets any of these values in the game
+service's Compose `environment` block, edit that block instead; it overrides
+`swlor.env`.
+
+Publish the new immutable image using the owner-approved workflow before
+deploying it. Existing hosts using the manual Compose setup must select the new
+image tag in their own Compose file; the managed deployer selects it from
+`server-image.txt`. No host-wide ptrace or core-dump settings need changing.
+
+To verify the launcher independently of game content:
+
+```bash
+docker build -t swlor-crash-capture:local SWLOR.Game.Server/Docker
+docker build -t swlor-crash-capture-tests:local tools/tests/server_crash_capture
+python -m unittest tools.tests.test_server_crash_capture -v
+```
+
+The native fixture covers clean shutdown, fatal handler loops, SIGINT/SIGTERM,
+bounded debugger stops, argument/exit-code preservation, opt-out, and Docker's
+restart-after-clean-exit behavior. It does not replace gameplay/client evidence
+for changes to game behavior.
+
 ## Initial source checkout
 
 Run as root. If the directory already contains the correct checkout, do not

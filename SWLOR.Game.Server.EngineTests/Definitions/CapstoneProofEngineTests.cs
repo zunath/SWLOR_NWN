@@ -45,7 +45,7 @@ public static class CapstoneProofEngineTests
     {
         // Thermal Detonator adepts share the Qion Test Site adept tier with Perfect Flurry.
         var enemy = ctx.SpawnCreature("cp_thermdet_ad", 2f);
-        ctx.AssertEqual((int)NPCGroupType.Hutlar_ThermalDetonator_Adept, GetLocalInt(enemy, "QUEST_NPC_GROUP_ID"),
+        ctx.AssertEqual((int)NPCGroupType.Hutlar_TestCrewTechnicians, GetLocalInt(enemy, "QUEST_NPC_GROUP_ID"),
             "The adept carries its quest group.");
         ctx.MakeHostile(enemy);
         SetPlotFlag(enemy, false);
@@ -66,6 +66,6 @@ public static class CapstoneProofEngineTests
     private static int Remaining(PlayerAbilityFixture fixture)
     {
         var record = JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(fixture.Id));
-        return record.Quests[QuestId].KillProgresses[NPCGroupType.Hutlar_PerfectFlurry_Adept];
+        return record.Quests[QuestId].KillProgresses[NPCGroupType.Hutlar_TestCrewTechnicians];
     }
 }

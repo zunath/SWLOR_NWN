@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Tressa Kade gave you the CZ-220 Breaker Yard Key. A wreck crew is drilling katar guard-work in the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Wreck Crew Scrappers, who hold the floor nearest the entrance, and recover the Adamantine Guard Breaker Yard Work Order. Any Scrapper counts, whichever katar line the crew drilled for, but only kills made while you guard an ally with Steel Shoulder or hold Whirling Guard or Iron Wall.")
-                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_AdamantineGuard_Adept, "adamantine_guard", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_WreckCrewScrappers, "adamantine_guard", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardBreakerYardWorkOrder)
 
                 .AddState()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The wreck crew rerouted the junkline in the CZ-220 Breaker Yard on CZ-220. Defeat five Wreck Crew Riggers deeper inside and recover the Adamantine Guard Junkline Control Relay. Any Rigger counts, whichever katar line the crew drilled for, but only kills made while you guard an ally with Steel Shoulder or hold Whirling Guard or Iron Wall.")
-                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_AdamantineGuard_Specialist, "adamantine_guard", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_WreckCrewRiggers, "adamantine_guard", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardJunklineControlRelay)
 
                 .AddState()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The wreck crew's warden holds the sheared bay in the CZ-220 Breaker Yard on CZ-220. Bring at least two fighters you trust, defeat the warden, Crew Chief Rakkesh, and recover the Adamantine Guard Sheared Bay Sigil.")
-                .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Warden, 1)
+                .AddKillObjective(NPCGroupType.CZ220_CrewChiefRakkesh, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardShearedBaySigil)
 
                 .AddState()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The wreck crew's inner circle holds the deepest part of the yard, the far south-east end of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat four Foreman's Hands and recover the Adamantine Guard Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made while you guard an ally with Steel Shoulder or hold Whirling Guard or Iron Wall.")
-                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_AdamantineGuard_InnerCircle, "adamantine_guard", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_ForemansHands, "adamantine_guard", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardForemansOverrideChip)
 
                 .AddState()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The wreck crew's foreman holds Bay One, deep in the CZ-220 Breaker Yard on CZ-220. Bring fighters you trust and defeat Wreck Foreman Ssurgan, the master.")
-                .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Master, 1)
+                .AddKillObjective(NPCGroupType.CZ220_WreckForemanSsurgan, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Borrik Sen gave you the CZ-220 Breaker Yard Key. A crew has sealed off the CZ-220 Breaker Yard on CZ-220 for unauthorized katar drills; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Wreck Crew Scrappers, who hold the floor nearest the entrance, and recover the Scrapheap Lockdown Breaker Yard Work Order. Any Scrapper counts, whichever katar line the crew drilled for, but only kills made after hobbling them with Hooking Strike or dazing them with Joint Lock.")
-                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Adept, "scrapheap_lockdown", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_WreckCrewScrappers, "scrapheap_lockdown", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownBreakerYardWorkOrder)
 
                 .AddState()
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The crew rerouted the junkline into a stand-off grid in the CZ-220 Breaker Yard on CZ-220. Defeat five Wreck Crew Riggers deeper inside and recover the Scrapheap Lockdown Junkline Control Relay. Any Rigger counts, whichever katar line the crew drilled for, but only kills made after hobbling them with Hooking Strike or dazing them with Joint Lock.")
-                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Specialist, "scrapheap_lockdown", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_WreckCrewRiggers, "scrapheap_lockdown", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownJunklineControlRelay)
 
                 .AddState()
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The crew's warden has fortified the sheared bay in the CZ-220 Breaker Yard on CZ-220. Go three-strong, defeat the warden, Crew Chief Tobin Rask, and recover the Scrapheap Lockdown Sheared Bay Sigil.")
-                .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Warden, 1)
+                .AddKillObjective(NPCGroupType.CZ220_CrewChiefTobinRask, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownShearedBaySigil)
 
                 .AddState()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The crew's inner circle holds the deepest part of the yard, the east side of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat four Foreman's Hands and recover the Scrapheap Lockdown Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made after hobbling them with Hooking Strike or dazing them with Joint Lock.")
-                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_InnerCircle, "scrapheap_lockdown", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.CZ220_ForemansHands, "scrapheap_lockdown", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownForemansOverrideChip)
 
                 .AddState()
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "The man who wrote the lockdown protocol holds the deepest bay of the CZ-220 Breaker Yard on CZ-220. Go three-strong, defeat Wreck Foreman Lucan Brandt, the master, and end the lockdown.")
-                .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Master, 1)
+                .AddKillObjective(NPCGroupType.CZ220_WreckForemanLucanBrandt, 1)
 
                 .AddState()
                 .SetStateJournalText(

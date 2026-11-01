@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Seris Nahl gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Expedition Raiders, the thieves nearest the entrance, and recover the Last Stand of the Light Crypt Trial Tablet. Any Expedition Raider counts, whichever crew it rides with, but only kills made while you shield an ally with Force Intercept.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_CryptRaider, "last_stand_of_the_light", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionRaiders, "last_stand_of_the_light", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
 
                 .AddState()
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Expedition Marauders deeper in the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Ritual Focus Shard. Any Expedition Marauder counts, whichever crew it rides with, but only kills made while you shield an ally with Force Intercept.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_CryptMarauder, "last_stand_of_the_light", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionMarauders, "last_stand_of_the_light", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightRitualFocusShard)
 
                 .AddState()
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Expedition Captain Rhaan Tolek at the trial altar on the west side of the Sith Crypt Depths on Mon Cala. Recover the Last Stand of the Light Splintered Tomb Sigil.")
-                .AddKillObjective(NPCGroupType.MonCala_CryptBreachCaptain, 1)
+                .AddKillObjective(NPCGroupType.MonCala_ExpeditionCaptainRhaanTolek, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightSplinteredTombSigil)
 
                 .AddState()
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Expedition Reavers in the deepest part of the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Keeper's Rite Token. Any Expedition Reaver counts, whichever crew it rides with, but only kills made while you shield an ally with Force Intercept.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_CryptReaver, "last_stand_of_the_light", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionReavers, "last_stand_of_the_light", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightKeepersRiteToken)
 
                 .AddState()
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Expedition Leader Kaelen Dorr in the Final Ritual Chamber, through the door at the north end of the Sith Crypt Depths on Mon Cala.")
-                .AddKillObjective(NPCGroupType.MonCala_CryptExpeditionLeader, 1)
+                .AddKillObjective(NPCGroupType.MonCala_ExpeditionLeaderKaelenDorr, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Neth Kyr gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Expedition Raiders, the hirelings nearest the entrance, and recover the Hunger of the Dark Crypt Trial Tablet. Any Expedition Raider counts, whichever crew it rides with, but only kills made with Force Drain, Force Lightning or Force Spark.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_VitaeReaverInitiate, "hunger_of_the_dark", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionRaiders, "hunger_of_the_dark", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkCryptTrialTablet)
 
                 .AddState()
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Expedition Marauders deeper in the Sith Crypt Depths on Mon Cala and recover the Hunger of the Dark Ritual Focus Shard. Any Expedition Marauder counts, whichever crew it rides with, but only kills made with Force Drain, Force Lightning or Force Spark.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_VitaeReaverAdept, "hunger_of_the_dark", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionMarauders, "hunger_of_the_dark", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkRitualFocusShard)
 
                 .AddState()
@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Expedition Captain Zarrik Thane at the trial altar on the east side of the Sith Crypt Depths on Mon Cala. Recover the Hunger of the Dark Splintered Tomb Sigil.")
-                .AddKillObjective(NPCGroupType.MonCala_VitaeReaverEnforcer, 1)
+                .AddKillObjective(NPCGroupType.MonCala_ExpeditionCaptainZarrikThane, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkSplinteredTombSigil)
 
                 .AddState()
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Expedition Reavers in the deepest part of the Sith Crypt Depths on Mon Cala and recover the Hunger of the Dark Keeper's Rite Token. Any Expedition Reaver counts, whichever crew it rides with, but only kills made with Force Drain, Force Lightning or Force Spark.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_VitaeReaverBinder, "hunger_of_the_dark", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionReavers, "hunger_of_the_dark", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkKeepersRiteToken)
 
                 .AddState()
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Expedition Leader Mordek Sull in the Final Ritual Chamber, through the door at the north end of the Sith Crypt Depths on Mon Cala.")
-                .AddKillObjective(NPCGroupType.MonCala_VitaeReaverChief, 1)
+                .AddKillObjective(NPCGroupType.MonCala_ExpeditionLeaderMordekSull, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Acolyte Varn gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Expedition Raiders, the hirelings nearest the entrance, and recover the Eclipse of Resolve Crypt Trial Tablet. Any Expedition Raider counts, whichever crew it rides with, but only kills made after weakening their resolve.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_UmbralRaiderScout, "eclipse_of_resolve", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionRaiders, "eclipse_of_resolve", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveCryptTrialTablet)
 
                 .AddState()
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Expedition Marauders deeper in the Sith Crypt Depths on Mon Cala and recover the Eclipse of Resolve Ritual Focus Shard. Any Expedition Marauder counts, whichever crew it rides with, but only kills made after weakening their resolve.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_UmbralRaiderAdept, "eclipse_of_resolve", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionMarauders, "eclipse_of_resolve", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveRitualFocusShard)
 
                 .AddState()
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Expedition Captain Tavik Orrun at the trial altar in the north-west of the Sith Crypt Depths on Mon Cala. Recover the Eclipse of Resolve Splintered Tomb Sigil.")
-                .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderCaptain, 1)
+                .AddKillObjective(NPCGroupType.MonCala_ExpeditionCaptainTavikOrrun, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveSplinteredTombSigil)
 
                 .AddState()
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Expedition Reavers in the deepest part of the Sith Crypt Depths on Mon Cala and recover the Eclipse of Resolve Keeper's Rite Token. Any Expedition Reaver counts, whichever crew it rides with, but only kills made after weakening their resolve.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_UmbralRaiderSaboteur, "eclipse_of_resolve", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_ExpeditionReavers, "eclipse_of_resolve", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveKeepersRiteToken)
 
                 .AddState()
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Expedition Leader Lorrek Syn in the Final Ritual Chamber, through the door at the north end of the Sith Crypt Depths on Mon Cala.")
-                .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderCommander, 1)
+                .AddKillObjective(NPCGroupType.MonCala_ExpeditionLeaderLorrekSyn, 1)
 
                 .AddState()
                 .SetStateJournalText(

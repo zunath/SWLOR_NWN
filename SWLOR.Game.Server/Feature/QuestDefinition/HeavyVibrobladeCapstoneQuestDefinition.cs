@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Valis Korr gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Defeat six Forgebound Initiates, the Forgebound who hold the rooms nearest the entrance, and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles. Any Forgebound Initiate counts, but a kill only counts after dazzling them with Flash.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Adept, "absolute_defense", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_ForgeboundInitiates, "absolute_defense", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
                 .AddState()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Forgebound Journeymans, the Forgebound who hold the deeper parts of the Forge Caverns on Tatooine, and recover the Absolute Defense Sith Tempering Matrix from the quench racks. Any Forgebound Journeyman counts, but a kill only counts after dazzling them with Flash.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Specialist, "absolute_defense", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_ForgeboundJourneymans, "absolute_defense", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseSithTemperingMatrix)
 
                 .AddState()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Forge Warden Ssorrak at the trial altar on the west side of the Forge Caverns on Tatooine and take the Absolute Defense Cracked Anvil Sigil he wears.")
-                .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Warden, 1)
+                .AddKillObjective(NPCGroupType.Tatooine_ForgeWardenSsorrak, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseCrackedAnvilSigil)
 
                 .AddState()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Forgebound Overseers, the Forgebound who guard the deepest part of the Forge Caverns on Tatooine, and secure an Absolute Defense Overseer's Clearance Token. Any Forgebound Overseer counts, but a kill only counts after dazzling them with Flash.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_InnerCircle, "absolute_defense", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_ForgeboundOverseers, "absolute_defense", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseOverseersClearanceToken)
 
                 .AddState()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two trusted allies, defeat Forge Master Kassrek in the Champion Forge, through the door at the north end of the Forge Caverns on Tatooine.")
-                .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Master, 1)
+                .AddKillObjective(NPCGroupType.Tatooine_ForgeMasterKassrek, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Senn Dralok gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Defeat six Forgebound Initiates, the Forgebound who hold the rooms nearest the entrance, and secure the Soul Ascension Forge Heat Ledger kept near the crucibles. Any Forgebound Initiate counts, but a kill only counts with Sacrificial Blade or Soul Burst.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_SoulAscension_Adept, "soul_ascension", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_ForgeboundInitiates, "soul_ascension", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 
                 .AddState()
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Forgebound Journeymans, the Forgebound who hold the deeper parts of the Forge Caverns on Tatooine, and recover the Soul Ascension Sith Tempering Matrix from the quench troughs. Any Forgebound Journeyman counts, but a kill only counts with Sacrificial Blade or Soul Burst.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_SoulAscension_Specialist, "soul_ascension", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_ForgeboundJourneymans, "soul_ascension", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionSithTemperingMatrix)
 
                 .AddState()
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Forge Warden Dael Karrow at the trial altar in the north-west of the Forge Caverns on Tatooine and take the Soul Ascension Cracked Anvil Sigil he wears.")
-                .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Warden, 1)
+                .AddKillObjective(NPCGroupType.Tatooine_ForgeWardenDaelKarrow, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionCrackedAnvilSigil)
 
                 .AddState()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Forgebound Overseers, the Forgebound who guard the deepest part of the Forge Caverns on Tatooine, and secure a Soul Ascension Overseer's Clearance Token. Any Forgebound Overseer counts, but a kill only counts with Sacrificial Blade or Soul Burst.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_SoulAscension_InnerCircle, "soul_ascension", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_ForgeboundOverseers, "soul_ascension", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionOverseersClearanceToken)
 
                 .AddState()
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two trusted allies, defeat Forge Master Orsen Vale in the Champion Forge, through the door at the north end of the Forge Caverns on Tatooine.")
-                .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Master, 1)
+                .AddKillObjective(NPCGroupType.Tatooine_ForgeMasterOrsenVale, 1)
 
                 .AddState()
                 .SetStateJournalText(

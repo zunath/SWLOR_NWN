@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Edda Maln gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Ward Orderlies there, in the rooms nearest the lift (keep your party steadied with Cleanse Order or Rousing Shout while it fights; any Ward Orderly the party kills while your order or shout is fresh counts, as they serve the whole ward), and recover the Hold the Line Triage Ward Ledger.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_HoldTheLine_Adept, "hold_the_line", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_WardOrderlys, "hold_the_line", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
 
                 .AddState()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Medical Sublevel on Mon Cala. Defeat five Ward Guards at the conduit junctions deeper inside (keep your party steadied with Cleanse Order or Rousing Shout while it fights; any Ward Guard the party kills while your order or shout is fresh counts, as they serve the whole ward) and recover the Hold the Line Kolto Conduit Coupler.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_HoldTheLine_Specialist, "hold_the_line", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_WardGuards, "hold_the_line", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineKoltoConduitCoupler)
 
                 .AddState()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring at least two people you trust to the heart of the Medical Sublevel on Mon Cala. Defeat Ward Supervisor Aron Meel and recover the Hold the Line Fractured Ward Sigil he wears.")
-                .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Warden, 1)
+                .AddKillObjective(NPCGroupType.MonCala_WardSupervisorAronMeel, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineFracturedWardSigil)
 
                 .AddState()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Matron's Attendants in the deepest part of the Medical Sublevel on Mon Cala (keep your party steadied with Cleanse Order or Rousing Shout while it fights; any Matron's Attendant the party kills while your order or shout is fresh counts, as they serve the whole ward) and recover the Hold the Line Matron's Ward Token.")
-                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_HoldTheLine_InnerCircle, "hold_the_line", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.MonCala_MatronsAttendants, "hold_the_line", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineMatronsWardToken)
 
                 .AddState()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Gather the people who have stood with you and defeat Ward Chief Anchor in the Protected Ward, through the north-east door of the Medical Sublevel on Mon Cala.")
-                .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Master, 1)
+                .AddKillObjective(NPCGroupType.MonCala_WardChiefAnchor, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Varen Kell gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, go south to the Lake, and head west through the Eastern Swamplands into the Western Swamplands, where a weathered concrete bunker sits half-sunk in the swamp a short walk west of where you arrive, its sealed door facing south. Defeat six Deserter Sappers in the outer galleries nearest the entrance (drive your party with Press the Attack while it fights; any Deserter Sapper the party kills while your Press the Attack is fresh counts, as they serve the whole deserter company) and recover the Decisive Command Republic Bunker Docket.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DecisiveCommand_Adept, "decisive_command", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DeserterSappers, "decisive_command", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandRepublicBunkerDocket)
 
                 .AddState()
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Viscara Republic Engineering Bunker on Viscara. Defeat five Deserter Engineers deeper in the shield grid chambers (drive your party with Press the Attack while it fights; any Deserter Engineer the party kills while your Press the Attack is fresh counts, as they serve the whole deserter company) and recover the Decisive Command Shield Grid Relay.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DecisiveCommand_Specialist, "decisive_command", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DeserterEngineers, "decisive_command", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandShieldGridRelay)
 
                 .AddState()
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Take a fire team of at least two others to the inner blast doors of the Viscara Republic Engineering Bunker on Viscara. Defeat Deserter Sergeant Grenn Vhon and recover the Decisive Command Cracked Command Crest he carries.")
-                .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Warden, 1)
+                .AddKillObjective(NPCGroupType.Viscara_DeserterSergeantGrennVhon, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandCrackedCommandCrest)
 
                 .AddState()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Quartermaster's Guards in the deep stores, the deepest part of the Viscara Republic Engineering Bunker on Viscara (drive your party with Press the Attack while it fights; any Quartermaster's Guard the party kills while your Press the Attack is fresh counts, as they serve the whole deserter company) and recover the Decisive Command Quartermaster Override Chip.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DecisiveCommand_InnerCircle, "decisive_command", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_QuartermastersGuards, "decisive_command", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandQuartermasterOverrideChip)
 
                 .AddState()
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Muster the people who have fought beside you and defeat Deserter Commander Halden Rhee in the command room of the Viscara Republic Engineering Bunker on Viscara.")
-                .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Master, 1)
+                .AddKillObjective(NPCGroupType.Viscara_DeserterCommanderHaldenRhee, 1)
 
                 .AddState()
                 .SetStateJournalText(

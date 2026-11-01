@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Ruk Halven gave you the Hutlar Qion Test Site Key. Leave the Hutlar Outpost onto the Qion Tundra and head east through the Qion Foothills into the Qion Box Canyon; the test site entrance is just south of the road up to Fort Ka'ra. Defeat six Test Crew Technicians inside, in the rooms nearest the entrance (only kills made with your grenades count, and any Test Crew Technician counts, as they serve the whole test crew), and recover the Thermal Detonator Qion Test Log.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Adept, "thermal_detonator", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TestCrewTechnicians, "thermal_detonator", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorQionTestLog)
 
                 .AddState()
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Test Crew Demolitionists deeper inside (only kills made with your grenades count, and any Test Crew Demolitionist counts, as they serve the whole test crew), and recover the Thermal Detonator Cryo-Range Regulator.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Specialist, "thermal_detonator", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TestCrewDemolitionists, "thermal_detonator", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorCryoRangeRegulator)
 
                 .AddState()
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon, defeat Test Supervisor Skorrik, and recover the Thermal Detonator Frostburned Test Crest.")
-                .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Warden, 1)
+                .AddKillObjective(NPCGroupType.Hutlar_TestSupervisorSkorrik, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorFrostburnedTestCrest)
 
                 .AddState()
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat four Site Chief's Officers in the deepest part of the dungeon (only kills made with your grenades count, and any Site Chief's Officer counts, as they serve the whole test crew), and recover the Thermal Detonator Site Chief's Override Chip.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_ThermalDetonator_InnerCircle, "thermal_detonator", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_SiteChiefsOfficers, "thermal_detonator", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorSiteChiefsOverrideChip)
 
                 .AddState()
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon and defeat Site Chief Ssorgan.")
-                .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Master, 1)
+                .AddKillObjective(NPCGroupType.Hutlar_SiteChiefSsorgan, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Miri Koss gave you the Hutlar Qion Test Site Key. Leave the Hutlar Outpost onto the Qion Tundra and head east through the Qion Foothills into the Qion Box Canyon; the test site entrance is just south of the road up to Fort Ka'ra. Defeat six Test Crew Technicians inside, in the rooms nearest the entrance (only kills made with your assault gadgets count, and any Test Crew Technician counts, as they serve the whole test crew), and recover the Overload Barrage Qion Test Log.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Adept, "overload_barrage", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TestCrewTechnicians, "overload_barrage", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageQionTestLog)
 
                 .AddState()
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Test Crew Demolitionists deeper inside (only kills made with your assault gadgets count, and any Test Crew Demolitionist counts, as they serve the whole test crew), and recover the Overload Barrage Cryo-Range Regulator.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Specialist, "overload_barrage", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_TestCrewDemolitionists, "overload_barrage", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageCryoRangeRegulator)
 
                 .AddState()
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon, defeat Test Supervisor Hale Dorrin, and recover the Overload Barrage Frostburned Test Crest.")
-                .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Warden, 1)
+                .AddKillObjective(NPCGroupType.Hutlar_TestSupervisorHaleDorrin, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageFrostburnedTestCrest)
 
                 .AddState()
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat four Site Chief's Officers in the deepest part of the dungeon (only kills made with your assault gadgets count, and any Site Chief's Officer counts, as they serve the whole test crew), and recover the Overload Barrage Site Chief's Override Chip.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_OverloadBarrage_InnerCircle, "overload_barrage", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_SiteChiefsOfficers, "overload_barrage", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageSiteChiefsOverrideChip)
 
                 .AddState()
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon and defeat Site Chief Ansel Pryor.")
-                .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Master, 1)
+                .AddKillObjective(NPCGroupType.Hutlar_SiteChiefAnselPryor, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Aric Jorr gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, go south to the Lake, and head west through the Eastern Swamplands into the Western Swamplands, where a weathered concrete bunker sits half-sunk in the swamp a short walk west of where you arrive, its sealed door facing south. Defeat six Deserter Sappers inside, in the rooms nearest the entrance (only kills made with your beacons, fields and remote charges count, and any Deserter Sapper counts, as they serve the whole deserter company), and recover the Killzone Beacon Republic Bunker Docket.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Adept, "killzone_beacon", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DeserterSappers, "killzone_beacon", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconRepublicBunkerDocket)
 
                 .AddState()
@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Deserter Engineers deeper inside (only kills made with your beacons, fields and remote charges count, and any Deserter Engineer counts, as they serve the whole deserter company), and recover the Killzone Beacon Shield Grid Relay.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Specialist, "killzone_beacon", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DeserterEngineers, "killzone_beacon", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconShieldGridRelay)
 
                 .AddState()
@@ -357,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat Deserter Sergeant Orgul, and recover the Killzone Beacon Cracked Command Crest.")
-                .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Warden, 1)
+                .AddKillObjective(NPCGroupType.Viscara_DeserterSergeantOrgul, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconCrackedCommandCrest)
 
                 .AddState()
@@ -378,7 +378,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat four Quartermaster's Guards in the deepest part of the dungeon (only kills made with your beacons, fields and remote charges count, and any Quartermaster's Guard counts, as they serve the whole deserter company), and recover the Killzone Beacon Quartermaster Override Chip.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_KillzoneBeacon_InnerCircle, "killzone_beacon", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_QuartermastersGuards, "killzone_beacon", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconQuartermasterOverrideChip)
 
                 .AddState()
@@ -397,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara and defeat Deserter Commander Kuvaz.")
-                .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Master, 1)
+                .AddKillObjective(NPCGroupType.Viscara_DeserterCommanderKuvaz, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Nella Voss gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, go south to the Lake, and head west through the Eastern Swamplands into the Western Swamplands, where a weathered concrete bunker sits half-sunk in the swamp a short walk west of where you arrive, its sealed door facing south. Defeat six Deserter Sappers inside, in the rooms nearest the entrance (keep your allies' gear charged with Power Cell while your party fights; any Deserter Sapper the party kills while your Power Cell is fresh counts, as they serve the whole deserter company), and recover the Emergency Bunker Republic Bunker Docket.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_EmergencyBunker_Adept, "emergency_bunker", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DeserterSappers, "emergency_bunker", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerRepublicBunkerDocket)
 
                 .AddState()
@@ -449,7 +449,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Deserter Engineers deeper inside (keep your allies' gear charged with Power Cell while your party fights; any Deserter Engineer the party kills while your Power Cell is fresh counts, as they serve the whole deserter company), and recover the Emergency Bunker Shield Grid Relay.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_EmergencyBunker_Specialist, "emergency_bunker", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_DeserterEngineers, "emergency_bunker", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerShieldGridRelay)
 
                 .AddState()
@@ -470,7 +470,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat Deserter Sergeant Bekko, and recover the Emergency Bunker Cracked Command Crest.")
-                .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Warden, 1)
+                .AddKillObjective(NPCGroupType.Viscara_DeserterSergeantBekko, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerCrackedCommandCrest)
 
                 .AddState()
@@ -491,7 +491,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat four Quartermaster's Guards in the deepest part of the dungeon (keep your allies' gear charged with Power Cell while your party fights; any Quartermaster's Guard the party kills while your Power Cell is fresh counts, as they serve the whole deserter company), and recover the Emergency Bunker Quartermaster Override Chip.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_EmergencyBunker_InnerCircle, "emergency_bunker", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_QuartermastersGuards, "emergency_bunker", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerQuartermasterOverrideChip)
 
                 .AddState()
@@ -510,7 +510,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara and defeat Deserter Commander Mukk Dorl.")
-                .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Master, 1)
+                .AddKillObjective(NPCGroupType.Viscara_DeserterCommanderMukkDorl, 1)
 
                 .AddState()
                 .SetStateJournalText(

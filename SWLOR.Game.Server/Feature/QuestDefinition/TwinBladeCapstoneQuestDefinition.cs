@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Iven Brask gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Defeat six Stable Brawlers, the Backroom Stable fighters who hold the rooms nearest the entrance of the Smuggler's Moon Fight Club Backrooms, and recover the Tempest Bloom Backroom Bout Ledger. Any Stable Brawler counts, but a kill only counts with Spinning Whirl, Blade Vortex or Serrated Arc.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Adept, "tempest_bloom", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StableBrawlers, "tempest_bloom", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomBackroomBoutLedger)
 
                 .AddState()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Stable Pit Fighters, the Backroom Stable fighters running the live pits deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then pull the rewired Tempest Bloom Ring Shock Regulator off the wall. Any Stable Pit Fighter counts, but a kill only counts with Spinning Whirl, Blade Vortex or Serrated Arc.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Specialist, "tempest_bloom", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StablePitFighters, "tempest_bloom", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomRingShockRegulator)
 
                 .AddState()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Pit Boss Dax Corvin guarding the deep door in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and take the Tempest Bloom Cracked Pit Sigil. No lone fighter has ever beaten him; bring allies.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Warden, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_PitBossDaxCorvin, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomCrackedPitSigil)
 
                 .AddState()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Stable Promoters, the Backroom Stable promoters who guard the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and recover the Tempest Bloom Promoter's Payout Chit from the last of them. Any Stable Promoter counts, but a kill only counts with Spinning Whirl, Blade Vortex or Serrated Arc.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_InnerCircle, "tempest_bloom", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StablePromoters, "tempest_bloom", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomPromotersPayoutChit)
 
                 .AddState()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Stable Champion Rolan Mace in the deepest room of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon. No one has survived his final bloom alone; bring allies. His defeat is the only proof Iven Brask needs.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Master, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_StableChampionRolanMace, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Nyra Tane gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Defeat six Stable Brawlers, the Backroom Stable fighters who hold the rooms nearest the entrance of the Smuggler's Moon Fight Club Backrooms, and recover the Red Bloom Backroom Bout Ledger. Any Stable Brawler counts, but a kill only counts while they bleed from your blades.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Adept, "red_bloom", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StableBrawlers, "red_bloom", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomBackroomBoutLedger)
 
                 .AddState()
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Stable Pit Fighters, the Backroom Stable fighters deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, then tear the rewired Red Bloom Ring Shock Regulator off the wall. Any Stable Pit Fighter counts, but a kill only counts while they bleed from your blades.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Specialist, "red_bloom", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StablePitFighters, "red_bloom", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomRingShockRegulator)
 
                 .AddState()
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Pit Boss Kessan Pru at the deep gate in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and take the Red Bloom Cracked Pit Sigil. Nyra Tane's condition stands: do not face him alone; bring allies.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Warden, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_PitBossKessanPru, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomCrackedPitSigil)
 
                 .AddState()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Stable Promoters, the Backroom Stable promoters who guard the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and recover the Red Bloom Promoter's Payout Chit from the last of them. Any Stable Promoter counts, but a kill only counts while they bleed from your blades.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RedBloom_InnerCircle, "red_bloom", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_StablePromoters, "red_bloom", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomPromotersPayoutChit)
 
                 .AddState()
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Stable Champion Ven Dolo holding Nyra Tane's old title in the champion's room of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon. No one has left his ring alone; bring allies. His defeat is the only proof Nyra Tane needs.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Master, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_StableChampionVenDolo, 1)
 
                 .AddState()
                 .SetStateJournalText(

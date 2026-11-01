@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using System.Reflection;
 using System.Text.Json;
@@ -391,7 +391,7 @@ public class CapstoneQuestDefinitionTests
                     .Should().ContainSingle($"{line.GetQuestId(step)} is a capstone proof kill step").Subject;
                 objective.Group.Should().Be(line.NpcGroups[step]);
                 objective.ProofKey.Should().Be(proofKey);
-                objective.CreditedGroups.Should().BeEquivalentTo(areaLines.Select(other => other.NpcGroups[step]));
+                areaLines.Select(other => other.NpcGroups[step]).Should().AllBeEquivalentTo(line.NpcGroups[step]);
             }
 
             foreach (var step in CapstoneQuestDefinitionTestData.OnDemandEncounterSteps)
@@ -851,14 +851,17 @@ public class CapstoneQuestDefinitionTests
         var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
         var lineSteps = CapstoneQuestDefinitionTestData.Lines
             .SelectMany(line => line.NpcGroups.Select((group, step) => (group, line, step)))
-            .ToDictionary(entry => entry.group, entry => (entry.line, entry.step));
+            .GroupBy(entry => entry.group)
+            .ToDictionary(group => group.Key, group => group.Select(entry => (entry.line, entry.step)).ToArray());
 
         foreach (var quest in quests.Values)
         {
             foreach (var objective in quest.States.Values.SelectMany(state => state.GetObjectives()).OfType<KillTargetObjective>())
             {
                 lineSteps.Should().ContainKey(objective.Group, $"{quest.QuestId} kills a group this spawn audit does not cover");
-                var (line, step) = lineSteps[objective.Group];
+                // A dungeon tier's group is shared by every line in the dungeon, so its spawns are all of theirs.
+                var sharing = lineSteps[objective.Group];
+                var (line, step) = sharing[0];
                 var areaResref = line.AreaGroup.DungeonAreaResref;
                 using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "git", $"{areaResref}.git.json")));
                 var waypointTags = git.RootElement.GetProperty("WaypointList").GetProperty("value")
@@ -869,7 +872,7 @@ public class CapstoneQuestDefinitionTests
                 if (CapstoneQuestDefinitionTestData.FixedSpawnSteps.Contains(step))
                 {
                     // Fixed spawns guarantee the whole kill count is standing in the dungeon at once.
-                    waypointTags.Count(tag => tag == line.EncounterSpawnWaypointTags[step])
+                    waypointTags.Count(tag => sharing.Any(entry => entry.line.EncounterSpawnWaypointTags[entry.step] == tag))
                         .Should()
                         .BeGreaterThanOrEqualTo(objective.Amount, $"{quest.QuestId} needs {objective.Amount} fixed spawns in {areaResref}");
                 }
@@ -886,7 +889,8 @@ public class CapstoneQuestDefinitionTests
                     }
 
                     var spawns = spawnTables[tableId].Spawns;
-                    var weight = spawns.Where(spawn => spawn.Resref == line.EnemyResrefs[step]).Sum(spawn => spawn.Weight);
+                    var weight = spawns.Where(spawn => sharing.Any(entry => entry.line.EnemyResrefs[entry.step] == spawn.Resref))
+                        .Sum(spawn => spawn.Weight);
                     var expected = spawnPoints * weight / (double)spawns.Sum(spawn => spawn.Weight);
                     expected.Should().BeGreaterThanOrEqualTo(1, $"{quest.QuestId} needs its enemies to be present in {areaResref}");
                 }

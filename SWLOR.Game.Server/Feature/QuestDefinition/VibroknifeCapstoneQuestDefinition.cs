@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Begin Mikka Varn's trials to unlock Viral Cascade. Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Holdout Recruits, the Annex Holdouts who hold the rooms nearest the entrance, and secure the Viral Cascade Veles Drill Ledger. Any Holdout Recruit counts, but a kill only counts while your venom festers in them.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_VitalRupture_Adept, "viral_cascade", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutRecruits, "viral_cascade", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureVelesDrillLedger)
 
                 .AddState()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat five Holdout Sergeants, the Annex Holdouts who hold the deeper rooms of the Veles Militia Annex on Viscara, and secure the Viral Cascade Militia Range Relay. Any Holdout Sergeant counts, but a kill only counts while your venom festers in them.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_VitalRupture_Specialist, "viral_cascade", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutSergeants, "viral_cascade", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureMilitiaRangeRelay)
 
                 .AddState()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Holdout Lieutenant Korvan Tull in the Veles Militia Annex on Viscara and secure the Viral Cascade Scored Challenge Badge.")
-                .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Warden, 1)
+                .AddKillObjective(NPCGroupType.Viscara_HoldoutLieutenantKorvanTull, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureScoredChallengeBadge)
 
                 .AddState()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Holdout Honor Guards, the Annex Holdouts who guard the deepest part of the Veles Militia Annex on Viscara, and secure the Viral Cascade Captain's Challenge Chit. Any Holdout Honor Guard counts, but a kill only counts while your venom festers in them.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_VitalRupture_InnerCircle, "viral_cascade", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutHonorGuards, "viral_cascade", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureCaptainsChallengeChit)
 
                 .AddState()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Holdout Captain Marek Dolan in the Veles Militia Annex on Viscara.")
-                .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Master, 1)
+                .AddKillObjective(NPCGroupType.Viscara_HoldoutCaptainMarekDolan, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Dalen Orso gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Bring down six Holdout Recruits, the Annex Holdouts who hold the rooms nearest the entrance, and recover the Systemic Shutdown Veles Drill Ledger. Any Holdout Recruit counts, but a kill only counts after exposing them with Crippling Slice or dropping them with Backstab.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_SystemicShutdown_Adept, "systemic_shutdown", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutRecruits, "systemic_shutdown", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownVelesDrillLedger)
 
                 .AddState()
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring down five Holdout Sergeants, the Annex Holdouts who hold the deeper rooms of the Veles Militia Annex on Viscara, and recover the Systemic Shutdown Militia Range Relay. Any Holdout Sergeant counts, but a kill only counts after exposing them with Crippling Slice or dropping them with Backstab.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_SystemicShutdown_Specialist, "systemic_shutdown", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutSergeants, "systemic_shutdown", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownMilitiaRangeRelay)
 
                 .AddState()
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring down Holdout Lieutenant Vessik Rane in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Scored Challenge Badge.")
-                .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Warden, 1)
+                .AddKillObjective(NPCGroupType.Viscara_HoldoutLieutenantVessikRane, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownScoredChallengeBadge)
 
                 .AddState()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring down four Holdout Honor Guards, the Annex Holdouts who guard the deepest part of the Veles Militia Annex on Viscara, and recover the Systemic Shutdown Captain's Challenge Chit. Any Holdout Honor Guard counts, but a kill only counts after exposing them with Crippling Slice or dropping them with Backstab.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_SystemicShutdown_InnerCircle, "systemic_shutdown", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutHonorGuards, "systemic_shutdown", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownCaptainsChallengeChit)
 
                 .AddState()
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Bring down Holdout Captain Jorrik Vael in the Veles Militia Annex on Viscara.")
-                .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Master, 1)
+                .AddKillObjective(NPCGroupType.Viscara_HoldoutCaptainJorrikVael, 1)
 
                 .AddState()
                 .SetStateJournalText(

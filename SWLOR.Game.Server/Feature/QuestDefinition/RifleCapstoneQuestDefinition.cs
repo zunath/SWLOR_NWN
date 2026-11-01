@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Ressa Vale gave you the Czerka Arms Test Range Key. Kill six Range Washouts, the Range Washouts who hold the rooms nearest the entrance of the Czerka Arms Test Range, whose gate stands near the GSI Tower in the Corporate District on Smuggler's Moon, and secure the Kill Box Czerka Test Docket. Any Range Washout counts, but a kill only counts while your Suppression is on them.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_KillBox_Adept, "kill_box", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RangeWashouts, "kill_box", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxCzerkaTestDocket)
 
                 .AddState()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Kill five Range Instructors, the Range Washouts who hold the deeper rooms of the Czerka Arms Test Range on Smuggler's Moon, and recover the Kill Box Blast-Cell Regulator. Any Range Instructor counts, but a kill only counts while your Suppression is on them.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_KillBox_Specialist, "kill_box", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RangeInstructors, "kill_box", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxBlastCellRegulator)
 
                 .AddState()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Range Overseer Sskeer in the deep range of the Czerka Arms Test Range on Smuggler's Moon and take the Kill Box Scored Range Crest.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Warden, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_RangeOverseerSskeer, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxScoredRangeCrest)
 
                 .AddState()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Kill four Black Cell Shooters, the Range Washouts who guard the deepest part of the Czerka Arms Test Range on Smuggler's Moon, and secure the Kill Box Czerka Clearance Chit. Any Black Cell Shooter counts, but a kill only counts while your Suppression is on them.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_KillBox_InnerCircle, "kill_box", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_BlackCellShooters, "kill_box", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxCzerkaClearanceChit)
 
                 .AddState()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Range Director Krassek in the Blast-Safe Cell at the far end of the Czerka Arms Test Range on Smuggler's Moon.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Master, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_RangeDirectorKrassek, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Orin Tal gave you the Czerka Arms Test Range Key. Kill six Range Washouts, the Range Washouts who hold the rooms nearest the entrance of the Czerka Arms Test Range, whose gate stands near the GSI Tower in the Corporate District on Smuggler's Moon, and secure the One Shot Czerka Test Docket. Any Range Washout counts, but a kill only counts with Aimed Shot, Piercing Round or Headshot.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_OneShot_Adept, "one_shot", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RangeWashouts, "one_shot", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotCzerkaTestDocket)
 
                 .AddState()
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Kill five Range Instructors, the Range Washouts who hold the deeper rooms of the Czerka Arms Test Range on Smuggler's Moon, and recover the One Shot Blast-Cell Regulator. Any Range Instructor counts, but a kill only counts with Aimed Shot, Piercing Round or Headshot.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_OneShot_Specialist, "one_shot", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_RangeInstructors, "one_shot", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotBlastCellRegulator)
 
                 .AddState()
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Range Overseer Callum Breck on the long lane of the Czerka Arms Test Range on Smuggler's Moon and take the One Shot Scored Range Crest.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Warden, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_RangeOverseerCallumBreck, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotScoredRangeCrest)
 
                 .AddState()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Kill four Black Cell Shooters, the Range Washouts who guard the deepest part of the Czerka Arms Test Range on Smuggler's Moon, and secure the One Shot Czerka Clearance Chit. Any Black Cell Shooter counts, but a kill only counts with Aimed Shot, Piercing Round or Headshot.")
-                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_OneShot_InnerCircle, "one_shot", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_BlackCellShooters, "one_shot", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotCzerkaClearanceChit)
 
                 .AddState()
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "With at least two allies, defeat Range Director Zhessk in the Blast-Safe Cell at the far end of the Czerka Arms Test Range on Smuggler's Moon.")
-                .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Master, 1)
+                .AddKillObjective(NPCGroupType.SmugglersMoon_RangeDirectorZhessk, 1)
 
                 .AddState()
                 .SetStateJournalText(

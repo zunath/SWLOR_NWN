@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Captain Tov Renn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office in Veles, north-east of where she stands. Defeat six Holdout Recruits, the Annex Holdouts who hold the rooms nearest the entrance, and secure the Invincible Veles Drill Ledger. Any Holdout Recruit counts, but a kill only counts after drawing them to you with Covering Strike.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_Invincible_Adept, "invincible", 6)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutRecruits, "invincible", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleVelesDrillLedger)
 
                 .AddState()
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Clear the range block of the Veles Militia Annex on Viscara. Defeat five Holdout Sergeants, the Annex Holdouts who hold the deeper rooms, and secure the Invincible Militia Range Relay. Any Holdout Sergeant counts, but a kill only counts after drawing them to you with Covering Strike.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_Invincible_Specialist, "invincible", 5)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutSergeants, "invincible", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleMilitiaRangeRelay)
 
                 .AddState()
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Holdout Lieutenant Sarn at the inner gate of the Veles Militia Annex on Viscara and secure the Invincible Scored Challenge Badge. Bring allies; no single fighter gets past him.")
-                .AddKillObjective(NPCGroupType.Viscara_Invincible_Warden, 1)
+                .AddKillObjective(NPCGroupType.Viscara_HoldoutLieutenantSarn, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleScoredChallengeBadge)
 
                 .AddState()
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat four Holdout Honor Guards, the Annex Holdouts who guard the deepest part of the Veles Militia Annex on Viscara, and secure the Invincible Captain's Challenge Chit. Any Holdout Honor Guard counts, but a kill only counts after drawing them to you with Covering Strike.")
-                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_Invincible_InnerCircle, "invincible", 4)
+                .AddCapstoneProofKillObjective(NPCGroupType.Viscara_HoldoutHonorGuards, "invincible", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleCaptainsChallengeChit)
 
                 .AddState()
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Defeat Holdout Captain Haro Kel in the command room of the Veles Militia Annex on Viscara. Bring allies; no one beats his guard alone.")
-                .AddKillObjective(NPCGroupType.Viscara_Invincible_Master, 1)
+                .AddKillObjective(NPCGroupType.Viscara_HoldoutCaptainHaroKel, 1)
 
                 .AddState()
                 .SetStateJournalText(

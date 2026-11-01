@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="amount">The number of kills needed.</param>
         public QuestBuilder AddCapstoneProofKillObjective(NPCGroupType group, string proofKey, int amount)
         {
-            var killObjective = new CapstoneProofKillObjective(group, CapstoneTierGroups.GetTier(group), proofKey, amount);
+            var killObjective = new CapstoneProofKillObjective(group, proofKey, amount);
             _activeState.AddObjective(killObjective);
 
             return this;

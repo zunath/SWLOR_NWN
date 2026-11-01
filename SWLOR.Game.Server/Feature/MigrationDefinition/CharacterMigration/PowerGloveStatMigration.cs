@@ -10,11 +10,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 /// so one glove grants what two identical Katars do. A character wearing a glove before this holds only one hand's
 /// share on the record; this adds the other hand's share.
 /// </summary>
-internal sealed class _25_CountPowerGloveStatsPerHand : ICharacterMigration
+internal static class PowerGloveStatMigration
 {
-    public int Version => 25;
-
-    public void Migrate(SavedCharacter character)
+    public static void Migrate(SavedCharacter character)
     {
         var glove = character.GetEquipped(InventorySlot.RightHand);
         if (glove?.BaseItem != BaseItem.PowerGlove)

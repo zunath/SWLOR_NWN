@@ -173,6 +173,113 @@ namespace SWLOR.Toolset.Tests
             editor.PlacementGhost!.TemplateResRef.Should().Be(PlaceableResRef);
         }
 
+        [AvaloniaTest]
+        public async Task CutKeepsAnIndependentCopyAndUndoRestoresItsComment()
+        {
+            AddAuthoredSourcePlacement();
+            var editor = await CreateEditorAsync();
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            editor.SelectSceneInstance(editor.AreaScene!.Instances.Single());
+            var view = new ShortcutAreaEditorView { DataContext = editor };
+
+            view.SendControlKey(Key.X).Should().BeTrue();
+            var section = editor.Sections.Single(section => section.BlueprintType == ResourceType.Utp);
+            section.Rows.Should().BeEmpty();
+            editor.UndoInstancesCommand.Execute(null);
+            section.Rows.Should().ContainSingle();
+            editor.PasteCopiedSceneInstance().Should().BeTrue();
+            editor.CommitPlacement(new Vector3(8, 9, 0));
+            section.Rows.Should().HaveCount(2);
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            var saved = GicDocument.Load(Path.Combine(_moduleRoot, "gic", $"{AreaResRef}.gic.json"));
+            saved.Placeables.Should().HaveCount(2);
+            GicDocument.GetComment(saved.Placeables[1]).Should().Be("builder note survives copy");
+        }
+
+        [AvaloniaTest]
+        public async Task TextFieldsKeepTheirOwnClipboardAndSpaceKeys()
+        {
+            AddAuthoredSourcePlacement();
+            var editor = await CreateEditorAsync();
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            editor.SelectSceneInstance(editor.AreaScene!.Instances.Single());
+            var view = new ShortcutAreaEditorView { DataContext = editor };
+            var text = new Avalonia.Controls.TextBox { Text = "Builder text" };
+            view.SendKey(Key.X, KeyModifiers.Control, text).Should().BeFalse();
+            view.SendKey(Key.C, KeyModifiers.Control, text).Should().BeFalse();
+            view.SendKey(Key.V, KeyModifiers.Control, text).Should().BeFalse();
+            view.SendKey(Key.Space, source: text).Should().BeFalse();
+            editor.Sections.Single(section => section.BlueprintType == ResourceType.Utp)
+                .Rows.Should().ContainSingle();
+            editor.IsPlacementPending.Should().BeFalse();
+        }
+
+        [AvaloniaTest]
+        public async Task RepeatedPlacementKeepsTheBrushUntilAnOrdinaryPlacementOrEscape()
+        {
+            var editor = await CreateEditorAsync();
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            editor.ArmPlacement(ResourceType.Utp, PlaceableResRef, PaletteSource.Custom).Should().BeTrue();
+            editor.CommitPlacement(new Vector3(2, 3, 0), keepBrush: true);
+            editor.IsPlacementPending.Should().BeTrue();
+            editor.CommitPlacement(new Vector3(4, 5, 0), keepBrush: true);
+            editor.AreaScene!.Instances.Should().HaveCount(2);
+            editor.CommitPlacement(new Vector3(6, 7, 0));
+            editor.IsPlacementPending.Should().BeFalse();
+            editor.AreaScene!.Instances.Should().HaveCount(3);
+
+            editor.ArmPlacement(ResourceType.Utp, PlaceableResRef, PaletteSource.Custom).Should().BeTrue();
+            var view = new ShortcutAreaEditorView { DataContext = editor };
+            view.SendKey(Key.Escape).Should().BeTrue();
+            editor.IsPlacementPending.Should().BeFalse();
+            editor.SelectedSceneInstance.Should().BeNull();
+        }
+
+        [AvaloniaTest]
+        public async Task SpaceDropsToTheWalkmeshAndUndoRestoresAuthoredHeight()
+        {
+            AddAuthoredSourcePlacement();
+            var editor = await CreateEditorAsync();
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            var source = editor.AreaScene!.Instances.Single();
+            editor.MoveSelectedInstance(source, new Vector3(4, 6, 8));
+            var scene = editor.AreaScene!;
+            var groundedScene = new AreaScene
+            {
+                Tileset = scene.Tileset, Width = scene.Width, Height = scene.Height,
+                Instances = scene.Instances, Diagnostics = scene.Diagnostics,
+                Tiles = new[]
+                {
+                    new TilePlacement
+                    {
+                        TileIndex = 0, Column = 0, Row = 0, TileId = 0, Orientation = 0,
+                        HeightLevel = 0, HeightOffset = 0, CenterX = 5, CenterY = 5,
+                        Transform = Matrix4x4.Identity, IsFallback = false,
+                        Walkmesh = new WalkMesh
+                        {
+                            Vertices = new[] { new Vector3(0, 0, 2), new Vector3(10, 0, 2),
+                                new Vector3(10, 10, 2), new Vector3(0, 10, 2) },
+                            Faces = new[] { new WalkFace { A = 0, B = 1, C = 2, Material = 1, Walkable = true },
+                                new WalkFace { A = 0, B = 2, C = 3, Material = 1, Walkable = true } }
+                        }
+                    }
+                }
+            };
+            typeof(AreaEditorViewModel).GetProperty(nameof(AreaEditorViewModel.AreaScene))!
+                .SetValue(editor, groundedScene);
+            var view = new ShortcutAreaEditorView { DataContext = editor };
+            view.SendKey(Key.Space).Should().BeTrue();
+            editor.SelectedSceneInstance!.Position.Should().Be(new Vector3(4, 6, 2));
+            editor.UndoInstancesCommand.Execute(null);
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            var saved = GitDocument.Load(Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json"));
+            InstanceFieldMap.GetPosition(ResourceType.Utp, saved.Placeables[0]).Z.Should().Be(8);
+        }
+
         private void AddAuthoredSourcePlacement()
         {
             var gitPath = Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json");
@@ -272,13 +379,16 @@ namespace SWLOR.Toolset.Tests
 
         private sealed class ShortcutAreaEditorView : AreaEditorView
         {
-            public bool SendControlKey(Key key)
+            public bool SendControlKey(Key key) => SendKey(key, KeyModifiers.Control);
+
+            public bool SendKey(Key key, KeyModifiers modifiers = KeyModifiers.None, object? source = null)
             {
                 var args = new KeyEventArgs
                 {
                     RoutedEvent = KeyDownEvent,
+                    Source = source,
                     Key = key,
-                    KeyModifiers = KeyModifiers.Control
+                    KeyModifiers = modifiers
                 };
                 OnKeyDown(args);
                 return args.Handled;

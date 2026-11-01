@@ -935,6 +935,28 @@ namespace SWLOR.Toolset.Editors
             return true;
         }
 
+        public bool CutSelectedSceneInstance()
+        {
+            if (!CopySelectedSceneInstance())
+                return false;
+            return DeleteSelectedSceneInstance();
+        }
+
+        public bool DropSelectedSceneInstanceToGround()
+        {
+            if (SelectedSceneInstance is not { } instance || AreaScene is not { } scene ||
+                instance.Kind == InstanceMarkerKind.Door || SectionForKind(instance.Kind) == null)
+                return false;
+
+            var position = instance.Position;
+            var height = AreaWalkmesh.GroundHeightAt(scene.Tiles, position.X, position.Y);
+            if (height == null)
+                return false;
+
+            MoveSelectedInstance(instance, new Vector3(position.X, position.Y, height.Value));
+            return true;
+        }
+
         /// <summary>
         /// Arms the copied object as the placement ghost. The next valid map click commits the clone.
         /// </summary>
@@ -1098,18 +1120,14 @@ namespace SWLOR.Toolset.Editors
         /// The heading to hang the new instance at, when the viewport chose one - a door takes the
         /// heading of the doorway it snapped into. Null leaves the blueprint's own default.
         /// </param>
-        public void CommitPlacement(Vector3 position, Vector2? orientation = null)
+        public void CommitPlacement(Vector3 position, Vector2? orientation = null, bool keepBrush = false)
         {
             var section = _pendingPlacementSection;
             var resRef = _pendingPlacementResRef;
             var useIndexedBlueprint = _pendingPlacementUsesIndexedBlueprint;
             var copiedInstance = _pendingPlacementCopy;
-            _pendingPlacementSection = null;
-            _pendingPlacementResRef = null;
-            _pendingPlacementUsesIndexedBlueprint = false;
-            _pendingPlacementCopy = null;
-            PlacementGhost = null;
-            NotifyPlacementChanged();
+            if (!keepBrush)
+                CancelPlacement();
 
             if (section == null || (copiedInstance == null && resRef == null))
                 return;

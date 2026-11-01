@@ -18,12 +18,17 @@ namespace SWLOR.Toolset.Editors
         private Viewport.SwlorAreaViewportMaterialProvider? _materialProvider;
         private SelectionContextMenuState? _selectionMenuState;
         private bool _viewportStateRestored;
+        private bool _keepPlacementBrush;
         private AreaEditorSurface AreaView => SceneView.Surface;
 
         public AreaEditorView()
         {
             InitializeComponent();
             AreaView.ContextRequested += OnViewportContextRequested;
+            AreaView.AddHandler(Avalonia.Input.InputElement.PointerReleasedEvent,
+                (_, args) => _keepPlacementBrush =
+                    (args.KeyModifiers & Avalonia.Input.KeyModifiers.Shift) != 0,
+                RoutingStrategies.Tunnel);
             SceneView.RaiseTileRequested += (sender, args) => _viewModel?.RaiseTileCommand.Execute(null);
             SceneView.LowerTileRequested += (sender, args) => _viewModel?.LowerTileCommand.Execute(null);
             AreaView.Viewport.InstancePicked += OnInstancePicked;
@@ -277,19 +282,39 @@ namespace SWLOR.Toolset.Editors
             if (e.Handled || _viewModel == null)
                 return;
 
+            if (e.Key != Avalonia.Input.Key.Escape && e.Source is Visual source &&
+                (source is TextBox || source.FindAncestorOfType<TextBox>() != null))
+                return;
+
             if (e.KeyModifiers == Avalonia.Input.KeyModifiers.Control)
             {
                 if (e.Key == Avalonia.Input.Key.C)
                     e.Handled = _viewModel.CopySelectedSceneInstance();
                 else if (e.Key == Avalonia.Input.Key.V)
                     e.Handled = _viewModel.PasteCopiedSceneInstance();
+                else if (e.Key == Avalonia.Input.Key.X)
+                    e.Handled = _viewModel.CutSelectedSceneInstance();
 
                 if (e.Handled)
                     return;
             }
 
+            if (e.KeyModifiers != Avalonia.Input.KeyModifiers.None)
+                return;
+
             if (e.Key == Avalonia.Input.Key.Delete)
                 e.Handled = _viewModel.DeleteSelectedSceneInstance();
+            else if (e.Key == Avalonia.Input.Key.Space)
+                e.Handled = _viewModel.DropSelectedSceneInstanceToGround();
+            else if (e.Key == Avalonia.Input.Key.Escape)
+            {
+                e.Handled = _viewModel.IsPlacementPending || _viewModel.IsTilePlacementPending ||
+                            _viewModel.HasSceneSelection || _viewModel.HasTileSelection;
+                _viewModel.CancelPlacement();
+                _viewModel.CancelTilePlacement();
+                _viewModel.SelectSceneInstance(null);
+                _viewModel.SelectTile(null);
+            }
         }
 
         /// <summary>
@@ -310,7 +335,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>A pending placement resolved to a viewport click.</summary>
         private void OnPlacementPointPicked(PlacementPick pick) =>
-            _viewModel?.CommitPlacement(pick.Position, pick.Orientation);
+            _viewModel?.CommitPlacement(pick.Position, pick.Orientation, _keepPlacementBrush);
 
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();

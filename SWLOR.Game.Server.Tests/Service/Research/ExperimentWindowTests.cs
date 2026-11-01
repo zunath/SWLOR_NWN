@@ -43,8 +43,8 @@ public class ExperimentWindowTests
     {
         var values = Enum.GetValues<GuiWindowType>().Select(type => (int)type).ToList();
 
-        ((int)GuiWindowType.ResearchExperiment).Should().Be(89);
-        values.Count(value => value == 88).Should().Be(1);
+        ((int)GuiWindowType.ResearchExperiment).Should().Be(90);
+        values.Count(value => value == 89).Should().Be(1);
     }
 
     [Test]

@@ -52,6 +52,8 @@ class PistolInventoryIconTests(unittest.TestCase):
                         self.assertEqual(stub[2], 2, f"{stem}: stub must be uncompressed")
                         self.assertEqual(struct.unpack_from("<HHBB", stub, 12), (8, 8, 32, 8),
                                          f"{stem}: stub must use 32-bit bottom-left TGA pixels")
+                        with Image.open(tga) as registration:
+                            self.assertIsNotNone(registration.convert("RGBA").getchannel("A").getbbox())
                 self.assertEqual(icon.size, (64, 64))
                 alpha = icon.getchannel("A")
                 self.assertIsNotNone(alpha.getbbox(), "Middle icon must contain visible artwork")
@@ -61,6 +63,14 @@ class PistolInventoryIconTests(unittest.TestCase):
                 digest = hashlib.sha256(visible.tobytes()).hexdigest()
                 self.assertNotIn(digest, seen, f"Part #{part} reuses Part #{seen.get(digest)} artwork")
                 seen[digest] = part
+
+    def test_dds_slots_without_stock_registration_have_tga_stubs(self):
+        for part in (109, 110, 111, 112, 114, 117, 118, 119, 120, 307, 308, 309):
+            with self.subTest(part=part):
+                stem = f"iwbwsh_m_{part % 100 * 10 + part // 100:03}"
+                self.assertTrue((WEAPONS / f"{stem}.dds").is_file())
+                self.assertTrue((WEAPONS / f"{stem}.tga").is_file(),
+                                f"{stem}: native inventory discovery needs a TGA registration")
 
     def test_empty_end_parts_do_not_cover_middle_artwork(self):
         for end in ("b", "t"):

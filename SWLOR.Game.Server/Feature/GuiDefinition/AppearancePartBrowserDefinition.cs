@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     labelRow.AddLabel()
                         .BindText(Bind<string>($"Tile{tile}Label"))
                         .BindIsVisible(Bind<bool>($"Tile{tile}Visible"))
-                        .SetWidth(TileSize)
+                        .SetWidth(TileSize + 10f)
                         .SetHeight(18f)
                         .SetHorizontalAlign(NuiHorizontalAlign.Center);
                 });

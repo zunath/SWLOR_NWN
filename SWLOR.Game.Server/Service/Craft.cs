@@ -11,8 +11,8 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -175,11 +175,13 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
-        private static bool IsResearchableRecipe(RecipeDetail recipe)
+        /// <summary>Whether the Research Terminal can turn a recipe into a blueprint: weapons, armor, food, ship modules and ship deeds.</summary>
+        public static bool IsResearchableRecipe(RecipeDetail recipe)
         {
             return recipe.EnhancementType == RecipeEnhancementType.Weapon ||
                    recipe.EnhancementType == RecipeEnhancementType.Armor ||
-                   recipe.EnhancementType == RecipeEnhancementType.Food;
+                   recipe.EnhancementType == RecipeEnhancementType.Food ||
+                   ShipBlueprintRules.IsResearchable(recipe);
         }
 
         private static void CacheEnhancementSubTypes()
@@ -210,6 +212,44 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="recipeType">The type of recipe to look for.</param>
         /// <returns>true if recipe has been registered, false otherwise.</returns>
+        /// <summary>The name a recipe list shows: the recipe's own name when it has one, else the crafted item's.</summary>
+        public static string GetRecipeName(RecipeDetail recipe)
+        {
+            return string.IsNullOrWhiteSpace(recipe.Name) ? Cache.GetItemNameByResref(recipe.Resref) : recipe.Name;
+        }
+
+        /// <summary>Whether the recipe is built at a station Shipyard (the space revamp's Capital hull deeds).</summary>
+        public static bool IsShipyardRecipe(RecipeDetail recipe) =>
+            recipe.Requirements.OfType<RecipeShipyardRequirement>().Any();
+
+        /// <summary>
+        /// The credits the station charges for one craft of the recipe beside the blueprint's cost: the Shipyard fee of the station whose
+        /// Shipyard the player stands at, for a Shipyard recipe. 0 for every other recipe.
+        /// </summary>
+        public static int GetStationFee(uint player, RecipeDetail recipe) =>
+            IsShipyardRecipe(recipe) ? StationBuildings.GetShipyardFee(StationBuildings.GetShipyardStation(player)) : 0;
+
+        /// <summary>
+        /// Takes the station's fee for one craft of the recipe from the player. Returns the charge for the station's treasury, which is
+        /// credited only once the character file holds the payment (<c>CraftSessionLifecycle</c>); null when there is none.
+        /// </summary>
+        public static CraftService.Minigame.StationFeeCharge TakeStationFee(uint player, RecipeDetail recipe)
+        {
+            if (!IsShipyardRecipe(recipe))
+                return null;
+
+            var station = StationBuildings.GetShipyardStation(player);
+            var fee = station == null ? 0 : StationBuildings.TakeShipyardFee(player, station);
+            return fee > 0 ? new CraftService.Minigame.StationFeeCharge(station.Id, fee) : null;
+        }
+
+        /// <summary>
+        /// The station's bonus to a craft's progress, in percent: a droid assigned to the Shipyard speeds up Capital hull builds
+        /// (<see cref="StationService.StationDroidRules.ShipyardBuildSpeedPercent"/>). 0 for every other recipe.
+        /// </summary>
+        public static int GetStationProgressBonusPercent(uint player, RecipeDetail recipe) =>
+            IsShipyardRecipe(recipe) ? StationBuildings.GetShipyardSpeedPercent(player) : 0;
+
         public static bool RecipeExists(RecipeType recipeType)
         {
             return _recipes.ContainsKey(recipeType);
@@ -417,6 +457,17 @@ namespace SWLOR.Game.Server.Service
                 recipeDetailColors.Add(GuiColor.White);
             }
 
+            // An Advanced deed's rare-trait slot, or the stand-in for its rare component (W11o).
+            if (detail.Category == RecipeCategoryType.Starship)
+            {
+                var rare = ShipRareComponentRules.RareComponentOf(detail.Components.Keys);
+                foreach (var line in ShipRareComponentRules.StandInLines(detail.Resref, rare == null ? null : Cache.GetItemNameByResref(rare)))
+                {
+                    recipeDetails.Add(line);
+                    recipeDetailColors.Add(GuiColor.White);
+                }
+            }
+
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.Green);
 
@@ -557,7 +608,7 @@ namespace SWLOR.Game.Server.Service
             if (tier > 5)
                 tier = 5;
 
-            return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
+            return CraftRankMilestones.GetResearchTier(player) >= tier;
         }
 
         /// <summary>
@@ -983,11 +1034,10 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var terminal = OBJECT_SELF;
-            var researchLevel = Perk.GetPerkLevel(player, PerkType.Research);
 
-            if (researchLevel <= 0)
+            if (CraftRankMilestones.GetResearchTier(player) <= 0)
             {
-                SendMessageToPC(player, $"Perk 'Research I' is required to use research terminals.");
+                SendMessageToPC(player, $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.");
                 return;
             }
 
@@ -1018,7 +1068,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         var delta = dbJob.DateCompleted - now;
                         var completionTime = Time.GetTimeLongIntervals(delta, false);
-                        SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                        SendMessageToPC(player, $"Another player's research job is active. This job will complete in: {completionTime}.");
                     }
                     else
                     {
@@ -1045,6 +1095,8 @@ namespace SWLOR.Game.Server.Service
             var recipeId = GetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID");
             blueprintDetail.Recipe = (RecipeType)recipeId;
             blueprintDetail.RandomEnhancementSlotGranted = GetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED");
+            blueprintDetail.GuaranteedTraits = ShipTraitRules.Parse(GetLocalString(blueprint, ShipBlueprintRules.GuaranteedTraitsVariable));
+            blueprintDetail.PrototypeTechUsed = GetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable);
 
             var blueprintProperties = new List<(ItemProperty Property, ItemPropertyType Type, int SubType, int CostValue)>();
             for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
@@ -1134,6 +1186,10 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", (int)blueprintDetail.Recipe);
             SetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED", blueprintDetail.RandomEnhancementSlotGranted);
+            if (blueprintDetail.GuaranteedTraits.Count > 0)
+                SetLocalString(blueprint, ShipBlueprintRules.GuaranteedTraitsVariable, ShipTraitRules.Format(blueprintDetail.GuaranteedTraits));
+            if (blueprintDetail.PrototypeTechUsed)
+                SetLocalBool(blueprint, ShipBlueprintRules.PrototypeTechVariable, true);
 
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprintDetail.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.LicensedRuns, blueprintDetail.LicensedRuns), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -1207,7 +1263,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var dbJob in dbJobs)
             {
-                DB.Delete<ResearchJob>(dbJob.Id);
+                CraftService.Research.ResearchExperimentService.DeleteJob(dbJob);
             }
         }
     }

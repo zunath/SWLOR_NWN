@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public InvincibleStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -50;
+            StatGroup.Stats[StatType.SpaceDamageTakenPercentAdjustment] = -50;
         }
 
         protected override void Apply(uint creature, int durationTicks)

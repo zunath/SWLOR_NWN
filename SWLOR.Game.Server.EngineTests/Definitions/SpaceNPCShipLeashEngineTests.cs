@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(ship);
             ctx.Assert(GetIsEnemy(player.Creature, ship), "player is an enemy of the ship");
             ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), target);
-            ctx.Assert(GetDistanceBetween(ship, target) <= 30f, $"target starts inside laser range ({GetDistanceBetween(ship, target):0.0}m)");
+            ctx.Assert(GetDistanceBetween(ship, target) <= 40f, $"target starts inside laser range ({GetDistanceBetween(ship, target):0.0}m)");
 
             // Home far from both ships puts the target outside the leash radius.
             var home = Location(ctx.Arena, new System.Numerics.Vector3(1f, 1f, 0f), 0f);

@@ -3,12 +3,16 @@ using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
+using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -31,9 +35,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             public int TimeReduction { get; set; }
             public int ItemBonuses { get; set; }
             public List<ItemProperty> GuaranteedBonuses { get; set; }
+            public List<ShipComponentTraitType> GuaranteedTraits { get; set; }
             public int CreditCost { get; set; }
             public int TimeCost { get; set; }
-            public int RequiredPerkLevel { get; set; }
+            public int RequiredResearchTier { get; set; }
 
             public string TimeString
             {
@@ -134,6 +139,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>A job with an experiment cannot be cancelled, so the button stays disabled for it.</summary>
+        public bool IsCancelEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ExperimentLines
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         private ResearchJob GetJob()
         {
             var query = new DBQuery<ResearchJob>()
@@ -149,13 +167,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(recipeType);
             var blueprint = Craft.GetBlueprintDetails(blueprintItem);
             var currentLevel = blueprint.Level <= 0 ? 0 : blueprint.Level;
-            var licensedRunsMinimum = 1 + Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
+            var licensedRunsMinimum = 1 + CraftRankMilestones.GetBlueprintLicensedRunBonus(Player);
             var licensedRunsMaximum = licensedRunsMinimum + 2;
             var creditCost = Craft.CalculateBlueprintResearchCreditCost(_recipeType, currentLevel + 1, blueprint.CreditReduction);
             var timeCost = Craft.CalculateBlueprintResearchSeconds(_recipeType, currentLevel + 1, blueprint.TimeReduction);
-            var perkLevel = recipe.Level / 10 + 1;
-            if (perkLevel > 5)
-                perkLevel = 5;
+            var researchTier = recipe.Level / 10 + 1;
+            if (researchTier > 5)
+                researchTier = 5;
 
             return new ResearchJobDetails
             {
@@ -170,9 +188,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 TimeReduction = blueprint.TimeReduction,
                 ItemBonuses = blueprint.ItemBonuses,
                 GuaranteedBonuses = blueprint.GuaranteedBonuses,
+                GuaranteedTraits = blueprint.GuaranteedTraits,
                 CreditCost = creditCost,
                 TimeCost = timeCost,
-                RequiredPerkLevel = perkLevel
+                RequiredResearchTier = researchTier
             };
         }
 
@@ -184,6 +203,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var now = DateTime.UtcNow;
             var dbJob = GetJob();
+            ExperimentLines = new GuiBindingList<string>();
+
+            // An experiment left open (a crash, or a window closed without being settled) ends with its saved evidence. Only its owner's
+            // window settles it: another player looking at the terminal never ends an experiment its owner may still be working.
+            var jobChanged = false;
+            var owned = ResearchExperimentLifecycle.IsOwnedBy(dbJob, GetObjectUUID(Player));
+            if (owned && ResearchExperimentLifecycle.IsOpen(dbJob) && !Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
+            {
+                ResearchExperimentLifecycle.Settle(dbJob, ServiceMinigameRandom.Instance);
+                jobChanged = true;
+            }
+
+            // A settled experiment whose XP was never given (the player logged out or was dead when it settled) pays it now, once.
+            // The payout records the XP on the player before it marks the job, so a stop in between never pays it twice; a dead
+            // player is paid the next time the window opens.
+            if (owned && ResearchExperimentLifecycle.IsExperimentXpOwed(dbJob))
+            {
+                ResearchExperimentService.GrantExperimentXp(Player, dbJob);
+                jobChanged |= dbJob.Experiment.XpGranted;
+            }
+
+            if (jobChanged)
+                DB.Set(dbJob);
 
             // New Job
             if (dbJob == null)
@@ -200,7 +242,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : $"Licensed Runs: {researchJob.CurrentLicensedRuns}";
                 TimeReduction = $"Time Reduction: -{researchJob.TimeReduction}%";
                 ItemBonuses = $"Item Bonuses: {researchJob.ItemBonuses}";
-                GuaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                var guaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                foreach (var line in ShipTraitRules.DescribeLines(researchJob.GuaranteedTraits))
+                {
+                    guaranteedBonuses.Add(line);
+                }
+                GuaranteedBonuses = guaranteedBonuses;
                 CreditCost = $"Price: {researchJob.CreditCost}cr";
                 TimeCost = $"Time: {researchJob.TimeString}";
                 NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
@@ -221,6 +268,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
                 JobProgressTime = $"Remaining: {timeString}";
+                IsCancelEnabled = ResearchExperimentLifecycle.CanCancel(dbJob);
+                ExperimentLines = BuildExperimentLines(dbJob);
             }
             // Complete
             else if (now >= dbJob.DateCompleted)
@@ -233,41 +282,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = 1f;
                 JobProgressTime = "COMPLETE";
+                ExperimentLines = BuildExperimentLines(dbJob);
             }
+        }
+
+        private static GuiBindingList<string> BuildExperimentLines(ResearchJob job)
+        {
+            var lines = new GuiBindingList<string>();
+            foreach (var line in ResearchExperimentLifecycle.Describe(job.Experiment))
+                lines.Add(line);
+
+            return lines;
         }
 
         private string GetUpgradeLevelBonus(int level)
         {
-            switch (level)
-            {
-                case 1:
-                    return "Item Bonus +1";
-                case 2:
-                    return "Licensed Run +1";
-                case 3:
-                    return "Blueprint Bonus";
-                case 4:
-                    return "Licensed Run +1";
-                case 5:
-                    return "Blueprint Bonus";
-                case 6:
-                    return "Item Bonus +1";
-                case 7:
-                    return "Guaranteed Item Bonus";
-                case 8:
-                    return "Blueprint Bonus";
-                case 9:
-                    return "Item Bonus +1";
-                case 10:
-                    return "Enhancement Slot +1";
-
-                default:
-                    return "MAX";
-            }
+            return ResearchGrantRules.Describe(level);
         }
 
         private string ValidateJob()
         {
+            if (Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
+            {
+                return "Finish your current research experiment first.";
+            }
+
+            // A craft in another window holds the player's gear and session, so the experiment cannot start beside it.
+            if (CraftMinigameRouting.IsAnyCraftWindowOpen(Player))
+            {
+                return "Finish your current craft first.";
+            }
+
             var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
 
             if (researchJob.CurrentLevel > 0 && !GetIsObjectValid(_blueprintItem))
@@ -285,9 +330,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return "Not enough credits!";
             }
 
-            if (Perk.GetPerkLevel(Player, PerkType.Research) < researchJob.RequiredPerkLevel)
+            if (CraftRankMilestones.GetResearchTier(Player) < researchJob.RequiredResearchTier)
             {
-                return $"Research level {researchJob.RequiredPerkLevel} required.";
+                return $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(researchJob.RequiredResearchTier)} is required to research this recipe.";
             }
 
             if (researchJob.CurrentLevel >= Craft.MaxResearchLevel)
@@ -309,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(Player);
-            var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
+            var maxConcurrentJobs = CraftRankMilestones.GetMaxConcurrentResearchJobs(Player);
             var dbQuery = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
             var currentJobs = DB.Search(dbQuery).ToList();
@@ -326,45 +371,104 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action ClickStartJob() => () =>
         {
             var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
-            ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. Are you sure you want to start the job?",
+            ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. A short experiment follows that can shorten the job; closing it early keeps the evidence you gathered. Are you sure you want to start the job?",
                 () =>
                 {
-                    var jobValidation = ValidateJob();
-                    if (!string.IsNullOrWhiteSpace(jobValidation))
+                    // A ship blueprint can spend one Prototype Tech, once, for a guaranteed bonus of the best tier its recipe allows.
+                    var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
+                    if (ShipBlueprintRules.IsResearchable(Craft.GetRecipe(_recipeType)) && GetIsObjectValid(prototypeTech) &&
+                        !HasSpentPrototypeTech())
                     {
-                        FloatingTextStringOnCreature(jobValidation, Player, false);
-                        ChangePartialView(PartialView, StartStageView);
+                        ShowModal("Spend one Prototype Tech on this job? The blueprint gains a guaranteed bonus of the best tier its recipe level allows when the job completes. A blueprint takes Prototype Tech only once.",
+                            () => StartJob(researchJob, true),
+                            () => StartJob(researchJob, false),
+                            "Spend",
+                            "Don't Spend");
                         return;
                     }
 
-                    var now = DateTime.UtcNow;
-                    var dbResearchJob = new ResearchJob
-                    {
-                        ParentPropertyId = _researchTerminalPropertyId,
-                        PlayerId = GetObjectUUID(Player),
-                        DateStarted = now,
-                        DateCompleted = now.AddSeconds(researchJob.TimeCost),
-                        SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
-                        Level = researchJob.CurrentLevel,
-                        Recipe = _recipeType
-                    };
-                    DB.Set(dbResearchJob);
-
-                    AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
-                    DestroyObject(_blueprintItem);
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                    StartJob(researchJob, false);
                 }, () =>
                 {
                     ChangePartialView(PartialView, StartStageView);
                 });
         };
 
+        /// <summary>Whether the blueprint being researched already gained its Prototype Tech bonus.</summary>
+        private bool HasSpentPrototypeTech() =>
+            GetIsObjectValid(_blueprintItem) && Craft.GetBlueprintDetails(_blueprintItem).PrototypeTechUsed;
+
+        private void StartJob(ResearchJobDetails researchJob, bool spendPrototypeTech)
+        {
+            var jobValidation = ValidateJob();
+            if (!string.IsNullOrWhiteSpace(jobValidation))
+            {
+                FloatingTextStringOnCreature(jobValidation, Player, false);
+                ChangePartialView(PartialView, StartStageView);
+                return;
+            }
+
+            // The Prototype Tech leaves the inventory with the blueprint and the credits, so the start's file stamp covers all three.
+            var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
+            var usesPrototypeTech = spendPrototypeTech && GetIsObjectValid(prototypeTech) && !HasSpentPrototypeTech();
+            if (usesPrototypeTech)
+                Item.ReduceItemStack(prototypeTech, 1);
+
+            var now = DateTime.UtcNow;
+            var targetLevel = researchJob.CurrentLevel + 1;
+            var extraBonus = ResearchGrantRules.RollExtraBonus(targetLevel, ServiceMinigameRandom.Instance);
+            var licensedRunsGrant = ResearchGrantRules.RollLicensedRunsGrant(
+                targetLevel, researchJob.EnhancementSlots > 0, ServiceMinigameRandom.Instance);
+            var trials = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials;
+            var dbResearchJob = new ResearchJob
+            {
+                ParentPropertyId = _researchTerminalPropertyId,
+                PlayerId = GetObjectUUID(Player),
+                DateStarted = now,
+                DateCompleted = now.AddSeconds(researchJob.TimeCost),
+                SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
+                Level = researchJob.CurrentLevel,
+                Recipe = _recipeType,
+                PrototypeTech = usesPrototypeTech,
+                Experiment = ResearchExperimentLifecycle.Open(
+                    targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
+            };
+            ResearchExperimentService.StampStart(Player, dbResearchJob);
+
+            AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
+            DestroyObject(_blueprintItem);
+            NwnCraftSessionWorld.Instance.PersistCharacter(Player);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+            Gui.TogglePlayerWindow(
+                Player,
+                GuiWindowType.ResearchExperiment,
+                new ResearchExperimentPayload(dbResearchJob.Id),
+                TetherObject);
+        }
+
         public Action ClickCancelJob() => () =>
         {
+            if (!ResearchExperimentLifecycle.IsOwnedBy(GetJob(), GetObjectUUID(Player)))
+            {
+                FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false);
+                return;
+            }
+
+            if (!ResearchExperimentLifecycle.CanCancel(GetJob()))
+            {
+                FloatingTextStringOnCreature(ResearchExperimentLifecycle.CannotCancelMessage, Player, false);
+                return;
+            }
+
             ShowModal("Canceling the research job will forfeit all credits spent and progress made towards the next level. You will not be refunded! Are you sure you want to cancel this research job?",
                 () =>
                 {
                     var dbJob = GetJob();
+                    if (!ResearchExperimentLifecycle.IsOwnedBy(dbJob, GetObjectUUID(Player)))
+                    {
+                        FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false);
+                        return;
+                    }
 
                     if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem) &&
                         !Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbJob.SerializedItem)))
@@ -373,7 +477,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    DB.Delete<ResearchJob>(dbJob.Id);
+                    ResearchExperimentService.FinishDelivery(Player, dbJob);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                     FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
@@ -389,7 +493,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action ClickCompleteJob() => () =>
         {
             var dbJob = GetJob();
+            if (!ResearchExperimentLifecycle.IsOwnedBy(dbJob, GetObjectUUID(Player)))
+            {
+                FloatingTextStringOnCreature(ResearchExperimentLifecycle.NotOwnerMessage, Player, false);
+                return;
+            }
+
             var recipe = Craft.GetRecipe(dbJob.Recipe);
+
+            if (ResearchExperimentLifecycle.IsOpen(dbJob))
+            {
+                if (Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
+                {
+                    FloatingTextStringOnCreature("Finish your experiment first.", Player, false);
+                    return;
+                }
+
+                ResearchExperimentLifecycle.Settle(dbJob, ServiceMinigameRandom.Instance);
+            }
 
             bool isNewBlueprint;
             uint item;
@@ -422,50 +543,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var blueprintDetails = Craft.GetBlueprintDetails(item);
 
-            void AddBlueprintBonus()
-            {
-                var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 &&
-                                          blueprintDetails.Level < Craft.MaxResearchLevel;
-
-                int[] weights;
-
-                if (hasEnhancementBonus)
-                {
-                    weights = new[]
-                    {
-                        310,
-                        420,
-                        420
-                    };
-                }
-                else
-                {
-                    weights = new[]
-                    {
-                        300,
-                        400,
-                        400
-                    };
-                }
-
-                var index = Random.GetRandomWeightedIndex(weights);
-
-                if (index == 0) // 0 = Licensed Runs
-                {
-                    blueprintDetails.LicensedRuns += Random.D3(1);
-                }
-                else if (index == 1) // 1 = Credit Reduction
-                {
-                    blueprintDetails.CreditReduction += Random.D10(1);
-                }
-                else if (index == 2) // 2 = Time Reduction
-                {
-                    blueprintDetails.TimeReduction += Random.D10(1);
-                }
-            }
-
             void AddGuaranteedBonus(int tier)
             {
+                // A ship blueprint's guaranteed bonuses are blueprint traits, within the research ceiling
+                // (ShipBlueprintRules.PickGuaranteed: the recipe level caps the tier, no repeats, at most 11).
+                if (ShipBlueprintRules.IsResearchable(recipe))
+                {
+                    var trait = ShipBlueprintRules.PickGuaranteed(
+                        recipe, tier, blueprintDetails.GuaranteedTraits, Random.Next);
+                    if (trait != ShipComponentTraitType.None)
+                        blueprintDetails.GuaranteedTraits.Add(trait);
+                    return;
+                }
+
                 var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
                 ItemProperty ip;
 
@@ -492,75 +582,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            blueprintDetails.Level++;
-            if (blueprintDetails.Level > Craft.MaxResearchLevel)
-                blueprintDetails.Level = Craft.MaxResearchLevel;
+            var completion = ResearchGrantRules.Complete(
+                blueprintDetails,
+                dbJob.Experiment,
+                ServiceMinigameRandom.Instance,
+                AddGuaranteedBonus);
 
-            switch (blueprintDetails.Level)
+            // Prototype Tech adds its guaranteed trait once per blueprint.
+            if (dbJob.PrototypeTech && ShipBlueprintRules.IsResearchable(recipe) && !blueprintDetails.PrototypeTechUsed)
             {
-                case 1:
-                    blueprintDetails.ItemBonuses++;
-                    if(Random.Next(1000) <= 1)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 2:
-                    blueprintDetails.LicensedRuns++;
-                    if (Random.Next(1000) <= 2)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 3:
-                    AddBlueprintBonus();
-                    if (Random.Next(1000) <= 3)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 4:
-                    blueprintDetails.LicensedRuns++;
-                    if (Random.Next(1000) <= 10)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 5:
-                    AddBlueprintBonus();
-                    if (Random.Next(1000) <= 15)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 6:
-                    blueprintDetails.ItemBonuses++;
-                    if (Random.Next(1000) <= 20)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 7:
-                    AddGuaranteedBonus(3);
-                    if (Random.Next(1000) <= 50)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 8:
-                    AddBlueprintBonus();
-                    if (Random.Next(1000) <= 80)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 9:
-                    blueprintDetails.ItemBonuses++;
-                    if (Random.Next(1000) <= 100)
-                        AddGuaranteedBonus(2);
-                    break;
-                case 10:
-                    blueprintDetails.EnhancementSlots++;
-                    if (Random.Next(1000) <= 120)
-                        AddGuaranteedBonus(3);
-                    break;
+                AddGuaranteedBonus(RevampRewardCatalog.PrototypeTechBonusTier);
+                blueprintDetails.PrototypeTechUsed = true;
             }
 
             if (isNewBlueprint)
             {
-                var scientificNetworking = Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
-                blueprintDetails.LicensedRuns = Random.D3(1) + scientificNetworking;
+                var licensedRunBonus = CraftRankMilestones.GetBlueprintLicensedRunBonus(Player);
+                blueprintDetails.LicensedRuns = Random.D3(1) + licensedRunBonus;
                 blueprintDetails.Recipe = dbJob.Recipe;
             }
 
             Craft.SetBlueprintDetails(item, blueprintDetails);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
-            DB.Delete<ResearchJob>(dbJob.Id);
+            var experimentXp = ResearchExperimentService.GrantExperimentXp(Player, dbJob);
+            var completionXp = ResearchExperimentService.GrantCompletionXp(Player, dbJob, completion.Level);
+            ResearchExperimentService.FinishDelivery(Player, dbJob);
+
+            SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp));
         };
+
+        private static string DescribeCompletion(ResearchCompletion completion, int xp)
+        {
+            var gained = completion.Grant == ResearchLevelGrant.RandomBlueprintBonus
+                ? completion.Candidate == ResearchCandidate.LicensedRuns
+                    ? $"Licensed Runs +{completion.Amount}"
+                    : $"{ResearchGrantRules.CandidateName(completion.Candidate, completion.Level)} +{completion.Amount}%"
+                : ResearchGrantRules.Describe(completion.Level);
+            var extra = completion.ExtraBonusTier > 0 ? $" An extra guaranteed bonus (tier {completion.ExtraBonusTier}) was added." : string.Empty;
+            var xpText = xp > 0 ? $" +{xp} Fabrication XP." : string.Empty;
+            return $"Research complete: the blueprint is now level {completion.Level}. {gained}.{extra}{xpText}";
+        }
     }
 }

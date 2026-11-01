@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .ResearchCostModifier(0.2f)
-                .Component("chiro_shard", 5);
+                .Component("chiro_shard", 5)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 30, targetSweet: 2, targetSpice: 30, innerRadius: 4, outerRadius: 19, freshness: 79);
         }
     }
 }

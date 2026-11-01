@@ -169,6 +169,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether a guild's board hides a task the player completed since the tasks were loaded. Most guilds keep a completed
+        /// task off the board until the next server start; a guild marked <see cref="GuildAttribute.TasksRefreshAfterCompletion"/>
+        /// puts it back at once, so the player can take another task of the same tier.
+        /// </summary>
+        /// <param name="guild">The guild whose board is being built.</param>
+        /// <param name="dateLastCompleted">When the player last completed the task, or null if they have not.</param>
+        /// <param name="dateTasksLoaded">When the guild's tasks were loaded, or null before they are.</param>
+        public static bool IsCompletedTaskHidden(GuildType guild, DateTime? dateLastCompleted, DateTime? dateTasksLoaded)
+        {
+            if (guild.GetAttribute<GuildType, GuildAttribute>().TasksRefreshAfterCompletion)
+                return false;
+
+            return dateLastCompleted >= dateTasksLoaded;
+        }
+
+        /// <summary>
         /// Retrieves quest details associated with the active guild tasks by rank.
         /// </summary>
         /// <param name="guild">The guild type to retrieve for</param>

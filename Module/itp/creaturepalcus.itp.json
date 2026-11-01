@@ -1067,6 +1067,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 40.0
                     },
                     "FACTION": {
@@ -1105,6 +1124,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 40.0
                     },
                     "FACTION": {
@@ -1118,6 +1156,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t4gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4carrier"
                     }
                   },
                   {
@@ -1143,6 +1200,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4ewar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 40.0
                     },
                     "FACTION": {
@@ -1156,6 +1232,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t4cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4logistics"
                     }
                   },
                   {
@@ -1238,6 +1333,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 60.0
                     },
                     "FACTION": {
@@ -1276,6 +1390,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 60.0
                     },
                     "FACTION": {
@@ -1289,6 +1422,956 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t6gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6carrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1pirint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1pirftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1pirgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2pirint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2pirftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2pirgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3pirint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3pirftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3pirgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4pirint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 33.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4pirftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4pirgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5pirint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5pirftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Cutlass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrfighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Prowler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrinterceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrbomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrsniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrewar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrminelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Marauder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrgunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrlogistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Mothership"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrcarrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5pirgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6pirint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6pirftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pirate Raider Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6pirgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Customs Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1repcusgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Customs Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1repcusint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Customs Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1czkcusgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Customs Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1czkcusint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Customs Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2repcusgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Customs Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2repcusint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Customs Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5repcusgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Customs Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5repcusint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Customs Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sithcusgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Customs Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sithcusint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trade Convoy Hauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1convoy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Convoy Escort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1escort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trade Convoy Hauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2convoy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Convoy Escort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2escort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trade Convoy Hauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3convoy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Convoy Escort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3escort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trade Convoy Hauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4convoy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Convoy Escort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4escort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trade Convoy Hauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5convoy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Convoy Escort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5escort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trade Convoy Hauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6convoy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Convoy Escort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6escort"
                     }
                   },
                   {
@@ -1314,6 +2397,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6ewar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 60.0
                     },
                     "FACTION": {
@@ -1327,6 +2429,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t6cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6logistics"
                     }
                   },
                   {
@@ -1428,6 +2549,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 20.0
                     },
                     "FACTION": {
@@ -1466,6 +2606,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 20.0
                     },
                     "FACTION": {
@@ -1485,6 +2644,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2carrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 17.0
                     },
                     "FACTION": {
@@ -1498,6 +2676,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t2interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2ewar"
                     }
                   },
                   {
@@ -1536,6 +2733,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t2cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2logistics"
                     }
                   },
                   {
@@ -1599,6 +2815,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 50.0
                     },
                     "FACTION": {
@@ -1612,6 +2847,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t5platform"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Derelict Defense Turret"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5derturret1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Derelict Defense Turret"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5derturret2"
                     }
                   },
                   {
@@ -1637,6 +2910,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 50.0
                     },
                     "FACTION": {
@@ -1656,6 +2948,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5carrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 47.0
                     },
                     "FACTION": {
@@ -1669,6 +2980,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t5interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5ewar"
                     }
                   },
                   {
@@ -1713,6 +3043,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5logistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 5.0
                     },
                     "FACTION": {
@@ -1726,6 +3075,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t1bomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1minelayer"
                     }
                   },
                   {
@@ -1770,6 +3138,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 10.0
                     },
                     "FACTION": {
@@ -1789,6 +3176,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1carrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 7.0
                     },
                     "FACTION": {
@@ -1802,6 +3208,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t1interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1ewar"
                     }
                   },
                   {
@@ -1846,6 +3271,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1logistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 25.0
                     },
                     "FACTION": {
@@ -1859,6 +3303,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t3bomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3minelayer"
                     }
                   },
                   {
@@ -1903,6 +3366,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 30.0
                     },
                     "FACTION": {
@@ -1930,11 +3412,49 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Snowdrift Syndicate Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3logistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Snowdrift Syndicate Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "t3gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3carrier"
                     }
                   },
                   {
@@ -1954,6 +3474,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t3interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3ewar"
                     }
                   },
                   {
@@ -2011,6 +3550,1298 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithcap1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutt Cartel Enforcer Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4huttenfgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutt Cartel Enforcer Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4huttenfint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 33.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sitharmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sitharmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 33.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmplt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Command Ship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5mandoarmcmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmftr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmbmb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmgun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Armada Blockade Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6mandoarmplt"
                     }
                   }
                 ]
@@ -2884,7 +5715,8 @@
                             "type": "resref",
                             "value": "abs_rakghoul"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -2921,7 +5753,8 @@
                             "type": "resref",
                             "value": "abs_rakalpha"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -2958,7 +5791,8 @@
                             "type": "resref",
                             "value": "abs_rakbrute"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -2995,7 +5829,8 @@
                             "type": "resref",
                             "value": "abs_rakstalk"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
@@ -3146,7 +5981,8 @@
                             "type": "resref",
                             "value": "abs_subzero"
                           }
-                        },                        {
+                        },
+                        {
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",

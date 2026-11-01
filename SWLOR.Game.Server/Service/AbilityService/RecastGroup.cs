@@ -935,6 +935,57 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Crossfire Stance", "Crossfire St.", true)]
         CrossfireStance = 578,
 
+        [RecastGroup("Ace Disabling Shot", "Disabling Shot", true)]
+        AceDisablingShot = 585,
+
+        [RecastGroup("Ace Double Shot", "Ace Dbl. Shot", true)]
+        AceDoubleShot = 586,
+
+        [RecastGroup("Ace Point Blank Burst", "Ace Burst", true)]
+        AcePointBlankBurst = 587,
+
+        [RecastGroup("Ace Stance", "Ace Stance", true)]
+        AceStance = 588,
+
+        [RecastGroup("Ordnance Volley", "Volley", true)]
+        OrdnanceVolley = 589,
+
+        [RecastGroup("Ordnance Flare Missile", "Flare Missile", true)]
+        OrdnanceFlareMissile = 590,
+
+        [RecastGroup("Ordnance Concussion Barrage", "Concussion", true)]
+        OrdnanceConcussionBarrage = 591,
+
+        [RecastGroup("Ordnance Stance", "Ord. Stance", true)]
+        OrdnanceShipStance = 592,
+
+        [RecastGroup("Bulwark Shield Ram", "Shield Ram", true)]
+        BulwarkShieldRam = 593,
+
+        [RecastGroup("Bulwark Defiance", "Defiance", true)]
+        BulwarkDefiance = 594,
+
+        [RecastGroup("Bulwark Hail", "Hail", true)]
+        BulwarkHail = 595,
+
+        [RecastGroup("Bulwark Hail II", "Hail II", true)]
+        BulwarkHail2 = 596,
+
+        [RecastGroup("Bulwark Stance", "Bulwark Stance", true)]
+        BulwarkShipStance = 597,
+
+        [RecastGroup("Command Emergency Repair", "Emerg. Repair", true)]
+        CommandEmergencyRepair = 598,
+
+        [RecastGroup("Command Focus Fire", "Focus Fire", true)]
+        CommandFocusFire = 599,
+
+        [RecastGroup("Command Break Formation", "Brk. Formation", true)]
+        CommandBreakFormation = 600,
+
+        [RecastGroup("Command Formation", "Formation", true)]
+        CommandFormation = 601,
+
     }
 
     public class RecastGroupAttribute : Attribute

@@ -47,7 +47,7 @@ One line per guide. Rule guides are required reading before working in their are
 
 ## Plans, audits, and data
 
-- [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md), [BeastMutationExpansionPlan.md](BeastMutationExpansionPlan.md), [VelesTradeConcourse.md](VelesTradeConcourse.md), [SkillRankLimitsPlan.md](SkillRankLimitsPlan.md): feature plans.
+- [CraftingRevampPlan.md](CraftingRevampPlan.md), [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md), [BeastMutationExpansionPlan.md](BeastMutationExpansionPlan.md), [VelesTradeConcourse.md](VelesTradeConcourse.md), [SkillRankLimitsPlan.md](SkillRankLimitsPlan.md), [SpaceRevampPlan.md](SpaceRevampPlan.md): feature plans.
 - [WeatherAreaAudit.md](WeatherAreaAudit.md): per-area weather audit.
 - [GameplayIconManifest.csv](GameplayIconManifest.csv), [CombatUpgradeBiblePerkManifest.csv](CombatUpgradeBiblePerkManifest.csv), [PlayerMessageAudit.json](PlayerMessageAudit.json): data read by tools and tests.
 

@@ -33,6 +33,8 @@ namespace SWLOR.Game.Server.Service
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
         private const string DroidItemId = "DROID_ITEM_ID";
+        private const string DroidPostedShipVariable = "DROID_POSTED_SHIP";
+        private const string DroidCrewIdVariable = "DROID_CREW_ID";
         // Keep undeliverable returns in the existing inventory payloads so item migrations still visit them.
         private const string PendingItemReturnPrefix = "DROID_RETURN_ITEM:";
         private const string PendingItemRestorePrefix = "DROID_RESTORE_ITEM:";
@@ -127,7 +129,6 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a player uses a droid assembly terminal, displays the UI.
-        /// Player will receive an error if they don't have any ranks in the Droid Assembly perk.
         /// </summary>
         [NWNEventHandler(ScriptName.OnDroidAssociateUsed)]
         public static void UseDroidAssemblyTerminal()
@@ -135,12 +136,6 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
-
-            if (Perk.GetPerkLevel(player, PerkType.DroidAssembly) <= 0)
-            {
-                SendMessageToPC(player, ColorToken.Red("The 'Droid Assembly' perk is required to use this terminal."));
-                return;
-            }
 
             Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
@@ -355,6 +350,9 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.SOC:
                             details.SOC += value;
                             break;
+                        case DroidStatSubType.Industry:
+                            details.Industry += value;
+                            break;
                         case DroidStatSubType.Armor:
                             AddSkillBonus(details.Skills, SkillType.Armor, value);
                             break;
@@ -511,6 +509,9 @@ namespace SWLOR.Game.Server.Service
                             break;
                         case DroidStatSubType.SOC:
                             details.SOC += value;
+                            break;
+                        case DroidStatSubType.Industry:
+                            details.Industry += value;
                             break;
                         case DroidStatSubType.Armor:
                             details.Armor += value;
@@ -1003,6 +1004,88 @@ namespace SWLOR.Game.Server.Service
             DespawnDroid(player);
         }
 
+        /// <summary>The id of a droid's controller item, created the first time it is asked for.</summary>
+        public static string GetDroidId(uint controller)
+        {
+            var id = GetLocalString(controller, DroidCrewIdVariable);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                id = Guid.NewGuid().ToString();
+                SetLocalString(controller, DroidCrewIdVariable, id);
+            }
+
+            return id;
+        }
+
+        /// <summary>The controller of the droid following the player, or OBJECT_INVALID.</summary>
+        public static uint GetActiveController(uint player) => GetLocalObject(player, DroidControlItemVariable);
+
+        /// <summary>Every droid controller the player carries, bags included.</summary>
+        public static List<uint> GetControllers(uint player)
+        {
+            var controllers = new List<uint>();
+            AddControllers(player, controllers);
+            return controllers;
+        }
+
+        private static void AddControllers(uint container, List<uint> controllers)
+        {
+            // The container's items are listed before any bag is opened, as a nested walk restarts the outer one.
+            var items = new List<uint>();
+            for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
+                items.Add(item);
+
+            foreach (var item in items)
+            {
+                if (GetResRef(item) == DroidControlItemResref)
+                    controllers.Add(item);
+                else if (GetHasInventory(item))
+                    AddControllers(item, controllers);
+            }
+        }
+
+        /// <summary>The controller the player carries for a droid id, or OBJECT_INVALID.</summary>
+        public static uint FindController(uint player, string droidId)
+        {
+            if (string.IsNullOrWhiteSpace(droidId))
+                return OBJECT_INVALID;
+
+            foreach (var item in GetControllers(player))
+            {
+                if (GetLocalString(item, DroidCrewIdVariable) == droidId)
+                    return item;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        /// <summary>The ship a droid is posted aboard (plan section 10, droid crew), or an empty string.</summary>
+        public static string GetPostedShipId(uint controller) => GetLocalString(controller, DroidPostedShipVariable);
+
+        /// <summary>Whether the droid is posted at a ship's station. A posted droid cannot be activated.</summary>
+        public static bool IsPosted(uint controller) => !string.IsNullOrWhiteSpace(GetPostedShipId(controller));
+
+        /// <summary>Marks the droid as posted aboard a ship. Its controller is cursed so it stays with its owner.</summary>
+        public static void MarkPosted(uint controller, string shipId)
+        {
+            SetLocalString(controller, DroidPostedShipVariable, shipId);
+            SetItemCursedFlag(controller, true);
+        }
+
+        /// <summary>Gives a posted droid back to its owner.</summary>
+        public static void ClearPosted(uint controller)
+        {
+            DeleteLocalString(controller, DroidPostedShipVariable);
+            SetItemCursedFlag(controller, false);
+        }
+
+        /// <summary>A droid's display name.</summary>
+        public static string GetDroidName(uint controller)
+        {
+            var name = LoadConstructedDroid(controller).Name;
+            return string.IsNullOrWhiteSpace(name) ? "Droid" : name;
+        }
+
         private static string GetDroidItemId(uint item)
         {
             if (string.IsNullOrWhiteSpace(GetLocalString(item, DroidItemId)))
@@ -1182,6 +1265,10 @@ namespace SWLOR.Game.Server.Service
                 AddItemProperty(DurationType.Permanent,
                     ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)instruction.Perk, instruction.Level), controller);
             SaveConstructedDroid(controller, constructedDroid);
+
+            // A posted droid works at the rating its controller reads now, not the one it had when it was posted.
+            if (IsPosted(controller))
+                Space.RefreshPostedDroid(controller);
         }
 
         [NWNEventHandler(ScriptName.OnDroidBlocked)]

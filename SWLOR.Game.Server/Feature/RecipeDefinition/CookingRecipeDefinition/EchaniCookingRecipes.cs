@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_wolf_meat", 3)
                 .Component("esh_greens", 2)
                 .Component("bread_flour", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 44, targetSweet: 16, targetSpice: 11, innerRadius: 7, outerRadius: 18, freshness: 102);
 
             // Echani Hand-Pulled Broth Noodles
             _builder.Create(RecipeType.EchaniBrothNoodles, SkillType.Agriculture)
@@ -32,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("bread_flour", 4)
                 .Component("esh_greens", 3)
                 .Component("ginger", 1)
-                .Component("distilled_water", 2);
+                .Component("distilled_water", 2)
+                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 18, targetSweet: 21, targetSpice: 16, innerRadius: 6, outerRadius: 28, freshness: 104);
 
             // Echani Chili-Oil Noodles
             _builder.Create(RecipeType.EchaniChiliNoodles, SkillType.Agriculture)
@@ -44,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("bread_flour", 4)
                 .Component("esh_chili_oil", 2)
                 .Component("esh_scallion", 1)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 19, targetSweet: 10, targetSpice: 28, innerRadius: 7, outerRadius: 25, freshness: 101);
 
             // Echani Stuffed Steamed Buns
             _builder.Create(RecipeType.EchaniSteamedBuns, SkillType.Agriculture)
@@ -56,7 +59,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_wolf_meat", 3)
                 .Component("bread_flour", 3)
                 .Component("esh_scallion", 1)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 39, targetSweet: 11, targetSpice: 8, innerRadius: 4, outerRadius: 22, freshness: 97);
 
             // Echani Scallion Flatbread
             _builder.Create(RecipeType.EchaniScallionFlatbread, SkillType.Agriculture)
@@ -68,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("bread_flour", 4)
                 .Component("esh_scallion", 3)
                 .Component("cultured_butter", 1)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 28, targetSweet: 19, targetSpice: 13, innerRadius: 4, outerRadius: 21, freshness: 102);
 
             // Echani Shared Hotpot Portion
             _builder.Create(RecipeType.EchaniSharedHotpot, SkillType.Agriculture)
@@ -81,7 +86,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_greens", 2)
                 .Component("esh_rice", 1)
                 .Component("ginger", 1)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 37, targetSweet: 5, targetSpice: 11, innerRadius: 4, outerRadius: 18, freshness: 95);
 
             // Echani Crispy Claypot Rice
             _builder.Create(RecipeType.EchaniClaypotRice, SkillType.Agriculture)
@@ -93,7 +99,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_rice", 3)
                 .Component("esh_poultry", 2)
                 .Component("esh_scallion", 1)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 25, targetSweet: 16, targetSpice: 10, innerRadius: 6, outerRadius: 23, freshness: 91);
 
             // Echani Savory Rice Porridge
             _builder.Create(RecipeType.EchaniRicePorridge, SkillType.Agriculture)
@@ -105,7 +112,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_rice", 3)
                 .Component("esh_pickles", 2)
                 .Component("esh_egg", 1)
-                .Component("distilled_water", 2);
+                .Component("distilled_water", 2)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 23, targetSweet: 12, targetSpice: 5, innerRadius: 4, outerRadius: 20, freshness: 97);
 
             // Echani Marbled Eggs
             _builder.Create(RecipeType.EchaniMarbledEggs, SkillType.Agriculture)
@@ -116,7 +124,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("esh_egg", 3)
                 .Component("herb_x", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 24, targetSweet: 4, targetSpice: 15, innerRadius: 4, outerRadius: 18, freshness: 92);
 
             // Echani Ginger-Steamed Fish
             _builder.Create(RecipeType.EchaniGingerFish, SkillType.Agriculture)
@@ -128,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_fish", 3)
                 .Component("ginger", 2)
                 .Component("esh_scallion", 1)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 35, targetSweet: 3, targetSpice: 31, innerRadius: 4, outerRadius: 23, freshness: 92);
 
             // Echani Sticky Glazed Poultry
             _builder.Create(RecipeType.EchaniGlazedPoultry, SkillType.Agriculture)
@@ -140,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_poultry", 3)
                 .Component("sugar", 2)
                 .Component("ginger", 1)
-                .Component("esh_chili_oil", 1);
+                .Component("esh_chili_oil", 1)
+                .KitchenParameters(dish: KitchenDish.Roast, targetSavory: 34, targetSweet: 28, targetSpice: 27, innerRadius: 4, outerRadius: 22, freshness: 96);
 
             // Echani Sweet Seed-Paste Cakes
             _builder.Create(RecipeType.EchaniSeedPasteCakes, SkillType.Agriculture)
@@ -152,7 +163,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("esh_seeds", 3)
                 .Component("bread_flour", 2)
                 .Component("sugar", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.Sweet, targetSavory: 11, targetSweet: 41, targetSpice: 0, innerRadius: 4, outerRadius: 18, freshness: 97);
 
             return _builder.Build();
         }

@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -282,6 +283,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EditCategories,
                 PropertyPermissionType.PilotShip,
+                PropertyPermissionType.CrewStation,
+                PropertyPermissionType.Dock,
                 PropertyPermissionType.RefitShip
             };
 
@@ -654,6 +657,17 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // A station's land is an instance too, although the city itself is an area property.
+            foreach (var layout in _activeLayouts.Values)
+            {
+                if (layout.PropertyType == PropertyType.City &&
+                    !string.IsNullOrWhiteSpace(layout.AreaInstanceResref) &&
+                    !resrefs.Contains(layout.AreaInstanceResref))
+                {
+                    resrefs.Add(layout.AreaInstanceResref);
+                }
+            }
+
             return resrefs;
         }
 
@@ -814,6 +828,17 @@ namespace SWLOR.Game.Server.Service
 
             SendPropertyLoadingMessage(player);
             return false;
+        }
+
+        /// <summary>
+        /// Queues an unloaded instanced property to load with no player waiting on it, such as the interior of a ship
+        /// docked aboard another that may need it later.
+        /// </summary>
+        /// <param name="propertyId">The property Id to load.</param>
+        public static void RequestInstanceLoad(string propertyId)
+        {
+            if (GetPropertyLoadState(propertyId) == PropertyLoadState.Unloaded)
+                QueuePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest);
         }
 
         private static bool QueuePropertyLoad(string propertyId, PropertyLoadPriority priority)
@@ -1270,7 +1295,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             var parentDetail = _propertyTypes[parent.PropertyType];
-            if (parentDetail.SpawnType == PropertySpawnType.Instance)
+            if (Station.IsStation(parent))
+            {
+                if (GetPropertyLoadState(parent.Id) == PropertyLoadState.Failed)
+                {
+                    dependencyFailed = true;
+                    return false;
+                }
+
+                if (!TryGetLoadedInstance(parent.Id, out var deck))
+                    return false;
+
+                area = deck.Area;
+            }
+            else if (parentDetail.SpawnType == PropertySpawnType.Instance)
             {
                 var state = GetPropertyLoadState(parent.Id);
                 if (state == PropertyLoadState.Failed)
@@ -1402,8 +1440,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Starships left in a ship-only location, at a player starport that no longer exists (probably destroyed
-        /// by the previous cleanup) or is being retrieved, or without a dock return to the last regular starport
-        /// they docked at and its orbit. The caller saves the property.
+        /// by the previous cleanup) or is being retrieved, or without a dock return to the regular starport of the
+        /// planet they are at, or to the last regular starport they docked at when it is in the same system.
+        /// The caller saves the property.
         /// </summary>
         /// <param name="property">The starship property to update.</param>
         /// <param name="retrievedStarportId">A player starport interior being retrieved. Ships docked there return even though it still exists.</param>
@@ -1425,7 +1464,8 @@ namespace SWLOR.Game.Server.Service
                 IsShipOnlyArea,
                 starportId => starportId != retrievedStarportId && DB.Exists<WorldProperty>(starportId),
                 GetPlanetStarport,
-                fallbackAreaResref);
+                fallbackAreaResref,
+                GetOrbitStarport);
 
             var destination = property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock)
                 ? dock.AreaResref
@@ -1433,15 +1473,15 @@ namespace SWLOR.Game.Server.Service
             switch (result)
             {
                 case StarshipDockReturnResult.ReturnedFromShipOnlyLocation:
-                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at the ship-only location '{previousDock?.AreaResref}'. It has been returned to the last NPC dock position at '{destination}'.");
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at the ship-only location '{previousDock?.AreaResref}'. It has been returned to the NPC starport at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.ReturnedFromMissingStarport:
                     Log.Write(LogGroup.Property, previousDock?.InstancePropertyId == retrievedStarportId
-                        ? $"Starship '{property.CustomName}' ({property.Id}) was docked at the retrieved player starport ({retrievedStarportId}). It has been relocated to the last NPC dock position at '{destination}'."
-                        : $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{destination}'.");
+                        ? $"Starship '{property.CustomName}' ({property.Id}) was docked at the retrieved player starport ({retrievedStarportId}). It has been relocated to the NPC starport at '{destination}'."
+                        : $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the NPC starport at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.RestoredMissingDock:
-                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had no dock position. It has been placed at the last NPC dock position at '{destination}'.");
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had no dock position. It has been placed at the NPC starport at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.ReturnedToPlanetStarport:
                     Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had to leave '{previousDock?.AreaResref}{previousDock?.InstancePropertyId}' without a last NPC dock position. It has been returned to the planet's starport at '{destination}'.");
@@ -1461,7 +1501,28 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The planet's landing and orbit locations, or null if the area has no planet or its waypoints are missing.</returns>
         private static (PropertyLocation Landing, PropertyLocation Orbit)? GetPlanetStarport(string areaResref)
         {
-            var planetType = Planet.GetPlanetType(Area.GetAreaByResref(areaResref));
+            return GetStarportOfPlanet(Planet.GetPlanetType(Area.GetAreaByResref(areaResref)));
+        }
+
+        /// <summary>
+        /// Retrieves the NPC starport landing and orbit of the planet a saved orbit belongs to. Planet.GetPlanetType
+        /// leaves space areas unresolved, and one orbit area can hold several planets' orbits, so the orbit resolves to
+        /// the planet whose orbit waypoint is nearest.
+        /// </summary>
+        /// <param name="orbit">A ship's saved orbit.</param>
+        /// <returns>The planet's landing and orbit locations, or null if no planet's orbit is in that area or its waypoints are missing.</returns>
+        private static (PropertyLocation Landing, PropertyLocation Orbit)? GetOrbitStarport(PropertyLocation orbit)
+        {
+            var planetOrbits = Planet.GetAllPlanets()
+                .Select(planet => (Planet: planet.Key, Waypoint: GetWaypointByTag(planet.Value.SpaceOrbitWaypointTag)))
+                .Where(planet => GetIsObjectValid(planet.Waypoint))
+                .Select(planet => (planet.Planet, ToPropertyLocation(planet.Waypoint)));
+
+            return GetStarportOfPlanet(StarshipDockReturn.FindOrbitPlanet(orbit, planetOrbits));
+        }
+
+        private static (PropertyLocation Landing, PropertyLocation Orbit)? GetStarportOfPlanet(PlanetType planetType)
+        {
             if (planetType == PlanetType.Invalid)
                 return null;
 
@@ -1945,21 +2006,20 @@ namespace SWLOR.Game.Server.Service
 
             // Calculate new upkeep price for this week.
             var dbMayor = DB.Get<Player>(city.OwnerPlayerId);
-            var upkeepReductionPercent = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
-                ? dbMayor.Perks[PerkType.Upkeep] * 0.05f
+            var upkeepPerkLevel = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
+                ? dbMayor.Perks[PerkType.Upkeep]
                 : 0;
             var layout = GetLayoutByType(city.Layout);
-            const int UpgradeBasePrice = 10000;
-            var basePrice = layout.PricePerDay * 7;
-            basePrice -= (int)(basePrice * upkeepReductionPercent);
+            var weeklyUpkeep = CityUpkeepRules.GetWeeklyUpkeep(
+                layout.PricePerDay,
+                upkeepPerkLevel,
+                city.Upgrades[PropertyUpgradeType.MedicalCenterLevel],
+                city.Upgrades[PropertyUpgradeType.StarportLevel],
+                city.Upgrades[PropertyUpgradeType.CantinaLevel],
+                city.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1));
 
-            var upgradePrice =
-                (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +
-                (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
-                (city.Upgrades[PropertyUpgradeType.CantinaLevel] - 1) * UpgradeBasePrice;
-
-            Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {basePrice + upgradePrice} credits.");
-            city.Upkeep += basePrice + upgradePrice;
+            Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {weeklyUpkeep} credits.");
+            city.Upkeep += weeklyUpkeep;
             DB.Set(city);
             Log.Write(LogGroup.Property, $"Total upkeep owed: {city.Upkeep} credits.");
             BroadcastPropertyEvent(
@@ -2002,6 +2062,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (property.PropertyType == PropertyType.Starship)
                 UnregisterStarshipFromStarports(property);
+
+            if (property.PropertyType == PropertyType.Structure && StationBuildingRules.IsStationBuilding(property.StructureType))
+                StationBuildings.OnDeleted(property);
 
             // Recursively clear any children properties tied to this property.
             // Children are also found by their parent Id because loading spawns structures that way,
@@ -2094,6 +2157,8 @@ namespace SWLOR.Game.Server.Service
             _propertyLoadJobs.RemoveAll(x => x.PropertyId == property.Id);
             _pendingStartupWorldPropertyIds.Remove(property.Id);
             _structurePropertyIdToPlaceable.Remove(property.Id);
+            if (Station.IsStation(property))
+                Station.DespawnExterior(property.Id);
 
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
@@ -2548,26 +2613,7 @@ namespace SWLOR.Game.Server.Service
             {
                 property.ParentPropertyId = GetResRef(area);
                 AssignPropertyId(area, property.Id);
-
-                // Maintenance fees will be collected one week from now.
-                property.Dates[PropertyDateType.Upkeep] = now.AddDays(7);
-
-                // The first voting cycle will begin three weeks from now.
-                property.Dates[PropertyDateType.ElectionStart] = now.AddDays(21);
-
-                // The property will be cleaned up on the first server reset after 18 hours have passed
-                // if there are less than the required number of citizens registered.
-                property.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(18);
-
-                // Initialize taxes at zero.
-                property.Taxes[PropertyTaxType.Citizenship] = 0;
-                property.Taxes[PropertyTaxType.Transportation] = 0;
-
-                // Upgrades
-                property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
-                property.Upgrades[PropertyUpgradeType.MedicalCenterLevel] = 1;
-                property.Upgrades[PropertyUpgradeType.StarportLevel] = 1;
-                property.Upgrades[PropertyUpgradeType.CantinaLevel] = 1;
+                InitializeNewCity(property, now);
             });
 
             CreateBuilding(
@@ -2592,6 +2638,106 @@ namespace SWLOR.Game.Server.Service
                 $"**First Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep])}\n" +
                 $"**First Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart])}\n" +
                 $"**Citizen Requirement Grace Ends**: {FormatUtcDate(city.Dates[PropertyDateType.BelowRequiredCitizens])}");
+        }
+
+        /// <summary>
+        /// Sets a new city's (or station's) first upkeep, election and citizen deadlines, taxes and upgrades.
+        /// </summary>
+        private static void InitializeNewCity(WorldProperty property, DateTime now)
+        {
+            // Maintenance fees will be collected one week from now.
+            property.Dates[PropertyDateType.Upkeep] = now.AddDays(7);
+
+            // The first voting cycle will begin three weeks from now.
+            property.Dates[PropertyDateType.ElectionStart] = now.AddDays(21);
+
+            // The property will be cleaned up on the first server reset after 18 hours have passed
+            // if there are less than the required number of citizens registered.
+            property.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(18);
+
+            // Initialize taxes at zero.
+            property.Taxes[PropertyTaxType.Citizenship] = 0;
+            property.Taxes[PropertyTaxType.Transportation] = 0;
+            property.Taxes[PropertyTaxType.Exchange] = 0;
+
+            // Upgrades
+            property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
+            property.Upgrades[PropertyUpgradeType.MedicalCenterLevel] = 1;
+            property.Upgrades[PropertyUpgradeType.StarportLevel] = 1;
+            property.Upgrades[PropertyUpgradeType.CantinaLevel] = 1;
+        }
+
+        /// <summary>
+        /// Founds a player station at an anchor site (plan section 25) and makes the player its mayor. The station is a city
+        /// whose land is a new deck instance; the Station Core (its City Hall) and its first Starport are built at their
+        /// deck slots, and its exterior appears beside the anchor. The Station Core item is consumed.
+        /// </summary>
+        /// <param name="player">The player who will become mayor.</param>
+        /// <param name="spaceArea">The space area the anchor site is in.</param>
+        /// <param name="item">The Station Core item.</param>
+        /// <param name="anchor">The free anchor site.</param>
+        public static WorldProperty CreateStation(uint player, uint spaceArea, uint item, StationAnchor anchor,
+            string pendingPaymentId = "", int pendingPaymentCredits = 0)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var now = DateTime.UtcNow;
+            var station = CreateProperty(player, playerId, "Player Station", PropertyType.City, PropertyLayoutType.Station, spaceArea, property =>
+            {
+                property.ParentPropertyId = anchor.AreaResref;
+                property.StationAnchorId = anchor.Id;
+                InitializeNewCity(property, now);
+                property.Upgrades[PropertyUpgradeType.JumpBeaconLevel] = 1;
+                // The founding payment the station waits on is saved with it, before anything else is created.
+                property.PendingPaymentId = pendingPaymentId ?? string.Empty;
+                property.PendingPaymentCredits = pendingPaymentCredits;
+            });
+
+            if (!TryGetLoadedInstance(station.Id, out var deck))
+                throw new InvalidOperationException($"Station '{station.Id}' has no deck instance.");
+
+            Location SlotLocation(StationDeckSlotType slotType)
+            {
+                var slot = StationTuning.DeckSlots[slotType];
+                return Location(deck.Area, Vector3(slot.X, slot.Y, 0f), 0f);
+            }
+
+            CreateBuilding(
+                player,
+                item,
+                station.Id,
+                PropertyType.CityHall,
+                PropertyLayoutType.CityHallStyle1,
+                StructureType.StationCore,
+                SlotLocation(StationDeckSlotType.Core));
+
+            // Docking goes only through a Starport, so the Core builds the station's first one.
+            var starportItem = CreateObject(ObjectType.Item, "structure_5003", SlotLocation(StationDeckSlotType.Starport));
+            CreateBuilding(
+                player,
+                starportItem,
+                station.Id,
+                PropertyType.Starport,
+                PropertyLayoutType.StarportStyle1,
+                StructureType.Starport,
+                SlotLocation(StationDeckSlotType.Starport));
+
+            dbPlayer.CitizenPropertyId = station.Id;
+            // A new citizenship must not inherit taxes from a previously deleted city.
+            dbPlayer.PropertyOwedTaxes = 0;
+            DB.Set(dbPlayer);
+
+            SendMessageToPC(player, $"Your station stands at the anchor site in {anchor.SystemName}. Use its docking point to dock at its Starport and go aboard.");
+            Log.Write(LogGroup.Property, $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new station at anchor '{anchor.Id}' in {GetName(spaceArea)}.");
+            BroadcastPropertyEvent(
+                station,
+                "New Player Station Founded",
+                $"A new player station has been founded in {anchor.SystemName}.\n" +
+                $"**First Upkeep Check**: {FormatUtcDate(station.Dates[PropertyDateType.Upkeep])}\n" +
+                $"**First Election Opens**: {FormatUtcDate(station.Dates[PropertyDateType.ElectionStart])}\n" +
+                $"**Citizen Requirement Grace Ends**: {FormatUtcDate(station.Dates[PropertyDateType.BelowRequiredCitizens])}");
+
+            return station;
         }
 
         /// <summary>
@@ -2946,7 +3092,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void EnterPropertyInstance()
         {
-            var player = GetExitingObject();
+            var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
@@ -3165,6 +3311,13 @@ namespace SWLOR.Game.Server.Service
                 (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
                 (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z")));
 
+            // Special case: a Station Core founds a player station at an anchor site in space.
+            if (structureType == StructureType.StationCore)
+            {
+                Station.BeginFounding(player, item, area, position);
+                return;
+            }
+
             // Special case: City Hall pulls up a menu with details about the land and an option to place it down, claiming the land.
             if (structureType == StructureType.CityHall)
             {
@@ -3204,6 +3357,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A ship listed on the market is locked until it sells or the listing ends (plan section 7).
+            if (ShipTransfer.IsPropertyListedForSale(propertyId))
+            {
+                FloatingTextStringOnCreature("This ship is listed for sale. Its furniture cannot change until the listing ends.", player, false);
+                return;
+            }
+
             var property = DB.Get<WorldProperty>(propertyId);
             var layout = GetLayoutByType(property.Layout);
             int structureLimit;
@@ -3222,7 +3382,8 @@ namespace SWLOR.Game.Server.Service
             if (property.PropertyType == PropertyType.City &&
                 structureDetail.RestrictedPropertyTypes == PropertyType.City)
             {
-                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid);
+                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid ||
+                                                       StationBuildingRules.IsStationBuilding(x.StructureType));
                 structureLimit = layout.BuildingLimit;
                 fixtureName = "Building";
             }
@@ -3269,6 +3430,34 @@ namespace SWLOR.Game.Server.Service
             {
                 FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
                 return;
+            }
+
+            // The Shipyard, Asteroid Drill and Jump Beacon stand only on a station deck, and no beacon reaches Wild Space.
+            var stationBuildingError = StationBuildingRules.GetPlacementError(
+                structureType,
+                Station.IsStation(property),
+                Station.GetAnchor(property)?.IsWildSpace ?? false);
+            if (!string.IsNullOrWhiteSpace(stationBuildingError))
+            {
+                FloatingTextStringOnCreature(stationBuildingError, player, false);
+                return;
+            }
+
+            // On a station deck the civic buildings snap to their slots and everything else keeps clear of the slots.
+            if (Station.IsStation(property))
+            {
+                var placement = StationDeckRules.GetPlacement(
+                    structureType,
+                    position.X,
+                    position.Y,
+                    StationDeckRules.GetOccupiedSlots(structures.Select(x => x.StructureType)));
+                if (placement.Refusal != StationDeckRefusal.None)
+                {
+                    FloatingTextStringOnCreature(StationDeckRules.DescribeRefusal(placement), player, false);
+                    return;
+                }
+
+                position = Vector3(placement.X, placement.Y, position.Z);
             }
 
             var location = Location(area, position, 0.0f);
@@ -3372,9 +3561,47 @@ namespace SWLOR.Game.Server.Service
             // Area spawns exist in a pre-built area.
             else if(propertyDetail.SpawnType == PropertySpawnType.Area)
             {
+                // A station's land is its own deck instance; its exterior stands at its anchor site in space.
+                if (Station.IsStation(property))
+                {
+                    try
+                    {
+                        SpawnStationDeck(property);
+                    }
+                    catch (Exception ex)
+                    {
+                        SetPropertyLoadState(property.Id, PropertyLoadState.Failed);
+                        Log.Write(LogGroup.Error, $"Station '{property.CustomName}' ({property.Id}) failed to spawn: {ex}");
+                    }
+
+                    return;
+                }
+
                 AssignPropertyId(area, property.Id);
                 SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
             }
+        }
+
+        /// <summary>
+        /// Spawns a station's deck instance (the station's land) and its exterior in space.
+        /// </summary>
+        /// <param name="station">The station city.</param>
+        private static void SpawnStationDeck(WorldProperty station)
+        {
+            if (!_propertyInstances.TryGetValue(station.Id, out var existing) ||
+                !GetIsObjectValid(existing.Area))
+            {
+                var layout = GetLayoutByType(station.Layout);
+                var deck = Area.CreateInstance(layout.AreaInstanceResref);
+                if (!GetIsObjectValid(deck))
+                    throw new InvalidOperationException($"Unable to create station deck from resref '{layout.AreaInstanceResref}'.");
+
+                RegisterInstance(station.Id, deck, station.Layout);
+                SetName(deck, "{PC} " + station.CustomName);
+            }
+
+            Station.SpawnExterior(station);
+            SetPropertyLoadState(station.Id, PropertyLoadState.Loaded);
         }
 
         /// <summary>
@@ -3598,6 +3825,9 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case PropertyUpgradeType.CantinaLevel:
                     structureType = StructureType.Cantina;
+                    break;
+                case PropertyUpgradeType.JumpBeaconLevel:
+                    structureType = StructureType.JumpBeacon;
                     break;
             }
 

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.TelegraphService;
@@ -687,6 +688,24 @@ namespace SWLOR.Game.Server.Service
             impact.RecordTarget(target);
         }
 
+        /// <summary>
+        /// Records a weapon shot a space ability fired in the ability's impact summary: the target it hit, the
+        /// critical and the damage. Combat.ApplyAbilityActivatedEffects reads the summary afterwards, so riders
+        /// such as "after a launcher ability hits two or more enemies" see the shots. Does nothing outside an impact.
+        /// </summary>
+        public static void RecordSpaceShot(uint activator, uint target, bool isArea, bool isCritical, int damage)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            if (impact == null || !GetIsObjectValid(target))
+                return;
+
+            impact.RecordShape(SkillType.Piloting, isArea);
+            impact.RecordTarget(target);
+            impact.Summary.AttributedDamage += Math.Max(0, damage);
+            if (isCritical)
+                impact.RecordCriticalHit();
+        }
+
         private static bool IsTrackedAbilityArea(uint activator)
         {
             var impact = GetTrackedAbilityImpact(activator);
@@ -751,18 +770,42 @@ namespace SWLOR.Game.Server.Service
 
             _lastActivationDenial = string.Empty;
 
+            // A crew member using their own Piloting ability from a station (plan section 10) is the ability's user:
+            // the ship activates it, and the crew member hears why it fails and pays its STM and recast.
+            var user = SpaceCrew.GetAbilityUser(activator);
+
             bool Deny(string reason)
             {
                 _lastActivationDenial = reason;
-                SendMessageToPC(activator, reason);
+                SendMessageToPC(user, reason);
                 return false;
             }
 
             // Cannot use this ability in space.
-            if (Space.IsPlayerInSpaceMode(activator) &&
-                !ability.CanBeUsedInSpace)
+            var inSpace = Space.IsPlayerInSpaceMode(activator);
+            if (inSpace && !ability.CanBeUsedInSpace)
             {
                 return Deny("This ability cannot be used in space.");
+            }
+
+            // A space ability fires the ship's weapons or commands its crew, so it needs a ship.
+            if (!inSpace && ability.CanBeUsedInSpace && !Space.IsShipInSpace(activator))
+            {
+                return Deny("This ability can only be used while piloting a ship.");
+            }
+
+            // A dazed ship cannot use abilities.
+            if (inSpace && Space.IsShipIncapacitated(activator))
+            {
+                return Deny("You cannot act while incapacitated.");
+            }
+
+            // A cloaking or cloaked ship uses no abilities.
+            if (inSpace)
+            {
+                var cloakBlock = Space.GetCloakAbilityBlock(activator);
+                if (!string.IsNullOrEmpty(cloakBlock))
+                    return Deny(cloakBlock);
             }
 
             // Must have appropriate levels in the perk to use the ability.
@@ -771,7 +814,7 @@ namespace SWLOR.Game.Server.Service
                 return Deny("You do not meet the prerequisites to use this ability.");
             }
 
-            if (Perk.ShouldEnforceActiveAbilityFeatReplacement(activator, ability.EffectiveLevelPerkType) &&
+            if (Perk.ShouldEnforceActiveAbilityFeatReplacement(user, ability.EffectiveLevelPerkType) &&
                 !Perk.IsCurrentActiveAbilityFeat(abilityType, ability.EffectiveLevelPerkType, effectivePerkLevel))
             {
                 return Deny("A newer rank has replaced this ability.");
@@ -798,8 +841,9 @@ namespace SWLOR.Game.Server.Service
                 return Deny("You cannot take actions at this time.");
             }
 
-            // Must be within line of sight.
-            if (ability.RequiresTarget &&
+            // Must be within line of sight. Ships fire across open space, like their modules, so space has no check.
+            if (!inSpace &&
+                ability.RequiresTarget &&
                 GetIsObjectValid(target) &&
                 !HasAbilityLineOfSight(activator, target))
             {
@@ -807,20 +851,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Must not be busy
-            if (Activity.IsBusy(activator))
+            if (Activity.IsBusy(user))
             {
                 return Deny("You are busy.");
             }
 
-            if (ability.ActivationType == AbilityActivationType.Weapon &&
+            // A ship fires its own weapons, so a pilot's equipped weapon does not matter in space.
+            if (!inSpace &&
+                ability.ActivationType == AbilityActivationType.Weapon &&
                 Combat.IsWeaponSkillType(ability.SkillType) &&
                 !Combat.HasEquippedWeaponForAbility(activator))
             {
                 return Deny("You must equip a weapon to use this ability.");
             }
 
-            if (ability.ActivationType == AbilityActivationType.Weapon ||
-                ability.IsHostileAbility && Combat.IsWeaponSkillType(ability.SkillType))
+            if (!inSpace &&
+                (ability.ActivationType == AbilityActivationType.Weapon ||
+                 ability.IsHostileAbility && Combat.IsWeaponSkillType(ability.SkillType)))
             {
                 var equipmentError = TwinPistolEquipmentValidation.GetUnusableEquipmentError(activator);
                 if (!string.IsNullOrEmpty(equipmentError)) return Deny(equipmentError);
@@ -857,11 +904,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Object range check. Location-targeted areas are validated separately above.
+            var maxRange = GetAbilityMaxRange(activator, ability, inSpace);
             if (ability.RequiresTarget &&
                 GetIsObjectValid(target) &&
-                GetDistanceBetween(activator, target) > ability.MaxRange)
+                GetDistanceBetween(activator, target) > maxRange)
             {
-                return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
+                return Deny("You are out of range.  This ability has a range of " + maxRange + " meters.");
             }
 
             // Hostility check
@@ -880,7 +928,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var req in ability.Requirements)
             {
-                var requirementError = req.CheckRequirements(activator, ability);
+                var requirementError = req.CheckRequirements(user, ability);
                 if (!string.IsNullOrWhiteSpace(requirementError))
                 {
                     return Deny(requirementError);
@@ -894,21 +942,34 @@ namespace SWLOR.Game.Server.Service
                 return Deny(customValidationResult);
             }
 
-            var areaLineOfSightError = ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability);
+            var areaLineOfSightError = inSpace
+                ? string.Empty
+                : ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability);
             if (!string.IsNullOrWhiteSpace(areaLineOfSightError))
             {
                 return Deny(areaLineOfSightError);
             }
 
             // Check if ability is on a recast timer still.
-            var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
+            var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(user, ability.RecastGroup);
             if (isOnRecast)
             {
-                PlayerFeedback.ShowCooldownFloatingText(activator, ability.Name, timeToWait);
+                PlayerFeedback.ShowCooldownFloatingText(user, ability.Name, timeToWait);
                 return Deny($"This ability can be used in {timeToWait}.");
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// How far an ability reaches. A space ability without an explicit range reaches as far as its ship's
+        /// longest usable weapon, because the weapon it fires decides what it can hit.
+        /// </summary>
+        public static float GetAbilityMaxRange(uint activator, AbilityDetail ability, bool inSpace)
+        {
+            return inSpace && ability.CanBeUsedInSpace && !ability.HasExplicitMaxRange
+                ? SpaceAbilities.GetLongestWeaponRange(activator)
+                : ability.MaxRange;
         }
 
         private static bool HasAbilityLineOfSight(uint activator, uint target)
@@ -3828,6 +3889,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             return remaining;
+        }
+
+        /// <summary>
+        /// Ends a temporary immunity the creature holds, with the shared hard crowd-control immunity when the
+        /// type is one of the hard crowd-control types.
+        /// </summary>
+        public static void RemoveTemporaryImmunity(uint target, ImmunityType immunity)
+        {
+            RemoveEffectByTag(target, GetTemporaryImmunityEffectTag(immunity));
+            if (HardCrowdControlImmunityTypes.Contains(immunity))
+                RemoveEffectByTag(target, GetTemporaryImmunityEffectTag(ImmunityType.HardCrowdControl));
         }
 
         public static bool HasTemporaryImmunity(uint target, ImmunityType immunity)

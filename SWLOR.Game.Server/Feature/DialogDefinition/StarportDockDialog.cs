@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             public PlanetType Planet { get; set; }
             public Location SpaceLocation { get; set; }
             public ShipDockPoint LandingPoint { get; set; }
+            public string StationId { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -39,6 +40,22 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var planetType = (PlanetType)GetLocalInt(self, "PLANET_TYPE_ID");
             var spaceWaypointTag = GetLocalString(self, "STARPORT_TELEPORT_WAYPOINT");
             var player = Player;
+
+            // An Interdictor's hold keeps a ship from docking (W11k).
+            if (Space.RefuseWhileInterdicted(player))
+            {
+                Close();
+                return;
+            }
+
+            // An incursion's blockade holding at this dock takes its docking services offline.
+            var blockade = Space.GetIncursionDockRefusal(self);
+            if (!string.IsNullOrEmpty(blockade))
+            {
+                SendMessageToPC(player, ColorToken.Red(blockade));
+                Close();
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
@@ -69,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = Data<Model>();
             model.SpaceLocation = GetLocation(spaceWaypoint);
             model.Planet = planetType;
+            model.StationId = GetLocalString(self, Station.StationCityVariable);
 
             var landingWaypointTag = GetLocalString(self, "STARPORT_LANDING_WAYPOINT_TAG");
             if (!string.IsNullOrWhiteSpace(landingWaypointTag))
@@ -97,11 +115,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = Player;
             var playerId = GetObjectUUID(player);
             var model = Data<Model>();
-            var dockPoints = model.LandingPoint == null
-                ? Space.GetDockPointsByPlanet(model.Planet)
-                : new Dictionary<string, ShipDockPoint> { ["station"] = model.LandingPoint };
+            var dockPoints = !string.IsNullOrWhiteSpace(model.StationId)
+                ? Station.GetDockPoints(model.StationId)
+                : model.LandingPoint == null
+                    ? Space.GetDockPointsByPlanet(model.Planet)
+                    : new Dictionary<string, ShipDockPoint> { ["station"] = model.LandingPoint };
 
-            page.Header = "Please select a location.";
+            page.Header = !string.IsNullOrWhiteSpace(model.StationId) && dockPoints.Count <= 0
+                ? "This station has no Starport to dock at."
+                : "Please select a location.";
 
             foreach (var (_, dockPoint) in dockPoints)
             {
@@ -114,6 +136,19 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     if (Enmity.HasEnmity(player))
                     {
                         SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
+                        return;
+                    }
+
+                    // Capital hulls dock only at the major ports and level 2 player starports, and a ship-only
+                    // location such as the Abandoned Station admits only the hulls its area allows.
+                    var activeShip = DB.Get<PlayerShip>(DB.Get<Player>(playerId).ActiveShipId);
+                    var landingAreaForSize = GetAreaFromLocation(dockPoint.Location);
+                    if (activeShip != null &&
+                        Space.TryRefuseStarport(
+                            player,
+                            Space.GetStarportRefusal(activeShip, landingAreaForSize, dockPoint.IsNPC ? string.Empty : dockPoint.PropertyId),
+                            landingAreaForSize))
+                    {
                         return;
                     }
 
@@ -272,6 +307,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     };
 
                     DB.Set(dbProperty);
+
+                    // A hold that started while the menu was open still stops the docking.
+                    if (Space.RefuseWhileInterdicted(player))
+                    {
+                        Close();
+                        return;
+                    }
 
                     Close();
                     Space.WarpPlayerInsideShip(player);

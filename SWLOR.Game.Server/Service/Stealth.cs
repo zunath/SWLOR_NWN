@@ -46,6 +46,10 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
+            // In space the Cloaking Device answers the stealth control (Space.RedirectSpaceStealth).
+            if (Space.IsPlayerInSpaceMode(creature))
+                return;
+
             if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
             {
                 EventsPlugin.SkipEvent();
@@ -294,16 +298,17 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool CanAcquireAggro(uint observer, uint target)
         {
-            return !IsHiddenByStealth(observer, target);
+            return !IsHiddenByStealth(observer, target) && !Space.IsShipHiddenFrom(observer, target);
         }
 
         /// <summary>
-        /// Returns whether the observer cannot see the target, either through invisibility or
-        /// because the target is a stealthed player the observer has not detected.
+        /// Returns whether the observer cannot see the target, through invisibility, because the target is a
+        /// stealthed player the observer has not detected, or because it is a ship under a cloak.
         /// </summary>
         public static bool IsHiddenFrom(uint observer, uint target)
         {
-            return IsHiddenByInvisibility(observer, target) ||
+            return Space.IsShipHiddenFrom(observer, target) ||
+                   IsHiddenByInvisibility(observer, target) ||
                    IsHiddenByStealth(observer, target);
         }
 

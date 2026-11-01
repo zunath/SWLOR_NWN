@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(10, 12);
             StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = ScaleBySourceSocial(5, 7);
+
+            // A ship rolls Accuracy, not ability hit chance, so it reads its own Accuracy stat.
+            StatGroup.Stats[StatType.SpaceAccuracyPercentAdjustment] = ScaleBySourceSocial(5, 7);
         }
     }
 }

@@ -37,6 +37,8 @@ Passive trait feats use the Passive gold frame/accent even when the always-on bo
 
 Ship module placeholder feat icons `ife_sm1` through `ife_sm30` are dynamic texture override anchors, not final player-facing artwork. Do not stamp semantic borders on them, and do not include them in the gameplay icon manifest. The actual ship module art comes from the equipped module texture override.
 
+Ship module action icons that can be switched on also have a lit variant, `iit_sl<name>` beside `iit_sm<name>`, with its own six recharge frames. Generate it with `python tools/GenerateLitModuleIcons.py <iit_sm icons>`, then `tools/GenerateCooldownIcons.ps1 -IconResRefs <iit_sl icons> -Force`. Lit icons are not in the gameplay icon manifest.
+
 Status effects use the same semantic frame location, but their color assignment is stricter:
 
 - Beneficial status effects must use the Beneficial green frame/accent.

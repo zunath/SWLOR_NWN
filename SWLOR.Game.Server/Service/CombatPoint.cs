@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 
@@ -123,7 +124,7 @@ namespace SWLOR.Game.Server.Service
                         GetIsDM(player) ||
                         GetIsDead(player) ||
                         GetCurrentHitPoints(player) <= 0 ||
-                        GetDistanceBetween(player, npc) > 40.0f ||
+                        GetDistanceBetween(player, npc) > ShipKillXpRules.GetRange(Space.IsPlayerInSpaceMode(player)) ||
                         GetArea(player) != GetArea(npc))
                         continue;
 

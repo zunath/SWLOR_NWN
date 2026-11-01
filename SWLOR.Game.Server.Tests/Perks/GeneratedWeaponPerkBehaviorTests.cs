@@ -1769,12 +1769,12 @@ public class GeneratedWeaponPerkBehaviorTests
         var infectionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "InfectionStatusEffect.cs"));
         var suppressionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         bleedSource.Should().Contain("WasNaturallyExpired");
-        venomSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
+        venomSource.Should().Contain("StatusEffect.ApplyDamageOverTime(source, creature, damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
         venomSource.Should().Contain("var baseDamage = CalculateBaseDamagePerTick(_damageBonusPercent, _baseDamagePerTick)");
         venomSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, baseDamage, CombatDamageType.Poison)");
         infectionSource.Should().Contain("public int Stacks");
         infectionSource.Should().Contain("DamagePerStack * Math.Max(1, Stacks)");
-        infectionSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
+        infectionSource.Should().Contain("StatusEffect.ApplyDamageOverTime(source, creature, damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
         combatSource.Should().Contain("typeof(HemorrhageStatusEffect)");
         File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "LacerationStatusEffect.cs")).Should().BeFalse();
         File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "RupturedStatusEffect.cs")).Should().BeFalse();

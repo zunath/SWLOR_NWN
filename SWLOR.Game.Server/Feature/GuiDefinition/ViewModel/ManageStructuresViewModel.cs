@@ -386,9 +386,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var structureDetail = Property.GetStructureByType(structure.StructureType);
 
+                // A ship listed on the market is locked until it sells or the listing ends (plan section 7).
+                if (ShipTransfer.IsPropertyListedForSale(structure.ParentPropertyId))
+                {
+                    Instructions = "This ship is listed for sale.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
                 if (!structureDetail.CanBeRetrieved)
                 {
                     Instructions = "This structure cannot be retrieved.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
+                if (structure.StructureType == StructureType.Starport &&
+                    Station.IsStation(parentProperty) &&
+                    Station.CountStarports(parentProperty.Id) <= 1)
+                {
+                    Instructions = "A station must keep a Starport.";
                     InstructionColor = GuiColor.Red;
                     return;
                 }

@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -38,8 +39,6 @@ public class CombatUpgradeBibleRecipeParityTests
         RecipeType.CouchLeatherPanelsGrey,
         RecipeType.MetalWallSinglePanels,
         RecipeType.MunchFungusBread,
-        RecipeType.Missile25,
-        RecipeType.Missile35,
         RecipeType.CombatBoots,
         RecipeType.ForzaBoots,
         RecipeType.SupremeBoots,
@@ -187,6 +186,115 @@ public class CombatUpgradeBibleRecipeParityTests
             "every live recipe must be documented in one of the Design Bible recipe tabs " +
             "(except the crafting submission-token recipes). Undocumented live recipes:\n" +
             string.Join("\n", undocumented));
+    }
+
+    [Test]
+    public void RecipeParameterColumns_MatchTheParametersInCode()
+    {
+        var workbookPath = Path.Combine(FindRepositoryRoot().FullName, "design", "bible", "SWLOR Design Bible.xlsx");
+        using var archive = OpenWorkbookWithRetry(workbookPath);
+
+        var mismatches = FindParameterColumnMismatches(archive, RecipeParameterProfiles.Game, BuildLiveRecipeRegistry());
+
+        mismatches.Should().BeEmpty(
+            "every minigame parameter column on a Bible recipe tab must match the recipe's parameters in code. Mismatches:\n" +
+            string.Join("\n", mismatches));
+    }
+
+    /// <summary>
+    /// Compares each profile's parameter columns on the recipe tabs with the recipes' parameters in code.
+    /// A tab without a profile's columns is skipped unless one of its recipes carries that profile's
+    /// parameters; a tab with the columns must hold all of them and match every recipe row.
+    /// </summary>
+    internal static List<string> FindParameterColumnMismatches(
+        ZipArchive archive,
+        IReadOnlyList<IRecipeParameterProfile> profiles,
+        IReadOnlyDictionary<RecipeType, RecipeDetail> registry)
+    {
+        var mismatches = new List<string>();
+        var sharedStrings = ReadSharedStrings(archive);
+
+        foreach (var worksheetName in RecipeWorksheetNames)
+        {
+            var cells = BuildCellIndex(ReadWorksheetByName(archive, worksheetName), sharedStrings);
+            var headerColumns = BuildHeaderColumnMap(cells);
+            if (!headerColumns.TryGetValue("Recipe Enum", out var enumColumn))
+            {
+                mismatches.Add($"[{worksheetName}] has no 'Recipe Enum' header.");
+                continue;
+            }
+
+            var rows = cells.Keys
+                .Select(GetRowNumber)
+                .Where(rowNumber => rowNumber > 1)
+                .Distinct()
+                .OrderBy(rowNumber => rowNumber)
+                .Select(rowNumber => (RowNumber: rowNumber, Enum: cells.GetValueOrDefault($"{enumColumn}{rowNumber}", string.Empty).Trim()))
+                .Where(row => row.Enum.Length > 0 && TryResolveRecipeType(row.Enum, out _))
+                .ToList();
+
+            foreach (var profile in profiles)
+            {
+                var headers = RecipeParameterBibleColumns.Headers(profile);
+                var missing = headers.Where(header => !headerColumns.ContainsKey(header)).ToList();
+                var documented = rows
+                    .Select(row => (row.RowNumber, Type: Enum.Parse<RecipeType>(row.Enum)))
+                    .Where(row => registry.TryGetValue(row.Type, out var detail) && HasProfileParameters(profile, detail))
+                    .ToList();
+
+                if (missing.Count == headers.Count && documented.Count == 0)
+                    continue;
+
+                if (missing.Count > 0)
+                {
+                    mismatches.Add(
+                        $"[{worksheetName}] lacks the {profile.Key} column(s) {string.Join(", ", missing.Select(m => $"'{m}'"))}" +
+                        (documented.Count > 0 ? $" although {documented.Count} of its recipes carry {profile.ParametersType.Name}." : "."));
+                    continue;
+                }
+
+                foreach (var (rowNumber, enumName) in rows)
+                {
+                    var type = Enum.Parse<RecipeType>(enumName);
+                    if (!registry.TryGetValue(type, out var detail))
+                        continue;
+
+                    var expected = HasProfileParameters(profile, detail)
+                        ? RecipeParameterBibleColumns.Cells(
+                            profile,
+                            detail.MinigameParameters,
+                            RecipeParameterBibleColumns.OverrideReasonFor(profile, type, registry))
+                        : headers.Select(header => new RecipeParameterBibleCell(header, string.Empty, false)).ToList();
+
+                    foreach (var expectedCell in expected)
+                    {
+                        var actual = cells.GetValueOrDefault($"{headerColumns[expectedCell.Header]}{rowNumber}", string.Empty).Trim();
+                        if (!ParameterCellMatches(expectedCell, actual))
+                        {
+                            mismatches.Add(
+                                $"[{worksheetName} row {rowNumber}] {enumName}.{expectedCell.Header}: " +
+                                $"Bible='{actual}' vs code='{expectedCell.Text}'");
+                        }
+                    }
+                }
+            }
+        }
+
+        return mismatches;
+    }
+
+    private static bool HasProfileParameters(IRecipeParameterProfile profile, RecipeDetail detail)
+    {
+        return detail.Skill == profile.Skill && profile.ParametersType.IsInstanceOfType(detail.MinigameParameters);
+    }
+
+    private static bool ParameterCellMatches(RecipeParameterBibleCell expected, string actual)
+    {
+        if (!expected.IsNumber || expected.Text.Length == 0)
+            return string.Equals(NormalizeWhitespace(actual), NormalizeWhitespace(expected.Text), StringComparison.Ordinal);
+
+        return decimal.TryParse(actual, NumberStyles.Float, CultureInfo.InvariantCulture, out var actualNumber) &&
+               Math.Abs(actualNumber - decimal.Parse(expected.Text, NumberStyles.Float, CultureInfo.InvariantCulture)) < 0.000000001m;
     }
 
     private static bool IsKnownUnimplementedBibleRow(string enumName)

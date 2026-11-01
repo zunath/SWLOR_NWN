@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var repairerShipId = "engine-repair-xp/" + repairer.Id;
             var allyShipId = "engine-repair-xp/" + ally.Id;
             var repairerStatus = new ShipStatus { Hull = 100, MaxHull = 100, Capacitor = 1000, MaxCapacitor = 1000 };
-            repairerStatus.HighPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "hull_rep_b" };
-            repairerStatus.HighPowerModules[2] = new ShipStatus.ShipStatusModule { ItemTag = "shld_rep_b" };
-            repairerStatus.HighPowerModules[3] = new ShipStatus.ShipStatusModule { ItemTag = "repairfield" };
-            repairerStatus.HighPowerModules[4] = new ShipStatus.ShipStatusModule { ItemTag = "bulwarkgen" };
-            repairerStatus.HighPowerModules[5] = new ShipStatus.ShipStatusModule { ItemTag = "cap_inject1" };
+            repairerStatus.HighPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "sm_hrep_00" };
+            repairerStatus.HighPowerModules[2] = new ShipStatus.ShipStatusModule { ItemTag = "sm_shrep_00" };
+            repairerStatus.HighPowerModules[3] = new ShipStatus.ShipStatusModule { ItemTag = "sm_rfield_40" };
+            repairerStatus.HighPowerModules[4] = new ShipStatus.ShipStatusModule { ItemTag = "sm_bulw_40" };
+            repairerStatus.HighPowerModules[5] = new ShipStatus.ShipStatusModule { ItemTag = "sm_hyper_00" };
             repairer.Update(p => p.ActiveShipId = repairerShipId);
             ally.Update(p => p.ActiveShipId = allyShipId);
             DB.Set(new PlayerShip { Id = repairerShipId, OwnerPlayerId = repairer.Id, Status = repairerStatus });
@@ -74,6 +74,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var shieldBefore = before.Shield;
                     var capacitorBefore = before.Capacitor;
                     await ctx.ExecuteInCreatureContextAsync(repairer.Creature, () => Space.ActivateShipModule(repairer.Creature, feat));
+                    // Repairers are toggles; keep each one to its first cycle.
+                    Space.TurnOffShipToggles(repairer.Creature);
                     var after = DB.Get<PlayerShip>(allyShipId).Status;
                     ctx.Assert(after.Hull > hullBefore || after.Shield > shieldBefore || after.Capacitor > capacitorBefore,
                         $"{name} restores the ally's ship");
@@ -121,7 +123,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var repairerShipId = "engine-repair-idle/" + repairer.Id;
             var allyShipId = "engine-repair-idle/" + ally.Id;
             var repairerStatus = new ShipStatus { Hull = 100, MaxHull = 100, Capacitor = 1000, MaxCapacitor = 1000 };
-            repairerStatus.HighPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "hull_rep_b" };
+            repairerStatus.HighPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "sm_hrep_00" };
             repairer.Update(p => p.ActiveShipId = repairerShipId);
             ally.Update(p => p.ActiveShipId = allyShipId);
             DB.Set(new PlayerShip { Id = repairerShipId, OwnerPlayerId = repairer.Id, Status = repairerStatus });
@@ -133,6 +135,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var bystander = ctx.SpawnCreature(EnemyResref, 6f);
                 await ctx.WaitFrameAsync();
                 await ctx.ExecuteInCreatureContextAsync(repairer.Creature, () => Space.ActivateShipModule(repairer.Creature, FeatType.ShipModule1));
+                Space.TurnOffShipToggles(repairer.Creature);
 
                 ctx.Assert(DB.Get<PlayerShip>(allyShipId).Status.Hull > 10, "the hull repair lands on the ally");
                 ctx.Assert(!CombatPoint.HasCombatPoints(repairer.Creature, bystander), "a repair outside combat credits no nearby creature");
@@ -164,7 +167,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             var shipId = "engine-ewar-xp/" + pilot.Id;
             var status = new ShipStatus { Hull = 100, MaxHull = 100, Capacitor = 1000, MaxCapacitor = 1000 };
-            status.HighPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "cap_ewar" };
+            status.HighPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "sm_ewar_40" };
             pilot.Update(p => p.ActiveShipId = shipId);
             DB.Set(new PlayerShip { Id = shipId, OwnerPlayerId = pilot.Id, Status = status });
             SetLocalObject(pilot.Creature, "SPACE_TARGET", pilot.Creature);
@@ -181,6 +184,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(pilot.Creature, () => Space.ActivateShipModule(pilot.Creature, FeatType.ShipModule1));
+                Space.TurnOffShipToggles(pilot.Creature);
 
                 ctx.Assert(CombatPoint.HasCombatPoints(pilot.Creature, hostileShip), "E-War credits the enemy ship it taunts");
                 ctx.Assert(!CombatPoint.HasCombatPoints(pilot.Creature, hostileNonShip), "E-War does not credit a hostile creature it cannot taunt");

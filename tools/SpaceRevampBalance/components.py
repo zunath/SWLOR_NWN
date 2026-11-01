@@ -1,0 +1,352 @@
+"""Space revamp component layer (plan section 14, Appendix D): component families, their recipes, the traits
+components carry and the salvage odds. catalog.py turns this into C#, item blueprints and recipes; bible_tabs.py
+writes the Ship Components (Revamp) tab from it. Draft numbers, tune in testing.
+"""
+
+TIERS = [1, 2, 3, 4, 5]
+
+# Tier material sets, as the existing Engineering and Smithery recipes use them.
+REFINED = {1: "ref_tilarium", 2: "ref_currian", 3: "ref_idailia", 4: "ref_barinium", 5: "ref_gostian"}
+ELECTRONICS = {1: "elec_ruined", 2: "elec_flawed", 3: "elec_good", 4: "elec_imperfect", 5: "elec_high"}
+FIBERPLAST = {1: "fiberp_ruined", 2: "fiberp_flawed", 3: "fiberp_good", 4: "fiberp_imperfect", 5: "fiberp_high"}
+METAL = {1: "aluminum", 2: "steel", 3: "obsidian", 4: "crystal", 5: "diamond"}
+MINERAL = {1: "quadrenium", 2: "vintrium", 3: "ionite", 4: "katrium", 5: "zinsiam"}
+GEM = {1: "jade", 2: "agate", 3: "citrine", 4: "ruby", 5: "emerald"}
+HERB = {1: "herb_v", 2: "herb_m", 3: "herb_c", 4: "herb_x", 5: "herb_t"}
+# The ground mining ladder's refined ores, at the same item value as the tier's space ore (Veldite ... Jasioclase).
+GROUND_REFINED = {1: "ref_veldite", 2: "ref_scordspar", 3: "ref_plagionite", 4: "ref_keromber", 5: "ref_jasioclase"}
+DURELIUM = "ore_durelium"
+TIBANNA = "gas_tibanna"
+
+# Balance pass (W11e): a gem or metal signature made a hull cost 1.9-2.7x its pre-component material value (a tier 1
+# gem is 350 credits beside 20 for refined ore), so in the tiers a hull recipe takes these components the signature is
+# the tier's ground refined ore instead: Hull Frames from tier 3 (Large and Capital hulls), Ordnance Assemblies in tiers
+# 1-2 (Bombers), Sensor Suites in tiers 1-2 (Interceptors, Explorers) and Extraction Heads in tiers 3-4 (Mining Barge
+# Advanced, Industrials). Every hull now costs at most 1.27x its old value; the other tiers keep their gem or metal.
+# Review fix 2026-10-30 (production.py, full production cost): the Extraction Head's metal signature (aluminum 100,
+# steel 200, diamond 1,300 credits) made the Mining Lasers the dockhand sells (ranks 0-40) cost 1.9x (tiers 1-2) and
+# 3.8x (tier 5) their pre-component recipe to craft, and the salvage and gas modules with them; every tier now takes the
+# tier's ground refined ore (1.00x).
+
+
+def _durelium_or_ore(t):
+    return DURELIUM if t <= 2 else GROUND_REFINED[t]
+
+
+def _in_tiers(tiers, swapped, other):
+    return lambda t: swapped[t] if t in tiers else other[t]
+
+
+def _tibanna_or(other):
+    return lambda t: TIBANNA if t in (3, 4) else other[t]
+
+
+# key, enum, name, resref short, skill, ESS9 model, base material(t), signature material(t), description.
+# Each component costs two material units (one base, one signature), so it stands in for two units of the
+# module or hull bill it joins and the total material count stays where it was.
+FAMILIES = [
+    ("hframe", "HullFrame", "Hull Frame", "Smithery", 229, REFINED.get, _durelium_or_ore,
+     "The ribbed metal skeleton of a hull or a plating module. Durelium in the lower tiers."),
+    ("reactor", "ShipReactor", "Ship Reactor", "Engineering", 230, ELECTRONICS.get, _tibanna_or(REFINED),
+     "A compact starship reactor core that powers a hull and feeds capacitor modules. Tibanna Gas in tiers 3 and 4."),
+    ("thruster", "ThrusterAssembly", "Thruster Assembly", "Smithery", 231, REFINED.get, FIBERPLAST.get,
+     "An engine nozzle with its mount and fuel lines, for hulls and thruster modules."),
+    ("emitter", "EnergyEmitter", "Energy Emitter", "Engineering", 232, ELECTRONICS.get, _tibanna_or(MINERAL),
+     "The focusing assembly of an energy weapon or damage amplifier. Tibanna Gas in tiers 3 and 4."),
+    ("ordnance", "OrdnanceAssembly", "Ordnance Assembly", "Smithery", 233, REFINED.get, _in_tiers((1, 2), GROUND_REFINED, METAL),
+     "A launcher breech and feed for missiles, torpedoes and explosive amplifiers."),
+    ("shieldprj", "ShieldProjector", "Shield Projector", "Engineering", 234, ELECTRONICS.get, MINERAL.get,
+     "A shield emitter dish for shield boosters, repairers and hardeners."),
+    ("sensor", "SensorSuite", "Sensor Suite", "Engineering", 235, ELECTRONICS.get, _in_tiers((1, 2), GROUND_REFINED, GEM),
+     "A sensor pod for targeting computers and electronic warfare."),
+    ("extract", "ExtractionHead", "Extraction Head", "Engineering", 236, ELECTRONICS.get, GROUND_REFINED.get,
+     "A cutting and focusing head for mining lasers, salvagers and gas harvesters."),
+    ("lifesup", "LifeSupportSystem", "Life Support System", "Agriculture", 237, FIBERPLAST.get, HERB.get,
+     "A hydroponic air and water system for freighters, cruisers and command ships."),
+]
+SALVAGE_FAMILIES = [f[1] for f in FAMILIES if f[1] != "LifeSupportSystem"]  # Appendix D: life support has no salvage
+
+
+def resref(short, tier):
+    return f"sc_{short}_{tier}"
+
+
+def recipe_level(tier):
+    return max(2, 10 * (tier - 1))
+
+
+# Module family -> component family (Appendix D's inputs read for the module ladders).
+MODULE_COMPONENT = {
+    "LaserCannon": "EnergyEmitter", "IonCannon": "EnergyEmitter", "BeamCannon": "EnergyEmitter",
+    "PointDefenseTurret": "EnergyEmitter", "Turbolaser": "EnergyEmitter", "QuadLaser": "EnergyEmitter",
+    "StormCannon": "EnergyEmitter", "LaserBattery": "EnergyEmitter", "ThermalAmplifier": "EnergyEmitter",
+    "EMAmplifier": "EnergyEmitter", "WeaponsComputer": "EnergyEmitter",
+    "MissileLauncher": "OrdnanceAssembly", "TorpedoLauncher": "OrdnanceAssembly",
+    "AssaultConcussionMissile": "OrdnanceAssembly", "ExplosiveAmplifier": "OrdnanceAssembly",
+    "ShieldBooster": "ShieldProjector", "ShieldRepairer": "ShieldProjector", "ShieldHardener": "ShieldProjector",
+    "BulwarkShieldGenerator": "ShieldProjector", "RepairField": "ShieldProjector", "RedundantShieldGenerator": "ShieldProjector",
+    "CapacitorBattery": "ShipReactor", "HypermatterInjector": "ShipReactor", "CapacitorRegulator": "ShipReactor",
+    "PowerDiverter": "ShipReactor",
+    "HullPlating": "HullFrame", "HullRepairer": "HullFrame", "ThermalPlating": "HullFrame", "EMPlating": "HullFrame",
+    "ExplosivePlating": "HullFrame", "AdaptivePlating": "HullFrame", "ReinforcedPlating": "HullFrame",
+    "SmugglingCompartment": "HullFrame", "CargoExpander": "HullFrame",
+    "Thrusters": "ThrusterAssembly", "AdvancedThrusters": "ThrusterAssembly", "Afterburner": "ThrusterAssembly",
+    "TargetingComputer": "SensorSuite", "TargetingArray": "SensorSuite", "EWarArray": "SensorSuite",
+    "ProbeLauncher": "SensorSuite", "DataAnalyzer": "SensorSuite", "CloakingDevice": "SensorSuite",
+    "IonWeb": "SensorSuite", "Interdictor": "SensorSuite", "Jammer": "SensorSuite", "TargetPainter": "SensorSuite",
+    "MiningLaser": "ExtractionHead", "StripMiner": "ExtractionHead", "Salvager": "ExtractionHead",
+    "GasHarvester": "ExtractionHead",
+}
+
+# Hull role -> its role components (Appendix D "Used by ships"). Every hull also takes Hull Frames, a Ship Reactor and
+# a Thruster Assembly (two for Interceptors and Blockade Runners).
+ROLE_COMPONENTS = {
+    "Fighter": ["EnergyEmitter"], "Interceptor": ["SensorSuite"], "Bomber": ["OrdnanceAssembly"],
+    "Explorer": ["SensorSuite"], "Gunship": ["ShieldProjector"], "Logistics": ["ShieldProjector"],
+    "Mining Barge": ["ExtractionHead"], "Light Freighter": ["LifeSupportSystem"],
+    "Blockade Runner": ["LifeSupportSystem"], "Frigate": ["EnergyEmitter"], "Industrial": ["ExtractionHead"],
+    "Heavy Freighter": ["LifeSupportSystem"], "Cruiser": ["EnergyEmitter", "LifeSupportSystem"],
+    "Command Ship": ["SensorSuite", "LifeSupportSystem"],
+}
+TWO_THRUSTERS = {"Interceptor", "Blockade Runner"}
+HULL_FRAMES = {"Small": 1, "Medium": 2, "Large": 3, "Capital": 4}
+
+# Trait stats. Percent stats change the module's own numbers; flat stats add to the ship (Evasion, Speed percent
+# points), to the module's bonus (Yield, in Module Bonus points) or to the rare-find roll (RareFind, points).
+PERCENT_STATS = ["Damage", "Accuracy", "CapacitorCost", "Hull", "Shield", "Repair", "Capacitor", "CapacitorRegen",
+                 "Defense", "Resistance"]
+FLAT_STATS = ["Evasion", "Speed", "Yield", "RareFind"]
+STAT_TEXT = {"Damage": "DMG", "Accuracy": "Accuracy", "CapacitorCost": "capacitor use", "Hull": "hull",
+             "Shield": "shield", "Repair": "repair amount", "Capacitor": "capacitor", "CapacitorRegen": "capacitor regen",
+             "Defense": "Defense", "Resistance": "resistances", "Evasion": "Evasion", "Speed": "speed",
+             "Yield": "Module Bonus", "RareFind": "rare-find chance"}
+
+# id, enum, name, kind (Crafted / Common / Rare), families, effects. Crafted variants are trade-offs (section 14: no
+# strict upgrade); salvaged common traits are one small bonus; rare traits are salvage-only and never crafted.
+TRAITS = [
+    (1, "Reinforced", "Reinforced", "Crafted", ["HullFrame"], [("Hull", 6), ("Resistance", 6), ("Speed", -2)]),
+    (2, "Lightweight", "Lightweight", "Crafted", ["HullFrame"], [("Speed", 2), ("Evasion", 3), ("Hull", -5), ("Resistance", -5)]),
+    (3, "Overclocked", "Overclocked", "Crafted", ["ShipReactor"], [("CapacitorRegen", 8), ("Capacitor", -5)]),
+    (4, "DeepCell", "Deep-Cell", "Crafted", ["ShipReactor"], [("Capacitor", 8), ("CapacitorRegen", -5)]),
+    (5, "Vectored", "Vectored", "Crafted", ["ThrusterAssembly"], [("Evasion", 3), ("Speed", -1)]),
+    (6, "Boosted", "Boosted", "Crafted", ["ThrusterAssembly"], [("Speed", 2), ("Evasion", -2)]),
+    (7, "Focused", "Focused", "Crafted", ["EnergyEmitter"], [("Accuracy", 6), ("Damage", -3)]),
+    (8, "Overcharged", "Overcharged", "Crafted", ["EnergyEmitter"], [("Damage", 6), ("CapacitorCost", 25)]),
+    (9, "Efficient", "Efficient", "Crafted", ["EnergyEmitter"], [("CapacitorCost", -25), ("Damage", -3)]),
+    (10, "Guided", "Guided", "Crafted", ["OrdnanceAssembly"], [("Accuracy", 6), ("Damage", -3)]),
+    (11, "HeavyPayload", "Heavy-Payload", "Crafted", ["OrdnanceAssembly"], [("Damage", 6), ("Accuracy", -4)]),
+    (12, "Dense", "Dense", "Crafted", ["ShieldProjector"], [("Shield", 6), ("Repair", -4)]),
+    (13, "Rapid", "Rapid", "Crafted", ["ShieldProjector"], [("Repair", 6), ("Shield", -4)]),
+    (14, "Calibrated", "Calibrated", "Crafted", ["SensorSuite"], [("Accuracy", 6), ("Evasion", -2)]),
+    (15, "LowPower", "Low-Power", "Crafted", ["SensorSuite"], [("CapacitorCost", -25), ("Accuracy", -3)]),
+    (16, "Bulk", "Bulk", "Crafted", ["ExtractionHead"], [("Yield", 2), ("CapacitorCost", 25)]),
+    (17, "Precision", "Precision", "Crafted", ["ExtractionHead"], [("RareFind", 5), ("Yield", -1)]),
+    (21, "Tuned", "Tuned", "Common", ["EnergyEmitter", "OrdnanceAssembly"], [("Damage", 3)]),
+    (22, "Aligned", "Aligned", "Common", ["EnergyEmitter", "OrdnanceAssembly", "SensorSuite"], [("Accuracy", 3)]),
+    (23, "Insulated", "Insulated", "Common", ["EnergyEmitter", "ShipReactor", "ShieldProjector", "SensorSuite", "ExtractionHead"], [("CapacitorCost", -20)]),
+    (24, "Braced", "Braced", "Common", ["HullFrame"], [("Hull", 3)]),
+    (25, "Charged", "Charged", "Common", ["ShieldProjector"], [("Shield", 3)]),
+    (26, "Responsive", "Responsive", "Common", ["ShieldProjector"], [("Repair", 3)]),
+    (27, "Expanded", "Expanded", "Common", ["ShipReactor"], [("Capacitor", 3)]),
+    (28, "CleanBurning", "Clean-Burning", "Common", ["ShipReactor"], [("CapacitorRegen", 3)]),
+    (29, "Hardened", "Hardened", "Common", ["HullFrame"], [("Defense", 3)]),
+    (30, "Shielded", "Shielded", "Common", ["HullFrame"], [("Resistance", 3)]),
+    (31, "Nimble", "Nimble", "Common", ["HullFrame", "ThrusterAssembly", "SensorSuite"], [("Evasion", 2)]),
+    (32, "Streamlined", "Streamlined", "Common", ["ThrusterAssembly"], [("Speed", 1)]),
+    (33, "WideBore", "Wide-Bore", "Common", ["ExtractionHead"], [("Yield", 1)]),
+    (34, "Keen", "Keen", "Common", ["ExtractionHead"], [("RareFind", 3)]),
+    (41, "SithTuned", "Sith-tuned", "Rare", ["EnergyEmitter", "OrdnanceAssembly"], [("Damage", 5), ("Accuracy", 5)]),
+    (42, "MandalorianForged", "Mandalorian-forged", "Rare", ["HullFrame"], [("Hull", 5), ("Resistance", 5), ("Defense", 5)]),
+    (43, "RepublicGrade", "Republic-grade", "Rare", ["ShieldProjector"], [("Shield", 5), ("Repair", 5)]),
+    (44, "CorellianModified", "Corellian-modified", "Rare", ["ThrusterAssembly"], [("Speed", 2), ("Evasion", 3)]),
+    (45, "HuttRigged", "Hutt-rigged", "Rare", ["ShipReactor"], [("Capacitor", 5), ("CapacitorRegen", 5)]),
+    (46, "ChissCalibrated", "Chiss-calibrated", "Rare", ["SensorSuite"], [("Accuracy", 5), ("CapacitorCost", -20)]),
+    (47, "CzerkaPattern", "Czerka-pattern", "Rare", ["ExtractionHead"], [("Yield", 2), ("RareFind", 5)]),
+]
+
+# Salvage odds per wreck difficulty (plan sections 12 and 14 give none; draft): the chance a salvage cycle also yields
+# one salvaged component of the wreck's tier (1-5), and the chance that component's trait is rare. Every salvaged
+# component carries a trait. Trait Hunter adds its rank's points to the rare chance.
+# Research blueprint traits (W9b, plan section 14): a researched module blueprint's item bonuses. Each stat has three
+# tiers; as on the ground, a blueprint's nth item bonus rolls tier n, capped by the recipe's level band (levels 0-20
+# tier 1, 21-40 tier 2), and a module only rolls stats its component family's modules carry. Draft numbers.
+BLUEPRINT_STATS = [
+    # stat, trait name, families, tier values
+    ("Damage", "DMG", ["EnergyEmitter", "OrdnanceAssembly"], [2, 3, 4]),
+    ("Accuracy", "Accuracy", ["EnergyEmitter", "OrdnanceAssembly", "SensorSuite"], [2, 3, 4]),
+    ("CapacitorCost", "Efficiency", ["EnergyEmitter", "OrdnanceAssembly", "ShieldProjector", "SensorSuite", "ExtractionHead",
+                                     "HullFrame"], [-10, -15, -20]),
+    ("Hull", "Hull", ["HullFrame"], [2, 3, 4]),
+    ("Shield", "Shield", ["ShieldProjector"], [2, 3, 4]),
+    ("Repair", "Repair", ["ShieldProjector", "HullFrame"], [2, 3, 4]),
+    ("Capacitor", "Capacitor", ["ShipReactor"], [2, 3, 4]),
+    ("CapacitorRegen", "Regen", ["ShipReactor"], [2, 3, 4]),
+    ("Defense", "Defense", ["HullFrame"], [2, 3, 4]),
+    ("Resistance", "Resistance", ["HullFrame", "ShieldProjector"], [2, 3, 4]),
+    ("Evasion", "Evasion", ["ThrusterAssembly"], [1, 2, 3]),
+    ("Yield", "Yield", ["ExtractionHead"], [1, 1, 2]),
+]
+BLUEPRINT_TRAIT_START = 61
+BLUEPRINT_TIER_NAMES = ["I", "II", "III"]
+
+
+def blueprint_traits():
+    """(id, enum, name, "Blueprint", families, effects, tier) for every blueprint trait."""
+    out, tid = [], BLUEPRINT_TRAIT_START
+    for stat, label, fams, values in BLUEPRINT_STATS:
+        for tier, value in enumerate(values, 1):
+            out.append((tid, f"Refined{stat}{tier}", f"Refined {label} {BLUEPRINT_TIER_NAMES[tier - 1]}", "Blueprint",
+                        fams, [(stat, value)], tier))
+            tid += 1
+    return out
+
+
+TRAITS += [t[:6] for t in blueprint_traits()]
+
+# Rare components (W9b, plan section 14 and Appendix D): one top-band item each, crafted from a rare material and a
+# tier 5 component. The named rank-50 modules take a Thorilide Core and an Aurodium Plating; Advanced hull recipes and
+# the rare-trait stand-in come with the manufacturer components (W9c). Prototype Tech comes from space slicing
+# (W12b) and the Wild Space tables and rare finds (W12c). key, enum, name, skill, ESS9 model, recipe inputs, description.
+RARE_FAMILIES = [
+    ("thorcore", "ThorilideCore", "Thorilide Core", "Engineering", 246, [("thor_crys", 2), ("sc_reactor_5", 1)],
+     "A Ship Reactor rebuilt around a lattice of Thorilide crystal, for named modules and Advanced ships."),
+    ("aurplate", "AurodiumPlating", "Aurodium Plating", "Smithery", 247, [("aurodium", 3), ("sc_hframe_5", 1)],
+     "A Hull Frame clad in salvaged Aurodium alloy, for named modules and Advanced ships."),
+    ("protocore", "PrototypeCore", "Prototype Core", "Engineering", 248, [("proto_tech", 1), ("sc_sensor_5", 1)],
+     "A Sensor Suite wired to stolen prototype tech, for the Rift Raider ships."),
+]
+RARE_TIER = 5
+RARE_RECIPE_LEVEL = 45
+
+
+def rare_resref(short):
+    return f"sc_{short}"
+
+
+# Rare components in Advanced hull recipes (W11o, plan sections 7 and 14, Appendix D), held to the W11e hull cost band:
+# no hull may cost more than 1.27x its pre-revamp material value (8 / 12 / 18 / 30 refined ore plus half that in
+# electronics of the hull's tier; Advanced Small 420, Medium 948, Large 1,890, Capital 3,945).
+# - Small, Medium and Large Advanced hulls take "salvaged parts carrying a rare trait" (section 14's fourth rare
+#   component): one more component of the hull's tier, of a family its recipe already takes, carrying a rare trait (the
+#   rare-trait slot, on top of the Standard bill). The crafted rare components (650-2,063 credits) cannot fit these hulls'
+#   budgets (533-2,400 in all), so they are not used here. Worst case 1.16x (Chela Bomber with a tier 2 Ordnance Assembly).
+# - Capital Advanced hulls take their maker's crafted rare component in place of the part it is built on (a Thorilide
+#   Core for the Capital Class Reactor, an Aurodium Plating for one Capital Class Structural Components, a Prototype Core
+#   for the Sensor Suite) and the hull's electronics; a tier 5 component with a rare trait of any salvage family may stand
+#   in for it. Republic Centurion: 4,758 with the Thorilide Core (1.21x), at most 4,995 with a stand-in (1.27x).
+# The slot's or stand-in's rare trait becomes a hull trait like any traited component's.
+RARE_BY_MAKER = {"Republic": "ThorilideCore", "Sith": "ThorilideCore", "Corellian": "ThorilideCore",
+                 "Chiss": "ThorilideCore", "Mandalorian": "AurodiumPlating", "Hutt": "AurodiumPlating",
+                 "Czerka": "AurodiumPlating", "Rift Raider": "PrototypeCore"}
+RARE_COMPONENT_SIZES = {"Capital"}
+# The part of a Capital bill each rare component replaces (the item it is built on).
+RARE_REPLACES = {"ThorilideCore": "capc_react", "AurodiumPlating": "capc_struc", "PrototypeCore": "sc_sensor_5"}
+HULL_COST_BAND = 1.27
+
+
+def advanced_rare_resref(maker):
+    return rare_resref(next(f[0] for f in RARE_FAMILIES if f[1] == RARE_BY_MAKER[maker]))
+
+
+# Capital parts (W11o, plan section 14: "Today's capital parts (capc_*) become the top band"): three of the legacy capital
+# construction parts stand above tier 5 for the families every hull takes. A Capital hull takes 2 Capital Class Structural
+# Components (for its 4 Hull Frames), a Capital Class Reactor and Capital Class Thrusters instead of the tier 5 items. Each
+# part is its tier 5 components plus one Refined Ardanium (the Korriban capital ore, 500 credits), and the hull drops five
+# Refined Gostian (100 credits) per part, so every Capital hull keeps its W11e material value (4,825-5,025 credits,
+# 1.22-1.27x its pre-component value). Recipe level 45, the Standard Capital hull's; the legacy level 52 recipes for these
+# three items are retired. They are not component items, but they keep the traits of the tier 5 components they consume
+# and pass them on to the Capital hull, so a manufacturer or rare trait still reaches it. key, resref, name, skill, family it bands, tier 5 components per part, parts per Capital hull,
+# description.
+CAPITAL_PART_MATERIAL = "ref_arda"
+CAPITAL_PART_LEVEL = 45
+CAPITAL_PART_ORE_SAVED = 5
+# Review fix 2026-10-30 (production.py): with the capital parts' own crafts counted, a Cruiser (5,025 raw, 1.274x)
+# cost 1.28x its pre-revamp recipe on full cost at the crafting revamp's success rates; a Standard Capital hull takes one
+# electronics fewer (4,762-4,962 raw, 1.21-1.26x; at most 1.26x on full cost).
+CAPITAL_ELECTRONICS_SAVED = 1
+CAPITAL_PARTS = [
+    ("CapitalStructure", "capc_struc", "Capital Class Structural Components", "Smithery", "HullFrame", 2, 2,
+     "A capital hull's load-bearing frame: two tier 5 Hull Frames braced with Refined Ardanium. Two go into every "
+     "Capital hull."),
+    ("CapitalReactor", "capc_react", "Capital Class Reactor", "Engineering", "ShipReactor", 1, 1,
+     "A capital ship's main reactor: a tier 5 Ship Reactor shielded with Refined Ardanium. One goes into every Capital "
+     "hull."),
+    ("CapitalThrusters", "capc_thrust", "Capital Class Thrusters", "Smithery", "ThrusterAssembly", 1, 1,
+     "A capital ship's engine block: a tier 5 Thruster Assembly on a Refined Ardanium mount. One goes into every "
+     "Capital hull."),
+]
+
+
+def capital_part_inputs(fam, per_part):
+    return [(resref(family(fam)[0], 5), per_part), (CAPITAL_PART_MATERIAL, 1)]
+
+
+# Manufacturer components (W9c, plan section 14 and Appendix D): one per manufacturer, a tier 5 component of a family
+# carrying that maker's trait (kind Manufacturer). They are the family's tier 5 item (sc_<family>_5) with the trait
+# stamped, so every tier 5 recipe of the family takes them and the trait reaches the module or hull built from them, as a
+# crafted variant's does. Never crafted: they come from aces, from the salvage of the maker's NPC ships (below) and later
+# from faction stores (W13) and Wild Space (W12c, the Rift Raider part). Each trait matches a rare trait's budget
+# (two or three bonuses, 10-13 points in all) with the maker's signature mix (Appendix C).
+# id, enum, trait and item name, manufacturer, family, effects.
+MANUFACTURERS = [
+    (101, "RepublicShieldMatrix", "Republic Shield Matrix", "Republic", "ShieldProjector",
+     [("Shield", 5), ("Repair", 5), ("Resistance", 3)]),
+    (102, "SithTargetingCore", "Sith Targeting Core", "Sith", "EnergyEmitter", [("Damage", 6), ("Accuracy", 4)]),
+    (103, "MandalorianPlating", "Mandalorian Plating", "Mandalorian", "HullFrame",
+     [("Hull", 5), ("Resistance", 4), ("Defense", 4)]),
+    (104, "CzerkaIndustrialFrame", "Czerka Industrial Frame", "Czerka", "ExtractionHead",
+     [("Yield", 2), ("RareFind", 3), ("CapacitorCost", -15)]),
+    (105, "HuttCargoCoupling", "Hutt Cargo Coupling", "Hutt", "ShipReactor", [("Capacitor", 6), ("CapacitorRegen", 6)]),
+    (106, "CorellianDriveKit", "Corellian Drive Kit", "Corellian", "ThrusterAssembly", [("Speed", 3), ("Evasion", 2)]),
+    (107, "ChissSensorArray", "Chiss Sensor Array", "Chiss", "SensorSuite", [("Accuracy", 6), ("CapacitorCost", -10)]),
+    (108, "RaiderRefitHull", "Raider Refit Hull", "Rift Raider", "HullFrame", [("Hull", 4), ("Speed", 2), ("Evasion", 2)]),
+]
+MANUFACTURER_TIER = 5
+TRAITS += [(tid, enum, name, "Manufacturer", [fam], eff) for (tid, enum, name, _maker, fam, eff) in MANUFACTURERS]
+# The chance per salvage cycle that a wreck of a maker's NPC ship also yields that maker's component (draft; Appendix D
+# "a low chance on basic ships, higher on elites and bosses"). With the cycles per wreck (Small 3, Medium 4, Large 6,
+# Capital 10, +2 elite, +4 boss) a Normal fighter's wreck gives one 3% of the time, an elite Medium 17%, a boss
+# capital 51%.
+MANUFACTURER_SALVAGE_PERCENT = {"Normal": 1, "Elite": 3, "Boss": 5}
+
+# Hull traits (W9c, plan section 14): a ship deed crafted from traited components inherits their traits, as a module does,
+# and so does a researched hull blueprint's bonus. A hull applies HULL_TRAIT_SHARE percent of each stat's summed value
+# (rounded half away from zero) to the ship's own totals: hull, shield and capacitor as percent points of the hull's
+# percent bonus, capacitor regen, Accuracy, Defense and resistances as a percent of the ship's total, DMG as percent
+# points of weapon damage, Evasion as points and speed as percent points. Capacitor use, repair amount, Module Bonus and
+# rare-find chance are module numbers and do nothing on a hull. A Small hull built from four rare-traited components gains
+# about 3% on a handful of stats, about a tenth of a rank step.
+HULL_TRAIT_SHARE = 50
+HULL_TRAIT_STATS = ["Damage", "Accuracy", "Hull", "Shield", "Capacitor", "CapacitorRegen", "Defense", "Resistance",
+                    "Evasion", "Speed"]
+# The blueprint traits a researched hull recipe rolls (W9c): the hull-side stats of BLUEPRINT_STATS.
+HULL_BLUEPRINT_STATS = ["Hull", "Shield", "Capacitor", "CapacitorRegen", "Defense", "Resistance", "Evasion"]
+
+SALVAGED_COMPONENT_PERCENT = {"Normal": 10, "Elite": 20, "Boss": 30}
+RARE_TRAIT_PERCENT = {"Normal": 5, "Elite": 10, "Boss": 20}
+TRAIT_HUNTER = [10, 20]
+
+
+def effect_text(effects):
+    parts = []
+    for stat, value in effects:
+        sign = "+" if value > 0 else ""
+        unit = "%" if stat in PERCENT_STATS or stat == "Speed" else ""
+        parts.append(f"{sign}{value}{unit} {STAT_TEXT[stat]}")
+    return ", ".join(parts)
+
+
+def traits_for(family, kind):
+    return [t for t in TRAITS if family in t[4] and t[3] == kind]
+
+
+def components_for_recipe(family, tier):
+    """The two materials of one component."""
+    for f in FAMILIES:
+        if f[1] == family:
+            return [(f[5](tier), 1), (f[6](tier), 1)]
+    raise KeyError(family)
+
+
+def family(enum):
+    return next(f for f in FAMILIES if f[1] == enum)

@@ -245,7 +245,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("b_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "b_pglove", 1, true);
         }
 
         private void BasicTwinPistolsTask(QuestBuilder builder)
@@ -262,7 +263,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("b_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "b_twinpistol", 1, true);
         }
 
         private void TitanPowerGloveTask(QuestBuilder builder)
@@ -279,7 +281,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("tit_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "tit_pglove", 1, true);
         }
 
         private void TitanTwinPistolsTask(QuestBuilder builder)
@@ -296,7 +299,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("tit_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "tit_twinpistol", 1, true);
         }
 
         private void DeltaPowerGloveTask(QuestBuilder builder)
@@ -313,7 +317,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("del_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "del_pglove", 1, true);
         }
 
         private void DeltaTwinPistolsTask(QuestBuilder builder)
@@ -330,7 +335,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("del_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "del_twinpistol", 1, true);
         }
 
         private void ProtoPowerGloveTask(QuestBuilder builder)
@@ -347,7 +353,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("proto_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "proto_pglove", 1, true);
         }
 
         private void ProtoTwinPistolsTask(QuestBuilder builder)
@@ -364,7 +371,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("proto_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "proto_twinpistol", 1, true);
         }
 
         private void OphidianPowerGloveTask(QuestBuilder builder)
@@ -381,7 +389,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("oph_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "oph_pglove", 1, true);
         }
 
         private void OphidianTwinPistolsTask(QuestBuilder builder)
@@ -398,7 +407,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("oph_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, "oph_twinpistol", 1, true);
         }
 
         private void BuildItemTask(
@@ -420,7 +430,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, resref, amount, true);
         }
     }
 }

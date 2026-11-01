@@ -117,15 +117,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                             Minimum = 1,
                             Maximum = 5,
                             DefaultIntValue = 1
-                        },
-                        new PlaceableBehaviorField
-                        {
-                            VariableName = "RESOURCE_COUNT",
-                            Label = "Charges",
-                            Kind = PlaceableFieldKind.Integer,
-                            Description = "How many times it can be harvested before it is used up.",
-                            Minimum = 1,
-                            DefaultIntValue = 4
                         }
                     }
                 },

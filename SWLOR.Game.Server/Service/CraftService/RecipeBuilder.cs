@@ -88,6 +88,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the name the recipe lists show, for recipes that make the same item in different ways.
+        /// Without it the lists show the crafted item's name.
+        /// </summary>
+        /// <param name="name">The recipe name to display.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder Name(string name)
+        {
+            _activeRecipe.Name = name;
+            return this;
+        }
+
+        /// <summary>
         /// Adds short lines describing what the crafted item does, shown in the recipe details.
         /// Use this for items whose effect is not visible from their item properties.
         /// </summary>
@@ -149,6 +161,15 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Requires the recipe to be crafted at a player station's Shipyard that admits the crafter (Capital hulls).
+        /// </summary>
+        public RecipeBuilder RequirementShipyard()
+        {
+            _activeRecipe.Requirements.Add(new RecipeShipyardRequirement());
+            return this;
+        }
+
+        /// <summary>
         /// Adds a perk level requirement to craft this recipe.
         /// </summary>
         /// <param name="perkType">The perk required to craft the recipe.</param>
@@ -173,6 +194,75 @@ namespace SWLOR.Game.Server.Service.CraftService
             _activeRecipe.Components[resref] = quantity;
             return this;
         }
+
+        /// <summary>
+        /// Sets the Reaction minigame parameters of an Espionage recipe.
+        /// </summary>
+        /// <param name="cyclePattern">How the cycle shares its turns between the phases.</param>
+        /// <param name="cycleLength">The turns in one full cycle.</param>
+        /// <param name="peakIntensity">How violent the Peak is.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder ReactionParameters(ReactionCyclePattern cyclePattern, int cycleLength, int peakIntensity) =>
+            MinigameParameters(new ReactionParameters(cyclePattern, cycleLength, peakIntensity));
+
+        /// <summary>
+        /// Sets the minigame parameters of the recipe. Each minigame's builder method calls this with
+        /// its own parameter type. A null value leaves the recipe without parameters, and a second
+        /// call with the same parameter type replaces the first.
+        /// </summary>
+        /// <param name="parameters">The parameters the recipe's minigame reads.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder MinigameParameters(RecipeMinigameParameters parameters)
+        {
+            if (parameters == null)
+                return this;
+
+            var existing = _activeRecipe.MinigameParameters;
+            if (existing != null && existing.GetType() != parameters.GetType())
+            {
+                throw new InvalidOperationException(
+                    $"Recipe {_activeType} already has {existing.GetType().Name}; a recipe uses one minigame.");
+            }
+
+            _activeRecipe.MinigameParameters = parameters;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the Kitchen minigame parameters of a cooking recipe: its dish, the center and radii of its flavor target, and
+        /// the Freshness the dish starts with.
+        /// </summary>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder KitchenParameters(
+            KitchenDish dish,
+            int targetSavory,
+            int targetSweet,
+            int targetSpice,
+            int innerRadius,
+            int outerRadius,
+            int freshness)
+        {
+            return MinigameParameters(new KitchenParameters(
+                dish,
+                targetSavory,
+                targetSweet,
+                targetSpice,
+                innerRadius,
+                outerRadius,
+                freshness));
+        }
+
+        /// <summary>
+        /// Sets the Plasma Forge parameters of the recipe.
+        /// </summary>
+        /// <param name="rangeCenter">The middle of the working range on the 0-100 Thermal meter.</param>
+        /// <param name="rangeWidth">How many Thermal points the working range spans.</param>
+        /// <param name="coolingRate">The Thermal the piece loses after every action.</param>
+        /// <param name="startingThermal">The Thermal the piece starts at.</param>
+        /// <param name="shapeShare">The percentage of the work that is Shape; the rest is Finish.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder ForgeParameters(int rangeCenter, int rangeWidth, int coolingRate, int startingThermal, int shapeShare) =>
+            MinigameParameters(new ForgeParameters(rangeCenter, rangeWidth, coolingRate, startingThermal, shapeShare));
 
         /// <summary>
         /// Returns a built list of recipes.

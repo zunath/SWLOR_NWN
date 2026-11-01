@@ -7,8 +7,10 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -19,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
         public const string BoardingOutOfCombatVariable = "SHIP_BOARDING_OUT_OF_COMBAT";
+        public const string DetailsElement = "ship_management_details";
+        public const string DetailsPartial = "SHIP_MANAGEMENT_DETAILS";
 
         private const string _blank = "Blank";
         private const int ShipsPerPage = 25;
@@ -553,6 +557,162 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool MidPower1Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower2Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower3Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower4Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower5Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower6Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower7Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower8Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string MidPower1Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower2Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower3Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower4Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower5Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower6Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower7Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower8Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower1Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower2Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower3Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower4Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower5Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower6Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower7Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower8Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsMidPowerVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsConfigurationVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsBoardShipEnabled
         {
             get => Get<bool>();
@@ -571,6 +731,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsTransferEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSaleEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string SaleButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SalePrice
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public bool IsPermissionsEnabled
         {
             get => Get<bool>();
@@ -584,6 +768,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string ShipLocation
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>The selected ship's hull traits (read-only), from the components it was built with.</summary>
+        public string HullTraitsText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string HullTraitsTooltip
         {
             get => Get<string>();
             set => Set(value);
@@ -624,6 +821,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
+
+        /// <summary>The selected ship's Standard design and the Hull Designs the player unlocked for its model.</summary>
+        public GuiBindingList<GuiComboEntry> HullDesignOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedHullDesignIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public bool IsHullDesignEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string RefitDesignText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>The appearance of each entry in <see cref="HullDesignOptions"/>.</summary>
+        private readonly List<AppearanceType> _hullDesignAppearances = new();
 
         private List<PlayerShip> GetMyShips()
         {
@@ -681,41 +906,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return DB.Search(permissionQuery).FirstOrDefault();
         }
 
+        /// <summary>Entering needs Enter Property, or a ship docked aboard that the player may pilot.</summary>
         private bool CanBoardShip(string propertyId)
         {
-            return Property.HasPropertyPermission(Player, propertyId, PropertyPermissionType.EnterProperty);
+            return Property.HasPropertyPermission(Player, propertyId, PropertyPermissionType.EnterProperty) ||
+                   Space.HasShipDockedAboard(Player, propertyId);
         }
 
         private int CalculateRepairBill(PlayerShip ship)
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
-            var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
-            var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
-            var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
-            if (socialBonus > 0.20f)
-                socialBonus = 0.20f;
-            else if (socialBonus < 0f)
-                socialBonus = 0f;
+            var starportLevel = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel);
+            var detail = Space.FindShipDetail(ship.Status.ItemTag);
+            var sizeMultiplier = ShipRepairBill.GetSizeMultiplier(detail?.Hull, ship.Status.CapitalShip);
 
-            var bonuses = starportBonus + socialBonus;
-
-            if (bonuses > 0.90f)
-                bonuses = 0.90f;
-
-            price -= (int)(price * bonuses);
-            if (ship.Status.CapitalShip)
-            {
-                price *= 5;
-            }
-
-            return price;
+            return ShipRepairBill.Calculate(
+                ship.Status.MaxShield - ship.Status.Shield,
+                ship.Status.MaxHull - ship.Status.Hull,
+                sizeMultiplier,
+                starportLevel,
+                GetAbilityScore(Player, AbilityType.Social));
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)
         {
+            // The details panel goes in first, so the values set below reach controls that are on screen.
+            ChangePartialView(DetailsElement, DetailsPartial);
+
             _planetType = initialPayload.PlanetType;
 
             List<PlayerShip> dbPlayerShips;
@@ -767,7 +985,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndex = 0;
             LoadPage();
 
+            SalePrice = string.Empty;
             WatchOnClient(model => model.ShipName);
+            WatchOnClient(model => model.SalePrice);
             WatchOnClient(model => model.SelectedPageIndex);
             _skipPageLoad = false;
         }
@@ -816,6 +1036,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HighPower6Resref = _blank;
                 HighPower7Resref = _blank;
                 HighPower8Resref = _blank;
+
+                for (var slot = 1; slot <= 8; slot++)
+                {
+                    SetMidSlot(slot, false, _blank, string.Empty);
+                }
+
+                IsMidPowerVisible = false;
+                IsConfigurationVisible = true;
 
                 LowPower1Visible = false;
                 LowPower2Visible = false;
@@ -867,8 +1095,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsPermissionsEnabled = false;
                 IsNameEnabled = false;
                 ShipLocation = string.Empty;
+                HullTraitsText = string.Empty;
+                HullTraitsTooltip = string.Empty;
                 IsRepairEnabled = false;
                 RepairText = "Repair";
+                LoadHullDesigns(null, null, false);
             }
             else
             {
@@ -879,7 +1110,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var permission = GetShipPermission(ship.PropertyId);
                 var hasAccess = permission != null;
-                var currentLocation = GetShipLocation(property, out var isDockInstanceLoading);
+                var isDockedAboard = Space.IsDockedAboardHost(ship, out var hostName);
+                var currentLocation = GetShipLocation(ship, property, out var isDockInstanceLoading);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
                 var isInSpace = property.Positions.ContainsKey(PropertyLocationType.CurrentPosition);
                 var gold = GetGold(Player);
@@ -915,7 +1147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower1Resref = detail.Texture;
-                    HighPower1Tooltip = detail.Name;
+                    HighPower1Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -930,7 +1162,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower2Resref = detail.Texture;
-                    HighPower2Tooltip = detail.Name;
+                    HighPower2Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -945,7 +1177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower3Resref = detail.Texture;
-                    HighPower3Tooltip = detail.Name;
+                    HighPower3Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -960,7 +1192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower4Resref = detail.Texture;
-                    HighPower4Tooltip = detail.Name;
+                    HighPower4Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -975,7 +1207,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower5Resref = detail.Texture;
-                    HighPower5Tooltip = detail.Name;
+                    HighPower5Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -990,7 +1222,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower6Resref = detail.Texture;
-                    HighPower6Tooltip = detail.Name;
+                    HighPower6Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1005,7 +1237,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower7Resref = detail.Texture;
-                    HighPower7Tooltip = detail.Name;
+                    HighPower7Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1020,7 +1252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower8Resref = detail.Texture;
-                    HighPower8Tooltip = detail.Name;
+                    HighPower8Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1044,7 +1276,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower1Resref = detail.Texture;
-                    LowPower1Tooltip = detail.Name;
+                    LowPower1Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1059,7 +1291,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower2Resref = detail.Texture;
-                    LowPower2Tooltip = detail.Name;
+                    LowPower2Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1074,7 +1306,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower3Resref = detail.Texture;
-                    LowPower3Tooltip = detail.Name;
+                    LowPower3Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1089,7 +1321,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower4Resref = detail.Texture;
-                    LowPower4Tooltip = detail.Name;
+                    LowPower4Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1104,7 +1336,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower5Resref = detail.Texture;
-                    LowPower5Tooltip = detail.Name;
+                    LowPower5Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1119,7 +1351,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower6Resref = detail.Texture;
-                    LowPower6Tooltip = detail.Name;
+                    LowPower6Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1134,7 +1366,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower7Resref = detail.Texture;
-                    LowPower7Tooltip = detail.Name;
+                    LowPower7Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1149,13 +1381,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower8Resref = detail.Texture;
-                    LowPower8Tooltip = detail.Name;
+                    LowPower8Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
                     LowPower8Resref = _blank;
                     LowPower8Tooltip = string.Empty;
                 }
+
+                for (var slot = 1; slot <= 8; slot++)
+                {
+                    var midModule = ship.Status.MidPowerModules.GetValueOrDefault(slot);
+                    var midDetail = midModule == null ? null : Space.GetShipModuleDetailByItemTag(midModule.ItemTag);
+                    SetMidSlot(slot, shipDetail.MidPowerNodes >= slot, midDetail?.Texture ?? _blank,
+                        midDetail == null ? string.Empty : ShipTraitRules.ModuleTooltip(midDetail.Name, midModule.Traits));
+                }
+
+                // Legacy hulls have no mid slots and revamp hulls have no configuration slots.
+                IsMidPowerVisible = shipDetail.MidPowerNodes > 0;
+                IsConfigurationVisible = shipDetail.ConfigurationNodes > 0;
 
                 Configuration1Visible = shipDetail.ConfigurationNodes >= 1;
                 Configuration2Visible = shipDetail.ConfigurationNodes >= 2;
@@ -1173,7 +1417,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration1Resref = detail.Texture;
-                    Configuration1Tooltip = detail.Name;
+                    Configuration1Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1188,7 +1432,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration2Resref = detail.Texture;
-                    Configuration2Tooltip = detail.Name;
+                    Configuration2Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1203,7 +1447,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration3Resref = detail.Texture;
-                    Configuration3Tooltip = detail.Name;
+                    Configuration3Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1218,7 +1462,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration4Resref = detail.Texture;
-                    Configuration4Tooltip = detail.Name;
+                    Configuration4Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1233,7 +1477,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration5Resref = detail.Texture;
-                    Configuration5Tooltip = detail.Name;
+                    Configuration5Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1248,7 +1492,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration6Resref = detail.Texture;
-                    Configuration6Tooltip = detail.Name;
+                    Configuration6Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1263,7 +1507,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration7Resref = detail.Texture;
-                    Configuration7Tooltip = detail.Name;
+                    Configuration7Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1278,7 +1522,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration8Resref = detail.Texture;
-                    Configuration8Tooltip = detail.Name;
+                    Configuration8Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1290,26 +1534,146 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsNameEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty) && isAtCurrentLocation;
                 IsRefitEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip) && isAtCurrentLocation;
                 IsPermissionsEnabled = hasAccess && permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
-                ShipLocation = isInSpace
-                    ? "In Space"
-                    : isDockInstanceLoading
-                        ? "Docked (loading...)"
-                        : GetName(currentLocation);
+                HullTraitsText = ShipTraitRules.HullTraitsText(ship.Status.HullTraits);
+                HullTraitsTooltip = ShipTraitRules.HullTraitsTooltip(ship.Status.HullTraits);
+                ShipLocation = isDockedAboard
+                    ? $"Docked aboard {hostName}"
+                    : isInSpace
+                        ? "In Space"
+                        : isDockInstanceLoading
+                            ? "Docked (loading...)"
+                            : GetName(currentLocation);
+                var listing = ShipTransfer.GetListing(ship.Id);
+                if (listing is { IsListed: true })
+                    ShipLocation += $" - listed for sale ({listing.Price} cr)";
                 IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
                                   ship.Status.Hull < ship.Status.MaxHull) &&
                                   gold >= repairPrice &&
                                   isAtCurrentLocation;
                 RepairText = $"Repair ({repairPrice} cr)";
+                LoadHullDesigns(ship, shipDetail, IsRefitEnabled && !isInSpace && !isDockedAboard);
             }
 
             ToggleRegisterButtons();
         }
 
-        private uint GetShipLocation(WorldProperty property, out bool isDockInstanceLoading)
+        /// <summary>
+        /// Fills the Hull Design list for the selected ship: its Standard design and the designs the player unlocked
+        /// for its model, with the ship's current design selected.
+        /// </summary>
+        private void LoadHullDesigns(PlayerShip ship, ShipDetail shipDetail, bool canRefit)
+        {
+            _hullDesignAppearances.Clear();
+            var options = new GuiBindingList<GuiComboEntry>();
+            if (ship == null || shipDetail == null)
+            {
+                HullDesignOptions = options;
+                SelectedHullDesignIndex = 0;
+                IsHullDesignEnabled = false;
+                RefitDesignText = "Refit Design";
+                return;
+            }
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+            _hullDesignAppearances.Add(shipDetail.Appearance);
+            options.Add(new GuiComboEntry(HullDesignRules.StandardDesignName, 0));
+            foreach (var design in HullDesignRules.UnlockedFor(ship.Status.ItemTag, dbPlayer.UnlockedHullDesigns))
+            {
+                options.Add(new GuiComboEntry(design.Name, _hullDesignAppearances.Count));
+                _hullDesignAppearances.Add(design.Appearance);
+            }
+
+            var current = Space.GetShipAppearance(ship, shipDetail);
+            HullDesignOptions = options;
+            SelectedHullDesignIndex = Math.Max(0, _hullDesignAppearances.IndexOf(current));
+            IsHullDesignEnabled = canRefit && _hullDesignAppearances.Count > 1;
+            RefitDesignText = $"Refit Design ({HullDesignRules.RefitFee(ship.Status.Size)} cr)";
+        }
+
+        /// <summary>A starport Refit: changes the selected ship to the chosen Hull Design, for a fee.</summary>
+        public Action OnClickRefitDesign() => () =>
+        {
+            if (SelectedShipIndex <= -1 || SelectedHullDesignIndex < 0 || SelectedHullDesignIndex >= _hullDesignAppearances.Count)
+                return;
+
+            var dbShip = DB.Get<PlayerShip>(_shipIds[SelectedShipIndex]);
+            var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+            var appearance = _hullDesignAppearances[SelectedHullDesignIndex];
+            if (appearance == Space.GetShipAppearance(dbShip, shipDetail))
+            {
+                FloatingTextStringOnCreature("The ship already has that design.", Player, false);
+                return;
+            }
+
+            var fee = HullDesignRules.RefitFee(dbShip.Status.Size);
+            var designName = HullDesignRules.DesignName(dbShip.Status.ItemTag, shipDetail.Appearance, appearance);
+            var shipId = dbShip.Id;
+            ShowModal($"A refit to the {designName} design will cost you {fee} credits. Will you pay for the refit?", () =>
+            {
+                var player = Player;
+                AssignCommand(player, () => CompleteRefit(player, shipId, appearance, fee, designName));
+            });
+        };
+
+        /// <summary>
+        /// Runs on the player's queue (TakeGoldFromCreature does nothing from a NUI handler): checks the refit again on
+        /// the ship as saved now, takes the fee with a mark naming the ship, then saves the new design with the payment's
+        /// id. A restart before that save returns the fee at the next login (<see cref="CreditPayments"/>).
+        /// </summary>
+        private void CompleteRefit(uint player, string shipId, AppearanceType appearance, int fee, string designName)
+        {
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            if (dbShip == null)
+                return;
+
+            var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (!HullDesignRules.CanRefitTo(dbShip.Status.ItemTag, shipDetail.Appearance, appearance, dbPlayer.UnlockedHullDesigns))
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("You have not unlocked that design."), player, false);
+                return;
+            }
+
+            if (GetGold(player) < fee)
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), player, false);
+                return;
+            }
+
+            var mark = CreditPayments.NewMark(CreditPaymentKind.HullRefit, dbShip.Id, fee);
+            CreditPayments.Take(player, mark);
+            dbShip.HullDesignAppearance = appearance == shipDetail.Appearance ? 0 : (int)appearance;
+            dbShip.LastPaymentId = mark.Id;
+            DB.Set(dbShip);
+            CreditPayments.Retire(player);
+
+            FloatingTextStringOnCreature(ColorToken.Green($"Ship refitted to the {designName} design!"), player, false);
+            if (Gui.IsWindowOpen(player, GuiWindowType.ShipManagement))
+                LoadShip();
+        }
+
+        private void SetMidSlot(int slot, bool visible, string resref, string tooltip)
+        {
+            switch (slot)
+            {
+                case 1: MidPower1Visible = visible; MidPower1Resref = resref; MidPower1Tooltip = tooltip; break;
+                case 2: MidPower2Visible = visible; MidPower2Resref = resref; MidPower2Tooltip = tooltip; break;
+                case 3: MidPower3Visible = visible; MidPower3Resref = resref; MidPower3Tooltip = tooltip; break;
+                case 4: MidPower4Visible = visible; MidPower4Resref = resref; MidPower4Tooltip = tooltip; break;
+                case 5: MidPower5Visible = visible; MidPower5Resref = resref; MidPower5Tooltip = tooltip; break;
+                case 6: MidPower6Visible = visible; MidPower6Resref = resref; MidPower6Tooltip = tooltip; break;
+                case 7: MidPower7Visible = visible; MidPower7Resref = resref; MidPower7Tooltip = tooltip; break;
+                case 8: MidPower8Visible = visible; MidPower8Resref = resref; MidPower8Tooltip = tooltip; break;
+            }
+        }
+
+        private uint GetShipLocation(PlayerShip ship, WorldProperty property, out bool isDockInstanceLoading)
         {
             isDockInstanceLoading = false;
 
-            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            // A ship docked aboard another travels with it and is reached through that ship.
+            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition) ||
+                Space.IsDockedAboardHost(ship, out _))
             {
                 return OBJECT_INVALID;
             }
@@ -1346,14 +1710,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipId = _shipIds[SelectedShipIndex];
                 var dbShip = DB.Get<PlayerShip>(shipId);
                 var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-                var shipLocation = GetShipLocation(dbProperty, out _);
-                IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
+                var shipLocation = GetShipLocation(dbShip, dbProperty, out _);
+                var isOwner = playerId == dbProperty.OwnerPlayerId;
+                var isDockedHere = shipLocation == GetArea(Player);
+                var isListed = ShipTransfer.IsListedForSale(shipId);
+                IsUnregisterEnabled = isDockedHere && isOwner;
                 IsRemoveAccessEnabled = IsOtherShipsToggled && playerId != dbShip.OwnerPlayerId;
+                IsTransferEnabled = isDockedHere && isOwner && !isListed;
+                IsSaleEnabled = isOwner && (isListed || isDockedHere);
+                SaleButtonText = isListed ? "Cancel Sale" : "List for Sale";
             }
             else
             {
                 IsUnregisterEnabled = false;
                 IsRemoveAccessEnabled = false;
+                IsTransferEnabled = false;
+                IsSaleEnabled = false;
+                SaleButtonText = "List for Sale";
             }
         }
 
@@ -1424,6 +1797,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Status = new ShipStatus
                     {
                         ItemTag = itemTag,
+                        RequiredSkills = Item.GetRequiredSkills(item),
+                        HullTraits = ShipComponents.GetTraitsOrNull(item),
                         Shield = shipDetail.MaxShield + bonuses.Shield,
                         MaxShield = shipDetail.MaxShield + bonuses.Shield,
                         Hull = shipDetail.MaxHull + bonuses.Hull,
@@ -1439,9 +1814,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Accuracy = shipDetail.Accuracy + bonuses.Accuracy,
                         Evasion = shipDetail.Evasion + bonuses.Evasion,
                         ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate,
-                        CapitalShip = shipDetail.CapitalShip
+                        CapitalShip = shipDetail.CapitalShip,
+                        Size = shipDetail.Size == ShipSize.Invalid ? ShipSize.Small : shipDetail.Size
                     }
                 };
+                // A revamp hull takes its stats from the hull and the pilot, and starts full.
+                Space.RecalculateShipStats(ship.Status, GetAbilityScore(Player, AbilityType.Willpower), true);
                 DB.Set(ship);
 
                 // Update the UI with the new ship details.
@@ -1470,9 +1848,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
+                        dbShip.Status.MidPowerModules.Count > 0 ||
                         dbShip.Status.LowPowerModules.Count > 0)
                     {
                         FloatingTextStringOnCreature($"Please uninstall all modules before unregistering your ship.", Player, false);
+                        return;
+                    }
+
+                    if (dbShip.Cargo.Count > 0)
+                    {
+                        FloatingTextStringOnCreature("Please sell the cargo in the cargo bay before unregistering your ship.", Player, false);
+                        return;
+                    }
+
+                    if (dbShip.SealedFreight.Count > 0)
+                    {
+                        FloatingTextStringOnCreature("Please deliver or abandon the sealed freight aboard before unregistering your ship.", Player, false);
                         return;
                     }
 
@@ -1492,6 +1883,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (dbPlayer.ActiveShipId == shipId)
                         dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
+                    Space.UndockAllToStarport(dbShip, "was unregistered");
+                    Space.ReturnShipDroidCrew(dbShip, "was unregistered");
+                    ShipTransfer.RemoveListings(shipId);
                     dbProperty.IsQueuedForDeletion = true;
 
                     DB.Delete<PlayerShip>(shipId);
@@ -1509,6 +1903,74 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     FloatingTextStringOnCreature("Ship unregistered!", Player, false);
                 });
+        };
+
+        /// <summary>
+        /// Direct transfer (plan section 7): the owner picks another player at the starport where the ship is docked.
+        /// The recipient reads the ship's summary and accepts; the giver pays the transfer fee then.
+        /// </summary>
+        public Action OnClickTransferShip() => () =>
+        {
+            if (SelectedShipIndex <= -1)
+                return;
+
+            var shipId = _shipIds[SelectedShipIndex];
+            Targeting.EnterTargetingMode(Player, ObjectType.Creature, "Please click on the player who will receive this ship.",
+                target =>
+                {
+                    var dbShip = DB.Get<PlayerShip>(shipId);
+                    if (dbShip == null || dbShip.OwnerPlayerId != GetObjectUUID(Player))
+                    {
+                        FloatingTextStringOnCreature("You no longer own this ship.", Player, false);
+                        return;
+                    }
+
+                    ShipTransfer.Offer(Player, dbShip, target);
+                });
+        };
+
+        /// <summary>
+        /// Market sale (plan section 7): lists the ship at the asking price typed in the price box, or cancels its
+        /// listing. The ship stays where it is docked and is locked while listed.
+        /// </summary>
+        public Action OnClickSellShip() => () =>
+        {
+            if (SelectedShipIndex <= -1)
+                return;
+
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            if (dbShip == null || dbShip.OwnerPlayerId != GetObjectUUID(Player))
+                return;
+
+            if (ShipTransfer.IsListedForSale(shipId))
+            {
+                ShowModal("Cancel this ship's market listing?", () =>
+                {
+                    ShipTransfer.RemoveListings(shipId);
+                    FloatingTextStringOnCreature("Listing cancelled.", Player, false);
+                    LoadShip();
+                });
+                return;
+            }
+
+            if (!ShipTransferRules.TryParsePrice(SalePrice, out var price))
+            {
+                FloatingTextStringOnCreature("Enter an asking price above zero in the price box first.", Player, false);
+                return;
+            }
+
+            var taxRate = PlayerMarket.GetMarketRegion(MarketRegionType.Global).TaxRate * 100;
+            ShowModal($"List this ship on the market for {price} credits? The market keeps {taxRate:0.#}% when it sells. " +
+                      "While it is listed, the ship cannot fly, be furnished or be transferred.", () =>
+            {
+                dbShip = DB.Get<PlayerShip>(shipId);
+                if (dbShip == null || !ShipTransfer.List(Player, dbShip, price))
+                    return;
+
+                FloatingTextStringOnCreature(ColorToken.Green("Ship listed for sale!"), Player, false);
+                LoadShip();
+            });
         };
 
         public Action OnClickSaveShipName() => () =>
@@ -1532,7 +1994,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShipNames[SelectedShipIndex] = ShipName;
         };
 
-        private bool ValidateModuleEquip(PlayerShip dbShip, uint item)
+        /// <param name="hotbarSlot">The slot (1-30) the module goes into, or 0 for a configuration slot. The owner
+        /// fits a crew-station slot without rank checks: its crew is checked when they switch it on.</param>
+        private bool ValidateModuleEquip(PlayerShip dbShip, uint item, int hotbarSlot = 0)
         {
             var itemTag = GetTag(item);
 
@@ -1552,11 +2016,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
             var shipDetails = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
 
+            // A revamp hull takes only revamp modules, a legacy hull only legacy modules, and capital modules need a capital hull.
+            var fitError = ShipFitRules.GetFitError(shipDetails, moduleDetails);
+            if (!string.IsNullOrEmpty(fitError))
+            {
+                SendMessageToPC(Player, fitError);
+                return false;
+            }
+
             // No high power nodes available.
             if (moduleDetails.PowerType == ShipModulePowerType.High &&
                 dbShip.Status.HighPowerModules.Count >= shipDetails.HighPowerNodes)
             {
                 SendMessageToPC(Player, "No high power nodes are available.");
+                return false;
+            }
+
+            // No mid power nodes available.
+            if (moduleDetails.PowerType == ShipModulePowerType.Mid &&
+                dbShip.Status.MidPowerModules.Count >= shipDetails.MidPowerNodes)
+            {
+                SendMessageToPC(Player, "No mid power nodes are available.");
                 return false;
             }
 
@@ -1568,153 +2048,110 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
-            // Doesn't meet perk requirements.
-            if (!Space.CanPlayerUseShipModule(Player, itemTag))
+            // A crew-station module is checked against its crew, not the owner (plan section 10).
+            if (hotbarSlot > 0 && Space.IsStationSlot(dbShip.Status, hotbarSlot))
             {
-                SendMessageToPC(Player, "You do not meet the perk requirements necessary to install this module.");
-                return false;
+                // A Cargo Expander or Smuggling Compartment works from a Helm slot only (ShipCargoRules).
+                if (ShipCargoRules.IsHelmOnlyModule(itemTag))
+                {
+                    SendMessageToPC(Player, "Cargo Expanders and Smuggling Compartments fit Helm slots only.");
+                    return false;
+                }
+
+                return true;
             }
 
-            var capShip = dbShip.Status.CapitalShip;
-            var capMod = moduleDetails.CapitalClassModule;
-
-            if (!capShip && capMod)
+            // Doesn't meet skill requirements.
+            var skillError = Item.GetSkillRequirementsError(Player, Item.GetRequiredSkills(item));
+            if (!string.IsNullOrEmpty(skillError))
             {
-                SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
-                return false;
-            }
-
-            if (capShip && !capMod)
-            {
-                SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                SendMessageToPC(Player, skillError);
                 return false;
             }
 
             return true;
         }
 
-        private void ProcessHighPower(int slot)
+        private void ProcessHighPower(int slot) => ProcessPower(ShipModulePowerType.High, slot);
+
+        private void ProcessMidPower(int slot) => ProcessPower(ShipModulePowerType.Mid, slot);
+
+        private void ProcessLowPower(int slot) => ProcessPower(ShipModulePowerType.Low, slot);
+
+        private static Dictionary<int, ShipStatus.ShipStatusModule> GetPowerModules(ShipStatus status, ShipModulePowerType row)
         {
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var module = dbShip.Status.HighPowerModules.ContainsKey(slot)
-                ? dbShip.Status.HighPowerModules[slot]
-                : null;
-
-            // No module is equipped in this slot.
-            // Put player into targeting mode to select a module.
-            if (module == null)
+            return row switch
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
-                    item =>
-                {
-                    dbShip = DB.Get<PlayerShip>(shipId);
-                    var itemTag = GetTag(item);
-                    if (!Space.IsRegisteredShipModule(itemTag))
-                    {
-                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-                    var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-
-                    if (!ValidateModuleEquip(dbShip, item))
-                        return;
-
-                    if (moduleDetails.PowerType != ShipModulePowerType.High)
-                    {
-                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
-                    {
-                        ItemInstanceId = GetObjectUUID(item),
-                        SerializedItem = ObjectPlugin.Serialize(item),
-                        ItemTag = itemTag,
-                        RecastTime = DateTime.MinValue,
-                        ModuleBonus = moduleBonus
-                    };
-
-                    moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
-
-                    DB.Set(dbShip);
-
-                    DestroyObject(item);
-                    LoadShip();
-                });
-            }
-            // A module exists. Prompt user whether they'd like to uninstall it.
-            else
-            {
-                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                ShowModal($"{moduleDetail.Name} is equipped to high slot #{slot}. Would you like to uninstall it?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
-                        return;
-                    }
-
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.HighPowerModules.Remove(slot);
-                    DB.Set(dbShip);
-                    LoadShip();
-                });
-            }
+                ShipModulePowerType.High => status.HighPowerModules,
+                ShipModulePowerType.Mid => status.MidPowerModules,
+                _ => status.LowPowerModules
+            };
         }
 
-        private void ProcessLowPower(int slot)
+        private static string GetPowerRowName(ShipModulePowerType row)
         {
+            return row switch
+            {
+                ShipModulePowerType.High => "high",
+                ShipModulePowerType.Mid => "mid",
+                _ => "low"
+            };
+        }
+
+        private void ProcessPower(ShipModulePowerType row, int slot)
+        {
+            var rowName = GetPowerRowName(row);
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
-            var module = dbShip.Status.LowPowerModules.ContainsKey(slot)
-                ? dbShip.Status.LowPowerModules[slot]
+            var modules = GetPowerModules(dbShip.Status, row);
+            var module = modules.ContainsKey(slot)
+                ? modules[slot]
                 : null;
 
             // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, $"Please click on a ship {rowName}-powered module within your inventory.",
                     item =>
                 {
                     dbShip = DB.Get<PlayerShip>(shipId);
+                    modules = GetPowerModules(dbShip.Status, row);
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
-                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
+                        SendMessageToPC(Player, $"Only {rowName}-powered ship modules may be installed to this slot.");
                         return;
                     }
 
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-                    var moduleBonus = Space.GetModuleBonus(item);
 
-                    if (!ValidateModuleEquip(dbShip, item))
+                    if (!ValidateModuleEquip(dbShip, item, ShipStatCalculator.GetHotbarSlot(row, slot)))
                         return;
 
-                    if (moduleDetails.PowerType != ShipModulePowerType.Low)
+                    if (moduleDetails.PowerType != row)
                     {
-                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
+                        SendMessageToPC(Player, $"Only {rowName}-powered ship modules may be installed to this slot.");
                         return;
                     }
 
-
-                    dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule
+                    var moduleBonus = Space.GetModuleBonus(item);
+                    modules[slot] = new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = GetObjectUUID(item),
                         SerializedItem = ObjectPlugin.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue,
-                        ModuleBonus = moduleBonus
+                        ModuleBonus = moduleBonus,
+                        Traits = ShipComponents.GetTraitsOrNull(item),
+                        RequiredSkills = Item.GetRequiredSkills(item)
                     };
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
+                    Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
 
                     DB.Set(dbShip);
+                    Space.GrantModuleFittedAchievement(Player, moduleDetails);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1724,8 +2161,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                ShowModal($"{moduleDetail.Name} is equipped to low slot #{slot}. Would you like to uninstall it?", () =>
+                ShowModal($"{moduleDetail.Name} is equipped to {rowName} slot #{slot}. Would you like to uninstall it?", () =>
                 {
+                    // A Cargo Expander stays while the cargo bay would overflow without it.
+                    var hullCargo = Space.FindShipDetail(dbShip.Status.ItemTag)?.Hull?.Cargo ?? 0;
+                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(dbShip.Status).ToList(),
+                            module.ItemTag, Trade.GetUsedVolume(dbShip)))
+                    {
+                        SendMessageToPC(Player, "Unload the cargo bay first: its cargo would not fit without this Cargo Expander.");
+                        return;
+                    }
+
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
@@ -1735,7 +2181,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.LowPowerModules.Remove(slot);
+                    modules.Remove(slot);
+                    Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
                     DB.Set(dbShip);
                     LoadShip();
                 });
@@ -1783,7 +2230,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             SerializedItem = ObjectPlugin.Serialize(item),
                             ItemTag = itemTag,
                             RecastTime = DateTime.MinValue,
-                            ModuleBonus = moduleBonus
+                            ModuleBonus = moduleBonus,
+                            RequiredSkills = Item.GetRequiredSkills(item)
                         };
 
                         moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
@@ -1850,6 +2298,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ProcessHighPower(8);
         };
 
+
+        public Action OnClickMidPower1() => () =>
+        {
+            ProcessMidPower(1);
+        };
+
+        public Action OnClickMidPower2() => () =>
+        {
+            ProcessMidPower(2);
+        };
+
+        public Action OnClickMidPower3() => () =>
+        {
+            ProcessMidPower(3);
+        };
+
+        public Action OnClickMidPower4() => () =>
+        {
+            ProcessMidPower(4);
+        };
+
+        public Action OnClickMidPower5() => () =>
+        {
+            ProcessMidPower(5);
+        };
+
+        public Action OnClickMidPower6() => () =>
+        {
+            ProcessMidPower(6);
+        };
+
+        public Action OnClickMidPower7() => () =>
+        {
+            ProcessMidPower(7);
+        };
+
+        public Action OnClickMidPower8() => () =>
+        {
+            ProcessMidPower(8);
+        };
 
         public Action OnClickLowPower1() => () =>
         {

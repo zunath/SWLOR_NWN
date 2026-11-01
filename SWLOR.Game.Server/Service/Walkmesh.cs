@@ -102,9 +102,12 @@ namespace SWLOR.Game.Server.Service
             var nativeArea = NWNXLib.g_pAppManager.m_pServerExoApp.GetAreaByGameObjectID(area);
             var objectClearance = GetObjectClearanceGrid(area, MinDistance);
 
-            for (var x = 0; x < arraySizeX; x++)
+            // Column and row 0 lie on the area's west and south edges, where a creature stands half outside the map,
+            // past the strip players can walk on. Starting one step in keeps every point at least one step from all
+            // four edges, as the last column and row already are from the east and north edges.
+            for (var x = 1; x < arraySizeX; x++)
             {
-                for (var y = 0; y < arraySizeY; y++)
+                for (var y = 1; y < arraySizeY; y++)
                 {
                     var checkPosition = Vector3(x * AreaBakeStep, y * AreaBakeStep);
                     var checkLocation = Location(area, checkPosition, 0.0f);

@@ -13,9 +13,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 /// droids, become their new items (<see cref="LegacySpaceItemCatalog"/>), and configuration modules are refunded in
 /// credits. The record refunds the retired Piloting perks as SP, keeps unlocked hull recipes, unlocks the Hull Design
 /// that keeps each carried deed's look, gains a Rebuild Token and gets the login notice. Piloting ranks keep their
-/// meaning, so no rebuild is forced. Registered ships and stored items are converted by <c>_30_ConvertSpaceItems</c>.
+/// meaning, so no rebuild is forced. Registered ships and stored items are converted by <c>_31_ConvertSpaceItems</c>.
 /// </summary>
-internal sealed class _26_ConvertSpaceItems : ICharacterMigration
+internal sealed class _27_ConvertSpaceItems : ICharacterMigration
 {
     /// <summary>The retired Piloting perks and the prices players paid per level.</summary>
     internal static readonly (PerkType Type, string Name, int[] Prices, FeatType Feat)[] RetiredPerks =
@@ -45,7 +45,7 @@ internal sealed class _26_ConvertSpaceItems : ICharacterMigration
         "the four new Piloting styles: Ace, Ordnance, Bulwark and Command. You also received a free Rebuild Token to " +
         "move skill ranks; you can set skill rank limits in the Skills window before you spend it.";
 
-    public int Version => 26;
+    public int Version => 27;
 
     public void Migrate(SavedCharacter character)
     {

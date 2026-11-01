@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class CraftingPerkConversionMigrationTests
 {
-    private const string MigrationName = "_25_ConvertCraftingPerksToRanks";
+    private const string MigrationName = "_26_ConvertCraftingPerksToRanks";
     private const int StartingSP = 5;
     private const int StartingTokens = 2;
 

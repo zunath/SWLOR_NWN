@@ -69,7 +69,7 @@ public class SpaceW11nReviewFixTests
         var apply = ReadSource("Feature", "MigrationDefinition", "LegacySpaceItemSweep.cs").Replace("\r\n", "\n");
         apply.IndexOf("Flush();").Should().BeLessThan(apply.IndexOf("DB.Delete<InventoryItem>(id);"), "the owner is paid before the module record is deleted");
 
-        ReadSource("Feature", "MigrationDefinition", "ServerMigration", "_30_ConvertSpaceItems.cs")
+        ReadSource("Feature", "MigrationDefinition", "ServerMigration", "_31_ConvertSpaceItems.cs")
             .Should().Contain("LegacySpaceItemSweep.Pay(owner, result.Items.Credits, result.Items.HullDesigns, shipKey)");
     }
 

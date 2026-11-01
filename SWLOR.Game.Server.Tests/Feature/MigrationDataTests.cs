@@ -26,13 +26,16 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConvertCraftingPerksToRanks"),
-                CharacterMigrations.Named("_26_ConvertSpaceItems") });
-        // 25 is the crafting revamp's release; 26 is the space revamp's, which follows it.
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
+                CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"), CharacterMigrations.Named("_27_ConvertSpaceItems") });
+        // 25 is master's next release; 26 is the crafting revamp's, which ships on its own; 27 is the space revamp's, which follows it.
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_ConvertCraftingPerksToRanks"), CharacterMigrations.Named("_26_ConvertSpaceItems") },
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"), CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"),
+                    CharacterMigrations.Named("_27_ConvertSpaceItems") },
                 "each unreleased release receives one combined player-item pass, and the crafting perk conversion ships before the space revamp");
-        CharacterMigrations.VersionOf("_25_ConvertCraftingPerksToRanks").Should().Be(ReleasedPlayerVersion + 1);
+        CharacterMigrations.VersionOf("_25_ConsolidatePelvisAppearance").Should().Be(ReleasedPlayerVersion + 1);
+        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(ReleasedPlayerVersion + 2);
+        CharacterMigrations.VersionOf("_27_ConvertSpaceItems").Should().Be(ReleasedPlayerVersion + 3);
     }
 
     [Test]
@@ -123,10 +126,12 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConvertSpaceItems) },
-            "the space revamp's release receives one combined stored-item pass");
-        new _30_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _30_ConvertSpaceItems().Version.Should().Be(ReleasedServerVersion + 1);
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance), typeof(_31_ConvertSpaceItems) },
+            "each unreleased release (30 next, 31 the space revamp) receives one combined stored-item pass");
+        new _30_ConsolidatePelvisAppearance().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _30_ConsolidatePelvisAppearance().Version.Should().Be(ReleasedServerVersion + 1);
+        new _31_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _31_ConvertSpaceItems().Version.Should().Be(ReleasedServerVersion + 2);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

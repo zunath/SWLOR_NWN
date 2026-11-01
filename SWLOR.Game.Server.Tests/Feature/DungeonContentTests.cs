@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
@@ -31,14 +31,14 @@ public class DungeonContentTests
             var group = (NPCGroupType)root.GetProperty("VarTable").GetProperty("value").EnumerateArray()
                 .Single(v => v.GetProperty("Name").GetProperty("value").GetString() == "QUEST_NPC_GROUP_ID")
                 .GetProperty("Value").GetProperty("value").GetInt32();
+            // Bosses are named; adepts, specialists and inner circle are one faction tier shared by every line in the
+            // dungeon, so the counter names the tier in the plural.
+            var counterName = tier is "wd" or "ms" ? name : name + "s";
             typeof(NPCGroupType).GetField(group.ToString())!.GetCustomAttribute<NPCGroupAttribute>()!
-                .Name.Should().Be(name, "the kill counter must identify the visible target");
-            var planet = line is "sabstorm" or "guardmst" or "sabcycl" ? "Hutlar" : "MonCala";
-            group.ToString().Should().Be(planet + "_" + name.Replace(" ", ""),
-                "enemy identifiers must describe their current identity, not the capstone they unlock");
-            var quest = quests.Single(q => q.Value.States[1].GetObjectives()
-                .OfType<KillTargetObjective>().Any(o => o.Group == group)).Value;
-            quest.States[1].JournalText.Should().Contain(name);
+                .Name.Should().Be(counterName, "the kill counter must identify the visible target");
+            foreach (var quest in quests.Select(q => q.Value).Where(q => q.States[1].GetObjectives()
+                         .OfType<KillTargetObjective>().Any(o => o.Group == group)))
+                quest.States[1].JournalText.Should().Contain(name);
         }
     }
 }

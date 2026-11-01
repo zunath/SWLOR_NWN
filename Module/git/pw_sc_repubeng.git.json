@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A targeting beacon is bolted beside the inner blast doors, its lens cracked but still pulsing. The bunker warden keeps the kill zone it marks."
+            "0": "A targeting beacon is bolted beside the inner blast doors, its lens cracked but still pulsing. The deserter sergeant keeps the kill zone it marks."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A collapsed shield emitter leans against the inner blast doors, its housing reinforced with scrap. The warden has made this doorway a fortress."
+            "0": "A collapsed shield emitter leans against the inner blast doors, its housing reinforced with scrap. The deserter sergeant has made this doorway a fortress."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Inner blast doors stand sealed behind a sandbagged firing step. The warden who holds them will not let anyone pass without a fight."
+            "0": "Inner blast doors stand sealed behind a sandbagged firing step. The deserter sergeant who holds them will not let anyone pass without a fight."
           }
         },
         "DisarmDC": {
@@ -89072,7 +89072,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Killzone Beacon Warden Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sergeant Orgul Spawn (Killzone Beacon line)"
           }
         },
         "MapNote": {
@@ -89135,7 +89135,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Emergency Bunker Warden Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sergeant Bekko Spawn (Emergency Bunker line)"
           }
         },
         "MapNote": {
@@ -89198,7 +89198,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Decisive Command Warden Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sergeant Grenn Vhon Spawn (Decisive Command line)"
           }
         },
         "MapNote": {
@@ -89261,7 +89261,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -89324,7 +89324,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89337,11 +89337,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89387,7 +89387,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -89450,7 +89450,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89463,11 +89463,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89513,7 +89513,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89526,11 +89526,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89576,7 +89576,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89589,11 +89589,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89639,7 +89639,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89652,11 +89652,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89702,7 +89702,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -89765,7 +89765,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89778,11 +89778,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89828,7 +89828,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -89891,7 +89891,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89904,11 +89904,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89954,7 +89954,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -89967,11 +89967,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -90017,7 +90017,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -90030,11 +90030,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -90080,7 +90080,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -90093,11 +90093,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -90143,7 +90143,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -90206,7 +90206,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -90219,11 +90219,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -90269,7 +90269,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -90332,7 +90332,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -90395,7 +90395,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -90408,11 +90408,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -90458,7 +90458,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -90471,11 +90471,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -90962,7 +90962,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Decisive Command Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Decisive Command line)"
           }
         },
         "MapNote": {
@@ -90983,15 +90983,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 136.5
+          "value": 103.25
         },
         "YPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 143.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91025,7 +91025,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Decisive Command Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Decisive Command line)"
           }
         },
         "MapNote": {
@@ -91046,15 +91046,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 120.25
         },
         "YPosition": {
           "type": "float",
-          "value": 20.5
+          "value": 141.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91088,7 +91088,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Decisive Command Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Decisive Command line)"
           }
         },
         "MapNote": {
@@ -91109,15 +91109,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 133.5
+          "value": 99.25
         },
         "YPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 126.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91151,7 +91151,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Decisive Command Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Decisive Command line)"
           }
         },
         "MapNote": {
@@ -91172,15 +91172,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 109.25
         },
         "YPosition": {
           "type": "float",
-          "value": 17.5
+          "value": 126.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91214,7 +91214,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Killzone Beacon line)"
           }
         },
         "MapNote": {
@@ -91235,15 +91235,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 130.5
+          "value": 120.25
         },
         "YPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 100.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91277,7 +91277,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Killzone Beacon line)"
           }
         },
         "MapNote": {
@@ -91298,15 +91298,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 129.0
+          "value": 119.75
         },
         "YPosition": {
           "type": "float",
-          "value": 96.5
+          "value": 90.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91340,7 +91340,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Killzone Beacon line)"
           }
         },
         "MapNote": {
@@ -91361,15 +91361,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 127.5
+          "value": 136.25
         },
         "YPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 102.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91403,7 +91403,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Killzone Beacon line)"
           }
         },
         "MapNote": {
@@ -91424,15 +91424,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 129.0
+          "value": 116.25
         },
         "YPosition": {
           "type": "float",
-          "value": 93.5
+          "value": 80.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91466,7 +91466,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Emergency Bunker line)"
           }
         },
         "MapNote": {
@@ -91487,15 +91487,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 70.5
+          "value": 81.25
         },
         "YPosition": {
           "type": "float",
-          "value": 79.0
+          "value": 138.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91529,7 +91529,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Emergency Bunker line)"
           }
         },
         "MapNote": {
@@ -91550,15 +91550,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 69.0
+          "value": 76.75
         },
         "YPosition": {
           "type": "float",
-          "value": 80.5
+          "value": 129.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91592,7 +91592,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Emergency Bunker line)"
           }
         },
         "MapNote": {
@@ -91613,15 +91613,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 67.5
+          "value": 67.25
         },
         "YPosition": {
           "type": "float",
-          "value": 79.0
+          "value": 126.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -91655,7 +91655,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle Spawn"
+            "0": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Emergency Bunker line)"
           }
         },
         "MapNote": {
@@ -91676,15 +91676,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 69.0
+          "value": 61.75
         },
         "YPosition": {
           "type": "float",
-          "value": 77.5
+          "value": 134.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Dead Man's Hand inner circle member in Tatooine - Anchorhead Canyon Range."
+    "value": "High Table Gun (Dead Man's Hand line) in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan in rough street clothes, one of the four who sit at the high table and bank every crooked game in the canyon. Killers and a bookkeeper among them, they play as a syndicate and will spend each other's lives before their own."
+      "0": "A Nautolan in rough street clothes, one of the four High Table guns who sit at the table and bank every crooked game in the canyon. Killers and a bookkeeper among them, they play as a syndicate and will spend each other's lives before their own."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dead Man's Hand Inner Circle"
+      "0": "High Table Gun"
     }
   },
   "fortbonus": {
@@ -758,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 160
+          "value": 150
         }
       },
       {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Hunger of the Dark specialist in Mon Cala - Sith Crypt Depths."
+    "value": "Expedition Marauder (Hunger of the Dark line) in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human Vitae Reaver in worn apprentice robes who hunts the Sith Crypt Depths with a small pack, staff ready. The adepts draw more from their victims than their bodies can hold, and it shows in their fevered eyes."
+      "0": "A human marauder of the expedition's Vitae Reaver crew in worn apprentice robes who hunts the Sith Crypt Depths with a small pack, staff ready. The marauders draw more from their victims than their bodies can hold, and it shows in their fevered eyes."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vitae Reaver Adept"
+      "0": "Expedition Marauder"
     }
   },
   "fortbonus": {
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 288
+          "value": 283
         }
       },
       {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Last Word inner circle member in Tatooine - Anchorhead Canyon Range."
+    "value": "High Table Gun (Last Word line) in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Echani gunman with a blaster pistol, one of the four who took over the canyon school after burying the old marshal's name in it. Some of them washed out of the marshal's classes and some never sat them, but together they have turned out ten years of duelists who think a fast draw is a verdict."
+      "0": "An Echani gunman with a blaster pistol, one of the four High Table guns who took over the canyon school after burying the old marshal's name in it. Some of them washed out of the marshal's classes and some never sat them, but together they have turned out ten years of duelists who think a fast draw is a verdict."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Last Word Inner Circle"
+      "0": "High Table Gun"
     }
   },
   "fortbonus": {
@@ -758,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 155
+          "value": 150
         }
       },
       {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Thermal Detonator master in Hutlar - Overload Chamber."
+    "value": "Site Chief Ssorgan (Thermal Detonator line) in Hutlar - Overload Chamber."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Trandoshan in Mandalorian armor, blaster pistol steady in his claw, waiting in the Overload Chamber at the far end of the Qion Test Site. He learned his ordnance work from a range instructor who now regrets teaching it, and he no longer tests charges, only the people standing where he places them."
+      "0": "A Trandoshan site chief in Mandalorian armor, blaster pistol steady in his claw, waiting in the Overload Chamber at the far end of the Qion Test Site. He learned his ordnance work from a range instructor who now regrets teaching it, and he no longer tests charges, only the people standing where he places them."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Thermal Detonator Master"
+      "0": "Site Chief Ssorgan"
     }
   },
   "fortbonus": {

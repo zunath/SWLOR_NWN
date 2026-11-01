@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Rain of Steel warden in Smuggler's Moon - Czerka Weapons Testing Facility."
+    "value": "Range Overseer Perrin Aldous (Rain of Steel line) in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in a dark officer's coat, a scored range crest on his chest and throwing blades ready in his hand. Once Czerka range security, he kept the keys when the funding dried up and has drilled on a sealed floor with unlimited stock ever since, throwing like a man who has never had to buy a blade."
+      "0": "A human range overseer in a dark officer's coat, a scored range crest on his chest and throwing blades ready in his hand. Once Czerka range security, he kept the keys when the funding dried up and has drilled on a sealed floor with unlimited stock ever since, throwing like a man who has never had to buy a blade."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rain of Steel Warden"
+      "0": "Range Overseer Perrin Aldous"
     }
   },
   "fortbonus": {

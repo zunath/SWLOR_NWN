@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Absolute Defense inner circle overseer in Tatooine - Forge Caverns."
+    "value": "Forgebound Overseer (Absolute Defense line) overseer in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human overseer of the forge's inner circle, a stamped clearance token at his belt. He grades every blow thrown at him like a heat on the anvil, and his heavy vibroblade answers each one with measured, unhurried force."
+      "0": "A human overseer of the Forgebound's inner circle, a stamped clearance token at his belt. He grades every blow thrown at him like a heat on the anvil, and his heavy vibroblade answers each one with measured, unhurried force."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Absolute Defense Inner Circle"
+      "0": "Forgebound Overseer"
     }
   },
   "fortbonus": {

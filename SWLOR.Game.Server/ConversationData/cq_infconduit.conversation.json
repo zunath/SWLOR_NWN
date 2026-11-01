@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These pipes sound nothing like the conduits beneath my old ward on Mon Cala. Those had a low note that kept time with a blade, with the whole sea leaning on every line. Students I taught there, in the Medical Sublevel beneath the Coral Isles Facility, took the conduit form and dammed it. They pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go to Mon Cala, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger. My patients' records are in it, and I cannot reach them anymore.",
+          "Text": "These pipes sound nothing like the conduits beneath my old ward on Mon Cala. Those had a low note that kept time with a blade, with the whole sea leaning on every line. Students I taught there, in the Medical Sublevel beneath the Coral Isles Facility, took the conduit form and dammed it. They pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go to Mon Cala, defeat six of the Ward Orderlies who hold the sealed ward nearest the lift, and bring me the Infinite Conduit Triage Ward Ledger. My patients' records are in it, and I cannot reach them anymore. Any Ward Orderly counts, because the whole sealed ward answers to one chain, but a kill only counts if you struck him with Focused Arc, Sever Focus or Guarded Channel. The current has to pass through you, or you have learned nothing from him.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take this key, go quietly, and come back whole. It works the service lift down to the sublevel. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it now. Go through the sliding door off the entry hall; the lift stands in the red-walled bay just east of the office block. At the bottom, follow the pipes. Six adepts, the ledger, and back to me. I'll keep a bed ready. I always do.",
+          "Text": "Then take this key, go quietly, and come back whole. It works the service lift down to the sublevel. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it now. Go through the sliding door off the entry hall; the lift stands in the red-walled bay just east of the office block. At the bottom, follow the pipes. Six Ward Orderlies, each struck with Focused Arc, Sever Focus or Guarded Channel, the ledger, and back to me. I'll keep a bed ready. I always do.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Adepts who learned to hold the current instead of carrying it. Their strikes land heavier than they should, and they do not yield; a dammed current doesn't know how to stop, only how to break. Don't try to outlast them. End each one cleanly and move on. And mind the kolto lines. That reserve is what my patients will come home to.",
+          "Text": "Ward Orderlies who learned to hold the current instead of carrying it. Their strikes land heavier than they should, and they do not yield; a dammed current doesn't know how to stop, only how to break. Don't try to outlast them. End each one cleanly and move on. And mind the kolto lines. That reserve is what my patients will come home to.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger is still below, and six adepts stand between you and it. In the Coral Isles Facility on Mon Cala, take the sliding door off the entry hall to the service lift in the red-walled bay, just east of the office block. Go gently. But go.",
+          "Text": "The ledger is still below, and six Ward Orderlies stand between you and it, each to be struck with Focused Arc, Sever Focus or Guarded Channel. In the Coral Isles Facility on Mon Cala, take the sliding door off the entry hall to the service lift in the red-walled bay, just east of the office block. Go gently. But go.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit a moment. The specialists below have pulled the Infinite Conduit Kolto Conduit Coupler off the main line. They use it to throttle the flow to their practice chamber: famine, then flood. It is fouling the reserve and teaching them exactly the wrong lesson at once. Defeat the five specialists and bring the coupler to me. It goes back on its line when the ward reopens.",
+          "Text": "Sit a moment. The Ward Guards below have pulled the Infinite Conduit Kolto Conduit Coupler off the main line. They use it to throttle the flow to their practice chamber: famine, then flood. It is fouling the reserve and teaching them exactly the wrong lesson at once. Defeat five Ward Guards, any Ward Guard, each struck with Focused Arc, Sever Focus or Guarded Channel, and bring the coupler to me. It goes back on its line when the ward reopens.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deeper than the adepts kept, where the main kolto lines run. Go back down through the facility and follow the sound of water being made to wait. Their practice chamber leans against the main line, and you will feel the throttled current before you see them.",
+          "Text": "Deeper than the Orderlies kept, where the main kolto lines run. Go back down through the facility and follow the sound of water being made to wait. Their practice chamber leans against the main line, and you will feel the throttled current before you see them.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Specialists, not students. They ride the surge -- long stillness, then everything at once. Between surges they are slow, almost gentle. That is your moment, and they know it, so they will try to make you impatient. Be water. Wait with them. Then don't.",
+          "Text": "Ward Guards, not students. They ride the surge -- long stillness, then everything at once. Between surges they are slow, almost gentle. That is your moment, and they know it, so they will try to make you impatient. Be water. Wait with them. Then don't.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists still throttle the line, and the Infinite Conduit Kolto Conduit Coupler is still in their hands. The reserve is patient. My patients are less so.",
+          "Text": "Five Ward Guards, each to be struck with Focused Arc, Sever Focus or Guarded Channel, still throttle the line, and the Infinite Conduit Kolto Conduit Coupler is still in their hands. The reserve is patient. My patients are less so.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A ward-keeper, once. One of ours, a Bothan who kept the deep ward's night watch. When the others began damming the current, he chose not to join them. He chose to exceed them, to hold every drop of the deep ward's flow inside himself. What is left is a reservoir with a face. There is a person in there somewhere. The pressure speaks for him now.",
+          "Text": "Ward Supervisor Dru Salin, once a ward-keeper. One of ours, a Bothan who kept the deep ward's night watch. When the others began damming the current, he chose not to join them. He chose to exceed them, to hold every drop of the deep ward's flow inside himself. What is left is a reservoir with a face. There is a person in there somewhere. The pressure speaks for him now.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The current runs almost clean now. Almost. Four voices are still out of tune: the inner circle, the ones who taught everyone below to dam the flow in the first place. They have taken the matron's old station in the sublevel, and they pass her ward token hand to hand like something to be proud of. Defeat all four and bring me the Infinite Conduit Matron's Ward Token. It belongs to the station, and the station belongs to the sick.",
+          "Text": "The current runs almost clean now. Almost. Four voices are still out of tune: the Matron's Attendants, the inner circle, the ones who taught everyone below to dam the flow in the first place. They have taken the matron's old station in the sublevel, and they pass her ward token hand to hand like something to be proud of. Defeat all four and bring me the Infinite Conduit Matron's Ward Token. Any Matron's Attendant counts, struck with Focused Arc, Sever Focus or Guarded Channel. It belongs to the station, and the station belongs to the sick.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deep in the sublevel. They no longer keep to the station itself; they walk its rooms in turn, guarding what they took. They know the warden fell. They will be standing close together by now. Fear does that, even to the practiced.",
+          "Text": "Deep in the sublevel, in its deepest part. They no longer keep to the station itself; they walk its rooms in turn, guarding what they took. They know the warden fell. They will be standing close together by now. Fear does that, even to the practiced.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them still hold the matron's station, and the Infinite Conduit Matron's Ward Token still passes between their hands. Go when you are braided, and not before.",
+          "Text": "Four Matron's Attendants, each to be struck with Focused Arc, Sever Focus or Guarded Channel, still hold the matron's station, and the Infinite Conduit Matron's Ward Token still passes between their hands. Go when you are braided, and not before.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit with me. I have been standing over this decision for days. Past every door you have opened, the sublevel ends at the Protected Ward, where we kept the patients who could not be moved. The one waiting there perfected the form you came to learn: the Force pouring through both blades without pooling, without end. Then he turned the river inward. He taught the four you defeated. He learned beside me, once. Go with at least two companions. There is nothing to carry back. When he falls, I will know.",
+          "Text": "Sit with me. I have been standing over this decision for days. Past every door you have opened, the sublevel ends at the Protected Ward, where we kept the patients who could not be moved. The one waiting there, Ward Chief Idris Voh, perfected the form you came to learn: the Force pouring through both blades without pooling, without end. Then he turned the river inward. He taught the four you defeated. He learned beside me, once. Go with at least two companions. There is nothing to carry back. When he falls, I will know.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The form itself, perfected and pointed at you. He will not surge like the specialists or hoard like the warden. He flows, endlessly, and one defender simply drowns in it. Three of you divide the current: while he pours into one, the others cut. Trade places before anyone empties. Whoever tires falls back to breathe. That rhythm is the entire battle.",
+          "Text": "The form itself, perfected and pointed at you. He will not surge like the Ward Guards or hoard like the warden. He flows, endlessly, and one defender simply drowns in it. Three of you divide the current: while he pours into one, the others cut. Trade places before anyone empties. Whoever tires falls back to breathe. That rhythm is the entire battle.",
           "Style": 0,
           "Color": null
         }
@@ -1327,7 +1327,7 @@
     "reply-00000": {
       "Id": "reply-00000",
       "Text": {
-        "Text": "Go back to the beginning. The adepts.",
+        "Text": "Go back to the beginning. The Ward Orderlies.",
         "Style": 4,
         "Color": null
       },
@@ -1350,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts, one ledger. The lift goes down today.",
+        "Text": "Six Ward Orderlies, one ledger. The lift goes down today.",
         "Style": 4,
         "Color": null
       },
@@ -1520,7 +1520,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. The line gets its coupler back.",
+        "Text": "Five Ward Guards. The line gets its coupler back.",
         "Style": 4,
         "Color": null
       },
@@ -1596,7 +1596,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "How do the specialists fight?",
+        "Text": "How do the Ward Guards fight?",
         "Style": 4,
         "Color": null
       },
@@ -1890,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "Who are the inner circle?",
+        "Text": "Who are the Matron's Attendants?",
         "Style": 4,
         "Color": null
       },

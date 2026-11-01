@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Overload Barrage warden in Hutlar - Qion Test Site."
+    "value": "Test Supervisor Hale Dorrin (Overload Barrage line) in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in fitted combat armor, blaster pistol in hand and a frost-scored test crest on his chest. He has learned to turn a barrage back through his own shielding before it lands, a trick no one will admit to teaching him."
+      "0": "A human test supervisor in fitted combat armor, blaster pistol in hand and a frost-scored test crest on his chest. He has learned to turn a volley back through his own shielding before it lands, a trick no one will admit to teaching him."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Overload Barrage Warden"
+      "0": "Test Supervisor Hale Dorrin"
     }
   },
   "fortbonus": {

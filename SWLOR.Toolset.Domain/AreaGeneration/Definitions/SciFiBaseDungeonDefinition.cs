@@ -48,17 +48,17 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .LevelNote("Ambient CR ~1-4 (Malfunctioning Patrol/Probe Droid, Colicoid Experiment); boss CR 10 (Republic Trooper).")
 
                 // Tier 2 — rogue droids and Republic security details gone dark (CR ~7-38 ambient).
-                // Boss: Adamantine Guard Adept (CR 50), first rank of the CZ-220 Breaker Yard line.
+                // Boss: Wreck Crew Scrapper (CR 50), first rank of the CZ-220 Breaker Yard wreck crew.
                 .Tier(2)
                 .AddCreature("nar_rogue_droid", 30)
                 .AddCreature("vrepnpctroop1", 70)
                 .CreaturesPerRoom(2, 3)
                 .Boss("cp_adamguard_ad")
                 .Treasure("CAPSTONE_CZ220_BREAKER_YARD_LESSON_LOOT", 3)
-                .LevelNote("Ambient CR ~7-38 (Rogue Droid/Republic Trooper/Republic Soldier); boss CR 50 (Adamantine Guard Adept).")
+                .LevelNote("Ambient CR ~7-38 (Rogue Droid/Republic Trooper/Republic Soldier); boss CR 50 (Wreck Crew Scrapper).")
 
                 // Tier 3 — CZ-220 Breaker Yard security elites (CR ~50-55 ambient).
-                // Boss: Worldbreaker Master (CR 60), the facility's top-rank guard unit.
+                // Boss: Wreck Foreman Kaddo Rin (CR 60), the facility's top-rank guard unit.
                 .Tier(3)
                 .AddCreature("cp_scraplock_sp", 30)
                 .AddCreature("cp_worldbrk_ic", 40)
@@ -66,7 +66,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .CreaturesPerRoom(2, 4)
                 .Boss("cp_worldbrk_ms")
                 .Treasure("CAPSTONE_CZ220_BREAKER_YARD_BOSS_LOOT", 4)
-                .LevelNote("Ambient CR ~50-55 (Scrapheap Lockdown Specialist/Worldbreaker Inner Circle/Adamantine Guard Warden); boss CR 60 (Worldbreaker Master).");
+                .LevelNote("Ambient CR ~50-55 (Wreck Crew Rigger/Foreman's Hand/Crew Chief Rakkesh); boss CR 60 (Wreck Foreman Kaddo Rin).");
 
             return _builder.Build();
         }

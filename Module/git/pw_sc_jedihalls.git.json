@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A sparring circle inlaid in the hall floor, ringed by scorch marks from deflected bolts. A guardian training droid stands dormant at its edge, waiting for a challenger."
+            "0": "A sparring circle inlaid in the hall floor, ringed by scorch marks from deflected bolts. A trial gatekeeper droid stands dormant at its edge, waiting for a challenger."
           }
         },
         "DisarmDC": {
@@ -55734,7 +55734,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Storm Gatekeeper Droid Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Gatekeeper Droid Spawn (Saber Storm line)"
           }
         },
         "MapNote": {
@@ -55797,7 +55797,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Guardian Gatekeeper Droid Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Gatekeeper Droid Spawn (Guardian Master line)"
           }
         },
         "MapNote": {
@@ -55860,7 +55860,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Cyclone Gatekeeper Droid Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Gatekeeper Droid Spawn (Saber Cyclone line)"
           }
         },
         "MapNote": {
@@ -55923,7 +55923,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -55986,7 +55986,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -55999,11 +55999,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56049,7 +56049,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56112,7 +56112,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -56125,11 +56125,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56175,7 +56175,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56238,7 +56238,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -56251,11 +56251,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56301,7 +56301,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56364,7 +56364,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -56377,11 +56377,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56427,7 +56427,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56490,7 +56490,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -56503,11 +56503,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56553,7 +56553,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56616,7 +56616,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -56629,11 +56629,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56679,7 +56679,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56742,7 +56742,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56805,7 +56805,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -56818,11 +56818,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56868,7 +56868,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -56931,7 +56931,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -56944,11 +56944,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantjedi"
+          "value": "wp_cdp_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56994,7 +56994,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -57057,7 +57057,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -57120,7 +57120,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -57561,7 +57561,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Storm Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Storm line)"
           }
         },
         "MapNote": {
@@ -57582,15 +57582,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 70.5
+          "value": 10.25
         },
         "YPosition": {
           "type": "float",
-          "value": 25.0
+          "value": 71.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -57624,7 +57624,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Storm Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Storm line)"
           }
         },
         "MapNote": {
@@ -57645,15 +57645,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 69.0
+          "value": 19.25
         },
         "YPosition": {
           "type": "float",
-          "value": 26.5
+          "value": 66.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -57687,7 +57687,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Storm Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Storm line)"
           }
         },
         "MapNote": {
@@ -57708,15 +57708,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 67.5
+          "value": 19.75
         },
         "YPosition": {
           "type": "float",
-          "value": 25.0
+          "value": 56.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -57750,7 +57750,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Storm Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Storm line)"
           }
         },
         "MapNote": {
@@ -57771,15 +57771,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 69.0
+          "value": 28.25
         },
         "YPosition": {
           "type": "float",
-          "value": 23.5
+          "value": 71.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -57813,7 +57813,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Guardian Master Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Guardian Master line)"
           }
         },
         "MapNote": {
@@ -57834,15 +57834,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 124.5
+          "value": 10.25
         },
         "YPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 138.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -57876,7 +57876,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Guardian Master Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Guardian Master line)"
           }
         },
         "MapNote": {
@@ -57897,15 +57897,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 123.0
+          "value": 20.25
         },
         "YPosition": {
           "type": "float",
-          "value": 96.5
+          "value": 138.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -57939,7 +57939,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Guardian Master Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Guardian Master line)"
           }
         },
         "MapNote": {
@@ -57960,15 +57960,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 121.5
+          "value": 19.25
         },
         "YPosition": {
           "type": "float",
-          "value": 95.0
+          "value": 128.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -58002,7 +58002,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Guardian Master Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Guardian Master line)"
           }
         },
         "MapNote": {
@@ -58023,15 +58023,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 123.0
+          "value": 28.75
         },
         "YPosition": {
           "type": "float",
-          "value": 93.5
+          "value": 133.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -58065,7 +58065,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Cyclone line)"
           }
         },
         "MapNote": {
@@ -58086,15 +58086,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 20.5
+          "value": 39.75
         },
         "YPosition": {
           "type": "float",
-          "value": 37.0
+          "value": 129.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -58128,7 +58128,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Cyclone line)"
           }
         },
         "MapNote": {
@@ -58149,15 +58149,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 49.75
         },
         "YPosition": {
           "type": "float",
-          "value": 38.5
+          "value": 129.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -58191,7 +58191,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Cyclone line)"
           }
         },
         "MapNote": {
@@ -58212,15 +58212,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 17.5
+          "value": 44.25
         },
         "YPosition": {
           "type": "float",
-          "value": 37.0
+          "value": 144.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -58254,7 +58254,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+            "0": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Cyclone line)"
           }
         },
         "MapNote": {
@@ -58275,15 +58275,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 19.0
+          "value": 58.75
         },
         "YPosition": {
           "type": "float",
-          "value": 35.5
+          "value": 120.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

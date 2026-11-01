@@ -99,7 +99,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A command lectern stands at the center of the room, a final grading ledger open on it to a blank page. The annex master waits for whoever comes to write on it."
+            "0": "A command lectern stands at the center of the room, a final grading ledger open on it to a blank page. The annex captain waits for whoever comes to write on it."
           }
         },
         "DisarmDC": {
@@ -466,7 +466,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A surgeon's stool and a rolled kit of blades sit beside the command table. The master of the knife cadre keeps this corner, and answers anyone who unrolls the kit."
+            "0": "A surgeon's stool and a rolled kit of blades sit beside the command table. The captain of the knife cadre keeps this corner, and answers anyone who unrolls the kit."
           }
         },
         "DisarmDC": {
@@ -10944,7 +10944,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Invincible Master Spawn"
+            "0": "Veles Militia Annex - Holdout Captain Haro Kel Spawn (Invincible line)"
           }
         },
         "MapNote": {
@@ -11015,7 +11015,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Viral Cascade Master Spawn"
+            "0": "Veles Militia Annex - Holdout Captain Marek Dolan Spawn (Viral Cascade line)"
           }
         },
         "MapNote": {
@@ -11086,7 +11086,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Systemic Shutdown Master Spawn"
+            "0": "Veles Militia Annex - Holdout Captain Jorrik Vael Spawn (Systemic Shutdown line)"
           }
         },
         "MapNote": {

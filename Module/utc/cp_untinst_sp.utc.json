@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Untouchable Instinct specialist in Dathomir - Grotto Apex Den."
+    "value": "Goad-Scarred Crystal Spider (Untouchable Instinct line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -140,7 +140,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Untouchable Instinct Specialist"
+      "0": "Goad-Scarred Crystal Spider"
     }
   },
   "fortbonus": {
@@ -533,7 +533,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 258
+          "value": 253
         }
       },
       {

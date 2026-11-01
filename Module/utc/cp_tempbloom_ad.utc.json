@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Tempest Bloom adept in Smuggler's Moon - Fight Club Backrooms."
+    "value": "Stable Brawler (Tempest Bloom line) in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak from the opening act of a backroom stable in the Fight Club Backrooms, throwing a bootleg of the Tempest Bloom with a twin blade. He trains on people who cannot leave, and he never comes alone."
+      "0": "A Zabrak brawler from the opening act of the stable in the Fight Club Backrooms, working a bootleg twin-blade routine. He trains on people who cannot leave, and he never comes alone."
     }
   },
   "Dex": {
@@ -372,7 +372,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tempest Bloom Adept"
+      "0": "Stable Brawler"
     }
   },
   "fortbonus": {
@@ -765,7 +765,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 122
+          "value": 117
         }
       },
       {

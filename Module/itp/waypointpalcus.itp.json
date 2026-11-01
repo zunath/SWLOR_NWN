@@ -21,7 +21,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Dead Man's Hand Master Spawn"
+                      "value": "Anchorhead Canyon Range - Range Marshal Jonas Harlan Spawn (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -32,7 +32,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Dead Man's Hand Warden Spawn"
+                      "value": "Anchorhead Canyon Range - Range Warden Silas Crowe Spawn (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -43,7 +43,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Dead Man's Hand Inner Circle Spawn"
+                      "value": "Anchorhead Canyon Range - High Table Gun Spawn (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -54,7 +54,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - General Capstone Spawn"
+                      "value": "Anchorhead Canyon Range - Canyon Drifter Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -65,7 +65,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Last Word Master Spawn"
+                      "value": "Anchorhead Canyon Range - Canyon Sharpshooter Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_tatcan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Range Marshal Wuun Kalo Spawn (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -76,7 +87,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Last Word Warden Spawn"
+                      "value": "Anchorhead Canyon Range - Range Warden Gruvo Spawn (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -87,7 +98,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Last Word Inner Circle Spawn"
+                      "value": "Anchorhead Canyon Range - High Table Gun Spawn (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -98,7 +109,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Unmoving Center Master Spawn"
+                      "value": "Anchorhead Canyon Range - Range Marshal Tarek Kor Spawn (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -109,7 +120,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Unmoving Center Warden Spawn"
+                      "value": "Anchorhead Canyon Range - Range Warden Dorrim Vex Spawn (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -120,7 +131,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+                      "value": "Anchorhead Canyon Range - High Table Gun Spawn (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -164,7 +175,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Adamantine Guard Master Spawn"
+                      "value": "CZ-220 Breaker Yard - Wreck Foreman Ssurgan Spawn (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -175,7 +186,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Adamantine Guard Warden Spawn"
+                      "value": "CZ-220 Breaker Yard - Crew Chief Rakkesh Spawn (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -186,7 +197,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+                      "value": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -197,7 +208,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - General Capstone Spawn"
+                      "value": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -208,7 +219,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Scrapheap Lockdown Master Spawn"
+                      "value": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_czbr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Wreck Foreman Lucan Brandt Spawn (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -219,7 +241,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Scrapheap Lockdown Warden Spawn"
+                      "value": "CZ-220 Breaker Yard - Crew Chief Tobin Rask Spawn (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -230,7 +252,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+                      "value": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -241,7 +263,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Worldbreaker Master Spawn"
+                      "value": "CZ-220 Breaker Yard - Wreck Foreman Kaddo Rin Spawn (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -252,7 +274,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Worldbreaker Warden Spawn"
+                      "value": "CZ-220 Breaker Yard - Crew Chief Nalo Ven Spawn (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -263,7 +285,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+                      "value": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -274,7 +296,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - General Capstone Spawn"
+                      "value": "Czerka Arms Test Range - Range Washout Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -285,7 +307,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - Kill Box Master Spawn"
+                      "value": "Czerka Arms Test Range - Range Instructor Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_czerka"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Range Director Krassek Spawn (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -296,7 +329,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - Kill Box Warden Spawn"
+                      "value": "Czerka Arms Test Range - Range Overseer Sskeer Spawn (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -307,7 +340,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - Kill Box Inner Circle Spawn"
+                      "value": "Czerka Arms Test Range - Black Cell Shooter Spawn (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -318,7 +351,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - One Shot Master Spawn"
+                      "value": "Czerka Arms Test Range - Range Director Zhessk Spawn (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -329,7 +362,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - One Shot Warden Spawn"
+                      "value": "Czerka Arms Test Range - Range Overseer Callum Breck Spawn (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -340,7 +373,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - One Shot Inner Circle Spawn"
+                      "value": "Czerka Arms Test Range - Black Cell Shooter Spawn (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -351,7 +384,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - Rain of Steel Master Spawn"
+                      "value": "Czerka Arms Test Range - Range Director Daav Rhoun Spawn (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -362,7 +395,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - Rain of Steel Warden Spawn"
+                      "value": "Czerka Arms Test Range - Range Overseer Perrin Aldous Spawn (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -373,7 +406,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Czerka Arms Test Range - Rain of Steel Inner Circle Spawn"
+                      "value": "Czerka Arms Test Range - Black Cell Shooter Spawn (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -450,7 +483,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - General Capstone Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Drill Droid Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -461,7 +494,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Bastion Training Engine Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Duelist Droid Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dantjedi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Jedi Trial Halls - Bastion Training Engine Spawn (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -472,7 +516,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Guardian Gatekeeper Droid Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Gatekeeper Droid Spawn (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -483,7 +527,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Guardian Master Inner Circle Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -494,7 +538,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Vortex Training Engine Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Vortex Training Engine Spawn (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -505,7 +549,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Cyclone Gatekeeper Droid Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Gatekeeper Droid Spawn (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -516,7 +560,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -527,7 +571,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Tempest Training Engine Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Tempest Training Engine Spawn (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -538,7 +582,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Storm Gatekeeper Droid Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Gatekeeper Droid Spawn (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -549,7 +593,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Jedi Trial Halls - Saber Storm Inner Circle Spawn"
+                      "value": "Hutlar Jedi Trial Halls - Trial Examiner Droid Spawn (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -560,7 +604,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Emergency Cocktail Master Spawn"
+                      "value": "Mon Cala Medical Sublevel - Ward Chief Koth Davin Spawn (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -571,7 +615,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Emergency Cocktail Warden Spawn"
+                      "value": "Mon Cala Medical Sublevel - Ward Supervisor Teno Barr Spawn (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -582,7 +626,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Emergency Cocktail Inner Circle Spawn"
+                      "value": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -593,7 +637,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - General Capstone Spawn"
+                      "value": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -604,7 +648,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Hold the Line Master Spawn"
+                      "value": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dantmed"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Medical Sublevel - Ward Chief Anchor Spawn (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -615,7 +670,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Hold the Line Warden Spawn"
+                      "value": "Mon Cala Medical Sublevel - Ward Supervisor Aron Meel Spawn (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -626,7 +681,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Hold the Line Inner Circle Spawn"
+                      "value": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -637,7 +692,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Infinite Conduit Master Spawn"
+                      "value": "Mon Cala Medical Sublevel - Ward Chief Idris Voh Spawn (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -648,7 +703,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Infinite Conduit Warden Spawn"
+                      "value": "Mon Cala Medical Sublevel - Ward Supervisor Dru Salin Spawn (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -659,7 +714,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Medical Sublevel - Infinite Conduit Inner Circle Spawn"
+                      "value": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -835,7 +890,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Force-Bonded Beast Master Spawn"
+                      "value": "Dathomir Grotto Apex Den - Old Wraid Spawn (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -846,7 +901,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Force-Bonded Beast Warden Spawn"
+                      "value": "Dathomir Grotto Apex Den - Handler's Wraid Spawn (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -857,7 +912,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+                      "value": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -868,7 +923,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - General Capstone Spawn"
+                      "value": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -879,7 +934,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Primal Overrun Master Spawn"
+                      "value": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dgrot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Old Rancor Spawn (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -890,7 +956,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Primal Overrun Warden Spawn"
+                      "value": "Dathomir Grotto Apex Den - Handler's Rancor Spawn (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -901,7 +967,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Primal Overrun Inner Circle Spawn"
+                      "value": "Dathomir Grotto Apex Den - Den Elder Shell-Back Spawn (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -912,7 +978,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Untouchable Instinct Master Spawn"
+                      "value": "Dathomir Grotto Apex Den - Old Giant Brown Lizard Spawn (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -923,7 +989,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Untouchable Instinct Warden Spawn"
+                      "value": "Dathomir Grotto Apex Den - Handler's Giant Brown Lizard Spawn (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -934,7 +1000,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle Spawn"
+                      "value": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -945,7 +1011,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Master Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Old Iriaz Bull Spawn (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -956,7 +1022,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Warden Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Breeder's Iriaz Bull Spawn (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -967,7 +1033,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Elder Kinrath Spawn (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -978,7 +1044,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Apex Bite Master Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Old Tukata Spawn (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -989,7 +1055,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Apex Bite Warden Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Breeder's Tukata Spawn (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1000,7 +1066,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Apex Bite Inner Circle Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Elder Scaled Brute Spawn (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1011,7 +1077,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1022,7 +1088,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Master Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_dtarn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Old Shyrack Spawn (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1033,7 +1110,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Warden Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Breeder's Shyrack Spawn (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1044,7 +1121,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Inner Circle Spawn"
+                      "value": "Dathomir Tarn Jungle Preserve - Elder Plated Burrower Spawn (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1088,7 +1165,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - General Capstone Spawn"
+                      "value": "Hutlar Qion Test Site - Test Crew Technician Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1099,7 +1176,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Overload Barrage Master Spawn"
+                      "value": "Hutlar Qion Test Site - Test Crew Demolitionist Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_hutlar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Site Chief Ansel Pryor Spawn (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1110,7 +1198,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Overload Barrage Warden Spawn"
+                      "value": "Hutlar Qion Test Site - Test Supervisor Hale Dorrin Spawn (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1121,7 +1209,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Overload Barrage Inner Circle Spawn"
+                      "value": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1132,7 +1220,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Perfect Flurry Master Spawn"
+                      "value": "Hutlar Qion Test Site - Site Chief Veshan Dru Spawn (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1143,7 +1231,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Perfect Flurry Warden Spawn"
+                      "value": "Hutlar Qion Test Site - Test Supervisor Ketu Ran Spawn (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1154,7 +1242,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Perfect Flurry Inner Circle Spawn"
+                      "value": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1165,7 +1253,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Thermal Detonator Master Spawn"
+                      "value": "Hutlar Qion Test Site - Site Chief Ssorgan Spawn (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1176,7 +1264,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Thermal Detonator Warden Spawn"
+                      "value": "Hutlar Qion Test Site - Test Supervisor Skorrik Spawn (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1187,7 +1275,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+                      "value": "Hutlar Qion Test Site - Site Chief's Officer Spawn (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1308,7 +1396,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Absolute Defense Master Spawn"
+                      "value": "Tatooine Forge Caverns - Forge Master Kassrek Spawn (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1319,7 +1407,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Absolute Defense Warden Spawn"
+                      "value": "Tatooine Forge Caverns - Forge Warden Ssorrak Spawn (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1330,7 +1418,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Absolute Defense Inner Circle Spawn"
+                      "value": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1341,7 +1429,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Forcebane Master Spawn"
+                      "value": "Tatooine Forge Caverns - Forge Master Kovath Sull Spawn (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1352,7 +1440,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Forcebane Warden Spawn"
+                      "value": "Tatooine Forge Caverns - Forge Warden Orbek Tal Spawn (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1363,7 +1451,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Forcebane Inner Circle Spawn"
+                      "value": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1374,7 +1462,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - General Capstone Spawn"
+                      "value": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1385,7 +1473,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Soul Ascension Master Spawn"
+                      "value": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_kforge"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine Forge Caverns - Forge Master Orsen Vale Spawn (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1396,7 +1495,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Soul Ascension Warden Spawn"
+                      "value": "Tatooine Forge Caverns - Forge Warden Dael Karrow Spawn (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1407,7 +1506,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tatooine Forge Caverns - Soul Ascension Inner Circle Spawn"
+                      "value": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1418,7 +1517,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Umbral Raider Commander Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Leader Lorrek Syn Spawn (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1429,7 +1528,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Umbral Raider Captain Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Captain Tavik Orrun Spawn (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1440,7 +1539,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Eclipse of Resolve Inner Circle Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1451,7 +1550,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1462,7 +1561,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Vitae Reaver Chief Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_kcrypt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Leader Mordek Sull Spawn (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1473,7 +1583,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Vitae Reaver Enforcer Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Captain Zarrik Thane Spawn (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1484,7 +1594,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Hunger of the Dark Inner Circle Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1495,7 +1605,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Crypt Expedition Leader Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Leader Kaelen Dorr Spawn (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1506,7 +1616,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Crypt Breach Captain Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Captain Rhaan Tolek Spawn (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1517,7 +1627,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mon Cala Sith Crypt Depths - Last Stand of the Light Inner Circle Spawn"
+                      "value": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1715,7 +1825,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Master Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Champion Thrask Spawn (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1726,7 +1836,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Warden Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Pit Boss Ssarok Spawn (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1737,7 +1847,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1748,7 +1858,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1759,7 +1869,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Red Bloom Master Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_smfight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Champion Ven Dolo Spawn (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1770,7 +1891,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Red Bloom Warden Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Pit Boss Kessan Pru Spawn (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1781,7 +1902,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1792,7 +1913,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Master Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Champion Rolan Mace Spawn (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1803,7 +1924,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Warden Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Pit Boss Dax Corvin Spawn (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1814,7 +1935,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle Spawn"
+                      "value": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1935,7 +2056,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - General Capstone Spawn"
+                      "value": "Veles Militia Annex - Holdout Recruit Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1946,7 +2067,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Invincible Master Spawn"
+                      "value": "Veles Militia Annex - Holdout Sergeant Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_veles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Holdout Captain Haro Kel Spawn (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1957,7 +2089,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Invincible Warden Spawn"
+                      "value": "Veles Militia Annex - Holdout Lieutenant Sarn Spawn (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1968,7 +2100,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Invincible Inner Circle Spawn"
+                      "value": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1979,7 +2111,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Systemic Shutdown Master Spawn"
+                      "value": "Veles Militia Annex - Holdout Captain Jorrik Vael Spawn (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1990,7 +2122,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Systemic Shutdown Warden Spawn"
+                      "value": "Veles Militia Annex - Holdout Lieutenant Vessik Rane Spawn (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2001,7 +2133,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Systemic Shutdown Inner Circle Spawn"
+                      "value": "Veles Militia Annex - Holdout Honor Guard Spawn (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2012,7 +2144,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Viral Cascade Master Spawn"
+                      "value": "Veles Militia Annex - Holdout Captain Marek Dolan Spawn (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2023,7 +2155,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Viral Cascade Warden Spawn"
+                      "value": "Veles Militia Annex - Holdout Lieutenant Korvan Tull Spawn (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2034,7 +2166,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Viral Cascade Inner Circle Spawn"
+                      "value": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2210,7 +2342,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Decisive Command Master Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Deserter Commander Halden Rhee Spawn (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2221,7 +2353,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Decisive Command Warden Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Deserter Sergeant Grenn Vhon Spawn (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2232,7 +2364,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Decisive Command Inner Circle Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2243,7 +2375,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Emergency Bunker Master Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Deserter Commander Mukk Dorl Spawn (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2254,7 +2386,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Emergency Bunker Warden Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Deserter Sergeant Bekko Spawn (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2265,7 +2397,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Emergency Bunker Inner Circle Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2276,7 +2408,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Deserter Sapper Spawn (Capstone Adept)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2287,7 +2419,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Killzone Beacon Master Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Deserter Engineer Spawn (Capstone Specialist)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cdp_vrepub"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Deserter Commander Kuvaz Spawn (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2298,7 +2441,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Killzone Beacon Warden Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Deserter Sergeant Orgul Spawn (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -2309,7 +2452,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Republic Engineering Bunker - Killzone Beacon Inner Circle Spawn"
+                      "value": "Viscara Republic Engineering Bunker - Quartermaster's Guard Spawn (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",

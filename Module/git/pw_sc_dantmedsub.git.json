@@ -89373,7 +89373,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A triage barricade of gurneys and supply crates holds the heart of the sublevel. The warden who built it has not given up an inch."
+            "0": "A triage barricade of gurneys and supply crates holds the heart of the sublevel. The ward supervisor who built it has not given up an inch."
           }
         },
         "DisarmDC": {
@@ -95053,7 +95053,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Cocktail Warden Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Supervisor Teno Barr Spawn (Emergency Cocktail line)"
           }
         },
         "MapNote": {
@@ -95116,7 +95116,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line Warden Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Supervisor Aron Meel Spawn (Hold the Line line)"
           }
         },
         "MapNote": {
@@ -95179,7 +95179,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Infinite Conduit Warden Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Supervisor Dru Salin Spawn (Infinite Conduit line)"
           }
         },
         "MapNote": {
@@ -95366,7 +95366,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -95379,11 +95379,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95429,7 +95429,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -95442,11 +95442,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95492,7 +95492,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -95505,11 +95505,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95555,7 +95555,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -95568,11 +95568,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95618,7 +95618,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -95631,11 +95631,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95681,7 +95681,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -95744,7 +95744,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -95757,11 +95757,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95807,7 +95807,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -95820,11 +95820,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -95870,7 +95870,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -95933,7 +95933,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -95996,7 +95996,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -96059,7 +96059,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -96122,7 +96122,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -96185,7 +96185,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -96248,7 +96248,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -96311,7 +96311,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -96324,11 +96324,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -96374,7 +96374,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -96437,7 +96437,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -96450,11 +96450,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -96500,7 +96500,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Guard Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -96513,11 +96513,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+          "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dantmed"
+          "value": "wp_cdp_dantmed"
         },
         "XOrientation": {
           "type": "float",
@@ -96563,7 +96563,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - General Capstone Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Orderly Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -96626,7 +96626,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Emergency Cocktail Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Emergency Cocktail line)"
           }
         },
         "MapNote": {
@@ -96651,7 +96651,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 15.5
+          "value": 21.25
         },
         "YOrientation": {
           "type": "float",
@@ -96659,11 +96659,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 115.0
+          "value": 15.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -96689,7 +96689,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Emergency Cocktail Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Emergency Cocktail line)"
           }
         },
         "MapNote": {
@@ -96714,7 +96714,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 14.0
+          "value": 31.25
         },
         "YOrientation": {
           "type": "float",
@@ -96722,11 +96722,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 116.5
+          "value": 15.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -96752,7 +96752,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Emergency Cocktail Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Emergency Cocktail line)"
           }
         },
         "MapNote": {
@@ -96777,7 +96777,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 12.5
+          "value": 16.75
         },
         "YOrientation": {
           "type": "float",
@@ -96785,11 +96785,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 115.0
+          "value": 24.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -96815,7 +96815,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Emergency Cocktail Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Emergency Cocktail line)"
           }
         },
         "MapNote": {
@@ -96840,7 +96840,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 14.0
+          "value": 34.75
         },
         "YOrientation": {
           "type": "float",
@@ -96848,11 +96848,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 113.5
+          "value": 25.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -96878,7 +96878,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Hold the Line Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Hold the Line line)"
           }
         },
         "MapNote": {
@@ -96903,7 +96903,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 127.5
+          "value": 20.25
         },
         "YOrientation": {
           "type": "float",
@@ -96911,11 +96911,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 30.0
+          "value": 56.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -96941,7 +96941,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Hold the Line Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Hold the Line line)"
           }
         },
         "MapNote": {
@@ -96966,7 +96966,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 126.0
+          "value": 20.25
         },
         "YOrientation": {
           "type": "float",
@@ -96974,11 +96974,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 31.5
+          "value": 66.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -97004,7 +97004,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Hold the Line Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Hold the Line line)"
           }
         },
         "MapNote": {
@@ -97029,7 +97029,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 124.5
+          "value": 30.25
         },
         "YOrientation": {
           "type": "float",
@@ -97037,11 +97037,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 30.0
+          "value": 58.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -97067,7 +97067,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Hold the Line Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Hold the Line line)"
           }
         },
         "MapNote": {
@@ -97092,7 +97092,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 126.0
+          "value": 34.75
         },
         "YOrientation": {
           "type": "float",
@@ -97100,11 +97100,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 28.5
+          "value": 67.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -97130,7 +97130,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Infinite Conduit Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Infinite Conduit line)"
           }
         },
         "MapNote": {
@@ -97155,7 +97155,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 57.5
+          "value": 30.25
         },
         "YOrientation": {
           "type": "float",
@@ -97163,11 +97163,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 101.0
+          "value": 76.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -97193,7 +97193,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Infinite Conduit Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Infinite Conduit line)"
           }
         },
         "MapNote": {
@@ -97218,7 +97218,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 56.0
+          "value": 40.25
         },
         "YOrientation": {
           "type": "float",
@@ -97226,11 +97226,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 102.5
+          "value": 76.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -97256,7 +97256,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Infinite Conduit Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Infinite Conduit line)"
           }
         },
         "MapNote": {
@@ -97281,7 +97281,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 54.5
+          "value": 35.25
         },
         "YOrientation": {
           "type": "float",
@@ -97289,11 +97289,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 101.0
+          "value": 85.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -97319,7 +97319,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Medical Sublevel - Infinite Conduit Inner Circle Spawn"
+            "0": "Mon Cala Medical Sublevel - Matron's Attendant Spawn (Infinite Conduit line)"
           }
         },
         "MapNote": {
@@ -97344,7 +97344,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 56.0
+          "value": 23.25
         },
         "YOrientation": {
           "type": "float",
@@ -97352,11 +97352,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 99.5
+          "value": 91.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       }
     ]

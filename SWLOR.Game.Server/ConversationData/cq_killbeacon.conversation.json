@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Target: the Republic Engineering Bunker on Viscara, abandoned in the swamps and since overrun. An engineering cell has turned its old fire-control hardware to unsanctioned live testing, six adepts confirmed. Route: Veles starport, south gate into the Wildlands, south to the Lake, then west through the Eastern Swamplands into the Western. The bunker sits half-sunk just west of where you come in, door facing south. Neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back here.",
+          "Text": "Target: the Republic Engineering Bunker on Viscara, abandoned in the swamps and since overrun. An engineering cell has turned its old fire-control hardware to unsanctioned live testing. The Deserter Sappers hold the rooms nearest the entrance: six confirmed. They serve the whole deserter company, so any Deserter Sapper counts, but only kills made with your beacons, fields and remote charges. A target your own marker never touched is not a qualifying engagement. Route: Veles starport, south gate into the Wildlands, south to the Lake, then west through the Eastern Swamplands into the Western. The bunker sits half-sunk just west of where you come in, door facing south. Neutralize the six sappers, recover the Killzone Beacon Republic Bunker Docket, and report back here.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts, standard live-fire discipline, nothing you haven't handled. Treat every marker in that bunker as active. This is not a drill and I will not pretend it is one to make you comfortable.",
+          "Text": "Six Deserter Sappers, standard live-fire discipline, nothing you haven't handled. Treat every marker in that bunker as active. This is not a drill and I will not pretend it is one to make you comfortable.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Western Swamplands, a short walk west of the Eastern crossing, sealed door facing south. Report when both are in hand.",
+          "Text": "Objective unchanged: six Deserter Sappers, one docket, Viscara Republic Engineering Bunker. Western Swamplands, a short walk west of the Eastern crossing, sealed door facing south. Report when both are in hand.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Second objective: their specialists have a Republic shield grid relay wired into the same bunker hardware, feeding targeting data outward instead of holding it. Five specialists, same bunker, recover the relay before it broadcasts anything further.",
+          "Text": "Second objective: their Deserter Engineers have a Republic shield grid relay wired into the same bunker hardware, feeding targeting data outward instead of holding it. Five Deserter Engineers, deeper in the same bunker, recover the relay before it broadcasts anything further. Same condition: your beacons, fields and remote charges make the kill. Any engineer counts.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Relay's still broadcasting from the Engineering Bunker. Five specialists standing between you and silence. Move.",
+          "Text": "Relay's still broadcasting from the Engineering Bunker. Five Deserter Engineers standing between you and silence. Move.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Third objective, and this one I will not authorize solo. Their warden holds a Cracked Command Crest, which tells me he's commanding actual fire teams now, not just adepts. Republic doctrine deploys fire teams of three against a command target. I am not making an exception for you. Bring two.",
+          "Text": "Third objective, and this one I will not authorize solo. Deserter Sergeant Orgul holds a Cracked Command Crest, which tells me he's commanding actual fire teams now, not just sappers. Republic doctrine deploys fire teams of three against a command target. I am not making an exception for you. Bring two.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fire team of three, Viscara Republic Engineering Bunker, warden objective. Do not deploy short-handed.",
+          "Text": "Fire team of three, Viscara Republic Engineering Bunker, Sergeant Orgul objective. Do not deploy short-handed.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirm the warden is neutralized and the crest is secured.",
+          "Text": "Confirm Sergeant Orgul is neutralized and the crest is secured.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fourth objective: the inner circle holds a Quartermaster Override Chip, the authorization trail for every requisition that armed this cell. Four hostiles, Bothans by the intercepts. Recover the chip; I need to know who signed for this hardware.",
+          "Text": "Fourth objective: the Quartermaster's Guards hold a Quartermaster Override Chip, the authorization trail for every requisition that armed this cell. Four Quartermaster's Guards, Bothans by the intercepts, holding the deepest part of the bunker; again, only kills made with your beacons, fields and remote charges count, and any guard will do. Recover the chip; I need to know who signed for this hardware.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Recommended. Four hostiles is worse odds than one warden in some respects. Keep your fire team intact; I don't reissue clearances for replacements mid-briefing.",
+          "Text": "Recommended. Four guards is worse odds than one sergeant in some respects. Keep your fire team intact; I don't reissue clearances for replacements mid-briefing.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Inner circle, four hostiles, chip objective, Viscara Republic Engineering Bunker. Report on completion.",
+          "Text": "Quartermaster's Guards, four hostiles, chip objective, Viscara Republic Engineering Bunker. Report on completion.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Final objective, and I'll say this plainly instead of by the book: the bunker's master has taken killzone beacon doctrine further than the Republic ever cleared for field use, and he intends to paint a live position as the target, not a range marker. Fire team of three, minimum, non-negotiable. I've watched this doctrine used correctly exactly once. I'd like to watch it again.",
+          "Text": "Final objective, and I'll say this plainly instead of by the book: Deserter Commander Kuvaz has taken killzone beacon doctrine further than the Republic ever cleared for field use, and he intends to paint a live position as the target, not a range marker. Fire team of three, minimum, non-negotiable. I've watched this doctrine used correctly exactly once. I'd like to watch it again.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Final objective unchanged. Team of three, Viscara Republic Engineering Bunker, master designation. Report only on completion.",
+          "Text": "Final objective unchanged. Team of three, Viscara Republic Engineering Bunker, Commander Kuvaz. Report only on completion.",
           "Style": 0,
           "Color": null
         }
@@ -1596,7 +1596,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "How many specialists am I looking at?",
+        "Text": "How many engineers am I looking at?",
         "Style": 4,
         "Color": null
       },
@@ -1766,7 +1766,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "What's the warden's command style?",
+        "Text": "What's Sergeant Orgul's command style?",
         "Style": 4,
         "Color": null
       },
@@ -1807,7 +1807,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Crest secured, warden down.",
+        "Text": "Crest secured, Orgul down.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Copy. Moving on the inner circle.",
+        "Text": "Copy. Moving on the Quartermaster's Guards.",
         "Style": 4,
         "Color": null
       },

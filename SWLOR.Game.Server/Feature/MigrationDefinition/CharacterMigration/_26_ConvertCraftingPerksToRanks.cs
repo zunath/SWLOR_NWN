@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 /// changed. Every owned rank returns its SP, the perk leaves the record and the character's feats, and the record
 /// gains one optional rebuild token.
 /// </summary>
-internal sealed class _25_ConvertCraftingPerksToRanks : ICharacterMigration
+internal sealed class _26_ConvertCraftingPerksToRanks : ICharacterMigration
 {
     /// <summary>
     /// The prices players paid per rank, kept here because the retired definitions no longer exist.
@@ -58,7 +58,7 @@ internal sealed class _25_ConvertCraftingPerksToRanks : ICharacterMigration
             FeatType.DroidAssemblyTrait),
     };
 
-    public int Version => 25;
+    public int Version => 26;
 
     /// <summary>Removes the feats the refunded perks granted, so none outlives its perk.</summary>
     public void Migrate(SavedCharacter character)

@@ -44,8 +44,9 @@ public class RepublicBasePlacementTests
         }
     }
 
-    [Test]
-    public void PublicEntrances_KeepEveryExistingRoomAndTheNewWingReachable()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void Entrances_PreserveExistingRoomsAndKeylessHangarAccess(bool hasKey)
     {
         var names = new[]
         {
@@ -62,9 +63,13 @@ public class RepublicBasePlacementTests
                 .Where(target => target.Tag.Length > 0)
                 .ToLookup(target => target.Tag, target => target.Area);
             var connections = areas.ToDictionary(area => area.Key, area =>
-                List(area.Value, "Placeable List").Select(obj => Local(obj, "DESTINATION"))
+                List(area.Value, "Placeable List").Where(obj => hasKey || Local(obj, "KEY_ITEM_ID") is "" or "0")
+                    .Select(obj => Local(obj, "DESTINATION"))
                     .Concat(List(area.Value, "Door List").Concat(List(area.Value, "TriggerList"))
                         .Where(obj => Number(obj, "LinkedToFlags") > 0)
+                        .Where(obj => hasKey ||
+                            (!obj.TryGetProperty("Locked", out var locked) || locked.GetProperty("value").GetInt32() == 0) &&
+                            (!obj.TryGetProperty("KeyRequired", out var required) || required.GetProperty("value").GetInt32() == 0))
                         .Select(obj => Text(obj, "LinkedTo")))
                     .SelectMany(tag => destinations[tag]).ToArray());
             var reached = new HashSet<string>();
@@ -75,8 +80,12 @@ public class RepublicBasePlacementTests
                 foreach (var destination in connections[area]) pending.Push(destination);
             }
 
-            reached.Should().BeEquivalentTo(names,
-                "replacing public entrances must not strand existing rooms, NPCs or services");
+            if (hasKey)
+                reached.Should().BeEquivalentTo(names,
+                    "replacing entrances must not strand existing rooms, NPCs or services");
+            else
+                reached.Should().Contain(new[] { "v_repubbase_hang", "visrephanger", "visredrepbase" },
+                    "the old hangar's Contract Board and the new wing must remain reachable without a base key");
         }
         finally
         {
@@ -127,12 +136,31 @@ public class RepublicBasePlacementTests
         using var hangar = Read("visrephanger");
         using var interior = Read("visredrepbase");
         var portal = List(hangar, "Placeable List")
-            .Where(obj => Text(obj, "OnUsed") == "teleport").Should().ContainSingle().Subject;
+            .Where(obj => Text(obj, "OnUsed") == "teleport" && Local(obj, "DESTINATION") == "RepBase_Inter2")
+            .Should().ContainSingle().Subject;
         Local(portal, "DESTINATION").Should().Be("RepBase_Inter2");
         List(interior, "WaypointList").Should()
             .ContainSingle(obj => Text(obj, "Tag") == Local(portal, "DESTINATION"));
         Number(portal, "Z").Should().BeApproximately(0, .05f,
             "the return portal must be reachable from the hangar floor");
+    }
+
+    [Test]
+    public void NewHangar_ProvidesAKeylessConnectionToTheOriginalHangar()
+    {
+        using var hangar = Read("visrephanger");
+        using var original = Read("v_repubbase_hang");
+        var portal = List(hangar, "Placeable List")
+            .Single(obj => Text(obj, "Tag") == "RepBase_OriginalHangar");
+        Text(portal, "OnUsed").Should().Be("teleport");
+        Local(portal, "DESTINATION").Should().Be("WP_V_RepHanger_to_RepBaseExt");
+        Local(portal, "KEY_ITEM_ID").Should().Be("0");
+        Local(portal, "TELEPORT_PARTY_MEMBERS").Should().Be("0");
+        Number(portal, "Z").Should().BeApproximately(0f, .01f);
+        List(original, "WaypointList").Should().ContainSingle(obj =>
+            Text(obj, "Tag") == Local(portal, "DESTINATION"));
+        ReadSource("gic", "visrephanger")["Placeable List"]!["value"]!.Count().Should()
+            .Be(List(hangar, "Placeable List").Length);
     }
 
     private static string Local(JsonElement element, string name) =>

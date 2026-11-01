@@ -89576,7 +89576,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Capstone Adept Spawn"
+            "0": "Viscara Republic Engineering Bunker - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -89589,11 +89589,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -89765,7 +89765,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Capstone Adept Spawn"
+            "0": "Viscara Republic Engineering Bunker - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -89778,11 +89778,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",
@@ -90206,7 +90206,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Capstone Adept Spawn"
+            "0": "Viscara Republic Engineering Bunker - Capstone Specialist Spawn"
           }
         },
         "MapNote": {
@@ -90219,11 +90219,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER"
+          "value": "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_vrepub"
+          "value": "wp_cdp_vrepub"
         },
         "XPosition": {
           "type": "float",

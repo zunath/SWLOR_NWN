@@ -29,7 +29,7 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 
 ## Capstone dungeons
 
-- Enemy tiers spawn by depth. Each dungeon has 20 fixed general spawn points: the 10 nearest the hub entrance on foot are tagged with the adept table (`CAPSTONE_<DUNGEON>`), the 10 farthest with the specialist table (`CAPSTONE_<DUNGEON>_DEEP`). Inner circle guards keep four fixed points per line, and wardens and masters spawn on demand. Never register a capstone general table as an area-level `CREATURE_SPAWN_TABLE_ID`, since random points would mix the tiers. The engine test `Capstone adept spawn points are nearer the entrance than specialist spawn points` checks the split.
+- Enemy tiers spawn by depth. Each dungeon has 20 fixed general spawn points. The ones nearest the hub entrance on foot are tagged with the adept table (`CAPSTONE_<DUNGEON>`), the farther ones with the specialist table (`CAPSTONE_<DUNGEON>_DEEP`). The cut falls between whole rooms (points within 12 m of each other) as close to half as the layout allows, so no room mixes the tiers. Inner circle guards keep four fixed points per line, and wardens and masters spawn on demand. Never register a capstone general table as an area-level `CREATURE_SPAWN_TABLE_ID`, since random points would mix the tiers. The engine test `Capstone adept spawn points are nearer the entrance than specialist spawn points` checks the split.
 
 ## Characters
 

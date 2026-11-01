@@ -865,6 +865,41 @@ public class CapstoneQuestDefinitionTests
         }
     }
 
+    [Test]
+    public void GeneralSpawnPoints_KeepEachRoomToOneTier()
+    {
+        // Adepts hold the rooms nearest the entrance and specialists the deeper ones (the walk order is checked
+        // in engine by CapstoneTierSpawnDepthEngineTests); points within 12 m share a room and never mix tiers.
+        const double RoomMeters = 12.0;
+        var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
+
+        foreach (var areaGroup in CapstoneQuestDefinitionTestData.AreaGroups)
+        {
+            using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "git", $"{areaGroup.DungeonAreaResref}.git.json")));
+            var points = git.RootElement.GetProperty("WaypointList").GetProperty("value")
+                .EnumerateArray()
+                .Select(waypoint => (
+                    Tag: GetTypedValue(waypoint, "Tag"),
+                    X: waypoint.GetProperty("XPosition").GetProperty("value").GetDouble(),
+                    Y: waypoint.GetProperty("YPosition").GetProperty("value").GetDouble()))
+                .ToArray();
+            var adepts = points.Where(point => point.Tag == areaGroup.SpawnTableId).ToArray();
+            var specialists = points.Where(point => point.Tag == areaGroup.DeepSpawnTableId).ToArray();
+
+            (adepts.Length + specialists.Length).Should().Be(20, $"{areaGroup.DungeonAreaResref} has twenty general spawn points");
+            adepts.Should().NotBeEmpty();
+            specialists.Should().NotBeEmpty();
+            foreach (var adept in adepts)
+            {
+                foreach (var specialist in specialists)
+                {
+                    Math.Sqrt(Math.Pow(adept.X - specialist.X, 2) + Math.Pow(adept.Y - specialist.Y, 2)).Should().BeGreaterThan(RoomMeters,
+                        $"{areaGroup.DungeonAreaResref} adept point ({adept.X:0.0},{adept.Y:0.0}) shares a room with specialist point ({specialist.X:0.0},{specialist.Y:0.0})");
+                }
+            }
+        }
+    }
+
     // Mirrors Spawn.CalculateCreatureSpawnCount for areas that register their table as an area local.
     private static int GetAreaCreatureSpawnCount(string modulePath, string areaResref, JsonElement git)
     {

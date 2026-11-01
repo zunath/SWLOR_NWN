@@ -56427,7 +56427,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56440,11 +56440,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cdp_dantjedi"
+          "value": "wp_cap_dantjedi"
         },
         "XPosition": {
           "type": "float",
@@ -56742,7 +56742,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Capstone Specialist Spawn"
+            "0": "Hutlar Jedi Trial Halls - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -56755,11 +56755,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP"
+          "value": "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cdp_dantjedi"
+          "value": "wp_cap_dantjedi"
         },
         "XPosition": {
           "type": "float",

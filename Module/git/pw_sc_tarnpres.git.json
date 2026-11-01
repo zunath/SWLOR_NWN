@@ -29398,7 +29398,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - Capstone Specialist Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Capstone Adept Spawn"
           }
         },
         "MapNote": {
@@ -29411,11 +29411,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cdp_dtarn"
+          "value": "wp_cap_dtarn"
         },
         "XPosition": {
           "type": "float",

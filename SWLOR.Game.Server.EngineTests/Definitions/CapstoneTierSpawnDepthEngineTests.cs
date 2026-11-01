@@ -39,9 +39,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// <summary>
         /// Walks each capstone dungeon's live walkmesh from the hub arrival point (following in-area doors and
         /// teleporters) and checks every adept spawn point is reached before any specialist spawn point, so the
-        /// easier tier holds the part of the dungeon nearest the entrance.
+        /// easier tier holds the part of the dungeon nearest the entrance. Inner circle guards stand no nearer than the
+        /// farthest adept point.
         /// </summary>
-        [EngineTest("Capstone adept spawn points are nearer the entrance than specialist spawn points", Category = "SpawnReachability", TimeoutSeconds = 300f)]
+        [EngineTest("Capstone adept spawn points are nearer the entrance than specialist and inner circle spawn points", Category = "SpawnReachability", TimeoutSeconds = 300f)]
         public static async Task AdeptSpawnPointsAreNearerTheEntrance(EngineTestContext ctx)
         {
             foreach (var (resref, entryTag, adeptTable) in Dungeons)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var entry = OBJECT_INVALID;
                 var adepts = new List<Vector3>();
                 var specialists = new List<Vector3>();
+                var innerCircle = new List<Vector3>();
                 var links = new List<(Vector3 From, Vector3 To)>();
                 for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
                 {
@@ -63,6 +65,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         if (tag == entryTag) entry = obj;
                         else if (tag == adeptTable) adepts.Add(GetPosition(obj));
                         else if (tag == adeptTable + "_DEEP") specialists.Add(GetPosition(obj));
+                        else if (tag.EndsWith("_IC_SPAWN")) innerCircle.Add(GetPosition(obj));
                     }
                     else if (type == ObjectType.Door || type == ObjectType.Trigger)
                     {
@@ -98,6 +101,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(farthestAdept.Item2 <= nearestSpecialist.Item2,
                     $"{resref} adept point ({farthestAdept.point.X:0.0},{farthestAdept.point.Y:0.0}) is {farthestAdept.Item2:0} m from the entrance, " +
                     $"farther than specialist point ({nearestSpecialist.point.X:0.0},{nearestSpecialist.point.Y:0.0}) at {nearestSpecialist.Item2:0} m");
+
+                ctx.Assert(innerCircle.Count == 12, $"{resref} has 12 inner circle spawn points (found {innerCircle.Count})");
+                foreach (var point in innerCircle)
+                {
+                    var walked = Walk(point);
+                    ctx.Assert(walked >= farthestAdept.Item2,
+                        $"{resref} inner circle point ({point.X:0.0},{point.Y:0.0}) is {walked:0} m from the entrance, nearer than adept point " +
+                        $"({farthestAdept.point.X:0.0},{farthestAdept.point.Y:0.0}) at {farthestAdept.Item2:0} m");
+                }
             }
         }
 

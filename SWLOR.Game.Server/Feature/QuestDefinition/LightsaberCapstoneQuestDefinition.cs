@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Storm Examiner Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Saber Storm Council Trial Chit.")
+                    "Disable four Storm Examiner Droids guarding the control systems at the far north-west end of the Jedi Trial Halls on Hutlar and recover the Saber Storm Council Trial Chit.")
                 .AddKillObjective(NPCGroupType.Hutlar_StormExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormCouncilTrialChit)
 
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Guardian Shield Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Guardian Master Council Trial Chit.")
+                    "Disable four Guardian Shield Droids guarding the control systems at the far north-west end of the Jedi Trial Halls on Hutlar and recover the Guardian Master Council Trial Chit.")
                 .AddKillObjective(NPCGroupType.Hutlar_GuardianShieldDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterCouncilTrialChit)
 

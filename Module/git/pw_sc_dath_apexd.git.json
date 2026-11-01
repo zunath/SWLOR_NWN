@@ -10998,7 +10998,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 59.75
+          "value": 25.75
         },
         "YOrientation": {
           "type": "float",
@@ -11006,11 +11006,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 19.75
+          "value": 76.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.00
         }
       },
       {
@@ -11061,7 +11061,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 49.75
+          "value": 33.75
         },
         "YOrientation": {
           "type": "float",
@@ -11069,11 +11069,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 19.75
+          "value": 83.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.00
         }
       },
       {
@@ -11124,7 +11124,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 59.75
+          "value": 12.75
         },
         "YOrientation": {
           "type": "float",
@@ -11132,11 +11132,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 9.75
+          "value": 93.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.00
         }
       },
       {
@@ -11187,7 +11187,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 59.75
+          "value": 25.75
         },
         "YOrientation": {
           "type": "float",
@@ -11195,11 +11195,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 29.75
+          "value": 89.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.00
         }
       },
       {
@@ -11250,7 +11250,133 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 149.75
+          "value": 22.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 65.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebeast_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 32.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 68.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.05
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebeast_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 15.75
         },
         "YOrientation": {
           "type": "float",
@@ -11262,7 +11388,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.00
         }
       },
       {
@@ -11313,133 +11439,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 149.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 64.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_forcebeast_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 139.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 74.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_forcebeast_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 149.75
+          "value": 10.75
         },
         "YOrientation": {
           "type": "float",
@@ -11447,11 +11447,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 54.75
+          "value": 83.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.10
         }
       },
       {

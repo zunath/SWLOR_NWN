@@ -49341,19 +49341,145 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 68.75
+          "value": 96.75
         },
         "YPosition": {
           "type": "float",
-          "value": 18.75
+          "value": 132.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
           "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_THERMDET_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_thermdet_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 100.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 142.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_THERMDET_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_thermdet_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 86.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 130.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
         },
         "YOrientation": {
           "type": "float",
@@ -49408,137 +49534,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 9.25
+          "value": 130.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_THERMDET_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_thermdet_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 69.25
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 28.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.07
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Hutlar Qion Test Site - Thermal Detonator Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_THERMDET_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_thermdet_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 89.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 8.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49593,15 +49593,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 25.25
+          "value": 132.25
         },
         "YPosition": {
           "type": "float",
-          "value": 62.75
+          "value": 140.25
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49656,15 +49656,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 16.25
+          "value": 122.25
         },
         "YPosition": {
           "type": "float",
-          "value": 67.75
+          "value": 140.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49719,15 +49719,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 34.25
+          "value": 131.25
         },
         "YPosition": {
           "type": "float",
-          "value": 67.25
+          "value": 130.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -49782,15 +49782,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 41.25
+          "value": 112.25
         },
         "YPosition": {
           "type": "float",
-          "value": 74.75
+          "value": 140.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

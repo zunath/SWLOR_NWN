@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew's inner circle holds the crane deck above the drill pit, on the north side of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat the four Adamantine Guard inner circle members and recover the Adamantine Guard Foreman's Override Chip.")
+                    "The wreck crew's inner circle holds the far south-east end of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat the four Adamantine Guard inner circle members and recover the Adamantine Guard Foreman's Override Chip.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardForemansOverrideChip)
 
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The crew's inner circle holds the crane deck above the drill pit, on the north side of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat the four Scrapheap Lockdown inner circle members and recover the Scrapheap Lockdown Foreman's Override Chip.")
+                    "The crew's inner circle holds the far south-east end of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat the four Scrapheap Lockdown inner circle members and recover the Scrapheap Lockdown Foreman's Override Chip.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownForemansOverrideChip)
 

@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Cyclone Examiner Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Council Trial Chit.")
+                    "Disable four Cyclone Examiner Droids guarding the control systems at the far north-west end of the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Council Trial Chit.")
                 .AddKillObjective(NPCGroupType.Hutlar_CycloneExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneCouncilTrialChit)
 

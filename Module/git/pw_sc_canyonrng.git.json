@@ -35274,15 +35274,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 94.75
+          "value": 8.75
         },
         "YPosition": {
           "type": "float",
-          "value": 8.75
+          "value": 112.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.02
         },
         "XOrientation": {
           "type": "float",
@@ -35336,16 +35336,16 @@
           "value": "wp_deadhand_ic"
         },
         "XPosition": {
-          "type": "float",
-          "value": 105.25
-        },
-        "YPosition": {
           "type": "float",
           "value": 18.75
         },
+        "YPosition": {
+          "type": "float",
+          "value": 114.75
+        },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35400,15 +35400,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 100.25
+          "value": 7.75
         },
         "YPosition": {
           "type": "float",
-          "value": 27.75
+          "value": 102.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35463,15 +35463,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 84.75
+          "value": 28.75
         },
         "YPosition": {
           "type": "float",
-          "value": 8.75
+          "value": 115.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35526,15 +35526,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 127.75
+          "value": 7.75
         },
         "YPosition": {
           "type": "float",
-          "value": 88.25
+          "value": 92.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35589,15 +35589,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 139.25
+          "value": 7.75
         },
         "YPosition": {
           "type": "float",
-          "value": 56.75
+          "value": 70.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35652,15 +35652,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 125.25
+          "value": 7.75
         },
         "YPosition": {
           "type": "float",
-          "value": 54.75
+          "value": 80.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -35715,15 +35715,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 138.25
+          "value": 17.75
         },
         "YPosition": {
           "type": "float",
-          "value": 88.25
+          "value": 73.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

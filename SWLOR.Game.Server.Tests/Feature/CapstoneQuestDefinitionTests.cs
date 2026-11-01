@@ -905,17 +905,18 @@ public class CapstoneQuestDefinitionTests
                     Y: waypoint.GetProperty("YPosition").GetProperty("value").GetDouble()))
                 .ToArray();
             var adepts = points.Where(point => point.Tag == areaGroup.SpawnTableId).ToArray();
-            var specialists = points.Where(point => point.Tag == areaGroup.DeepSpawnTableId).ToArray();
+            // Inner circle guards stand deep as well, never in an adept room.
+            var deepPoints = points.Where(point => point.Tag == areaGroup.DeepSpawnTableId || point.Tag.EndsWith("_IC_SPAWN")).ToArray();
 
-            (adepts.Length + specialists.Length).Should().Be(20, $"{areaGroup.DungeonAreaResref} has twenty general spawn points");
+            (adepts.Length + deepPoints.Count(point => point.Tag == areaGroup.DeepSpawnTableId)).Should().Be(20, $"{areaGroup.DungeonAreaResref} has twenty general spawn points");
             adepts.Should().NotBeEmpty();
-            specialists.Should().NotBeEmpty();
+            deepPoints.Should().NotBeEmpty();
             foreach (var adept in adepts)
             {
-                foreach (var specialist in specialists)
+                foreach (var deepPoint in deepPoints)
                 {
-                    Math.Sqrt(Math.Pow(adept.X - specialist.X, 2) + Math.Pow(adept.Y - specialist.Y, 2)).Should().BeGreaterThan(RoomMeters,
-                        $"{areaGroup.DungeonAreaResref} adept point ({adept.X:0.0},{adept.Y:0.0}) shares a room with specialist point ({specialist.X:0.0},{specialist.Y:0.0})");
+                    Math.Sqrt(Math.Pow(adept.X - deepPoint.X, 2) + Math.Pow(adept.Y - deepPoint.Y, 2)).Should().BeGreaterThan(RoomMeters,
+                        $"{areaGroup.DungeonAreaResref} adept point ({adept.X:0.0},{adept.Y:0.0}) shares a room with {deepPoint.Tag} point ({deepPoint.X:0.0},{deepPoint.Y:0.0})");
                 }
             }
         }

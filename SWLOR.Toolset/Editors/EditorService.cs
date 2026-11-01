@@ -118,20 +118,29 @@ namespace SWLOR.Toolset.Editors
             var root = _workspaceContext.Workspace?.ModuleRoot;
             if (root == null) return null;
             var path = Path.GetFullPath(Path.Combine(root, "ifo", "module.ifo.json"));
-            if (_moduleEntries.TryGetValue(path, out var entry))
+            _moduleEntries.TryGetValue(path, out var entry);
+            try
             {
-                if (_openAreaEditors.Count == 0 && _moduleProperties == null &&
-                    !entry.IsDirty && entry.Session.HasExternalChange())
+                if (entry != null)
                 {
-                    entry.Session.ReloadFromDisk();
-                    entry.MarkSaved();
+                    if (_openAreaEditors.Count == 0 && _moduleProperties == null &&
+                        !entry.IsDirty && entry.Session.HasExternalChange())
+                    {
+                        entry.Session.ReloadFromDisk();
+                        entry.MarkSaved();
+                    }
+                    return entry;
                 }
+                if (!File.Exists(path)) return null;
+                entry = new ModuleEntryEditor(DocumentSession.Open(path));
+                _moduleEntries.Add(path, entry);
                 return entry;
             }
-            if (!File.Exists(path)) return null;
-            entry = new ModuleEntryEditor(DocumentSession.Open(path));
-            _moduleEntries.Add(path, entry);
-            return entry;
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not open module entry data from {path}: {ex.Message}");
+                return entry;
+            }
         }
 
         public void Dispose()

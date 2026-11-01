@@ -469,6 +469,87 @@ namespace SWLOR.Toolset.Tests
             context.WaitForBackgroundScans();
         }
 
+        [AvaloniaTest]
+        public void UnreadableModuleEntryKeepsAreaEditingAvailableAndPreservesCachedData()
+        {
+            Support.WindowsFileSharing.Require();
+            var path = Path.Combine(_moduleRoot, "ifo", "module.ifo.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var original = File.ReadAllBytes(Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"));
+            foreach (var cached in new[] { false, true })
+            {
+                File.WriteAllBytes(path, original);
+                var log = new OutputLogService();
+                var context = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+                context.OpenAndSettle(_moduleRoot);
+                var factory = new SWLOR.Toolset.Shell.ToolsetDockFactory(null!, null!, null!, null!, null!, null!, null!, null!, null!);
+                using var service = new EditorService(context, new LookupOptionProvider(context), log, factory, new StubPrompts());
+                ModuleEntryEditor? OpenEntry() => (ModuleEntryEditor?)typeof(EditorService)
+                    .GetMethod("ModuleEntryForWorkspace", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                    .Invoke(service, null);
+                var expected = cached ? OpenEntry() : null;
+                var expectedBytes = expected?.Session.ToBytes();
+                using (var locked = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
+                    OpenEntry().Should().BeSameAs(expected);
+                File.WriteAllText(path, "malformed module data");
+                OpenEntry().Should().BeSameAs(expected);
+                if (expected != null) expected.Session.ToBytes().Should().Equal(expectedBytes!);
+                log.Lines.Count(line => line.Contains("Could not open module entry data")).Should().Be(2);
+                File.WriteAllBytes(path, original);
+                OpenEntry().Should().NotBeNull();
+                context.WaitForBackgroundScans();
+            }
+        }
+
+        [AvaloniaTest]
+        public async Task ModulePropertiesPublishesLocalChangesOnceAndRevertRefreshesArea()
+        {
+            var path = Path.Combine(_moduleRoot, "ifo", "module.ifo.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var document = JsonGffDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"));
+            document.Root.SetString("Mod_Entry_Area", GffFieldType.ResRef, AreaResRef);
+            document.Root.SetSingle("Mod_Entry_Dir_X", 1);
+            document.Root.SetSingle("Mod_Entry_Dir_Y", 0);
+            File.WriteAllBytes(path, document.ToBytes());
+            using var session = DocumentSession.Open(path);
+            var entry = new ModuleEntryEditor(session);
+            var editor = await CreateEditorAsync(moduleEntry: entry);
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            var properties = new SWLOR.Toolset.Editors.Module.ModulePropertiesDocumentViewModel(
+                path, _moduleRoot, new ModuleWorkspace(_moduleRoot), new OutputLogService(),
+                new StubPrompts(), moduleEntry: entry);
+            var tagUpdates = 0;
+            properties.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(properties.Tag)) tagUpdates++;
+            };
+            properties.Tag = "shared_module_tag";
+            tagUpdates.Should().Be(1);
+            properties.Undo();
+            tagUpdates.Should().Be(2);
+            properties.Redo();
+            tagUpdates.Should().Be(3);
+            editor.RotateSelectedInstance(editor.AreaScene!.Instances.Single(marker =>
+                marker.Kind == InstanceMarkerKind.StartLocation), Vector2.UnitY);
+            editor.IsDirty.Should().BeTrue();
+            var sceneUpdates = 0;
+            editor.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(editor.AreaScene)) sceneUpdates++;
+            };
+            properties.RevertCommand.Execute(null);
+            sceneUpdates.Should().Be(1);
+            properties.Tag.Should().NotBe("shared_module_tag");
+            editor.AreaScene!.Instances.Single(marker => marker.Kind == InstanceMarkerKind.StartLocation)
+                .Orientation.Should().Be(Vector2.UnitY);
+            editor.IsDirty.Should().BeTrue("the area's separate rotation remains undoable");
+            editor.UndoAreCommand.Execute(null);
+            editor.IsDirty.Should().BeFalse();
+            properties.IsDirty.Should().BeFalse();
+            properties.OnClose().Should().BeTrue();
+        }
+
         private void AddAuthoredSourcePlacement()
         {
             var gitPath = Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json");

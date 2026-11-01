@@ -118,6 +118,7 @@ namespace SWLOR.Toolset.Editors.Module
         private bool _closePromptOpen;
         private bool _disposed;
         private bool _refreshing;
+        private bool _publishingModuleChange;
         private CancellationTokenSource? _customReloadCts;
         private IReadOnlyList<string> _allAvailableHaks = Array.Empty<string>();
 
@@ -406,7 +407,7 @@ namespace SWLOR.Toolset.Editors.Module
             try
             {
                 _session.Execute(description, mutation);
-                _moduleEntry?.NotifyChanged();
+                PublishModuleChange();
                 AfterHistoryChange();
                 return true;
             }
@@ -609,6 +610,7 @@ namespace SWLOR.Toolset.Editors.Module
         {
             var customContentBefore = CustomContentSignature();
             _session.RevertToSaved();
+            PublishModuleChange();
             ReloadFields();
             if (customContentBefore != CustomContentSignature())
                 QueueCustomContentReload();
@@ -670,7 +672,7 @@ namespace SWLOR.Toolset.Editors.Module
         {
             var customContentBefore = CustomContentSignature();
             _session.Undo();
-            _moduleEntry?.NotifyChanged();
+            PublishModuleChange();
             ReloadFields();
             if (customContentBefore != CustomContentSignature())
                 QueueCustomContentReload();
@@ -682,7 +684,7 @@ namespace SWLOR.Toolset.Editors.Module
         {
             var customContentBefore = CustomContentSignature();
             _session.Redo();
-            _moduleEntry?.NotifyChanged();
+            PublishModuleChange();
             ReloadFields();
             if (customContentBefore != CustomContentSignature())
                 QueueCustomContentReload();
@@ -773,8 +775,22 @@ namespace SWLOR.Toolset.Editors.Module
             }
         }
 
+        private void PublishModuleChange()
+        {
+            _publishingModuleChange = true;
+            try
+            {
+                _moduleEntry?.NotifyChanged();
+            }
+            finally
+            {
+                _publishingModuleChange = false;
+            }
+        }
+
         private void OnSharedModuleChanged()
         {
+            if (_publishingModuleChange) return;
             ReloadFields();
             AfterHistoryChange();
         }

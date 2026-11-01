@@ -26,9 +26,15 @@ these rules hold for every change in `SWLOR_Haks`:
   armor ships such maps, add them to `PALETTE_SPECULAR_MAPS` so the generator
   unbinds them. Maps shared with nonmetal parts use `PALETTE_SPECULAR_MASK_MAPS`
   to opt in only the affected metal mask (forearm 30 shares its maps with the
-  cloth-only forearm 103). The 532 materials that still bind them from before
-  the baseline are grandfathered in `legacyMetalSpecular`; `--update` never adds
-  to it, and fixed materials leave it (Havoc armor and forearm 30 did).
+  cloth-only forearm 103). `tools/PaletteMetalMaterials.json` records audited
+  playable materials, their exact metal masks and original reflectance inputs.
+  Those combinations bind neither map, without changing other materials or masks
+  that share the textures.
+  Profile signatures still retain the authored inputs so aliases do not move.
+  The remaining 44 grandfathered entries are unused material variants or bindings
+  outside the playable normal-phenotype model and helmet catalogs. Keep them in
+  `legacyMetalSpecular`; `--update` never adds to it, and corrected materials leave
+  it. Active playable armor, collars, headgear and droid parts have been corrected.
 
 The generated tint materials share three fragment shaders in
 `SWLOR_Haks/sw_shader`: `fs_plt_tinter`, `fs_plt_tinter_nm`, and

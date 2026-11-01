@@ -8,8 +8,7 @@ using System.Text;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     /// <summary>
-    /// Reads saved object metadata without instantiating native objects, and edits
-    /// only the inventory lists when migrating a saved creature. Native loading
+    /// Reads and edits saved object fields without instantiating native objects. Native loading
     /// can reject retired appearances and discard unrelated saved state, neither
     /// of which should prevent an item migration or rewrite the creature itself.
     /// GFF scalar payloads remain raw bytes so names, effects and unknown fields

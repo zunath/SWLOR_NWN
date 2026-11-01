@@ -1,7 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -37,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 .HasMaxRange(7f)
                 .BreaksStealth()
                 .UsesImpactAnimation(Animation.DoubleStrike)
-                .HasCustomValidation((activator, target, level, location) => ValidateGrip(activator))
                 .HasActivationAction((activator, target, level, location) =>
                 {
                     Combat.StoreAbilityActivationIdleBonuses(activator, SkillType.Unarmed);
@@ -74,9 +72,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.DoubleStrike);
         }
-
-        private static string ValidateGrip(uint creature) => EquipmentPredicates.HasUnarmedGrip(creature)
-            ? string.Empty
-            : "Equip a Power Glove and leave your off hand available.";
     }
 }

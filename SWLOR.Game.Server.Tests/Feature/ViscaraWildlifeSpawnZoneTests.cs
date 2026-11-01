@@ -20,6 +20,7 @@ public class ViscaraWildlifeSpawnZoneTests
     [TestCase("viscaralake", 24f, 94f, TestName = "Lake enclosed west pond")]
     [TestCase("viscaralake", 232f, 0f, TestName = "Lake south edge water")]
     [TestCase("viscaralake", 318f, 180f, TestName = "Lake east edge water")]
+    [TestCase("viscaralake", 318f, 8f, TestName = "Lake south-east corner water")]
     [TestCase("viscaradeepmount", 310f, 200f, TestName = "Deep Mountains plateau beside the entrance")]
     [TestCase("viscaradeepmount", 250f, 150f, TestName = "Deep Mountains plateau lip above the entrance passage")]
     [TestCase("viscaradeepmount", 250f, 240f, TestName = "Deep Mountains basin enclosed by the plateau")]

@@ -681,10 +681,11 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(item))
                     continue;
 
+                var copies = PowerGloveEquipment.GetEquipmentStatCopies(GetBaseItemType(item));
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
                     if (GetItemPropertyType(ip) == ItemPropertyType.HPBonus)
-                        amount += GetItemPropertyCostTableValue(ip);
+                        amount += GetItemPropertyCostTableValue(ip) * copies;
                 }
             }
 
@@ -736,9 +737,11 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(item) || GetBaseItemType(item) == BaseItem.CompanionPistol)
                     continue;
 
+                var copies = PowerGloveEquipment.GetEquipmentStatCopies(GetBaseItemType(item));
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
-                    totals.Add(GetItemPropertyType(ip), GetItemPropertySubType(ip), GetItemPropertyCostTableValue(ip));
+                    for (var copy = 0; copy < copies; copy++)
+                        totals.Add(GetItemPropertyType(ip), GetItemPropertySubType(ip), GetItemPropertyCostTableValue(ip));
                 }
             }
 
@@ -1071,10 +1074,11 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(item) || GetBaseItemType(item) == BaseItem.CompanionPistol)
                     continue;
 
+                var copies = PowerGloveEquipment.GetEquipmentStatCopies(GetBaseItemType(item));
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
                     if (GetItemPropertyType(ip) == ItemPropertyType.CombatReadiness)
-                        amount += GetItemPropertyCostTableValue(ip);
+                        amount += GetItemPropertyCostTableValue(ip) * copies;
                 }
             }
 

@@ -1584,7 +1584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hostile opponents of combat level forty-five or higher. No summoned creatures, training dummies or other spacers. Use equipped Power Gloves and land the Uppercut. Your own paid attacks count; misses and free casts do not. Dirty Jab, Low Kick and Retaliation can help, but none is required.",
+          "Text": "Hostile opponents of combat level forty-five or higher. No summoned creatures, training dummies or other spacers. Land the Uppercut with any weapon. Your own paid attacks count; misses and free casts do not. Dirty Jab, Low Kick and Retaliation can help, but none is required.",
           "Style": 0,
           "Color": null
         }
@@ -2572,7 +2572,7 @@
     "unarmed-training": {
       "Id": "unarmed-training",
       "Text": {
-        "Text": "I want to discuss Power Glove techniques.",
+        "Text": "I want to discuss Unarmed techniques.",
         "Style": 4,
         "Color": null
       },

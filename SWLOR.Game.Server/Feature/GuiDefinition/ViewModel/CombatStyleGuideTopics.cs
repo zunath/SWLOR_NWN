@@ -191,11 +191,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles"),
 
-                Topic("Unarmed", "Choose Unarmed for Power Glove combinations that chain setups into finishers, or for heavy strikes and counterattacks. Both gloves strike each attack, and Unarmed abilities add the DMG of both gloves.",
+                Topic("Unarmed", "Choose Unarmed for combinations that chain setups into finishers, or for heavy strikes and counterattacks.",
                     new[]
                     {
                         Style("Unarmed - Martial Artist", "Martial Artist chains Jab into Palm Strike and finishers, with setups that also help your other weapon attacks."),
-                        Style("Unarmed - Brawler", "Brawler includes pressure attacks that weaken an enemy's attacks, heavy strikes, and counterattacks earned by taking damage.")
+                        Style("Unarmed - Brawler", "Brawler includes pressure attacks that weaken an enemy's attacks, heavy strikes, and counterattacks earned by taking damage."),
+                        Style("Equipment and Cross-skilling", "Power Gloves are one owned item. Equipping one automatically fills your other hand with a matching glove; removing either hand unequips the pair. Both hands strike each attack with the item's DMG, and the item's other bonuses count once for each hand, so one Power Glove matches two identical Katars. Unarmed abilities and perks work with any weapon. With Power Gloves or two Katars, Unarmed abilities add the DMG of both hands; other weapons add one weapon's DMG.")
                     },
                     "Perks", "Combat Basics", "Katar Combat Styles", "Staff Combat Styles"),
 

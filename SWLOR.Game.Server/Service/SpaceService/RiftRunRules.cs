@@ -47,6 +47,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool WrecksDockedShips(RiftRun run) =>
             run != null && run.Failed && run.Phase == RiftRunPhase.Closing;
 
+        /// <summary>
+        /// Whether a ship's run pilot takes the XP debt for its loss at their next login: only when they do not ride the
+        /// escape pods that take the debt now (<paramref name="podRiderIds"/>), so a pilot is never charged twice.
+        /// </summary>
+        public static bool OwesDeferredLoss(string pilotId, ICollection<string> podRiderIds) =>
+            !string.IsNullOrWhiteSpace(pilotId) && (podRiderIds == null || !podRiderIds.Contains(pilotId));
+
         /// <summary>A waiting ship that left the run some other way (undocked outside the pocket) no longer rejoins it.</summary>
         public static void Forget(RiftRun run, string shipId)
         {

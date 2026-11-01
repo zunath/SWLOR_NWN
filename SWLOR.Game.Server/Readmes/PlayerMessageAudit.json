@@ -7946,84 +7946,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 248,
+    "Line": 265,
     "Member": "TakeShipyardFee",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Paid the {station.CustomName} Shipyard fee of {fee} credits.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 311,
+    "Line": 328,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The Asteroid Drill has no ore to collect.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 345,
+    "Line": 362,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, collected.Count > 0\n                ? ColorToken.Green($\"Collected from the Asteroid Drill: {string.Join(\", \", collected)}.\")\n                : ColorToken.Red(\"The Asteroid Drill has no ore to collect.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 370,
+    "Line": 387,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A droid is already assigned here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 376,
+    "Line": 393,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer carry that droid, or it is busy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 396,
+    "Line": 413,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} now works the {detail.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 415,
+    "Line": 432,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{state.DroidName} was sent back to its owner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 422,
+    "Line": 439,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 432,
+    "Line": 449,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} returns to you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 696,
+    "Line": 713,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(StationBuildingRules.DescribeJumpRefusal(refusal, request)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 722,
+    "Line": 739,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 758,
+    "Line": 775,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{ship.CustomName} jumped to {destination.CustomName}, burning {fuel} Station Fuel.\"))"

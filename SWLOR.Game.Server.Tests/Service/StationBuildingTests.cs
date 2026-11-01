@@ -499,6 +499,24 @@ public class StationBuildingTests
     // Files
 
     [Test]
+    public void BuildingMenus_ChangeTheCurrentStateNotThePagesCopy()
+    {
+        var dialog = ReadServer("Feature", "DialogDefinition", "StationBuildingDialog.cs").Replace("\r\n", "\n");
+        dialog.Should().NotContain("DB.Set(state);", "a page's copy of the state would undo a droid recalled or posted since");
+        dialog.Should().Contain("StationBuildings.UpdateState(buildingId, current => current.ShipyardAccess = next);")
+            .And.Contain("StationBuildings.UpdateState(buildingId, current => current.BeaconAccess = next);")
+            .And.Contain("current.BeaconAllyStationIds.Remove(otherId);\n                        if (!allied)\n                            current.BeaconAllyStationIds.Add(otherId);");
+
+        var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        var update = service.Substring(service.IndexOf("public static bool UpdateState(string buildingId, Action<StationBuildingState> change)", StringComparison.Ordinal));
+        update = update.Substring(0, update.IndexOf("/// <summary>The structure property behind a building's console", StringComparison.Ordinal));
+        var reload = update.IndexOf("var state = GetState(building);", StringComparison.Ordinal);
+        reload.Should().BeGreaterThan(update.IndexOf("DB.Get<WorldProperty>(buildingId)", StringComparison.Ordinal));
+        update.IndexOf("change(state);", StringComparison.Ordinal).Should().BeGreaterThan(reload);
+        update.IndexOf("DB.Set(state);", StringComparison.Ordinal).Should().BeGreaterThan(update.IndexOf("change(state);", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void TheDrill_ReadsItsStockAgainWhenOreIsCollected()
     {
         var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");

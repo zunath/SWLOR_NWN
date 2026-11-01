@@ -49,6 +49,23 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        /// <summary>
+        /// Applies a menu's change to the building's current state, read again now: a menu holds the state it showed when
+        /// its page was built, and saving that copy would undo whatever changed since (a droid recalled or posted, ore
+        /// collected, another policy). Returns false when the building is gone.
+        /// </summary>
+        public static bool UpdateState(string buildingId, Action<StationBuildingState> change)
+        {
+            var building = string.IsNullOrWhiteSpace(buildingId) ? null : DB.Get<WorldProperty>(buildingId);
+            if (building == null)
+                return false;
+
+            var state = GetState(building);
+            change(state);
+            DB.Set(state);
+            return true;
+        }
+
         /// <summary>The structure property behind a building's console, or null.</summary>
         public static WorldProperty GetBuildingOfConsole(uint console)
         {

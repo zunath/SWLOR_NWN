@@ -122,10 +122,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (CanSetPolicy(station))
             {
                 var next = state.ShipyardAccess == ShipyardAccessType.Anyone ? ShipyardAccessType.Citizens : ShipyardAccessType.Anyone;
+                var buildingId = Data<Model>().BuildingId;
                 page.AddResponse(next == ShipyardAccessType.Anyone ? "Open the Shipyard to anyone" : "Open the Shipyard to citizens only", () =>
                 {
-                    state.ShipyardAccess = next;
-                    DB.Set(state);
+                    if (CanSetPolicy(station))
+                        StationBuildings.UpdateState(buildingId, current => current.ShipyardAccess = next);
                 });
             }
 
@@ -245,10 +246,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     JumpBeaconAccessType.Allies => JumpBeaconAccessType.Anyone,
                     _ => JumpBeaconAccessType.Citizens,
                 };
+                var buildingId = Data<Model>().BuildingId;
                 page.AddResponse($"Open the beacon to {DescribeAccess(next)}", () =>
                 {
-                    state.BeaconAccess = next;
-                    DB.Set(state);
+                    if (CanSetPolicy(station))
+                        StationBuildings.UpdateState(buildingId, current => current.BeaconAccess = next);
                 });
                 page.AddResponse($"Allied stations ({state.BeaconAllyStationIds.Count})", () => GoToPage(AllyPageId));
             }
@@ -364,15 +366,23 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 .Where(x => Station.IsStation(x) && x.Id != station.Id)
                 .OrderBy(x => x.CustomName);
 
+            var buildingId = Data<Model>().BuildingId;
             foreach (var other in stations)
             {
                 var otherId = other.Id;
                 var allied = state.BeaconAllyStationIds.Contains(otherId);
                 page.AddResponse($"{(allied ? "[Allied] " : string.Empty)}{other.CustomName}", () =>
                 {
-                    if (!state.BeaconAllyStationIds.Remove(otherId))
-                        state.BeaconAllyStationIds.Add(otherId);
-                    DB.Set(state);
+                    if (!CanSetPolicy(station))
+                        return;
+
+                    // The choice means what the page showed: remove an ally it listed, add one it did not.
+                    StationBuildings.UpdateState(buildingId, current =>
+                    {
+                        current.BeaconAllyStationIds.Remove(otherId);
+                        if (!allied)
+                            current.BeaconAllyStationIds.Add(otherId);
+                    });
                 });
             }
         }

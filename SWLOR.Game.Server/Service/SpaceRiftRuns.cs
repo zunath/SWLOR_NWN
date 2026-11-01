@@ -405,15 +405,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A logged-out pilot's ship in a failed run takes what a ship destroyed online takes (<see cref="ApplyDeath"/>):
-        /// its cargo spills into the dying pocket, it is left at 1 hull and no shield for the repair bill, and its pilot
-        /// takes the XP debt at their next login. Modules stay installed, as no player destroyed it.
+        /// A logged-out pilot's ship in a failed run is lost with everyone aboard, as a ship destroyed online is
+        /// (<see cref="ApplyDeath"/>): its cargo spills into the dying pocket and it is left at 1 hull and no shield for
+        /// the repair bill (modules stay installed, as no player destroyed it). Every player in its interior (its own crew
+        /// and passengers, a pilot who logged back in and stayed aboard, and those who came aboard with a docked ship)
+        /// rides an escape pod to its dock and takes the XP debt now. The ships docked aboard are wrecked with it
+        /// (<see cref="WreckShipsDockedInCollapse"/>) and the players in their interiors ride the pods too. A run pilot who
+        /// rides no pod takes the debt at their next login instead, never both.
         /// </summary>
         private static void ForfeitAwayShip(RiftRun run, PlayerShip ship, Location location)
         {
+            var riders = new List<uint>();
+            if (Property.TryGetLoadedInstance(ship.PropertyId, out var instance))
+                riders.AddRange(GetPlayersInArea(instance.Area).Where(GetIsObjectValid));
+
+            var visitors = GetDockedShips(ship.Id);
+            if (visitors.Count > 0)
+                WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);
+
             WreckShipInPocket(ship, location);
-            var pilotId = OweAwayShipLoss(run, ship.Id);
-            Log.Write(LogGroup.Space, $"RIFT RUN - away ship {ship.Id} lost in a failed run; pilot {pilotId ?? "unknown"} owes the XP debt at login");
+            var pilotId = run.PilotIds.TryGetValue(ship.Id, out var id) ? id : null;
+            var deferred = RiftRunRules.OwesDeferredLoss(pilotId, riders.Select(GetObjectUUID).ToList());
+            if (deferred)
+                OweAwayShipLoss(run, ship.Id);
+
+            Log.Write(LogGroup.Space, $"RIFT RUN - away ship {ship.Id} lost in a failed run with {riders.Count} players aboard; " +
+                                      $"pilot {pilotId ?? "unknown"} {(deferred ? "owes the XP debt at login" : "rides the escape pods")}");
+            EjectAwayShipRiders(ship, riders);
         }
 
         /// <summary>A ship lost in a failed run's collapse: its cargo spills and it is left at 1 hull and no shield.</summary>
@@ -475,8 +493,7 @@ namespace SWLOR.Game.Server.Service
                 RiftRunRules.Forget(run, visitor.Id);
 
                 var pilotId = run.PilotIds.TryGetValue(visitor.Id, out var id) ? id : null;
-                var podded = pilotId != null &&
-                             (aboardHostIds.Contains(pilotId) || riders.Any(x => GetObjectUUID(x) == pilotId));
+                var podded = !RiftRunRules.OwesDeferredLoss(pilotId, aboardHostIds.Concat(riders.Select(GetObjectUUID)).ToList());
                 if (pilotId != null && !podded)
                     OweAwayShipLoss(run, visitor.Id);
 
@@ -517,23 +534,9 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Space, $"RIFT RUN COLLAPSED - {run.Key.Resref}, chamber {run.Room + 1}, {run.Pilots.Count} ship(s) destroyed");
         }
 
-        /// <summary>
-        /// A logged-out pilot's host lost in a failed run is lost with everyone aboard, as a host destroyed online is
-        /// (<see cref="ApplyDeath"/>): every player in its interior (its own crew and passengers, and those who came
-        /// aboard with a docked ship) rides an escape pod to its dock and takes the XP debt. The ships docked aboard are
-        /// wrecked with it (<see cref="WreckShipsDockedInCollapse"/>), the players in their interiors ride the pods too,
-        /// and a docked ship's run pilot who rides no pod takes the debt at their next login.
-        /// </summary>
-        private static void LoseAwayHostWithEveryoneAboard(RiftRun run, PlayerShip host, Location location)
+        /// <summary>The players aboard a logged-out pilot's ship lost in a failed run ride escape pods to its dock.</summary>
+        private static void EjectAwayShipRiders(PlayerShip host, List<uint> riders)
         {
-            var riders = new List<uint>();
-            if (Property.TryGetLoadedInstance(host.PropertyId, out var hostInstance))
-                riders.AddRange(GetPlayersInArea(hostInstance.Area).Where(GetIsObjectValid));
-
-            var visitors = GetDockedShips(host.Id);
-            if (visitors.Count > 0)
-                WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);
-
             if (riders.Count == 0)
                 return;
 
@@ -575,10 +578,7 @@ namespace SWLOR.Game.Server.Service
                 _shipClones.Remove(shipId);
                 var dbShip = DB.Get<PlayerShip>(shipId);
                 if (run.Failed && dbShip != null)
-                {
                     ForfeitAwayShip(run, dbShip, GetLocation(clone));
-                    LoseAwayHostWithEveryoneAboard(run, dbShip, GetLocation(clone));
-                }
 
                 DestroyObject(clone);
                 var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);

@@ -463,20 +463,42 @@ public class RiftRunTests
         var runs = ReadSource("Service", "SpaceRiftRuns.cs").Replace("\r\n", "\n");
         var close = runs.Substring(runs.IndexOf("private static void CloseRiftPocket(", StringComparison.Ordinal));
         close = close.Substring(0, close.IndexOf("private static void MessageRiftRun(", StringComparison.Ordinal));
-        close.Should().Contain("ForfeitAwayShip(run, dbShip, GetLocation(clone));\n                    LoseAwayHostWithEveryoneAboard(run, dbShip, GetLocation(clone));",
+        close.Should().Contain("if (run.Failed && dbShip != null)\n                    ForfeitAwayShip(run, dbShip, GetLocation(clone));",
             "the forfeited host's occupants and carried ships share the collapse, as with a host destroyed online");
 
-        var away = runs.Substring(runs.IndexOf("private static void LoseAwayHostWithEveryoneAboard(", StringComparison.Ordinal));
-        away = away.Substring(0, away.IndexOf("private static void CloseRiftPocket(", StringComparison.Ordinal));
-        var aboard = away.IndexOf("riders.AddRange(GetPlayersInArea(hostInstance.Area).Where(GetIsObjectValid));", StringComparison.Ordinal);
-        var wreck = away.IndexOf("WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);", StringComparison.Ordinal);
-        var pods = away.IndexOf("EjectEscapePods(riders, OBJECT_INVALID, podLocation, podType);", StringComparison.Ordinal);
+        var forfeit = runs.Substring(runs.IndexOf("private static void ForfeitAwayShip(", StringComparison.Ordinal));
+        forfeit = forfeit.Substring(0, forfeit.IndexOf("private static void WreckShipInPocket(", StringComparison.Ordinal));
+        var aboard = forfeit.IndexOf("riders.AddRange(GetPlayersInArea(instance.Area).Where(GetIsObjectValid));", StringComparison.Ordinal);
+        var wreck = forfeit.IndexOf("WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);", StringComparison.Ordinal);
+        var deferred = forfeit.IndexOf("var deferred = RiftRunRules.OwesDeferredLoss(pilotId, riders.Select(GetObjectUUID).ToList());", StringComparison.Ordinal);
+        var owe = forfeit.IndexOf("if (deferred)\n                OweAwayShipLoss(run, ship.Id);", StringComparison.Ordinal);
+        var pods = forfeit.IndexOf("EjectAwayShipRiders(ship, riders);", StringComparison.Ordinal);
         aboard.Should().BeGreaterThan(0, "everyone in the host's interior rides the pods, its own crew included");
-        away.Substring(0, aboard).Should().NotContain("return;", "a host with no docked ships still ejects its occupants");
+        forfeit.Substring(0, aboard).Should().NotContain("return;", "a host with no docked ships still ejects its occupants");
         wreck.Should().BeGreaterThan(aboard);
-        away.Should().Contain("if (visitors.Count > 0)\n                WreckShipsDockedInCollapse(");
-        pods.Should().BeGreaterThan(wreck, "the players aboard ride escape pods and take the XP debt");
-        away.Should().Contain("TryResolveEscapePodDestination(hostProperty, out var podLocation, out var podType)");
+        forfeit.Should().Contain("if (visitors.Count > 0)\n                WreckShipsDockedInCollapse(");
+        deferred.Should().BeGreaterThan(wreck, "a pilot in a docked ship's interior is a rider too");
+        owe.Should().BeGreaterThan(deferred, "the deferred debt is recorded only for a pilot who rides no pod");
+        forfeit.IndexOf("OweAwayShipLoss(", StringComparison.Ordinal).Should().Be(forfeit.LastIndexOf("OweAwayShipLoss(", StringComparison.Ordinal),
+            "the pilot's deferred debt is recorded in one place, behind the pod check");
+        pods.Should().BeGreaterThan(owe);
+
+        var eject = runs.Substring(runs.IndexOf("private static void EjectAwayShipRiders(", StringComparison.Ordinal));
+        eject = eject.Substring(0, eject.IndexOf("private static void CloseRiftPocket(", StringComparison.Ordinal));
+        eject.Should().Contain("TryResolveEscapePodDestination(hostProperty, out var podLocation, out var podType)")
+            .And.Contain("EjectEscapePods(riders, OBJECT_INVALID, podLocation, podType);");
+    }
+
+    [Test]
+    public void APilotRidingThePods_IsNeverAlsoChargedAtLogin()
+    {
+        RiftRunRules.OwesDeferredLoss("pilot", new List<string> { "crew", "pilot" })
+            .Should().BeFalse("a host pilot who logged back in and stayed aboard takes the debt in the escape pod");
+        RiftRunRules.OwesDeferredLoss("pilot", new List<string> { "crew" }).Should().BeTrue("a pilot still logged out takes it at login");
+        RiftRunRules.OwesDeferredLoss("pilot", new List<string>()).Should().BeTrue();
+        RiftRunRules.OwesDeferredLoss("pilot", null).Should().BeTrue();
+        RiftRunRules.OwesDeferredLoss(null, new List<string> { "crew" }).Should().BeFalse("a ship with no known pilot owes nobody");
+        RiftRunRules.OwesDeferredLoss(string.Empty, new List<string>()).Should().BeFalse();
     }
 
     [Test]

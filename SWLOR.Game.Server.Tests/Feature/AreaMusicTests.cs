@@ -95,15 +95,17 @@ public class AreaMusicTests
     }
 
     [Test]
-    public void SilentThroughEmptyRowAllowList_HasOnlyAreasStillPointingAtEmptyRows()
+    public void SilentThroughEmptyRowAllowList_HasOnlyAreasSilentDayAndNightThroughEmptyRows()
     {
         var playable = PlayableTracks();
 
         var stale = SilentThroughEmptyRow
             .Where(area => !File.Exists(Path.Combine(Root, "Module", "git", $"{area}.git.json")) ||
-                !PointsAtEmptyRow(MusicTracks(area), playable))
+                MusicTracks(area) is var tracks && (!PointsAtEmptyRow(tracks, playable) ||
+                    playable.Contains(tracks.Day) || playable.Contains(tracks.Night)))
             .ToList();
 
-        stale.Should().BeEmpty("fixed or removed areas should leave the allow-list");
+        // A track picked for only one side would play on that side and cut out on the other.
+        stale.Should().BeEmpty("fixed or removed areas leave the allow-list, and a fix sets day and night together");
     }
 }

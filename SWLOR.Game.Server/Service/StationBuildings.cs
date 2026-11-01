@@ -298,9 +298,21 @@ namespace SWLOR.Game.Server.Service
             DB.Set(state);
         }
 
-        /// <summary>Gives the player the drill's stored ore. Stops when their inventory is full and keeps the rest.</summary>
-        public static void CollectDrill(uint player, StationBuildingState state)
+        /// <summary>
+        /// Gives the player the drill's stored ore. Stops when their inventory is full and keeps the rest. The stock is
+        /// read again here, not taken from the menu that was opened earlier, so two players collecting from menus opened
+        /// at the same time never both receive the same ore.
+        /// </summary>
+        public static void CollectDrill(uint player, WorldProperty station, string buildingId)
         {
+            var state = string.IsNullOrWhiteSpace(buildingId) ? null : DB.Get<StationBuildingState>(StationBuildingState.KeyFor(buildingId));
+            if (state == null)
+            {
+                SendMessageToPC(player, ColorToken.Red("The Asteroid Drill has no ore to collect."));
+                return;
+            }
+
+            AccrueDrill(station, state);
             var collected = new List<string>();
             foreach (var (resref, units) in state.DrillStorage.ToList())
             {

@@ -237,10 +237,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             var status = GetShipStatus(player);
-            var launcher = GetBestProbeLauncher(status);
-            if (launcher == null)
+            if (GetBestProbeLauncher(status) == null)
             {
                 SendMessageToPC(player, ColorToken.Red("A Sensor Sweep needs a Probe Launcher fitted."));
+                return false;
+            }
+
+            // A launcher in a station slot sweeps only while someone who meets its rank works that station.
+            var launcher = GetBestWorkedProbeLauncher(player, status);
+            if (launcher == null)
+            {
+                SendMessageToPC(player, ColorToken.Red("A Sensor Sweep needs someone qualified working the station with the Probe Launcher."));
                 return false;
             }
 

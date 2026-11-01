@@ -283,6 +283,24 @@ namespace SWLOR.Game.Server.Service
                 height);
         }
 
+        /// <summary>
+        /// The Probe Launcher a Sensor Sweep runs: the best one fitted in a worked slot (a Helm slot, or a station slot
+        /// whose crew member or droid meets its rank; <see cref="GetStationSlotEffectiveness"/>), or null.
+        /// </summary>
+        public static ShipModuleStep GetBestWorkedProbeLauncher(uint ship, ShipStatus status)
+        {
+            if (status == null)
+                return null;
+
+            var launchers = status.HighPowerModules.Select(x => (Slot: x.Key, Module: x.Value))
+                .Concat(status.LowPowerModules.Select(x => (Slot: x.Key + 10, Module: x.Value)))
+                .Concat(status.MidPowerModules.Select(x => (Slot: x.Key + 20, Module: x.Value)))
+                .Select(x => (x.Slot, Detail: FindShipModuleDetail(x.Module?.ItemTag)))
+                .Where(x => x.Detail?.Type == ShipModuleType.ProbeLauncher && x.Detail.Step != null)
+                .Select(x => (x.Slot, x.Detail.Step));
+            return SensorSweepRules.ChooseLauncher(launchers, slot => GetStationSlotEffectiveness(ship, status, slot));
+        }
+
         /// <summary>Whether a player's ship has a Probe Launcher fitted, and the best one's step.</summary>
         public static ShipModuleStep GetBestProbeLauncher(ShipStatus status)
         {

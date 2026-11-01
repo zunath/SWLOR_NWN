@@ -29,6 +29,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool IsResultFresh(DateTime sweptAt, DateTime now) =>
             now < sweptAt.AddSeconds(ScanningTuning.SweepResultSeconds);
 
+        /// <summary>
+        /// The launcher a Sensor Sweep uses: the highest rank among the fitted Probe Launchers (by slot number) whose slot
+        /// is worked (<paramref name="slotEffectiveness"/> above 0: a Helm slot, or a station slot whose occupant meets the
+        /// module's rank). Null when none is worked.
+        /// </summary>
+        public static ShipModuleStep ChooseLauncher(IEnumerable<(int Slot, ShipModuleStep Step)> launchers, Func<int, double> slotEffectiveness) =>
+            (launchers ?? Enumerable.Empty<(int Slot, ShipModuleStep Step)>())
+                .Where(x => x.Step != null && slotEffectiveness(x.Slot) > 0)
+                .OrderByDescending(x => x.Step.Rank)
+                .Select(x => x.Step)
+                .FirstOrDefault();
+
         /// <summary>The contacts a sweep lists: nearest first, at most <see cref="ScanningTuning.SweepMaximumShips"/>.</summary>
         public static List<SensorSweepContact> Order(IEnumerable<SensorSweepContact> contacts) =>
             contacts.OrderBy(x => x.Distance).ThenBy(x => x.Name, StringComparer.Ordinal).Take(ScanningTuning.SweepMaximumShips).ToList();

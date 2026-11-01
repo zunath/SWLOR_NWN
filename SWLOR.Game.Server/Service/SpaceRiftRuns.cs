@@ -518,6 +518,44 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// A logged-out pilot's host lost in a failed run takes the ships docked aboard it down with it, as a host
+        /// destroyed online does (<see cref="WreckShipsDockedInCollapse"/>). The players who came aboard with those ships
+        /// (still in the host's interior) and the players in their interiors ride escape pods to the host's dock and take
+        /// the XP debt; a docked ship's run pilot who rides no pod takes it at their next login.
+        /// </summary>
+        private static void WreckShipsDockedAboardAwayHost(RiftRun run, PlayerShip host, Location location)
+        {
+            var visitors = GetDockedShips(host.Id);
+            if (visitors.Count == 0)
+                return;
+
+            // Read before the wreck clears each ship's docked state.
+            var carriedCrewIds = visitors.SelectMany(x => x.DockedCrewPlayerIds ?? new List<string>()).ToHashSet();
+            var riders = new List<uint>();
+            if (Property.TryGetLoadedInstance(host.PropertyId, out var hostInstance))
+                riders.AddRange(GetPlayersInArea(hostInstance.Area).Where(x => GetIsObjectValid(x) && carriedCrewIds.Contains(GetObjectUUID(x))));
+
+            WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);
+            if (riders.Count == 0)
+                return;
+
+            var hostProperty = DB.Get<WorldProperty>(host.PropertyId);
+            if (hostProperty != null && TryResolveEscapePodDestination(hostProperty, out var podLocation, out var podType))
+            {
+                EjectEscapePods(riders, OBJECT_INVALID, podLocation, podType);
+                return;
+            }
+
+            // No dock can be found: as for a host destroyed online, the riders die.
+            Log.Write(LogGroup.Space, $"RIFT RUN - ship {host.Id} was lost in a failed run with no dock to eject its carried ships' players to.");
+            foreach (var rider in riders)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), rider);
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), rider);
+            }
+        }
+
+        /// <summary>
         /// Removes a finished pocket once no player is in it. Ships left in it by pilots who logged out are sent back to
         /// their docks; when the run failed they first take the losses of a ship destroyed in the collapse
         /// (<see cref="ForfeitAwayShip"/>).
@@ -539,7 +577,11 @@ namespace SWLOR.Game.Server.Service
                 _shipClones.Remove(shipId);
                 var dbShip = DB.Get<PlayerShip>(shipId);
                 if (run.Failed && dbShip != null)
+                {
                     ForfeitAwayShip(run, dbShip, GetLocation(clone));
+                    WreckShipsDockedAboardAwayHost(run, dbShip, GetLocation(clone));
+                }
+
                 DestroyObject(clone);
                 var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
                 if (dbProperty != null && dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition))

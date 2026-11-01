@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Collect the ore", () =>
                 {
-                    StationBuildings.CollectDrill(player, state);
+                    StationBuildings.CollectDrill(player, station, state.BuildingId);
                 });
             }
 

@@ -458,6 +458,26 @@ public class RiftRunTests
     }
 
     [Test]
+    public void ALoggedOutHostLostInACollapse_WrecksItsCarriedShipsToo()
+    {
+        var runs = ReadSource("Service", "SpaceRiftRuns.cs").Replace("\r\n", "\n");
+        var close = runs.Substring(runs.IndexOf("private static void CloseRiftPocket(", StringComparison.Ordinal));
+        close = close.Substring(0, close.IndexOf("private static void MessageRiftRun(", StringComparison.Ordinal));
+        close.Should().Contain("ForfeitAwayShip(run, dbShip, GetLocation(clone));\n                    WreckShipsDockedAboardAwayHost(run, dbShip, GetLocation(clone));",
+            "a carried ship has no clone or space position of its own, so the host's forfeit wrecks it");
+
+        var away = runs.Substring(runs.IndexOf("private static void WreckShipsDockedAboardAwayHost(", StringComparison.Ordinal));
+        away = away.Substring(0, away.IndexOf("private static void CloseRiftPocket(", StringComparison.Ordinal));
+        var crew = away.IndexOf("var carriedCrewIds = visitors.SelectMany(x => x.DockedCrewPlayerIds", StringComparison.Ordinal);
+        var wreck = away.IndexOf("WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);", StringComparison.Ordinal);
+        crew.Should().BeGreaterThan(0);
+        wreck.Should().BeGreaterThan(crew, "the carried crews are read before the wreck clears the docked state");
+        away.IndexOf("EjectEscapePods(riders, OBJECT_INVALID, podLocation, podType);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(wreck, "the carried ships' players ride escape pods and take the XP debt");
+        away.Should().Contain("TryResolveEscapePodDestination(hostProperty, out var podLocation, out var podType)");
+    }
+
+    [Test]
     public void ARunsShipDockedAboard_WaitsInTheRunAndUndocksBackIntoIt()
     {
         var run = new RiftRun { Phase = RiftRunPhase.Fighting };

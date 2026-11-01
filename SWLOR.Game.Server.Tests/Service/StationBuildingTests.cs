@@ -499,6 +499,22 @@ public class StationBuildingTests
     // Files
 
     [Test]
+    public void TheDrill_ReadsItsStockAgainWhenOreIsCollected()
+    {
+        var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        var collect = service.Substring(service.IndexOf("public static void CollectDrill(uint player, WorldProperty station, string buildingId)", StringComparison.Ordinal));
+        collect = collect.Substring(0, collect.IndexOf("// Droids", StringComparison.Ordinal));
+        var reload = collect.IndexOf("DB.Get<StationBuildingState>(StationBuildingState.KeyFor(buildingId))", StringComparison.Ordinal);
+        reload.Should().BeGreaterThan(0, "two menus opened together keep separate snapshots of the stock");
+        reload.Should().BeLessThan(collect.IndexOf("foreach (var (resref, units) in state.DrillStorage.ToList())", StringComparison.Ordinal));
+        collect.IndexOf("AccrueDrill(station, state);", StringComparison.Ordinal).Should().BeGreaterThan(reload);
+
+        var dialog = ReadServer("Feature", "DialogDefinition", "StationBuildingDialog.cs");
+        dialog.Should().Contain("StationBuildings.CollectDrill(player, station, state.BuildingId);")
+            .And.NotContain("StationBuildings.CollectDrill(player, state);", "the menu's snapshot is never handed out");
+    }
+
+    [Test]
     public void AJump_CountsTheCargoOfShipsDockedAboard()
     {
         var carrier = new PlayerShip { Id = "carrier" };

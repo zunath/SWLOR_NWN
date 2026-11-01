@@ -340,6 +340,34 @@ public class ScanningTests
     }
 
     [Test]
+    public void Sweep_UsesOnlyALauncherWhoseSlotIsWorked()
+    {
+        var basic = new ShipModuleStep { Rank = 1, Tag = "basic" };
+        var advanced = new ShipModuleStep { Rank = 3, Tag = "advanced" };
+        var launchers = new[] { (Slot: 1, Step: basic), (Slot: 22, Step: advanced) };
+
+        SensorSweepRules.ChooseLauncher(launchers, slot => slot == 1 ? 1.0 : 0.0).Should().BeSameAs(basic,
+            "an empty or unqualified Sensors station lends its launcher nothing");
+        SensorSweepRules.ChooseLauncher(launchers, slot => slot == 1 ? 1.0 : 0.6).Should().BeSameAs(advanced,
+            "a qualified crew member or droid at the station works it");
+        SensorSweepRules.ChooseLauncher(launchers, _ => 0.0).Should().BeNull();
+        SensorSweepRules.ChooseLauncher(null, _ => 1.0).Should().BeNull();
+
+        var scanning = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceScanning.cs")).Replace("\r\n", "\n");
+        var worked = scanning.Substring(scanning.IndexOf("public static ShipModuleStep GetBestWorkedProbeLauncher(", StringComparison.Ordinal));
+        worked = worked.Substring(0, worked.IndexOf("public static ShipModuleStep GetBestProbeLauncher(", StringComparison.Ordinal));
+        worked.Should().Contain("status.LowPowerModules.Select(x => (Slot: x.Key + 10, Module: x.Value))")
+            .And.Contain("status.MidPowerModules.Select(x => (Slot: x.Key + 20, Module: x.Value))")
+            .And.Contain("SensorSweepRules.ChooseLauncher(launchers, slot => GetStationSlotEffectiveness(ship, status, slot))");
+
+        var sweep = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceSignatureJump.cs")).Replace("\r\n", "\n");
+        sweep = sweep.Substring(sweep.IndexOf("public static bool RunSensorSweep(", StringComparison.Ordinal));
+        sweep.Should().Contain("var launcher = GetBestWorkedProbeLauncher(player, status);");
+        sweep.IndexOf("var launcher = GetBestWorkedProbeLauncher(player, status);", StringComparison.Ordinal)
+            .Should().BeLessThan(sweep.IndexOf("launcher.SweepRange", StringComparison.Ordinal), "the range and cloak reveal come from the worked launcher");
+    }
+
+    [Test]
     public void Sweep_ListsEveryShipInRange_CloakedIncluded_NearestFirst()
     {
         SensorSweepRules.Range(0).Should().Be(100);

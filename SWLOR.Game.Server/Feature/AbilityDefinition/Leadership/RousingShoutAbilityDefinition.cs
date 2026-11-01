@@ -132,6 +132,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 durationSeconds);
             Ability.PlaySuccessfulImpactVisualEffect(activator, target);
 
+            CapstoneProof.RecordSupportAbilityImpact(activator, target, Ability.GetActiveAbilityImpactSummary(activator)?.Ability);
+
             if (targetWasInDanger)
             {
                 if (StatusEffect.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds))

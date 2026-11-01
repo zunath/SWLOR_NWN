@@ -287,6 +287,7 @@ namespace SWLOR.Game.Server.Entity
         public int TimesCompleted { get; set; }
         public DateTime? DateLastCompleted { get; set; }
 
+        [JsonConverter(typeof(RenamedNpcGroupsJsonConverter))]
         public Dictionary<NPCGroupType, int> KillProgresses { get; set; } = new Dictionary<NPCGroupType, int>();
         public Dictionary<string, int> ItemProgresses { get; set; } = new Dictionary<string, int>();
         public Dictionary<string, int> CombatProgresses { get; set; } = new();

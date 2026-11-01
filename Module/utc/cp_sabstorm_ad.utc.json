@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Saber Storm adept in Hutlar - Jedi Trial Halls."
+    "value": "Trial Drill Droid (Saber Storm line) in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A humanoid drill droid with a training blade locked in one fist, its plating scored by years of practice cuts. It still runs its Saber Storm drill without pause, but its safeties no longer let it stop short of a real wound."
+      "0": "A humanoid drill droid with a training blade locked in one fist, its plating scored by years of practice cuts. It still runs its trial drill without pause, but its safeties no longer let it stop short of a real wound."
     }
   },
   "Dex": {
@@ -351,7 +351,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Storm Drill Droid"
+      "0": "Trial Drill Droid"
     }
   },
   "fortbonus": {

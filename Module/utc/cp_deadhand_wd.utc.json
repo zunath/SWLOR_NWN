@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Dead Man's Hand warden in Tatooine - Anchorhead Canyon Range."
+    "value": "Range Warden Silas Crowe (Dead Man's Hand line) in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in a grey captain's coat who keeps a sabacc table beside the altar on the east side of the Anchorhead Canyon Range and decides who sits and who pays. He ran security at the old game before he ran the game himself, and now he wears the house crest. He never bluffs, never draws first, and has never needed to draw twice."
+      "0": "A human range warden in a grey captain's coat who keeps a sabacc table beside the altar on the east side of the Anchorhead Canyon Range and decides who sits and who pays. He ran security at the old game before he ran the game himself, and now he wears the house crest. He never bluffs, never draws first, and has never needed to draw twice."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dead Man's Hand Warden"
+      "0": "Range Warden Silas Crowe"
     }
   },
   "fortbonus": {

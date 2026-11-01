@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Apex Bite adept in Dathomir - Tarn Jungle Preserve."
+    "value": "Young Scaled Brute (Apex Bite line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -140,7 +140,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Apex Bite Adept"
+      "0": "Young Scaled Brute"
     }
   },
   "fortbonus": {

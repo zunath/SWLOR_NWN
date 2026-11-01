@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Rare Crypt Raider elite in Mon Cala - Sith Crypt Depths."
+    "value": "Rare Expedition Raider elite in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -225,7 +225,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crypt Raider Nihl"
+      "0": "Expedition Raider Nihl"
     }
   },
   "fortbonus": {

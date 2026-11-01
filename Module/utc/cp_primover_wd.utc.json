@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Primal Overrun warden in Dathomir - Grotto Apex Den."
+    "value": "Handler's Rancor (Primal Overrun line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -168,7 +168,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Primal Overrun Warden"
+      "0": "Handler's Rancor"
     }
   },
   "fortbonus": {

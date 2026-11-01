@@ -136,7 +136,7 @@ public class VelesMilitiaAnnexPlacementTests
         Local(git, "MINI_MAP_DISABLED").GetInt32().Should().Be(1);
         Local(git, "PLANET_TYPE_ID").GetInt32().Should().Be(1);
         Local(git, "MAP_KEY_ITEM_ID").GetInt32().Should().Be(40);
-        var spawns = List(git, "WaypointList").Where(w => Text(w, "Tag") == "CAPSTONE_VELES_MILITIA_ANNEX").ToArray();
+        var spawns = List(git, "WaypointList").Where(w => Text(w, "Tag") is "CAPSTONE_VELES_MILITIA_ANNEX" or "CAPSTONE_VELES_MILITIA_ANNEX_DEEP").ToArray();
         spawns.Should().HaveCount(20);
         var entry = Tagged(git, "WaypointList", "VELES_ANNEX_ENTRY");
         foreach (var spawn in spawns)

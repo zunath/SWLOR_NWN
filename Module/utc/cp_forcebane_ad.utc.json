@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Forcebane adept in Tatooine - Forge Caverns."
+    "value": "Forgebound Initiate (Forcebane line) in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Echani spear adept of the hidden forge, drilled in counters stolen from a hunter who never meant to sell them. He keeps his point moving and his distance exact."
+      "0": "An Echani initiate of the Forgebound, drilled in counters stolen from a hunter who never meant to sell them. He keeps his point moving and his distance exact."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Forcebane Adept"
+      "0": "Forgebound Initiate"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 112
+          "value": 102
         }
       },
       {

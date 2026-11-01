@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Dead Man's Hand specialist in Tatooine - Anchorhead Canyon Range."
+    "value": "Canyon Sharpshooter (Dead Man's Hand line) in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan gunman in a hired tough's clothes who works the long lanes of the Anchorhead Canyon Range. He is a sharp: patient, never the first to show his hand, firing from angles that were marked out before anyone sat down to play."
+      "0": "A Nautolan sharpshooter in a hired tough's clothes who works the long lanes of the Anchorhead Canyon Range. He is a sharp: patient, never the first to show his hand, firing from angles that were marked out before anyone sat down to play."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dead Man's Hand Specialist"
+      "0": "Canyon Sharpshooter"
     }
   },
   "fortbonus": {
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 158
+          "value": 148
         }
       },
       {

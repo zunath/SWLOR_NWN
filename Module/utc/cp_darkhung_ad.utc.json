@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Hunger of the Dark adept in Mon Cala - Sith Crypt Depths."
+    "value": "Expedition Raider (Hunger of the Dark line) in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human acolyte in cast-off dark robes, carrying a staff and a hunger he has not learned to control. Vitae Reaver Initiates drain the strength from anyone they catch in the Sith Crypt Depths."
+      "0": "A human raider of the expedition's Vitae Reaver crew in cast-off dark robes, carrying a staff and a hunger he has not learned to control. The crew's raiders drain the strength from anyone they catch in the Sith Crypt Depths."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vitae Reaver Initiate"
+      "0": "Expedition Raider"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 287
+          "value": 282
         }
       },
       {

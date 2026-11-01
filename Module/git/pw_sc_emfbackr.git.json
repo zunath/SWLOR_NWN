@@ -115084,7 +115084,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fight Club Backrooms - Crippling Defense Warden Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Pit Boss Ssarok Spawn (Crippling Defense line)"
           }
         },
         "MapNote": {
@@ -115147,7 +115147,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fight Club Backrooms - Red Bloom Warden Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Pit Boss Kessan Pru Spawn (Red Bloom line)"
           }
         },
         "MapNote": {
@@ -115210,7 +115210,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fight Club Backrooms - Tempest Bloom Warden Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Pit Boss Dax Corvin Spawn (Tempest Bloom line)"
           }
         },
         "MapNote": {
@@ -115338,7 +115338,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115405,7 +115405,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115472,7 +115472,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115539,7 +115539,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115565,7 +115565,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 90.0
+          "value": 88.75
         },
         "YOrientation": {
           "type": "float",
@@ -115573,7 +115573,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 45.0
+          "value": 43.75
         },
         "ZPosition": {
           "type": "float",
@@ -115606,7 +115606,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115673,7 +115673,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115740,7 +115740,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115807,7 +115807,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115874,7 +115874,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -115941,7 +115941,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -115954,11 +115954,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116008,7 +116008,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -116034,7 +116034,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 133.75
         },
         "YOrientation": {
           "type": "float",
@@ -116042,7 +116042,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 45.0
+          "value": 43.75
         },
         "ZPosition": {
           "type": "float",
@@ -116075,7 +116075,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116088,11 +116088,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116142,7 +116142,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116155,11 +116155,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116209,7 +116209,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116222,11 +116222,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116276,7 +116276,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Brawler Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -116343,7 +116343,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116356,11 +116356,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116410,7 +116410,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116423,11 +116423,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116477,7 +116477,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116490,11 +116490,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116544,7 +116544,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116557,11 +116557,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116611,7 +116611,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Pit Fighter Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -116624,11 +116624,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS"
+          "value": "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_smfight"
+          "value": "wp_cdp_smfight"
         },
         "__struct_id": 5,
         "XOrientation": {
@@ -116675,7 +116675,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Crippling Defense line)"
           }
         },
         "MapNote": {
@@ -116700,7 +116700,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 36.5
+          "value": 12.25
         },
         "YOrientation": {
           "type": "float",
@@ -116708,11 +116708,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 124.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -116738,7 +116738,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Crippling Defense line)"
           }
         },
         "MapNote": {
@@ -116763,7 +116763,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 35.0
+          "value": 22.75
         },
         "YOrientation": {
           "type": "float",
@@ -116771,11 +116771,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 136.5
+          "value": 124.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -116801,7 +116801,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Crippling Defense line)"
           }
         },
         "MapNote": {
@@ -116826,7 +116826,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 33.5
+          "value": 20.75
         },
         "YOrientation": {
           "type": "float",
@@ -116834,11 +116834,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 106.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -116864,7 +116864,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Crippling Defense line)"
           }
         },
         "MapNote": {
@@ -116889,7 +116889,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 35.0
+          "value": 32.25
         },
         "YOrientation": {
           "type": "float",
@@ -116897,11 +116897,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 133.5
+          "value": 120.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -116927,7 +116927,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Red Bloom line)"
           }
         },
         "MapNote": {
@@ -116952,7 +116952,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 16.5
+          "value": 143.75
         },
         "YOrientation": {
           "type": "float",
@@ -116960,11 +116960,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 55.0
+          "value": 148.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -116990,7 +116990,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Red Bloom line)"
           }
         },
         "MapNote": {
@@ -117015,7 +117015,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 15.0
+          "value": 144.75
         },
         "YOrientation": {
           "type": "float",
@@ -117023,11 +117023,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 56.5
+          "value": 138.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -117053,7 +117053,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Red Bloom line)"
           }
         },
         "MapNote": {
@@ -117078,7 +117078,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 13.5
+          "value": 133.75
         },
         "YOrientation": {
           "type": "float",
@@ -117086,11 +117086,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 55.0
+          "value": 147.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -117116,7 +117116,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Red Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Red Bloom line)"
           }
         },
         "MapNote": {
@@ -117141,7 +117141,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 15.0
+          "value": 134.75
         },
         "YOrientation": {
           "type": "float",
@@ -117149,11 +117149,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 53.5
+          "value": 137.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -117179,7 +117179,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Tempest Bloom line)"
           }
         },
         "MapNote": {
@@ -117204,7 +117204,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 146.5
+          "value": 105.25
         },
         "YOrientation": {
           "type": "float",
@@ -117212,11 +117212,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 65.0
+          "value": 148.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -117242,7 +117242,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Tempest Bloom line)"
           }
         },
         "MapNote": {
@@ -117267,7 +117267,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 145.0
+          "value": 105.25
         },
         "YOrientation": {
           "type": "float",
@@ -117275,11 +117275,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 66.5
+          "value": 138.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -117305,7 +117305,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Tempest Bloom line)"
           }
         },
         "MapNote": {
@@ -117330,7 +117330,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 143.5
+          "value": 115.25
         },
         "YOrientation": {
           "type": "float",
@@ -117338,11 +117338,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 65.0
+          "value": 135.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       },
       {
@@ -117368,7 +117368,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Inner Circle Spawn"
+            "0": "Smuggler's Moon Fight Club Backrooms - Stable Promoter Spawn (Tempest Bloom line)"
           }
         },
         "MapNote": {
@@ -117393,7 +117393,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 145.0
+          "value": 109.75
         },
         "YOrientation": {
           "type": "float",
@@ -117401,11 +117401,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 63.5
+          "value": 127.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         }
       }
     ]

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Perfect Flurry master in Hutlar - Overload Chamber."
+    "value": "Site Chief Veshan Dru (Perfect Flurry line) in Hutlar - Overload Chamber."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A quiet Zabrak in Mandalorian armor, throwing blades held still and ready. He once shared the exhibition circuit's bill, never dropped a blade, and never took a bow, and now he waits in the Overload Chamber, a thrower whose every blade is in the air before the first one lands."
+      "0": "A quiet Zabrak site chief in Mandalorian armor, throwing blades held still and ready. He once shared the exhibition circuit's bill, never dropped a blade, and never took a bow, and now he waits in the Overload Chamber, a thrower whose every blade is in the air before the first one lands."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Perfect Flurry Master"
+      "0": "Site Chief Veshan Dru"
     }
   },
   "fortbonus": {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Systemic Shutdown specialist in Viscara - Veles Militia Annex."
+    "value": "Holdout Sergeant (Systemic Shutdown line) in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan in dark, close-fitting clothes who has stopped telegraphing his strikes. He works deeper in the annex with a vibroknife, trying to end a fight at a nerve cluster before his opponent knows it has started."
+      "0": "A Nautolan sergeant in dark, close-fitting clothes who has stopped telegraphing his strikes. He works deeper in the annex with a vibroknife, trying to end a fight at a nerve cluster before his opponent knows it has started."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Systemic Shutdown Specialist"
+      "0": "Holdout Sergeant"
     }
   },
   "fortbonus": {
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 83
+          "value": 73
         }
       },
       {

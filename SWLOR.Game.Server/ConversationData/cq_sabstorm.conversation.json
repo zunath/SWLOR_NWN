@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Drop the rear shoulder. There. Now listen. Beneath the concrete ruin at the north end of the Cloning Test Site on Hutlar lie the Jedi Trial Halls, a training refuge built in secret before the Mandalorians came. Its drill droids still run, and their safeties have failed. I gave them the recordings they fight from, so this is mine to answer for. Disable six Storm Drill Droids and recover the Saber Storm Enclave Trial Slate. It logged every shutdown that failed.",
+          "Text": "Drop the rear shoulder. There. Now listen. Beneath the concrete ruin at the north end of the Cloning Test Site on Hutlar lie the Jedi Trial Halls, a training refuge built in secret before the Mandalorians came. Its drill droids still run, and their safeties have failed. I gave them the recordings they fight from, so this is mine to answer for. Disable six Trial Drill Droids, the ones nearest the entrance, and recover the Saber Storm Enclave Trial Slate. Any Trial Drill Droid counts, since the halls run one program, but a droid only counts if its defenses were sundered before it fell. It logged every shutdown that failed.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. At the north end of the Cloning Test Site on Hutlar stands a big concrete ruin. A concrete entrance block is built onto its east side, just south of the big pipe, and the key opens its east-facing blast door. The Trial Halls lie below. Disable six Storm Drill Droids and bring me the Saber Storm Enclave Trial Slate.",
+          "Text": "Take this key. At the north end of the Cloning Test Site on Hutlar stands a big concrete ruin. A concrete entrance block is built onto its east side, just south of the big pipe, and the key opens its east-facing blast door. The Trial Halls lie below. Disable six Trial Drill Droids, each with its defenses sundered first, and bring me the Saber Storm Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Storm Drill Droids, and the Saber Storm Enclave Trial Slate. The blast door is in the concrete entrance block on the east side of the big ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
+          "Text": "Six Trial Drill Droids, each sundered before it falls, and the Saber Storm Enclave Trial Slate. The blast door is in the concrete entrance block on the east side of the big ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The first drills are down. Their timing controller still drives the next set of machines. Disable five Storm Duelist Droids deeper in the Trial Halls and recover the Saber Storm Kyber Focus Shard.",
+          "Text": "The first drills are down. Their timing controller still drives the next set of machines. Disable five Trial Duelist Droids deeper in the Trial Halls, sundering each one's defenses first, and recover the Saber Storm Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Storm Duelist Droids, deeper in the Trial Halls. Bring back the Saber Storm Kyber Focus Shard.",
+          "Text": "Five Trial Duelist Droids, each sundered before it falls, deeper in the Trial Halls. Bring back the Saber Storm Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Storm Duelist Droids, deeper in the Trial Halls. Bring back the Saber Storm Kyber Focus Shard.",
+          "Text": "Five Trial Duelist Droids, each sundered before it falls, deeper in the Trial Halls. Bring back the Saber Storm Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One gate runs on its own controller, and the remote shutdown still cannot reach it. A Storm Gatekeeper Droid holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "One gate runs on its own controller, and the remote shutdown still cannot reach it. A Trial Gatekeeper Droid holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Storm Gatekeeper Droid holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Do not go without two allies.",
+          "Text": "The Trial Gatekeeper Droid holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Storm Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis must be disabled directly.",
+          "Text": "The Trial Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis must be disabled directly.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Storm Gatekeeper Droid still holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Do not go without two allies.",
+          "Text": "The Trial Gatekeeper Droid still holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is open, but four linked Storm Examiner Droids still guard the network's control systems. Disable all four and recover the Saber Storm Council Trial Chit.",
+          "Text": "The gate is open, but four linked Trial Examiner Droids still guard the network's control systems in the west wing of the halls, the deepest part. Any Trial Examiner Droid counts, but sunder its defenses before it falls. Disable all four and recover the Saber Storm Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Storm Examiner Droids guard the control systems in the Trial Halls. Disable them and recover the Saber Storm Council Trial Chit.",
+          "Text": "Four Trial Examiner Droids guard the control systems in the west wing of the Trial Halls. Sunder each one's defenses before it falls. Disable them and recover the Saber Storm Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Storm Examiner Droids still guard the control systems in the Trial Halls. Disable them and recover the Saber Storm Council Trial Chit.",
+          "Text": "Four Trial Examiner Droids still guard the control systems in the west wing of the Trial Halls. Sunder each one's defenses before it falls. Disable them and recover the Saber Storm Council Trial Chit.",
           "Style": 0,
           "Color": null
         }

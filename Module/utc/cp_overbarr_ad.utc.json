@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Overload Barrage adept in Hutlar - Qion Test Site."
+    "value": "Test Crew Technician (Overload Barrage line) in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A stocky Ugnaught in black work coveralls, blaster pistol in hand. He runs barrage tests in the Qion Test Site off stolen charge tables, dumping every cell he carries at once and trusting numbers someone spiked on purpose."
+      "0": "A stocky Ugnaught test crew technician in black work coveralls, blaster pistol in hand. He runs charge tests in the Qion Test Site off stolen charge tables, dumping every cell he carries at once and trusting numbers someone spiked on purpose."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Overload Barrage Adept"
+      "0": "Test Crew Technician"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 187
+          "value": 177
         }
       },
       {

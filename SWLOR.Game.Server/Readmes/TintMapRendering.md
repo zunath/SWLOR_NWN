@@ -592,7 +592,7 @@ bridge and replays idle, walk and run on a robe wearer against the plain body. R
 
 Several chest, belt, pelvis, neck and shoulder parts carry long skirts or capes in the part
 mesh: the coat skirts of chests 028, 059, 154, 269 and 310, the skirt belts 019, 110, 112
-and 114, the skirt of pelvis 035, and the full-length capes of neck 291 and shoulders 260.
+and 114, skirts in the pelvis family, and the full-length capes of neck 291 and shoulders 260.
 Each half of a skirt or cape was weighted to its own thigh and shin, so striding pulled the
 halves apart: the back tore open and the legs showed through it. A body part only reaches
 the normal body's bones, and a least-squares fit shows no blend of them reproduces robe
@@ -612,7 +612,7 @@ the normal body's bones, and a least-squares fit shows no blend of them reproduc
   original when standing), and in a run the side panels followed the striding legs into a
   tent while the back stood out level (up to 97 degrees).
 
-`ChestSkirtBindings.py` now keeps the flap-and-pelvis back that moved like fabric and lets
+For the models it owns in `ChestSkirtBindings.json`, `ChestSkirtBindings.py` keeps the flap-and-pelvis back that moved like fabric and lets
 only a share of each side panel follow its own leg (`LEGS`, 60%). Above the hip joints a
 vertex keeps the pelvis binding. From the hips to the middle back flap joint it eases onto
 the pelvis and, away from a seam (`SEAM` to `SIDE`, 30 to 90 degrees round from the back,
@@ -640,6 +640,16 @@ Bothan female chest 310 is not rebound: its external bone table does not match t
 skeleton. Belt 226 and pelvis 198 stay as originally rigged at the test server's request;
 the manifest's `restored` list keeps them so.
 
+Human pelvis 034 has a separate owner: `PelvisSkirtBindings.py` and its pinned
+manifest. It retains the accepted 2026-10-31 released pelvis 035 rig, original rear
+panels, UVs and width, with local front/side position corrections and corresponding
+native metadata. Legacy human 035 is protected in the generic manifest's `restored`
+list. Do not reapply the generic thigh/flap weights to either human model. Canonical
+034 keeps its existing material identity and dye mapping for the 035-to-034 migration;
+matching UVs do not make their dye masks interchangeable. Its focused guard is
+`TestPelvisSkirtBindings.py`; regenerate part-skin aliases after its recipe changes.
+See `GarmentModelRules.md` for the required fit/motion and clipping acceptance checks.
+
 The engine keeps a joint that a clip does not track where the previous clip left it. SWLOR's
 custom emotes (`/paraderest` among them) carried no flap tracks, and their libraries'
 skeletons lacked the flap joints, so the flaps kept the idle's sideways lean and the
@@ -649,9 +659,11 @@ bind transforms) into the skeletons of the emote libraries `a_ba_non_combat` and
 `a_ba_non_combat2`, and gives each of their 145 custom emote clips one rest key (identity)
 on every flap joint; the engine only applies clip tracks for joints the animation model's
 skeleton carries (client-verified: tracks without the skeleton joints changed nothing). No
-other normal-phenotype part uses the flap joints: belt 226 and pelvis 198, back on their
-original leg weights, no longer do, and `TestFillEmoteFlapTracks.py` fails if any part
-but the skirts rebound above is skinned to them. So only those skirts change, and only in
+other unregistered normal-phenotype part may use these flap joints: belt 226 and pelvis
+198, back on their original leg weights, no longer do. The shared tracks also reach the
+accepted flap bindings of canonical human pelvis 034. `TestFillEmoteFlapTracks.py`
+checks consumers against both the generic and specialized recipe manifests; robe aliases
+are checked on their receiving skeletons by `TestPartSkinModels.py`. These consumers change only in
 the custom emotes; the dwarf and half-orc roots number their flaps apart and are
 unaffected. The custom emotes in the other animation libraries (`a_ba_med_weap`, whose
 point-pistol clips another tool owns, `a_ba_int`, `a_fa_int`, `a_ba_dnc`, `a_ba_casts`,
@@ -665,6 +677,10 @@ materials and UVs, keeps the hood and collar on the neck and hangs the cloak fro
 bones as above, then compiles it with CleanModels against the wearer's skeleton; every
 compiled vertex must sit where the original put it. The dwarf and half-orc bodies keep the
 dangly original.
+
+The following numerical tolerances bound specific legacy fixtures, not an acceptable
+visible clipping budget. Passing them does not clear an on-screen breakthrough;
+`GarmentModelRules.md`'s native acceptance criteria still apply.
 
 `TestChestSkirtBindings.py` measures every rebound model against its original. Over the
 walk and run clips the hem of every skirt that reaches below the knee moves against the

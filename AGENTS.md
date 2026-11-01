@@ -51,6 +51,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
 - Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
 - Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
+- Wearable parts, robes, skinning, clipping and motion regressions: `Readmes/GarmentModelRules.md`
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`

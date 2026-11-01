@@ -122,7 +122,7 @@ public class WildSpaceTests
         var space = ReadServerSource("Service", "Space.cs");
         space.Should().Contain("Stat.GetStatAdjustment(target, StatType.SpaceShieldDamageTakenPercentAdjustment)");
         space.Should().Contain("GetShipAccuracy(source, activatorStatus, shot, activator)")
-            .And.Contain("(ship != attacker && GetIsObjectValid(ship) ? Stat.GetStatAdjustment(ship, StatType.SpaceAccuracyPercentAdjustment) : 0)",
+            .And.Contain("(ship != attacker && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, attacker, StatType.SpaceAccuracyPercentAdjustment) : 0)",
                 "a station shot takes the ship's jam, aura and system accuracy too");
         space.Should().Contain("Stat.GetStatAdjustment(ship, StatType.SpaceCapacitorRegenPercentAdjustment)");
         space.Should().Contain("Stat.GetStatAdjustment(activator, StatType.SpaceEmDamagePercentAdjustment)",

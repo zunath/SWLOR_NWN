@@ -301,7 +301,9 @@ public class PilotingOrdnanceTests
             .And.Contain("GetShotStatAdjustment(activator, source, StatType.WeaponCriticalRatePercentAdjustment)");
         ReadServerSource("Service", "SpaceStances.cs").Should()
             .Contain("if (shotSource != ship)")
-            .And.Contain("value += StatusEffect.GetStatAdjustment(ship, stat) - ownedOnShip;",
+            .And.Contain("value += GetShipWideAdjustment(ship, shotSource, stat);")
+            .And.Contain("!sourceStatuses.Contains(effect.GetType())", "a command order on the ship and its crew counts once")
+            .And.Contain("var value = TemporaryStatModifier.GetStatAdjustment(ship, stat);",
                 "a station shot takes the ship's debuffs and auras (Disabling Shot, Break Formation), not the pilot's stances");
         ReadServerSource("Feature", "AbilityDefinition", "Piloting", "AceInTheHoleAbilityDefinition.cs")
             .Should().Contain("StatusEffect.ApplyStatusEffect(SpaceCrew.GetAbilityUser(activator), activator, new DeadMansHandStatusEffect(), 0f);");

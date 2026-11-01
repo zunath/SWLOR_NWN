@@ -2005,7 +2005,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="ship">
         /// The firing ship when <paramref name="attacker"/> is a station operator (a crew member, or OBJECT_INVALID for a
-        /// droid): the ship's own Space Accuracy % (a jam's Flash, a commander's aura, a Wild Space system) applies too.
+        /// droid): the ship-wide Space Accuracy % (a jam's Flash, a commander's aura, a Wild Space system) applies too,
+        /// once (<see cref="GetShipWideAdjustment"/>).
         /// </param>
         public static int GetShipAccuracy(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot, uint ship = OBJECT_INVALID)
         {
@@ -2024,7 +2025,7 @@ namespace SWLOR.Game.Server.Service
                 Stat.GetStatAdjustment(attacker, StatType.Accuracy),
                 Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment) +
                 Stat.GetStatAdjustment(attacker, StatType.SpaceAccuracyPercentAdjustment) +
-                (ship != attacker && GetIsObjectValid(ship) ? Stat.GetStatAdjustment(ship, StatType.SpaceAccuracyPercentAdjustment) : 0));
+                (ship != attacker && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, attacker, StatType.SpaceAccuracyPercentAdjustment) : 0));
         }
 
         /// <summary>

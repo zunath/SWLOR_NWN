@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -131,8 +133,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            AssignCommand(player, () => TakeGoldFromCreature(order.Credits, player, true));
-            CargoHoldRules.AddUnits(ship.Cargo, commodity, order.Units, order.Credits);
+            // The payment is saved in the character file with a mark naming the cargo change, then the cargo: a restart
+            // in between leaves a mark the next login applies once (ApplyPendingTrade).
+            TakeGoldFromCreature(order.Credits, player, true);
+            var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = order.Units, Credits = order.Credits };
+            SaveTradeGold(player, trade);
+            trade.ApplyTo(ship.Cargo, ship.LastTradeId);
+            ship.LastTradeId = trade.Id;
             AddPressure(state, commodity, -order.Units, now);
             DB.Set(ship);
             DB.Set(state);
@@ -167,8 +174,15 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var cost = CargoHoldRules.RemoveUnits(ship.Cargo, commodity, order.Units);
+            // The proceeds are saved in the character file with a mark naming the cargo change, then the cargo: a restart
+            // in between leaves a mark the next login applies once (ApplyPendingTrade). The sale's cost basis is read
+            // from a copy of the lot, so the bay changes only through the mark.
+            var cost = CargoHoldRules.RemoveUnits(CopyLot(ship.Cargo, commodity), commodity, order.Units);
             GiveGoldToCreature(player, order.Credits);
+            var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = -order.Units };
+            SaveTradeGold(player, trade);
+            trade.ApplyTo(ship.Cargo, ship.LastTradeId);
+            ship.LastTradeId = trade.Id;
             AddPressure(state, commodity, order.Units, now);
             DB.Set(ship);
             DB.Set(state);
@@ -184,6 +198,45 @@ namespace SWLOR.Game.Server.Service
                 Skill.GiveSkillXP(player, SkillType.Piloting, xp);
 
             Space.RecordTradeEarnings(player, profit);
+        }
+
+        /// <summary>The character-file local naming the last exchange trade's cargo change (<see cref="PendingTrade"/>).</summary>
+        private const string PendingTradeVariable = "TRADE_PENDING";
+
+        /// <summary>Saves the trade's gold in the character file together with the mark naming its cargo change.</summary>
+        private static void SaveTradeGold(uint player, PendingTrade trade)
+        {
+            ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);
+            ExportSingleCharacter(player);
+        }
+
+        /// <summary>One commodity's lot of a bay on its own, so a cost can be read without changing the bay.</summary>
+        private static Dictionary<CommodityType, CargoLot> CopyLot(Dictionary<CommodityType, CargoLot> cargo, CommodityType commodity)
+        {
+            var copy = new Dictionary<CommodityType, CargoLot>();
+            if (cargo.TryGetValue(commodity, out var lot))
+                copy[commodity] = new CargoLot { Units = lot.Units, CostBasis = lot.CostBasis };
+            return copy;
+        }
+
+        /// <summary>Applies the cargo change of a trade whose gold the character file holds but whose bay a restart did not save.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyPendingTrade()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!PendingTrade.TryParse(ObjectPlugin.GetString(player, PendingTradeVariable), out var trade))
+                return;
+
+            var ship = DB.Get<PlayerShip>(trade.ShipId);
+            if (ship == null || !trade.ApplyTo(ship.Cargo, ship.LastTradeId))
+                return;
+
+            ship.LastTradeId = trade.Id;
+            DB.Set(ship);
+            Log.Write(LogGroup.Space, $"TRADE RECOVER - {PlayerName.GetAuditName(player)} - applied {trade.Units} {trade.Commodity} to ship {ship.Id} after a restart.");
         }
 
         private static void AddPressure(TradeExchangeState state, CommodityType commodity, int units, DateTime now)

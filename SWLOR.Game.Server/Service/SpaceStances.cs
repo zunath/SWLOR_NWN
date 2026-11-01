@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -32,18 +33,39 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(ship))
                 return value;
 
-            var ownedOnShip = 0;
             foreach (var buff in GetOwnedSelfBuffs(ship))
             {
-                if (!buff.StatGroup.Stats.TryGetValue(stat, out var amount))
-                    continue;
-
-                ownedOnShip += amount;
-                value += SpaceStanceRules.ShotAdjustment(ship, shotSource, buff.Source, amount);
+                if (buff.StatGroup.Stats.TryGetValue(stat, out var amount))
+                    value += SpaceStanceRules.ShotAdjustment(ship, shotSource, buff.Source, amount);
             }
 
             if (shotSource != ship)
-                value += StatusEffect.GetStatAdjustment(ship, stat) - ownedOnShip;
+                value += GetShipWideAdjustment(ship, shotSource, stat);
+
+            return value;
+        }
+
+        /// <summary>
+        /// The part of a station shot's stat that covers the whole firing ship: its statuses other than owned stances
+        /// (an enemy's debuff, a commander's aura) and its temporary modifiers (a Wild Space system). A status the shot's
+        /// source also carries is left out, so a command order that lands on the ship and on each crew member counts once.
+        /// </summary>
+        public static int GetShipWideAdjustment(uint ship, uint shotSource, StatType stat)
+        {
+            var sourceStatuses = GetIsObjectValid(shotSource)
+                ? StatusEffect.GetCreatureStatusEffects(shotSource).GetAllEffects().Select(x => x.GetType()).ToHashSet()
+                : new HashSet<System.Type>();
+
+            var value = TemporaryStatModifier.GetStatAdjustment(ship, stat);
+            foreach (var effect in StatusEffect.GetCreatureStatusEffects(ship).GetAllEffects())
+            {
+                if (!IsOwnedSelfBuff(effect) &&
+                    !sourceStatuses.Contains(effect.GetType()) &&
+                    effect.StatGroup.Stats.TryGetValue(stat, out var amount))
+                {
+                    value += amount;
+                }
+            }
 
             return value;
         }

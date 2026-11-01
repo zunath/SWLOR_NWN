@@ -8,7 +8,7 @@ The shared procedure for NWN client evidence. Read it before verifying any chang
 - **Live server** ("Server behavior" below): anything the C# server produces, such as combat, abilities, NUI windows, conversations, chat commands, migrations, and economy behavior.
 - A change with no in-game surface (toolset app, CLI, docs, agent rules) has nothing to capture; say so in the handoff.
 
-Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Server behavior · Client traps · Public access · Evidence and cleanup
+Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Equipment and garment captures · Server behavior · Client traps · Public access · Evidence and cleanup
 
 ## Hard rules
 
@@ -53,9 +53,43 @@ Read source JSON in its actual encoding (the module IFO uses a legacy encoding),
 ## Capture
 
 - Set each camera after the area load settles and wait for a fresh render before emitting its marker. Timings such as camera at 4 s, marker at 7 s, overview at 10 s, marker at 13 s are examples, not proof: inspect images for loading screens, stale frames, wrong angles, and occlusion, and recapture failures.
+- For equipment studies, use `AttachCamera` on the subject instead of placing an invisible player at the same coordinates. Creature collision can displace either one and invalidate the framing. Keep that player within unobstructed sight of the subject and log `GetObjectSeen`: an attached camera can show an unseen creature translucently. Log the runtime gender, phenotype, body parts, equipped native base items and appearance parts with the capture; synchronized byte and extended blueprint fields are still required.
 - Emit each marker as the entire payload (`WriteTimestampedLogEntry("VISUAL_CLOSE_READY")`), hold the view a few seconds, and never emit two markers back-to-back. End with `VISUAL_REVIEW_COMPLETE` after the final view is held. Use the same strings in the launcher arguments.
 - Log the subject's `GetPosition` and `GetFacing` at capture and compare them with the authored data. The engine moves creatures off blocked coordinates; an adjusted spawn does not verify the requested one. Correct the source and recapture.
 - Capture at least a clear close view and a contextual overview for each moved NPC or object. Keep the native PNGs; contact sheets may resize copies but must link the originals. Do not edit away clipping or obstacles.
+
+## Equipment and garment captures
+
+Use `GarmentModelRules.md` for the required coverage and acceptance criteria.
+The capture must establish the actual rendered subject and state:
+
+- Assert expected gender, base/render phenotype, equipped base item and appearance
+  parts at every marker, with position/facing. Wait for equipment/model loading and
+  retry the fixture setup if necessary. Missing armor, a wrong part or a stale pose
+  invalidates that frame even when the launcher succeeded; exclude and recapture it.
+- Name sides anatomically, relative to the wearer. Prove an ambiguous orbit with
+  asymmetric equipment (for example left thigh 14/right thigh 1, then swap them).
+  In the verified top-down fixture at subject facing 90, `SetCameraFacing` 270 is
+  front, 180 is RIGHT, 0 is LEFT and 90 is rear. Recheck after changing facing or
+  camera mode; a filename saying "left" does not prove the visible side.
+- Initialize the fixture clock before scheduling delayed probes. `SetTime` after
+  scheduling can advance multiple capture markers together. Clear/settle action
+  queues and equip before starting the measured pose; resolve player pose labels
+  to actual API constants and inherited clips instead of inventing a missing ID.
+- Record pose start, elapsed capture time and resolved clip duration. Sample the
+  observed contact interval and nearby phases in regression tests. A fixed delay
+  or requested run is not proof of a stride or a matched animation phase: inspect
+  the native image, recapture idle/pre-stride frames, and label phase differences
+  honestly in before/after motion sheets.
+- Use the real rendering path for the claim. A manual generated-body/alias fixture
+  can check bone binding while omitting the server's hide masks or dye projection;
+  robe/skin overlap there is not proof of a good combined outfit. Full server-driven
+  projection and dye behavior require the live route below.
+
+Keep raw failed/earlier captures and a correction map if an old label was wrong.
+Link each contact-sheet crop to its native original. Reuse earlier evidence only
+when the inspected model, material, animation and relevant projection dependencies
+remain unchanged; a new Git commit alone neither invalidates nor validates it.
 
 ## Server behavior
 

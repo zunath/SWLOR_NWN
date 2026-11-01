@@ -38,6 +38,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<bool> CurrencyHasUse
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<bool> CurrencyCanUse
         {
             get => Get<GuiBindingList<bool>>();
@@ -53,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var currencyNames = new GuiBindingList<string>();
             var currencyDescriptions = new GuiBindingList<string>();
             var currencyAmountText = new GuiBindingList<string>();
+            var currencyHasUse = new GuiBindingList<bool>();
             var currencyCanUse = new GuiBindingList<bool>();
 
             _currencyTypes.Clear();
@@ -69,13 +76,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 currencyNames.Add(detail.Name);
                 currencyDescriptions.Add(detail.Description);
                 currencyAmountText.Add(amount.ToString("N0", CultureInfo.InvariantCulture));
-                currencyCanUse.Add(currency == CurrencyType.LanguageToken && amount > 0);
+                // Only Language Tokens are spent from this window; the others are spent elsewhere.
+                var hasUse = currency == CurrencyType.LanguageToken;
+                currencyHasUse.Add(hasUse);
+                currencyCanUse.Add(hasUse && amount > 0);
             }
 
             CurrencyIcons = currencyIcons;
             CurrencyNames = currencyNames;
             CurrencyDescriptions = currencyDescriptions;
             CurrencyAmountText = currencyAmountText;
+            CurrencyHasUse = currencyHasUse;
             CurrencyCanUse = currencyCanUse;
         }
 

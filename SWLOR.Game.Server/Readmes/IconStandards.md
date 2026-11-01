@@ -129,6 +129,8 @@ Production gameplay TGA files must use bottom-left TGA origin (`image descriptor
 
 Inventory item TGAs use transparent backgrounds and transparent outer borders, matching native NWN inventory art. Do not stamp semantic frames or dark mattes into 64x64 inventory resources. The opacity and semantic-frame requirements below apply to 32x32 action/status icons.
 
+New and replaced icon resources ship as DDS, not TGA: single-level DXT5, rows stored bottom-up, no TXI, matching the existing DDS inventory and currency (`cur_*`) icons. Encode them with `write_icon` in `tools/FixWeaponInventoryIcons.py` and remove the old TGA so it cannot shadow the DDS.
+
 Production action/status gameplay TGA files must be fully opaque. Do not leave transparent or partially transparent edge pixels in feat, spell, ability, or status-effect icons.
 
 ## Artwork Quality

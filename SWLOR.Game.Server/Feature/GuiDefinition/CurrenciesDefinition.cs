@@ -96,11 +96,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 cell.SetWidth(UseCellWidth);
                                 cell.SetIsVariable(false);
 
-                                cell.AddButton()
-                                    .SetText("Use")
-                                    .SetTooltip("Spend a Language Token to master a language.")
-                                    .BindIsVisible(model => model.CurrencyCanUse)
-                                    .BindOnClicked(model => model.OnClickUse());
+                                // The group takes the list's row visibility so the button keeps its own.
+                                cell.AddGroup(group =>
+                                {
+                                    group.AddButton()
+                                        .SetText("Use")
+                                        .SetWidth(52f)
+                                        .SetHeight(28f)
+                                        .SetMargin(0f)
+                                        .SetTooltip("Spend a Language Token to master a language.")
+                                        .BindIsVisible(model => model.CurrencyHasUse)
+                                        .BindIsEnabled(model => model.CurrencyCanUse)
+                                        .BindOnClicked(model => model.OnClickUse());
+                                })
+                                    .SetShowBorder(false)
+                                    .SetScrollbars(NuiScrollbars.None)
+                                    .SetPadding(0f);
                             });
 
                             template.AddCell(cell =>

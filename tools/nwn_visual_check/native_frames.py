@@ -57,11 +57,13 @@ class NativeFrames:
                     with Image.open(path) as image:
                         if image.size != (1280, 720):
                             raise RuntimeError('Native screenshot is not 1280x720')
-                        self.frame = image.convert('RGB')
+                        frame = image.convert('RGB')
+                    # Decoding can finish before the writer releases its delete lock.
+                    # Only the new image produced by this request is disposable.
+                    path.unlink()
                 except OSError:
                     continue  # The client may still be writing this frame.
-                # Only the new image produced by this request is disposable.
-                path.unlink()
+                self.frame = frame
                 return True
             time.sleep(.025)
         return False

@@ -9,6 +9,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch, Mock
 
@@ -170,6 +171,58 @@ class ProfileBoundaryTests(unittest.TestCase):
             self.assertEqual(captured.size, (1280, 720))
             self.assertEqual(captured.getpixel((1000, 360)), (255, 255, 255))
         self.assertFalse(native.exists())
+
+    @unittest.skipUnless(sys.platform=='win32','Windows screenshot writer sharing semantics')
+    def test_native_screenshot_waits_for_writer_delete_lock(self):
+        from PIL import Image
+
+        frames=NativeFrames.__new__(NativeFrames)
+        frames.directory=self.owned/'screenshots'
+        frames.window=1
+        frames.frame=None
+        frames.user=Mock()
+        native=frames.directory/'NWN0000.tga'
+        kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+        kernel.CreateFileW.argtypes=[ctypes.c_wchar_p,ctypes.c_uint32,ctypes.c_uint32,
+                                    ctypes.c_void_p,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_void_p]
+        kernel.CreateFileW.restype=ctypes.c_void_p
+        kernel.CloseHandle.argtypes=[ctypes.c_void_p]
+        handles=[]
+        timers=[]
+
+        def release(handle):
+            if handle[0] is not None:
+                kernel.CloseHandle(handle[0])
+                handle[0]=None
+
+        def screenshot(_,message,*_args):
+            if message==0x101:
+                image=Image.new('RGB',(1280,720),'black')
+                image.paste('white',(640,0,1280,720))
+                image.save(native)
+                # Allow reads while the simulated client writer denies deletion.
+                handle=[kernel.CreateFileW(str(native),0x80000000,1,None,3,0,None)]
+                self.assertNotIn(handle[0],(None,ctypes.c_void_p(-1).value))
+                handles.append(handle)
+                timer=threading.Timer(.15,release,args=(handle,))
+                timers.append(timer)
+                timer.start()
+            return True
+
+        frames.user.PostMessageW.side_effect=screenshot
+        try:
+            output=self.owned/'writer-lock.png'
+            frames.save(output)
+            with Image.open(output) as captured:
+                self.assertEqual(captured.size,(1280,720))
+                self.assertEqual(captured.getpixel((1000,360)),(255,255,255))
+            self.assertEqual(frames.user.PostMessageW.call_count,2)
+            self.assertFalse(native.exists())
+        finally:
+            for timer in timers:
+                timer.join()
+            for handle in handles:
+                release(handle)
 
     @unittest.skipUnless(sys.platform=='win32','run() refuses non-Windows hosts before validating settings')
     def test_native_refusal_happens_before_process_creation(self):

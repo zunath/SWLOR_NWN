@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
+using CNWSArea = NWN.Native.API.CNWSArea;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -13,6 +16,12 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
         private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
+        private static readonly Dictionary<ushort, bool> _placeableHasWalkmesh = new();
+        private static readonly (float X, float Y)[] _stepDirections =
+        {
+            (1f, 0f), (0.7071f, 0.7071f), (0f, 1f), (-0.7071f, 0.7071f),
+            (-1f, 0f), (-0.7071f, -0.7071f), (0f, -1f), (0.7071f, -0.7071f),
+        };
         private const int AreaBakeStep = 2;
         private static bool _bakingRan;
 
@@ -90,20 +99,35 @@ namespace SWLOR.Game.Server.Service
 
             var arraySizeX = width * (10 / AreaBakeStep);
             var arraySizeY = height * (10 / AreaBakeStep);
+            var nativeArea = NWNXLib.g_pAppManager.m_pServerExoApp.GetAreaByGameObjectID(area);
+            var objectClearance = GetObjectClearanceGrid(area, MinDistance);
 
-            for (var x = 0; x < arraySizeX; x++)
+            // Column and row 0 lie on the area's west and south edges, where a creature stands half outside the map,
+            // past the strip players can walk on. Starting one step in keeps every point at least one step from all
+            // four edges, as the last column and row already are from the east and north edges.
+            for (var x = 1; x < arraySizeX; x++)
             {
-                for (var y = 0; y < arraySizeY; y++)
+                for (var y = 1; y < arraySizeY; y++)
                 {
                     var checkPosition = Vector3(x * AreaBakeStep, y * AreaBakeStep);
                     var checkLocation = Location(area, checkPosition, 0.0f);
                     var material = GetSurfaceMaterial(checkLocation);
-                    var isWalkable = Convert.ToInt32(Get2DAString("surfacemat", "Walk", material)) == 1;
+                    if (Convert.ToInt32(Get2DAString("surfacemat", "Walk", material)) != 1)
+                        continue;
 
-                    // Location is not walkable if another object exists nearby.
-                    var nearest = GetNearestObjectToLocation(checkLocation, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable | ObjectType.Trigger);
-                    var distance = GetDistanceBetweenLocations(checkLocation, GetLocation(nearest));
-                    if (GetIsObjectValid(nearest) && distance <= MinDistance)
+                    var groundHeight = GetGroundHeight(checkLocation);
+                    var isWalkable = true;
+
+                    // Location is not walkable if another object exists nearby. Distances are measured from the ground,
+                    // not from Z 0, so raised terrain keeps the full radius.
+                    if (objectClearance.HasObjectWithin(new Vector3(checkPosition.X, checkPosition.Y, groundHeight)))
+                    {
+                        isWalkable = false;
+                    }
+
+                    // Location is not walkable if a creature there has no room to stand, e.g. inside or against a
+                    // placeable's walkmesh, which the tile surface material does not know about.
+                    if (isWalkable && LacksStandingRoom(nativeArea, checkPosition.X, checkPosition.Y, groundHeight))
                     {
                         isWalkable = false;
                     }
@@ -125,11 +149,64 @@ namespace SWLOR.Game.Server.Service
                     {
                         var position = new Vector3(x * AreaBakeStep,
                             y * AreaBakeStep,
-                            GetGroundHeight(checkLocation));
+                            groundHeight);
                         _walkmeshesByArea[resref].Add(position);
                     }
                 }
             }
+        }
+
+        // Placeables without a walkmesh (grass, flowers, dirt decals) block nothing, so they do not push spawns away.
+        private static SpawnClearanceGrid GetObjectClearanceGrid(uint area, float radius)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var meshManager = server.m_pcExoAppInternal.m_pPlaceMeshManager;
+            var positions = new List<Vector3>();
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                var type = GetObjectType(obj);
+                if (type == ObjectType.Placeable)
+                {
+                    var appearance = server.GetPlaceableByGameObjectID(obj).m_nAppearance;
+                    if (!_placeableHasWalkmesh.TryGetValue(appearance, out var hasWalkmesh))
+                    {
+                        var mesh = meshManager.GetWalkMesh(appearance);
+                        _placeableHasWalkmesh[appearance] = hasWalkmesh = mesh != null && mesh.m_nTriangles > 0;
+                    }
+
+                    if (hasWalkmesh)
+                        positions.Add(GetPosition(obj));
+                }
+                else if (type == ObjectType.Creature || type == ObjectType.Door || type == ObjectType.Trigger)
+                {
+                    positions.Add(GetPosition(obj));
+                }
+            }
+
+            return new SpawnClearanceGrid(positions, radius);
+        }
+
+        /// <summary>
+        /// Asks the engine's collision test whether a creature at the position has room to stand: a clear step in
+        /// every direction. The tile surface material ignores placeable walkmeshes, and a creature created inside or
+        /// against one is nudged into it and never walks out.
+        /// </summary>
+        private static bool LacksStandingRoom(CNWSArea nativeArea, float x, float y, float groundHeight)
+        {
+            const float StepLength = 0.5f;
+            const float BelowGround = 1.0f;
+            const float AboveGround = 2.0f;
+            if (nativeArea == null)
+                return false;
+
+            foreach (var (dx, dy) in _stepDirections)
+            {
+                if (nativeArea.NoNonWalkPolys(x, y, x + dx * StepLength, y + dy * StepLength,
+                        groundHeight - BelowGround, groundHeight + AboveGround, 0.0f) == 0)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -139,8 +216,18 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A random location within an area.</returns>
         public static Location GetRandomLocation(uint area)
         {
-            var resref = GetResRef(area);
-            if (!_walkmeshesByArea.ContainsKey(resref))
+            return GetRandomLocation(area, GetResRef(area));
+        }
+
+        /// <summary>
+        /// A random walkable location in <paramref name="area"/> from the walkmesh baked for <paramref name="templateResref"/>.
+        /// An instance made from a template (Area.CreateInstance) gets a generated resref such as "nw_3" that was never
+        /// baked, so callers placing things in an instance pass the template's resref (W11r).
+        /// </summary>
+        public static Location GetRandomLocation(uint area, string templateResref)
+        {
+            var resref = templateResref;
+            if (string.IsNullOrEmpty(resref) || !_walkmeshesByArea.ContainsKey(resref))
                 return Location(area, Vector3.Zero, 0.0f);
 
             var count = _walkmeshesByArea[resref].Count;

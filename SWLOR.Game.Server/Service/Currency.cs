@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to give currency</param>
         /// <param name="type">The type of currency to give</param>
         /// <param name="amount">The amount of currency to give</param>
-        public static void GiveCurrency(uint player, CurrencyType type, int amount)
+        /// <param name="beforeSave">Changes saved in the same write as the currency, such as a mark that it was given.</param>
+        public static void GiveCurrency(uint player, CurrencyType type, int amount, Action<Player> beforeSave = null)
         {
             amount = Math.Abs(amount);
 
@@ -80,6 +81,7 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.Currencies[type] = 0;
 
             dbPlayer.Currencies[type] += amount;
+            beforeSave?.Invoke(dbPlayer);
 
             DB.Set(dbPlayer);
             Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());

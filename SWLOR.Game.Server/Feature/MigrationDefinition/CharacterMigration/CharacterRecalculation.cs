@@ -80,6 +80,22 @@ internal static class CharacterRecalculation
     }
 
     /// <summary>
+    /// Returns a retired perk's purchase price as skill points and tells the player. Its definition is gone, so the
+    /// prices players paid per level come from the caller. Returns the SP refunded.
+    /// </summary>
+    public static int RefundPerk(Entity.Player record, List<string> notices, PerkType perkType, string name, IReadOnlyList<int> prices)
+    {
+        if (record.Perks == null || !record.Perks.TryGetValue(perkType, out var perkLevel))
+            return 0;
+        var refundAmount = prices.Take(perkLevel).Sum();
+        record.UnallocatedSP += refundAmount;
+        record.Perks.Remove(perkType);
+        Log.Write(LogGroup.Migration, $"{record.Name} ({record.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
+        notices.Add($"Perk '{name}' was automatically refunded. You reclaimed {refundAmount} SP.");
+        return refundAmount;
+    }
+
+    /// <summary>
     /// Saved-data <see cref="Perk.GetPlayerEffectivePerkLevel(uint, PerkType)"/>: the highest owned perk level whose
     /// requirements the record (and its active beast) meet.
     /// </summary>

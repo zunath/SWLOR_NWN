@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int SOC { get; set; }
         public int VIT { get; set; }
         public int WIL { get; set; }
+        public int Industry { get; set; }
         public int Vibroblade { get; set; }
         public int Vibroknife { get; set; }
         public int Lightsaber { get; set; }

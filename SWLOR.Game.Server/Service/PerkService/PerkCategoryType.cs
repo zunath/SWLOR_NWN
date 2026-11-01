@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("General", true)]
         General = 2,
 
-        [PerkCategory("Piloting", true)]
+        [PerkCategory("Piloting", false)]
         Piloting = 5,
 
         [PerkCategory("First Aid", false)]
@@ -187,6 +187,21 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Twin Pistol - Crossfire", true)]
         TwinPistolCrossfire = 64,
+
+        [PerkCategory("Piloting - Ace", true)]
+        PilotingAce = 65,
+
+        [PerkCategory("Piloting - Ordnance", true)]
+        PilotingOrdnance = 66,
+
+        [PerkCategory("Piloting - Bulwark", true)]
+        PilotingBulwark = 67,
+
+        [PerkCategory("Piloting - Command", true)]
+        PilotingCommand = 68,
+
+        [PerkCategory("Droid Protocols", true)]
+        DroidProtocols = 69,
     }
 
     public class PerkCategoryAttribute : Attribute

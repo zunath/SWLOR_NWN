@@ -181,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Search()
         {
             var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
+            ShipTransfer.ExpireOldListings(marketDetail.MarketId);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true)
                 .AddFieldSearch(nameof(MarketItem.MarketId), marketDetail.MarketId, false);
@@ -269,8 +270,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             var itemId = _rows[index].ItemId;
             var dbItem = DB.Get<MarketItem>(itemId);
+            if (dbItem == null)
+                return;
 
-            var item = ObjectPlugin.Deserialize(dbItem.Data);
+            // A ship listing (plan section 7) shows its deed and the ship's summary.
+            var isShip = !string.IsNullOrWhiteSpace(dbItem.ShipId);
+            var item = isShip ? ShipTransfer.DeserializeListingDeed(dbItem) : ObjectPlugin.Deserialize(dbItem.Data);
+            if (!GetIsObjectValid(item))
+                return;
+
+            if (isShip && DB.Get<PlayerShip>(dbItem.ShipId) is { } listedShip)
+                SendMessageToPC(Player, ShipTransfer.BuildSummary(listedShip));
+
             var payload = new ExamineItemPayload(item);
             Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
@@ -284,8 +295,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemId = row.ItemId;
             var itemName = row.Name;
             var price = row.Price;
+            var preview = DB.Get<MarketItem>(itemId);
+            var shipSummary = !string.IsNullOrWhiteSpace(preview?.ShipId) && DB.Get<PlayerShip>(preview.ShipId) is { } previewShip
+                ? "\n\n" + ShipTransfer.BuildSummary(previewShip)
+                : string.Empty;
 
-            ShowModal($"Are you sure you want to buy '{itemName}' for {price} credits?", () =>
+            ShowModal($"Are you sure you want to buy '{itemName}' for {price} credits?{shipSummary}", () =>
             {
                 var dbItem = DB.Get<MarketItem>(itemId);
 
@@ -320,6 +335,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     FloatingTextStringOnCreature("The price of this item has been changed by the seller. Please try again.", Player, false);
                     Search();
+                    return;
+                }
+
+                // A ship listing (plan section 7) changes the ship's owner where it is docked instead of handing over an
+                // item. It is checked again first; a ship that can't change owner now keeps its listing.
+                if (!string.IsNullOrWhiteSpace(dbItem.ShipId))
+                {
+                    if (!ShipTransfer.Buy(Player, dbItem, PlayerMarket.GetMarketRegion(_regionType).TaxRate))
+                        return;
+
+                    var shipRowIndex = _rows.IndexOf(row);
+                    if (shipRowIndex >= 0)
+                        ItemsTable.RemoveRowAt(this, _rows, shipRowIndex);
                     return;
                 }
 

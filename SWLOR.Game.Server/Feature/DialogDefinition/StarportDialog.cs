@@ -4,8 +4,11 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -58,9 +61,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         var dbProperty = DB.Get<WorldProperty>(propertyId);
                         var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
                         var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
-                        var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
 
-                        planetType = Planet.GetPlanetType(cityArea);
+                        planetType = Station.GetCityPlanet(dbCity);
                     }
 
                     if (planetType == PlanetType.Invalid)
@@ -79,6 +81,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     Gui.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, Owner);
                 });
 
+                AddTradeExchangeResponse(page, player, landingWaypointTag);
+                AddHoldingsResponse(page, player, landingWaypointTag);
             }
 
             page.AddResponse("View Shop", () =>
@@ -86,6 +90,156 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var store = GetNearestObjectByTag("dockhand_store", Owner);
                 OpenStore(store, player);
                 Close();
+            });
+        }
+
+        /// <summary>
+        /// The dock's Trade Exchange (plan section 13). An NPC starport trades through its planet's exchange; a player
+        /// city's starport trades through the same exchange once the city has upgraded it, and charges the city's tariff.
+        /// Ship-only locations such as the Abandoned Station have none.
+        /// </summary>
+        private void AddTradeExchangeResponse(ConversationMenuPage page, uint player, string landingWaypointTag)
+        {
+            var area = GetArea(Owner);
+            var starportId = Property.GetPropertyId(area);
+            if (!string.IsNullOrWhiteSpace(starportId))
+            {
+                AddCityTradeExchangeResponse(page, player, starportId);
+                return;
+            }
+
+            var exchange = TradeLookup.GetExchangeForPlanet(Planet.GetPlanetType(area));
+            var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag)
+                ? GetLocalLocation(Owner, "STARPORT_LANDING_WAYPOINT")
+                : GetLocation(GetWaypointByTag(landingWaypointTag));
+            var landingArea = GetAreaFromLocation(landingLocation);
+            if (exchange == TradeExchangeType.Invalid ||
+                !GetIsObjectValid(landingArea) ||
+                GetLocalBool(landingArea, StarshipDockReturn.ShipOnlyLocationVariable))
+            {
+                return;
+            }
+
+            var landingAreaResref = GetResRef(landingArea);
+            page.AddResponse("Trade Exchange", () =>
+            {
+                Close();
+                var closed = Space.GetIncursionExchangeRefusal(exchange);
+                if (!string.IsNullOrEmpty(closed))
+                {
+                    SendMessageToPC(player, ColorToken.Red(closed));
+                    return;
+                }
+
+                var payload = new TradeExchangePayload(exchange, landingAreaResref);
+                Gui.TogglePlayerWindow(player, GuiWindowType.TradeExchange, payload, Owner);
+            });
+        }
+
+        /// <summary>
+        /// Planetary Holdings (plan section 26): every NPC planet starport with an exchange sells its planet's holdings
+        /// and runs the player's holdings. Player-city starports and ship-only locations have none.
+        /// </summary>
+        private void AddHoldingsResponse(ConversationMenuPage page, uint player, string landingWaypointTag)
+        {
+            var area = GetArea(Owner);
+            var starportId = Property.GetPropertyId(area);
+            if (!string.IsNullOrWhiteSpace(starportId))
+            {
+                AddCityHoldingsResponse(page, player, starportId);
+                return;
+            }
+
+            var exchange = TradeLookup.GetExchangeForPlanet(Planet.GetPlanetType(area));
+            var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag)
+                ? GetLocalLocation(Owner, "STARPORT_LANDING_WAYPOINT")
+                : GetLocation(GetWaypointByTag(landingWaypointTag));
+            var landingArea = GetAreaFromLocation(landingLocation);
+            if (exchange == TradeExchangeType.Invalid ||
+                HoldingRules.GetHoldingsAt(exchange).Count == 0 ||
+                !GetIsObjectValid(landingArea) ||
+                GetLocalBool(landingArea, StarshipDockReturn.ShipOnlyLocationVariable))
+            {
+                return;
+            }
+
+            var landingAreaResref = GetResRef(landingArea);
+            page.AddResponse("Planetary Holdings", () =>
+            {
+                Close();
+                PlanetaryHoldings.RehomeStrandedHoldings(player, exchange, landingAreaResref);
+                var payload = new HoldingsPayload(exchange, landingAreaResref);
+                Gui.TogglePlayerWindow(player, GuiWindowType.PlanetaryHoldings, payload, Owner);
+            });
+            AddGuestSiteResponses(page, player, landingAreaResref);
+        }
+
+        /// <summary>
+        /// W11o: a player city's Starport sells its planet's holdings, an orbit station's Starport its anchor exchange's;
+        /// ships docked at this Starport collect and deliver. A Wild Space station has none.
+        /// </summary>
+        private void AddCityHoldingsResponse(ConversationMenuPage page, uint player, string starportId)
+        {
+            var dock = Trade.TryGetCityDock(starportId);
+            if (dock == null)
+                return;
+
+            var city = DB.Get<WorldProperty>(dock.CityId);
+            var exchange = HoldingRules.GetCityDockHoldingsExchange(dock.Exchange, Station.GetAnchor(city)?.IsWildSpace ?? false);
+            if (exchange == TradeExchangeType.Invalid)
+                return;
+
+            page.AddResponse("Planetary Holdings", () =>
+            {
+                Close();
+                var payload = new HoldingsPayload(exchange, starportId);
+                Gui.TogglePlayerWindow(player, GuiWindowType.PlanetaryHoldings, payload, Owner);
+            });
+            AddGuestSiteResponses(page, player, starportId);
+        }
+
+        /// <summary>W11o: join an open holding site of a party member at this dock as a guest.</summary>
+        private void AddGuestSiteResponses(ConversationMenuPage page, uint player, string dockId)
+        {
+            foreach (var (holdingId, label) in PlanetaryHoldings.GetGuestSites(player, dockId))
+            {
+                page.AddResponse($"Join {label}", () =>
+                {
+                    Close();
+                    PlanetaryHoldings.JoinSite(player, holdingId, dockId);
+                });
+            }
+        }
+
+        /// <summary>
+        /// A player city's Trade Exchange. Cities whose starport is below the opening level (and cities on no NPC planet)
+        /// see no exchange; a city starport that only needs an upgrade tells the player so.
+        /// </summary>
+        private void AddCityTradeExchangeResponse(ConversationMenuPage page, uint player, string starportId)
+        {
+            var dock = Trade.TryGetCityDock(starportId);
+            if (dock == null || dock.Exchange == TradeExchangeType.Invalid)
+                return;
+
+            page.AddResponse("Trade Exchange", () =>
+            {
+                Close();
+                if (!dock.HasExchange)
+                {
+                    SendMessageToPC(player, ColorToken.Red(
+                        $"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership."));
+                    return;
+                }
+
+                var closed = Space.GetIncursionExchangeRefusal(dock);
+                if (!string.IsNullOrEmpty(closed))
+                {
+                    SendMessageToPC(player, ColorToken.Red(closed));
+                    return;
+                }
+
+                var payload = new TradeExchangePayload(dock.Exchange, starportId);
+                Gui.TogglePlayerWindow(player, GuiWindowType.TradeExchange, payload, Owner);
             });
         }
     }

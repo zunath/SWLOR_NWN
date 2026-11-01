@@ -1965,6 +1965,7 @@ def exact_weapon_stance_stat_entries(row, base):
 
     if base == "Ordnance Stance":
         add_stat(stats, "ThrowingAreaAbilityDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
+        add_stat(stats, "ThrowingSingleTargetDamagePercentAdjustment", f"-{parse_percent(r'single-target thrown damage is reduced by (\d+)%', description)}")
         return list(stats.items())
 
     if base == "Flurry Stance":

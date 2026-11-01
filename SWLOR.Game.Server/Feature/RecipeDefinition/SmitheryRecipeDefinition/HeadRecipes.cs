@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 36, coolingRate: 1, startingThermal: 63, shapeShare: 62);
 
             // Spiritmaster Cap
             _builder.Create(RecipeType.SpiritmasterCap, SkillType.Smithery)
@@ -43,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 50, coolingRate: 1, startingThermal: 46, shapeShare: 62);
 
             // Combat Cap
             _builder.Create(RecipeType.CombatCap, SkillType.Smithery)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 50, coolingRate: 1, startingThermal: 46, shapeShare: 62);
 
             // Advent Helmet
             _builder.Create(RecipeType.AdventHelmet, SkillType.Smithery)
@@ -65,7 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 43, coolingRate: 1, startingThermal: 63, shapeShare: 62);
 
             // Amateur Helmet
             _builder.Create(RecipeType.AmateurHelmet, SkillType.Smithery)
@@ -76,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 43, coolingRate: 1, startingThermal: 66, shapeShare: 62);
 
             // Cloth Helmet
             _builder.Create(RecipeType.ClothHelmet, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 35, coolingRate: 1, startingThermal: 62, shapeShare: 62);
 
             // Chef Helmet
             _builder.Create(RecipeType.ChefHelmet, SkillType.Smithery)
@@ -98,7 +104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 34, coolingRate: 1, startingThermal: 65, shapeShare: 62);
         }
 
         private void Tier2()
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 40, coolingRate: 6, startingThermal: 71, shapeShare: 61);
 
             // Vivid Cap
             _builder.Create(RecipeType.VividCap, SkillType.Smithery)
@@ -121,7 +129,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 48, coolingRate: 3, startingThermal: 52, shapeShare: 62);
 
             // Valor Cap
             _builder.Create(RecipeType.ValorCap, SkillType.Smithery)
@@ -131,7 +140,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 2, startingThermal: 55, shapeShare: 61);
 
             // Frontier Helmet
             _builder.Create(RecipeType.FrontierHelmet, SkillType.Smithery)
@@ -142,7 +152,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 29, coolingRate: 1, startingThermal: 67, shapeShare: 61);
 
             // Worker Helmet
             _builder.Create(RecipeType.WorkerHelmet, SkillType.Smithery)
@@ -153,7 +164,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 29, coolingRate: 5, startingThermal: 67, shapeShare: 62);
 
             // Linen Helmet
             _builder.Create(RecipeType.LinenHelmet, SkillType.Smithery)
@@ -164,7 +176,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 39, coolingRate: 6, startingThermal: 60, shapeShare: 62);
 
             // Velveteen Helmet
             _builder.Create(RecipeType.VelveteenHelmet, SkillType.Smithery)
@@ -175,7 +188,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 32, coolingRate: 5, startingThermal: 59, shapeShare: 62);
         }
 
         private void Tier3()
@@ -188,7 +202,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 3)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 23, coolingRate: 2, startingThermal: 55, shapeShare: 62);
 
             // Reginal Cap
             _builder.Create(RecipeType.ReginalCap, SkillType.Smithery)
@@ -198,7 +213,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 3)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 37, coolingRate: 4, startingThermal: 31, shapeShare: 62);
 
             // Forza Cap
             _builder.Create(RecipeType.ForzaCap, SkillType.Smithery)
@@ -208,7 +224,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 3)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 40, coolingRate: 1, startingThermal: 39, shapeShare: 62);
 
             // Majestic Helmet
             _builder.Create(RecipeType.MajesticHelmet, SkillType.Smithery)
@@ -219,7 +236,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 21, coolingRate: 5, startingThermal: 62, shapeShare: 62);
 
             // Mechanic Helmet
             _builder.Create(RecipeType.MechanicHelmet, SkillType.Smithery)
@@ -230,7 +248,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 25, coolingRate: 4, startingThermal: 65, shapeShare: 62);
 
             // Designer Helmet
             _builder.Create(RecipeType.DesignerHelmet, SkillType.Smithery)
@@ -241,7 +260,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 20, coolingRate: 4, startingThermal: 64, shapeShare: 62);
 
             // Silk Helmet
             _builder.Create(RecipeType.SilkHelmet, SkillType.Smithery)
@@ -252,7 +272,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 21, coolingRate: 4, startingThermal: 58, shapeShare: 62);
         }
 
         private void Tier4()
@@ -265,7 +286,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 24, coolingRate: 4, startingThermal: 60, shapeShare: 62);
 
             // Grenada Cap
             _builder.Create(RecipeType.GrenadaCap, SkillType.Smithery)
@@ -275,7 +297,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 42, coolingRate: 5, startingThermal: 45, shapeShare: 62);
 
             // Survival Cap
             _builder.Create(RecipeType.SurvivalCap, SkillType.Smithery)
@@ -285,7 +308,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 39, coolingRate: 5, startingThermal: 45, shapeShare: 62);
 
             // Dream Helmet
             _builder.Create(RecipeType.DreamHelmet, SkillType.Smithery)
@@ -296,7 +320,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 25, coolingRate: 4, startingThermal: 61, shapeShare: 62);
 
             // Devotion Helmet
             _builder.Create(RecipeType.DevotionHelmet, SkillType.Smithery)
@@ -307,7 +332,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 24, coolingRate: 4, startingThermal: 61, shapeShare: 62);
 
             // Oasis Helmet
             _builder.Create(RecipeType.OasisHelmet, SkillType.Smithery)
@@ -318,7 +344,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 22, coolingRate: 4, startingThermal: 59, shapeShare: 62);
 
             // Vintage Helmet
             _builder.Create(RecipeType.VintageHelmet, SkillType.Smithery)
@@ -329,7 +356,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 24, coolingRate: 4, startingThermal: 64, shapeShare: 62);
         }
 
         private void Tier5()
@@ -342,7 +370,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 3)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 24, coolingRate: 3, startingThermal: 59, shapeShare: 62);
 
             // Transcendent Cap
             _builder.Create(RecipeType.TranscendentCap, SkillType.Smithery)
@@ -352,7 +381,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 3)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 4, startingThermal: 36, shapeShare: 62);
 
             // Supreme Cap
             _builder.Create(RecipeType.SupremeCap, SkillType.Smithery)
@@ -362,7 +392,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 3)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 4, startingThermal: 40, shapeShare: 62);
 
             // Eternal Helmet
             _builder.Create(RecipeType.EternalHelmet, SkillType.Smithery)
@@ -373,7 +404,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 24, coolingRate: 4, startingThermal: 62, shapeShare: 62);
 
             // Skysteel Helmet
             _builder.Create(RecipeType.SkysteelHelmet, SkillType.Smithery)
@@ -384,7 +416,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 24, coolingRate: 5, startingThermal: 59, shapeShare: 62);
 
             // Rose Helmet
             _builder.Create(RecipeType.RoseHelmet, SkillType.Smithery)
@@ -395,7 +428,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 24, coolingRate: 5, startingThermal: 57, shapeShare: 62);
 
             // Moonflame Helmet
             _builder.Create(RecipeType.MoonflameHelmet, SkillType.Smithery)
@@ -406,7 +440,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 24, coolingRate: 4, startingThermal: 62, shapeShare: 62);
 
             // Chaos Helmet
             _builder.Create(RecipeType.ChaosHelmet, SkillType.Smithery)
@@ -424,7 +459,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
+                .Component("ref_keromber", 5)
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 24, coolingRate: 5, startingThermal: 61, shapeShare: 62);
 
             // Arkanian Dragon Helm
             _builder.Create(RecipeType.ArkanianDragonHelm, SkillType.Smithery)
@@ -442,7 +478,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ark_dragon_troph", 1)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
+                .Component("ref_keromber", 5)
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 24, coolingRate: 5, startingThermal: 68, shapeShare: 62);
 
             // Magus Cap
             _builder.Create(RecipeType.MagusCap, SkillType.Smithery)
@@ -460,7 +497,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
+                .Component("ref_keromber", 5)
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 24, coolingRate: 7, startingThermal: 64, shapeShare: 62);
 
             // Immortal Cap
             _builder.Create(RecipeType.ImmortalCap, SkillType.Smithery)
@@ -478,7 +516,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
+                .Component("ref_keromber", 5)
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 24, coolingRate: 6, startingThermal: 61, shapeShare: 62);
         }
         private void Tier1A()
         {
@@ -491,7 +530,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("fiberp_ruined", 3)
-                .Component("lth_ruined", 2);
+                .Component("lth_ruined", 2)
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 39, coolingRate: 1, startingThermal: 64, shapeShare: 62);
 
             // Mystic Cap
             _builder.Create(RecipeType.MysticCap, SkillType.Smithery)
@@ -502,7 +542,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 5)
                 .Component("fiberp_ruined", 3)
-                .Component("jade", 2);
+                .Component("jade", 2)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 50, coolingRate: 1, startingThermal: 45, shapeShare: 62);
 
             // Vanguard Cap
             _builder.Create(RecipeType.VanguardCap, SkillType.Smithery)
@@ -513,7 +554,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 5)
                 .Component("fiberp_ruined", 3)
-                .Component("elec_ruined", 2);
+                .Component("elec_ruined", 2)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 52, coolingRate: 1, startingThermal: 46, shapeShare: 62);
         }
 
         private void Tier2A()
@@ -527,7 +569,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("fiberp_flawed", 3)
-                .Component("lth_flawed", 2);
+                .Component("lth_flawed", 2)
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 50, coolingRate: 1, startingThermal: 74, shapeShare: 62);
 
             // Oracle Cap
             _builder.Create(RecipeType.OracleCap, SkillType.Smithery)
@@ -538,7 +581,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 5)
                 .Component("fiberp_flawed", 3)
-                .Component("agate", 2);
+                .Component("agate", 2)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 56, coolingRate: 6, startingThermal: 52, shapeShare: 63);
 
             // Onslaught Cap
             _builder.Create(RecipeType.OnslaughtCap, SkillType.Smithery)
@@ -549,7 +593,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 5)
                 .Component("fiberp_flawed", 3)
-                .Component("elec_flawed", 2);
+                .Component("elec_flawed", 2)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 55, coolingRate: 6, startingThermal: 52, shapeShare: 62);
         }
 
         private void Tier3A()
@@ -563,7 +608,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("fiberp_good", 3)
-                .Component("lth_good", 2);
+                .Component("lth_good", 2)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 20, coolingRate: 1, startingThermal: 52, shapeShare: 62);
 
             // Arcanist Cap
             _builder.Create(RecipeType.ArcanistCap, SkillType.Smithery)
@@ -574,7 +620,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 5)
                 .Component("fiberp_good", 3)
-                .Component("citrine", 2);
+                .Component("citrine", 2)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 37, coolingRate: 1, startingThermal: 49, shapeShare: 62);
 
             // Maverick Cap
             _builder.Create(RecipeType.MaverickCap, SkillType.Smithery)
@@ -585,7 +632,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 5)
                 .Component("fiberp_good", 3)
-                .Component("elec_good", 2);
+                .Component("elec_good", 2)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 35, coolingRate: 4, startingThermal: 21, shapeShare: 62);
         }
 
         private void Tier4A()
@@ -599,7 +647,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("fiberp_imperfect", 3)
-                .Component("lth_imperfect", 2);
+                .Component("lth_imperfect", 2)
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 22, coolingRate: 4, startingThermal: 60, shapeShare: 62);
 
             // Luminary Cap
             _builder.Create(RecipeType.LuminaryCap, SkillType.Smithery)
@@ -610,7 +659,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 5)
                 .Component("fiberp_imperfect", 3)
-                .Component("ruby", 2);
+                .Component("ruby", 2)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 41, coolingRate: 5, startingThermal: 45, shapeShare: 62);
 
             // Apex Cap
             _builder.Create(RecipeType.ApexCap, SkillType.Smithery)
@@ -621,7 +671,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 5)
                 .Component("fiberp_imperfect", 3)
-                .Component("elec_imperfect", 2);
+                .Component("elec_imperfect", 2)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 43, coolingRate: 5, startingThermal: 45, shapeShare: 62);
         }
 
 }

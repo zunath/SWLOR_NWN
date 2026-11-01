@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -42,7 +41,7 @@ public class FurnitureRenameMigrationTests
     }
 
     [Test]
-    public void StalePlayerJson_DeserializesAfterMigrationWithRecipeKnowledgePreserved()
+    public void StalePlayerJson_DeserializesWithRecipeKnowledgePreserved()
     {
         var unlocked = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc);
         var crafted = new DateTime(2026, 10, 2, 0, 0, 0, DateTimeKind.Utc);
@@ -52,7 +51,6 @@ public class FurnitureRenameMigrationTests
             "\"CommandlineBust\":\"2026-08-01T00:00:00Z\",\"CommandlineDisplayPlinth\":\"2026-10-03T00:00:00Z\"}," +
             "\"CraftedRecipes\":{\"VeilcarvedDisplayPlinth\":\"2026-10-02T00:00:00Z\"}," +
             "\"UnknownField\":{\"value\":42}}");
-        var unknown = player["UnknownField"]!.DeepClone();
 
         void AssertMigrated(Player migrated)
         {
@@ -67,13 +65,7 @@ public class FurnitureRenameMigrationTests
         // A record that skipped server migration 29 (e.g. restored afterwards) still loads, with the former names mapped.
         AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
 
-        _29_CorrectStoredCarapaceBracers.RenameFurnitureRecipes(player, out var saved).Should().BeTrue();
-        AssertMigrated(saved);
-        _29_CorrectStoredCarapaceBracers.RenameFurnitureRecipes(player, out _).Should().BeFalse();
-        JToken.DeepEquals(player["UnknownField"], unknown).Should().BeTrue();
-        player[nameof(Player.UnlockedRecipes)]!["VeilcarvedDisplayPlinth"].Should().BeNull();
-
-        var reserialized = JObject.Parse(JsonConvert.SerializeObject(saved));
+        var reserialized = JObject.Parse(JsonConvert.SerializeObject(JsonConvert.DeserializeObject<Player>(player.ToString())));
         reserialized[nameof(Player.UnlockedRecipes)]![nameof(RecipeType.VeilcarvedRunePillar)].Should().NotBeNull();
         AssertMigrated(JsonConvert.DeserializeObject<Player>(reserialized.ToString())!);
     }

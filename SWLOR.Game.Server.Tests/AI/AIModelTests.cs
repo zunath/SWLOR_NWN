@@ -1681,7 +1681,7 @@ public class AIModelTests
         var abilityValidation = ExtractMethodBody(abilitySource, "public static bool CanUseAbility");
 
         canUseAbility.Should().Contain("return Ability.CanUseAbility(context.Self, target, action.Feat, effectiveLevel, targetLocation);");
-        abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);");
+        abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(user, ability.RecastGroup);", "the user is the activator except for a crew member's own ability at a station");
         abilityValidation.Should().Contain("if (isOnRecast)");
 
         Ability.CacheData();

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.ExtraHotbarService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -146,8 +147,23 @@ namespace SWLOR.Game.Server.Service
                 _unlockedPlayers.Remove(player);
 
             Gui.PublishRefreshEvent(player, new ExtraHotbarRefreshEvent());
-            if (!isUnlocked)
+            if (isUnlocked)
+                KeepTitleBarsClear(player);
+            else
                 SaveLockedPositions(player);
+        }
+
+        /// <summary>
+        /// Unlocked bars grow a title bar upward, which covers a bar stacked right above. A covered bar ignores the
+        /// mouse, so each bar moves off the bars numbered below it, bar 1 staying put.
+        /// </summary>
+        private static void KeepTitleBarsClear(uint player)
+        {
+            foreach (var windowType in _windowTypes)
+            {
+                if (Gui.IsWindowOpen(player, windowType))
+                    ((ExtraHotbarViewModel)Gui.GetPlayerWindow(player, windowType).ViewModel).KeepClearOfLowerBars();
+            }
         }
 
         /// <summary>
@@ -484,6 +500,13 @@ namespace SWLOR.Game.Server.Service
             var offHandChanges = currentOffHand != newOffHand;
             var mainHandChanges = currentMainHand != newMainHand || (offHandChanges && IsHandCompanion(currentOffHand));
 
+            // A craft holds the player's gear, so nothing comes off either hand while any crafting window is open.
+            if (CraftMinigameRouting.IsAnyCraftWindowOpen(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("Items cannot be equipped while crafting."));
+                return;
+            }
+
             // Nothing comes off until everything going on is known to be usable.
             foreach (var (changes, item) in new[] { (mainHandChanges, newMainHand), (offHandChanges, newOffHand) })
             {
@@ -567,9 +590,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static string GetEquipError(uint player, uint item)
         {
-            if (Gui.IsWindowOpen(player, GuiWindowType.Craft))
-                return "Items cannot be equipped while crafting.";
-
             if (Item.ForceSensitiveWeaponBaseItemTypes.Contains(GetBaseItemType(item)) &&
                 !Item.CanEquipForceSensitiveWeapon(player))
                 return "Only Force Sensitive characters may equip that item.";

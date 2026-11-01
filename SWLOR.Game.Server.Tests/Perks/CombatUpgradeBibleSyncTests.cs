@@ -19,6 +19,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
@@ -206,6 +207,7 @@ public class CombatUpgradeBibleSyncTests
 
     private static readonly HashSet<PerkCategoryType> DroidInstructionCategories = new()
     {
+        PerkCategoryType.DroidProtocols,
         PerkCategoryType.General,
         PerkCategoryType.VibrobladeDefense,
         PerkCategoryType.VibrobladeOffense,
@@ -334,7 +336,8 @@ public class CombatUpgradeBibleSyncTests
     public void CombatUpgradeBibleManifest_MatchesLivePerkAndAbilityRegistries()
     {
         var root = FindRepositoryRoot();
-        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
+        var rows = manifest
             .Where(IsScopedImplementedRow)
             .ToArray();
         var perks = BuildPerksWithout2daLookup();
@@ -389,7 +392,12 @@ public class CombatUpgradeBibleSyncTests
             }
         }
 
-        AssertNoExtraScopedPerks(rows, perks, failures);
+        // A perk of a scoped category may have an implemented row of an unscoped type (the Gathering styles, beside the space
+        // revamp's scoped Space Industry rows): the row documents it, so it is not an extra perk.
+        var documented = manifest
+            .Where(row => !OutOfScopeTabs.Contains(row.Tab) && ImplementedStatuses.Contains(row.DevStatus) && !string.IsNullOrWhiteSpace(row.PerkName))
+            .ToArray();
+        AssertNoExtraScopedPerks(rows, documented, perks, failures);
         AssertNoExtraScopedAbilities(scopedPerkTypes, expectedActiveFeats, abilities, failures);
         AssertAllAbilityDefinitionNamesMatchAbilityNames(abilities, failures);
         AssertDefinitionFormatting(root, failures);
@@ -1516,8 +1524,9 @@ public class CombatUpgradeBibleSyncTests
         {
             foreach (var (level, perkLevel) in detail.PerkLevels.OrderBy(x => x.Key))
             {
-                if (perkLevel.DroidAISlots <= 0 || perkLevel.GrantedFeats.Count <= 0 ||
-                    perkLevel.GrantedFeats.All(IsPassiveIconTraitFeat))
+                // Droid protocols (PerkGroupType.Droid) are instructions with no ability feat.
+                if (perkLevel.DroidAISlots <= 0 || (detail.GroupType != PerkGroupType.Droid &&
+                    (perkLevel.GrantedFeats.Count <= 0 || perkLevel.GrantedFeats.All(IsPassiveIconTraitFeat))))
                     continue;
 
                 var suffix = detail.PerkLevels.Count > 1
@@ -1752,13 +1761,14 @@ public class CombatUpgradeBibleSyncTests
 
     private static void AssertNoExtraScopedPerks(
         IReadOnlyCollection<BiblePerkRow> rows,
+        IReadOnlyCollection<BiblePerkRow> documented,
         IReadOnlyCollection<PerkRecord> perks,
         List<string> failures)
     {
         var expectedCategories = rows
             .SelectMany(GetExpectedCategories)
             .ToHashSet();
-        var expectedRows = rows
+        var expectedRows = documented
             .Select(row => (
                 Categories: GetExpectedCategories(row),
                 Name: NormalizeName(GetBaseName(row.PerkName)),
@@ -2023,6 +2033,22 @@ public class CombatUpgradeBibleSyncTests
         }
 
         var description = row.Description.ToLowerInvariant();
+
+        // A space ability names its radius by the shared space phrase ("near your ship", "within command range"),
+        // whose size is a SpaceRadii constant rather than a number in the text.
+        if (detail.CanBeUsedInSpace && targeting.Shape == AbilityTargetingShapeType.Sphere)
+        {
+            var spaceRadius = description.Contains("near your ship")
+                ? SpaceRadii.NearShip
+                : description.Contains("near the target") || description.Contains("enemies near it")
+                    ? SpaceRadii.NearTarget
+                    : description.Contains("within command range")
+                        ? SpaceRadii.CommandRange
+                        : (float?)null;
+            if (spaceRadius != null && Math.Abs(targeting.SizeX - spaceRadius.Value) < 0.001f)
+                return;
+        }
+
         var sizeX = Number(targeting.SizeX);
         var sizeY = Number(targeting.SizeY);
         var escapedX = Regex.Escape(sizeX);
@@ -2886,12 +2912,17 @@ public class CombatUpgradeBibleSyncTests
             ("Espionage", "Saboteur") => PerkCategoryType.EspionageSaboteur,
             ("Espionage", "Tradecraft") => PerkCategoryType.EspionageTradecraft,
             ("Fabrication", "Invention") => PerkCategoryType.Fabrication,
+            ("Fabrication", "Builder") => PerkCategoryType.Fabrication,
+            ("Fabrication", "Researcher") => PerkCategoryType.Fabrication,
             ("Force", "Alter") => PerkCategoryType.ForceAlter,
             ("Force", "Control") => PerkCategoryType.ForceControl,
             ("Force", "Sense") => PerkCategoryType.ForceSense,
             ("Gathering", "General") => PerkCategoryType.Gathering,
             ("Gathering", "Harvesting") => PerkCategoryType.Gathering,
             ("Gathering", "Scavenging") => PerkCategoryType.Gathering,
+            ("Gathering", "Space Industry") => PerkCategoryType.Gathering,
+            ("Gathering", "Prospector") => PerkCategoryType.Gathering,
+            ("Gathering", "Treasure Seeker") => PerkCategoryType.Gathering,
             ("Heavy Vibroblade", "Immortal") => PerkCategoryType.HeavyVibrobladeDefense,
             ("Heavy Vibroblade", "Berserker") => PerkCategoryType.HeavyVibrobladeOffense,
             ("Katar", "Iron Guard") => PerkCategoryType.KatarIronGuard,
@@ -2903,7 +2934,10 @@ public class CombatUpgradeBibleSyncTests
             ("Lightsaber", "Severance") => PerkCategoryType.LightsaberDefense,
             ("Lightsaber", "Ward") => PerkCategoryType.LightsaberOffense,
             ("Mimicry", "Mimicry") => PerkCategoryType.Mimicry,
-            ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
+            ("Piloting", "Ace") => PerkCategoryType.PilotingAce,
+            ("Piloting", "Ordnance") => PerkCategoryType.PilotingOrdnance,
+            ("Piloting", "Bulwark") => PerkCategoryType.PilotingBulwark,
+            ("Piloting", "Command") => PerkCategoryType.PilotingCommand,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
             ("Twin Pistol", "Barrage") => PerkCategoryType.TwinPistolBarrage,

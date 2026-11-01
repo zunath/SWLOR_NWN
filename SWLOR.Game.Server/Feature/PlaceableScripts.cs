@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            // An Interdictor's hold keeps a ship from jumping a starlane (W11k).
+            if (Space.IsPlayerInSpaceMode(user) && Space.RefuseWhileInterdicted(user))
+                return;
+
             var device = OBJECT_SELF;
             var destination = GetLocalString(device, "DESTINATION");
             var vfxId = GetLocalInt(device, "VISUAL_EFFECT");
@@ -69,6 +73,15 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
+            // A ship may not jump a starlane into a system its hull is too large for.
+            var destinationArea = GetArea(waypoint);
+            if (!Space.CanFlownShipEnterArea(user, destinationArea))
+                return;
+
+            // A starlane into a higher tier, a zone or Wild Space says so as the pilot jumps.
+            var fromArea = GetArea(device);
+            Space.WarnOfDangerousStarlane(user, fromArea, destinationArea);
+
             var location = GetLocation(waypoint);
             TeleportCreature(user, location, waypoint);
 
@@ -85,11 +98,13 @@ namespace SWLOR.Game.Server.Feature
                     GetIsDM(partyMember) ||
                     IsInCombatOrHasEnmity(partyMember) ||
                     GetArea(partyMember) != GetArea(device) ||
-                    GetDistanceBetween(partyMember, device) > TeleportPartyMemberRange)
+                    GetDistanceBetween(partyMember, device) > TeleportPartyMemberRange ||
+                    !Space.CanFlownShipEnterArea(partyMember, destinationArea))
                 {
                     continue;
                 }
 
+                Space.WarnOfDangerousStarlane(partyMember, fromArea, destinationArea);
                 TeleportCreature(partyMember, location, waypoint);
 
                 var userName = PlayerName.GetDisplayName(partyMember, user);

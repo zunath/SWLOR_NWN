@@ -84,9 +84,13 @@ public class AnimationPlanningTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
             .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities()).ToDictionary(p => p.Key, p => p.Value);
         AbilityDetail[] Active(PerkDetail perk) => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats).Distinct()
-            .Where(feat => abilities.ContainsKey(feat) && !abilities[feat].IsMimicryTrait).Select(feat => abilities[feat]).ToArray();
+            .Where(feat => abilities.ContainsKey(feat) && !abilities[feat].IsMimicryTrait && !abilities[feat].CanBeUsedInSpace)
+            .Select(feat => abilities[feat]).ToArray();
         var bible = Csv("SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv");
-        var requirements = CurrentPerks().Where(perk => Active(perk).Length > 0 || bible.Any(row =>
+        // Space abilities fire from the ship, so a Piloting style row needs no character animation.
+        bool Space(PerkDetail perk) => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats)
+            .Any(feat => abilities.ContainsKey(feat) && abilities[feat].CanBeUsedInSpace);
+        var requirements = CurrentPerks().Where(perk => Active(perk).Length > 0 || !Space(perk) && bible.Any(row =>
             Normalize(row["Tab"]) == Normalize(Category(perk)) && Normalize(row["PerkName"]) == Normalize(perk.Name) &&
             new[] { "Combat", "Stance", "Toggle", "Aura" }.Contains(row["Type"]))).ToArray();
         var plan = Csv("design/animations/animation-plan.csv");
@@ -121,7 +125,8 @@ public class AnimationPlanningTests
             .ToDictionary(pair => pair.Key, pair => pair.Value);
         var perks = CurrentPerks();
         var granted = perks.SelectMany(perk => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats))
-            .Distinct().Where(feat => definitions.TryGetValue(feat, out var ability) && !ability.IsMimicryTrait);
+            .Distinct().Where(feat => definitions.TryGetValue(feat, out var ability) && !ability.IsMimicryTrait &&
+                                      !ability.CanBeUsedInSpace);
         var techniques = definitions.Where(pair => pair.Value.IsMimicryTechnique && !pair.Value.IsMimicryTrait)
             .Select(pair => pair.Key);
         var expected = granted.Concat(techniques).Distinct().Select(feat => feat.ToString()).ToArray();
@@ -184,6 +189,8 @@ public class AnimationPlanningTests
             entry => entry.GetProperty("Name").GetString()!);
         foreach (var entry in names)
             installed[entry.Key].GetProperty("AnimationName").GetString().Should().Be(entry.Value);
+        // Activity clips have no ability: fishing's cast and fight, the five station work loops, gathering's six actions,
+        // and the Twin Pistol cycle and travel runs.
         var motionNames = new Dictionary<string, string>
         {
             ["TwinPistolCycle"] = "sw_twinpisto",
@@ -192,7 +199,10 @@ public class AnimationPlanningTests
             ["GrappleShotTravel"] = "sw_grapplesh",
         };
         installed.Keys.Except(names.Keys).Should().BeEquivalentTo(
-            new[] { "Fishing6", "Fishing7", "Fishing8" }.Concat(motionNames.Keys));
+            new[] { "Fishing6", "Fishing7", "Fishing8" }.Concat(motionNames.Keys)
+                .Concat(new[] { "Reel", "GiveLine", "HoldRod", "LandFish" })
+                .Concat(new[] { "ForgeWork", "Circuitry", "Fabricate", "Cooking", "Compound" })
+                .Concat(new[] { "Survey", "Strike", "HvyStrike", "Extract", "Search", "Dig" }));
         foreach (var id in installed.Keys.Except(names.Keys))
         {
             var expectedName = motionNames.TryGetValue(id, out var motionName) ? motionName : "sw_" + id.ToLowerInvariant();

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 1))
                 .Quantity(5)
                 .Component("elec_ruined", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Trigger, cycleLength: 5, peakIntensity: 1);
 
             // Trap Kit II
             _builder.Create(RecipeType.TrapKit2, SkillType.Espionage)
@@ -32,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 2))
                 .Quantity(5)
                 .Component("elec_flawed", 3)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Trigger, cycleLength: 4, peakIntensity: 2);
 
             // Trap Kit III
             _builder.Create(RecipeType.TrapKit3, SkillType.Espionage)
@@ -43,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 3))
                 .Quantity(5)
                 .Component("elec_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Trigger, cycleLength: 6, peakIntensity: 3);
 
             // Trap Kit IV
             _builder.Create(RecipeType.TrapKit4, SkillType.Espionage)
@@ -54,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 4))
                 .Quantity(5)
                 .Component("elec_imperfect", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Trigger, cycleLength: 6, peakIntensity: 4);
 
             // Trap Kit V (Master Saboteur capstone - Trapcraft has no fifth level)
             _builder.Create(RecipeType.TrapKit5, SkillType.Espionage)
@@ -65,7 +69,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 5))
                 .Quantity(5)
                 .Component("elec_high", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .ReactionParameters(cyclePattern: ReactionCyclePattern.Trigger, cycleLength: 4, peakIntensity: 5);
 
             return _builder.Build();
         }

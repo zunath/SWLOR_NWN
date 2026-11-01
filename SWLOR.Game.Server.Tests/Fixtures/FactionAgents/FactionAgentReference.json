@@ -1,0 +1,1763 @@
+{
+  "Cases": [
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 275,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 2,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1150,
+      "Tokens": 2
+    },
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 0,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 375,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 2,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 1250,
+      "Tokens": 3
+    },
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 0,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 475,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 2,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 1350,
+      "Tokens": 3
+    },
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 0,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 900,
+      "Tokens": 2
+    },
+    {
+      "Type": "Kill",
+      "Tier": 1,
+      "Hops": 2,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 1775,
+      "Tokens": 4
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 1,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 575,
+      "Tokens": 1
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 1,
+      "Hops": 3,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1025,
+      "Tokens": 2
+    },
+    {
+      "Type": "MiningQuota",
+      "Tier": 1,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 750,
+      "Tokens": 2
+    },
+    {
+      "Type": "ConvoyEscort",
+      "Tier": 1,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 950,
+      "Tokens": 2
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 1,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CombatSite",
+      "Credits": 650,
+      "Tokens": 1
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 1,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CacheSite",
+      "Credits": 700,
+      "Tokens": 1
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 1,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "Derelict",
+      "Credits": 700,
+      "Tokens": 1
+    },
+    {
+      "Type": "DataHeist",
+      "Tier": 1,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 950,
+      "Tokens": 2,
+      "IntelTokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 425,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 2,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1775,
+      "Tokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 0,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 575,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 2,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 1950,
+      "Tokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 0,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 725,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 2,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 2075,
+      "Tokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 0,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 1375,
+      "Tokens": 3
+    },
+    {
+      "Type": "Kill",
+      "Tier": 2,
+      "Hops": 2,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 2725,
+      "Tokens": 5
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 2,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 900,
+      "Tokens": 2
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 2,
+      "Hops": 3,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1575,
+      "Tokens": 3
+    },
+    {
+      "Type": "MiningQuota",
+      "Tier": 2,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1200,
+      "Tokens": 2
+    },
+    {
+      "Type": "ConvoyEscort",
+      "Tier": 2,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1475,
+      "Tokens": 3
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 2,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CombatSite",
+      "Credits": 1000,
+      "Tokens": 2
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 2,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CacheSite",
+      "Credits": 1050,
+      "Tokens": 2
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 2,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "Derelict",
+      "Credits": 1100,
+      "Tokens": 2
+    },
+    {
+      "Type": "DataHeist",
+      "Tier": 2,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1475,
+      "Tokens": 3,
+      "IntelTokens": 6
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 575,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 2,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2400,
+      "Tokens": 5
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 0,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 800,
+      "Tokens": 2
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 2,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 2625,
+      "Tokens": 5
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 0,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 975,
+      "Tokens": 2
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 2,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 2825,
+      "Tokens": 6
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 0,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 1875,
+      "Tokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 3,
+      "Hops": 2,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 3700,
+      "Tokens": 7
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 3,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1225,
+      "Tokens": 2
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 3,
+      "Hops": 3,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2150,
+      "Tokens": 4
+    },
+    {
+      "Type": "MiningQuota",
+      "Tier": 3,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1850,
+      "Tokens": 4
+    },
+    {
+      "Type": "ConvoyEscort",
+      "Tier": 3,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2025,
+      "Tokens": 4
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 3,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CombatSite",
+      "Credits": 1350,
+      "Tokens": 3
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 3,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CacheSite",
+      "Credits": 1425,
+      "Tokens": 3
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 3,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "Derelict",
+      "Credits": 1475,
+      "Tokens": 3
+    },
+    {
+      "Type": "DataHeist",
+      "Tier": 3,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1950,
+      "Tokens": 4,
+      "IntelTokens": 8
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 500,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 2,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2150,
+      "Tokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 0,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 700,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 2,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 2350,
+      "Tokens": 5
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 0,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 875,
+      "Tokens": 2
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 2,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 2500,
+      "Tokens": 5
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 0,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 1675,
+      "Tokens": 3
+    },
+    {
+      "Type": "Kill",
+      "Tier": 4,
+      "Hops": 2,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 3300,
+      "Tokens": 7
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 4,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1100,
+      "Tokens": 2
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 4,
+      "Hops": 3,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1900,
+      "Tokens": 4
+    },
+    {
+      "Type": "MiningQuota",
+      "Tier": 4,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1950,
+      "Tokens": 4
+    },
+    {
+      "Type": "ConvoyEscort",
+      "Tier": 4,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1800,
+      "Tokens": 4
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 4,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CombatSite",
+      "Credits": 1175,
+      "Tokens": 2
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 4,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CacheSite",
+      "Credits": 1275,
+      "Tokens": 3
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 4,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "Derelict",
+      "Credits": 1300,
+      "Tokens": 3
+    },
+    {
+      "Type": "DataHeist",
+      "Tier": 4,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1725,
+      "Tokens": 3,
+      "IntelTokens": 6
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 625,
+      "Tokens": 1
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 2,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2650,
+      "Tokens": 5
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 0,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 875,
+      "Tokens": 2
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 2,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 2875,
+      "Tokens": 6
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 0,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 1075,
+      "Tokens": 2
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 2,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 3100,
+      "Tokens": 6
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 0,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 2050,
+      "Tokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 5,
+      "Hops": 2,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 4050,
+      "Tokens": 8
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 5,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1350,
+      "Tokens": 3
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 5,
+      "Hops": 3,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2350,
+      "Tokens": 5
+    },
+    {
+      "Type": "MiningQuota",
+      "Tier": 5,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2425,
+      "Tokens": 5
+    },
+    {
+      "Type": "ConvoyEscort",
+      "Tier": 5,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 2000,
+      "Tokens": 4
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 5,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CombatSite",
+      "Credits": 1475,
+      "Tokens": 3
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 5,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CacheSite",
+      "Credits": 1575,
+      "Tokens": 3
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 5,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "Derelict",
+      "Credits": 1575,
+      "Tokens": 3
+    },
+    {
+      "Type": "DataHeist",
+      "Tier": 5,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1825,
+      "Tokens": 4,
+      "IntelTokens": 8
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 1500,
+      "Tokens": 3
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 2,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 6300,
+      "Tokens": 13
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 0,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 2075,
+      "Tokens": 4
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 2,
+      "Role": "Fighter",
+      "Site": "",
+      "Credits": 6875,
+      "Tokens": 14
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 0,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 2575,
+      "Tokens": 5
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 2,
+      "Role": "Interceptor",
+      "Site": "",
+      "Credits": 7375,
+      "Tokens": 15
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 0,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 4875,
+      "Tokens": 10
+    },
+    {
+      "Type": "Kill",
+      "Tier": 6,
+      "Hops": 2,
+      "Role": "Gunship",
+      "Site": "",
+      "Credits": 9675,
+      "Tokens": 19
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 6,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 3200,
+      "Tokens": 6
+    },
+    {
+      "Type": "SealedCourier",
+      "Tier": 6,
+      "Hops": 3,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 5600,
+      "Tokens": 11
+    },
+    {
+      "Type": "MiningQuota",
+      "Tier": 6,
+      "Hops": 0,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 4500,
+      "Tokens": 9
+    },
+    {
+      "Type": "ConvoyEscort",
+      "Tier": 6,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 5025,
+      "Tokens": 10
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 6,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CombatSite",
+      "Credits": 3550,
+      "Tokens": 7
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 6,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "CacheSite",
+      "Credits": 3875,
+      "Tokens": 8
+    },
+    {
+      "Type": "ScanDown",
+      "Tier": 6,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "Derelict",
+      "Credits": 3900,
+      "Tokens": 8
+    },
+    {
+      "Type": "DataHeist",
+      "Tier": 6,
+      "Hops": 1,
+      "Role": "Invalid",
+      "Site": "",
+      "Credits": 5200,
+      "Tokens": 10,
+      "IntelTokens": 20
+    }
+  ],
+  "Rates": {
+    "1": {
+      "Combat": 4055,
+      "Agents": 4354,
+      "Percent": 107.4
+    },
+    "2": {
+      "Combat": 6270,
+      "Agents": 6777,
+      "Percent": 108.1
+    },
+    "3": {
+      "Combat": 8500,
+      "Agents": 9183,
+      "Percent": 108.0
+    },
+    "4": {
+      "Combat": 7557,
+      "Agents": 8177,
+      "Percent": 108.2
+    },
+    "5": {
+      "Combat": 9315,
+      "Agents": 10069,
+      "Percent": 108.1
+    },
+    "6": {
+      "Combat": 22212,
+      "Agents": 23988,
+      "Percent": 108.0
+    }
+  },
+  "Stores": {
+    "RepublicMilitary": [
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_ion",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_inc",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_skr",
+        "Quantity": 10
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10072",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10073",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10199",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10200",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10069",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10070",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10205",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2001",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2003",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10059",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10060",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10104",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2005",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10237",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10062",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10063",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10148",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10056",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10157",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10101",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10240",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10134",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10075",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10150",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10117",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10122",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2170",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10129",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10124",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10125",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10143",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10127",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10141",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_shieldprj_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t55",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_aurekstrike",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_chelabomber",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_jeditranspo",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_lambdashutt",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_republiccen",
+        "Quantity": 1
+      }
+    ],
+    "Czerka": [
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_ion",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_inc",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_skr",
+        "Quantity": 10
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10226",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10151",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10227",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10132",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10229",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10198",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10131",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2174",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10187",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_extract_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t55",
+        "Quantity": 1
+      }
+    ],
+    "Smuggler": [
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_ion",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_inc",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_skr",
+        "Quantity": 10
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10190",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10193",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10194",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10204",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10153",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10144",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10201",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10054",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10206",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10147",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10160",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10164",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10217",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10142",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10093",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10118",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2169",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_thruster_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_sensor_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t55",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_cutlass",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_barracuda",
+        "Quantity": 1
+      }
+    ],
+    "HuttCartel": [
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_ion",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_inc",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_skr",
+        "Quantity": 10
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10216",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10212",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_reactor_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_sensor_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t55",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_huttgrandba",
+        "Quantity": 1
+      }
+    ],
+    "Mandalorian": [
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_ion",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_inc",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_skr",
+        "Quantity": 10
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10105",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10156",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10224",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10116",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10115",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_hframe_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t55",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_basiliskwar",
+        "Quantity": 1
+      }
+    ],
+    "SithMilitary": [
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_ion",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_inc",
+        "Quantity": 10
+      },
+      {
+        "Category": "Ammo",
+        "Resref": "ship_missile_skr",
+        "Quantity": 10
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2008",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10089",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10090",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10091",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10210",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10211",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10087",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10088",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10078",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10079",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10106",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10241",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_2007",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10084",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10085",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10064",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10065",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10066",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10067",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10081",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10082",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10163",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10137",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10126",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10238",
+        "Quantity": 1
+      },
+      {
+        "Category": "DesignSchematic",
+        "Resref": "dsgn_10239",
+        "Quantity": 1
+      },
+      {
+        "Category": "ManufacturerComponent",
+        "Resref": "sc_emitter_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t55",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_sithfighter",
+        "Quantity": 1
+      },
+      {
+        "Category": "ShipSchematic",
+        "Resref": "schm_eclipseinte",
+        "Quantity": 1
+      }
+    ]
+  },
+  "StorePrices": {
+    "Ammo": 6,
+    "DesignSchematic": 20,
+    "ManufacturerComponent": 25,
+    "RiftKey": 20,
+    "ShipSchematic": 100
+  },
+  "RiftKeys": {
+    "rift_key_t1": {
+      "Tokens": 6,
+      "MinimumTier": "Neutral"
+    },
+    "rift_key_t2": {
+      "Tokens": 8,
+      "MinimumTier": "Trusted"
+    },
+    "rift_key_t3": {
+      "Tokens": 12,
+      "MinimumTier": "Trusted"
+    },
+    "rift_key_t4": {
+      "Tokens": 11,
+      "MinimumTier": "Honored"
+    },
+    "rift_key_t5": {
+      "Tokens": 13,
+      "MinimumTier": "Honored"
+    },
+    "rift_key_t55": {
+      "Tokens": 20,
+      "MinimumTier": "Honored"
+    }
+  }
+}

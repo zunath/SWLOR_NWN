@@ -37614,6 +37614,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crew Console"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crew_console"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Croknor Vein"
                     },
                     "RESREF": {
@@ -37641,6 +37652,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "asteroid_currian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Durelium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_durel1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Durelium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_durel2"
                     }
                   },
                   {
@@ -38928,6 +38961,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mkt_visc_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veylan Greens Patch"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_grove_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silverwood Seed Bush"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_grove_seed"
                     }
                   }
                 ]

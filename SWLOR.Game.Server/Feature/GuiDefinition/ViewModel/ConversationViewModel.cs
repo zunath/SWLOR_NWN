@@ -25,6 +25,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>The speaker name, wrapped onto the three label rows of the portrait column (NUI labels do not wrap).</summary>
+        public string SpeakerNameLine1
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SpeakerNameLine2
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SpeakerNameLine3
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string PortraitResref
         {
             get => Get<string>();
@@ -169,6 +188,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var speaker = ResolveSpeakerObject(node);
             SpeakerName = ResolveSpeakerName(node, speaker);
+            var speakerLines = WrapSpeakerName(SpeakerName);
+            SpeakerNameLine1 = speakerLines[0];
+            SpeakerNameLine2 = speakerLines[1];
+            SpeakerNameLine3 = speakerLines[2];
             PortraitResref = ResolvePortrait(node, speaker);
             HasPortrait = !string.IsNullOrWhiteSpace(PortraitResref);
             if (playPresentation)
@@ -235,6 +258,66 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var charactersPerLine = (int)Math.Floor(dialogueWidth / estimatedCharacterWidth);
 
             return Math.Max(charactersPerLine, 1);
+        }
+
+        /// <summary>The characters that fit on one row of the 150 px portrait column (about 8 px each).</summary>
+        public const int SpeakerNameLineCharacters = 18;
+
+        /// <summary>
+        /// Wraps a speaker name onto the portrait column's three label rows at word breaks. NUI labels draw one line
+        /// and clip the rest, so "Docking Point: CZ-220" or "Requisitions Officer Mira Kell" lost their ends. A one-line
+        /// name sits on the middle row, as the single centred label did; a longer name fills the rows from the top, and
+        /// a name past three rows ends in "...".
+        /// </summary>
+        public static string[] WrapSpeakerName(string name)
+        {
+            var lines = new List<string>();
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var current = string.Empty;
+                foreach (var word in name.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var remaining = word;
+                    while (remaining.Length > SpeakerNameLineCharacters)
+                    {
+                        if (current.Length > 0)
+                        {
+                            lines.Add(current);
+                            current = string.Empty;
+                        }
+
+                        lines.Add(remaining[..SpeakerNameLineCharacters]);
+                        remaining = remaining[SpeakerNameLineCharacters..];
+                    }
+
+                    if (current.Length == 0)
+                        current = remaining;
+                    else if (current.Length + 1 + remaining.Length <= SpeakerNameLineCharacters)
+                        current += " " + remaining;
+                    else
+                    {
+                        lines.Add(current);
+                        current = remaining;
+                    }
+                }
+
+                if (current.Length > 0)
+                    lines.Add(current);
+            }
+
+            if (lines.Count > 3)
+            {
+                var last = lines[2];
+                lines = new List<string> { lines[0], lines[1], (last.Length > SpeakerNameLineCharacters - 3 ? last[..(SpeakerNameLineCharacters - 3)] : last) + "..." };
+            }
+
+            return lines.Count switch
+            {
+                0 => new[] { string.Empty, string.Empty, string.Empty },
+                1 => new[] { string.Empty, lines[0], string.Empty },
+                2 => new[] { lines[0], lines[1], string.Empty },
+                _ => lines.ToArray(),
+            };
         }
 
         private static IEnumerable<string> SplitDialogueText(string text, int segmentCharacterLimit)

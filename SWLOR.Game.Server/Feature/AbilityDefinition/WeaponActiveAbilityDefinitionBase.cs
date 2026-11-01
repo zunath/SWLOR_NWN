@@ -2013,8 +2013,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RemoveStatusEffectOnPerkRefund(type)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
+                    // A crew member's stance from a ship's station is theirs: it sits on the ship, with them as its
+                    // source (Space.GetShotStatAdjustment). Anywhere else the user is the activator.
+                    var user = Service.SpaceService.SpaceCrew.GetAbilityUser(activator);
                     StatusEffect.RemoveOtherStanceStatuses(activator, type);
-                    if (StatusEffect.ApplyStatusEffect(activator, activator, statusEffectFactory(), 0f))
+                    if (StatusEffect.ApplyStatusEffect(user, activator, statusEffectFactory(), 0f))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 })
                 .IsCastedAbility()
@@ -2112,7 +2115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return true;
 
             StatusEffect.RemoveStatusEffect(activator, type, false);
-            SendMessageToPC(activator, $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
+            SendMessageToPC(Service.SpaceService.SpaceCrew.GetAbilityUser(activator), $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
             if (CombatRecorder.IsRecording)
                 CombatRecorder.NoteToggleDeactivated(activator);
             return false;

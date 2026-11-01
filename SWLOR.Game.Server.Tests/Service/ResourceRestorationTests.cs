@@ -24,7 +24,7 @@ public class ResourceRestorationTests
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.ValueText is "GetMaxFP" or "GetMaxStamina" or "RestoreFP" or "RestoreStamina"
-                or "GetCurrentFP" or "GetCurrentStamina");
+                or "GetCurrentFP" or "GetCurrentStamina" or "IsStaminaRestorationBlocked");
         var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(field => field.Declaration.Variables.Any(variable =>
                 variable.Identifier.ValueText is "FPPerWillpower" or "StaminaPerTwoMight"));
@@ -49,7 +49,7 @@ public class ResourceRestorationTests
                 {{string.Join(Environment.NewLine, methods)}}
                 {{tick}}
                 private static bool _restoresStamina;
-                private static bool IsPC, IsDM, IsPossessed;
+                private static bool IsPC, IsDM, IsPossessed, InStealth;
                 private static int LocalFP, LocalStamina, Scripts, Triggers, Feedback, RestoreBonus;
                 private static readonly Player Npc = new() { FP = 40, Stamina = 40 };
                 public sealed class Player
@@ -66,6 +66,7 @@ public class ResourceRestorationTests
                 private static bool GetIsPC(uint creature) => IsPC;
                 private static bool GetIsDM(uint creature) => IsDM;
                 private static bool GetIsDMPossessed(uint creature) => IsPossessed;
+                private static bool GetActionMode(uint creature, ActionMode mode) => InStealth;
                 private static string GetObjectUUID(uint creature) => "test-player";
                 private static int GetAbilityScore(uint creature, AbilityType ability) => 10;
                 private static int GetStatAdjustment(uint creature, StatType type) => 0;
@@ -93,7 +94,7 @@ public class ResourceRestorationTests
                 }
                 public static void Reset(bool pc, bool dm, bool possessed, bool missing, bool stamina)
                 {
-                    IsPC = pc; IsDM = dm; IsPossessed = possessed; _restoresStamina = stamina;
+                    IsPC = pc; IsDM = dm; IsPossessed = possessed; _restoresStamina = stamina; InStealth = false;
                     DB.Saved = missing ? null : new Player(); DB.Reads = 0; DB.Writes = 0;
                     LocalFP = 68; LocalStamina = 53; Scripts = Triggers = Feedback = RestoreBonus = 0;
                 }
@@ -108,6 +109,7 @@ public class ResourceRestorationTests
                     DB.Reads, DB.Writes, Scripts, Triggers, Feedback
                 };
                 public static void SetRestoreBonus(int bonus) => RestoreBonus = bonus;
+                public static void SetStealth(bool stealth) => InStealth = stealth;
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
@@ -182,6 +184,19 @@ public class ResourceRestorationTests
         Call("SetRestoreBonus", 1);
         Call("Restore", "FP", 1, false, true).Should().Be(2);
         State()[0].Should().Be(50);
+    }
+
+    [TestCase("FP", 2)]
+    [TestCase("STM", 0)]
+    public void StealthedPlayer_GainsNoStaminaButStillGainsFP(string resource, int expectedGain)
+    {
+        Call("Reset", true, false, false, false, true);
+        Call("SetStealth", true);
+
+        var gained = (int)Call("Restore", resource, 10, false, true);
+
+        gained.Should().Be(expectedGain);
+        State()[1].Should().Be(33, "a stealthed player's Stamina is never restored");
     }
 
     private int[] State() => (int[])Call("State");

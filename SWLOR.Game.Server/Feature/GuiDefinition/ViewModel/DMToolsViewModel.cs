@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -37,6 +38,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<string> _layoutIds = new();
         private int _selectedLayoutIndex;
         private uint _highlightedPlaceable;
+
+        private const int PlaceablesTabId = 0;
+        private const int SpaceTabId = 1;
+        public const string TabContentElement = "dmtools_tab_content";
+        public const string PlaceablesTabPartial = "DMTOOLS_TAB_PLACEABLES";
+        public const string SpaceTabPartial = "DMTOOLS_TAB_SPACE";
+
+        private static readonly GuiTabGroup<DMToolsViewModel, GuiPayloadBase> Tabs =
+            new GuiTabGroup<DMToolsViewModel, GuiPayloadBase>()
+                .AddTab(PlaceablesTabId, PlaceablesTabPartial)
+                .AddTab(SpaceTabId, SpaceTabPartial);
+
+        private static readonly GuiToggleGroupSync TabToggles = new(PlaceablesTabId, SpaceTabId);
+
+        public int SelectedTabId { get => Get<int>(); set => Set(value); }
+
+        public int TabToggleValue
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                TabToggles.HandleClientChange(value, SelectTab);
+            }
+        }
+
+        public GuiBindingList<GuiComboEntry> SpaceFactionOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceFactionIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpaceRoleOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceRoleIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpaceCountOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceCountIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpaceSignatureOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceSignatureIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpacePocketOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpacePocketIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpaceBattleOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceBattleIndex { get => Get<int>(); set => Set(value); }
+
+        public string SpaceStatus { get => Get<string>(); set => Set(value); }
+
+        public GuiColor SpaceStatusColor { get => Get<GuiColor>(); set => Set(value); }
 
         public string Instructions
         {
@@ -133,6 +187,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PageNumbers = new GuiBindingList<GuiComboEntry>();
             LayoutNames = new GuiBindingList<string>();
             LayoutToggles = new GuiBindingList<bool>();
+            TabToggleValue = PlaceablesTabId;
+            SelectedTabId = PlaceablesTabId;
+            SpaceFactionOptions = ComboOptions(SpaceSquadCatalog.Factions);
+            SpaceRoleOptions = ComboOptions(SpaceSquadCatalog.Roles.Select(x => x.Label).ToList());
+            SpaceCountOptions = ComboOptions(Enumerable.Range(1, SpaceSquadCatalog.MaxSquadSize).Select(x => x.ToString()).ToList());
+            SpaceFactionIndex = 0;
+            SpaceRoleIndex = 0;
+            SpaceCountIndex = 2;
+            SpaceSignatureOptions = ComboOptions(DmSpaceToolRules.SignatureChoices.Select(x => x.Label).ToList());
+            SpaceSignatureIndex = 0;
+            SpacePocketOptions = ComboOptions(DmSpaceToolRules.RiftTierLabels);
+            SpacePocketIndex = 0;
+            SpaceBattleOptions = ComboOptions(DmSpaceToolRules.CapitalBattleLabels);
+            SpaceBattleIndex = 0;
+            SpaceStatus = string.Empty;
+            SpaceStatusColor = GuiColor.Green;
 
             RebuildPlaceables();
             Search();
@@ -141,8 +211,235 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPageIndex);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.LayoutName);
+            WatchOnClient(model => model.TabToggleValue);
+            WatchOnClient(model => model.SpaceFactionIndex);
+            WatchOnClient(model => model.SpaceRoleIndex);
+            WatchOnClient(model => model.SpaceCountIndex);
+            WatchOnClient(model => model.SpaceSignatureIndex);
+            WatchOnClient(model => model.SpacePocketIndex);
+            WatchOnClient(model => model.SpaceBattleIndex);
             _skipPaginationSearch = false;
+
+            SelectTab(PlaceablesTabId);
         }
+
+        private static GuiBindingList<GuiComboEntry> ComboOptions(IReadOnlyList<string> labels)
+        {
+            var options = new GuiBindingList<GuiComboEntry>();
+            for (var index = 0; index < labels.Count; index++)
+                options.Add(new GuiComboEntry(labels[index], index));
+
+            return options;
+        }
+
+        private void SelectTab(int tabId)
+        {
+            SelectedTabId = tabId;
+            TabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            Tabs.Select(this, TabContentElement, tabId, RestoreTabPicks);
+        }
+
+        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId, RestoreTabPicks);
+
+        /// <summary>
+        /// Pushes the Space combos' picks again once their layout exists. A pick pushed while another tab is shown is
+        /// dropped, so the Ships combo showed 1 while a squad of 3 spawned.
+        /// </summary>
+        private void RestoreTabPicks()
+        {
+            if (SelectedTabId != SpaceTabId)
+                return;
+
+            SpaceFactionIndex = SpaceFactionIndex;
+            SpaceRoleIndex = SpaceRoleIndex;
+            SpaceCountIndex = SpaceCountIndex;
+            SpaceSignatureIndex = SpaceSignatureIndex;
+            SpacePocketIndex = SpacePocketIndex;
+            SpaceBattleIndex = SpaceBattleIndex;
+        }
+
+        /// <summary>
+        /// Spawns the picked squad on a ring around the DM. Space ships only work in space areas, so the DM must be
+        /// in one.
+        /// </summary>
+        public Action OnSpawnSpaceSquad() => () =>
+        {
+            var area = GetArea(Player);
+            if (!Space.IsSpaceArea(area))
+            {
+                SpaceStatus = "You must be in a space area.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
+            var tag = SpaceSquadCatalog.CreatureTag(SpaceFactionIndex, SpaceRoleIndex);
+            if (string.IsNullOrEmpty(tag))
+            {
+                SpaceStatus = "That faction has no ship in that role.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
+            var count = SpaceSquadCatalog.SquadSize(SpaceCountIndex);
+            var center = GetPosition(Player);
+            var spawned = 0;
+            for (var index = 0; index < count; index++)
+            {
+                var (x, y) = SpaceSquadCatalog.Offset(index, count);
+                var location = Location(area, new Vector3(center.X + x, center.Y + y, center.Z), GetFacing(Player));
+                var ship = CreateObject(ObjectType.Creature, tag, location);
+                if (GetIsObjectValid(ship))
+                    spawned++;
+            }
+
+            SpaceStatus = $"Spawned {spawned} {SpaceSquadCatalog.Factions[SpaceFactionIndex]} {SpaceSquadCatalog.Roles[SpaceRoleIndex].Label} ship(s).";
+            SpaceStatusColor = spawned == count ? GuiColor.Green : GuiColor.Red;
+            Log.Write(LogGroup.DM, $"{GetName(Player)} spawned {spawned} x {tag} in {GetName(area)}.");
+        };
+
+        /// <summary>
+        /// Starts a trade convoy (plan section 13) of the picked faction's tier at the DM: a hauler and its escorts on
+        /// the Neutral faction, flying to one of the area's starlanes.
+        /// </summary>
+        public Action OnStartConvoy() => () =>
+        {
+            var area = GetArea(Player);
+            if (!Space.IsSpaceArea(area))
+            {
+                SpaceStatus = "You must be in a space area.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
+            var tier = SpaceSquadCatalog.ConvoyTier(SpaceFactionIndex);
+            if (tier <= 0)
+            {
+                SpaceStatus = "The Rift Raiders run no convoys. Pick a faction tier.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
+            var started = Trade.StartConvoy(GetLocation(Player), tier);
+            SpaceStatus = started ? $"Started a tier {tier} trade convoy." : "The convoy could not be created.";
+            SpaceStatusColor = started ? GuiColor.Green : GuiColor.Red;
+            Log.Write(LogGroup.DM, $"{GetName(Player)} started a tier {tier} trade convoy in {GetName(area)}.");
+        };
+
+        /// <summary>
+        /// Starts an incursion (plan section 30) centred on the DM's orbit, by a random armada, when none is running.
+        /// </summary>
+        public Action OnStartIncursion() => () =>
+        {
+            var (started, message) = Space.StartIncursionAt(Player);
+            SpaceStatus = message;
+            SpaceStatusColor = started ? GuiColor.Green : GuiColor.Red;
+            Log.Write(LogGroup.DM, $"{GetName(Player)} start incursion in {GetName(GetArea(Player))}: {message}");
+        };
+
+        /// <summary>
+        /// Starts a capital battle (plan section 11) in the picked orbit, or a random tier 5-6 orbit, when no battle or
+        /// incursion runs. Its ships drop their loot, and destroying the whole group pays its contributors.
+        /// </summary>
+        public Action OnStartCapitalBattle() => () =>
+        {
+            var (started, message) = Space.StartCapitalBattleAt(DmSpaceToolRules.GetCapitalBattleArea(SpaceBattleIndex));
+            ReportSpace(started, message);
+            Log.Write(LogGroup.DM, $"{GetName(Player)} start capital battle: {message}");
+        };
+
+        /// <summary>Shows a Space tab result: green when it worked, red when it did not.</summary>
+        private void ReportSpace(bool succeeded, string message)
+        {
+            SpaceStatus = message;
+            SpaceStatusColor = succeeded ? GuiColor.Green : GuiColor.Red;
+        }
+
+        /// <summary>
+        /// Asks the DM to click the ground or an object in their area, then runs <paramref name="place"/> with that
+        /// point. A ground click arrives as the area object; a clicked object stands for its own position.
+        /// </summary>
+        private void PickSpacePoint(string prompt, Func<uint, uint, Vector3, (bool Succeeded, string Message)> place)
+        {
+            var dm = DMPresence.GetDM(Player);
+            var controlled = DMPresence.GetControlledCreature(Player);
+            var area = GetArea(controlled);
+            var refusal = DmSpaceToolRules.GetPlaceRefusal(Space.IsSpaceArea(area), GetResRef(area));
+            if (!string.IsNullOrEmpty(refusal))
+            {
+                ReportSpace(false, refusal);
+                return;
+            }
+
+            Targeting.EnterTargetingMode(controlled, ObjectType.All, prompt, target =>
+            {
+                Vector3 position;
+                if (target == area)
+                    position = GetTargetingModeSelectedPosition();
+                else if (GetIsObjectValid(target) && GetArea(target) == area)
+                    position = GetPosition(target);
+                else
+                {
+                    ReportSpace(false, "Pick the ground or an object in this area.");
+                    return;
+                }
+
+                var (succeeded, message) = place(dm, controlled, position);
+                ReportSpace(succeeded, message);
+            }, false);
+        }
+
+        /// <summary>Places a boardable derelict where the DM clicks and opens its site (plan section 28).</summary>
+        public Action OnPlaceDerelict() => () =>
+            PickSpacePoint("Click where to place the derelict.", (dm, controlled, position) =>
+                Space.DmPlaceSignature(dm, controlled, SignatureType.Derelict, position, true));
+
+        /// <summary>Places a hidden signature of the picked kind where the DM clicks, for a Probe Launcher to find (plan section 24).</summary>
+        public Action OnPlaceSignature() => () =>
+        {
+            var type = DmSpaceToolRules.GetSignatureChoice(SpaceSignatureIndex).Type;
+            PickSpacePoint("Click where to place the signature.", (dm, controlled, position) =>
+                Space.DmPlaceSignature(dm, controlled, type, position, false));
+        };
+
+        /// <summary>Opens a Rift Pocket of the picked tier for the player ship the DM clicks, without spending a key (plan section 31).</summary>
+        public Action OnOpenRiftPocket() => () =>
+        {
+            var dm = DMPresence.GetDM(Player);
+            var key = DmSpaceToolRules.GetRiftKey(SpacePocketIndex);
+            Targeting.EnterTargetingMode(DMPresence.GetControlledCreature(Player), ObjectType.Creature,
+                "Click the player's ship to open a Rift Pocket for.", target =>
+                {
+                    var (opened, message) = Space.DmOpenRiftPocket(dm, target, key);
+                    ReportSpace(opened, message);
+                });
+        };
+
+        /// <summary>Closes the Rift Pocket the DM is standing in: its ships go back where they opened it.</summary>
+        public Action OnCloseRiftPocket() => () =>
+        {
+            var (closed, message) = Space.DmCloseRiftPocket(DMPresence.GetDM(Player), DMPresence.GetControlledCreature(Player));
+            ReportSpace(closed, message);
+        };
+
+        /// <summary>Lists the open Rift Pockets in the DM's chat.</summary>
+        public Action OnListRiftPockets() => () =>
+        {
+            ReportSpace(true, Space.DmDescribeRiftPockets());
+            foreach (var line in Space.DmListRiftPockets())
+                DMPresence.SendMessage(Player, line);
+        };
+
+        /// <summary>Breaks the cloak of the ship the DM clicks.</summary>
+        public Action OnUncloakShip() => () =>
+        {
+            var dm = DMPresence.GetDM(Player);
+            Targeting.EnterTargetingMode(DMPresence.GetControlledCreature(Player), ObjectType.Creature,
+                "Click the cloaked ship.", target =>
+                {
+                    var (decloaked, message) = Space.DmDecloakShip(dm, target);
+                    ReportSpace(decloaked, message);
+                });
+        };
 
         private string GetAreaResref()
         {

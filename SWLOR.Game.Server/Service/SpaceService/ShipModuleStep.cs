@@ -1,0 +1,114 @@
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.SkillService;
+
+namespace SWLOR.Game.Server.Service.SpaceService
+{
+    /// <summary>
+    /// One rank step of a revamp module family: the item, how it is used and the numbers it carries.
+    /// Rows come from the generated RevampModuleCatalog; unused numbers stay 0.
+    /// </summary>
+    public class ShipModuleStep
+    {
+        public ShipModuleFamily Family { get; set; }
+        public int Rank { get; set; }
+        public string Tag { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public ShipModulePowerType Row { get; set; }
+        public SkillType Skill { get; set; }
+        public ShipModuleActivation Activation { get; set; }
+        public double CycleSeconds { get; set; }
+        public int CapacitorCost { get; set; }
+        public int Range { get; set; }
+        public bool Capital { get; set; }
+
+        /// <summary>A named rank-50 module: its recipe needs a Module Schematic and gives 2 enhancement slots.</summary>
+        public bool Named { get; set; }
+
+        public string Texture { get; set; }
+        public string Description { get; set; }
+        public RecipeType RecipeType { get; set; }
+        public int RecipeLevel { get; set; }
+        public (string Resref, int Quantity)[] Components { get; set; } = new (string Resref, int Quantity)[0];
+
+        // Weapons
+        public SpaceWeaponFamily WeaponFamily { get; set; }
+        public CombatDamageType DamageType { get; set; }
+        public int Dmg { get; set; }
+        public int Attack { get; set; }
+        public int Accuracy { get; set; }
+        public bool ShieldBypass { get; set; }
+        public bool IgnoreSizePenalty { get; set; }
+        public double ShieldDamageMultiplier { get; set; } = 1.0;
+
+        /// <summary>The size the weapon always fires as. Null means the firing hull's size.</summary>
+        public ShipSize? FixedSize { get; set; }
+
+        // Gathering
+        /// <summary>The highest asteroid, gas cloud or wreck tier a mining, gas or salvage module works.</summary>
+        public int MiningTier { get; set; }
+
+        // Support and passive numbers
+        public int Shield { get; set; }
+        public int Hull { get; set; }
+        public int Repair { get; set; }
+        public int MaxCapacitor { get; set; }
+        public int CapacitorRestore { get; set; }
+        public double CapacitorRegen { get; set; }
+        public int SpeedPercent { get; set; }
+        public int ModuleAccuracy { get; set; }
+        public int ModuleDefense { get; set; }
+        public int ModuleEvasion { get; set; }
+        public int ResistAll { get; set; }
+        public int ResistThermal { get; set; }
+        public int ResistEM { get; set; }
+        public int ResistExplosive { get; set; }
+        public int DamageThermal { get; set; }
+        public int DamageEM { get; set; }
+        public int DamageExplosive { get; set; }
+        public int DamageAll { get; set; }
+        public int AuraShieldPercent { get; set; }
+        public int AuraAccuracy { get; set; }
+
+        // Trade
+        /// <summary>The percentage a Smuggling Compartment cuts the customs scan chance by.</summary>
+        public int ScanReduction { get; set; }
+
+        /// <summary>
+        /// The share of the hull's own cargo a Cargo Expander adds to the cargo bay, in percent. Expanders stack
+        /// (<see cref="SWLOR.Game.Server.Service.TradeService.ShipCargoRules"/>).
+        /// </summary>
+        public int CargoPercent { get; set; }
+
+        // Scanning
+        /// <summary>The signal a Probe Launcher cycle adds to every hidden signature, before bonuses.</summary>
+        public int ScanStrength { get; set; }
+
+        /// <summary>The range in meters of a Probe Launcher's Sensor Sweep pulse.</summary>
+        public int SweepRange { get; set; }
+
+        // Cloaking
+        /// <summary>The range in meters within which another ship sees a ship cloaked with this device.</summary>
+        public int RevealRange { get; set; }
+
+        // Electronic warfare and the Afterburner (W11k)
+        /// <summary>The percentage an Ion Web slows its target by, before the Interceptor's strength bonus.</summary>
+        public int WebPercent { get; set; }
+
+        /// <summary>The range in meters at which an Interdictor holds its target, before the Interceptor's range bonus.</summary>
+        public int InterdictRange { get; set; }
+
+        /// <summary>The Accuracy a Jammer takes from its target (a negative number).</summary>
+        public int TargetAccuracy { get; set; }
+
+        /// <summary>The percentage more damage a Target Painter's target takes from every source.</summary>
+        public int PaintPercent { get; set; }
+
+        /// <summary>The percentage an Afterburner adds to the ship's speed while it is on.</summary>
+        public int AfterburnerPercent { get; set; }
+
+        /// <summary>A copy whose numbers can be changed (component traits) without touching the catalog row.</summary>
+        public ShipModuleStep Clone() => (ShipModuleStep)MemberwiseClone();
+    }
+}

@@ -195,18 +195,29 @@ def match_faces(source,target):
     low=sp.min(axis=1);high=sp.max(axis=1);slack=3e-6+1e-4*(high-low).max(axis=1,keepdims=True)
     face_index=BoxIndex(low-slack,high+slack)
     for ti,tp in enumerate(target['positions']):
+        target_normal=np.cross(tp[1]-tp[0],tp[2]-tp[0])
         center=tp.mean(axis=0);tu=target['uv'][ti];candidates=center_index.query(center)
-        candidates=candidates[np.linalg.norm(centers[candidates]-center,axis=1)<3e-6];found=None;matches=[]
+        candidates=candidates[np.linalg.norm(centers[candidates]-center,axis=1)<3e-6];found=None;matches=[];exact=[]
         for si in candidates:
+            # Sub-micron edges can put a reversed backface inside the position
+            # tolerance for every cyclic corner. Winding still identifies its side.
+            if normal[si]@target_normal<=0:continue
             for shift in range(3):
                 ids=np.roll(np.arange(3),shift)
                 if np.max(abs(sp[si,ids]-tp))<3e-6 and np.max(abs(su[si,ids]-tu))<2e-6:
-                    matches.append((int(si),np.eye(3)[ids]));break
+                    match=(int(si),np.eye(3)[ids]);matches.append(match)
+                    # Prepared float32 corners survive the rigid import and native
+                    # ASCII round trip exactly. Prefer that identity to nearby
+                    # slivers admitted by the fallback geometric tolerance.
+                    if np.array_equal(sp[si,ids].astype(np.float32),tp.astype(np.float32)) and np.array_equal(su[si,ids].astype(np.float32),tu.astype(np.float32)):
+                        exact.append(match)
+                    break
+        if exact:matches=exact
         if matches:found=matches[0]
         if found is None:
             # A clipping plane can subdivide a source face without changing its UV field.
             near=face_index.query(center);plane=np.abs(np.sum((center-a[near])*normal[near],axis=1))/np.maximum(length[near],1e-20)
-            for si in near[(plane<3e-6)&(length[near]>1e-15)]:
+            for si in near[(plane<3e-6)&(length[near]>1e-15)&((normal[near]@target_normal)>0)]:
                 matrix=np.stack((e[si],f[si]),axis=1);weights=np.linalg.lstsq(matrix,(tp-a[si]).T,rcond=None)[0].T;bary=np.column_stack((1-weights.sum(axis=1),weights))
                 if bary.min()>=-2e-5 and np.max(abs(bary@sp[si]-tp))<3e-6 and np.max(abs(bary@su[si]-tu))<2e-6:matches.append((int(si),bary))
             if matches:found=matches[0]
@@ -277,12 +288,13 @@ def reproject_texture(source,meshes,input_path,output_path):
     return {'source_tga_sha256':hashlib.sha256(original).hexdigest(),'reprojected_tga_sha256':hashlib.sha256(output_path.read_bytes()).hexdigest(),'native_triangles_matched':matched,'covered_texels':int(coverage.sum()),'dilated_texels':int((filled&~coverage).sum()),'padding':'full_texture_nearest_toroidal_manhattan','conflicting_uv_texels':overlap,'max_quantization_error_degrees':max_error,'negative_z_clamped':False}
 
 
-def preserve_authored_tangents(path,sources):
+def preserve_authored_tangents(path,sources,angle_limit=.5):
     """Explicit policy: preserve uniquely owned authored frames, never merge conflicts.
 
     Native positions, indices, UVs, normals, materials and controllers are immutable.
     Only existing tangent/sign float streams are patched; normals remain the
-    compiler's retained, quantized authored normals.
+    compiler's retained, quantized authored normals. `angle_limit` (degrees) bounds how far the retained native
+    normals and orthogonalized tangents may sit from the authored ones; 0.5 unless a manifest explicitly widens it.
     """
     before=path.read_bytes();after=bytearray(before);allowed=set();rows=[]
     for mesh in native_meshes(path):
@@ -300,7 +312,7 @@ def preserve_authored_tangents(path,sources):
                     if error>1e-6:raise ValueError(f'Authored tangent conflict at compiled vertex {vertex} of {path.name}; do not average')
                 else:owned[int(vertex)]=candidate
         # Bound importer normal quantization instead of silently changing the normals.
-        if max_normal_angle>.5 or max_tangent_angle>.5:
+        if max_normal_angle>angle_limit or max_tangent_angle>angle_limit:
             raise ValueError('Authored basis differs materially from retained native normals')
         for vertex,value in owned.items():
             tangent=mesh['tangent_offset']+vertex*12;sign=mesh['sign_offset']+vertex*4

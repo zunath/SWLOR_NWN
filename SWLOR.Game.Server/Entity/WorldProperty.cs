@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Entity
             CustomName = string.Empty;
             CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
+            StationAnchorId = string.Empty;
             ChildPropertyIds = new Dictionary<PropertyChildType, List<string>>();
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
@@ -122,9 +123,22 @@ namespace SWLOR.Game.Server.Entity
         public long Treasury { get; set; }
 
         /// <summary>
+        /// The ids of craft station fees already credited to <see cref="Treasury"/> (<see cref="PendingStationFee.Id"/>), saved with the credit, so
+        /// a retry after a crash never credits a fee twice. Records saved before this existed hold null, which means none.
+        /// </summary>
+        public HashSet<string> PaidCraftFees { get; set; }
+
+        /// <summary>
         /// Tracks the amount of credits required to pay off the upkeep for this property.
         /// Only applicable to City property types.
         /// </summary>
         public int Upkeep { get; set; }
+
+        /// <summary>
+        /// The anchor site a player station stands at (plan section 25). Empty for every other property, including
+        /// planet cities; older records load empty.
+        /// </summary>
+        [Indexed]
+        public string StationAnchorId { get; set; }
     }
 }

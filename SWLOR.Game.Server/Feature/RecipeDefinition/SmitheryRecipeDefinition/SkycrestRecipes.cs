@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 4)
                 .Component("fiberp_ruined", 2)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 53, coolingRate: 1, startingThermal: 47, shapeShare: 70);
 
             // Skycrest Talonwraps
             _builder.Create(RecipeType.SkycrestTalonwraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 55, coolingRate: 1, startingThermal: 48, shapeShare: 62);
 
             // Skycrest Striders
             _builder.Create(RecipeType.SkycrestStriders, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 49, coolingRate: 1, startingThermal: 46, shapeShare: 62);
 
             // Skycrest Sash
             _builder.Create(RecipeType.SkycrestSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 55, coolingRate: 1, startingThermal: 48, shapeShare: 54);
 
             // Skycrest Mantle
             _builder.Create(RecipeType.SkycrestMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 55, coolingRate: 1, startingThermal: 48, shapeShare: 54);
 
             // Skycrest Gorget
             _builder.Create(RecipeType.SkycrestGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 54, coolingRate: 2, startingThermal: 47, shapeShare: 38);
 
             // Skycrest Band
             _builder.Create(RecipeType.SkycrestBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 54, coolingRate: 2, startingThermal: 47, shapeShare: 38);
 
             // Skycrest Guard
             _builder.Create(RecipeType.SkycrestGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 53, coolingRate: 1, startingThermal: 47, shapeShare: 62);
 
             // Skycrest Visor
             _builder.Create(RecipeType.SkycrestVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 50, coolingRate: 1, startingThermal: 46, shapeShare: 62);
 
             // Skycrest Charm
             _builder.Create(RecipeType.SkycrestCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 51, coolingRate: 2, startingThermal: 47, shapeShare: 38);
 
             // Skycrest Trophy Band
             _builder.Create(RecipeType.SkycrestTrophyBand, SkillType.Smithery)
@@ -147,7 +157,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 55, coolingRate: 2, startingThermal: 48, shapeShare: 38);
 
             // Skycrest Braid
             _builder.Create(RecipeType.SkycrestBraid, SkillType.Smithery)
@@ -159,7 +170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("stormpl_plume", 1);
+                .Component("stormpl_plume", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 48, coolingRate: 1, startingThermal: 45, shapeShare: 54);
         }
     }
 }

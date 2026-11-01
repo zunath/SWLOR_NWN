@@ -1,0 +1,951 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.HoldingService;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Service
+{
+    /// <summary>
+    /// Planetary Holdings (plan section 26): an account (public CD key) owns up to three holdings across its characters,
+    /// bought at NPC planet docks. Each makes one
+    /// batch of its planet's good a day into that dock's warehouse, owes credit upkeep, and is upgraded with credits and
+    /// goods hauled from other planets. A Processing Plant refines the output with a delivered input; an industrial droid
+    /// posted as staff raises the output; events roll every few days. The owner's ship docked there collects the
+    /// warehouse into its cargo bay, and each holding has a small ground site reached from the dock. Holdings catch up
+    /// lazily, whenever the owner logs in or opens the Holdings window.
+    /// W11o: a bandit raid is a ground fight at the site (the owner and party guests kill the raiders to keep the stock),
+    /// the outdoor types have outdoor sites, and player-city and station starports sell holdings too.
+    /// </summary>
+    public static class PlanetaryHoldings
+    {
+        public const string SiteHoldingIdVariable = "HOLDING_SITE_ID";
+        private const string SiteReturnVariable = "HOLDING_SITE_RETURN";
+        private const string RaiderVariable = "HOLDING_RAIDER";
+        private const string SiteRaidersSpawnedVariable = "HOLDING_RAIDERS_SPAWNED";
+        private const string QuestNpcGroupVariable = "QUEST_NPC_GROUP_ID";
+        private const int RaiderPlacementTries = 12;
+        private const string SiteConsoleTag = "building_exit";
+        private const string SiteEntranceTag = "PROPERTY_ENTRANCE";
+        private const string SiteConversation = "HoldingSiteDialog";
+
+        private static readonly Dictionary<string, uint> _sites = new();
+
+        // Records
+
+        /// <summary>A player's holding records as saved, oldest first.</summary>
+        public static List<PlanetaryHolding> GetHoldingRecords(string playerId)
+        {
+            if (string.IsNullOrWhiteSpace(playerId))
+                return new List<PlanetaryHolding>();
+
+            var query = new DBQuery<PlanetaryHolding>()
+                .AddFieldSearch(nameof(PlanetaryHolding.OwnerPlayerId), playerId, false)
+                .AddPaging(HoldingTuning.MaximumHoldings * 4, 0);
+            return DB.Search(query).OrderBy(x => x.DateCreated).ToList();
+        }
+
+        /// <summary>
+        /// The player's holdings brought up to now. Foreclosed holdings are gone from the list. Each record is marked with
+        /// the owner's public CD key here, so records saved before the per-account limit count toward it from now on.
+        /// </summary>
+        public static List<PlanetaryHolding> LoadHoldings(uint player)
+        {
+            var holdings = GetHoldingRecords(GetObjectUUID(player)).Where(x => Process(x, player)).ToList();
+            var cdKey = GetPCPublicCDKey(player);
+            if (!string.IsNullOrWhiteSpace(cdKey))
+            {
+                foreach (var holding in holdings.Where(x => x.OwnerCDKey != cdKey))
+                {
+                    holding.OwnerCDKey = cdKey;
+                    DB.Set(holding);
+                }
+            }
+
+            return holdings;
+        }
+
+        /// <summary>
+        /// The holdings the player's account owns: <paramref name="ownHoldings"/> (the player's, already loaded) plus those
+        /// of the account's other characters that still exist. The limit is per account so that more characters do not
+        /// multiply the passive income (review 2026-10-30).
+        /// </summary>
+        public static int CountAccountHoldings(uint player, int ownHoldings)
+        {
+            var cdKey = GetPCPublicCDKey(player);
+            if (string.IsNullOrWhiteSpace(cdKey))
+                return ownHoldings;
+
+            var query = new DBQuery<PlanetaryHolding>()
+                .AddFieldSearch(nameof(PlanetaryHolding.OwnerCDKey), cdKey, false)
+                .AddPaging(HoldingTuning.MaximumHoldings * 20, 0);
+            return HoldingRules.CountAccountHoldings(GetObjectUUID(player), ownHoldings, DB.Search(query),
+                playerId => DB.Get<Player>(playerId) is { IsDeleted: false });
+        }
+
+        /// <summary>One of the player's holdings brought up to now, or null when it is not theirs or was lost.</summary>
+        public static PlanetaryHolding LoadHolding(uint player, string holdingId)
+        {
+            var holding = string.IsNullOrWhiteSpace(holdingId) ? null : DB.Get<PlanetaryHolding>(holdingId);
+            if (holding == null || holding.OwnerPlayerId != GetObjectUUID(player))
+                return null;
+
+            return Process(holding, player) ? holding : null;
+        }
+
+        public static string GetPlanetName(HoldingDetail detail) => TradeLookup.GetExchange(detail.Exchange)?.Name ?? "an unknown planet";
+
+        public static string GetHoldingName(PlanetaryHolding holding)
+        {
+            var detail = HoldingRules.GetDetail(holding.Type);
+            return detail == null ? "Holding" : $"{detail.Name} ({GetPlanetName(detail)})";
+        }
+
+        /// <summary>
+        /// Catches the holding up to now and saves it. Returns false when the upkeep owed lost it (the record is deleted).
+        /// New events go to the owner when they are online.
+        /// </summary>
+        private static bool Process(PlanetaryHolding holding, uint owner)
+        {
+            var detail = HoldingRules.GetDetail(holding.Type);
+            if (detail == null)
+                return false;
+
+            var result = HoldingRules.Advance(holding, detail, DateTime.UtcNow, new System.Random(Random.Next()));
+            if (result.Foreclosed)
+            {
+                Foreclose(holding, detail, owner);
+                return false;
+            }
+
+            if (result.Days > 0)
+                DB.Set(holding);
+
+            if (GetIsObjectValid(owner))
+            {
+                foreach (var text in result.Events)
+                    SendMessageToPC(owner, $"{GetHoldingName(holding)}: {text}");
+            }
+
+            return true;
+        }
+
+        private static void Foreclose(PlanetaryHolding holding, HoldingDetail detail, uint owner)
+        {
+            ReleaseDroid(holding, owner);
+            DB.Delete<PlanetaryHolding>(holding.Id);
+            Log.Write(LogGroup.Space, $"HOLDING FORECLOSED - {holding.OwnerPlayerId} - {holding.Type} {holding.Id} - upkeep owed {holding.UpkeepOwed}");
+
+            if (GetIsObjectValid(owner))
+            {
+                SendMessageToPC(owner, ColorToken.Red(
+                    $"Your {detail.Name} at {GetPlanetName(detail)} was foreclosed: {holding.UpkeepOwed} credits of upkeep went unpaid."));
+            }
+        }
+
+        // Buying and abandoning
+
+        /// <summary>The holding name with "a" or "an" ("an Assembly Line").</summary>
+        public static string WithArticle(string name) =>
+            (!string.IsNullOrEmpty(name) && "AEIOU".IndexOf(char.ToUpperInvariant(name[0])) >= 0 ? "an " : "a ") + name;
+
+        public static bool Buy(uint player, HoldingType type, TradeExchangeType exchange, string dockId)
+        {
+            var detail = HoldingRules.GetDetail(type);
+            var owned = CountAccountHoldings(player, LoadHoldings(player).Count);
+            var refusal = HoldingRules.GetPurchaseRefusal(detail, exchange, owned, GetGold(player));
+            if (refusal == HoldingRefusal.None && string.IsNullOrWhiteSpace(dockId))
+                refusal = HoldingRefusal.NotSoldHere;
+            if (refusal != HoldingRefusal.None)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)));
+                return false;
+            }
+
+            AssignCommand(player, () => TakeGoldFromCreature(detail.PurchasePrice, player, true));
+            var holding = HoldingRules.Create(GetObjectUUID(player), detail, dockId, DateTime.UtcNow, GetPCPublicCDKey(player));
+            HoldingRules.AddLog(holding, DateTime.UtcNow, $"Bought for {detail.PurchasePrice} credits.");
+            DB.Set(holding);
+
+            SendMessageToPC(player, ColorToken.Green(
+                $"You bought {WithArticle(detail.Name)} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes " +
+                $"{HoldingRules.GetDailyUnits(holding, detail)} {TradeLookup.GetCommodity(detail.Output)?.Name} a day for your ship " +
+                $"to collect here, and owes {HoldingRules.GetDailyUpkeep(holding, detail)} credits of upkeep a day."));
+            Log.Write(LogGroup.Space, $"HOLDING BUY - {PlayerName.GetAuditName(player)} - {type} {holding.Id} at {dockId} for {detail.PurchasePrice}");
+            return true;
+        }
+
+        /// <summary>Gives the holding up: a share of its price back, less the upkeep owed; its stock and supplies are lost.</summary>
+        public static void Abandon(uint player, string holdingId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            var detail = HoldingRules.GetDetail(holding.Type);
+            var refund = HoldingRules.GetSellBackRefund(holding);
+            ReleaseDroid(holding, player);
+            DB.Delete<PlanetaryHolding>(holding.Id);
+            if (refund > 0)
+                GiveGoldToCreature(player, refund);
+
+            SendMessageToPC(player, $"You gave up your {detail.Name} at {GetPlanetName(detail)} and received {refund} credits.");
+            Log.Write(LogGroup.Space, $"HOLDING ABANDON - {PlayerName.GetAuditName(player)} - {holding.Type} {holding.Id} - refund {refund}, upkeep owed {holding.UpkeepOwed}");
+        }
+
+        // Upkeep and fines
+
+        public static void PayUpkeep(uint player, string holdingId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null || holding.UpkeepOwed <= 0)
+                return;
+
+            if (GetGold(player) < holding.UpkeepOwed)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NotEnoughCredits)));
+                return;
+            }
+
+            var paid = holding.UpkeepOwed;
+            AssignCommand(player, () => TakeGoldFromCreature(paid, player, true));
+            holding.UpkeepOwed = 0;
+            DB.Set(holding);
+            SendMessageToPC(player, ColorToken.Green($"You paid {paid} credits of upkeep for your {GetHoldingName(holding)}."));
+            Log.Write(LogGroup.Space, $"HOLDING UPKEEP - {PlayerName.GetAuditName(player)} - {holding.Id} - {paid}");
+        }
+
+        public static void PayFine(uint player, string holdingId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            var refusal = holding.CustomsFine <= 0
+                ? HoldingRefusal.NoFine
+                : GetGold(player) < holding.CustomsFine ? HoldingRefusal.NotEnoughCredits : HoldingRefusal.None;
+            if (refusal != HoldingRefusal.None)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)));
+                return;
+            }
+
+            var fine = holding.CustomsFine;
+            AssignCommand(player, () => TakeGoldFromCreature(fine, player, true));
+            holding.CustomsFine = 0;
+            HoldingRules.AddLog(holding, DateTime.UtcNow, $"Paid the {fine} credit customs fine.");
+            DB.Set(holding);
+            SendMessageToPC(player, ColorToken.Green($"You paid the {fine} credit customs fine. The inspectors leave your stock alone."));
+            Log.Write(LogGroup.Space, $"HOLDING FINE - {PlayerName.GetAuditName(player)} - {holding.Id} - {fine}");
+        }
+
+        // The warehouse
+
+        /// <summary>
+        /// Loads the warehouse into the cargo bay of the player's ship docked at the holding's dock, as much as fits. Any
+        /// upkeep owed is paid first. Collected goods count as costing their base price.
+        /// </summary>
+        public static void Collect(uint player, string holdingId, string shipId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            var ship = GetDockedShip(player, holding, shipId);
+            var plan = ship == null ? new Dictionary<CommodityType, int>() : HoldingRules.PlanCollection(holding.Warehouse, Trade.GetFreeVolume(ship));
+            var refusal = ship == null
+                ? HoldingRefusal.ShipNotDocked
+                : holding.Warehouse.Values.Sum() <= 0
+                    ? HoldingRefusal.NothingToCollect
+                    : plan.Count == 0
+                        ? HoldingRefusal.CargoBayFull
+                        : GetGold(player) < holding.UpkeepOwed ? HoldingRefusal.UpkeepOwed : HoldingRefusal.None;
+            if (refusal != HoldingRefusal.None)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)));
+                return;
+            }
+
+            var upkeep = holding.UpkeepOwed;
+            if (upkeep > 0)
+            {
+                AssignCommand(player, () => TakeGoldFromCreature(upkeep, player, true));
+                holding.UpkeepOwed = 0;
+            }
+
+            // The units leave the warehouse and are noted as a pending collection in one save, then the ship loads them.
+            foreach (var (commodity, units) in plan)
+                HoldingRules.RemoveStock(holding.Warehouse, commodity, units);
+            holding.PendingCollectionId = Guid.NewGuid().ToString();
+            holding.PendingCollectionShipId = ship.Id;
+            holding.PendingCollection = new Dictionary<CommodityType, int>(plan);
+            DB.Set(holding);
+            FinishCollection(holding, ship);
+
+            var loaded = string.Join(", ", plan.Select(x => $"{x.Value} {TradeLookup.GetCommodity(x.Key)?.Name}"));
+            var left = holding.Warehouse.Values.Sum();
+            SendMessageToPC(player, ColorToken.Green(
+                $"Loaded {loaded} from your {GetHoldingName(holding)}" +
+                (upkeep > 0 ? $", paying {upkeep} credits of upkeep" : string.Empty) +
+                (left > 0 ? $". {left} units stay in the warehouse." : ".")));
+            Log.Write(LogGroup.Space, $"HOLDING COLLECT - {PlayerName.GetAuditName(player)} - {holding.Id} - {loaded} - upkeep {upkeep} - ship {ship.Id}");
+        }
+
+        /// <summary>
+        /// Loads a holding's pending collection into its ship, unless the ship already saved it, then clears it. A ship
+        /// that no longer exists has the units returned to the warehouse.
+        /// </summary>
+        private static void FinishCollection(PlanetaryHolding holding, PlayerShip ship)
+        {
+            if (string.IsNullOrWhiteSpace(holding.PendingCollectionId))
+                return;
+
+            if (ship == null)
+            {
+                foreach (var (commodity, units) in holding.PendingCollection)
+                    HoldingRules.AddStock(holding.Warehouse, commodity, units);
+            }
+            else if (ship.LastHoldingCollectionId != holding.PendingCollectionId)
+            {
+                foreach (var (commodity, units) in holding.PendingCollection)
+                    CargoHoldRules.AddUnits(ship.Cargo, commodity, units, HoldingRules.GetCostBasis(commodity, units));
+                ship.LastHoldingCollectionId = holding.PendingCollectionId;
+                DB.Set(ship);
+            }
+
+            holding.PendingCollectionId = string.Empty;
+            holding.PendingCollectionShipId = string.Empty;
+            holding.PendingCollection.Clear();
+            DB.Set(holding);
+        }
+
+        /// <summary>Finishes any holding collection a restart left pending.</summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void FinishPendingCollections()
+        {
+            var count = (int)DB.SearchCount(new DBQuery<PlanetaryHolding>());
+            if (count <= 0)
+                return;
+
+            foreach (var holding in DB.Search(new DBQuery<PlanetaryHolding>().AddPaging(count, 0)))
+            {
+                if (string.IsNullOrWhiteSpace(holding.PendingCollectionId))
+                    continue;
+
+                FinishCollection(holding, DB.Get<PlayerShip>(holding.PendingCollectionShipId));
+                Log.Write(LogGroup.Space, $"HOLDING COLLECT - finished the pending collection for holding {holding.Id} after a restart");
+            }
+        }
+
+        /// <summary>Unloads a good the holding needs from the ship's cargo bay into its supplies, up to what it still takes.</summary>
+        public static void Deliver(uint player, string holdingId, string shipId, CommodityType commodity)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            var detail = HoldingRules.GetDetail(holding.Type);
+            var ship = GetDockedShip(player, holding, shipId);
+            var wanted = HoldingRules.GetDeliverableUnits(holding, detail, commodity);
+            var aboard = ship == null ? 0 : CargoHoldRules.GetUnits(ship.Cargo, commodity);
+            var refusal = ship == null
+                ? HoldingRefusal.ShipNotDocked
+                : wanted <= 0 ? HoldingRefusal.NothingNeeded : aboard <= 0 ? HoldingRefusal.NoneAboard : HoldingRefusal.None;
+            if (refusal != HoldingRefusal.None)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)));
+                return;
+            }
+
+            // The units leave the cargo bay and are noted as a pending delivery in one save, then the holding takes them.
+            var units = System.Math.Min(wanted, aboard);
+            CargoHoldRules.RemoveUnits(ship.Cargo, commodity, units);
+            ship.PendingHoldingDeliveryId = Guid.NewGuid().ToString();
+            ship.PendingHoldingDeliveryHoldingId = holding.Id;
+            ship.PendingHoldingDeliveryCommodity = commodity;
+            ship.PendingHoldingDeliveryUnits = units;
+            DB.Set(ship);
+            var result = FinishDelivery(ship, holding);
+
+            SendMessageToPC(player, ColorToken.Green($"Delivered {units} {TradeLookup.GetCommodity(commodity)?.Name} to your {GetHoldingName(holding)}."));
+            foreach (var text in result.Events)
+                SendMessageToPC(player, $"{GetHoldingName(holding)}: {text}");
+            Log.Write(LogGroup.Space, $"HOLDING DELIVER - {PlayerName.GetAuditName(player)} - {holding.Id} - {units} {commodity} - ship {ship.Id}");
+        }
+
+        /// <summary>
+        /// Adds a ship's pending delivery to its holding's supplies, unless the holding already saved it, then clears it.
+        /// A holding that no longer exists has the units returned to the cargo bay.
+        /// </summary>
+        private static HoldingAdvanceResult FinishDelivery(PlayerShip ship, PlanetaryHolding holding)
+        {
+            var result = new HoldingAdvanceResult();
+            if (string.IsNullOrWhiteSpace(ship.PendingHoldingDeliveryId))
+                return result;
+
+            var commodity = ship.PendingHoldingDeliveryCommodity;
+            var units = ship.PendingHoldingDeliveryUnits;
+            if (holding == null)
+            {
+                CargoHoldRules.AddUnits(ship.Cargo, commodity, units, HoldingRules.GetCostBasis(commodity, units));
+            }
+            else if (holding.LastDeliveryId != ship.PendingHoldingDeliveryId)
+            {
+                HoldingRules.Deliver(holding, HoldingRules.GetDetail(holding.Type), commodity, units, DateTime.UtcNow, result);
+                holding.LastDeliveryId = ship.PendingHoldingDeliveryId;
+                DB.Set(holding);
+            }
+
+            ship.PendingHoldingDeliveryId = string.Empty;
+            ship.PendingHoldingDeliveryHoldingId = string.Empty;
+            ship.PendingHoldingDeliveryUnits = 0;
+            DB.Set(ship);
+            return result;
+        }
+
+        /// <summary>Finishes any holding delivery a restart left pending.</summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void FinishPendingDeliveries()
+        {
+            var count = (int)DB.SearchCount(new DBQuery<PlayerShip>());
+            if (count <= 0)
+                return;
+
+            foreach (var ship in DB.Search(new DBQuery<PlayerShip>().AddPaging(count, 0)))
+            {
+                if (string.IsNullOrWhiteSpace(ship.PendingHoldingDeliveryId))
+                    continue;
+
+                FinishDelivery(ship, DB.Get<PlanetaryHolding>(ship.PendingHoldingDeliveryHoldingId));
+                Log.Write(LogGroup.Space, $"HOLDING DELIVER - finished the pending delivery for ship {ship.Id} after a restart");
+            }
+        }
+
+        /// <summary>The player's own ship docked at the holding's dock, or null.</summary>
+        private static PlayerShip GetDockedShip(uint player, PlanetaryHolding holding, string shipId)
+        {
+            if (string.IsNullOrWhiteSpace(shipId))
+                return null;
+
+            return Trade.GetShipsDockedAt(player, holding.DockId).FirstOrDefault(x => x.Id == shipId);
+        }
+
+        // Upgrades
+
+        public static void Upgrade(uint player, string holdingId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            var detail = HoldingRules.GetDetail(holding.Type);
+            var refusal = HoldingRules.GetUpgradeRefusal(holding, detail, GetGold(player));
+            if (refusal != HoldingRefusal.None)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)));
+                return;
+            }
+
+            var upgrade = HoldingRules.GetNextUpgrade(holding, detail);
+            AssignCommand(player, () => TakeGoldFromCreature(upgrade.Credits, player, true));
+            HoldingRules.ApplyUpgrade(holding, detail);
+            HoldingRules.AddLog(holding, DateTime.UtcNow, $"Upgraded to level {holding.Level}.");
+            DB.Set(holding);
+
+            SendMessageToPC(player, ColorToken.Green(
+                $"Your {GetHoldingName(holding)} is now level {holding.Level} and makes {HoldingRules.GetDailyUnits(holding, detail)} units a day."));
+            Log.Write(LogGroup.Space, $"HOLDING UPGRADE - {PlayerName.GetAuditName(player)} - {holding.Id} - level {holding.Level} - {upgrade.Credits} credits");
+        }
+
+        public static void BuildPlant(uint player, string holdingId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            var detail = HoldingRules.GetDetail(holding.Type);
+            var refusal = HoldingRules.GetPlantRefusal(holding, detail, GetGold(player));
+            if (refusal != HoldingRefusal.None)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)));
+                return;
+            }
+
+            AssignCommand(player, () => TakeGoldFromCreature(detail.Plant.Credits, player, true));
+            HoldingRules.ApplyPlant(holding, detail);
+            HoldingRules.AddLog(holding, DateTime.UtcNow, "Built a Processing Plant.");
+            DB.Set(holding);
+
+            SendMessageToPC(player, ColorToken.Green(
+                $"Your {GetHoldingName(holding)} has a Processing Plant. Deliver {TradeLookup.GetCommodity(detail.Chain.Input)?.Name} and it turns " +
+                $"its output into {TradeLookup.GetCommodity(detail.Chain.Refined)?.Name}."));
+            Log.Write(LogGroup.Space, $"HOLDING PLANT - {PlayerName.GetAuditName(player)} - {holding.Id} - {detail.Plant.Credits} credits");
+        }
+
+        public static void SetRefining(uint player, string holdingId, bool refine)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null || !holding.HasProcessingPlant || holding.RefineOutput == refine)
+                return;
+
+            holding.RefineOutput = refine;
+            DB.Set(holding);
+        }
+
+        // Droid staff
+
+        /// <summary>
+        /// Posts one of the player's droids as the holding's staff (plan section 27). Like ship droid crew, the controller
+        /// stays with its owner, cursed, and the droid is never spawned, so it does not take the follow slot.
+        /// </summary>
+        public static void AssignDroid(uint player, string holdingId, uint controller)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(holding.DroidItemId))
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.DroidAlreadyPosted)));
+                return;
+            }
+
+            if (!GetIsObjectValid(controller) || !Space.GetPostableDroids(player).Contains(controller))
+            {
+                SendMessageToPC(player, ColorToken.Red("You no longer carry that droid, or it is busy."));
+                return;
+            }
+
+            var details = Droid.LoadDroidItemPropertyDetails(controller);
+            var protocols = DroidIndustryRules.SelectProtocols(details.Perks);
+            holding.DroidItemId = Droid.GetDroidId(controller);
+            holding.DroidName = Droid.GetDroidName(controller);
+            holding.DroidIndustry = System.Math.Max(0, details.Industry);
+            holding.DroidEfficiencyPercent = DroidIndustryRules.GetProtocolValue(protocols, PerkType.EfficiencyProtocol);
+            HoldingRules.AddLog(holding, DateTime.UtcNow, $"{holding.DroidName} joined the staff.");
+
+            // The controller is marked and saved with the character before the holding is: a restart in between leaves
+            // a marker the login check clears, never a staff droid that is still free to use.
+            Droid.MarkPosted(controller, HoldingRules.GetDroidPostingId(holding.Id));
+            ExportSingleCharacter(player);
+            DB.Set(holding);
+
+            SendMessageToPC(player, ColorToken.Green(
+                $"{holding.DroidName} now works your {GetHoldingName(holding)}. With Industry {holding.DroidIndustry} it adds " +
+                $"{HoldingRules.GetDroidPercent(holding)}% to the output. It stays at its post until recalled."));
+            Log.Write(LogGroup.Space, $"HOLDING DROID - {PlayerName.GetAuditName(player)} - {holding.Id} - posted '{holding.DroidName}' (Industry {holding.DroidIndustry})");
+        }
+
+        /// <summary>
+        /// A staff droid's rating changed (its instructions were edited, or a login found its controller changed): the
+        /// holding catches up at the old rating, then works at the new one.
+        /// </summary>
+        public static void RefreshStaffDroid(uint owner, string holdingId, uint controller)
+        {
+            var holding = LoadHolding(owner, holdingId);
+            if (holding == null || holding.DroidItemId != Droid.GetDroidId(controller))
+                return;
+
+            var (industry, efficiency) = StationBuildings.GetDroidIndustry(controller);
+            if (HoldingRules.RefreshDroid(holding, industry, efficiency))
+                DB.Set(holding);
+        }
+
+        public static void RecallDroid(uint player, string holdingId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(holding.DroidItemId))
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NoDroid)));
+                return;
+            }
+
+            var name = holding.DroidName;
+            ReleaseDroid(holding, player);
+            HoldingRules.AddLog(holding, DateTime.UtcNow, $"{name} left the staff.");
+            DB.Set(holding);
+            SendMessageToPC(player, $"{name} leaves your {GetHoldingName(holding)} and is back with you.");
+        }
+
+        /// <summary>Clears the holding's staff droid and uncurses its controller when its owner is online.</summary>
+        private static void ReleaseDroid(PlanetaryHolding holding, uint owner)
+        {
+            if (string.IsNullOrWhiteSpace(holding.DroidItemId))
+                return;
+
+            if (GetIsObjectValid(owner))
+            {
+                var controller = Droid.FindController(owner, holding.DroidItemId);
+                if (GetIsObjectValid(controller))
+                    Droid.ClearPosted(controller);
+            }
+
+            holding.DroidItemId = string.Empty;
+            holding.DroidName = string.Empty;
+            holding.DroidIndustry = 0;
+            holding.DroidEfficiencyPercent = 0;
+        }
+
+        // Ground sites
+
+        /// <summary>
+        /// Takes the owner to the holding's ground site: an instance of its type's template, made on the first visit and
+        /// removed once empty. Its office terminal manages the holding and leads back to the dock.
+        /// </summary>
+        public static void VisitSite(uint player, string holdingId, string dockId)
+        {
+            var holding = LoadHolding(player, holdingId);
+            if (holding == null)
+                return;
+
+            if (holding.DockId != dockId)
+            {
+                SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NotAtDock)));
+                return;
+            }
+
+            var detail = HoldingRules.GetDetail(holding.Type);
+            var site = GetOrCreateSite(holding, detail);
+            if (!GetIsObjectValid(site))
+            {
+                SendMessageToPC(player, ColorToken.Red("The holding's site cannot be reached right now."));
+                Log.Write(LogGroup.Error, $"Holding site template '{detail.SiteAreaResref}' could not be instanced for holding {holding.Id}.");
+                return;
+            }
+
+            SpawnRaiders(holding, detail, site);
+            SendToSite(player, site);
+        }
+
+        private static void SendToSite(uint player, uint site)
+        {
+            var entrance = GetSiteEntrance(site);
+            SetLocalLocation(player, SiteReturnVariable, GetLocation(player));
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionJumpToLocation(entrance);
+            });
+        }
+
+        /// <summary>
+        /// The holding sites a player can join as a guest at this dock (W11o): those of the members of their party whose
+        /// site is open (the owner went first), as (holding id, label).
+        /// </summary>
+        public static List<(string HoldingId, string Label)> GetGuestSites(uint player, string dockId)
+        {
+            var sites = new List<(string HoldingId, string Label)>();
+            foreach (var (holdingId, site) in _sites.ToList())
+            {
+                var holding = GetIsObjectValid(site) ? DB.Get<PlanetaryHolding>(holdingId) : null;
+                if (holding == null || holding.DockId != dockId || holding.OwnerPlayerId == GetObjectUUID(player))
+                    continue;
+
+                var owner = FindOnlinePlayer(holding.OwnerPlayerId);
+                if (!HoldingRules.CanJoinAsGuest(GetIsObjectValid(owner) && GetFactionEqual(owner, player), true, holding.DockId == dockId))
+                    continue;
+
+                sites.Add((holdingId, $"{GetName(owner)}'s {GetHoldingName(holding)}"));
+            }
+
+            return sites;
+        }
+
+        /// <summary>A party guest joins an open holding site at its dock (W11o). Guests cannot manage the holding.</summary>
+        public static void JoinSite(uint guest, string holdingId, string dockId)
+        {
+            var holding = string.IsNullOrWhiteSpace(holdingId) ? null : DB.Get<PlanetaryHolding>(holdingId);
+            var owner = holding == null ? OBJECT_INVALID : FindOnlinePlayer(holding.OwnerPlayerId);
+            var open = holding != null && _sites.TryGetValue(holding.Id, out var site) && GetIsObjectValid(site);
+            if (!HoldingRules.CanJoinAsGuest(GetIsObjectValid(owner) && GetFactionEqual(owner, guest), open, holding?.DockId == dockId))
+            {
+                SendMessageToPC(guest, ColorToken.Red("Only members of the owner's party can join a holding site, and only while the owner has it open at this dock."));
+                return;
+            }
+
+            SpawnRaiders(holding, HoldingRules.GetDetail(holding.Type), _sites[holding.Id]);
+            SendToSite(guest, _sites[holding.Id]);
+            SendMessageToPC(owner, $"{GetName(guest)} joins you at your {GetHoldingName(holding)}.");
+        }
+
+        private static uint FindOnlinePlayer(string playerId)
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsDM(player) && GetObjectUUID(player) == playerId)
+                    return player;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        // Bandit raids (W11o)
+
+        /// <summary>A pending raid's raiders, spawned once per site instance at walkable spots away from the entrance.</summary>
+        private static void SpawnRaiders(PlanetaryHolding holding, HoldingDetail detail, uint site)
+        {
+            if (!holding.RaidPending || GetLocalBool(site, SiteRaidersSpawnedVariable))
+                return;
+
+            SetLocalBool(site, SiteRaidersSpawnedVariable, true);
+            var entrance = GetPositionFromLocation(GetSiteEntrance(site));
+            foreach (var resref in HoldingRules.PlanRaiders(detail, max => Random.Next(max)))
+            {
+                var location = GetSiteEntrance(site);
+                for (var attempt = 0; attempt < RaiderPlacementTries; attempt++)
+                {
+                    // The site is an instance with a generated resref; its template's walkmesh holds the walkable spots.
+                    var candidate = Walkmesh.GetRandomLocation(site, detail.SiteAreaResref);
+                    var position = GetPositionFromLocation(candidate);
+                    if (position.X == 0f && position.Y == 0f)
+                        continue;
+
+                    location = candidate;
+                    if (System.Numerics.Vector3.Distance(position, entrance) >= HoldingTuning.RaidEntranceClearMeters)
+                        break;
+                }
+
+                var raider = CreateObject(ObjectType.Creature, resref, location);
+                if (!GetIsObjectValid(raider))
+                    continue;
+
+                // The roster borrows other areas' creatures; their kills here count toward no quest.
+                DeleteLocalInt(raider, QuestNpcGroupVariable);
+                Spawn.PrepareDMSpawnedCreature(raider);
+                Stat.LoadNPCStats(raider);
+                SetLocalString(raider, RaiderVariable, holding.Id);
+            }
+        }
+
+        /// <summary>The last raider down at a site drives the raid off: the warehouse is safe.</summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        public static void CheckRaidRepelled()
+        {
+            var raider = OBJECT_SELF;
+            var holdingId = GetLocalString(raider, RaiderVariable);
+            if (string.IsNullOrWhiteSpace(holdingId))
+                return;
+
+            var site = GetArea(raider);
+            for (var obj = GetFirstObjectInArea(site, ObjectType.Creature); GetIsObjectValid(obj); obj = GetNextObjectInArea(site, ObjectType.Creature))
+            {
+                if (obj != raider && !GetIsDead(obj) && GetLocalString(obj, RaiderVariable) == holdingId)
+                    return;
+            }
+
+            var holding = DB.Get<PlanetaryHolding>(holdingId);
+            if (holding == null)
+                return;
+
+            var owner = FindOnlinePlayer(holding.OwnerPlayerId);
+            if (!Process(holding, owner))
+                return;
+
+            var result = new HoldingAdvanceResult();
+            if (!HoldingRules.RepelRaid(holding, DateTime.UtcNow, result))
+                return;
+
+            DB.Set(holding);
+            for (var obj = GetFirstObjectInArea(site); GetIsObjectValid(obj); obj = GetNextObjectInArea(site))
+            {
+                if (GetIsPC(obj))
+                    SendMessageToPC(obj, ColorToken.Green($"{GetHoldingName(holding)}: {result.Events.LastOrDefault()}"));
+            }
+
+            Log.Write(LogGroup.Space, $"HOLDING RAID REPELLED - {holding.OwnerPlayerId} - {holding.Type} {holding.Id}");
+        }
+
+        // Player-city and station starports (W11o)
+
+        /// <summary>
+        /// A holding bought at a player city's or station's Starport whose starport is gone (retrieved, or the city lost)
+        /// ships from this NPC dock of its exchange from now on, so it is never stranded.
+        /// </summary>
+        public static void RehomeStrandedHoldings(uint player, TradeExchangeType exchange, string npcDockId)
+        {
+            if (exchange == TradeExchangeType.Invalid || string.IsNullOrWhiteSpace(npcDockId) || HoldingRules.IsCityDockId(npcDockId))
+                return;
+
+            foreach (var holding in LoadHoldings(player))
+            {
+                var detail = HoldingRules.GetDetail(holding.Type);
+                if (detail?.Exchange != exchange || !HoldingRules.IsCityDockId(holding.DockId) || Trade.TryGetCityDock(holding.DockId) != null)
+                    continue;
+
+                holding.DockId = npcDockId;
+                HoldingRules.AddLog(holding, DateTime.UtcNow, "Its starport is gone: the holding now ships from this dock.");
+                DB.Set(holding);
+                SendMessageToPC(player, $"Your {GetHoldingName(holding)} lost its starport and now ships from this dock.");
+            }
+        }
+
+        /// <summary>Sends the player from a holding site back to the dock they came from.</summary>
+        public static void LeaveSite(uint player)
+        {
+            var destination = GetLocalLocation(player, SiteReturnVariable);
+            if (!GetIsObjectValid(GetAreaFromLocation(destination)))
+                destination = GetStartingLocation();
+
+            DeleteLocalLocation(player, SiteReturnVariable);
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionJumpToLocation(destination);
+            });
+        }
+
+        private static uint GetOrCreateSite(PlanetaryHolding holding, HoldingDetail detail)
+        {
+            if (_sites.TryGetValue(holding.Id, out var existing) && GetIsObjectValid(existing))
+                return existing;
+
+            var site = Area.CreateInstance(detail.SiteAreaResref, "holding_site", $"{detail.Name} - {GetPlanetName(detail)}");
+            if (!GetIsObjectValid(site))
+                return OBJECT_INVALID;
+
+            SetLocalString(site, SiteHoldingIdVariable, holding.Id);
+            for (var obj = GetFirstObjectInArea(site); GetIsObjectValid(obj); obj = GetNextObjectInArea(site))
+            {
+                if (GetTag(obj) != SiteConsoleTag)
+                    continue;
+
+                SetName(obj, "Holding Office Terminal");
+                SetLocalString(obj, "CONVERSATION", SiteConversation);
+                SetLocalString(obj, SiteHoldingIdVariable, holding.Id);
+            }
+
+            _sites[holding.Id] = site;
+            return site;
+        }
+
+        private static Location GetSiteEntrance(uint site)
+        {
+            for (var obj = GetFirstObjectInArea(site); GetIsObjectValid(obj); obj = GetNextObjectInArea(site))
+            {
+                if (GetTag(obj) == SiteEntranceTag)
+                    return GetLocation(obj);
+            }
+
+            return Location(site, Vector3(5f, 5f, 0f), 0f);
+        }
+
+        /// <summary>A holding site with no players left is removed a little later.</summary>
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void CleanUpSite()
+        {
+            var site = OBJECT_SELF;
+            var holdingId = GetLocalString(site, SiteHoldingIdVariable);
+            if (string.IsNullOrWhiteSpace(holdingId) || !GetIsPC(GetExitingObject()))
+                return;
+
+            DelayCommand(10f, () => TryDestroySite(site, holdingId));
+        }
+
+        private static void TryDestroySite(uint site, string holdingId)
+        {
+            if (!GetIsObjectValid(site))
+                return;
+
+            for (var obj = GetFirstObjectInArea(site); GetIsObjectValid(obj); obj = GetNextObjectInArea(site))
+            {
+                if (GetIsPC(obj))
+                    return;
+            }
+
+            if (DestroyArea(site) == 1)
+            {
+                if (_sites.TryGetValue(holdingId, out var current) && current == site)
+                    _sites.Remove(holdingId);
+            }
+            else
+            {
+                DelayCommand(30f, () => TryDestroySite(site, holdingId));
+            }
+        }
+
+        // Login and droid controllers
+
+        /// <summary>
+        /// At login: holdings catch up (their news goes to the owner) and a staff droid whose holding is gone, or no longer
+        /// lists it, is the owner's again.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void CheckHoldingsAtLogin()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var holdings = LoadHoldings(player);
+            foreach (var controller in Droid.GetControllers(player))
+            {
+                var postedId = Droid.GetPostedShipId(controller);
+                if (!HoldingRules.IsDroidPosting(postedId))
+                    continue;
+
+                var holdingId = HoldingRules.GetHoldingIdFromPosting(postedId);
+                var droidId = Droid.GetDroidId(controller);
+                if (holdings.Any(x => x.Id == holdingId && x.DroidItemId == droidId))
+                {
+                    SetItemCursedFlag(controller, true);
+                    continue;
+                }
+
+                Droid.ClearPosted(controller);
+                SendMessageToPC(player, $"{Droid.GetDroidName(controller)} no longer works a holding and is back with you.");
+            }
+
+            var waiting = holdings.Where(x => x.Warehouse.Values.Sum() > 0).ToList();
+            if (waiting.Count > 0)
+            {
+                SendMessageToPC(player, "Your holdings have goods waiting: " +
+                                        string.Join(", ", waiting.Select(x => $"{GetHoldingName(x)} {x.Warehouse.Values.Sum()} units")) + ".");
+            }
+        }
+
+        /// <summary>A staff droid's controller that leaves its owner (destroyed or taken) ends its posting.</summary>
+        [NWNEventHandler(ScriptName.OnModuleUnacquire)]
+        public static void EndStaffPostingOnControllerLoss()
+        {
+            var owner = GetModuleItemLostBy();
+            var controller = GetModuleItemLost();
+            if (!GetIsPC(owner) || GetResRef(controller) != Droid.DroidControlItemResref)
+                return;
+
+            var postedId = Droid.GetPostedShipId(controller);
+            if (!HoldingRules.IsDroidPosting(postedId))
+                return;
+
+            var holdingId = HoldingRules.GetHoldingIdFromPosting(postedId);
+            var droidId = Droid.GetDroidId(controller);
+
+            // The item may only have moved inside the owner's inventory; check once the move is done.
+            DelayCommand(0.1f, () =>
+            {
+                if (GetIsObjectValid(owner) && GetIsObjectValid(Droid.FindController(owner, droidId)))
+                    return;
+
+                var holding = DB.Get<PlanetaryHolding>(holdingId);
+                if (holding == null || holding.DroidItemId != droidId)
+                    return;
+
+                var name = holding.DroidName;
+                ReleaseDroid(holding, OBJECT_INVALID);
+                HoldingRules.AddLog(holding, DateTime.UtcNow, $"{name} left the staff: its controller is gone.");
+                DB.Set(holding);
+                if (GetIsObjectValid(owner))
+                    SendMessageToPC(owner, $"{name} no longer works your {GetHoldingName(holding)}: its controller is gone.");
+            });
+        }
+    }
+}

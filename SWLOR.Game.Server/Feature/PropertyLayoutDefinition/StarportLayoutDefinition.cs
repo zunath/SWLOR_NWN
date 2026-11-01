@@ -54,6 +54,10 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
             var cityId = dbBuilding.ParentPropertyId;
 
+            // A station's flights terminal is the only way off the station without a ship, so anyone may use it.
+            if (!string.IsNullOrWhiteSpace(GetLocalString(terminal, Station.StationCityVariable)))
+                return true;
+
             if (dbPlayer.CitizenPropertyId != cityId)
             {
                 SendMessageToPC(player, "Only citizens may use starport facilities.");
@@ -80,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             ExecuteScript(ScriptName.OnPlaceableGenericConversation, terminal);
         }
 
-        private void SpawnStarportFlightTerminals(uint area, PlanetType planetType)
+        private void SpawnStarportFlightTerminals(uint area, PlanetType planetType, WorldProperty station = null)
         {
             var planet = Planet.GetPlanetByType(planetType);
             void SpawnTerminal(uint waypoint)
@@ -88,9 +92,11 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 var location = GetLocation(waypoint);
                 var terminal = CreateObject(ObjectType.Placeable, "flights_terminal", location);
                 SetPlotFlag(terminal, true);
-                SetName(terminal, $"{planet.Name} Starport Flights Terminal");
+                SetName(terminal, station == null ? $"{planet.Name} Starport Flights Terminal" : $"{station.CustomName} Flights Terminal");
 
                 SetLocalInt(terminal, "CURRENT_LOCATION", (int)planetType);
+                if (station != null)
+                    SetLocalString(terminal, Station.StationCityVariable, station.Id);
                 SetEventScript(terminal, EventScript.Placeable_OnUsed, ScriptName.OnPropertyStarportTerminal);
             }
 
@@ -123,9 +129,8 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             return GetNearestObjectByTag("STARSHIP_DOCKPOINT", referenceObject);
         }
 
-        private void SpawnDockhands(uint area, PlanetType planetType)
+        private void SpawnDockhands(uint area, PlanetType planetType, string spaceWaypointTag)
         {
-            var planet = Planet.GetPlanetByType(planetType);
             void SpawnDockhand(uint waypoint)
             {
                 var location = GetLocation(waypoint);
@@ -133,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 var npc = CreateObject(ObjectType.Creature, "spc_dockhand", location);
                 CreateObject(ObjectType.Store, "dockhand_store", location);
 
-                SetLocalString(npc, "STARPORT_TELEPORT_WAYPOINT", planet.SpaceOrbitWaypointTag);
+                SetLocalString(npc, "STARPORT_TELEPORT_WAYPOINT", spaceWaypointTag);
 
                 // Replace the waypoint string with an actual location.
                 DeleteLocalString(npc, "STARPORT_LANDING_WAYPOINT");
@@ -177,6 +182,18 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                     var dbProperty = DB.Get<WorldProperty>(propertyId);
                     var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+
+                    // A station's ships launch at its anchor site, its shuttle runs to its home port, and only its own
+                    // docking point lists its dock (never a planet's docking menu).
+                    var anchor = Station.GetAnchor(dbCity);
+                    if (anchor != null)
+                    {
+                        SpawnStarportFlightTerminals(instance, anchor.HomePlanet, dbCity);
+                        SpawnDockhands(instance, anchor.HomePlanet, anchor.Tag);
+                        Station.RegisterDockPoint(dbCity.Id, GetLandingWaypoint(instance), propertyId);
+                        return;
+                    }
+
                     var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
                     var planet = Planet.GetPlanetType(cityArea);
 
@@ -184,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                         return;
 
                     SpawnStarportFlightTerminals(instance, planet);
-                    SpawnDockhands(instance, planet);
+                    SpawnDockhands(instance, planet, Planet.GetPlanetByType(planet).SpaceOrbitWaypointTag);
 
                     var dockPoint = GetLandingWaypoint(instance);
                     Space.RegisterLandingPoint(dockPoint, cityArea, false, propertyId);

@@ -631,6 +631,9 @@ namespace SWLOR.Game.Server.Service
             if (property == null || !visitedPropertyIds.Add(property.Id))
                 return PlanetType.Invalid;
 
+            if (Station.IsStation(property))
+                return Station.GetCityPlanet(property);
+
             if (property.PropertyType == PropertyType.City)
                 return ResolveCommsPlanetForAreaResref(property.ParentPropertyId);
 

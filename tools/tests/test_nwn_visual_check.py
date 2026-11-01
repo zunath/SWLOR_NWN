@@ -189,6 +189,7 @@ class ProfileBoundaryTests(unittest.TestCase):
         kernel.CloseHandle.argtypes=[ctypes.c_void_p]
         handles=[]
         timers=[]
+        requests=[]
 
         def release(handle):
             if handle[0] is not None:
@@ -197,13 +198,17 @@ class ProfileBoundaryTests(unittest.TestCase):
 
         def screenshot(_,message,*_args):
             if message==0x101:
-                image=Image.new('RGB',(1280,720),'black')
+                if requests:
+                    native.touch()
+                target=frames.directory/f'NWN{len(requests):04}.tga'
+                image=Image.new('RGB',(1280,720),'black' if not requests else 'green')
                 image.paste('white',(640,0,1280,720))
-                image.save(native)
+                image.save(target)
                 # Allow reads while the simulated client writer denies deletion.
-                handle=[kernel.CreateFileW(str(native),0x80000000,1,None,3,0,None)]
+                handle=[kernel.CreateFileW(str(target),0x80000000,1,None,3,0,None)]
                 self.assertNotIn(handle[0],(None,ctypes.c_void_p(-1).value))
                 handles.append(handle)
+                requests.append(target)
                 timer=threading.Timer(.15,release,args=(handle,))
                 timers.append(timer)
                 timer.start()
@@ -217,7 +222,16 @@ class ProfileBoundaryTests(unittest.TestCase):
                 self.assertEqual(captured.size,(1280,720))
                 self.assertEqual(captured.getpixel((1000,360)),(255,255,255))
             self.assertEqual(frames.user.PostMessageW.call_count,2)
-            self.assertFalse(native.exists())
+            self.assertTrue(native.exists())
+            # The writer closing can update its mtime after our next request.
+            # This previously consumed raw image must never become a new frame.
+            for timer in timers:
+                timer.join()
+            second=self.owned/'second-writer-lock.png'
+            frames.save(second)
+            with Image.open(second) as captured:
+                self.assertEqual(captured.getpixel((100,360)),(0,128,0))
+            self.assertEqual(frames.user.PostMessageW.call_count,4)
         finally:
             for timer in timers:
                 timer.join()

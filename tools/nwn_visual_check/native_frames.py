@@ -6,11 +6,12 @@ import time
 
 
 class NativeFrames:
-    """Request one fresh render from the owned client; retain no raw duplicates."""
+    """Request fresh renders; owned-profile cleanup retires locked raw files."""
 
     def __init__(self, process_id, desktop, profile):
         self.window = None
         self.frame = None
+        self.consumed = set()
         self.directory = Path(profile)/'screenshots'
         self.user = ctypes.WinDLL('user32', use_last_error=True)
         callback = ctypes.WINFUNCTYPE(w.BOOL, w.HWND, w.LPARAM)
@@ -39,6 +40,8 @@ class NativeFrames:
     def wait_for_fresh(self, timeout=2):
         from PIL import Image
         self.frame = None
+        consumed = getattr(self, 'consumed', set())
+        self.consumed = consumed
         before = {p: (p.stat().st_mtime_ns, p.stat().st_size) for p in self.directory.glob('*.tga')}
         # Default ScreenCapture binding in the task-owned review profile. These
         # messages target one private HWND; they never enter the user's input queue.
@@ -48,6 +51,8 @@ class NativeFrames:
         deadline = time.monotonic()+timeout
         while time.monotonic() < deadline:
             for path in self.directory.glob('*.tga'):
+                if path in consumed:
+                    continue
                 stat = path.stat()
                 if before.get(path) == (stat.st_mtime_ns, stat.st_size):
                     continue
@@ -58,9 +63,15 @@ class NativeFrames:
                         if image.size != (1280, 720):
                             raise RuntimeError('Native screenshot is not 1280x720')
                         frame = image.convert('RGB')
-                    # Decoding can finish before the writer releases its delete lock.
-                    # Only the new image produced by this request is disposable.
-                    path.unlink()
+                    try:
+                        path.unlink()
+                    except PermissionError as error:
+                        if getattr(error, 'winerror', None) != 32:
+                            raise
+                        # A complete decoded frame is valid while its writer still
+                        # denies deletion. Teardown removes this owned raw file.
+                        # Ignore later close-time mtime changes to this same frame.
+                        consumed.add(path)
                 except OSError:
                     continue  # The client may still be writing this frame.
                 self.frame = frame

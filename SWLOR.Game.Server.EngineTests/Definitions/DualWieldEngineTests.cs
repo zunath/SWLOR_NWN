@@ -342,8 +342,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
                 ctx.AssertEqual("longsword_b", GetResRef(main), "Fixture uses the retired template from the saved character");
-                ctx.Assert(BasicVibrobladeCompatibility.NormalizeInventory(attacker), "Login/inventory repair finds the equipped legacy item");
-                ctx.Assert(!BasicVibrobladeCompatibility.NormalizeInventory(attacker), "Repair is idempotent");
+                ctx.Assert(BasicVibrobladeCompatibility.Normalize(main), "Repair finds the equipped legacy item");
+                ctx.Assert(!BasicVibrobladeCompatibility.Normalize(off), "The current template needs no repair");
+                ctx.Assert(!BasicVibrobladeCompatibility.Normalize(main), "Repair is idempotent");
                 foreach (var item in new[] { main, off })
                 {
                     var dmg = Properties(item).Where(ip => GetItemPropertyType(ip) == ItemPropertyType.DMG).ToArray();

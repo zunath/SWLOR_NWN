@@ -831,6 +831,42 @@ public class CapstoneQuestDefinitionTests
         }
     }
 
+    [Test]
+    public void SpawnPoints_StandApartInTheirDungeon()
+    {
+        // The random spawn bake (Walkmesh.BakeArea) keeps spawn points 6 m clear of creatures, and the general
+        // capstone spawn points were laid out at that spacing. Fixed spawns follow the same rule so enemies
+        // never spawn on top of each other.
+        const double MinimumSpacingMeters = 6.0;
+        var spawnTables = BuildSpawnTables();
+        var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module");
+
+        foreach (var areaResref in CapstoneQuestDefinitionTestData.AreaGroups.Select(group => group.DungeonAreaResref).Distinct())
+        {
+            using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(modulePath, "git", $"{areaResref}.git.json")));
+            var spawnPoints = git.RootElement.GetProperty("WaypointList").GetProperty("value")
+                .EnumerateArray()
+                .Select(waypoint => (
+                    Tag: GetTypedValue(waypoint, "Tag"),
+                    X: waypoint.GetProperty("XPosition").GetProperty("value").GetDouble(),
+                    Y: waypoint.GetProperty("YPosition").GetProperty("value").GetDouble()))
+                .Where(waypoint => spawnTables.ContainsKey(waypoint.Tag) || waypoint.Tag.EndsWith("_WD_SPAWN") || waypoint.Tag.EndsWith("_MS_SPAWN"))
+                .ToArray();
+
+            spawnPoints.Should().Contain(point => point.Tag.EndsWith("_IC_SPAWN"), $"{areaResref} has inner circle spawn points");
+            for (var i = 0; i < spawnPoints.Length; i++)
+            {
+                for (var j = i + 1; j < spawnPoints.Length; j++)
+                {
+                    var (a, b) = (spawnPoints[i], spawnPoints[j]);
+                    var distance = Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+                    distance.Should().BeGreaterThanOrEqualTo(MinimumSpacingMeters,
+                        $"{areaResref} {a.Tag} ({a.X:0.0},{a.Y:0.0}) and {b.Tag} ({b.X:0.0},{b.Y:0.0}) are too close");
+                }
+            }
+        }
+    }
+
     // Mirrors Spawn.CalculateCreatureSpawnCount for areas that register their table as an area local.
     private static int GetAreaCreatureSpawnCount(string modulePath, string areaResref, JsonElement git)
     {

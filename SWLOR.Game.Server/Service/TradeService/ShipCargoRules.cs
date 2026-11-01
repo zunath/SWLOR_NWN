@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Service.TradeService
     /// <summary>
     /// The cargo bay's size (plan section 13 and Appendix B), mirrored by tools/SpaceRevampBalance/trade.py: the hull's
     /// Cargo stat, plus each fitted Cargo Expander's share of it. Expanders stack, and each costs 5% speed through its
-    /// step's SpeedPercent.
+    /// step's SpeedPercent. An expander works from a Helm slot only: a station slot does nothing while its seat is empty,
+    /// and a bay must not shrink when a crew member leaves.
     /// </summary>
     public static class ShipCargoRules
     {
@@ -34,10 +35,33 @@ namespace SWLOR.Game.Server.Service.TradeService
             return capacity;
         }
 
-        /// <summary>The cargo bay of a hull with the modules fitted on this status.</summary>
+        /// <summary>Whether a module tag is a Cargo Expander.</summary>
+        public static bool IsCargoExpander(string tag) =>
+            RevampModuleCatalog.Steps.Any(x => x.Tag == tag && x.Family == ShipModuleFamily.CargoExpander);
+
+        /// <summary>The cargo bay of a hull with the modules fitted on this status: its Helm-slot expanders count.</summary>
         public static int GetCapacity(int hullCargo, ShipStatus status)
         {
-            return GetCapacity(hullCargo, GetFittedModuleTags(status));
+            return GetCapacity(hullCargo, GetHelmModuleTags(status));
+        }
+
+        /// <summary>Every module fitted in a Helm slot of the status, in any row.</summary>
+        public static IEnumerable<string> GetHelmModuleTags(ShipStatus status)
+        {
+            if (status == null)
+                return Enumerable.Empty<string>();
+
+            return new[]
+                {
+                    (Row: ShipModulePowerType.High, Modules: status.HighPowerModules),
+                    (Row: ShipModulePowerType.Mid, Modules: status.MidPowerModules),
+                    (Row: ShipModulePowerType.Low, Modules: status.LowPowerModules),
+                }
+                .SelectMany(row => row.Modules
+                    .Where(x => x.Value != null &&
+                                ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, ShipStatCalculator.GetHotbarSlot(row.Row, x.Key)) ==
+                                ShipCrewSeat.Pilot)
+                    .Select(x => x.Value.ItemTag));
         }
 
         /// <summary>Every module fitted on the status, in any row.</summary>

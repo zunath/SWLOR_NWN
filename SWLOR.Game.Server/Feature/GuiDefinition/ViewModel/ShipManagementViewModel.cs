@@ -2029,7 +2029,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // A crew-station module is checked against its crew, not the owner (plan section 10).
             if (hotbarSlot > 0 && Space.IsStationSlot(dbShip.Status, hotbarSlot))
+            {
+                // A Cargo Expander works from a Helm slot only (ShipCargoRules).
+                if (ShipCargoRules.IsCargoExpander(itemTag))
+                {
+                    SendMessageToPC(Player, "Cargo Expanders fit Helm slots only.");
+                    return false;
+                }
+
                 return true;
+            }
 
             // Doesn't meet skill requirements.
             var skillError = Item.GetSkillRequirementsError(Player, Item.GetRequiredSkills(item));
@@ -2135,7 +2144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     // A Cargo Expander stays while the cargo bay would overflow without it.
                     var hullCargo = Space.FindShipDetail(dbShip.Status.ItemTag)?.Hull?.Cargo ?? 0;
-                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetFittedModuleTags(dbShip.Status).ToList(),
+                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(dbShip.Status).ToList(),
                             module.ItemTag, Trade.GetUsedVolume(dbShip)))
                     {
                         SendMessageToPC(Player, "Unload the cargo bay first: its cargo would not fit without this Cargo Expander.");

@@ -2003,7 +2003,11 @@ namespace SWLOR.Game.Server.Service
         /// Calculates the accuracy of a ship firing the given shot: ship and module Accuracy plus the pilot's
         /// AGI (energy) or PER (launcher) x 3. A legacy NPC adds 8 + 2 x level; a preset NPC's values include it.
         /// </summary>
-        public static int GetShipAccuracy(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
+        /// <param name="ship">
+        /// The firing ship when <paramref name="attacker"/> is a station operator (a crew member, or OBJECT_INVALID for a
+        /// droid): the ship's own Space Accuracy % (a jam's Flash, a commander's aura, a Wild Space system) applies too.
+        /// </param>
+        public static int GetShipAccuracy(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot, uint ship = OBJECT_INVALID)
         {
             var accuracy = SpaceCombatMath.Accuracy(
                 attackerStatus.Accuracy + attackerStatus.GetAccuracyPenalty(DateTime.UtcNow),
@@ -2019,7 +2023,8 @@ namespace SWLOR.Game.Server.Service
                 accuracy,
                 Stat.GetStatAdjustment(attacker, StatType.Accuracy),
                 Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment) +
-                Stat.GetStatAdjustment(attacker, StatType.SpaceAccuracyPercentAdjustment));
+                Stat.GetStatAdjustment(attacker, StatType.SpaceAccuracyPercentAdjustment) +
+                (ship != attacker && GetIsObjectValid(ship) ? Stat.GetStatAdjustment(ship, StatType.SpaceAccuracyPercentAdjustment) : 0));
         }
 
         /// <summary>
@@ -2178,7 +2183,7 @@ namespace SWLOR.Game.Server.Service
                 shot = shot.WithBonusDmg(stationDmg - shot.Dmg);
 
             var chanceToHit = SpaceCombatMath.HitChance(
-                GetShipAccuracy(source, activatorStatus, shot),
+                GetShipAccuracy(source, activatorStatus, shot, activator),
                 GetShipEvasion(target, targetStatus),
                 weaponSize,
                 targetSize,

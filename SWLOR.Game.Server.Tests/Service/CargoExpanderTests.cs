@@ -71,6 +71,30 @@ public class CargoExpanderTests
     }
 
     [Test]
+    public void OnlyHelmSlotExpanders_AddCargo()
+    {
+        // Low slots 11-13 on a hull with three Low slots, the last a station (Engineer) slot.
+        var status = new ShipStatus
+        {
+            Size = ShipSize.Medium,
+            SlotTags = new Dictionary<int, ShipSlotTag> { [11] = ShipSlotTag.Helm, [12] = ShipSlotTag.Helm, [13] = ShipSlotTag.Engineer },
+        };
+        status.LowPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "sm_cargo_00" };
+        status.LowPowerModules[3] = new ShipStatus.ShipStatusModule { ItemTag = "sm_cargo_45" };
+
+        ShipCargoRules.GetHelmModuleTags(status).Should().Equal("sm_cargo_00");
+        ShipCargoRules.GetCapacity(480, status).Should().Be(480 + 96, "an expander in an empty station slot adds nothing");
+        ShipCargoRules.IsCargoExpander("sm_cargo_45").Should().BeTrue();
+        ShipCargoRules.IsCargoExpander("sm_laser_00").Should().BeFalse();
+
+        ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs")
+            .Should().Contain("if (ShipCargoRules.IsCargoExpander(itemTag))")
+            .And.Contain("SendMessageToPC(Player, \"Cargo Expanders fit Helm slots only.\");",
+                "a station slot refuses an expander")
+            .And.Contain("ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(dbShip.Status)");
+    }
+
+    [Test]
     public void TheCargoBay_HudAndRemoval_ReadTheExpanders()
     {
         ReadServerSource("Service", "Trade.cs").Should().Contain("return ShipCargoRules.GetCapacity(hullCargo, ship?.Status);");

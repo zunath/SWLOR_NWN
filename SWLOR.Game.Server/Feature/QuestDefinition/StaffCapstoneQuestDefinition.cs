@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Marda Voss gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Canyon Drifters, who hold the ground nearest the door, and recover the Unmoving Center Canyon Range Tally. Any Canyon Drifter counts, whichever line it was first built for, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
+                    "Marda Voss gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Canyon Drifters, who hold the ground nearest the door, and recover the Unmoving Center Canyon Range Tally. Any Canyon Drifter counts, whatever form it fights in, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Adept, "unmoving_center", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterCanyonRangeTally)
 
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Canyon Sharpshooters deeper in the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Sightline Calibrator. Any Canyon Sharpshooter counts, whichever line it was first built for, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
+                    "Defeat five Canyon Sharpshooters deeper in the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Sightline Calibrator. Any Canyon Sharpshooter counts, whatever form it fights in, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Specialist, "unmoving_center", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterSightlineCalibrator)
 
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four High Table Guns in the deepest part of the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Marshal's Challenge Chit. Any High Table Gun counts, whichever line it was first built for, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
+                    "Defeat four High Table Guns in the deepest part of the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Marshal's Challenge Chit. Any High Table Gun counts, whatever form it fights in, but only kills made with Sweeping Guard, Leg Sweep or Line Breaker, or inside your Shelter Circle.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_UnmovingCenter_InnerCircle, "unmoving_center", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterMarshalsChallengeChit)
 

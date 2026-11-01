@@ -9408,7 +9408,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - Absolute Defense Master Spawn"
+            "0": "Tatooine Forge Caverns - Forge Master Kassrek Spawn (Absolute Defense line)"
           }
         },
         "MapNote": {
@@ -9479,7 +9479,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - Soul Ascension Master Spawn"
+            "0": "Tatooine Forge Caverns - Forge Master Orsen Vale Spawn (Soul Ascension line)"
           }
         },
         "MapNote": {
@@ -9550,7 +9550,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - Forcebane Master Spawn"
+            "0": "Tatooine Forge Caverns - Forge Master Kovath Sull Spawn (Forcebane line)"
           }
         },
         "MapNote": {

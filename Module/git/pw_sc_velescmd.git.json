@@ -10944,7 +10944,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Invincible Master Spawn"
+            "0": "Veles Militia Annex - Holdout Captain Haro Kel Spawn (Invincible line)"
           }
         },
         "MapNote": {
@@ -11015,7 +11015,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Viral Cascade Master Spawn"
+            "0": "Veles Militia Annex - Holdout Captain Marek Dolan Spawn (Viral Cascade line)"
           }
         },
         "MapNote": {
@@ -11086,7 +11086,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex - Systemic Shutdown Master Spawn"
+            "0": "Veles Militia Annex - Holdout Captain Jorrik Vael Spawn (Systemic Shutdown line)"
           }
         },
         "MapNote": {

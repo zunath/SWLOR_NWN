@@ -10440,7 +10440,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Killzone Beacon Master Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Commander Kuvaz Spawn (Killzone Beacon line)"
           }
         },
         "MapNote": {
@@ -10511,7 +10511,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Emergency Bunker Master Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Commander Mukk Dorl Spawn (Emergency Bunker line)"
           }
         },
         "MapNote": {
@@ -10582,7 +10582,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker - Decisive Command Master Spawn"
+            "0": "Viscara Republic Engineering Bunker - Deserter Commander Halden Rhee Spawn (Decisive Command line)"
           }
         },
         "MapNote": {

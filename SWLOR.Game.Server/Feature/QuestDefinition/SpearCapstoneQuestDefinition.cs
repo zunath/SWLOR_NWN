@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Maar Veth gave you the Tatooine Forge Caverns Key. On Tatooine, leave the Southern Entrance of Anchorhead by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Kill six Forgebound Initiates, who drill at the outer forges nearest the entrance, and secure the Forcebane Forge Heat Ledger they keep by the crucibles. Any Forgebound Initiate counts, whichever line it was first built for, but only kills made after clouding them with Disabling Strike or Disruption Field.")
+                    "Maar Veth gave you the Tatooine Forge Caverns Key. On Tatooine, leave the Southern Entrance of Anchorhead by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Kill six Forgebound Initiates, who drill at the outer forges nearest the entrance, and secure the Forcebane Forge Heat Ledger they keep by the crucibles. Any Forgebound Initiate counts, whatever form it fights in, but only kills made after clouding them with Disabling Strike or Disruption Field.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_Forcebane_Adept, "forcebane", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Forgebound Journeymen along the tempering line deeper in the Forge Caverns on Tatooine and secure the Forcebane Sith Tempering Matrix. Any Forgebound Journeyman counts, whichever line it was first built for, but only kills made after clouding them with Disabling Strike or Disruption Field.")
+                    "Kill five Forgebound Journeymen along the tempering line deeper in the Forge Caverns on Tatooine and secure the Forcebane Sith Tempering Matrix. Any Forgebound Journeyman counts, whatever form it fights in, but only kills made after clouding them with Disabling Strike or Disruption Field.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_Forcebane_Specialist, "forcebane", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneSithTemperingMatrix)
 
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill four Forgebound Overseers in the deepest part of the Forge Caverns on Tatooine and secure the Forcebane Overseer's Clearance Token. Any Forgebound Overseer counts, whichever line it was first built for, but only kills made after clouding them with Disabling Strike or Disruption Field.")
+                    "Kill four Forgebound Overseers in the deepest part of the Forge Caverns on Tatooine and secure the Forcebane Overseer's Clearance Token. Any Forgebound Overseer counts, whatever form it fights in, but only kills made after clouding them with Disabling Strike or Disruption Field.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Tatooine_Forcebane_InnerCircle, "forcebane", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneOverseersClearanceToken)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Dax Rell gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Kill six Stable Brawlers, who work the floor nearest the Back Rooms door in the Smuggler's Moon Fight Club Backrooms, and secure the Crippling Defense Backroom Bout Ledger. Any Stable Brawler counts, whichever line it was first built for, but only kills made with your heaviest spear techniques.")
+                    "Dax Rell gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Kill six Stable Brawlers, who work the floor nearest the Back Rooms door in the Smuggler's Moon Fight Club Backrooms, and secure the Crippling Defense Backroom Bout Ledger. Any Stable Brawler counts, whatever form it fights in, but only kills made with your heaviest spear techniques.")
                 .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Adept, "crippling_defense", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseBackroomBoutLedger)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Stable Pit Fighters deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Ring Shock Regulator that runs their rigged rings. Any Stable Pit Fighter counts, whichever line it was first built for, but only kills made with your heaviest spear techniques.")
+                    "Kill five Stable Pit Fighters deeper in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Ring Shock Regulator that runs their rigged rings. Any Stable Pit Fighter counts, whatever form it fights in, but only kills made with your heaviest spear techniques.")
                 .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Specialist, "crippling_defense", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseRingShockRegulator)
 
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill four Stable Promoters in the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Promoter's Payout Chit. Any Stable Promoter counts, whichever line it was first built for, but only kills made with your heaviest spear techniques.")
+                    "Kill four Stable Promoters in the deepest part of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Promoter's Payout Chit. Any Stable Promoter counts, whatever form it fights in, but only kills made with your heaviest spear techniques.")
                 .AddCapstoneProofKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_InnerCircle, "crippling_defense", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefensePromotersPayoutChit)
 

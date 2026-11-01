@@ -10471,7 +10471,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Warden Spawn"
+            "0": "Dathomir Grotto Apex Den - Handler's Wraid Spawn (Force-Bonded Beast line)"
           }
         },
         "MapNote": {
@@ -10534,7 +10534,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Untouchable Instinct Warden Spawn"
+            "0": "Dathomir Grotto Apex Den - Handler's Giant Brown Lizard Spawn (Untouchable Instinct line)"
           }
         },
         "MapNote": {
@@ -10597,7 +10597,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Primal Overrun Warden Spawn"
+            "0": "Dathomir Grotto Apex Den - Handler's Rancor Spawn (Primal Overrun line)"
           }
         },
         "MapNote": {
@@ -10721,7 +10721,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Primal Overrun Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Shell-Back Spawn (Primal Overrun line)"
           }
         },
         "MapNote": {
@@ -10784,7 +10784,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Primal Overrun Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Shell-Back Spawn (Primal Overrun line)"
           }
         },
         "MapNote": {
@@ -10847,7 +10847,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Primal Overrun Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Shell-Back Spawn (Primal Overrun line)"
           }
         },
         "MapNote": {
@@ -10910,7 +10910,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Primal Overrun Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Shell-Back Spawn (Primal Overrun line)"
           }
         },
         "MapNote": {
@@ -10973,7 +10973,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
           }
         },
         "MapNote": {
@@ -11036,7 +11036,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
           }
         },
         "MapNote": {
@@ -11099,7 +11099,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
           }
         },
         "MapNote": {
@@ -11162,7 +11162,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Untouchable Instinct Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
           }
         },
         "MapNote": {
@@ -11225,7 +11225,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
           }
         },
         "MapNote": {
@@ -11288,7 +11288,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
           }
         },
         "MapNote": {
@@ -11351,7 +11351,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
           }
         },
         "MapNote": {
@@ -11414,7 +11414,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Inner Circle Spawn"
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
           }
         },
         "MapNote": {
@@ -11477,7 +11477,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -11540,7 +11540,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -11603,7 +11603,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -11666,7 +11666,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -11729,7 +11729,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -11792,7 +11792,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -11855,7 +11855,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -11918,7 +11918,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -11981,7 +11981,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -12044,7 +12044,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -12107,7 +12107,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -12170,7 +12170,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12233,7 +12233,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -12296,7 +12296,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12359,7 +12359,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12422,7 +12422,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12485,7 +12485,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Specialist Spawn"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12548,7 +12548,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -12611,7 +12611,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -12674,7 +12674,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Capstone Adept Spawn"
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
         "MapNote": {

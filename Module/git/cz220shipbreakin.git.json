@@ -20042,7 +20042,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Warden Spawn"
+            "0": "CZ-220 Breaker Yard - Crew Chief Rakkesh Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20105,7 +20105,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Warden Spawn"
+            "0": "CZ-220 Breaker Yard - Crew Chief Tobin Rask Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20168,7 +20168,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Warden Spawn"
+            "0": "CZ-220 Breaker Yard - Crew Chief Nalo Ven Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -20355,7 +20355,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20418,7 +20418,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20481,7 +20481,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20544,7 +20544,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20607,7 +20607,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20670,7 +20670,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20733,7 +20733,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20796,7 +20796,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20859,7 +20859,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -20922,7 +20922,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -20985,7 +20985,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -21048,7 +21048,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -21111,7 +21111,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -21174,7 +21174,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21237,7 +21237,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21300,7 +21300,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21363,7 +21363,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -21426,7 +21426,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -21489,7 +21489,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -21552,7 +21552,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21615,7 +21615,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -21678,7 +21678,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21741,7 +21741,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21804,7 +21804,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21867,7 +21867,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -21930,7 +21930,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -21993,7 +21993,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -22056,7 +22056,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -22119,7 +22119,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -22182,7 +22182,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -22245,7 +22245,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Adept Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -22308,7 +22308,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Capstone Specialist Spawn"
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {

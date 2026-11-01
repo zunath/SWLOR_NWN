@@ -386,7 +386,7 @@ public class SpaceW11nReviewFixTests
             .Should().BeLessThan(Index(buy, "TakeGoldFromCreature("),
                 "a listing the seller took off the market, or that expired, is refused before the buyer pays");
         Index(buy, "ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);")
-            .Should().BeLessThan(Index(buy, "Complete(ship, buyerId, \"was sold\");"),
+            .Should().BeLessThan(Index(buy, "Complete(ship, buyerId, \"was sold\", payment.Id);"),
                 "the proceeds owed are saved with the transfer");
 
         var complete = Between(source, "public static void Complete(", "private static void ResetPermissions(");

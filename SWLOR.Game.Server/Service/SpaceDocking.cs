@@ -315,6 +315,10 @@ namespace SWLOR.Game.Server.Service
             visitorProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
             DB.Set(visitorProperty);
 
+            // A ship flown in a Rift Run waits in it while docked aboard, as it does while its pilot is logged out, so it
+            // may undock back into the pocket and rejoin the run. A ship the run never enrolled is not marked.
+            MarkRiftRunPilotAway(player);
+
             DeleteLocalLocation(player, "SPACE_INSTANCE_LOCATION");
             DeleteLocalBool(player, "SPACE_INSTANCE_LOCATION_SET");
             ExitSpaceMode(player);
@@ -410,6 +414,7 @@ namespace SWLOR.Game.Server.Service
                     SendMessageToPC(player, ColorToken.Red($"{ShipAccessRules.DescribeStarportRefusal(dockRefusal, ShipSize.Invalid)} {visitorName} stays aboard until {hostName} is in space or at a dock that takes it."));
                     return false;
                 case ShipUndockPlacement.Starport:
+                    ForgetRiftRunShip(visitor.Id);
                     DockAtHostStarport(visitor, hostProperty);
                     SendMessageToPC(player, $"{visitorName} undocks from {hostName} and is now docked at this starport.");
                     Log.Write(LogGroup.Space, $"Ship {visitor.Id} undocked from ship {host.Id} into its starport (player {GetObjectUUID(player)}).");
@@ -430,6 +435,10 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red($"{visitorName} is not part of this Rift Run, so it cannot undock in the pocket. It stays aboard until {hostName} leaves."));
                 return false;
             }
+
+            // A run's ship undocking outside its pocket (its host left it) has left the run.
+            if (!IsRiftPocket(hostArea))
+                ForgetRiftRunShip(visitor.Id);
 
             if (!CanShipEnterArea(player, visitor, GetAreaFromLocation(hostLocation)))
                 return false;

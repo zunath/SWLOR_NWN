@@ -39,6 +39,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             run.AwayShips[shipId] = origin;
         }
 
+        /// <summary>A waiting ship that left the run some other way (undocked outside the pocket) no longer rejoins it.</summary>
+        public static void Forget(RiftRun run, string shipId)
+        {
+            if (!string.IsNullOrEmpty(shipId))
+                run.AwayShips.Remove(shipId);
+        }
+
         /// <summary>
         /// Whether a ship whose pilot logged out may rejoin its run: the run is still open (not cleared and returning, not
         /// closing). A closed run keeps the shipped behaviour: the ship goes back to its dock when the pocket closes.

@@ -178,10 +178,10 @@ public class ShipTransferTests
         var source = ReadServerSource("Service", "ShipTransfer.cs");
         var buy = ExtractMethod(source, "private static void CompletePurchase(");
         buy.IndexOf("ship.SaleId = payment.Id;", StringComparison.Ordinal)
-            .Should().BeLessThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\");", StringComparison.Ordinal),
+            .Should().BeLessThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\", payment.Id);", StringComparison.Ordinal),
                 "the proceeds owed are saved in the same ship record as the new owner");
         buy.IndexOf("PaySaleProceeds(ship);", StringComparison.Ordinal)
-            .Should().BeGreaterThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\");", StringComparison.Ordinal));
+            .Should().BeGreaterThan(buy.IndexOf("Complete(ship, buyerId, \"was sold\", payment.Id);", StringComparison.Ordinal));
 
         var pay = ExtractMethod(source, "private static void PaySaleProceeds(");
         pay.Should().Contain("!dbSeller.PaidShipSaleIds.Contains(ship.SaleId)", "a sale already in the till is not paid twice");
@@ -279,16 +279,65 @@ public class ShipTransferTests
     }
 
     [Test]
-    public void APayment_IsKeptOnlyWhenItsTransferWasSaved()
+    public void APayment_IsKeptAtEveryRestartPointAfterItsTransferWasSaved()
     {
-        var payment = new ShipTransferPayment { Id = "p1", ShipId = "s1", NewOwnerPlayerId = "buyer", Credits = 1000 };
+        var payment = new ShipTransferPayment { Id = "p1", ShipId = "s1", NewOwnerPlayerId = "recipient", Credits = 1000 };
+        var receipt = new ShipTransferReceipt { Id = "p1", ShipId = "s1", NewOwnerPlayerId = "recipient" };
+        new PlayerShip().TransferPaymentId.Should().BeEmpty("older ship records carry no payment");
 
-        payment.IsApplied(new PlayerShip { OwnerPlayerId = "buyer" }).Should().BeTrue("the transfer finished");
-        payment.IsApplied(new PlayerShip { OwnerPlayerId = "seller", TransferToPlayerId = "buyer" })
-            .Should().BeTrue("the saved transfer is finished at module load");
-        payment.IsApplied(new PlayerShip { OwnerPlayerId = "seller" }).Should().BeFalse("a restart came before the transfer was saved");
-        payment.IsApplied(new PlayerShip { OwnerPlayerId = "someone else" }).Should().BeFalse();
-        payment.IsApplied(null).Should().BeFalse("the ship is gone, so it never changed hands");
+        // 1. The mark was exported, but the transfer intent was never saved: the credits go back.
+        var ship = new PlayerShip { Id = "s1", OwnerPlayerId = "giver" };
+        payment.IsSettledBy(null, ship).Should().BeFalse();
+        payment.IsSettledBy(null, null).Should().BeFalse("a ship deleted later was never transferred");
+
+        // 2. The intent naming the payment was saved: the module load finishes the transfer and writes the receipt.
+        ship.TransferToPlayerId = "recipient";
+        ship.TransferFromPlayerId = "giver";
+        ship.TransferPaymentId = "p1";
+        payment.IsSettledBy(null, ship).Should().BeTrue();
+
+        // 3. The receipt was written but the intent not yet cleared.
+        payment.IsSettledBy(receipt, ship).Should().BeTrue();
+
+        // 4. The intent was cleared before the payer's mark was retired, and the recipient passed the ship on before the
+        //    payer logged in again: the receipt still keeps the payment.
+        ship.TransferToPlayerId = string.Empty;
+        ship.TransferPaymentId = string.Empty;
+        ship.OwnerPlayerId = "third player";
+        payment.IsSettledBy(receipt, ship).Should().BeTrue("who owns the ship now does not matter");
+        payment.IsSettledBy(receipt, null).Should().BeTrue("the ship may even be gone");
+
+        // 5. Another transfer of the same ship never settles this payment.
+        payment.IsSettledBy(new ShipTransferReceipt { Id = "p2" }, new PlayerShip { TransferPaymentId = "p2" }).Should().BeFalse();
+        new ShipTransferPayment { Id = string.Empty }.IsSettledBy(null, new PlayerShip()).Should().BeFalse();
+    }
+
+    [Test]
+    public void TheReceipt_IsSavedWithTheTransferAndOutlivesThePayersMark()
+    {
+        var source = ReadServerSource("Service", "ShipTransfer.cs");
+        var complete = ExtractMethod(source, "public static void Complete(");
+        AssertInOrder(complete,
+            "if (string.IsNullOrWhiteSpace(ship.TransferToPlayerId))",
+            "ship.TransferPaymentId = paymentId ?? string.Empty;",
+            "DB.Set(ship);",
+            "ShipTransferRules.Reown(ship, owned, newOwnerPlayerId);",
+            "DB.Set(new ShipTransferReceipt",
+            "Id = ship.TransferPaymentId,",
+            "ship.TransferToPlayerId = string.Empty;",
+            "ship.TransferPaymentId = string.Empty;",
+            "DB.Set(ship);");
+        ExtractMethod(source, "public static void FinishInterruptedTransfers(")
+            .Should().Contain("Complete(ship, ship.TransferToPlayerId, ship.TransferReason);",
+                "the restart recovery keeps the payment id saved with the intent and writes the receipt");
+
+        AssertInOrder(ExtractMethod(source, "private static void RetirePayment("),
+            "ObjectPlugin.DeleteString(payer, PaymentVariable);", "ExportSingleCharacter(payer);", "DB.Delete<ShipTransferReceipt>(paymentId);");
+        source.Should().NotContain("ClearPayment(", "every mark is retired together with its receipt");
+
+        var receipt = typeof(ShipTransferReceipt);
+        receipt.IsSubclassOf(typeof(EntityBase)).Should().BeTrue("the receipt is its own record, keyed by the payment id");
+        new ShipTransferReceipt().ShipId.Should().BeEmpty();
     }
 
     [Test]
@@ -302,21 +351,20 @@ public class ShipTransferTests
 
         var purchase = ExtractMethod(source, "private static void CompletePurchase(");
         AssertInOrder(purchase, "if (GetGold(buyer) < price)", "TakeGoldFromCreature(price, buyer, true);", "SavePayment(buyer, payment);",
-            "ship.SaleId = payment.Id;", "Complete(ship, buyerId, \"was sold\");", "PaySaleProceeds(ship);", "ClearPayment(buyer);");
+            "ship.SaleId = payment.Id;", "Complete(ship, buyerId, \"was sold\", payment.Id);", "PaySaleProceeds(ship);", "RetirePayment(buyer, payment.Id);");
         purchase.Should().Contain("if (listing.Price != price)");
 
         var gift = ExtractMethod(source, "private static void CompleteGift(");
-        AssertInOrder(gift, "TakeGoldFromCreature(offer.Fee, giver, true);", "SavePayment(giver, new ShipTransferPayment",
-            "Complete(ship, offer.RecipientPlayerId, \"changed owner\");", "ClearPayment(giver);");
+        AssertInOrder(gift, "TakeGoldFromCreature(offer.Fee, giver, true);", "SavePayment(giver, payment);",
+            "Complete(ship, offer.RecipientPlayerId, \"changed owner\", payment.Id);", "RetirePayment(giver, payment.Id);");
 
         AssertInOrder(ExtractMethod(source, "private static void SavePayment("),
             "ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);", "ExportSingleCharacter(payer);");
-        AssertInOrder(ExtractMethod(source, "private static void ClearPayment("),
-            "ObjectPlugin.DeleteString(payer, PaymentVariable);", "ExportSingleCharacter(payer);");
 
         source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
         var settle = ExtractMethod(source, "public static void SettleInterruptedPayment(");
-        AssertInOrder(settle, "payment.IsApplied(DB.Get<PlayerShip>(payment.ShipId))", "GiveGoldToCreature(player, payment.Credits);", "ClearPayment(player);");
+        AssertInOrder(settle, "payment.IsSettledBy(DB.Get<ShipTransferReceipt>(payment.Id), DB.Get<PlayerShip>(payment.ShipId))",
+            "GiveGoldToCreature(player, payment.Credits);", "RetirePayment(player, payment.Id);");
     }
 
     private static void AssertInOrder(string source, params string[] parts)

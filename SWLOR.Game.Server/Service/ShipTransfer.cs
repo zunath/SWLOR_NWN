@@ -175,16 +175,18 @@ namespace SWLOR.Game.Server.Service
         /// to their owners, any market listing ends, and the ship, its interior and every structure inside are
         /// re-owned. Every permission on them resets: the old owner and their guests lose access and the new owner
         /// gets full rights. The caller has already checked <see cref="ShipTransferRules.GetRefusal"/>. The transfer is
-        /// saved on the ship before anything changes hands (with a sale's proceeds, when the caller set them), and every
-        /// step is safe to repeat, so a restart part-way through finishes it at the next module load.
+        /// saved on the ship before anything changes hands (with a sale's proceeds, when the caller set them, and the
+        /// payment that bought it), and every step is safe to repeat, so a restart part-way through finishes it at the
+        /// next module load. A paid transfer writes its <see cref="ShipTransferReceipt"/> before the intent is cleared.
         /// </summary>
-        public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason)
+        public static void Complete(PlayerShip ship, string newOwnerPlayerId, string reason, string paymentId = "")
         {
             if (string.IsNullOrWhiteSpace(ship.TransferToPlayerId))
             {
                 ship.TransferToPlayerId = newOwnerPlayerId;
                 ship.TransferFromPlayerId = ship.OwnerPlayerId;
                 ship.TransferReason = reason;
+                ship.TransferPaymentId = paymentId ?? string.Empty;
                 DB.Set(ship);
             }
 
@@ -214,9 +216,22 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbOldOwner);
             }
 
+            // The payment's receipt is saved before the intent naming the payment goes, so one of them always shows
+            // the transfer was saved until the payer's mark is retired.
+            if (!string.IsNullOrWhiteSpace(ship.TransferPaymentId))
+            {
+                DB.Set(new ShipTransferReceipt
+                {
+                    Id = ship.TransferPaymentId,
+                    ShipId = ship.Id,
+                    NewOwnerPlayerId = newOwnerPlayerId
+                });
+            }
+
             ship.TransferToPlayerId = string.Empty;
             ship.TransferFromPlayerId = string.Empty;
             ship.TransferReason = string.Empty;
+            ship.TransferPaymentId = string.Empty;
             DB.Set(ship);
 
             Log.Write(LogGroup.Property, $"Ship {ship.Id} ({shipName}) changed owner from {oldOwnerPlayerId} to {newOwnerPlayerId}: {reason}.");
@@ -380,8 +395,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Runs on the giver's queue: checks the gift again, takes the fee and saves it in the giver's character file
-        /// with a mark naming the transfer, then saves the transfer. A restart in between returns the fee at the giver's
-        /// next login (<see cref="SettleInterruptedPayment"/>).
+        /// with a mark naming the transfer, then saves the transfer with the payment's id. A restart before the transfer
+        /// is saved returns the fee at the giver's next login (<see cref="SettleInterruptedPayment"/>); one after keeps it.
         /// </summary>
         private static void CompleteGift(uint giver, uint recipient, ShipTransferOffer offer)
         {
@@ -390,15 +405,16 @@ namespace SWLOR.Game.Server.Service
 
             var shipName = GetShipName(ship);
             TakeGoldFromCreature(offer.Fee, giver, true);
-            SavePayment(giver, new ShipTransferPayment
+            var payment = new ShipTransferPayment
             {
                 Id = Guid.NewGuid().ToString(),
                 ShipId = ship.Id,
                 NewOwnerPlayerId = offer.RecipientPlayerId,
                 Credits = offer.Fee
-            });
-            Complete(ship, offer.RecipientPlayerId, "changed owner");
-            ClearPayment(giver);
+            };
+            SavePayment(giver, payment);
+            Complete(ship, offer.RecipientPlayerId, "changed owner", payment.Id);
+            RetirePayment(giver, payment.Id);
 
             FloatingTextStringOnCreature(ColorToken.Green($"{shipName} is now yours!"), recipient, false);
             FloatingTextStringOnCreature(ColorToken.Green($"{shipName} now belongs to {GetName(recipient)}."), giver, false);
@@ -633,9 +649,9 @@ namespace SWLOR.Game.Server.Service
             ship.SaleId = payment.Id;
             ship.SaleSellerPlayerId = listing.PlayerId;
             ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);
-            Complete(ship, buyerId, "was sold");
+            Complete(ship, buyerId, "was sold", payment.Id);
             PaySaleProceeds(ship);
-            ClearPayment(buyer);
+            RetirePayment(buyer, payment.Id);
 
             var seller = DMPlayerDirectory.GetOnlinePlayer(listing.PlayerId);
             if (GetIsObjectValid(seller))
@@ -706,16 +722,22 @@ namespace SWLOR.Game.Server.Service
             ExportSingleCharacter(payer);
         }
 
-        /// <summary>The transfer is saved: the mark goes and is saved too, so it is never settled again later.</summary>
-        private static void ClearPayment(uint payer)
+        /// <summary>
+        /// The payment is settled: the mark goes and is saved, then the payment's receipt goes. The receipt outlives
+        /// the mark, so a mark a restart left behind always finds it.
+        /// </summary>
+        private static void RetirePayment(uint payer, string paymentId)
         {
             ObjectPlugin.DeleteString(payer, PaymentVariable);
             ExportSingleCharacter(payer);
+            if (!string.IsNullOrWhiteSpace(paymentId))
+                DB.Delete<ShipTransferReceipt>(paymentId);
         }
 
         /// <summary>
         /// Settles a ship transfer's payment a restart interrupted. The module load already finished any transfer that
-        /// was saved, which keeps the payment; a payment whose transfer was never saved goes back to the payer.
+        /// was saved and wrote its receipt, which keeps the payment; a payment whose transfer was never saved goes back
+        /// to the payer.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void SettleInterruptedPayment()
@@ -727,7 +749,7 @@ namespace SWLOR.Game.Server.Service
             if (!ShipTransferPayment.TryParse(ObjectPlugin.GetString(player, PaymentVariable), out var payment))
                 return;
 
-            if (payment.IsApplied(DB.Get<PlayerShip>(payment.ShipId)))
+            if (payment.IsSettledBy(DB.Get<ShipTransferReceipt>(payment.Id), DB.Get<PlayerShip>(payment.ShipId)))
             {
                 Log.Write(LogGroup.Property, $"Ship {payment.ShipId} payment {payment.Id} by {PlayerName.GetAuditName(player)} was settled with its transfer.");
             }
@@ -740,7 +762,7 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Returned {payment.Credits} credits of ship {payment.ShipId} payment {payment.Id} to {PlayerName.GetAuditName(player)}: its transfer was never saved.");
             }
 
-            ClearPayment(player);
+            RetirePayment(player, payment.Id);
         }
 
         /// <summary>The ship deed a ship listing shows when examined, or OBJECT_INVALID. The caller destroys it.</summary>

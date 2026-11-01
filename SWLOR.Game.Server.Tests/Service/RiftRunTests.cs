@@ -414,4 +414,37 @@ public class RiftRunTests
         pocket.Should().BeGreaterThan(0);
         pocket.Should().BeLessThan(undock.IndexOf("BeginShipLaunch(player, visitor.Id", StringComparison.Ordinal), "the pocket is refused before the launch");
     }
+
+    [Test]
+    public void ARunsShipDockedAboard_WaitsInTheRunAndUndocksBackIntoIt()
+    {
+        var run = new RiftRun { Phase = RiftRunPhase.Fighting };
+        run.Pilots.Add(7u);
+        run.ShipIds[7u] = "enrolled";
+
+        // Docking marks the ship as waiting, as logging out does, so it may undock into the pocket and rejoin.
+        RiftRunRules.MarkAway(run, 7u);
+        RiftRunRules.CanRejoin(run, "enrolled").Should().BeTrue();
+        RiftRunRules.CanUndockInto(true, RiftRunRules.CanRejoin(run, "enrolled")).Should().BeTrue();
+        RiftRunRules.CanUndockInto(true, RiftRunRules.CanRejoin(run, "visitor")).Should().BeFalse("a ship the run never enrolled stays aboard");
+        RiftRunRules.Rejoin(run, 8u, "enrolled").Should().BeTrue("whoever undocks it flies it back into the run");
+        run.ShipIds[8u].Should().Be("enrolled");
+
+        // Undocking outside the pocket (the host left it) takes the ship out of the run for good.
+        RiftRunRules.MarkAway(run, 8u);
+        RiftRunRules.Forget(run, "enrolled");
+        RiftRunRules.CanRejoin(run, "enrolled").Should().BeFalse();
+
+        var docking = ReadSource("Service", "SpaceDocking.cs").Replace("\r\n", "\n");
+        var dock = docking.Substring(docking.IndexOf("public static bool DockWithTarget(", StringComparison.Ordinal));
+        dock = dock.Substring(0, dock.IndexOf("// Undocking", StringComparison.Ordinal));
+        dock.IndexOf("MarkRiftRunPilotAway(player);", StringComparison.Ordinal).Should()
+            .BeGreaterThan(0).And.BeLessThan(dock.IndexOf("ExitSpaceMode(player);", StringComparison.Ordinal),
+                "the run still knows the pilot's ship when it is marked waiting");
+
+        var undock = docking.Substring(docking.IndexOf("public static bool UndockShip(", StringComparison.Ordinal));
+        undock = undock.Substring(0, undock.IndexOf("private static void CompleteUndockLaunch(", StringComparison.Ordinal));
+        undock.Should().Contain("ForgetRiftRunShip(visitor.Id);\n                    DockAtHostStarport(visitor, hostProperty);");
+        undock.Should().Contain("if (!IsRiftPocket(hostArea))\n                ForgetRiftRunShip(visitor.Id);");
+    }
 }

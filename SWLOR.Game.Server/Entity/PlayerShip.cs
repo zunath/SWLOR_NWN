@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Entity
             TransferToPlayerId = string.Empty;
             TransferFromPlayerId = string.Empty;
             TransferReason = string.Empty;
+            TransferPaymentId = string.Empty;
             LastHoldingCollectionId = string.Empty;
             LastTradeIds = new Dictionary<string, string>();
             PendingHoldingDeliveryId = string.Empty;
@@ -99,6 +100,13 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>Why the ship is changing owner, for the messages and log of the transfer to <see cref="TransferToPlayerId"/>.</summary>
         public string TransferReason { get; set; }
+
+        /// <summary>
+        /// The payment (<c>ShipTransferPayment</c>) that bought the transfer to <see cref="TransferToPlayerId"/>, or empty.
+        /// Saved with the transfer intent, so the transfer the module load finishes still writes the payment's
+        /// <see cref="ShipTransferReceipt"/>. Older records load empty.
+        /// </summary>
+        public string TransferPaymentId { get; set; }
 
         /// <summary>
         /// The last Planetary Holding collection loaded into the cargo bay, saved with the cargo, so a collection a

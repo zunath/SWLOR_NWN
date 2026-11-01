@@ -155,14 +155,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A pilot logging out of a run: their ship waits in the pocket for them to rejoin (W11k). This runs at logout
-        /// because the run's next check can still see the leaving pilot's creature after its ship is unregistered, and
-        /// would then drop the pilot without keeping their ship (W11m live check).
+        /// A pilot logging out of a run, or docking their ship aboard another ship: their ship waits in the run for them
+        /// to rejoin (W11k). This runs at logout because the run's next check can still see the leaving pilot's creature
+        /// after its ship is unregistered, and would then drop the pilot without keeping their ship (W11m live check).
         /// </summary>
         private static void MarkRiftRunPilotAway(uint pilot)
         {
             foreach (var run in _riftRuns.Values.Where(x => x.Pilots.Contains(pilot)))
                 RiftRunRules.MarkAway(run, pilot);
+        }
+
+        /// <summary>A run's waiting ship that left the pocket aboard its host and undocked elsewhere is out of the run.</summary>
+        private static void ForgetRiftRunShip(string shipId)
+        {
+            foreach (var run in _riftRuns.Values)
+                RiftRunRules.Forget(run, shipId);
         }
 
         /// <summary>The open run a logged-out pilot's ship waits in, or null (W11k).</summary>

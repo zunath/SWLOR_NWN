@@ -51,7 +51,8 @@ public class AppearancePartNamesTests
         foreach (var (key, name) in AppearancePartNames.All)
         {
             name.Length.Should().BeInRange(1, AppearancePartNames.MaxLength, key);
-            Regex.IsMatch(name, "^[A-Za-z0-9][A-Za-z0-9 '\\-]*$").Should().BeTrue($"{key} is \"{name}\"");
+            // Letters only: a number would read as the part number drawn on the tile.
+            Regex.IsMatch(name, "^[A-Za-z][A-Za-z '\\-]*$").Should().BeTrue($"{key} is \"{name}\"");
             name.Should().Be(name.Trim(), key);
             name.Should().NotContain("  ", key);
         }

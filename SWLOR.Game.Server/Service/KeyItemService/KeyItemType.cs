@@ -566,6 +566,8 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         HutlarDroidFoundryMap = 276,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Abandoned Station Map", true, "Map of the Abandoned Station in orbit over Viscara.")]
         ViscaraAbandonedStationMap = 277,
+        [KeyItem(KeyItemCategoryType.Keys, "Smuggler's Moon Starlane Pass", true, "Nera Venn's permanent flight clearance for the starlane between Mon Cala and Smuggler's Moon. The beacons recognize its holder in either direction.")]
+        SmugglersMoonStarlanePass = 278,
 
         // Incubation field notes — one per mutation target beast. The declared Name is a
         // readable fallback; IncubationFieldNote injects the canonical Name and the full

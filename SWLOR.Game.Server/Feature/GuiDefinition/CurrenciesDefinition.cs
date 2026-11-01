@@ -32,14 +32,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetVerticalAlign(NuiVerticalAlign.Middle);
 
+                        row.AddSpacer()
+                            .SetWidth(UseCellWidth);
+
                         row.AddLabel()
                             .SetText("Balance")
                             .SetWidth(90f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Right)
                             .SetVerticalAlign(NuiVerticalAlign.Middle);
-
-                        row.AddSpacer()
-                            .SetWidth(UseCellWidth);
 
                         row.AddSpacer()
                             .SetWidth(18f);
@@ -79,20 +79,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             template.AddCell(cell =>
                             {
-                                cell.SetWidth(90f);
-                                cell.SetIsVariable(false);
-
-                                cell.AddLabel()
-                                    .BindText(model => model.CurrencyAmountText)
-                                    .BindTooltip(model => model.CurrencyDescriptions)
-                                    .SetColor(255, 236, 155)
-                                    .SetPadding(4f)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Right)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
-                            });
-
-                            template.AddCell(cell =>
-                            {
                                 cell.SetWidth(UseCellWidth);
                                 cell.SetIsVariable(false);
 
@@ -112,6 +98,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetShowBorder(false)
                                     .SetScrollbars(NuiScrollbars.None)
                                     .SetPadding(0f);
+                            });
+
+                            template.AddCell(cell =>
+                            {
+                                cell.SetWidth(90f);
+                                cell.SetIsVariable(false);
+
+                                cell.AddLabel()
+                                    .BindText(model => model.CurrencyAmountText)
+                                    .BindTooltip(model => model.CurrencyDescriptions)
+                                    .SetColor(255, 236, 155)
+                                    .SetPadding(4f)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
                             });
 
                             template.AddCell(cell =>

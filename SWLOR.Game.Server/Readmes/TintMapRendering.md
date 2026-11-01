@@ -8,8 +8,10 @@ these rules hold for every change in `SWLOR_Haks`:
 
 - **No silent dye changes.** `SWLOR_Haks/tools/CheckDyeAppearance.py` fingerprints
   every tint material in `sw_tint_mtr` (its directives and the exact content of
-  every texture it binds) plus the shared tint shaders and palette atlas, and
-  compares them with `tools/DyeAppearanceBaseline.json`. `BuildHaks.cmd` runs it,
+  every texture and TXI it binds, tint masks included), the shared tint shaders
+  and palette atlas, and each existing model's rows in `tintmap.2da` and
+  `cloaktint.2da` (material and dye layers), and compares them with
+  `tools/DyeAppearanceBaseline.json`. `BuildHaks.cmd` runs it,
   and `TestDyeAppearance.py` covers it. A failure means existing parts would take
   dyes differently. Undo the change, or, when the change is intended, get the
   owner's approval, capture before/after client screenshots of the affected parts

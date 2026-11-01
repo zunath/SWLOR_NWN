@@ -137,6 +137,18 @@ jobs:
             test -x /nwn/run-server.sh
           '
 
+      - name: Verify crash capture and restart lifecycle
+        shell: bash
+        env:
+          SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
+          SWLOR_CRASH_TEST_IMAGE: swlor-crash-capture-tests:ci
+        run: |
+          docker build \
+            --build-arg SERVER_IMAGE="$SERVER_IMAGE" \
+            --tag "$SWLOR_CRASH_TEST_IMAGE" \
+            tools/tests/server_crash_capture
+          python3 -m unittest tools.tests.test_server_crash_capture -v
+
       - name: Publish the verified server image
         shell: bash
         env:

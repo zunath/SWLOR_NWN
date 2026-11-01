@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Unit KX-17 gave you the CZ-220 Breaker Yard Key. Travel to the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Wreck Crew Scrappers, who hold the floor nearest the entrance, and recover the Worldbreaker Breaker Yard Work Order. Any Scrapper counts, whichever katar line the crew drilled for, but only kills made after dazing, knocking down or disorienting them.")
+                    "Unit KX-17 gave you the CZ-220 Breaker Yard Key. Travel to the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Wreck Crew Scrappers, who hold the floor nearest the entrance, and recover the Worldbreaker Breaker Yard Work Order. Any Scrapper counts, whatever form it fights in, but only kills made after dazing, knocking down or disorienting them.")
                 .AddCapstoneProofKillObjective(NPCGroupType.CZ220_Worldbreaker_Adept, "worldbreaker", 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerBreakerYardWorkOrder)
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the CZ-220 Breaker Yard on CZ-220. Defeat five Wreck Crew Riggers on the junkline deeper inside and recover the Worldbreaker Junkline Control Relay. Any Rigger counts, whichever katar line the crew drilled for, but only kills made after dazing, knocking down or disorienting them.")
+                    "Return to the CZ-220 Breaker Yard on CZ-220. Defeat five Wreck Crew Riggers on the junkline deeper inside and recover the Worldbreaker Junkline Control Relay. Any Rigger counts, whatever form it fights in, but only kills made after dazing, knocking down or disorienting them.")
                 .AddCapstoneProofKillObjective(NPCGroupType.CZ220_Worldbreaker_Specialist, "worldbreaker", 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerJunklineControlRelay)
 
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Four Foreman's Hands hold the deepest part of the Breaker Bay, the crane deck above the drill pit on the north side, in the CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made after dazing, knocking down or disorienting them.")
+                    "Four Foreman's Hands hold the deepest part of the Breaker Bay, at its north-east end, in the CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip. Any Foreman's Hand counts, whatever form it fights in, but only kills made after dazing, knocking down or disorienting them.")
                 .AddCapstoneProofKillObjective(NPCGroupType.CZ220_Worldbreaker_InnerCircle, "worldbreaker", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerForemansOverrideChip)
 

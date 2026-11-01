@@ -48756,15 +48756,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 71.75
+          "value": 95.75
         },
         "YPosition": {
           "type": "float",
-          "value": 65.75
+          "value": 142.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4
+          "value": 0.40
         },
         "XOrientation": {
           "type": "float",
@@ -48819,15 +48819,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 81.75
+          "value": 89.75
         },
         "YPosition": {
           "type": "float",
-          "value": 63.25
+          "value": 134.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4
+          "value": 0.40
         },
         "XOrientation": {
           "type": "float",
@@ -48882,15 +48882,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 68.75
+          "value": 78.75
         },
         "YPosition": {
           "type": "float",
-          "value": 75.75
+          "value": 133.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4
+          "value": 0.40
         },
         "XOrientation": {
           "type": "float",
@@ -48945,15 +48945,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 87.25
+          "value": 109.75
         },
         "YPosition": {
           "type": "float",
-          "value": 82.75
+          "value": 127.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4
+          "value": 0.40
         },
         "XOrientation": {
           "type": "float",
@@ -49260,145 +49260,19 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 113.75
+          "value": 130.75
         },
         "YPosition": {
           "type": "float",
-          "value": 127.75
+          "value": 138.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4
+          "value": 0.40
         },
         "XOrientation": {
           "type": "float",
           "value": 1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_eclipse_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 127.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 127.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.4
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_eclipse_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 120.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 145.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.4
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
         },
         "YOrientation": {
           "type": "float",
@@ -49453,11 +49327,137 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 137.25
+          "value": 128.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_eclipse_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 115.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_eclipse_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 120.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 124.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
         },
         "XOrientation": {
           "type": "float",

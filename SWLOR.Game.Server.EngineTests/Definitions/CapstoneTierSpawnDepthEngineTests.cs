@@ -109,8 +109,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(walked >= farthestAdept.Item2,
                         $"{resref} inner circle point ({point.X:0.0},{point.Y:0.0}) is {walked:0} m from the entrance, nearer than adept point " +
                         $"({farthestAdept.point.X:0.0},{farthestAdept.point.Y:0.0}) at {farthestAdept.Item2:0} m");
+
+                    // Guards stand in open floor, not pressed against a wall or cliff.
+                    var blocked = FirstBlockedAround(area, point, OpenFloorRadiusMeters);
+                    ctx.Assert(blocked == null,
+                        $"{resref} inner circle point ({point.X:0.0},{point.Y:0.0}) has no open floor at {blocked}, within {OpenFloorRadiusMeters} m");
                 }
             }
+        }
+
+        private const float OpenFloorRadiusMeters = 3f;
+
+        private static string FirstBlockedAround(uint area, Vector3 point, float radius)
+        {
+            var ground = GetGroundHeight(Location(area, point, 0f));
+            for (var r = 0.5f; r <= radius; r += 0.5f)
+            for (var angle = 0; angle < 360; angle += 15)
+            {
+                var sample = Vector3(point.X + r * MathF.Cos(angle * MathF.PI / 180f), point.Y + r * MathF.Sin(angle * MathF.PI / 180f));
+                var location = Location(area, sample, 0f);
+                if (Get2DAString("surfacemat", "Walk", GetSurfaceMaterial(location)) != "1" ||
+                    Math.Abs(GetGroundHeight(location) - ground) > 1f)
+                    return $"({sample.X:0.0},{sample.Y:0.0})";
+            }
+
+            return null;
         }
 
         private static uint FindArea(string resref)

@@ -52410,15 +52410,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 121.25
+          "value": 129.75
         },
         "YPosition": {
           "type": "float",
-          "value": 24.75
+          "value": 139.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -52473,15 +52473,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 105.25
+          "value": 119.75
         },
         "YPosition": {
           "type": "float",
-          "value": 33.25
+          "value": 140.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -52490,6 +52490,69 @@
         "YOrientation": {
           "type": "float",
           "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Absolute Defense line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_absdef_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 126.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 130.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
         }
       },
       {
@@ -52540,74 +52603,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 14.75
+          "value": 122.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Absolute Defense line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_absdef_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 95.25
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 15.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -52662,11 +52662,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 133.25
+          "value": 94.25
         },
         "YPosition": {
           "type": "float",
-          "value": 144.25
+          "value": 121.25
         },
         "ZPosition": {
           "type": "float",
@@ -52725,11 +52725,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 134.25
+          "value": 86.25
         },
         "YPosition": {
           "type": "float",
-          "value": 134.25
+          "value": 127.25
         },
         "ZPosition": {
           "type": "float",
@@ -52788,11 +52788,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 123.25
+          "value": 86.75
         },
         "YPosition": {
           "type": "float",
-          "value": 143.75
+          "value": 137.25
         },
         "ZPosition": {
           "type": "float",
@@ -52851,11 +52851,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 124.25
+          "value": 76.25
         },
         "YPosition": {
           "type": "float",
-          "value": 133.75
+          "value": 128.75
         },
         "ZPosition": {
           "type": "float",
@@ -52914,15 +52914,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 94.75
+          "value": 85.25
         },
         "YPosition": {
           "type": "float",
-          "value": 122.75
+          "value": 11.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -52977,15 +52977,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 111.75
+          "value": 80.75
         },
         "YPosition": {
           "type": "float",
-          "value": 115.25
+          "value": 20.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -53040,15 +53040,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 119.25
+          "value": 94.25
         },
         "YPosition": {
           "type": "float",
-          "value": 122.75
+          "value": 15.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",
@@ -53103,15 +53103,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 89.25
+          "value": 86.75
         },
         "YPosition": {
           "type": "float",
-          "value": 131.25
+          "value": 28.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.00
         },
         "XOrientation": {
           "type": "float",

@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Trial Examiner Droids guarding the control systems at the far north-west end of the Jedi Trial Halls on Hutlar, the deepest part, and recover the Saber Storm Council Trial Chit. Any Trial Examiner Droid counts, whatever form it fights in, but only kills made after sundering their defenses.")
+                    "Disable four Trial Examiner Droids guarding the control systems in the west wing of the Jedi Trial Halls on Hutlar, the deepest part, and recover the Saber Storm Council Trial Chit. Any Trial Examiner Droid counts, whatever form it fights in, but only kills made after sundering their defenses.")
                 .AddCapstoneProofKillObjective(NPCGroupType.Hutlar_StormExaminerDroid, "saber_storm", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormCouncilTrialChit)
 

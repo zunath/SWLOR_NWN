@@ -10746,7 +10746,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 19.75
+          "value": 11.75
         },
         "YOrientation": {
           "type": "float",
@@ -10754,11 +10754,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 119.75
+          "value": 99.75
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.00
         }
       },
       {
@@ -10809,74 +10809,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 9.75
+          "value": 11.75
         },
         "YOrientation": {
           "type": "float",
           "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 119.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Shell-Back Spawn (Primal Overrun line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_PRIMOVER_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_primover_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 19.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
         },
         "YPosition": {
           "type": "float",
@@ -10884,7 +10821,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.0
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Shell-Back Spawn (Primal Overrun line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_PRIMOVER_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_primover_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 21.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 100.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
         }
       },
       {
@@ -10935,7 +10935,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 29.75
+          "value": 17.25
         },
         "YOrientation": {
           "type": "float",
@@ -10943,511 +10943,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 119.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_UNTINST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_untinst_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 25.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 76.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_UNTINST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_untinst_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 33.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 83.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_UNTINST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_untinst_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 12.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 93.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_UNTINST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_untinst_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 25.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 89.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_forcebeast_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 22.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 65.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_forcebeast_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 32.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 68.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.05
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_forcebeast_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 15.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 74.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_forcebeast_ic"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 10.75
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 83.75
+          "value": 118.25
         },
         "ZPosition": {
           "type": "float",
@@ -11477,6 +10973,510 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNTINST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_untinst_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 30.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 149.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNTINST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_untinst_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 40.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 149.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNTINST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_untinst_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 45.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 137.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Crystal Spider Spawn (Untouchable Instinct line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNTINST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_untinst_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 12.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 138.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebeast_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 28.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 73.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebeast_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 30.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 88.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebeast_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 17.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 91.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Den Elder Wyvern Spawn (Force-Bonded Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebeast_ic"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 49.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 79.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
             "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
           }
         },
@@ -11502,7 +11502,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 146.00
+          "value": 149.75
         },
         "YOrientation": {
           "type": "float",
@@ -11510,389 +11510,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 148.00
+          "value": 120.75
         },
         "ZPosition": {
-          "type": "float",
-          "value": 5.93
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 26.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 4.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 4.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 144.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cap_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 154.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 18.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 78.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 82.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 74.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 156.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
           "type": "float",
           "value": 6.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 72.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
         }
       },
       {
@@ -11943,7 +11565,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 90.00
+          "value": 129.25
         },
         "YOrientation": {
           "type": "float",
@@ -11951,511 +11573,511 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 10.00
+          "value": 149.75
         },
         "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cap_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 134.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 92.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cap_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 118.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 48.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cap_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 50.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 44.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 34.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 110.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cap_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 106.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 126.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 6.01
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 70.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 118.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 38.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 154.00
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.00
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_cdp_dgrot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 124.00
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
           "type": "float",
           "value": 6.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 130.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 95.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 110.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 118.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 6.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 130.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 65.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 107.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 40.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 149.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 41.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 149.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 10.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 58.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 41.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 87.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 10.25
         },
         "ZPosition": {
           "type": "float",
@@ -12510,7 +12132,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 46.00
+          "value": 57.25
         },
         "YOrientation": {
           "type": "float",
@@ -12518,7 +12140,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 78.00
+          "value": 10.75
         },
         "ZPosition": {
           "type": "float",
@@ -12548,7 +12170,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12561,11 +12183,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dgrot"
+          "value": "wp_cdp_dgrot"
         },
         "XOrientation": {
           "type": "float",
@@ -12573,7 +12195,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 86.00
+          "value": 118.25
         },
         "YOrientation": {
           "type": "float",
@@ -12581,11 +12203,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 42.00
+          "value": 10.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.11
+          "value": 1.00
         }
       },
       {
@@ -12611,7 +12233,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12624,11 +12246,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dgrot"
+          "value": "wp_cdp_dgrot"
         },
         "XOrientation": {
           "type": "float",
@@ -12636,7 +12258,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 154.00
+          "value": 26.25
         },
         "YOrientation": {
           "type": "float",
@@ -12644,11 +12266,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 116.00
+          "value": 10.25
         },
         "ZPosition": {
           "type": "float",
-          "value": 6.13
+          "value": 1.00
         }
       },
       {
@@ -12674,7 +12296,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Young Wyvern Spawn (Capstone Adept)"
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -12687,11 +12309,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN"
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dgrot"
+          "value": "wp_cdp_dgrot"
         },
         "XOrientation": {
           "type": "float",
@@ -12699,7 +12321,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 18.00
+          "value": 74.25
         },
         "YOrientation": {
           "type": "float",
@@ -12707,7 +12329,385 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 34.00
+          "value": 81.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 65.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 114.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 50.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 147.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 82.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 144.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 18.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 149.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 31.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 109.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Grotto Apex Den - Goad-Scarred Wyvern Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_dgrot"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 10.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 72.75
         },
         "ZPosition": {
           "type": "float",

@@ -54392,452 +54392,452 @@
         },
         "XPosition": {
           "type": "float",
+          "value": 142.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 10.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_INVINC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_invinc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 143.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 20.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_INVINC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_invinc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 132.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 10.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_INVINC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_invinc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 137.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 28.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_vitrupt_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 111.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 106.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_vitrupt_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 106.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 97.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_vitrupt_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 114.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 89.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_vitrupt_ic"
+        },
+        "XPosition": {
+          "type": "float",
           "value": 96.75
         },
         "YPosition": {
           "type": "float",
-          "value": 120.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_INVINC_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_invinc_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 94.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 141.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_INVINC_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_invinc_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 84.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 140.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Invincible line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_INVINC_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_invinc_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 88.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 114.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_vitrupt_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 145.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 6.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.00
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_vitrupt_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 135.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 4.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.00
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_vitrupt_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 145.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 16.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.00
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Viral Cascade line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_VITRUPT_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_vitrupt_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 135.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 14.25
+          "value": 116.75
         },
         "ZPosition": {
           "type": "float",
@@ -54896,7 +54896,70 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 125.75
+          "value": 103.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 138.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Systemic Shutdown line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SYSSHUT_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_sysshut_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 94.75
         },
         "YPosition": {
           "type": "float",
@@ -54908,69 +54971,6 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Veles Militia Annex - Holdout Honor Guard Spawn (Systemic Shutdown line)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_SYSSHUT_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_sysshut_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 115.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 145.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.00
-        },
-        "XOrientation": {
-          "type": "float",
           "value": 0.0
         },
         "YOrientation": {
@@ -55022,11 +55022,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 125.75
+          "value": 113.25
         },
         "YPosition": {
           "type": "float",
-          "value": 133.25
+          "value": 143.25
         },
         "ZPosition": {
           "type": "float",
@@ -55085,11 +55085,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 105.75
+          "value": 84.75
         },
         "YPosition": {
           "type": "float",
-          "value": 143.75
+          "value": 143.25
         },
         "ZPosition": {
           "type": "float",

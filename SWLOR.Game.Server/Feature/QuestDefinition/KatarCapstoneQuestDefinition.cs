@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The crew's inner circle holds the deepest part of the yard, the far south-east end of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat four Foreman's Hands and recover the Scrapheap Lockdown Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made after hobbling them with Hooking Strike or dazing them with Joint Lock.")
+                    "The crew's inner circle holds the deepest part of the yard, the east side of the Breaker Bay in the CZ-220 Breaker Yard on CZ-220. Defeat four Foreman's Hands and recover the Scrapheap Lockdown Foreman's Override Chip. Any Foreman's Hand counts, whichever katar line the crew drilled for, but only kills made after hobbling them with Hooking Strike or dazing them with Joint Lock.")
                 .AddCapstoneProofKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_InnerCircle, "scrapheap_lockdown", 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownForemansOverrideChip)
 

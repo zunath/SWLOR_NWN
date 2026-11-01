@@ -16,5 +16,6 @@ namespace SWLOR.Game.Server.Service.TradeService
         Korriban = 7,
         Dathomir = 8,
         Dantooine = 9,
+        Eshan = 10,
     }
 }

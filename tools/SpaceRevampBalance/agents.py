@@ -11,7 +11,7 @@ Sources:
 - Placement: plan section 29's table, mapped to the standing factions W7c uses (trade.py EXCHANGE_FACTION). The table
   lists Korriban first for the Sith Military, but Dathomir (tier 5) is the lower tier, so it is the Sith's first dock.
 - Dock tiers: trade.py EXCHANGES (Viscara and CZ-220 1, Mon Cala 2, Hutlar 3, Tatooine and Smuggler's Moon 4,
-  Dathomir and Dantooine 5, Korriban 6).
+  Dathomir, Dantooine and Eshan 5, Korriban 6).
 - Mission orbits: the orbits and zones whose spawn tables fly the mission tier's faction ships
   (SpaceSpawnDefinition: Smuggler's Moon flies tier 1, Mid Rim 1 tier 5, Mid Rim 2 tier 6), with trade.py's lane graph.
 - Space combat credits per hour: scanning.combat_rate (trade.py's baseline with the space lockboxes normal kills drop).
@@ -37,7 +37,8 @@ REPO = Path(__file__).resolve().parents[2]
 TIERS = [1, 2, 3, 4, 5, 6]
 
 # ---------------------------------------------------------------------------------------------------------------
-# Agents (plan section 29): two per faction at different docks, no dock with more than two, the first at the lower tier
+# Agents (plan section 29): two per faction at different docks, no dock with more than two, the first at the lower tier.
+# The Eshan merge adds a third Smuggler agent at Eshan (tier 5), after the two the plan's table places.
 # ---------------------------------------------------------------------------------------------------------------
 # Dock: (landing area resref = the dock id Trade uses, exchange, dock name). The agent stands beside the dock's Dock
 # Master in the same area.
@@ -52,6 +53,7 @@ DOCKS = {
     "dath_landingpad": ("Dathomir", "Dathomir Landing Pad"),
     "dan_centcolony": ("Dantooine", "Dantooine Central Colony"),
     "korribanlandingp": ("Korriban", "Korriban Landing Platform"),
+    "pwsc_eshstarport": ("Eshan", "Eshan Starport"),
 }
 
 FACTION_NAMES = {"RepublicMilitary": "Republic Military", "Czerka": "Czerka Corporation", "Smuggler": "Smugglers",
@@ -106,6 +108,11 @@ AGENTS = [
      "The Empire has use for capable pilots. It has no use for anything else."),
     ("SithKorriban", "Captain Seris Drask", "SithMilitary", "korribanlandingp", "g_elite_sith",
      "Korriban's skies belong to the Empire. Keep them that way and you will be rewarded."),
+    # The Eshan merge (master #2344): Eshan's dock agent, appended so no agent id moves. Eshan is an open port like
+    # Dathomir with a smuggler presence on the ground (Raalo Kes, the Scraplands), so the Smugglers' third agent, at
+    # their highest-tier dock; the scrapyard smuggler is the appearance donor.
+    ("SmugglerEshan", "Kessra Vayle", "Smuggler", "pwsc_eshstarport", "esh_scrap_smug",
+     "The Echani judge a pilot by how they fight. I judge one by what they can haul. Need work?"),
 ]
 AGENT_IDS = {a[0]: i for i, a in enumerate(AGENTS, 1)}
 MAXIMUM_AGENTS_PER_DOCK = 2
@@ -274,7 +281,7 @@ ORBITS = {
     2: ["moncalaorbit", "space_viscbelt"],
     3: ["hutlar_orbit", "space_midrimneb"],
     4: ["tatooineorbit", "space_midrimneb"],
-    5: ["space_dathomir", "dantooineorbit", "space_midrim1", "space_korrdebris"],
+    5: ["space_dathomir", "dantooineorbit", "space_midrim1", "space_korrdebris", "eshanorbit"],
     6: ["space_korriban", "space_midrim2"],
 }
 ORBIT_NAMES = dict(trade.ORBIT_NAMES)
@@ -412,10 +419,10 @@ def check_placement():
             problems.append(f"{dock} hosts {len(agents)} agents")
     for faction in FACTION_NAMES:
         mine = [a for a in AGENTS if a[2] == faction]
-        if len(mine) != 2 or mine[0][3] == mine[1][3]:
-            problems.append(f"{faction} needs two agents at different docks")
-        elif dock_tier(mine[0][3]) > dock_tier(mine[1][3]):
-            problems.append(f"{faction}'s first agent is not at the lower-tier dock")
+        if len(mine) < 2 or len({a[3] for a in mine}) != len(mine):
+            problems.append(f"{faction} needs two or more agents, each at a different dock")
+        elif any(dock_tier(x[3]) > dock_tier(y[3]) for x, y in zip(mine, mine[1:])):
+            problems.append(f"{faction}'s agents are not in dock tier order (the first at the lowest-tier dock)")
     return problems
 
 

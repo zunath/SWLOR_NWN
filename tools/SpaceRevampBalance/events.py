@@ -59,7 +59,7 @@ INVADERS = [
 CENTERS = list(dict.fromkeys(ex[3] for ex in trade.EXCHANGES))
 REGION_NAMES = {"viscaraorbit": "Viscara", "moncalaorbit": "Mon Cala", "hutlar_orbit": "Hutlar", "tatooineorbit": "Tatooine",
                 "narshadorbit": "Smuggler's Moon", "space_dathomir": "Dathomir", "dantooineorbit": "Dantooine",
-                "space_korriban": "Korriban"}
+                "space_korriban": "Korriban", "eshanorbit": "Eshan"}
 
 
 def region_areas(center):

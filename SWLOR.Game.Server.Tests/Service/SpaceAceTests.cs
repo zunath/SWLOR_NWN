@@ -25,7 +25,7 @@ public class SpaceAceTests
     private static readonly string[] OrbitAreas =
     {
         "viscaraorbit", "narshadorbit", "moncalaorbit", "hutlar_orbit", "tatooineorbit", "space_dathomir",
-        "dantooineorbit", "space_midrim1", "space_midrim2", "space_korriban",
+        "dantooineorbit", "space_midrim1", "space_midrim2", "space_korriban", "eshanorbit",
     };
 
     private static readonly string[] ZoneAreas = { "space_viscbelt", "space_midrimneb", "space_korrdebris" };

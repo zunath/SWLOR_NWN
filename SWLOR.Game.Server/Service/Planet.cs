@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<string> _spaceAreaResrefs = new(StringComparer.OrdinalIgnoreCase)
         {
             "dantooineorbit",
+            "eshanorbit",
             "hutlar_orbit",
             "moncalaorbit",
             "prefab_space",
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Service
             ["dan_"] = PlanetType.Dantooine,
             ["dath"] = PlanetType.Dathomir,
             ["druz_"] = PlanetType.Viscara,
+            ["esh_"] = PlanetType.Eshan,
             ["fosz"] = PlanetType.Viscara,
             ["hutlar_"] = PlanetType.Hutlar,
             ["jeditemp_"] = PlanetType.Viscara,
@@ -67,6 +69,9 @@ namespace SWLOR.Game.Server.Service
             ["moncala"] = PlanetType.MonCala,
             ["moseis_"] = PlanetType.Tatooine,
             ["nanostation"] = PlanetType.CZ220,
+            ["pw_ar_sc_eshan"] = PlanetType.Eshan,
+            ["pw_sc_eshan"] = PlanetType.Eshan,
+            ["pwsc_esh"] = PlanetType.Eshan,
             ["scor_k"] = PlanetType.Korriban,
             ["smesks_"] = PlanetType.Tatooine,
             ["sol_hutlar"] = PlanetType.Hutlar,

@@ -207,7 +207,7 @@ PROTOTYPE_TECH_DESCRIPTION = ("Stolen experimental ship parts. A research termin
                               "for a guaranteed top-tier bonus, and an Engineer builds it into a Prototype Core.")
 
 # ---------------------------------------------------------------------------------------------------------------
-# Aces (W9c, plan sections 11 and 14): one named rare-spawn pilot per orbit (the ten orbit areas) and one per W6c zone,
+# Aces (W9c, plan sections 11 and 14): one named rare-spawn pilot per orbit (the eleven orbit areas) and one per W6c zone,
 # built like a ground named rare elite (skills/swlor-rare-spawn-generation): an Elite of its area's top faction level
 # (tier x 10, the level of the tier's Gunship and Defense Platform) in a role ship, converted by model.npc_ship like every
 # space NPC (npc_catalog.py), so it takes the Elite hull class (Medium) and the Elite HP and damage curves. Each flies a
@@ -374,7 +374,22 @@ WILD_ACES = [
 ]
 for _ace in WILD_ACES:
     _ace["wild"] = True
-ACES = ACES + WILD_ACES
+
+# The Eshan merge (master #2344): Eshan's orbit ace, a tier 5 orbit ace like Dathomir's and Dantooine's, appended after
+# every other ace so no trophy (StructureType) or achievement id moves; its achievement follows the crewed kill. It flies
+# the Y8 Miner's unused Pattern B (Czerka, Medium) as a Bomber and drops one of the three Module Schematics no ace had.
+LATE_ACES = [
+    dict(key="Eshan", tag="ace_eshan", name="Tarsa Vell", short="Vell", area="eshanorbit",
+         area_text="Eshan orbit", table="SPACE_ESHAN_ORBIT", tier=5, role="Bomber", design=10227,
+         maker="Czerka", named="PointDefenseTurret", rare=("ExtractionHead", "CzerkaPattern"),
+         trophy=("Frost-Rimed Hull Section", "_mdrn_pl_shipp06",
+                 "A section of a mining hauler's hull, still rimed with frost from the Eshan approach, mounted as a wall piece."),
+         lore="A Red Hand bomber pilot who flies an armored Czerka mining hauler over Eshan and breaks the rice freighters "
+              "open with its torpedoes."),
+]
+for _ace in LATE_ACES:
+    _ace["late"] = True
+ACES = ACES + WILD_ACES + LATE_ACES
 
 
 def ace_level(ace):
@@ -483,7 +498,7 @@ def achievements():
         out.append((enum, name, f"Destroyed {article} {faction} ship (tier {tier}) in space."))
     out.append(("SpaceCapitalKill", "Capital Breaker", "Helped destroy a capital ship in space."))
     for ace in ACES:
-        if not ace.get("wild"):
+        if not ace.get("wild") and not ace.get("late"):
             out.append((ace_achievement(ace), f"{ace['short']} Downed", f"Helped destroy the ace {ace['name']} in {ace['area_text']}."))
     out.append(("SpaceNamedModule", "Named and Fitted", "Fitted a named rank-50 module to a ship."))
     for _site, enum, name, text in SITE_ACHIEVEMENTS:
@@ -497,4 +512,7 @@ def achievements():
     for _area, enum, name, text in INTERIOR_ACHIEVEMENTS:
         out.append((enum, name, text))
     out.append(CREWED_KILL_ACHIEVEMENT)
+    # The Eshan merge: Eshan's ace, after the crewed kill so no existing id moves.
+    for ace in LATE_ACES:
+        out.append((ace_achievement(ace), f"{ace['short']} Downed", f"Helped destroy the ace {ace['name']} in {ace['area_text']}."))
     return [(ACHIEVEMENT_START + i, enum, name, text) for i, (enum, name, text) in enumerate(out)]

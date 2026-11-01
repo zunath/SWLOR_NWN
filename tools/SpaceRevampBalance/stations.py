@@ -81,6 +81,9 @@ ORBIT_ANCHORS = [
     ("Dantooine2", "dantooineorbit", 60.5, 90.5, "Dantooine"),
     ("SmugglersMoon1", "narshadorbit", 240.5, 120.5, "SmugglersMoon"),
     ("SmugglersMoon2", "narshadorbit", 80.5, 110.5, "SmugglersMoon"),
+    # Eshan (the Eshan merge, master #2344): its orbit is laid out like Dathomir's, so Dathomir's open sites.
+    ("Eshan1", "eshanorbit", 60.5, 150.5, "Eshan"),
+    ("Eshan2", "eshanorbit", 150.5, 250.5, "Eshan"),
 ]
 # (id, area, x, y)
 WILD_ANCHORS = [
@@ -105,7 +108,7 @@ EXTERIOR_SCALE_BY_LEVEL = [1.2, 1.4, 1.6, 1.8, 2.0]
 # Planet name of each PlanetType used as a home port.
 PLANET_NAMES = {"Viscara": "Viscara", "CZ220": "CZ-220", "Tatooine": "Tatooine", "MonCala": "Mon Cala",
                 "Hutlar": "Hutlar", "Dathomir": "Dathomir", "Korriban": "Korriban", "Dantooine": "Dantooine",
-                "SmugglersMoon": "Smuggler's Moon"}
+                "SmugglersMoon": "Smuggler's Moon", "Eshan": "Eshan"}
 
 
 def exchange_for_planet(planet):
@@ -244,6 +247,7 @@ AREA_RESOURCE_TABLES = {
     "moncalaorbit": "SPACE_RESOURCES_MONCALA_ORBIT", "hutlar_orbit": "SPACE_RESOURCES_HUTLAR_ORBIT",
     "space_dathomir": "SPACE_RESOURCES_DATHOMIR_ORBIT", "space_korriban": "SPACE_RESOURCES_KORRIBAN_ORBIT",
     "dantooineorbit": "SPACE_RESOURCES_DATHOMIR_ORBIT", "narshadorbit": "SPACE_RESOURCES_VISCARA_ORBIT",
+    "eshanorbit": "SPACE_RESOURCES_ESHAN_ORBIT",
     "space_wspulsar": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsblkhole": "SPACE_RESOURCES_KORRIBAN_DEBRIS",
     "space_wsionstorm": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsmagnetar": "SPACE_RESOURCES_KORRIBAN_DEBRIS",
     "space_wsredgiant": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsgraveyrd": "SPACE_RESOURCES_KORRIBAN_DEBRIS",

@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int EjectHullPercent = 25;
 
         /// <summary>The known orbits a rift can open in.</summary>
-        public static readonly string[] KnownOrbits = { "viscaraorbit", "moncalaorbit", "hutlar_orbit", "tatooineorbit", "narshadorbit", "space_dathomir", "dantooineorbit", "space_korriban", "space_midrim1", "space_midrim2" };
+        public static readonly string[] KnownOrbits = { "viscaraorbit", "moncalaorbit", "hutlar_orbit", "tatooineorbit", "narshadorbit", "space_dathomir", "dantooineorbit", "space_korriban", "space_midrim1", "space_midrim2", "eshanorbit" };
 
         public static readonly IReadOnlyDictionary<RiftSizeClass, RiftSizeDetail> SizeClasses = new Dictionary<RiftSizeClass, RiftSizeDetail>
         {

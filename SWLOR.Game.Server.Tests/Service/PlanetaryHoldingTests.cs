@@ -75,6 +75,7 @@ public class PlanetaryHoldingTests
             { HoldingType.HerbGrove, (TradeExchangeType.Dathomir, CommodityType.WitchHerbs) },
             { HoldingType.GrainFarm, (TradeExchangeType.Dantooine, CommodityType.Grain) },
             { HoldingType.BanthaRanch, (TradeExchangeType.Dantooine, CommodityType.BanthaMilk) },
+            { HoldingType.RicePaddy, (TradeExchangeType.Eshan, CommodityType.EshanRice) },
         };
 
         HoldingCatalog.Holdings.Select(x => x.Type).Should().BeEquivalentTo(Enum.GetValues<HoldingType>().Where(x => x != HoldingType.Invalid));
@@ -164,7 +165,7 @@ public class PlanetaryHoldingTests
         Detail(HoldingType.MoistureFarm).SiteAreaResref.Should().Be("holding_desert");
         Detail(HoldingType.CrystalMine).SiteAreaResref.Should().Be("holding_cave");
         Detail(HoldingType.AssemblyLine).SiteAreaResref.Should().Be("player_rnd", "industrial holdings keep their interior");
-        HoldingCatalog.Holdings.Count(x => HoldingTuning.OutdoorSiteResrefs.Contains(x.SiteAreaResref)).Should().Be(11);
+        HoldingCatalog.Holdings.Count(x => HoldingTuning.OutdoorSiteResrefs.Contains(x.SiteAreaResref)).Should().Be(12);
 
         var ifo = File.ReadAllText(Path.Combine(Root, "Module", "ifo", "module.ifo.json"), System.Text.Encoding.Latin1);
         var categories = File.ReadAllText(Path.Combine(Root, "toolset", "categories.json"));

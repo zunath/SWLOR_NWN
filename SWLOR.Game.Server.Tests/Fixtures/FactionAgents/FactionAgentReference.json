@@ -1366,6 +1366,11 @@
       },
       {
         "Category": "RiftKey",
+        "Resref": "rift_key_t5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
         "Resref": "rift_key_t55",
         "Quantity": 1
       },

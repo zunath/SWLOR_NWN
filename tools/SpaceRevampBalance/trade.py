@@ -107,10 +107,22 @@ SOURCE.update({
     "SithHolocrons": "refined: Sith Relics + 2 Encrypted Data Chips, x1.20",
     "AgedBanthaCheese": "refined: 2 Bantha Milk + 1 Neon Salt, x1.19",
 })
+
+# Eshan goods (the Eshan merge, master #2344): Eshan's export, after the holding goods so no id moves. Eshan is a cold
+# Echani farming world; its rice is a good no other dock makes (Dantooine already exports Grain). Only one: a second
+# Eshan export (Dire Wolf Pelts, esh_wolf_pelt 175, was tried) puts the Hutt Grand Barge's every-good trade with Jump
+# Beacons at 204-210% of T3 combat, over beacon_problems' 200% cap, with every import pair tried.
+ESHAN_GOODS = [
+    (31, "EshanRice", "Eshan Rice", 63, 2, [], "Sacks of white rice from the Eshan paddies."),
+]
+COMMODITIES += ESHAN_GOODS
+SOURCE.update({
+    "EshanRice": "esh_rice (Eshan White Rice) 63",
+})
 # The docks whose holdings refine each holding good (holdings.py checks them against its chains) and the docks that
 # import it (pays well).
 HOLDING_GOOD_SOURCES = {
-    "RationPacks": ["MonCala", "Tatooine", "SmugglersMoon", "Dantooine"],
+    "RationPacks": ["MonCala", "Tatooine", "SmugglersMoon", "Dantooine", "Eshan"],
     "FocusingLenses": ["Viscara", "CZ220"],
     "PrefabShelters": ["Hutlar", "Tatooine"],
     "Glitterstim": ["SmugglersMoon"],
@@ -164,6 +176,8 @@ EXCHANGES = [
      ["WitchHerbs", "BeastHides"], ["CzerkaMachineParts", "MedicalSupplies"]),
     ("Dantooine", "Dantooine", ["Dantooine"], "dantooineorbit", "Republic", 5,
      ["Grain", "BanthaMilk"], ["ByyskHides", "BanthaHides", "BeastHides", "AraciaTimber"]),
+    ("Eshan", "Eshan", ["Eshan"], "eshanorbit", "None", 5,
+     ["EshanRice"], ["KinrathSilk", "MedicalSupplies"]),
 ]
 # Station Fuel (W13b, plan sections 25-26) is the Jump Beacon's fuel: a refined good worth more than its inputs (Reactor
 # Cores and Tibanna Gas), made by Czerka at CZ-220 beside its reactor cores, and imported nowhere: stations burn it.
@@ -171,13 +185,18 @@ EXCHANGES = [
 # Departures from the plan's dock table: Mon Cala also exports Medical Supplies (kolto) and CZ-220 Weapons Crates,
 # because the table lists both as imports with no exporter. Smuggler's Moon Landing and Station share one exchange
 # (they share an orbit). Smuggler's Moon has no NPC spawns yet; tier 4 is its lanes' tier (Hutlar 3, Tatooine 4).
+# Eshan (master #2344) is an independent port like Dathomir: no lawful authority, no customs, the tier 5 roster in orbit.
+# It imports Kinrath Silk (Echani tailoring) and Medical Supplies (a cold world): trade.py --sim keeps every band with
+# them (Exalted legal 121%, beacon checks clear); Reactor Cores in their place put Exalted legal trade at 127-134%, over
+# the 125% cap.
 
-# Starlane graph (Module/git, 2026-10-28): every lane has one back. The three W6c zones are dead ends with no exchange,
+# Starlane graph (Module/git, 2026-10-31: the Eshan merge adds Dantooine - Eshan): every lane has one back. The three W6c zones are dead ends with no exchange,
 # so they change no route length. The Mid Rim Nebula (T3-4) hangs off Hutlar (T3) since W11e, not Mid Rim 1 (T5 space).
 LANES = {
     "viscaraorbit": ["moncalaorbit", "space_midrim1", "space_viscbelt"],
     "moncalaorbit": ["dantooineorbit", "hutlar_orbit", "viscaraorbit"],
-    "dantooineorbit": ["moncalaorbit"],
+    "dantooineorbit": ["eshanorbit", "moncalaorbit"],
+    "eshanorbit": ["dantooineorbit"],
     "hutlar_orbit": ["moncalaorbit", "narshadorbit", "tatooineorbit", "space_midrimneb"],
     "narshadorbit": ["hutlar_orbit", "tatooineorbit"],
     "tatooineorbit": ["hutlar_orbit", "narshadorbit", "space_dathomir"],
@@ -230,11 +249,11 @@ BLACK_MARKET_PREMIUM = 1.10
 # (Hutlar 3, Tatooine 4) gives 4. The Mid Rim systems have none either: the plan's Mid Rim Nebula is T3-4, so Mid Rim 1
 # (the Viscara side) is 3 and Mid Rim 2 (the Korriban side) is 4. The W6c zones take their higher faction tier.
 ORBIT_TIERS = {"viscaraorbit": 1, "moncalaorbit": 2, "hutlar_orbit": 3, "tatooineorbit": 4, "narshadorbit": 4,
-               "space_dathomir": 5, "dantooineorbit": 5, "space_korriban": 6, "space_midrim1": 3, "space_midrim2": 4,
+               "space_dathomir": 5, "dantooineorbit": 5, "eshanorbit": 5, "space_korriban": 6, "space_midrim1": 3, "space_midrim2": 4,
                "space_viscbelt": 2, "space_midrimneb": 4, "space_korrdebris": 5}
 ORBIT_NAMES = {"viscaraorbit": "Viscara Orbit", "moncalaorbit": "Mon Cala Orbit", "hutlar_orbit": "Hutlar Orbit",
                "tatooineorbit": "Tatooine Orbit", "narshadorbit": "Smuggler's Moon Orbit", "space_dathomir": "Dathomir Orbit",
-               "dantooineorbit": "Dantooine Orbit", "space_korriban": "Korriban Orbit", "space_midrim1": "Mid Rim 1",
+               "dantooineorbit": "Dantooine Orbit", "eshanorbit": "Eshan Orbit", "space_korriban": "Korriban Orbit", "space_midrim1": "Mid Rim 1",
                "space_midrim2": "Mid Rim 2", "space_viscbelt": "Viscara Asteroid Belt", "space_midrimneb": "Mid Rim Nebula",
                "space_korrdebris": "Korriban Debris Field"}
 
@@ -310,7 +329,7 @@ STANDING = {"CaughtSmuggling": -25, "RanFromCustoms": -100, "AttackedLawfulShip"
 AUTHORITY_FACTION = {"Republic": "RepublicMilitary", "Czerka": "Czerka", "Sith": "SithMilitary"}
 EXCHANGE_FACTION = {"Viscara": "RepublicMilitary", "CZ220": "Czerka", "MonCala": "RepublicMilitary", "Hutlar": "HuttCartel",
                     "Tatooine": "HuttCartel", "SmugglersMoon": "Smuggler", "Korriban": "SithMilitary", "Dathomir": "Invalid",
-                    "Dantooine": "RepublicMilitary"}
+                    "Dantooine": "RepublicMilitary", "Eshan": "Invalid"}
 CONVOY_AUTHORITY_DEFAULT = "Czerka"  # a convoy outside a lawful orbit flies for Czerka (industrial shipping)
 
 # ---------------------------------------------------------------------------------------------------------------

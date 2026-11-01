@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -67,9 +66,10 @@ public class FurnitureRenameMigrationTests
         // A record that skipped server migration 29 (e.g. restored afterwards) still loads, with the former names mapped.
         AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
 
-        _29_CorrectStoredCarapaceBracers.RenameFurnitureRecipes(player, out var saved).Should().BeTrue();
+        FurnitureRenameMigration.MigratePlayer(player).Should().BeTrue();
+        var saved = JsonConvert.DeserializeObject<Player>(player.ToString())!;
         AssertMigrated(saved);
-        _29_CorrectStoredCarapaceBracers.RenameFurnitureRecipes(player, out _).Should().BeFalse();
+        FurnitureRenameMigration.MigratePlayer(player).Should().BeFalse();
         JToken.DeepEquals(player["UnknownField"], unknown).Should().BeTrue();
         player[nameof(Player.UnlockedRecipes)]!["VeilcarvedDisplayPlinth"].Should().BeNull();
 

@@ -415,6 +415,60 @@ namespace SWLOR.Toolset.Tests
             (await editor.TrySaveAsync()).Should().BeTrue();
         }
 
+        [AvaloniaTest]
+        public async Task MixedPlayerStartSelectionCopiesAndDeletesOnlyPlacedObjects()
+        {
+            AddAuthoredSourcePlacement();
+            var path = Path.Combine(_moduleRoot, "ifo", "module.ifo.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var document = JsonGffDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"));
+            document.Root.SetString("Mod_Entry_Area", GffFieldType.ResRef, AreaResRef);
+            File.WriteAllBytes(path, document.ToBytes());
+            using var session = DocumentSession.Open(path);
+            var entry = new ModuleEntryEditor(session);
+            var clipboard = new AreaInstanceClipboard();
+            var editor = await CreateEditorAsync(clipboard, entry);
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            editor.SelectSceneSelection(new AreaSelectionPick(editor.AreaScene!.Instances, Array.Empty<(int, int)>(), false));
+            editor.SelectedSceneInstances.Should().HaveCount(2);
+            var view = new ShortcutAreaEditorView { DataContext = editor };
+            view.SendControlKey(Key.C).Should().BeTrue();
+            clipboard.Contents.Should().ContainSingle().Which.Type.Should().Be(ResourceType.Utp);
+            view.SendKey(Key.Delete).Should().BeTrue();
+            editor.Sections.Single(section => section.BlueprintType == ResourceType.Utp).Rows.Should().BeEmpty();
+            entry.IsDirty.Should().BeFalse();
+            editor.UndoInstancesCommand.Execute(null);
+            editor.Sections.Single(section => section.BlueprintType == ResourceType.Utp).Rows.Should().ContainSingle();
+        }
+
+        [AvaloniaTest]
+        public void ReopeningModulePropertiesRefreshesAnUnownedCleanCachedIfo()
+        {
+            var path = Path.Combine(_moduleRoot, "ifo", "module.ifo.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            File.Copy(Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"), path);
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            context.OpenAndSettle(_moduleRoot);
+            var factory = new SWLOR.Toolset.Shell.ToolsetDockFactory(null!, null!, null!, null!, null!, null!, null!, null!, null!);
+            using var service = new EditorService(context, new LookupOptionProvider(context), log, factory, new StubPrompts());
+            SWLOR.Toolset.Editors.Module.ModulePropertiesDocumentViewModel Current() =>
+                (SWLOR.Toolset.Editors.Module.ModulePropertiesDocumentViewModel)typeof(EditorService)
+                    .GetField("_moduleProperties", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                    .GetValue(service)!;
+            service.OpenModuleProperties();
+            Current().OnClose().Should().BeTrue();
+            var external = JsonGffDocument.Load(path);
+            external.Root.SetString("Mod_Tag", GffFieldType.CExoString, "external_module_tag");
+            File.WriteAllBytes(path, external.ToBytes());
+            service.OpenModuleProperties();
+            Current().Tag.Should().Be("external_module_tag");
+            Current().IsDirty.Should().BeFalse();
+            Current().OnClose().Should().BeTrue();
+            context.WaitForBackgroundScans();
+        }
+
         private void AddAuthoredSourcePlacement()
         {
             var gitPath = Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json");

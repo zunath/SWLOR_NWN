@@ -1670,8 +1670,10 @@ namespace SWLOR.Toolset.Editors
         {
             if (SelectedSceneInstances.Count > 1)
             {
-                var references = SelectedSceneInstances.Select(marker =>
-                    new AreaInstanceReference(MapKindToSectionType(marker.Kind)!.Value, IndexWithinKind(marker))).ToArray();
+                var references = SelectedSceneInstances
+                    .Where(marker => MapKindToSectionType(marker.Kind) != null)
+                    .Select(marker => new AreaInstanceReference(MapKindToSectionType(marker.Kind)!.Value, IndexWithinKind(marker)))
+                    .ToArray();
                 if (!_instanceEditor.DeleteMany(references)) return false;
                 PublishBatchInstanceEdit();
                 return true;

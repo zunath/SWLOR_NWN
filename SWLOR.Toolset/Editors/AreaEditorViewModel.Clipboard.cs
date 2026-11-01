@@ -82,7 +82,7 @@ public partial class AreaEditorViewModel
         var selected = SelectedSceneInstances.Count > 0 ? SelectedSceneInstances :
             SelectedSceneInstance is { } instance ? new[] { instance } : Array.Empty<InstanceMarker>();
         var copies = new List<AreaInstanceClipboardEntry>();
-        foreach (var marker in selected)
+        foreach (var marker in selected.Where(marker => MapKindToSectionType(marker.Kind) != null))
         {
             if (SectionForKind(marker.Kind) is not { } section ||
                 section.CopyInstanceForPlacement(IndexWithinKind(marker), marker) is not { } copy)

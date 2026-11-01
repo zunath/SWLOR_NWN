@@ -111,18 +111,34 @@ namespace SWLOR.Toolset.Editors
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _cancelledAreaEditorLoads = new(StringComparer.OrdinalIgnoreCase);
         private readonly AreaInstanceClipboard _areaInstanceClipboard = new();
-        private ModuleEntryEditor? _moduleEntry;
+        private readonly Dictionary<string, ModuleEntryEditor> _moduleEntries = new(StringComparer.OrdinalIgnoreCase);
 
         private ModuleEntryEditor? ModuleEntryForWorkspace()
         {
-            if (_moduleEntry != null) return _moduleEntry;
             var root = _workspaceContext.Workspace?.ModuleRoot;
             if (root == null) return null;
-            var path = Path.Combine(root, "ifo", "module.ifo.json");
-            return File.Exists(path) ? _moduleEntry = new ModuleEntryEditor(DocumentSession.Open(path)) : null;
+            var path = Path.GetFullPath(Path.Combine(root, "ifo", "module.ifo.json"));
+            if (_moduleEntries.TryGetValue(path, out var entry))
+            {
+                if (_openAreaEditors.Count == 0 && _moduleProperties == null &&
+                    !entry.IsDirty && entry.Session.HasExternalChange())
+                {
+                    entry.Session.ReloadFromDisk();
+                    entry.MarkSaved();
+                }
+                return entry;
+            }
+            if (!File.Exists(path)) return null;
+            entry = new ModuleEntryEditor(DocumentSession.Open(path));
+            _moduleEntries.Add(path, entry);
+            return entry;
         }
 
-        public void Dispose() => _moduleEntry?.Session.Dispose();
+        public void Dispose()
+        {
+            foreach (var entry in _moduleEntries.Values) entry.Session.Dispose();
+            _moduleEntries.Clear();
+        }
 
         private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
             new(StringComparer.OrdinalIgnoreCase);

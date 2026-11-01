@@ -2030,10 +2030,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // A crew-station module is checked against its crew, not the owner (plan section 10).
             if (hotbarSlot > 0 && Space.IsStationSlot(dbShip.Status, hotbarSlot))
             {
-                // A Cargo Expander works from a Helm slot only (ShipCargoRules).
-                if (ShipCargoRules.IsCargoExpander(itemTag))
+                // A Cargo Expander or Smuggling Compartment works from a Helm slot only (ShipCargoRules).
+                if (ShipCargoRules.IsHelmOnlyModule(itemTag))
                 {
-                    SendMessageToPC(Player, "Cargo Expanders fit Helm slots only.");
+                    SendMessageToPC(Player, "Cargo Expanders and Smuggling Compartments fit Helm slots only.");
                     return false;
                 }
 

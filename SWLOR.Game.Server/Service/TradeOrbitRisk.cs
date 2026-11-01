@@ -52,14 +52,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The module tags fitted to a ship, in every row.</summary>
         private static IEnumerable<string> GetFittedModuleTags(PlayerShip ship)
         {
-            var status = ship?.Status;
-            if (status == null)
-                return Enumerable.Empty<string>();
-
-            return status.HighPowerModules.Values
-                .Concat(status.MidPowerModules.Values)
-                .Concat(status.LowPowerModules.Values)
-                .Select(x => x.ItemTag);
+            // A Smuggling Compartment works from a Helm slot only, as a Cargo Expander does (ShipCargoRules).
+            return ShipCargoRules.GetHelmModuleTags(ship?.Status);
         }
 
         /// <summary>

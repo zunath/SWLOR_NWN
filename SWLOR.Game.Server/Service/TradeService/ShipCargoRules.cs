@@ -39,6 +39,14 @@ namespace SWLOR.Game.Server.Service.TradeService
         public static bool IsCargoExpander(string tag) =>
             RevampModuleCatalog.Steps.Any(x => x.Tag == tag && x.Family == ShipModuleFamily.CargoExpander);
 
+        /// <summary>
+        /// Whether a module works from a Helm slot only: a Cargo Expander or a Smuggling Compartment. A station slot does
+        /// nothing while its seat is empty, and neither the bay nor the customs cut may change when a crew member leaves.
+        /// </summary>
+        public static bool IsHelmOnlyModule(string tag) =>
+            RevampModuleCatalog.Steps.Any(x => x.Tag == tag &&
+                                               x.Family is ShipModuleFamily.CargoExpander or ShipModuleFamily.SmugglingCompartment);
+
         /// <summary>The cargo bay of a hull with the modules fitted on this status: its Helm-slot expanders count.</summary>
         public static int GetCapacity(int hullCargo, ShipStatus status)
         {

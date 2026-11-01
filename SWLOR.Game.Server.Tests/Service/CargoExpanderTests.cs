@@ -86,10 +86,15 @@ public class CargoExpanderTests
         ShipCargoRules.GetCapacity(480, status).Should().Be(480 + 96, "an expander in an empty station slot adds nothing");
         ShipCargoRules.IsCargoExpander("sm_cargo_45").Should().BeTrue();
         ShipCargoRules.IsCargoExpander("sm_laser_00").Should().BeFalse();
+        RevampModuleCatalog.Steps.Where(x => x.Family is ShipModuleFamily.CargoExpander or ShipModuleFamily.SmugglingCompartment)
+            .Should().OnlyContain(x => ShipCargoRules.IsHelmOnlyModule(x.Tag));
+        ShipCargoRules.IsHelmOnlyModule("sm_laser_00").Should().BeFalse();
+        ReadServerSource("Service", "TradeOrbitRisk.cs").Should().Contain("return ShipCargoRules.GetHelmModuleTags(ship?.Status);",
+            "a compartment in an empty station slot gives no customs cut");
 
         ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs")
-            .Should().Contain("if (ShipCargoRules.IsCargoExpander(itemTag))")
-            .And.Contain("SendMessageToPC(Player, \"Cargo Expanders fit Helm slots only.\");",
+            .Should().Contain("if (ShipCargoRules.IsHelmOnlyModule(itemTag))")
+            .And.Contain("SendMessageToPC(Player, \"Cargo Expanders and Smuggling Compartments fit Helm slots only.\");",
                 "a station slot refuses an expander")
             .And.Contain("ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(dbShip.Status)");
     }

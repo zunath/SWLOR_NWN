@@ -22,7 +22,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// A shot stat for the firing ship's shot: the stat of the creature whose stats the shot reads, with a crew
-        /// member's self-buff on the ship moved from the pilot's shots to that crew member's own.
+        /// member's self-buff on the ship moved from the pilot's shots to that crew member's own. A station shot (a crew
+        /// member's, or a droid's with no stat source) also takes the ship's other statuses, which cover the whole ship:
+        /// an enemy's debuff (Disabling Shot, Break Formation) or a commander's aura. A pilot's shot already reads them.
         /// </summary>
         public static int GetShotStatAdjustment(uint ship, uint shotSource, StatType stat)
         {
@@ -30,11 +32,18 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(ship))
                 return value;
 
+            var ownedOnShip = 0;
             foreach (var buff in GetOwnedSelfBuffs(ship))
             {
-                if (buff.StatGroup.Stats.TryGetValue(stat, out var amount))
-                    value += SpaceStanceRules.ShotAdjustment(ship, shotSource, buff.Source, amount);
+                if (!buff.StatGroup.Stats.TryGetValue(stat, out var amount))
+                    continue;
+
+                ownedOnShip += amount;
+                value += SpaceStanceRules.ShotAdjustment(ship, shotSource, buff.Source, amount);
             }
+
+            if (shotSource != ship)
+                value += StatusEffect.GetStatAdjustment(ship, stat) - ownedOnShip;
 
             return value;
         }

@@ -30742,11 +30742,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 89.25
+          "value": 84.75
         },
         "YPosition": {
           "type": "float",
-          "value": 39.25
+          "value": 45.25
         },
         "ZPosition": {
           "type": "float",
@@ -30805,11 +30805,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 83.25
+          "value": 95.25
         },
         "YPosition": {
           "type": "float",
-          "value": 40.75
+          "value": 34.75
         },
         "ZPosition": {
           "type": "float",
@@ -30868,11 +30868,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 90.75
+          "value": 75.25
         },
         "YPosition": {
           "type": "float",
-          "value": 33.25
+          "value": 25.25
         },
         "ZPosition": {
           "type": "float",
@@ -30931,11 +30931,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 78.75
+          "value": 74.75
         },
         "YPosition": {
           "type": "float",
-          "value": 28.75
+          "value": 44.25
         },
         "ZPosition": {
           "type": "float",
@@ -30994,11 +30994,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 124.75
+          "value": 121.75
         },
         "YPosition": {
           "type": "float",
-          "value": 16.75
+          "value": 13.75
         },
         "ZPosition": {
           "type": "float",
@@ -31057,11 +31057,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 132.75
+          "value": 131.75
         },
         "YPosition": {
           "type": "float",
-          "value": 16.25
+          "value": 11.25
         },
         "ZPosition": {
           "type": "float",
@@ -31119,202 +31119,202 @@
           "value": "wp_unbrbeast_ic"
         },
         "XPosition": {
-          "type": "float",
-          "value": 134.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 22.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_UNBRBEAST_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_unbrbeast_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 120.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 21.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_alpharhy_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 24.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 130.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_alpharhy_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 24.25
-        },
-        "YPosition": {
           "type": "float",
           "value": 138.75
         },
+        "YPosition": {
+          "type": "float",
+          "value": 23.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNBRBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_unbrbeast_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 128.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 37.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_alpharhy_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 18.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 134.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_alpharhy_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 28.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 124.75
+        },
         "ZPosition": {
           "type": "float",
           "value": 0.0
@@ -31372,11 +31372,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 30.75
+          "value": 44.75
         },
         "YPosition": {
           "type": "float",
-          "value": 129.25
+          "value": 137.25
         },
         "ZPosition": {
           "type": "float",
@@ -31435,11 +31435,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 30.75
+          "value": 28.75
         },
         "YPosition": {
           "type": "float",
-          "value": 140.75
+          "value": 114.75
         },
         "ZPosition": {
           "type": "float",

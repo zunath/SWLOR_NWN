@@ -57586,7 +57586,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 18.75
+          "value": 35.25
         },
         "ZPosition": {
           "type": "float",
@@ -57645,11 +57645,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 73.25
+          "value": 65.25
         },
         "YPosition": {
           "type": "float",
-          "value": 29.25
+          "value": 15.25
         },
         "ZPosition": {
           "type": "float",
@@ -57708,11 +57708,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 67.25
+          "value": 56.75
         },
         "YPosition": {
           "type": "float",
-          "value": 30.75
+          "value": 33.25
         },
         "ZPosition": {
           "type": "float",
@@ -57771,11 +57771,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 74.75
+          "value": 78.75
         },
         "YPosition": {
           "type": "float",
-          "value": 23.25
+          "value": 36.75
         },
         "ZPosition": {
           "type": "float",
@@ -57834,11 +57834,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 118.75
+          "value": 112.75
         },
         "YPosition": {
           "type": "float",
-          "value": 90.75
+          "value": 93.75
         },
         "ZPosition": {
           "type": "float",
@@ -57897,11 +57897,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 118.25
+          "value": 120.25
         },
         "YPosition": {
           "type": "float",
-          "value": 98.75
+          "value": 104.75
         },
         "ZPosition": {
           "type": "float",
@@ -57960,11 +57960,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 124.75
+          "value": 130.25
         },
         "YPosition": {
           "type": "float",
-          "value": 89.25
+          "value": 105.25
         },
         "ZPosition": {
           "type": "float",
@@ -58023,11 +58023,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 124.75
+          "value": 113.75
         },
         "YPosition": {
           "type": "float",
-          "value": 100.75
+          "value": 83.25
         },
         "ZPosition": {
           "type": "float",
@@ -58086,11 +58086,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 14.75
+          "value": 11.75
         },
         "YPosition": {
           "type": "float",
-          "value": 32.75
+          "value": 29.75
         },
         "ZPosition": {
           "type": "float",
@@ -58149,137 +58149,137 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 14.25
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 40.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_SABCYCL_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_sabcycl_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 20.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 31.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_SABCYCL_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_sabcycl_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 20.75
+          "value": 10.75
         },
         "YPosition": {
           "type": "float",
           "value": 42.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SABCYCL_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_sabcycl_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 21.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 27.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar Jedi Trial Halls - Saber Cyclone Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SABCYCL_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_sabcycl_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 19.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 47.25
         },
         "ZPosition": {
           "type": "float",

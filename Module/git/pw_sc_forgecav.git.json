@@ -52410,74 +52410,74 @@
         },
         "XPosition": {
           "type": "float",
+          "value": 121.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 24.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Absolute Defense Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_absdef_ic"
+        },
+        "XPosition": {
+          "type": "float",
           "value": 105.25
         },
         "YPosition": {
           "type": "float",
-          "value": 23.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine Forge Caverns - Absolute Defense Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_absdef_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 106.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 29.25
+          "value": 33.25
         },
         "ZPosition": {
           "type": "float",
@@ -52536,11 +52536,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 115.25
+          "value": 120.25
         },
         "YPosition": {
           "type": "float",
-          "value": 29.25
+          "value": 14.75
         },
         "ZPosition": {
           "type": "float",
@@ -52599,11 +52599,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 116.75
+          "value": 95.25
         },
         "YPosition": {
           "type": "float",
-          "value": 23.25
+          "value": 15.25
         },
         "ZPosition": {
           "type": "float",
@@ -52662,137 +52662,137 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 68.75
+          "value": 65.75
         },
         "YPosition": {
+          "type": "float",
+          "value": 61.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Soul Ascension Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SOULASC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_soulasc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 79.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 61.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Soul Ascension Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SOULASC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_soulasc_ic"
+        },
+        "XPosition": {
           "type": "float",
           "value": 64.75
         },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine Forge Caverns - Soul Ascension Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_SOULASC_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_soulasc_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 68.25
-        },
         "YPosition": {
           "type": "float",
-          "value": 72.75
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine Forge Caverns - Soul Ascension Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_SOULASC_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_soulasc_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 76.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 64.25
+          "value": 74.75
         },
         "ZPosition": {
           "type": "float",
@@ -52851,11 +52851,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 77.25
+          "value": 57.25
         },
         "YPosition": {
           "type": "float",
-          "value": 73.25
+          "value": 67.75
         },
         "ZPosition": {
           "type": "float",
@@ -52914,11 +52914,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 100.75
+          "value": 94.75
         },
         "YPosition": {
           "type": "float",
-          "value": 118.75
+          "value": 122.75
         },
         "ZPosition": {
           "type": "float",
@@ -52977,11 +52977,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 100.25
+          "value": 111.75
         },
         "YPosition": {
           "type": "float",
-          "value": 126.75
+          "value": 115.25
         },
         "ZPosition": {
           "type": "float",
@@ -53040,11 +53040,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 108.75
+          "value": 119.25
         },
         "YPosition": {
           "type": "float",
-          "value": 118.25
+          "value": 122.75
         },
         "ZPosition": {
           "type": "float",
@@ -53103,11 +53103,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 104.75
+          "value": 89.25
         },
         "YPosition": {
           "type": "float",
-          "value": 130.75
+          "value": 131.25
         },
         "ZPosition": {
           "type": "float",

@@ -35022,11 +35022,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 38.75
+          "value": 30.75
         },
         "YPosition": {
           "type": "float",
-          "value": 128.25
+          "value": 125.25
         },
         "ZPosition": {
           "type": "float",
@@ -35085,11 +35085,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 34.75
+          "value": 22.75
         },
         "YPosition": {
           "type": "float",
-          "value": 140.75
+          "value": 134.75
         },
         "ZPosition": {
           "type": "float",
@@ -35148,11 +35148,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 32.75
+          "value": 55.25
         },
         "YPosition": {
           "type": "float",
-          "value": 128.75
+          "value": 134.75
         },
         "ZPosition": {
           "type": "float",
@@ -35211,11 +35211,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 28.75
+          "value": 20.75
         },
         "YPosition": {
           "type": "float",
-          "value": 139.25
+          "value": 124.75
         },
         "ZPosition": {
           "type": "float",
@@ -35278,7 +35278,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 12.75
+          "value": 8.75
         },
         "ZPosition": {
           "type": "float",
@@ -35337,11 +35337,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 99.25
+          "value": 105.25
         },
         "YPosition": {
           "type": "float",
-          "value": 23.25
+          "value": 18.75
         },
         "ZPosition": {
           "type": "float",
@@ -35400,11 +35400,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 100.75
+          "value": 100.25
         },
         "YPosition": {
           "type": "float",
-          "value": 17.25
+          "value": 27.75
         },
         "ZPosition": {
           "type": "float",
@@ -35463,11 +35463,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 88.75
+          "value": 84.75
         },
         "YPosition": {
           "type": "float",
-          "value": 12.75
+          "value": 8.75
         },
         "ZPosition": {
           "type": "float",
@@ -35526,11 +35526,11 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 141.25
+          "value": 142.25
         },
         "YPosition": {
           "type": "float",
-          "value": 73.25
+          "value": 77.75
         },
         "ZPosition": {
           "type": "float",
@@ -35539,6 +35539,132 @@
         "XOrientation": {
           "type": "float",
           "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNMOVCTR_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_unmovctr_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 139.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 56.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNMOVCTR_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_unmovctr_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 125.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 54.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
         },
         "YOrientation": {
           "type": "float",
@@ -35593,133 +35719,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 78.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_UNMOVCTR_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_unmovctr_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 134.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 58.25
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Inner Circle Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "CAPSTONE_UNMOVCTR_IC_SPAWN"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_unmovctr_ic"
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 141.75
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 57.25
+          "value": 87.25
         },
         "ZPosition": {
           "type": "float",

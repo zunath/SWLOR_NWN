@@ -357,6 +357,13 @@
           "type": "cexostring",
           "value": "Scheduled passenger shuttle boarding point."
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Scheduled passenger shuttle status console point."
+        }
       }
     ]
   }

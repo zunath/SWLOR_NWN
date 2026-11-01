@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That marker you just walked past means live ordnance, and you strolled by it like a fence post. People like that are why I sealed the Hutlar Qion Test Site. There's a crew in there cooking oversized charges with no containment plan. Head out onto the Qion Tundra, then east through the Qion Foothills into the Qion Box Canyon; the entrance sits just south of the road up to Fort Ka'ra. Put down six of their adepts and bring me their Thermal Detonator Qion Test Log, so I know what they were building before it built itself into a crater.",
+          "Text": "That marker you just walked past means live ordnance, and you strolled by it like a fence post. People like that are why I sealed the Hutlar Qion Test Site. There's a crew in there cooking oversized charges with no containment plan. Head out onto the Qion Tundra, then east through the Qion Foothills into the Qion Box Canyon; the entrance sits just south of the road up to Fort Ka'ra. Put down six of their Test Crew Technicians, the hands working the rooms nearest the entrance, and bring me their Thermal Detonator Qion Test Log, so I know what they were building before it built itself into a crater. Kills only count if your own grenades did the work; a technician who never felt one of your charges teaches you nothing. Any technician will do, they all work for the same site.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The test site still owes me that log. Out to the Qion Box Canyon, six adepts down, log in hand, then we talk.",
+          "Text": "The test site still owes me that log. Out to the Qion Box Canyon, six Test Crew Technicians down by your grenades, log in hand, then we talk.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts and an honest log, first day. Credits are hazard pay. The lesson is that Thermal Detonator answers to paperwork before it answers to you.",
+          "Text": "Six technicians and an honest log, first day. Credits are hazard pay. The lesson is that Thermal Detonator answers to paperwork before it answers to you.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The log you brought me raised more questions than it answered. Their specialists are running a cryo-range regulator hot enough to crack, and if that thing lets go near the test wells it won't be a training accident, it'll be a funeral. Go back to the test site, drop five of their specialists, and bring me the regulator before it decides for itself when it's done.",
+          "Text": "The log you brought me raised more questions than it answered. Their demolitionists are running a cryo-range regulator hot enough to crack, and if that thing lets go near the test wells it won't be a training accident, it'll be a funeral. Go back to the test site, drop five of their Test Crew Demolitionists, deeper in than the technicians, and bring me the regulator. Same rule: your grenades have to do the killing, and any demolitionist on that site counts before it decides for itself when it's done.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That regulator is still ticking down in the Qion test site. Five specialists, one regulator, then back here.",
+          "Text": "That regulator is still ticking down in the Qion test site. Five demolitionists, your grenades on every one, one regulator, then back here.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their warden's been running that site like a private range, and that regulator says the tests are getting bigger, not smaller. I am not sending you at that alone. Bring two people you'd trust to carry a live charge, go back to the test site, put the warden down, and bring me the Frostburned Test Crest he wears.",
+          "Text": "Test Supervisor Skorrik has been running that site like a private range, and that regulator says the tests are getting bigger, not smaller. I am not sending you at that alone. Bring two people you'd trust to carry a live charge, go back to the test site, put Skorrik down, and bring me the Frostburned Test Crest he wears.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good, go find them. A test site is not a duel, and the warden doesn't fight like one either.",
+          "Text": "Good, go find them. A test site is not a duel, and Skorrik doesn't fight like one either.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because the last one who tried it solo, I found in three pieces and none of them near each other. One set of hands can't watch a blast radius and a warden at the same time. Two more sets can.",
+          "Text": "Because the last one who tried it solo, I found in three pieces and none of them near each other. One set of hands can't watch a blast radius and a supervisor at the same time. Two more sets can.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It's frostburned, which means whatever the warden's setting off now runs colder and meaner than anything on the books. I want that crest to know what I'm dealing with before it becomes everyone's problem.",
+          "Text": "It's frostburned, which means whatever Skorrik is setting off now runs colder and meaner than anything on the books. I want that crest to know what I'm dealing with before it becomes everyone's problem.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden and that crest are still waiting in the Qion test site. Don't go back in without the company I told you to bring.",
+          "Text": "Skorrik and that crest are still waiting in the Qion test site. Don't go back in without the company I told you to bring.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's a warden down and a crest that'll keep me up reading it tonight. You didn't do that with a will and a prayer, you did it with backup. Remember that.",
+          "Text": "That's Skorrik down and a crest that'll keep me up reading it tonight. You didn't do that with a will and a prayer, you did it with backup. Remember that.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden was muscle. The inner circle are the ones who signed off on using him that way. I want their Site Chief's Override Chip; it'll tell me who authorized what, and there's no version of that list I like the look of. Four of them, same test site. Bring the chip back whole.",
+          "Text": "Skorrik was muscle. The Site Chief's Officers are the ones who signed off on using him that way. I want the Site Chief's Override Chip they guard; it'll tell me who authorized what, and there's no version of that list I like the look of. Four of them, in the deepest part of the same test site, and your grenades have to be what puts them down. Any officer counts, they all answer to the same chief. Bring the chip back whole.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go. Four names on that chip is four fewer people I have to guess about.",
+          "Text": "Then go. Four officers down is four fewer people I have to guess about.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "On paper, nobody. In practice, whoever the warden answered to, and whoever they answer to still hasn't shown their face. I have a guess, and I don't like it.",
+          "Text": "On paper, nobody. In practice, whoever Skorrik answered to, and whoever they answer to still hasn't shown their face. I have a guess, and I don't like it.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Wouldn't hurt. Four of them together is worse odds than one warden alone, even if none of them hit as hard.",
+          "Text": "Wouldn't hurt. Four officers together is worse odds than one supervisor alone, even if none of them hit as hard.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That override chip is still sitting in the Qion test site with four people standing on top of it. Go get it.",
+          "Text": "That override chip is still sitting in the Qion test site with four officers standing on top of it. Go get it.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That chip led exactly where I didn't want it to: the site's master. He doesn't run tests anymore; he runs Thermal Detonator the way I taught it before I knew better. He'll put more ordnance in the air than the whole crew combined, aimed at whoever's standing closest together. Don't go in with fewer than three. This is the last lesson, and there's no partial credit on it.",
+          "Text": "That chip led exactly where I didn't want it to: the site's chief, Site Chief Ssorgan. He doesn't run tests anymore; he runs Thermal Detonator the way I taught it before I knew better. He'll put more ordnance in the air than the whole crew combined, aimed at whoever's standing closest together. Don't go in with fewer than three. This is the last lesson, and there's no partial credit on it.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden staged charges. The master reads a room and places them where the room will actually be standing, which is worse. He's not testing ordnance anymore, he's testing people.",
+          "Text": "Skorrik staged charges. Ssorgan reads a room and places them where the room will actually be standing, which is worse. He's not testing ordnance anymore, he's testing people.",
           "Style": 0,
           "Color": null
         }
@@ -1543,7 +1543,7 @@
     "reply-00010": {
       "Id": "reply-00010",
       "Text": {
-        "Text": "Why are specialists running it hot?",
+        "Text": "Why are the demolitionists running it hot?",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Why can't I handle the warden alone?",
+        "Text": "Why can't I handle Skorrik alone?",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "What's this warden's specialty?",
+        "Text": "What's this supervisor's specialty?",
         "Style": 4,
         "Color": null
       },
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "What makes him different from the warden?",
+        "Text": "What makes him different from Skorrik?",
         "Style": 4,
         "Color": null
       },

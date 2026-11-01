@@ -7179,7 +7179,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Absolute Defense Specialist"
+                      "value": "Forgebound Journeyman (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7198,7 +7198,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Adamantine Guard Specialist"
+                      "value": "Wreck Crew Rigger (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7217,7 +7217,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crippling Defense Specialist"
+                      "value": "Stable Pit Fighter (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7255,7 +7255,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dead Man's Hand Specialist"
+                      "value": "Canyon Sharpshooter (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7274,7 +7274,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Decisive Command Specialist"
+                      "value": "Deserter Engineer (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7293,7 +7293,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Umbral Raider Adept"
+                      "value": "Expedition Marauder (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7312,7 +7312,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Bunker Specialist"
+                      "value": "Deserter Engineer (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7331,7 +7331,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Cocktail Specialist"
+                      "value": "Ward Guard (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7350,7 +7350,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Forcebane Specialist"
+                      "value": "Forgebound Journeyman (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7369,7 +7369,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Bulwark Droid"
+                      "value": "Trial Duelist Droid (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7388,7 +7388,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hold the Line Specialist"
+                      "value": "Ward Guard (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7407,7 +7407,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vitae Reaver Adept"
+                      "value": "Expedition Marauder (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7521,7 +7521,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Infinite Conduit Specialist"
+                      "value": "Ward Guard (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7540,7 +7540,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Invincible Specialist"
+                      "value": "Holdout Sergeant (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7559,7 +7559,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Kill Box Specialist"
+                      "value": "Range Instructor (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7578,7 +7578,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Killzone Beacon Specialist"
+                      "value": "Deserter Engineer (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7597,7 +7597,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crypt Marauder"
+                      "value": "Expedition Marauder (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7616,7 +7616,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Word Specialist"
+                      "value": "Canyon Sharpshooter (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7654,7 +7654,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "One Shot Specialist"
+                      "value": "Range Instructor (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7673,7 +7673,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Overload Barrage Specialist"
+                      "value": "Test Crew Demolitionist (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7692,7 +7692,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Perfect Flurry Specialist"
+                      "value": "Test Crew Demolitionist (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7730,7 +7730,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rain of Steel Specialist"
+                      "value": "Range Instructor (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7749,7 +7749,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Bloom Specialist"
+                      "value": "Stable Pit Fighter (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7768,7 +7768,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cyclone Duelist Droid"
+                      "value": "Trial Duelist Droid (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7787,7 +7787,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Storm Duelist Droid"
+                      "value": "Trial Duelist Droid (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7806,7 +7806,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Scrapheap Lockdown Specialist"
+                      "value": "Wreck Crew Rigger (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8414,7 +8414,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Soul Ascension Specialist"
+                      "value": "Forgebound Journeyman (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8433,7 +8433,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Systemic Shutdown Specialist"
+                      "value": "Holdout Sergeant (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8452,7 +8452,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tempest Bloom Specialist"
+                      "value": "Stable Pit Fighter (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8471,7 +8471,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Thermal Detonator Specialist"
+                      "value": "Test Crew Demolitionist (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8490,7 +8490,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unmoving Center Specialist"
+                      "value": "Canyon Sharpshooter (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8509,7 +8509,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viral Cascade Specialist"
+                      "value": "Holdout Sergeant (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8547,7 +8547,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Worldbreaker Specialist"
+                      "value": "Wreck Crew Rigger (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16287,7 +16287,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Alpha Rhythm Adept"
+                      "value": "Young Kinrath (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16306,7 +16306,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Alpha Rhythm Inner Circle"
+                      "value": "Elder Kinrath (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16325,7 +16325,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Alpha Rhythm Master"
+                      "value": "Old Iriaz Bull (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16344,7 +16344,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Alpha Rhythm Specialist"
+                      "value": "Pen-Scarred Kinrath (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16363,7 +16363,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Alpha Rhythm Warden"
+                      "value": "Breeder's Iriaz Bull (Alpha Rhythm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16382,7 +16382,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Apex Bite Adept"
+                      "value": "Young Scaled Brute (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16401,7 +16401,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Apex Bite Inner Circle"
+                      "value": "Elder Scaled Brute (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16420,7 +16420,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Apex Bite Master"
+                      "value": "Old Tukata (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16439,7 +16439,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Apex Bite Specialist"
+                      "value": "Pen-Scarred Scaled Brute (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16458,7 +16458,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Apex Bite Warden"
+                      "value": "Breeder's Tukata (Apex Bite line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16534,7 +16534,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Force-Bonded Beast Adept"
+                      "value": "Young Wyvern (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16553,7 +16553,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Force-Bonded Beast Inner Circle"
+                      "value": "Den Elder Wyvern (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16572,7 +16572,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Force-Bonded Beast Master"
+                      "value": "Old Wraid (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16591,7 +16591,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Force-Bonded Beast Specialist"
+                      "value": "Goad-Scarred Wyvern (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16610,7 +16610,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Force-Bonded Beast Warden"
+                      "value": "Handler's Wraid (Force-Bonded Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16724,7 +16724,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Primal Overrun Adept"
+                      "value": "Young Shell-Back (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16743,7 +16743,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Primal Overrun Inner Circle"
+                      "value": "Den Elder Shell-Back (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16762,7 +16762,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Primal Overrun Master"
+                      "value": "Old Rancor (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16781,7 +16781,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Primal Overrun Specialist"
+                      "value": "Goad-Scarred Shell-Back (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16800,7 +16800,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Primal Overrun Warden"
+                      "value": "Handler's Rancor (Primal Overrun line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16933,7 +16933,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unbreakable Beast Adept"
+                      "value": "Young Plated Burrower (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16952,7 +16952,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unbreakable Beast Inner Circle"
+                      "value": "Elder Plated Burrower (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16971,7 +16971,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unbreakable Beast Master"
+                      "value": "Old Shyrack (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16990,7 +16990,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unbreakable Beast Specialist"
+                      "value": "Pen-Scarred Plated Burrower (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17009,7 +17009,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unbreakable Beast Warden"
+                      "value": "Breeder's Shyrack (Unbreakable Beast line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17028,7 +17028,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Untouchable Instinct Adept"
+                      "value": "Young Crystal Spider (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17047,7 +17047,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Untouchable Instinct Inner Circle"
+                      "value": "Den Elder Crystal Spider (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17066,7 +17066,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Untouchable Instinct Master"
+                      "value": "Old Giant Brown Lizard (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17085,7 +17085,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Untouchable Instinct Specialist"
+                      "value": "Goad-Scarred Crystal Spider (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17104,7 +17104,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Untouchable Instinct Warden"
+                      "value": "Handler's Giant Brown Lizard (Untouchable Instinct line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17139,7 +17139,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Absolute Defense Adept"
+                      "value": "Forgebound Initiate (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17158,7 +17158,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Absolute Defense Inner Circle"
+                      "value": "Forgebound Overseer (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17177,7 +17177,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Absolute Defense Master"
+                      "value": "Forge Master Kassrek (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17196,7 +17196,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Absolute Defense Warden"
+                      "value": "Forge Warden Ssorrak (Absolute Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17215,7 +17215,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Adamantine Guard Adept"
+                      "value": "Wreck Crew Scrapper (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17234,7 +17234,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Adamantine Guard Inner Circle"
+                      "value": "Foreman's Hand (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17253,7 +17253,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Adamantine Guard Master"
+                      "value": "Wreck Foreman Ssurgan (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17272,7 +17272,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Adamantine Guard Warden"
+                      "value": "Crew Chief Rakkesh (Adamantine Guard line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17500,7 +17500,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crippling Defense Adept"
+                      "value": "Stable Brawler (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17519,7 +17519,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crippling Defense Inner Circle"
+                      "value": "Stable Promoter (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17538,7 +17538,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crippling Defense Master"
+                      "value": "Stable Champion Thrask (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17557,7 +17557,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crippling Defense Warden"
+                      "value": "Pit Boss Ssarok (Crippling Defense line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17576,7 +17576,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dead Man's Hand Adept"
+                      "value": "Canyon Drifter (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17595,7 +17595,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dead Man's Hand Inner Circle"
+                      "value": "High Table Gun (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17614,7 +17614,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dead Man's Hand Master"
+                      "value": "Range Marshal Jonas Harlan (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17633,7 +17633,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dead Man's Hand Warden"
+                      "value": "Range Warden Silas Crowe (Dead Man's Hand line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17652,7 +17652,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Decisive Command Adept"
+                      "value": "Deserter Sapper (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17671,7 +17671,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Decisive Command Inner Circle"
+                      "value": "Quartermaster's Guard (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17690,7 +17690,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Decisive Command Master"
+                      "value": "Deserter Commander Halden Rhee (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17709,7 +17709,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Decisive Command Warden"
+                      "value": "Deserter Sergeant Grenn Vhon (Decisive Command line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18013,7 +18013,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Umbral Raider Scout"
+                      "value": "Expedition Raider (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18032,7 +18032,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Umbral Raider Saboteur"
+                      "value": "Expedition Reaver (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18051,7 +18051,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Umbral Raider Commander"
+                      "value": "Expedition Leader Lorrek Syn (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18070,7 +18070,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Umbral Raider Captain"
+                      "value": "Expedition Captain Tavik Orrun (Eclipse of Resolve line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18089,7 +18089,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Bunker Adept"
+                      "value": "Deserter Sapper (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18108,7 +18108,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Bunker Inner Circle"
+                      "value": "Quartermaster's Guard (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18127,7 +18127,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Bunker Master"
+                      "value": "Deserter Commander Mukk Dorl (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18146,7 +18146,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Bunker Warden"
+                      "value": "Deserter Sergeant Bekko (Emergency Bunker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18165,7 +18165,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Cocktail Adept"
+                      "value": "Ward Orderly (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18184,7 +18184,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Cocktail Inner Circle"
+                      "value": "Matron's Attendant (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18203,7 +18203,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Cocktail Master"
+                      "value": "Ward Chief Koth Davin (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18222,7 +18222,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Emergency Cocktail Warden"
+                      "value": "Ward Supervisor Teno Barr (Emergency Cocktail line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18241,7 +18241,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Forcebane Adept"
+                      "value": "Forgebound Initiate (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18260,7 +18260,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Forcebane Inner Circle"
+                      "value": "Forgebound Overseer (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18279,7 +18279,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Forcebane Master"
+                      "value": "Forge Master Kovath Sull (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18298,7 +18298,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Forcebane Warden"
+                      "value": "Forge Warden Orbek Tal (Forcebane line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18317,7 +18317,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Patrol Droid"
+                      "value": "Trial Drill Droid (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18336,7 +18336,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Shield Droid"
+                      "value": "Trial Examiner Droid (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18355,7 +18355,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Bastion Training Engine"
+                      "value": "Bastion Training Engine (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18374,7 +18374,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Gatekeeper Droid"
+                      "value": "Trial Gatekeeper Droid (Guardian Master line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18393,7 +18393,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hold the Line Adept"
+                      "value": "Ward Orderly (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18412,7 +18412,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hold the Line Inner Circle"
+                      "value": "Matron's Attendant (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18431,7 +18431,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hold the Line Master"
+                      "value": "Ward Chief Anchor (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18450,7 +18450,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hold the Line Warden"
+                      "value": "Ward Supervisor Aron Meel (Hold the Line line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18469,7 +18469,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vitae Reaver Initiate"
+                      "value": "Expedition Raider (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18488,7 +18488,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vitae Reaver Binder"
+                      "value": "Expedition Reaver (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18507,7 +18507,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vitae Reaver Chief"
+                      "value": "Expedition Leader Mordek Sull (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18526,7 +18526,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vitae Reaver Enforcer"
+                      "value": "Expedition Captain Zarrik Thane (Hunger of the Dark line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18545,7 +18545,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Infinite Conduit Adept"
+                      "value": "Ward Orderly (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18564,7 +18564,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Infinite Conduit Inner Circle"
+                      "value": "Matron's Attendant (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18583,7 +18583,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Infinite Conduit Master"
+                      "value": "Ward Chief Idris Voh (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18602,7 +18602,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Infinite Conduit Warden"
+                      "value": "Ward Supervisor Dru Salin (Infinite Conduit line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18621,7 +18621,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Invincible Adept"
+                      "value": "Holdout Recruit (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18640,7 +18640,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Invincible Inner Circle"
+                      "value": "Holdout Honor Guard (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18659,7 +18659,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Invincible Master"
+                      "value": "Holdout Captain Haro Kel (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18678,7 +18678,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Invincible Warden"
+                      "value": "Holdout Lieutenant Sarn (Invincible line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18716,7 +18716,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Kill Box Adept"
+                      "value": "Range Washout (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18735,7 +18735,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Kill Box Inner Circle"
+                      "value": "Black Cell Shooter (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18754,7 +18754,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Kill Box Master"
+                      "value": "Range Director Krassek (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18773,7 +18773,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Kill Box Warden"
+                      "value": "Range Overseer Sskeer (Kill Box line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18792,7 +18792,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Killzone Beacon Adept"
+                      "value": "Deserter Sapper (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18811,7 +18811,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Killzone Beacon Inner Circle"
+                      "value": "Quartermaster's Guard (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18830,7 +18830,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Killzone Beacon Master"
+                      "value": "Deserter Commander Kuvaz (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18849,7 +18849,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Killzone Beacon Warden"
+                      "value": "Deserter Sergeant Orgul (Killzone Beacon line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18868,7 +18868,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crypt Raider"
+                      "value": "Expedition Raider (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18887,7 +18887,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crypt Reaver"
+                      "value": "Expedition Reaver (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18906,7 +18906,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crypt Expedition Leader"
+                      "value": "Expedition Leader Kaelen Dorr (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18925,7 +18925,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crypt Breach Captain"
+                      "value": "Expedition Captain Rhaan Tolek (Last Stand of the Light line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18944,7 +18944,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Word Adept"
+                      "value": "Canyon Drifter (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18963,7 +18963,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Word Inner Circle"
+                      "value": "High Table Gun (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18982,7 +18982,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Word Master"
+                      "value": "Range Marshal Wuun Kalo (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19001,7 +19001,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Word Warden"
+                      "value": "Range Warden Gruvo (Last Word line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19020,7 +19020,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "One Shot Adept"
+                      "value": "Range Washout (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19039,7 +19039,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "One Shot Inner Circle"
+                      "value": "Black Cell Shooter (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19058,7 +19058,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "One Shot Master"
+                      "value": "Range Director Zhessk (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19077,7 +19077,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "One Shot Warden"
+                      "value": "Range Overseer Callum Breck (One Shot line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19096,7 +19096,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Overload Barrage Adept"
+                      "value": "Test Crew Technician (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19115,7 +19115,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Overload Barrage Inner Circle"
+                      "value": "Site Chief's Officer (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19134,7 +19134,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Overload Barrage Master"
+                      "value": "Site Chief Ansel Pryor (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19153,7 +19153,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Overload Barrage Warden"
+                      "value": "Test Supervisor Hale Dorrin (Overload Barrage line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19172,7 +19172,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Perfect Flurry Adept"
+                      "value": "Test Crew Technician (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19191,7 +19191,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Perfect Flurry Inner Circle"
+                      "value": "Site Chief's Officer (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19210,7 +19210,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Perfect Flurry Master"
+                      "value": "Site Chief Veshan Dru (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19229,7 +19229,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Perfect Flurry Warden"
+                      "value": "Test Supervisor Ketu Ran (Perfect Flurry line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19419,7 +19419,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rain of Steel Adept"
+                      "value": "Range Washout (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19438,7 +19438,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rain of Steel Inner Circle"
+                      "value": "Black Cell Shooter (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19457,7 +19457,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rain of Steel Master"
+                      "value": "Range Director Daav Rhoun (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19476,7 +19476,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rain of Steel Warden"
+                      "value": "Range Overseer Perrin Aldous (Rain of Steel line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19495,7 +19495,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Bloom Adept"
+                      "value": "Stable Brawler (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19514,7 +19514,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Bloom Inner Circle"
+                      "value": "Stable Promoter (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19533,7 +19533,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Bloom Master"
+                      "value": "Stable Champion Ven Dolo (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19552,7 +19552,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Bloom Warden"
+                      "value": "Pit Boss Kessan Pru (Red Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19590,7 +19590,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cyclone Drill Droid"
+                      "value": "Trial Drill Droid (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19609,7 +19609,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cyclone Examiner Droid"
+                      "value": "Trial Examiner Droid (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19628,7 +19628,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vortex Training Engine"
+                      "value": "Vortex Training Engine (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19647,7 +19647,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cyclone Gatekeeper Droid"
+                      "value": "Trial Gatekeeper Droid (Saber Cyclone line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19666,7 +19666,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Storm Drill Droid"
+                      "value": "Trial Drill Droid (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19685,7 +19685,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Storm Examiner Droid"
+                      "value": "Trial Examiner Droid (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19704,7 +19704,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tempest Training Engine"
+                      "value": "Tempest Training Engine (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19723,7 +19723,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Storm Gatekeeper Droid"
+                      "value": "Trial Gatekeeper Droid (Saber Storm line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19742,7 +19742,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Scrapheap Lockdown Adept"
+                      "value": "Wreck Crew Scrapper (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19761,7 +19761,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Scrapheap Lockdown Inner Circle"
+                      "value": "Foreman's Hand (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19780,7 +19780,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Scrapheap Lockdown Master"
+                      "value": "Wreck Foreman Lucan Brandt (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19799,7 +19799,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Scrapheap Lockdown Warden"
+                      "value": "Crew Chief Tobin Rask (Scrapheap Lockdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19818,7 +19818,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Soul Ascension Adept"
+                      "value": "Forgebound Initiate (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19837,7 +19837,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Soul Ascension Inner Circle"
+                      "value": "Forgebound Overseer (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19856,7 +19856,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Soul Ascension Master"
+                      "value": "Forge Master Orsen Vale (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19875,7 +19875,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Soul Ascension Warden"
+                      "value": "Forge Warden Dael Karrow (Soul Ascension line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19894,7 +19894,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Systemic Shutdown Adept"
+                      "value": "Holdout Recruit (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19913,7 +19913,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Systemic Shutdown Inner Circle"
+                      "value": "Holdout Honor Guard (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19932,7 +19932,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Systemic Shutdown Master"
+                      "value": "Holdout Captain Jorrik Vael (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19951,7 +19951,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Systemic Shutdown Warden"
+                      "value": "Holdout Lieutenant Vessik Rane (Systemic Shutdown line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19970,7 +19970,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tempest Bloom Adept"
+                      "value": "Stable Brawler (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19989,7 +19989,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tempest Bloom Inner Circle"
+                      "value": "Stable Promoter (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20008,7 +20008,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tempest Bloom Master"
+                      "value": "Stable Champion Rolan Mace (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20027,7 +20027,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tempest Bloom Warden"
+                      "value": "Pit Boss Dax Corvin (Tempest Bloom line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20046,7 +20046,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Thermal Detonator Adept"
+                      "value": "Test Crew Technician (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20065,7 +20065,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Thermal Detonator Inner Circle"
+                      "value": "Site Chief's Officer (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20084,7 +20084,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Thermal Detonator Master"
+                      "value": "Site Chief Ssorgan (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20103,7 +20103,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Thermal Detonator Warden"
+                      "value": "Test Supervisor Skorrik (Thermal Detonator line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20122,7 +20122,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unmoving Center Adept"
+                      "value": "Canyon Drifter (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20141,7 +20141,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unmoving Center Inner Circle"
+                      "value": "High Table Gun (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20160,7 +20160,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unmoving Center Master"
+                      "value": "Range Marshal Tarek Kor (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20179,7 +20179,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unmoving Center Warden"
+                      "value": "Range Warden Dorrim Vex (Unmoving Center line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20198,7 +20198,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viral Cascade Adept"
+                      "value": "Holdout Recruit (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20217,7 +20217,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viral Cascade Inner Circle"
+                      "value": "Holdout Honor Guard (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20236,7 +20236,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viral Cascade Master"
+                      "value": "Holdout Captain Marek Dolan (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20255,7 +20255,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viral Cascade Warden"
+                      "value": "Holdout Lieutenant Korvan Tull (Viral Cascade line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20274,7 +20274,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Worldbreaker Adept"
+                      "value": "Wreck Crew Scrapper (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20293,7 +20293,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Worldbreaker Inner Circle"
+                      "value": "Foreman's Hand (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20312,7 +20312,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Worldbreaker Master"
+                      "value": "Wreck Foreman Kaddo Rin (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -20331,7 +20331,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Worldbreaker Warden"
+                      "value": "Crew Chief Nalo Ven (Worldbreaker line)"
                     },
                     "RESREF": {
                       "type": "resref",

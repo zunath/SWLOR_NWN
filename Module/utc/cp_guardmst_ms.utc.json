@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Guardian Master master in Hutlar - Saber Trial Chamber."
+    "value": "Bastion Training Engine (Guardian Master line) in Hutlar - Saber Trial Chamber."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The tall droid that once ran every Guardian drill in the hidden halls, a long blade in its hand. From the Saber Trial Chamber it still directs the damaged routines, guarding an empty refuge against everyone who enters."
+      "0": "The tall droid that once ran every defensive drill in the hidden halls, a long blade in its hand. From the Saber Trial Chamber it still directs the damaged routines, guarding an empty refuge against everyone who enters."
     }
   },
   "Dex": {

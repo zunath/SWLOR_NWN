@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Umbral Raiders presented forged orders under a Sith seal, claiming the Sith Crypt Depths, an ancient tomb newly broken open beneath the Sharptooth caves on Mon Cala. The survey crews cataloguing it stood aside. By the time the forgery was found, the raiders had seized the tombs and turned the old defenses on those crews. I am tasked with correcting the error. Put down six Umbral Raider Scouts and recover the Eclipse of Resolve Crypt Trial Tablet. Their false claim begins with it.",
+          "Text": "The Umbral Raiders, gunhands riding with a relic expedition, presented forged orders under a Sith seal, claiming the Sith Crypt Depths, an ancient tomb newly broken open beneath the Sharptooth caves on Mon Cala. The survey crews cataloguing it stood aside. By the time the forgery was found, the raiders had seized the tombs and turned the old defenses on those crews. I am tasked with correcting the error. Put down six Expedition Raiders, the hirelings nearest the entrance, and recover the Eclipse of Resolve Crypt Trial Tablet. Their false claim begins with it. Any Expedition Raider counts, whichever crew they ride with, but only kills made after you weakened their resolve. Fear you never turned back on them is not a test passed.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. It opens the sealed door in the old tomb wall, the purple stonework on the north side of the first cavern inside the Sharptooth Jungle Caves on Mon Cala. Six scouts, one tablet. They will try to frighten you first. Note it, and proceed.",
+          "Text": "Take this key. It opens the sealed door in the old tomb wall, the purple stonework on the north side of the first cavern inside the Sharptooth Jungle Caves on Mon Cala. Six Expedition Raiders, each with their resolve weakened first, one tablet. They will try to frighten you first. Note it, and proceed.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Umbral Raider Scouts and the trial tablet. The sealed door is on the north side of the first cavern in the Sharptooth Jungle Caves on Mon Cala. Proceed.",
+          "Text": "Six Expedition Raiders, each killed after you weakened their resolve, and the trial tablet. The sealed door is on the north side of the first cavern in the Sharptooth Jungle Caves on Mon Cala. Proceed.",
           "Style": 0,
           "Color": null
         }
@@ -452,7 +452,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It lists the tombs they claim under the forged orders. Several were never opened before. Their adepts have moved deeper with the relics. Your next assignment will follow.",
+          "Text": "It lists the tombs they claim under the forged orders. Several were never opened before. Their marauders have moved deeper with the relics. Your next assignment will follow.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The scouts were the outer layer. Their adepts carry the Eclipse of Resolve Ritual Focus Shard and use it to cast dread over anyone who approaches. Put down five Umbral Raider Adepts and recover the shard.",
+          "Text": "The raiders were the outer layer. Their Expedition Marauders carry the Eclipse of Resolve Ritual Focus Shard and use it to cast dread over anyone who approaches. Put down five Expedition Marauders, deeper in the Depths than the raiders, and recover the shard. Any Marauder counts, but only after you weakened their resolve.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Umbral Raider Adepts and the focus shard. When the dread comes, do not mistake it for your own.",
+          "Text": "Five Expedition Marauders, each with their resolve weakened first, and the focus shard. When the dread comes, do not mistake it for your own.",
           "Style": 0,
           "Color": null
         }
@@ -536,7 +536,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It was taken from a sealed relic chamber, and it amplifies fear. The adepts use it to drive the survey crews out of positions they could have held. Recovering it removes their best weapon.",
+          "Text": "It was taken from a sealed relic chamber, and it amplifies fear. The Marauders use it to drive the survey crews out of positions they could have held. Recovering it removes their best weapon.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not in one place. The adepts patrol the Depths in small groups, and one of them carries the shard. Search the passages methodically.",
+          "Text": "Not in one place. The Marauders patrol the Depths in small groups, and one of them carries the shard. Search the passages methodically.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Umbral Raider Adepts and the shard, in the Sith Crypt Depths. The forged orders are still in circulation.",
+          "Text": "Five Expedition Marauders and the shard, in the Sith Crypt Depths. The forged orders are still in circulation.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their captain, a Twi'lek listed as the Umbral Raider Captain, holds the trial altar in the north-west of the Depths. He broke the Eclipse of Resolve Splintered Tomb Sigil off a sealed tomb to prove their claim. Go to that altar and he will answer. Bring at least two allies, and recover the sigil.",
+          "Text": "Their captain, a Twi'lek listed as Expedition Captain Tavik Orrun, holds the trial altar in the north-west of the Depths. He broke the Eclipse of Resolve Splintered Tomb Sigil off a sealed tomb to prove their claim. Go to that altar and he will answer. Bring at least two allies, and recover the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirmed. This is the tomb named in their forged orders. With the captain gone, their saboteurs will try to bury what remains.",
+          "Text": "Confirmed. This is the tomb named in their forged orders. With the captain gone, their Reavers will try to bury what remains.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Rodians, recorded as Umbral Raider Saboteurs, are wrecking the remaining tomb seals so no one can prove what was taken. They carry the Eclipse of Resolve Keeper's Rite Token, the keepers' mark that opens the last vaults. Put down four Umbral Raider Saboteurs and recover the token.",
+          "Text": "Four Rodians, recorded as Expedition Reavers, are wrecking the remaining tomb seals in the deepest part of the Depths so no one can prove what was taken. They carry the Eclipse of Resolve Keeper's Rite Token, the keepers' mark that opens the last vaults. Put down four Expedition Reavers and recover the token. Any Reaver counts, but only after you weakened their resolve.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Umbral Raider Saboteurs and the token. They range through the Depths. Take them one at a time.",
+          "Text": "Four Expedition Reavers, each with their resolve weakened first, and the token. They range through the Depths. Take them one at a time.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Umbral Raider Saboteurs and the Keeper's Rite Token, in the Sith Crypt Depths.",
+          "Text": "Four Expedition Reavers and the Keeper's Rite Token, in the Sith Crypt Depths.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their commander, a Twi'lek recorded as the Umbral Raider Commander, has withdrawn into the Final Ritual Chamber, through the door at the north end of the Depths. He signed the forged orders, and he is preparing the last shipment. Stop him. Bring at least two allies.",
+          "Text": "Their commander, a Twi'lek recorded as Expedition Leader Lorrek Syn, has withdrawn into the Final Ritual Chamber, through the door at the north end of the Depths. He signed the forged orders, and he is preparing the last shipment. Stop him. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Umbral Raider Commander is in the Final Ritual Chamber, at the north end of the Depths. Take your allies.",
+          "Text": "Expedition Leader Lorrek Syn is in the Final Ritual Chamber, at the north end of the Depths. Take your allies.",
           "Style": 0,
           "Color": null
         }
@@ -1262,7 +1262,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Umbral Raider Commander is down. Report.",
+          "Text": "Expedition Leader Lorrek Syn is down. Report.",
           "Style": 0,
           "Color": null
         }
@@ -1837,7 +1837,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Go over the four Saboteurs again.",
+        "Text": "Go over the four Reavers again.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll stop the four Saboteurs.",
+        "Text": "I'll stop the four Reavers.",
         "Style": 4,
         "Color": null
       },
@@ -1890,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "Who are these Saboteurs?",
+        "Text": "Who are these Reavers?",
         "Style": 4,
         "Color": null
       },

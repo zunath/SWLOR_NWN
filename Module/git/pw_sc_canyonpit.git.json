@@ -99,7 +99,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A single staff stands planted upright in a crack in the dueling pit floor. The master who set it there has never been moved from this spot."
+            "0": "A single staff stands planted upright in a crack in the dueling pit floor. The marshal who set it there has never been moved from this spot."
           }
         },
         "DisarmDC": {
@@ -466,7 +466,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A weathered duel post stands at the center of the dueling pit, its wood pocked with blaster scars. The range master answers anyone who calls him out from here."
+            "0": "A weathered duel post stands at the center of the dueling pit, its wood pocked with blaster scars. The range marshal answers anyone who calls him out from here."
           }
         },
         "DisarmDC": {
@@ -833,7 +833,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A high-stakes table sits at the edge of the dueling pit, one chair empty and a hand dealt face down. The range master is waiting for someone to take the last seat."
+            "0": "A high-stakes table sits at the edge of the dueling pit, one chair empty and a hand dealt face down. The range marshal is waiting for someone to take the last seat."
           }
         },
         "DisarmDC": {
@@ -10730,7 +10730,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Unmoving Center Master Spawn"
+            "0": "Anchorhead Canyon Range - Range Marshal Tarek Kor Spawn (Unmoving Center line)"
           }
         },
         "MapNote": {
@@ -10801,7 +10801,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Last Word Master Spawn"
+            "0": "Anchorhead Canyon Range - Range Marshal Wuun Kalo Spawn (Last Word line)"
           }
         },
         "MapNote": {
@@ -10872,7 +10872,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range - Dead Man's Hand Master Spawn"
+            "0": "Anchorhead Canyon Range - Range Marshal Jonas Harlan Spawn (Dead Man's Hand line)"
           }
         },
         "MapNote": {

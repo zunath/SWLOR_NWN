@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Perfect Flurry specialist in Hutlar - Qion Test Site."
+    "value": "Test Crew Demolitionist (Perfect Flurry line) in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Twi'lek woman in padded colonist garb with armored panels, throwing blades fanned between her fingers. She drills on the cryo range, where a performer's routine has been stripped down to release timings and arc spacing and paced by a chronometer instead of a pulse."
+      "0": "A Twi'lek woman demolitionist of the test crew in padded colonist garb with armored panels, throwing blades fanned between her fingers. She drills on the cryo range, where a performer's routine has been stripped down to release timings and arc spacing and paced by a chronometer instead of a pulse."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Perfect Flurry Specialist"
+      "0": "Test Crew Demolitionist"
     }
   },
   "fortbonus": {

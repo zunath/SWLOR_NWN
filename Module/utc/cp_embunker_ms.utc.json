@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Emergency Bunker master in Viscara - Engineering Command Room."
+    "value": "Deserter Commander Mukk Dorl (Emergency Bunker line) in Viscara - Engineering Command Room."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught in Republic elite armor who has sealed himself into the deepest room of the bunker, a blaster pistol resting easy in his hand. He treats the walls around him as patience made solid and has no intention of ever coming out."
+      "0": "An Ugnaught deserter commander in Republic elite armor who has sealed himself into the deepest room of the bunker, a blaster pistol resting easy in his hand. He treats the walls around him as patience made solid and has no intention of ever coming out."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Bunker Master"
+      "0": "Deserter Commander Mukk Dorl"
     }
   },
   "fortbonus": {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Red Bloom adept in Smuggler's Moon - Fight Club Backrooms."
+    "value": "Stable Brawler (Red Bloom line) in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian student of a backroom school in the Fight Club Backrooms that teaches Nyra Tane's paired-blade form secondhand, keeping the shape and dropping the rules. He is cutting his way toward dangerous with a twin blade, and nobody taught him when to stop."
+      "0": "A Rodian brawler of the stable's backroom school in the Fight Club Backrooms, which teaches Nyra Tane's paired-blade style secondhand, keeping the shape and dropping the rules. He is cutting his way toward dangerous with a twin blade, and nobody taught him when to stop."
     }
   },
   "Dex": {
@@ -372,7 +372,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Red Bloom Adept"
+      "0": "Stable Brawler"
     }
   },
   "fortbonus": {
@@ -765,7 +765,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 127
+          "value": 117
         }
       },
       {

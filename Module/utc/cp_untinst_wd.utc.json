@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Untouchable Instinct warden in Dathomir - Grotto Apex Den."
+    "value": "Handler's Giant Brown Lizard (Untouchable Instinct line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -154,7 +154,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Untouchable Instinct Warden"
+      "0": "Handler's Giant Brown Lizard"
     }
   },
   "fortbonus": {

@@ -358,6 +358,21 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Adds a capstone kill objective: kills of any enemy in the group's dungeon tier count once the player has used
+        /// the capstone's mechanic on it.
+        /// </summary>
+        /// <param name="group">The line's own NPC group, which holds the progress.</param>
+        /// <param name="proofKey">The capstone proof the player must show on each enemy.</param>
+        /// <param name="amount">The number of kills needed.</param>
+        public QuestBuilder AddCapstoneProofKillObjective(NPCGroupType group, string proofKey, int amount)
+        {
+            var killObjective = new CapstoneProofKillObjective(group, proofKey, amount);
+            _activeState.AddObjective(killObjective);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a collect item objective to this quest state.
         /// </summary>
         /// <param name="resref">The resref of the required item.</param>

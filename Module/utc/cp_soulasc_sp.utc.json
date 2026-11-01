@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Soul Ascension specialist in Tatooine - Forge Caverns."
+    "value": "Forgebound Journeyman (Soul Ascension line) in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak deacon of the quench troughs in Sith trooper armor, his hands burned from tempering edges that whisper appetite. He wields his heavy vibroblade slowly and deliberately, like a man taking communion."
+      "0": "A Zabrak journeyman of the quench troughs in Sith trooper armor, his hands burned from tempering edges that whisper appetite. He wields his heavy vibroblade slowly and deliberately, like a man taking communion."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Soul Ascension Specialist"
+      "0": "Forgebound Journeyman"
     }
   },
   "fortbonus": {
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 108
+          "value": 103
         }
       },
       {

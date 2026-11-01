@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Saber Cyclone specialist in Hutlar - Jedi Trial Halls."
+    "value": "Trial Duelist Droid (Saber Cyclone line) in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -295,7 +295,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Cyclone Duelist Droid"
+      "0": "Trial Duelist Droid"
     }
   },
   "fortbonus": {
@@ -688,7 +688,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 278
+          "value": 268
         }
       },
       {

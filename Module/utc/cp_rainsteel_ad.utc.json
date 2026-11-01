@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Rain of Steel adept in Smuggler's Moon - Czerka Weapons Testing Facility."
+    "value": "Range Washout (Rain of Steel line) in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Nautolan blade-hand in black work kit from Czerka's old recovery trials, a fistful of throwing blades taken from a quartermaster's stolen crates. He drills past the first firing line of the Czerka Arms Test Range and leaves his spent blades lying where they fall."
+      "0": "A Nautolan range washout in black work kit from Czerka's old recovery trials, a fistful of throwing blades taken from a quartermaster's stolen crates. He drills past the first firing line of the Czerka Arms Test Range and leaves his spent blades lying where they fall."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rain of Steel Adept"
+      "0": "Range Washout"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 172
+          "value": 162
         }
       },
       {

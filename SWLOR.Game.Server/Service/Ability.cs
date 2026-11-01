@@ -2767,6 +2767,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             beforeSuccessfulImpactRiders?.Invoke(target);
+            CapstoneProof.RecordAbilityImpact(activator, target, trackedImpact?.Ability);
 
             Combat.ApplySuccessfulAbilityImpactRiders(
                 activator,

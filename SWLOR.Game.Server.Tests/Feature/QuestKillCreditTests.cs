@@ -36,6 +36,7 @@ public class QuestKillCreditTests
                 public static float Distance, Range;
                 public static int Credits, Advances;
                 public static bool SameArea = true;
+                public static bool HasProof = true;
                 public static int GetLocalInt(uint o, string key) => (int)NPCGroupType.Viscara_ValleyCairnmogs;
                 public static List<string> GetQuestsAssociatedWithNPCGroup(NPCGroupType group) => new() { "test" };
                 public static uint GetNearestCreature(CreatureType type, int n, uint o) => 1;
@@ -74,6 +75,7 @@ public class QuestKillCreditTests
             {
                 public NPCGroupType Group => NPCGroupType.Viscara_ValleyCairnmogs;
                 public float MaximumCreditDistance => Quest.Range;
+                public bool CountsKill(uint player, uint creature) => Quest.HasProof;
                 public void Advance(uint player, string id) => Quest.Credits++;
             }
             """.Replace("METHOD", method);
@@ -87,16 +89,18 @@ public class QuestKillCreditTests
         _harness = Assembly.Load(stream.ToArray());
     }
 
-    [TestCase(50f, 50f, 1)]
-    [TestCase(50.1f, 50f, 0)]
-    [TestCase(52f, 55f, 1)]
-    [TestCase(55f, 55f, 1)]
-    [TestCase(55.1f, 55f, 0)]
-    public void DeathHandler_UsesEachObjectivesCreditRange(float distance, float range, int expected)
+    [TestCase(50f, 50f, 1, true)]
+    [TestCase(50.1f, 50f, 0, true)]
+    [TestCase(52f, 55f, 1, true)]
+    [TestCase(55f, 55f, 1, true)]
+    [TestCase(55.1f, 55f, 0, true)]
+    [TestCase(10f, 50f, 0, false)]
+    public void DeathHandler_RequiresCreditRangeAndProof(float distance, float range, int expected, bool hasProof)
     {
         var quest = _harness.GetType("KillCreditHarness.Quest")!;
         quest.GetField("Distance")!.SetValue(null, distance);
         quest.GetField("Range")!.SetValue(null, range);
+        quest.GetField("HasProof")!.SetValue(null, hasProof);
         quest.GetField("Credits")!.SetValue(null, 0);
         quest.GetField("Advances")!.SetValue(null, 0);
         quest.GetMethod("ProgressKillTargetObjectives")!.Invoke(null, null);

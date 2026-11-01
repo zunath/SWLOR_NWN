@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The students I took into the hidden halls on Hutlar are safe here, every one of them. The halls are not. Beneath a concrete ruin in the Cloning Test Site lie the Jedi Trial Halls, a refuge built before the Mandalorians came, and its training droids now treat anyone inside as an intruder. Start near the entrance. Disable six Guardian Patrol Droids and recover the Guardian Master Enclave Trial Slate. It recorded every shutdown that failed.",
+          "Text": "The students I took into the hidden halls on Hutlar are safe here, every one of them. The halls are not. Beneath a concrete ruin in the Cloning Test Site lie the Jedi Trial Halls, a refuge built before the Mandalorians came, and its training droids now treat anyone inside as an intruder. Start near the entrance. Disable six Trial Drill Droids, the ones nearest it. Any Trial Drill Droid counts, since the halls run one program, but a kill only counts while the Saber Ward is on someone fighting beside you. A guardian who guards no one has taught the droids nothing. Recover the Guardian Master Enclave Trial Slate. It recorded every shutdown that failed.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. At the north end of the Cloning Test Site on Hutlar stands a big concrete ruin. A concrete entrance block is built onto its east side, just south of the big pipe, and the key opens its east-facing blast door. The Trial Halls lie below. Six patrol droids, and the trial slate. Bring it back to me here in Anchorhead.",
+          "Text": "Take this key. At the north end of the Cloning Test Site on Hutlar stands a big concrete ruin. A concrete entrance block is built onto its east side, just south of the big pipe, and the key opens its east-facing blast door. The Trial Halls lie below. Six Trial Drill Droids, each dropped while your Saber Ward is on someone, and the trial slate. Bring it back to me here in Anchorhead.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Guardian Patrol Droids, and the trial slate. The blast door is in the concrete entrance block on the east side of the big ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
+          "Text": "Six Trial Drill Droids, each dropped while your Saber Ward is on someone, and the trial slate. The blast door is in the concrete entrance block on the east side of the big ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The first droids are down, but their timing controller still drives the next set. Disable five Guardian Bulwark Droids deeper in the Trial Halls and recover the Guardian Master Kyber Focus Shard.",
+          "Text": "The first droids are down, but their timing controller still drives the next set. Disable five Trial Duelist Droids deeper in the Trial Halls, each while your Saber Ward is on someone fighting beside you; any Trial Duelist Droid counts. Recover the Guardian Master Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Guardian Bulwark Droids, deeper in the Trial Halls. Bring back the focus shard.",
+          "Text": "Five Trial Duelist Droids, each dropped while your Saber Ward is on someone, deeper in the Trial Halls. Bring back the focus shard.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Guardian Bulwark Droids, deeper in the Trial Halls. Bring back the focus shard.",
+          "Text": "Five Trial Duelist Droids, each dropped while your Saber Ward is on someone, deeper in the Trial Halls. Bring back the focus shard.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One gate runs on its own controller, and the remote shutdown cannot reach it. A Guardian Gatekeeper Droid holds the eastern halls, north of the passage you enter by. Disable it and recover the Guardian Master Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "One gate runs on its own controller, and the remote shutdown cannot reach it. A Trial Gatekeeper Droid holds the eastern halls, north of the passage you enter by. Disable it and recover the Guardian Master Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Gatekeeper Droid holds the eastern halls, north of the passage. Disable it and bring back the broken sigil. Do not go without two allies.",
+          "Text": "The Trial Gatekeeper Droid holds the eastern halls, north of the passage. Disable it and bring back the broken sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis has to be disabled by hand.",
+          "Text": "The Trial Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis has to be disabled by hand.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Gatekeeper Droid still holds the eastern halls. Disable it and bring back the broken sigil. Do not go without two allies.",
+          "Text": "The Trial Gatekeeper Droid still holds the eastern halls. Disable it and bring back the broken sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is open, but four linked Guardian Shield Droids still guard the network's control systems. Disable all four and recover the Guardian Master Council Trial Chit.",
+          "Text": "The gate is open, but four linked Trial Examiner Droids still guard the network's control systems at the far north-west end of the halls, the deepest part. Any Trial Examiner Droid counts, but only while your Saber Ward is on someone beside you. Disable all four and recover the Guardian Master Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Guardian Shield Droids guard the control systems in the Trial Halls. Disable them and bring back the trial chit.",
+          "Text": "Four Trial Examiner Droids guard the control systems at the far north-west end of the Trial Halls. Take each one down while your Saber Ward is on someone. Disable them and bring back the trial chit.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Guardian Shield Droids still guard the control systems in the Trial Halls. Disable them and bring back the trial chit.",
+          "Text": "Four Trial Examiner Droids still guard the control systems at the far north-west end of the Trial Halls. Take each one down while your Saber Ward is on someone. Disable them and bring back the trial chit.",
           "Style": 0,
           "Color": null
         }
@@ -1860,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I will disable the shield droids.",
+        "Text": "I will disable the Trial Examiner Droids.",
         "Style": 4,
         "Color": null
       },

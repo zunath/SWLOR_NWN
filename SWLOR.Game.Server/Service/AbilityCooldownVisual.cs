@@ -226,6 +226,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _activeVisuals.Remove(playerId);
+            Gui.PublishRefreshEvent(player, new ExtraHotbarCooldownRefreshEvent());
         }
 
         private static void CacheAbilityCooldownTextures()

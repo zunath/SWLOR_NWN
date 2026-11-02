@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Service.TravelerService
                 .AddItem("musicianoutfit1", 3);
         }
 
-        // PROPOSAL: the stock is area maps that only drop as rare finds. The rumors are placeholder lines that name no
-        // established place or person.
+        // PROPOSAL: the stock is area maps that no NPC store sells (several drop as rare finds). The rumors are placeholder
+        // lines that name no established place or person.
         private static void InformationBroker(TravelerBuilder builder)
         {
             builder.Create(TravelerType.InformationBroker)

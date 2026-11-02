@@ -210,6 +210,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The walkable points baked for an area, the same points random spawns are drawn from.
+        /// Empty when the area was not baked.
+        /// </summary>
+        /// <param name="area">The area to retrieve walkable points for.</param>
+        public static IReadOnlyList<Vector3> GetWalkablePoints(uint area)
+        {
+            return _walkmeshesByArea.TryGetValue(GetResRef(area), out var points)
+                ? points
+                : Array.Empty<Vector3>();
+        }
+
+        /// <summary>
         /// Retrieves a random location from the walkmeshes in an area.
         /// </summary>
         /// <param name="area">The area to retrieve a random location for.</param>

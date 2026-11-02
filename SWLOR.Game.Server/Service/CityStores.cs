@@ -244,6 +244,13 @@ namespace SWLOR.Game.Server.Service
 
         // Buying and selling
 
+        /// <summary>The store a store event is about: the one the event names, or else the one the shopper opened last.</summary>
+        private static uint GetEventStore(uint shopper)
+        {
+            var store = StringToObject(EventsPlugin.GetEventData("STORE"));
+            return GetIsObjectValid(store) ? store : GetLocalObject(shopper, OpenStoreVariable);
+        }
+
         /// <summary>
         /// Before a purchase from a city store: refuses a limited item that has no allowance left this week, and keeps
         /// what is being bought, since the item may be merged into the buyer's stack by the time the purchase is over.
@@ -251,11 +258,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnStoreRequestBuyBefore)]
         public static void OnBuyBefore()
         {
-            var store = StringToObject(EventsPlugin.GetEventData("STORE"));
+            var buyer = OBJECT_SELF;
+            var store = GetEventStore(buyer);
             if (!IsCityStore(store))
                 return;
 
-            var buyer = OBJECT_SELF;
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             if (!GetIsObjectValid(item))
                 return;
@@ -287,8 +294,8 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnStoreRequestBuyAfter)]
         public static void OnBuyAfter()
         {
-            var store = StringToObject(EventsPlugin.GetEventData("STORE"));
             var buyer = OBJECT_SELF;
+            var store = GetEventStore(buyer);
             var resref = GetLocalString(buyer, PendingResrefVariable);
             var quantity = GetLocalInt(buyer, PendingQuantityVariable);
             var pendingPrice = GetLocalInt(buyer, PendingPriceVariable);
@@ -329,10 +336,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnSellBefore()
         {
             var seller = OBJECT_SELF;
-            var store = StringToObject(EventsPlugin.GetEventData("STORE"));
-            if (!GetIsObjectValid(store))
-                store = GetLocalObject(seller, OpenStoreVariable);
-
+            var store = GetEventStore(seller);
             if (!IsCityStore(store))
                 return;
 

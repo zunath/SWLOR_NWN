@@ -4355,14 +4355,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CityStores.cs",
-    "Line": 274,
+    "Line": 281,
     "Member": "OnBuyBefore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(buyer, ColorToken.Red(\"That item is sold out here until the weekly restock.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CityStores.cs",
-    "Line": 340,
+    "Line": 344,
     "Member": "OnSellBefore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(seller, ColorToken.Red(\"City stores only sell. They do not buy from players.\"))"

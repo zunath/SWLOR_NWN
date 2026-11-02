@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityGazetteService;
 using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -131,6 +132,38 @@ public class SalesTaxRulesTests
     public void ManageCity_SavesTheEnteredRateClamped_AndOnlyWithEditTaxes(bool canEditTaxes, string entered, int current, int expected)
     {
         ManageCityViewModel.ResolveSalesTax(canEditTaxes, entered, current).Should().Be(expected);
+    }
+
+    #endregion
+
+    #region The Gazette
+
+    [Test]
+    public void AChangedSalesTax_IsPostedToTheGazetteWithItsOldAndNewRate()
+    {
+        var text = CityGazetteRules.BuildTaxChangeText(new[]
+        {
+            ("Citizenship tax", "500 cr per week", "500 cr per week"),
+            ("Sales tax", "0%", "5%")
+        });
+
+        text.Should().Be("Taxes changed: Sales tax 0% -> 5%.");
+    }
+
+    [Test]
+    public void AnUnchangedSalesTax_PostsNothing()
+    {
+        CityGazetteRules.BuildTaxChangeText(new[] { ("Sales tax", "5%", "5%") }).Should().BeEmpty();
+    }
+
+    [Test]
+    public void ManageCity_ReportsTheSalesTaxAmongTheTaxesItPosts()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            Root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.cs"));
+
+        source.Should().Contain("(\"Sales tax\", $\"{salesTaxBefore}%\", $\"{CityStores.GetSalesTax(dbCity)}%\")");
+        source.Should().Contain("dbCity.Taxes[PropertyTaxType.Sales] = salesTax;");
     }
 
     #endregion

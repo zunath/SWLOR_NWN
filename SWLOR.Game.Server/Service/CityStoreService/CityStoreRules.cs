@@ -55,15 +55,6 @@ namespace SWLOR.Game.Server.Service.CityStoreService
         }
 
         /// <summary>
-        /// What a store was built from. A store opened later with a different signature (a facility upgrade, a new theme,
-        /// a new week) is rebuilt.
-        /// </summary>
-        public static string GetSignature(CityStoreKind kind, string blueprint, DateTime weekStartUtc)
-        {
-            return $"{(int)kind}|{blueprint}|{weekStartUtc:yyyyMMddHH}";
-        }
-
-        /// <summary>
         /// Whether a shopper may use a city's stores. Anyone may, citizen or not, except a citizen of a city the host
         /// city has an Embargo against.
         /// </summary>

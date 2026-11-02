@@ -29,6 +29,9 @@ namespace SWLOR.Game.Server.Service.CityGazetteService
         Decision = 7,
 
         /// <summary>An Edict was enacted or repealed.</summary>
-        Edict = 8
+        Edict = 8,
+
+        /// <summary>A City Project was started, finished or cancelled.</summary>
+        Project = 9
     }
 }

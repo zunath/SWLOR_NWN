@@ -121,6 +121,12 @@ public interface ICraftSessionWorld
     string GetStationCityId(uint player);
 
     /// <summary>
+    /// The Craftsmanship and Control a house Workshop adds to a craft of the skill, from the house the player stands in now, or 0. A craft
+    /// records it when it starts and keeps that value, so a change to the house mid-craft does not touch it.
+    /// </summary>
+    int GetWorkshopBonus(uint player, SkillType skill);
+
+    /// <summary>
     /// The points Artisans' Charter adds to the XP of a craft made at a station in <paramref name="craftCityId"/>, judged when the XP is
     /// settled: 10 for a citizen in good standing of that city whose city has the Edict in effect, otherwise 0.
     /// </summary>

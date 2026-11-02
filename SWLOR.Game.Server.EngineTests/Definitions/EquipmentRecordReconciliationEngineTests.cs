@@ -214,6 +214,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var player = fixture.Creature;
             ctx.SuppressNPCNaturalRegen(player);
             var ring = await CreateItemAsync(ctx, player, "absdef_l6", AttackRingProperties);
+            fixture.MatchEquipmentRecordsToGear();
             var attack = Record(player).Attack;
 
             // The native unequip raises its before event even for an item it then refuses to unequip.
@@ -231,6 +232,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var player = fixture.Creature;
             ctx.SuppressNPCNaturalRegen(player);
             var ring = await CreateItemAsync(ctx, player, "absdef_l6", AttackRingProperties);
+            fixture.MatchEquipmentRecordsToGear();
             var attack = Record(player).Attack;
             await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
             ctx.AssertEqual(attack + 20, Record(player).Attack, "equipping adds the ring's Attack");
@@ -258,6 +260,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (GetIsObjectValid(held)) await UnequipAsync(ctx, player, held);
             }
             var blade = await CreateItemAsync(ctx, player, "b_longsword", AttackRingProperties);
+            fixture.MatchEquipmentRecordsToGear();
             var attack = Record(player).Attack;
             await EquipAsync(ctx, player, blade, InventorySlot.RightHand);
             ctx.AssertEqual(attack + 20, Record(player).Attack, "the blade in the right hand counts once");

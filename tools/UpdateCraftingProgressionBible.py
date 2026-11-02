@@ -10,6 +10,9 @@ Changes:
     for Treasure Hunter and Creditfinder) and a note naming the rank milestone that replaced them.
   - Total SP on those tabs counts only the purchasable rows, and SP Price cells stored as text become numbers on the
     Engineering, Fabrication, Agriculture and Gathering tabs.
+  - Agriculture: while the tab still has the old Farming rows (row 9 reads Farming), their total and Total SP are written
+    too. Once UpdateAgriculturePerkBible.py has replaced them with the Farmer line and the crop table, it owns the tab and
+    this tool leaves the rows, totals and Total SP alone. AgriculturePerkBibleTests runs both tools to check they agree.
   - General: Treasure Hunter I-III and Creditfinder I-III with their Armor requirements.
   - System Changes & Migrations: the refund and rebuild token entry.
 """
@@ -282,6 +285,12 @@ def update_fabrication_like(sheet: Sheet, spec: dict, description: str, total_ro
 
 def update_agriculture(sheet: Sheet) -> None:
     numeric_sp_cells(sheet, 9)
+
+    # UpdateAgriculturePerkBible.py replaces the Farming rows with the Farmer line, moves the Chef and Angler lines down, and
+    # writes every total and Total SP. Rows 9-14 are then Farmer purchases, so the Farming totals below would overwrite them.
+    if sheet.text_of(sheet.row_cells(9).get("A", "")).strip() != "Farming":
+        return
+
     total = 0
     for number in range(9, 14):
         total += int(sheet.text_of(sheet.row_cells(number)["B"]).split(".")[0])

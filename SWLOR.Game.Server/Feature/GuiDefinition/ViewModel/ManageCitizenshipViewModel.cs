@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ClerkRecoveryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -166,6 +167,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.CitizenPropertyId = string.Empty;
                         dbPlayer.CitizenSinceUtc = null;
                         dbPlayer.PropertyOwedTaxes = 0;
+                        // The 7 days after which the mayor can send this player's animals away start now.
+                        dbPlayer.CityDepartures = ClerkRecoveryRules.RecordDeparture(dbPlayer.CityDepartures, _cityPropertyId, DateTime.UtcNow);
                         DB.Set(dbPlayer);
 
                         // If there's an active election going, remove this player from the running.
@@ -250,6 +253,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.CitizenSinceUtc = DateTime.UtcNow;
                         // Clear any stale debt left by a previously deleted city.
                         dbPlayer.PropertyOwedTaxes = 0;
+                        // Back in the city, so the absence ends.
+                        dbPlayer.CityDepartures = ClerkRecoveryRules.ClearDeparture(dbPlayer.CityDepartures, _cityPropertyId);
 
                         DB.Set(dbPlayer);
 

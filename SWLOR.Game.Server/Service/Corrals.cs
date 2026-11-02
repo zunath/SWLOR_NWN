@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.ClerkRecoveryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.LivestockService;
@@ -240,6 +241,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static Livestock LoadAnimal(string animalId, DateTime now)
         {
+            // An action the City Hall clerk was finishing is finished first.
+            ClerkRecovery.RecoverAnimal(animalId);
+
             var animal = GetAnimal(animalId);
             if (animal == null)
                 return null;
@@ -355,7 +359,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Collects from an adult fed in the last 24 hours, once every 20: 1 manure, plus 1 milk from a Thune. The owner gets
         /// Agriculture XP. With <paramref name="toOverflow"/> everything goes to their overflow store, as it does when the City
-        /// Hall clerk collects for an owner who cannot reach their corral.
+        /// Hall clerk collects for an owner who cannot reach their corral: the collection is marked on the animal, the overflow
+        /// records are written, and then the animal records the collection (<see cref="ClerkRecovery"/>).
         /// </summary>
         public static LivestockResult Collect(uint player, string animalId, bool toOverflow = false)
         {
@@ -371,13 +376,15 @@ namespace SWLOR.Game.Server.Service
                 return LivestockResult.Refused(LivestockRefusal.NotAnAnimal);
 
             var items = LivestockRules.GetCollectItems(definition);
+            if (toOverflow)
+                return GiveProductsThroughClerk(player, animal, definition, items, ClerkRecoveryAction.Collect, "collected from", now);
 
             // The record goes first, so a stop between the two steps can lose a collection but never repeat it.
             LivestockRules.ApplyCollection(animal, now);
             animal.LastProcessedUtc = now;
             DB.Set(animal);
 
-            return GiveProducts(player, animal, definition, items, "collected from", toOverflow, now);
+            return GiveProducts(player, animal, definition, items, "collected from", now);
         }
 
         /// <summary>
@@ -398,17 +405,21 @@ namespace SWLOR.Game.Server.Service
                 return LivestockResult.Refused(LivestockRefusal.NotAnAnimal);
 
             var items = LivestockRules.GetButcherItems(definition, Perk.GetPlayerEffectivePerkLevel(player, PerkType.BountifulHarvest));
+            if (toOverflow)
+                return GiveProductsThroughClerk(player, animal, definition, items, ClerkRecoveryAction.Butcher, "butchered", now);
 
             // The record goes first, so a stop between the two steps can lose the meat but never butcher the animal twice.
             DB.Delete<Livestock>(animal.Id);
             DestroyCreature(animal.Id);
 
-            return GiveProducts(player, animal, definition, items, "butchered", toOverflow, now);
+            return GiveProducts(player, animal, definition, items, "butchered", now);
         }
 
         /// <summary>
         /// Packs the animal into a crate item to move, sell or trade. Every timer and any penalty it carries resume where they
-        /// stopped when it is placed again. With <paramref name="toOverflow"/> the crate goes to the owner's overflow store.
+        /// stopped when it is placed again. With <paramref name="toOverflow"/> the crate goes to the owner's overflow store, as it
+        /// does when the City Hall clerk crates for an owner who cannot reach their corral: the crating is marked on the animal, the
+        /// overflow record is written, and then the animal is deleted (<see cref="ClerkRecovery"/>).
         /// </summary>
         public static LivestockResult Crate(uint player, string animalId, bool toOverflow = false)
         {
@@ -424,6 +435,9 @@ namespace SWLOR.Game.Server.Service
                 return LivestockResult.Refused(LivestockRefusal.NotAnAnimal);
 
             var crate = LivestockRules.Pack(animal, now);
+            if (toOverflow)
+                return CrateThroughClerk(player, animal, definition, crate, now);
+
             var item = CreateCrateItem(crate, definition, GetLocation(player));
             if (!GetIsObjectValid(item))
                 return LivestockResult.Refused(LivestockRefusal.NotAnAnimal, "Crates are not available yet, so the animal stays where it is.");
@@ -433,8 +447,8 @@ namespace SWLOR.Game.Server.Service
             DestroyCreature(animal.Id);
 
             // An item that does not fit is destroyed by TryAcquireItem, so the crate is made again for the overflow store.
-            var inOverflow = toOverflow;
-            if (!toOverflow && !Item.TryAcquireItem(player, item))
+            var inOverflow = false;
+            if (!Item.TryAcquireItem(player, item))
             {
                 inOverflow = true;
                 item = CreateCrateItem(crate, definition, GetLocation(player));
@@ -473,17 +487,24 @@ namespace SWLOR.Game.Server.Service
             LivestockDefinition definition,
             List<(string Resref, int Count)> items,
             string verb,
-            bool toOverflow,
             DateTime now)
         {
             var itemsInOverflow = 0;
             var named = new List<(string Name, int Count)>();
             foreach (var (resref, count) in items)
             {
-                itemsInOverflow += FarmItems.Give(toOverflow ? OBJECT_INVALID : player, animal.OwnerPlayerId, resref, count, GetLocation(player));
+                itemsInOverflow += FarmItems.Give(player, animal.OwnerPlayerId, resref, count, GetLocation(player));
                 named.Add((Cache.GetItemNameByResref(resref) ?? resref, count));
             }
 
+            GiveProductXp(player, definition, items);
+
+            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} {verb} {definition.Type} {animal.Id}: {string.Join(", ", items.Select(item => $"{item.Count} {item.Resref}"))} ({itemsInOverflow} to overflow).");
+            return LivestockResult.Success(LivestockRules.DescribeProducts(verb, definition.Name, named, itemsInOverflow));
+        }
+
+        private static void GiveProductXp(uint player, LivestockDefinition definition, List<(string Resref, int Count)> items)
+        {
             var rank = Skill.GetCreatureSkillRank(player, SkillType.Agriculture);
             Skill.GiveSkillXP(
                 player,
@@ -491,9 +512,57 @@ namespace SWLOR.Game.Server.Service
                 LivestockRules.GetProductXp(definition.Level, rank, LivestockRules.CountItems(items)),
                 false,
                 false);
+        }
 
-            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} {verb} {definition.Type} {animal.Id}: {string.Join(", ", items.Select(item => $"{item.Count} {item.Resref}"))} ({itemsInOverflow} to overflow).");
-            return LivestockResult.Success(LivestockRules.DescribeProducts(verb, definition.Name, named, itemsInOverflow));
+        /// <summary>
+        /// The City Hall clerk's collection or butchering for an owner who cannot reach their corral: the products are marked on the
+        /// animal first, then written to the owner's overflow store, and then the animal records the collection or is deleted
+        /// (<see cref="ClerkRecovery.RunAnimal"/>). A restart in between is finished at the next processing.
+        /// </summary>
+        private static LivestockResult GiveProductsThroughClerk(
+            uint player,
+            Livestock animal,
+            LivestockDefinition definition,
+            List<(string Resref, int Count)> items,
+            ClerkRecoveryAction action,
+            string verb,
+            DateTime now)
+        {
+            ClerkRecovery.RunAnimal(animal, ClerkRecoveryRules.BuildProductMark(Guid.NewGuid().ToString(), action, animal.OwnerPlayerId, now, items));
+            GiveProductXp(player, definition, items);
+
+            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} had the clerk {verb} {definition.Type} {animal.Id}: {string.Join(", ", items.Select(item => $"{item.Count} {item.Resref}"))} into overflow storage.");
+            return LivestockResult.Success(ClerkRecoveryRules.DescribeRemoteProducts(
+                verb,
+                definition.Name,
+                items.Select(item => (Cache.GetItemNameByResref(item.Resref) ?? item.Resref, item.Count))));
+        }
+
+        /// <summary>
+        /// The City Hall clerk's crating for an owner who cannot reach their corral, or the mayor's send-away of an absent owner's
+        /// animal: the crated animal is marked first, then written to the owner's overflow store as a crate, and then the animal is
+        /// deleted. Nothing is done when the crate item does not exist yet.
+        /// </summary>
+        private static LivestockResult CrateThroughClerk(uint player, Livestock animal, LivestockDefinition definition, LivestockCrate crate, DateTime now)
+        {
+            if (!CanCreateCrate(definition))
+                return LivestockResult.Refused(LivestockRefusal.NotAnAnimal, ClerkRecoveryRules.NoCratesText);
+
+            ClerkRecovery.RunAnimal(animal, ClerkRecoveryRules.BuildCrateMark(Guid.NewGuid().ToString(), animal.OwnerPlayerId, now, crate));
+
+            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} had the clerk crate {definition.Type} {animal.Id} into overflow storage.");
+            return LivestockResult.Success(ClerkRecoveryRules.DescribeRemoteCrated(definition.Name));
+        }
+
+        /// <summary>Whether the crate item exists, so an animal is never marked for a crate that cannot be made.</summary>
+        internal static bool CanCreateCrate(LivestockDefinition definition)
+        {
+            var probe = CreateCrateItem(new LivestockCrate { Species = definition.Type }, definition, GetStartingLocation());
+            if (!GetIsObjectValid(probe))
+                return false;
+
+            DestroyObject(probe);
+            return true;
         }
 
         // Animals leaving
@@ -501,6 +570,10 @@ namespace SWLOR.Game.Server.Service
         /// <summary>An animal went unfed for 72 hours: it is gone, and its owner is told.</summary>
         public static void RemoveWanderedOff(Livestock animal)
         {
+            // An action the City Hall clerk was finishing is finished first; the animal wanders off at the next processing.
+            if (ClerkRecovery.RecoverAnimal(animal.Id))
+                return;
+
             DB.Delete<Livestock>(animal.Id);
             DestroyCreature(animal.Id);
 
@@ -515,6 +588,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void SendToOverflow(Livestock animal, DateTime now)
         {
+            // An action the City Hall clerk was finishing is finished first. A butchered or crated animal is gone; one only
+            // collected from is crated below.
+            if (ClerkRecovery.RecoverAnimal(animal.Id))
+            {
+                animal = GetAnimal(animal.Id);
+                if (animal == null)
+                    return;
+            }
+
             var definition = GetDefinition(animal.Species);
             if (definition != null && LivestockRules.HasWanderedOff(animal, now))
             {
@@ -567,6 +649,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessAtServerStart()
         {
+            // The City Hall clerk's actions a restart interrupted are finished before anything replays or removes an animal.
+            ClerkRecovery.RecoverAnimalsAtServerStart();
+
             Farmhands.CatchUpAll();
 
             var now = DateTime.UtcNow;
@@ -753,7 +838,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Creates a crate item holding the animal's timers, or an invalid item when the crate blueprint does not exist yet.</summary>
-        private static uint CreateCrateItem(LivestockCrate crate, LivestockDefinition definition, Location where)
+        internal static uint CreateCrateItem(LivestockCrate crate, LivestockDefinition definition, Location where)
         {
             var item = CreateObject(ObjectType.Item, LivestockRules.CrateResref, where);
             if (!GetIsObjectValid(item))

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.ClerkRecoveryService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.FarmingService;
@@ -90,6 +91,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static CropType RemoveWitheredCrop(string plotId, DateTime now)
         {
+            // A harvest the City Hall clerk was finishing is finished first, whatever the crop's stage now.
+            if (ClerkRecovery.RecoverPlot(plotId))
+                return CropType.Invalid;
+
             var record = GetPlot(plotId);
             if (record == null || FarmingRules.GetStage(record, now) != GardenPlotStage.Withered)
                 return CropType.Invalid;
@@ -302,7 +307,11 @@ namespace SWLOR.Game.Server.Service
         /// Harvests a ripe crop for its planter. The yield, the seed roll and the Agriculture XP use the perk and skill ranks the
         /// planter holds now. The items go to their inventory, and any that do not fit go to their overflow storage.
         /// </summary>
-        public static FarmingResult Harvest(uint player, string plotId)
+        /// <param name="toOverflow">
+        /// True when the City Hall clerk harvests for a planter who cannot reach the plot: everything goes to their overflow storage,
+        /// through a mark on the crop (<see cref="ClerkRecovery"/>) so a restart cannot lose the harvest or repeat it.
+        /// </param>
+        public static FarmingResult Harvest(uint player, string plotId, bool toOverflow = false)
         {
             Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
@@ -333,6 +342,18 @@ namespace SWLOR.Game.Server.Service
             var seedReturned = FarmingRules.ReturnsSeed(seedPercent, Random.D100(1));
             var rank = Skill.GetCreatureSkillRank(player, SkillType.Agriculture);
 
+            if (toOverflow)
+            {
+                // The mark carries the harvest and goes onto the crop first; the overflow records come before the crop is deleted.
+                ClerkRecovery.RunCrop(record, ClerkRecoveryRules.BuildHarvestMark(
+                    Guid.NewGuid().ToString(), playerId, now, crop.HarvestResref, yield, crop.SeedResref, seedReturned));
+                Skill.GiveSkillXP(player, SkillType.Agriculture, FarmingRules.GetHarvestXp(crop.Level, rank, yield), false, false);
+
+                RefreshName(plotId);
+                Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} had the clerk harvest {yield} from {crop.Type} in garden plot {plotId} (tended {record.Tended}, fertilized {record.Fertilized}, seed back {seedReturned}) into overflow storage.");
+                return FarmingResult.Success(ClerkRecoveryRules.DescribeRemoteHarvest(crop.Name, yield, seedReturned));
+            }
+
             // The record goes first, so a stop between the two steps can lose a harvest but never repeat it.
             DB.Delete<GardenPlot>(record.Id);
             var itemsInOverflow = GiveItems(player, playerId, crop.HarvestResref, yield);
@@ -353,6 +374,8 @@ namespace SWLOR.Game.Server.Service
             if (GetPlotStructure(plotId) == null)
                 return FarmingResult.Refused(FarmingRefusal.NoPlot);
 
+            // A harvest the City Hall clerk was finishing is finished first.
+            ClerkRecovery.RecoverPlot(plotId);
             var record = GetPlot(plotId);
             var refusal = FarmingRules.CheckClear(
                 isPlayer,
@@ -384,6 +407,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void OnPlotRetrieved(WorldProperty plot, uint placeable)
         {
+            // A harvest the City Hall clerk was finishing is finished first, so nothing it owes is lost with the crop.
+            ClerkRecovery.RecoverPlot(plot.Id);
             var record = GetPlot(plot.Id);
             if (record == null)
                 return;
@@ -412,6 +437,10 @@ namespace SWLOR.Game.Server.Service
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
             if (string.IsNullOrWhiteSpace(propertyId) || !DB.Exists<GardenPlot>(GardenPlot.KeyFor(propertyId)))
+                return;
+
+            // A harvest the City Hall clerk was finishing is finished first, so nothing it owes is lost with the crop.
+            if (ClerkRecovery.RecoverPlot(propertyId))
                 return;
 
             DB.Delete<GardenPlot>(GardenPlot.KeyFor(propertyId));
@@ -450,6 +479,13 @@ namespace SWLOR.Game.Server.Service
             var orphaned = 0;
             foreach (var record in DB.Search(new DBQuery<GardenPlot>().AddPaging(count, 0)).ToList())
             {
+                // A clerk harvest a restart interrupted is finished before anything else decides what happens to the crop.
+                if (record.Recovery != null)
+                {
+                    ClerkRecovery.RecoverPlot(record.PlotId);
+                    continue;
+                }
+
                 if (GetPlotStructure(record.PlotId) == null)
                 {
                     DB.Delete<GardenPlot>(record.Id);
@@ -526,7 +562,7 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(item);
         }
 
-        private static void RefreshName(string plotId)
+        internal static void RefreshName(string plotId)
         {
             var placeable = Property.GetPlaceableByPropertyId(plotId);
             if (GetIsObjectValid(placeable))

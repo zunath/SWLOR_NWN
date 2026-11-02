@@ -47,5 +47,12 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The last time the animal was brought up to date. Farmhands replay time from here.</summary>
         public DateTime LastProcessedUtc { get; set; }
+
+        /// <summary>
+        /// The City Hall clerk's collection, butchering or crating of this animal while it is being finished
+        /// (<see cref="ClerkRecoveryMark"/>), or null. A restart that leaves it finishes the action at the next processing. Older
+        /// records load without one.
+        /// </summary>
+        public ClerkRecoveryMark Recovery { get; set; }
     }
 }

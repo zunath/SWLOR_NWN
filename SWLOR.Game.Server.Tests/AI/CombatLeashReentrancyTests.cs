@@ -60,6 +60,7 @@ public class CombatLeashReentrancyTests
                 public static void SetCurrentHitPoints(uint creature, int hp) => Heals++;
                 public static Location GetLocalLocation(uint creature, string key) => new();
                 public static bool ShouldStartCombatLeashEvade(uint creature, uint target, Location home) => LeashRequired;
+                public static bool TryKeepFightingWithinLeash(uint creature, Location home) => false;
                 public static void ApplyLeashEvadeMovementRate(uint creature) { }
                 public static void DelayCommand(float delay, Action callback) { }
                 public static void ContinueLeashEvadeReturn(uint creature, Location home) => Returns++;

@@ -533,4 +533,32 @@ public class RiftRunTests
         undock.Should().Contain("ForgetRiftRunShip(visitor.Id);\n                    DockAtHostStarport(visitor, hostProperty);");
         undock.Should().Contain("if (!IsRiftPocket(hostArea))\n                ForgetRiftRunShip(visitor.Id);");
     }
+
+    [Test]
+    public void AShipDetachedFromADestroyedHost_LaunchesIntoAPocketOnlyWhenTheRunCountsIt()
+    {
+        var docking = ReadSource("Service", "SpaceDocking.cs").Replace("\r\n", "\n");
+        var detach = docking.Substring(docking.IndexOf("public static HashSet<uint> DetachDockedShips(", StringComparison.Ordinal));
+        detach = detach.Substring(0, detach.IndexOf("private static void PlaceShipInSpace(", StringComparison.Ordinal));
+
+        // A ship the run never enrolled would fly the pocket outside the run and never be sent home: it goes to its last
+        // dock instead, and its players share the host's fate, as a ship with no loaded interior does.
+        var waits = detach.IndexOf("var waitsInPocket = GetIsObjectValid(hostArea) && FindRejoinableRiftRun(visitor.Id)?.Area == hostArea;", StringComparison.Ordinal);
+        var refuse = detach.IndexOf("!RiftRunRules.CanUndockInto(IsRiftPocket(hostArea), waitsInPocket) ||", StringComparison.Ordinal);
+        var lastDock = detach.IndexOf("visitorProperty.Positions.Remove(PropertyLocationType.CurrentPosition);", StringComparison.Ordinal);
+        var place = detach.IndexOf("PlaceShipInSpace(visitor, visitorProperty, location);", StringComparison.Ordinal);
+        waits.Should().BeGreaterThan(0);
+        refuse.Should().BeGreaterThan(waits).And.BeLessThan(lastDock, "the refused ship takes the last-dock path");
+        place.Should().BeGreaterThan(lastDock, "only a ship that may launch there is placed beside the wreck");
+
+        // A run's ship detached anywhere but its pocket has left the run, so it never launches back into the pocket later.
+        detach.Should().Contain("if (!waitsInPocket)\n                    ForgetRiftRunShip(visitor.Id);");
+        detach.IndexOf("ForgetRiftRunShip(visitor.Id);", StringComparison.Ordinal).Should().BeLessThan(refuse);
+
+        var undockAll = docking.Substring(docking.IndexOf("public static void UndockAllToStarport(", StringComparison.Ordinal));
+        undockAll = undockAll.Substring(0, undockAll.IndexOf("// Host destroyed", StringComparison.Ordinal));
+        undockAll.IndexOf("ForgetRiftRunShip(visitor.Id);", StringComparison.Ordinal).Should()
+            .BeGreaterThan(0).And.BeLessThan(undockAll.IndexOf("DockAtHostStarport(visitor, hostProperty);", StringComparison.Ordinal),
+                "a ship put in the starport by an unregistered, sold or given host no longer rejoins the run it waited in");
+    }
 }

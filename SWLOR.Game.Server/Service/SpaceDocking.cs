@@ -596,6 +596,9 @@ namespace SWLOR.Game.Server.Service
             foreach (var visitor in GetDockedShips(host.Id))
             {
                 var visitorName = GetShipName(visitor);
+
+                // A Rift Run ship waiting aboard leaves its run: it no longer launches back into the pocket.
+                ForgetRiftRunShip(visitor.Id);
                 if (hostProperty != null &&
                     hostProperty.Positions.TryGetValue(PropertyLocationType.DockPosition, out var hostDock) &&
                     GetStarportRefusal(visitor, hostDock) == StarportDockRefusal.None)
@@ -623,7 +626,9 @@ namespace SWLOR.Game.Server.Service
         /// wreck, and the players aboard who belong to it (<see cref="ShipDockingRules.AssignReturningPlayers"/>)
         /// leave any station and go back to it, the first who can pilot it at its controls and the rest in its
         /// interior. A ship whose interior is not loaded returns to its last dock instead, and its players share the
-        /// host's fate. Returns the players sent back to a docked ship, whom the destruction (and escape pods) skip.
+        /// host's fate; so does a ship that may not fly the host's Rift Run pocket (<see cref="RiftRunRules.CanUndockInto"/>).
+        /// A ship detached anywhere but its own run's pocket leaves that run. Returns the players sent back to a docked
+        /// ship, whom the destruction (and escape pods) skip.
         /// A host destroyed in a collapsing Rift Run pocket takes its docked ships down with it instead
         /// (<see cref="WreckShipsDockedInCollapse"/>): nobody is sent back, and the players in their interiors are added
         /// to <paramref name="wreckedRiders"/> to ride the host's escape pods.
@@ -658,6 +663,7 @@ namespace SWLOR.Game.Server.Service
 
             var entries = visitors.Select(ToDockVisitor).ToList();
             var assignments = ShipDockingRules.AssignReturningPlayers(aboardById.Keys, entries);
+            var hostArea = GetAreaFromLocation(hostLocation);
 
             for (var index = 0; index < visitors.Count; index++)
             {
@@ -668,8 +674,14 @@ namespace SWLOR.Game.Server.Service
                 ClearDockedState(visitor);
                 DB.Set(visitor);
 
+                // Only a ship the pocket's run counts may launch into it; a ship detached elsewhere leaves its run.
+                var waitsInPocket = GetIsObjectValid(hostArea) && FindRejoinableRiftRun(visitor.Id)?.Area == hostArea;
+                if (!waitsInPocket)
+                    ForgetRiftRunShip(visitor.Id);
+
                 if (visitorProperty == null ||
-                    !GetIsObjectValid(GetAreaFromLocation(hostLocation)) ||
+                    !GetIsObjectValid(hostArea) ||
+                    !RiftRunRules.CanUndockInto(IsRiftPocket(hostArea), waitsInPocket) ||
                     !Property.TryGetLoadedInstance(visitor.PropertyId, out var visitorInstance))
                 {
                     if (visitorProperty != null)
@@ -678,7 +690,7 @@ namespace SWLOR.Game.Server.Service
                         DB.Set(visitorProperty);
                     }
 
-                    Log.Write(LogGroup.Space, $"Ship {visitor.Id} detached from destroyed ship {host.Id} without a loaded interior and returns to its last dock.");
+                    Log.Write(LogGroup.Space, $"Ship {visitor.Id} detached from destroyed ship {host.Id} without a loaded interior or outside its Rift Run pocket and returns to its last dock.");
                     continue;
                 }
 

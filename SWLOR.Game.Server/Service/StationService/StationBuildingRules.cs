@@ -152,17 +152,8 @@ namespace SWLOR.Game.Server.Service.StationService
         /// The cargo value a jump carries (<see cref="PirateAmbushRules.GetCargoValue"/>): the ship's own cargo and sealed
         /// freight plus those of every ship docked aboard it, which jump with it.
         /// </summary>
-        public static int GetJumpCargoValue(PlayerShip ship, IEnumerable<PlayerShip> dockedShips)
-        {
-            if (ship == null)
-                return 0;
-
-            var value = (long)PirateAmbushRules.GetCargoValue(ship.Cargo, ship.SealedFreight);
-            foreach (var docked in (dockedShips ?? Enumerable.Empty<PlayerShip>()).Where(x => x != null && x.Id != ship.Id))
-                value += PirateAmbushRules.GetCargoValue(docked.Cargo, docked.SealedFreight);
-
-            return (int)Math.Min(int.MaxValue, value);
-        }
+        public static int GetJumpCargoValue(PlayerShip ship, IEnumerable<PlayerShip> dockedShips) =>
+            PirateAmbushRules.GetCargoValue(ship, dockedShips);
 
         /// <summary>The cargo's share of a jump's fuel, before the hull's discount.</summary>
         public static int GetCargoJumpFuel(int cargoValue, int hops)

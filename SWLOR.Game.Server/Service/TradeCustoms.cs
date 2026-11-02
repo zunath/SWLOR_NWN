@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -139,7 +140,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Runs on the pilot's queue: takes the fine (no more than they carry) with a mark naming their ship, then saves the
-        /// confiscation on the ship with the payment's id and retires the mark. A restart before that save returns the fine
+        /// confiscation on the ship with the payment's id, confiscates from the ships docked aboard, and retires the mark. A restart before that save returns the fine
         /// at the next login and leaves the goods, so the patrol's encounter is undone whole (<see cref="CreditPayments"/>).
         /// </summary>
         private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine(uint player, TradeAuthority authority, int fine, bool confiscate)
@@ -160,6 +161,20 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(ship);
             }
 
+            // The ships docked aboard lose their banned goods too, after the host's save: a restart in between leaves
+            // them their goods rather than taking goods without the fine.
+            var docked = ship == null || !confiscate ? new List<PlayerShip>() : Space.GetDockedShips(ship.Id);
+            foreach (var visitor in docked.Where(x => x.Id != ship.Id))
+            {
+                var seized = CustomsRules.Confiscate(visitor.Cargo, authority);
+                if (seized.Count == 0)
+                    continue;
+
+                DB.Set(visitor);
+                foreach (var (commodity, units) in seized)
+                    taken[commodity] = taken.GetValueOrDefault(commodity) + units;
+            }
+
             if (mark != null)
                 CreditPayments.Retire(player);
             return (fine, taken);
@@ -172,7 +187,10 @@ namespace SWLOR.Game.Server.Service
 
             var ship = GetActiveShip(player);
             var authority = CustomsRules.PickPatrol(orbit, Random.NextFloat());
-            var bannedValue = CustomsRules.GetBannedValue(ship?.Cargo, authority);
+
+            // The scan sees the bays of the ships docked aboard too.
+            var docked = ship == null ? new List<PlayerShip>() : Space.GetDockedShips(ship.Id);
+            var bannedValue = CustomsRules.GetBannedValue(ship, docked, authority);
             if (ship == null || bannedValue <= 0)
                 return;
 
@@ -206,7 +224,7 @@ namespace SWLOR.Game.Server.Service
                 Area = area,
                 Authority = authority,
                 PatrolGroup = group,
-                Goods = CustomsRules.GetBannedUnits(ship.Cargo, authority),
+                Goods = CustomsRules.GetBannedUnits(ship, docked, authority),
                 Fine = CustomsRules.GetFine(bannedValue),
                 AnswerBy = DateTime.UtcNow.AddSeconds(TradeTuning.CustomsAnswerSeconds),
                 Tier = orbit.Tier,

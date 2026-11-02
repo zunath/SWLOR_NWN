@@ -109,7 +109,8 @@ namespace SWLOR.Game.Server.Service
             if (ship == null)
                 return;
 
-            var value = PirateAmbushRules.GetCargoValue(ship.Cargo, ship.SealedFreight);
+            // The ships docked aboard carry their cargo in with the host.
+            var value = PirateAmbushRules.GetCargoValue(ship, Space.GetDockedShips(ship.Id));
             var chance = PirateAmbushRules.GetAmbushChance(value, orbit.Tier);
             if (chance <= 0 || Random.NextFloat() >= chance)
                 return;

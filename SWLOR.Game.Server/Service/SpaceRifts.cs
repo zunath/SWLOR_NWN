@@ -39,6 +39,14 @@ namespace SWLOR.Game.Server.Service
         public static RiftConnection FindRift(string riftId) =>
             !string.IsNullOrEmpty(riftId) && _rifts.TryGetValue(riftId, out var rift) ? rift : null;
 
+        /// <summary>The hulls docked aboard a ship, which cross a rift with it and spend its mass too.</summary>
+        private static List<ShipSize> GetCarriedHulls(string shipId) =>
+            GetDockedShips(shipId).Select(GetShipSize).ToList();
+
+        /// <summary>The hulls docked aboard the ship a pilot flies, or none.</summary>
+        private static List<ShipSize> GetCarriedHulls(uint pilot) =>
+            TryGetFlownShip(pilot, out var ship) ? GetCarriedHulls(ship.Id) : new List<ShipSize>();
+
         /// <summary>Warns and collapses rifts that are due, and opens rifts where a Wild Space system is short of them.</summary>
         private static void ProcessRiftNetwork()
         {
@@ -176,7 +184,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var pilot in GetPilotsInArea(systemResref))
             {
                 var status = GetShipStatus(pilot);
-                if (status == null || RiftRules.HasExit(systemResref, status.Size, _rifts.Values, now))
+                if (status == null || RiftRules.HasExit(systemResref, status.Size, _rifts.Values, now, GetCarriedHulls(pilot)))
                     continue;
 
                 EjectPilotFromWildSpace(pilot, status, systemResref);
@@ -189,7 +197,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var dbShip = DB.Get<PlayerShip>(shipId);
-                if (dbShip == null || RiftRules.HasExit(systemResref, dbShip.Status.Size, _rifts.Values, now))
+                if (dbShip == null || RiftRules.HasExit(systemResref, dbShip.Status.Size, _rifts.Values, now, GetCarriedHulls(dbShip.Id)))
                     continue;
 
                 EjectShipCloneFromWildSpace(dbShip, clone, systemResref);
@@ -271,9 +279,10 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             var rift = FindRift(signature.RiftId);
             var status = GetShipStatus(pilot);
+            var carried = GetCarriedHulls(pilot);
             var refusal = rift == null || status == null
                 ? RiftPassageRefusal.Collapsed
-                : RiftRules.GetPassageRefusal(rift, status.Size, now);
+                : RiftRules.GetPassageRefusal(rift, status.Size, now, carried);
             if (refusal != RiftPassageRefusal.None)
             {
                 SendMessageToPC(pilot, ColorToken.Red(RiftRules.Message(refusal)));
@@ -292,7 +301,7 @@ namespace SWLOR.Game.Server.Service
             if (!CanFlownShipEnterArea(pilot, destination))
                 return;
 
-            RiftRules.SpendPassage(rift, status.Size, now);
+            RiftRules.SpendPassage(rift, status.Size, now, carried);
             farEnd.Signal[GetObjectUUID(pilot)] = farEnd.SignalRequired;
             farEnd.RevealedAt ??= now;
 

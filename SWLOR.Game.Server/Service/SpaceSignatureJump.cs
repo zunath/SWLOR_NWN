@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Service
                 var status = GetShipStatus(player);
                 var riftRefusal = status == null
                     ? RiftPassageRefusal.Collapsed
-                    : RiftRules.GetPassageRefusal(FindRift(signature.RiftId), status.Size, DateTime.UtcNow);
+                    : RiftRules.GetPassageRefusal(FindRift(signature.RiftId), status.Size, DateTime.UtcNow, GetCarriedHulls(player));
                 if (riftRefusal != RiftPassageRefusal.None)
                 {
                     SendMessageToPC(player, ColorToken.Red(RiftRules.Message(riftRefusal)));

@@ -221,6 +221,33 @@ public class WildSpaceTests
     }
 
     [Test]
+    public void AHostCrossingARift_SpendsTheMassOfTheShipsDockedAboard()
+    {
+        var carried = new[] { ShipSize.Medium, ShipSize.Small };
+        RiftRules.PassageMass(ShipSize.Capital, carried).Should().Be(
+            RiftRules.PassageMass(ShipSize.Capital) + RiftRules.PassageMass(ShipSize.Medium) + RiftRules.PassageMass(ShipSize.Small));
+        RiftRules.PassageMass(ShipSize.Large, null).Should().Be(RiftRules.PassageMass(ShipSize.Large));
+
+        var rift = RiftRules.Create("r", "space_wspulsar", "viscaraorbit", RiftSizeClass.Large, Now, 10 * 3600);
+        rift.MassRemaining = RiftRules.PassageMass(ShipSize.Capital) + 1;
+        RiftRules.GetPassageRefusal(rift, ShipSize.Capital, Now).Should().Be(RiftPassageRefusal.None);
+        RiftRules.GetPassageRefusal(rift, ShipSize.Capital, Now, carried).Should().Be(RiftPassageRefusal.MassSpent,
+            "the docked ships cross with the host");
+        RiftRules.HasExit("space_wspulsar", ShipSize.Capital, new[] { rift }, Now, carried).Should().BeFalse();
+        RiftRules.HasExit("space_wspulsar", ShipSize.Capital, new[] { rift }, Now).Should().BeTrue();
+
+        rift.MassRemaining = 30;
+        RiftRules.SpendPassage(rift, ShipSize.Capital, Now, carried);
+        rift.MassRemaining.Should().Be(30 - RiftRules.PassageMass(ShipSize.Capital, carried));
+
+        var rifts = ReadServerSource("Service", "SpaceRifts.cs");
+        rifts.Should().Contain("RiftRules.GetPassageRefusal(rift, status.Size, now, carried)");
+        rifts.Should().Contain("RiftRules.HasExit(systemResref, status.Size, _rifts.Values, now, GetCarriedHulls(pilot))");
+        rifts.Should().Contain("RiftRules.HasExit(systemResref, dbShip.Status.Size, _rifts.Values, now, GetCarriedHulls(dbShip.Id))",
+            "a logged-out host's clone is judged with its docked ships too");
+    }
+
+    [Test]
     public void TheCollapseWarning_ComesTwoMinutesBeforeTheEndOfALifetime()
     {
         var rift = RiftRules.Create("r", "space_wspulsar", "viscaraorbit", RiftSizeClass.Large, Now, 4 * 3600);
@@ -313,10 +340,10 @@ public class WildSpaceTests
     {
         var jump = ReadServerSource("Service", "SpaceSignatureJump.cs");
         jump.Should().Contain("if (signature.Type == SignatureType.Rift)\n            {\n                CrossRift(player, signature);");
-        jump.Should().Contain("RiftRules.GetPassageRefusal(FindRift(signature.RiftId), status.Size, DateTime.UtcNow)");
+        jump.Should().Contain("RiftRules.GetPassageRefusal(FindRift(signature.RiftId), status.Size, DateTime.UtcNow, GetCarriedHulls(player))");
 
         var rifts = ReadServerSource("Service", "SpaceRifts.cs");
-        rifts.Should().Contain("RiftRules.SpendPassage(rift, status.Size, now);");
+        rifts.Should().Contain("RiftRules.SpendPassage(rift, status.Size, now, carried);");
         rifts.Should().Contain("if (!CanFlownShipEnterArea(pilot, destination))");
         rifts.Should().Contain("farEnd.Signal[GetObjectUUID(pilot)] = farEnd.SignalRequired;", "the crossing ship can come back");
         rifts.Should().Contain("EjectStrandedShips(end, now);");

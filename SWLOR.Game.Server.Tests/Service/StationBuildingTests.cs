@@ -608,6 +608,19 @@ public class StationBuildingTests
             .Contain("CargoValue = record == null ? 0 : StationBuildingRules.GetJumpCargoValue(record, Space.GetDockedShips(record.Id)),");
     }
 
+    [Test]
+    public void AShipAwayAboardAHostOrAtADerelict_IsNotJumpedFromItsLastDock()
+    {
+        // Docking aboard a host or at a derelict keeps the ship's last dock, so the starport still lists it.
+        var service = ReadServer("Service", "StationBuildings.cs");
+        var docked = service.Substring(service.IndexOf("private static bool IsDockedAt(", StringComparison.Ordinal));
+        docked = docked.Substring(0, docked.IndexOf("public static List<(WorldProperty Ship, PlayerShip Record)> GetJumpableShips(", StringComparison.Ordinal));
+        docked.Should().Contain("!Space.IsDockedAboardHost(record, out _)", "IsDockedAboardHost covers a host and a derelict")
+            .And.NotContain("string.IsNullOrWhiteSpace(record.DockedToShipId)");
+        service.Should().Contain("ShipDocked = ship != null && IsDockedAt(ship, record, GetStarportInteriorIds(origin.Id)),");
+        service.Should().Contain("if (ship == null || !IsDockedAt(ship, record, interiors) ||");
+    }
+
     private static string AsteroidTable(string placeableResref)
     {
         using var utp = ReadModule("utp", placeableResref);

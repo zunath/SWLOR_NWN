@@ -733,7 +733,7 @@ Every number in this plan is a proposal until approved. Edict effects and costs 
 | Open situations per city | Up to 3, at most 1 new per 24 hours | New |
 | Situation expiry and modifier length | 72 hours each | New |
 | Treasury effect per situation | Costs up to 15,000 credits and gains up to 10,000; gains capped at 20,000 a week per city and restricted | Base upkeep: 35,000 a week |
-| Leadership XP per decision | Set during the build from the Leadership XP curve | New |
+| Leadership XP per decision | 25% of the skill chart XP for level 10 x city level, by rank difference: 150 at an even match, 300 at +6 (owner-approved 2026-11-02) | New |
 | Market stalls | 1 per city level | New |
 | Ambient townsfolk | 2 per city level, from level 2; the mayor can switch townsfolk and critters off separately | New |
 | Sales tax | 0% to 10%, set by the mayor | Transportation tax: 0% to 25% |
@@ -777,7 +777,7 @@ Before building, players review this plan and the owner approves its values, inc
 - Every Edict effect and cost, and the new harvesting roll, which adds to how harvesting works.
 - Breeders' Charter, the cultured enzyme brackets, and the starter rule.
 - Store stock lists, stock limits, and prices, and the Civic Exchange's stock and prices.
-- The Workshop bonus, Leadership XP per decision, Fertilizer and culture recipes, and City Project materials.
+- The Workshop bonus, Fertilizer and culture recipes, and City Project materials.
 - Shadowport prices and bust chances, with the space revamp's customs values.
 
 | Order | Workstream | Contents |

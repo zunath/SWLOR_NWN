@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.AsteroidDrill, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
             Assign(StructureType.JumpBeacon, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
             Assign(StructureType.DuelingRing, StructureChangeType.PositionChanged, Duels.OnRingPlaced);
+            Assign(StructureType.GardenPlot, StructureChangeType.PositionChanged, Farming.OnPlotSpawned);
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
@@ -65,6 +66,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.AsteroidDrill, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
             Assign(StructureType.JumpBeacon, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
             Assign(StructureType.DuelingRing, StructureChangeType.Retrieved, Duels.OnRingRetrieved);
+            Assign(StructureType.GardenPlot, StructureChangeType.Retrieved, Farming.OnPlotRetrieved);
 
             return _actions;
         }

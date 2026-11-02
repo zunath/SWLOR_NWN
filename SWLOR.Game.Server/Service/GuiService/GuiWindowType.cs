@@ -104,6 +104,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         PlanetaryHoldings = 104,
         CityGazette = 110,
         CityAffairs = 111,
+        GardenPlot = 112,
+        DMCities = 113,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

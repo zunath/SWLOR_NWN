@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Service
                 CityGazetteEntryType.Edict,
                 EdictRules.BuildEnactedText(type, target?.CustomName, enactment.TakesEffect),
                 officialPlayerId,
-                EdictRules.GetOfficialTitle(officialPlayerId == city.OwnerPlayerId));
+                CityPowers.GetDelegateTitle(city, officialPlayerId));
             return EdictRefusal.None;
         }
 
@@ -191,8 +191,65 @@ namespace SWLOR.Game.Server.Service
                 CityGazetteEntryType.Edict,
                 EdictRules.BuildRepealedText(type, target?.CustomName),
                 officialPlayerId,
-                EdictRules.GetOfficialTitle(officialPlayerId == city.OwnerPlayerId));
+                CityPowers.GetDelegateTitle(city, officialPlayerId));
             return EdictRefusal.None;
+        }
+
+        /// <summary>
+        /// Replaces every Edict the city holds with an outright election winner's platform, whatever the locks, marks them as
+        /// from the platform, adds their first part-week to the upkeep bill and sets the mayor's record to the number
+        /// promised (see <see cref="EdictChanges.EnactPlatform"/>). Changes the city in memory only: the election result
+        /// saves it, and then calls <see cref="AnnouncePlatform"/>. The other cities an Alliance joins or ends are saved here.
+        /// </summary>
+        /// <param name="city">The city whose election result is posting, with the election's conditions already cleared.</param>
+        /// <param name="platform">The winner's platform.</param>
+        /// <param name="nowUtc">The time, for tests.</param>
+        public static EdictPlatformEnactment EnactPlatform(WorldProperty city, ElectionPlatform platform, DateTime? nowUtc = null)
+        {
+            var now = nowUtc ?? DateTime.UtcNow;
+            var enactment = EdictChanges.EnactPlatform(city, platform.Edicts, GetLiveCity, IsWildSpaceStation(city), now);
+
+            // The other cities are saved first. If the server stops before the city is, the result is counted again at the
+            // next start, and that run finds their records already changed and ends in the same place.
+            foreach (var other in enactment.ChangedCities)
+            {
+                DB.Set(other);
+            }
+
+            Log.Write(LogGroup.Property, $"Platform of the new mayor of city '{city.CustomName}' ({city.Id}) enacted {enactment.Enacted.Count} Edict(s) over {enactment.ReplacedCount} earlier one(s); {enactment.PartWeekAdded} credits added to the upkeep bill.");
+            foreach (var (type, refusal) in enactment.Dropped)
+            {
+                Log.Write(LogGroup.Property, $"Platform Edict '{type}' of city '{city.CustomName}' ({city.Id}) was not enacted: {refusal}.");
+            }
+
+            return enactment;
+        }
+
+        /// <summary>Posts the Gazette entries for a platform that took effect, once the city has been saved.</summary>
+        /// <param name="city">The city.</param>
+        /// <param name="enactment">What <see cref="EnactPlatform"/> returned.</param>
+        /// <param name="mayorPlayerId">The mayor the platform belongs to.</param>
+        public static void AnnouncePlatform(WorldProperty city, EdictPlatformEnactment enactment, string mayorPlayerId)
+        {
+            foreach (var partner in enactment.FormedAlliances)
+            {
+                CityGazette.Post(partner.Id, CityGazetteEntryType.Edict, EdictRules.BuildAllianceFormedText(city.CustomName));
+            }
+
+            foreach (var partner in enactment.EndedAlliances)
+            {
+                CityGazette.Post(partner.Id, CityGazetteEntryType.Edict, EdictRules.BuildAllianceEndedText(city.CustomName, "replaced its Edicts after an election"));
+            }
+
+            if (enactment.Enacted.Count == 0 && enactment.ReplacedCount == 0)
+                return;
+
+            CityGazette.Post(
+                city.Id,
+                CityGazetteEntryType.Edict,
+                EdictRules.BuildPlatformEnactedText(enactment.Enacted, enactment.ReplacedCount),
+                mayorPlayerId,
+                EdictRules.GetOfficialTitle(true));
         }
 
         /// <summary>
@@ -227,7 +284,8 @@ namespace SWLOR.Game.Server.Service
             return city != null && city.PropertyType == PropertyType.City && !city.IsQueuedForDeletion;
         }
 
-        private static WorldProperty GetLiveCity(string cityId)
+        /// <summary>The city with the id, or null when it does not exist or is being removed.</summary>
+        public static WorldProperty GetLiveCity(string cityId)
         {
             if (string.IsNullOrWhiteSpace(cityId))
                 return null;

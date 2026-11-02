@@ -178,6 +178,140 @@ namespace SWLOR.Game.Server.Service.EdictService
         }
 
         /// <summary>
+        /// Replaces every Edict the city holds with an outright winner's platform, whatever the locks (Player City Revamp,
+        /// "Edict rules" item 3). Each promised Edict is enacted from the platform with a fresh 7-day lock, then the ones
+        /// the city's level cannot hold pause (a paused Edict is not a broken promise), and the first part-week of each
+        /// Edict that works now is added to the upkeep bill. The mayor's record starts again at the Edicts enacted.
+        /// City-wide conditions are read from the city, so call it after the election has cleared the ones it ends: any
+        /// that remain keep the new Edicts paused, and they pay their part-week when the pause lifts. An Alliance that
+        /// replaces one with the same city keeps the pair going; any other old Alliance ends for the city it named.
+        /// Nothing is charged to the treasury.
+        /// </summary>
+        /// <param name="city">The city. Its Edicts and mayor's record change; the caller saves it.</param>
+        /// <param name="platform">The Edicts the winner promised.</param>
+        /// <param name="findCity">A live city by id, or null when it is missing or being removed.</param>
+        /// <param name="isWildSpaceStation">Whether the city is a Wild Space station.</param>
+        /// <param name="nowUtc">The time the results post.</param>
+        public static EdictPlatformEnactment EnactPlatform(
+            WorldProperty city,
+            IEnumerable<ElectionPlatformEdict> platform,
+            Func<string, WorldProperty> findCity,
+            bool isWildSpaceStation,
+            DateTime nowUtc)
+        {
+            var previous = city.Edicts.ToList();
+
+            // Promised Edicts are checked for what can go wrong since registration (a named city gone, a station moved to
+            // Wild Space). The city's level is not: a platform is enacted in full and the level pauses what it cannot hold.
+            var accepted = new List<(ElectionPlatformEdict Promise, WorldProperty Target)>();
+            var dropped = new List<(EdictType Type, EdictRefusal Refusal)>();
+            var held = new Dictionary<EdictType, CityEdict>();
+            foreach (var promise in ElectionPlatformRules.Normalize(platform))
+            {
+                var namesTarget = EdictCatalog.Get(promise.Type)?.NamesTargetCity ?? false;
+                var target = namesTarget && !string.IsNullOrWhiteSpace(promise.TargetCityId) ? findCity(promise.TargetCityId) : null;
+                var refusal = EdictRules.GetEnactRefusal(
+                    promise.Type,
+                    city.Id,
+                    promise.TargetCityId,
+                    target != null,
+                    CityLevelRules.MaxLevel,
+                    isWildSpaceStation,
+                    CityWideCondition.None,
+                    held);
+                if (refusal != EdictRefusal.None)
+                {
+                    dropped.Add((promise.Type, refusal));
+                    continue;
+                }
+
+                accepted.Add((promise, target));
+                held[promise.Type] = new CityEdict { TargetCityId = promise.TargetCityId };
+            }
+
+            // An Alliance that is replaced ends for the other city, unless the platform enacts it again with the same city.
+            var keptPartnerIds = accepted
+                .Where(x => x.Promise.Type == EdictType.Alliance)
+                .Select(x => x.Target.Id)
+                .ToHashSet();
+            var ended = new List<WorldProperty>();
+            foreach (var (type, edict) in previous)
+            {
+                if (type != EdictType.Alliance ||
+                    edict.State != EdictState.Active ||
+                    string.IsNullOrWhiteSpace(edict.TargetCityId) ||
+                    keptPartnerIds.Contains(edict.TargetCityId))
+                {
+                    continue;
+                }
+
+                var partner = findCity(edict.TargetCityId);
+                if (partner != null && RemoveAllianceNaming(partner, city.Id, nowUtc))
+                    ended.Add(partner);
+            }
+
+            city.Edicts.Clear();
+            var formed = new List<WorldProperty>();
+            foreach (var (promise, target) in accepted)
+            {
+                var edict = new CityEdict
+                {
+                    State = EdictState.Active,
+                    EnactedUtc = nowUtc,
+                    LockEndsUtc = EdictRules.GetLockEndUtc(nowUtc),
+                    TargetCityId = target?.Id ?? string.Empty,
+                    FromPlatform = true
+                };
+
+                if (promise.Type == EdictType.Alliance)
+                {
+                    var partnerAlliance = target.Edicts.GetValueOrDefault(EdictType.Alliance);
+                    if (partnerAlliance == null || partnerAlliance.TargetCityId != city.Id)
+                    {
+                        // The other mayor has not enacted it yet: it takes a slot and costs nothing until they do.
+                        edict.State = EdictState.Pending;
+                        edict.LockEndsUtc = null;
+                    }
+                    else if (partnerAlliance.State == EdictState.Pending)
+                    {
+                        ActivateWaitingAlliance(target, partnerAlliance, nowUtc);
+                        formed.Add(target);
+                    }
+                }
+
+                city.Edicts[promise.Type] = edict;
+            }
+
+            ApplyCityLevelPauses(city, nowUtc, billResumes: false);
+
+            // Every Edict is new, so each one that works now pays its first part-week. Under a remaining city-wide pause
+            // none works yet, and each pays when the pause lifts.
+            var partWeek = AddResumedBilling(city, new HashSet<EdictType>(), nowUtc);
+
+            city.MayorRecord = new MayorRecord { Promised = accepted.Count };
+
+            return new EdictPlatformEnactment(
+                accepted.Select(x => (x.Promise.Type, x.Target?.CustomName ?? string.Empty)).ToList(),
+                dropped,
+                previous.Count,
+                formed,
+                ended,
+                partWeek);
+        }
+
+        /// <summary>
+        /// Clears the platform mark on every Edict the city holds. Used when a different player takes the seat without a
+        /// platform: the Edicts stay, but they were not promised by the new mayor, so repealing one breaks no promise.
+        /// </summary>
+        public static void ClearPlatformOrigin(WorldProperty city)
+        {
+            foreach (var edict in city.Edicts.Values)
+            {
+                edict.FromPlatform = false;
+            }
+        }
+
+        /// <summary>
         /// Removes the city's Alliance if it names the other city, and lets what the freed slot allows resume. Returns
         /// true if one was removed.
         /// </summary>

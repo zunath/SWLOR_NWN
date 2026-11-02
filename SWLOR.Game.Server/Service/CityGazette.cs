@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityGazetteService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -224,6 +225,32 @@ namespace SWLOR.Game.Server.Service
                 Property.SanitizeDiscordText(entry.Text));
 
             QueueDiscord(url, HookAuthor, "Story Hook", description, HookColor, city);
+        }
+
+        /// <summary>
+        /// Posts a city's story request to the DM feed (Player City Revamp, "Story hooks"). It is not a Gazette entry, so the
+        /// public never reads it. A failure is logged and never reaches the caller.
+        /// </summary>
+        /// <param name="city">The city or station.</param>
+        /// <param name="posterName">The poster's character name. The feed is staff only.</param>
+        /// <param name="posterTitle">The title they posted under.</param>
+        /// <param name="text">The request.</param>
+        public static void PostStoryRequest(WorldProperty city, string posterName, string posterTitle, string text)
+        {
+            var url = _appSettings.DMStoryHookWebhookUrl;
+            if (city == null || string.IsNullOrWhiteSpace(url))
+                return;
+
+            var level = GetCityLevel(city);
+            var description = StoryRequestRules.BuildFeedDescription(
+                Property.SanitizeDiscordText(city.CustomName),
+                Property.GetCityLevelName(level),
+                level,
+                Property.SanitizeDiscordText(posterName),
+                Property.SanitizeDiscordText(posterTitle),
+                Property.SanitizeDiscordText(text));
+
+            QueueDiscord(url, HookAuthor, "Story Request", description, HookColor, city);
         }
 
         private static int GetCityLevel(WorldProperty city)

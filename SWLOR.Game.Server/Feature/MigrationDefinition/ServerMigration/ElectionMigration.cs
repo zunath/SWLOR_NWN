@@ -13,7 +13,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// The election part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): gives an
 /// election that is already open its kind and stage dates, and gives current citizens a citizen-since time so they
 /// can vote at once. An election that is running keeps the calendar it opened under (14 days of registration, 7 of
-/// voting), so the shorter calendar never moves its cutoff.
+/// voting), so the shorter calendar never moves its cutoff. It adds no platforms: an election already in Voting finishes
+/// without them, and its winner fills Edict slots from Manage City; one still in Registration accepts platforms, and a
+/// candidate who registered earlier has none until they edit theirs (a winner with none leaves the city's Edicts alone).
 /// </summary>
 public static class ElectionMigration
 {

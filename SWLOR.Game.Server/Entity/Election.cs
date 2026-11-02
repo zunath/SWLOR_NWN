@@ -43,7 +43,10 @@ namespace SWLOR.Game.Server.Entity
 
         public List<string> CandidatePlayerIds { get; set; }
 
-        /// <summary>What each candidate stands for, by player id. Older records load with none.</summary>
+        /// <summary>
+        /// What each candidate stands for, by player id. Registering creates the entry, even for a platform with no Edicts.
+        /// A candidate of an election that was already open when platforms arrived has none until they edit their platform.
+        /// </summary>
         public Dictionary<string, ElectionPlatform> Platforms { get; set; }
 
         /// <summary>One vote per CD key, by CD key.</summary>

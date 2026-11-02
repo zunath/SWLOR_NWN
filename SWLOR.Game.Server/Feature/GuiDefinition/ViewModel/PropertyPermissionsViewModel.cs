@@ -150,6 +150,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             };
         }
 
+        /// <summary>
+        /// Whether the player is the mayor of this city who stepped down. They keep their permission record until the snap
+        /// election ends, but have no powers, so they grant nothing. Only the city's own permissions are affected.
+        /// </summary>
+        private bool IsDepartedMayorOfThisCity()
+        {
+            if (_isCategory || _propertyType != PropertyType.City || string.IsNullOrWhiteSpace(PropertyId))
+                return false;
+
+            return CityPowers.IsDepartedMayor(DB.Get<WorldProperty>(PropertyId), GetObjectUUID(Player));
+        }
+
         private bool CanAdjustPermission(
             WorldPropertyPermission grantorPermissions,
             WorldPropertyPermission targetPermissions,
@@ -159,7 +171,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var isTargetOwner = targetPlayerId == ownerPlayerId;
-            return grantorPermissions.GrantPermissions[type] // Player must have grant permission for this property
+            return !IsDepartedMayorOfThisCity() // A mayor who stepped down grants nothing
+                   && grantorPermissions.GrantPermissions[type] // Player must have grant permission for this property
                 && playerId != targetPlayerId // Player can't adjust their own permissions
                 && (!targetPermissions.GrantPermissions[type] || playerId == ownerPlayerId) // Player can't adjust permissions of another grantor, unless owner
                 && !isTargetOwner; // Player can't adjust the owner's permissions.
@@ -173,7 +186,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var isTargetOwner = targetPlayerId == ownerPlayerId;
-            return grantorPermissions.GrantPermissions[type] // Player must have grantor permission
+            return !IsDepartedMayorOfThisCity() // A mayor who stepped down grants nothing
+                   && grantorPermissions.GrantPermissions[type] // Player must have grantor permission
                    && !PropertyPermissionRules.IsGrantRightOwnerOnly(type) // The owner keeps this grant right for themselves
                    && playerId == ownerPlayerId // Can't adjust owner's permissions
                    && playerId != targetPlayerId // Can't adjust your own permissions
@@ -518,6 +532,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If they lost them while the window was open, they could still send this command even though they no longer have permission.
             if (grantorPermissions == null)
                 return;
+
+            // The mayor may have stepped down while the window was open.
+            if (IsDepartedMayorOfThisCity())
+            {
+                Instruction = "You stepped down as mayor and cannot grant permissions until the snap election ends.";
+                InstructionColor = GuiColor.Red;
+                return;
+            }
 
             // Handle specific player permissions.
             if (IsPlayerSelected)

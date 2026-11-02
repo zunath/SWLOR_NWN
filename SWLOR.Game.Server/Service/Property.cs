@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
+using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -302,6 +303,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.TendGardens,
                 PropertyPermissionType.EditTaxes,
                 PropertyPermissionType.AccessTreasury,
                 PropertyPermissionType.ManageUpgrades,
@@ -356,6 +358,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.EditCategories,
+                PropertyPermissionType.TendGardens,
             };
 
             _permissionsByPropertyType[PropertyType.Lab] = new List<PropertyPermissionType>
@@ -1621,6 +1624,9 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
+                // An Acting Mayor's term that ran out, and a step-down nobody accepted, end here.
+                CitySuccession.Process(now, city);
+
                 CityAffairs.Process(now, city);
 
                 if (now < city.Dates[PropertyDateType.Upkeep])
@@ -1771,6 +1777,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A restart can leave a step-down's snap election open with the step-down still pending.
+            CitySuccession.RepairAfterRestart(city, election);
+
             AdvanceElection(now, city, election, TransferPermissions);
         }
 
@@ -1827,12 +1836,12 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Who counts as the incumbent in this election's result. For now it is always the sitting mayor; in a step-down
-        /// snap election it is the interim holder.
+        /// Who counts as the incumbent in this election's result: the sitting mayor, or in a step-down snap election the
+        /// interim holder, who becomes mayor wherever the incumbent would stay.
         /// </summary>
-        private static string GetElectionIncumbentId(WorldProperty city, Election election)
+        internal static string GetElectionIncumbentId(WorldProperty city, Election election)
         {
-            return city.OwnerPlayerId;
+            return CitySuccession.GetIncumbentId(city, election.Kind);
         }
 
         /// <summary>
@@ -1861,9 +1870,11 @@ namespace SWLOR.Game.Server.Service
 
             var opening = kind == ElectionKind.SnapConfidence
                 ? "A snap mayoral election has opened for candidate registration after citizens voted No on the mayor."
-                : kind == ElectionKind.Recall
-                    ? "A recall election has opened for candidate registration."
-                    : "A new mayoral election has opened for candidate registration.";
+                : kind == ElectionKind.SnapStepDown
+                    ? "A snap mayoral election has opened for candidate registration because the mayor stepped down."
+                    : kind == ElectionKind.Recall
+                        ? "A recall election has opened for candidate registration."
+                        : "A new mayoral election has opened for candidate registration.";
             BroadcastPropertyEvent(
                 city,
                 "City Election Open",
@@ -1952,13 +1963,18 @@ namespace SWLOR.Game.Server.Service
                 ? null
                 : ElectionRules.GetNextRegularElectionUtc(endedUtc);
 
-            // Someone new takes the seat.
-            if (!string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId)
+            // Someone new takes the seat. This is also where a step-down snap election that ended with the status quo
+            // seats the interim holder, so the new mayor path runs for them too.
+            var seatChanged = !string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId;
+            if (seatChanged)
             {
                 transferPermissions(outcome.WinnerPlayerId);
                 city.OwnerPlayerId = outcome.WinnerPlayerId;
                 Log.Write(LogGroup.Property, $"New mayor of {city.CustomName} is '{outcome.WinnerPlayerId}'");
             }
+
+            // An election that seats a mayor ends the Acting Mayor's term, and the end of a step-down election ends the step-down.
+            var successionChange = CitySuccession.ApplyElectionEnd(city, election.Kind, outcome.HasMandate, seatChanged);
 
             // Only an outright win ends a No confidence pause; ties, No results and empty elections leave things as they were.
             if (outcome.SetsNoConfidence && !city.NoConfidenceSinceUtc.HasValue)
@@ -1972,6 +1988,16 @@ namespace SWLOR.Game.Server.Service
 
             // An empty recall opens the second, and an empty second recall removes the city or pauses it for neglect.
             CityRecall.Apply(now, city, election.Kind, outcome.ClearsNeglect, recallStep);
+
+            // Only an outright win enacts a platform, replacing every Edict over its lock. It comes after the pauses the
+            // election ends are cleared, so what still holds keeps the new Edicts paused. A winner with no platform (the
+            // election opened before platforms) leaves the Edicts as they are; a new mayor's inherited ones stop counting as promises.
+            var winnerPlatform = outcome.HasMandate
+                ? ElectionPlatformRules.GetPlatformToEnact(election.Platforms, outcome.WinnerPlayerId)
+                : null;
+            var platformEnactment = winnerPlatform == null ? null : Edict.EnactPlatform(city, winnerPlatform, now);
+            if (platformEnactment == null && seatChanged)
+                EdictChanges.ClearPlatformOrigin(city);
 
             city.LastElectionResult = new ElectionResultRecord
             {
@@ -1992,6 +2018,7 @@ namespace SWLOR.Game.Server.Service
 
             // The result is saved first, so a restart before the election record is removed cannot count it twice.
             DB.Set(city);
+            CitySuccession.AnnounceElectionEnd(city.Id, successionChange);
 
             if (opensSnapElection)
                 OpenElection(now, city, ElectionKind.SnapConfidence, GetSnapElectionId(election.Id));
@@ -2002,6 +2029,9 @@ namespace SWLOR.Game.Server.Service
             DB.Delete<Election>(election.Id);
 
             BroadcastElectionResult(city, outcome, nextRegularUtc);
+            if (platformEnactment != null)
+                Edict.AnnouncePlatform(city, platformEnactment, outcome.WinnerPlayerId);
+
             CityRecall.Announce(city, recallStep);
         }
 
@@ -2045,6 +2075,14 @@ namespace SWLOR.Game.Server.Service
                     title = "City Election Concluded";
                     summary = "The mayoral election has concluded in a tie. The incumbent mayor remains in office.";
                     break;
+            }
+
+            // After a mayor stepped down, "the incumbent stays" means the interim holder takes the seat.
+            if (outcome.Kind == ElectionKind.SnapStepDown)
+            {
+                var stepDownSummary = ElectionNoticeText.BuildStepDownSummary(outcome.Type);
+                if (!string.IsNullOrEmpty(stepDownSummary))
+                    summary = stepDownSummary;
             }
 
             var details = $"{summary}\n" +
@@ -2255,6 +2293,9 @@ namespace SWLOR.Game.Server.Service
             if (property.PropertyType == PropertyType.Structure && StationBuildingRules.IsStationBuilding(property.StructureType))
                 StationBuildings.OnDeleted(property);
 
+            if (property.PropertyType == PropertyType.Structure && property.StructureType == StructureType.DuelingRing)
+                Tournaments.OnRingDeleted(property);
+
             // Recursively clear any children properties tied to this property.
             // Children are also found by their parent Id because loading spawns structures that way,
             // so a stale child list can't leave orphaned buildings or interiors behind.
@@ -2344,6 +2385,7 @@ namespace SWLOR.Game.Server.Service
                 CityGazette.DeleteAll(property.Id);
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
+                Tournaments.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
             }
 
@@ -3635,6 +3677,17 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A house holds a limited number of garden plots. A city's plots count against its structure limit alone.
+            if (structureType == StructureType.GardenPlot)
+            {
+                var plotLimit = FarmingRules.GetPlotLimit(property.PropertyType, Farming.IsGreenhouse(property));
+                if (structures.Count(x => x.StructureType == StructureType.GardenPlot) >= plotLimit)
+                {
+                    FloatingTextStringOnCreature($"This property holds at most {plotLimit} garden plots.", player, false);
+                    return;
+                }
+            }
+
             // The Shipyard, Asteroid Drill and Jump Beacon stand only on a station deck, and no beacon reaches Wild Space.
             var stationBuildingError = StationBuildingRules.GetPlacementError(
                 structureType,
@@ -3941,18 +3994,11 @@ namespace SWLOR.Game.Server.Service
             var dbProperty = DB.Get<WorldProperty>(propertyId);
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
 
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), dbBuilding.ParentPropertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
-                .SingleOrDefault();
+            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
 
-            // Player has at least one permission. Display the window.
-            if (permission != null && (permission.Permissions[PropertyPermissionType.RenameProperty] ||
-                                       permission.Permissions[PropertyPermissionType.EditTaxes] ||
-                                       permission.Permissions[PropertyPermissionType.AccessTreasury] ||
-                                       permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
-                                       permission.Permissions[PropertyPermissionType.ManageUpkeep] ||
-                                       permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageEdicts)))
+            // The player holds a permission the window uses, is an Acting Mayor, or must answer a step-down. A mayor who
+            // stepped down has no powers, whatever their permission record says.
+            if (CityPowers.CanOpenManageCity(dbCity, playerId))
             {
                 Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }

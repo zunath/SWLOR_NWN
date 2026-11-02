@@ -253,6 +253,9 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The id of the latest city election result this character has read at login.</summary>
         public string SeenElectionResultId { get; set; }
+
+        /// <summary>The id of the latest planetary council summons this character has read. Older records load empty.</summary>
+        public string SeenCouncilSummonsId { get; set; }
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int Accuracy { get; set; }

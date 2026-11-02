@@ -469,6 +469,21 @@ namespace SWLOR.Game.Server.Service.EdictService
             return $"The {GetName(type)} Edict{DescribeTarget(targetCityName, " naming ")} was repealed.";
         }
 
+        /// <summary>
+        /// The Gazette line for a winner's platform taking effect: the Edicts enacted, and whether it replaced earlier ones.
+        /// </summary>
+        /// <param name="enacted">The Edicts enacted, each with the name of the city it names.</param>
+        /// <param name="replacedCount">How many Edicts the platform replaced.</param>
+        public static string BuildPlatformEnactedText(IReadOnlyList<(EdictType Type, string TargetCityName)> enacted, int replacedCount)
+        {
+            var replaced = replacedCount > 0 ? " The city's earlier Edicts ended." : string.Empty;
+            if (enacted.Count == 0)
+                return "The mayor's election platform took effect with no Edicts." + replaced;
+
+            var names = enacted.Select(x => GetName(x.Type) + DescribeTarget(x.TargetCityName, " naming "));
+            return $"The mayor's election platform took effect. Edicts enacted: {string.Join(", ", names)}.{replaced}";
+        }
+
         public static string BuildAllianceFormedText(string otherCityName)
         {
             return $"The Alliance with {NameOrUnknown(otherCityName)} took effect.";

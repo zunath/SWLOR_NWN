@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -65,39 +67,82 @@ namespace SWLOR.Game.Server.Service
         #region Candidates
 
         /// <summary>
-        /// Enters the character in the race with a statement. Returns the reason it was refused, or empty on success.
+        /// Enters the character in the race with a platform: the Edicts they promise and a statement. Returns the reason it
+        /// was refused, or empty on success.
         /// </summary>
-        public static string RegisterCandidate(string electionId, string playerId, string statement)
+        public static string RegisterCandidate(string electionId, string playerId, string statement, IEnumerable<ElectionPlatformEdict> edicts)
         {
             var election = DB.Get<Election>(electionId);
             var error = CheckRegistrationChange(election, playerId);
+            if (string.IsNullOrEmpty(error))
+                error = CheckPlatform(election, edicts);
+            if (!string.IsNullOrEmpty(error))
+                return error;
+
+            error = CheckCanRun(election, playerId);
             if (!string.IsNullOrEmpty(error))
                 return error;
 
             if (!election.CandidatePlayerIds.Contains(playerId))
                 election.CandidatePlayerIds.Add(playerId);
 
-            SetStatement(election, playerId, statement);
+            SetPlatform(election, playerId, statement, edicts);
             DB.Set(election);
             return string.Empty;
         }
 
         /// <summary>
-        /// Replaces a candidate's statement. Returns the reason it was refused, or empty on success.
+        /// Replaces a candidate's platform. Returns the reason it was refused, or empty on success.
         /// </summary>
-        public static string UpdateStatement(string electionId, string playerId, string statement)
+        public static string UpdatePlatform(string electionId, string playerId, string statement, IEnumerable<ElectionPlatformEdict> edicts)
         {
             var election = DB.Get<Election>(electionId);
             var error = CheckRegistrationChange(election, playerId);
+            if (string.IsNullOrEmpty(error))
+                error = CheckPlatform(election, edicts);
             if (!string.IsNullOrEmpty(error))
                 return error;
 
             if (!election.CandidatePlayerIds.Contains(playerId))
                 return "You are not in the race.";
 
-            SetStatement(election, playerId, statement);
+            SetPlatform(election, playerId, statement, edicts);
             DB.Set(election);
             return string.Empty;
+        }
+
+        /// <summary>
+        /// The reason the character cannot enter the race or edit a platform right now (registration closed, not a citizen),
+        /// or empty.
+        /// </summary>
+        public static string GetRegistrationAccessError(Election election, string playerId)
+        {
+            return CheckRegistrationChange(election, playerId);
+        }
+
+        /// <summary>
+        /// Checks the promised Edicts against the city as it is now. Returns the reason they cannot be a platform, or empty.
+        /// </summary>
+        public static string GetPlatformError(Election election, IEnumerable<ElectionPlatformEdict> edicts)
+        {
+            return CheckPlatform(election, edicts);
+        }
+
+        private static string CheckPlatform(Election election, IEnumerable<ElectionPlatformEdict> edicts)
+        {
+            var city = DB.Get<WorldProperty>(election.PropertyId);
+            if (city == null)
+                return "This city is no longer available.";
+
+            var (refusal, type) = ElectionPlatformRules.GetRefusal(
+                edicts,
+                city.Id,
+                EdictChanges.GetCityLevel(city),
+                Edict.IsWildSpaceStation(city),
+                targetId => Edict.GetLiveCity(targetId) != null);
+            return refusal == EdictRefusal.None
+                ? string.Empty
+                : ElectionPlatformRules.DescribeRefusal(refusal, type, EdictChanges.GetCityLevel(city));
         }
 
         /// <summary>
@@ -150,6 +195,18 @@ namespace SWLOR.Game.Server.Service
             return changed;
         }
 
+        /// <summary>
+        /// Why the character may not run in this election, beyond the registration rules: the mayor who stepped down cannot
+        /// run in the snap election that follows. Empty when they may.
+        /// </summary>
+        private static string CheckCanRun(Election election, string playerId)
+        {
+            if (election.Kind != ElectionKind.SnapStepDown)
+                return string.Empty;
+
+            return StepDownRules.CheckCandidate(election.Kind, playerId, DB.Get<WorldProperty>(election.PropertyId)?.OwnerPlayerId);
+        }
+
         private static string CheckRegistrationChange(Election election, string playerId)
         {
             if (election == null)
@@ -166,7 +223,7 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
-        private static void SetStatement(Election election, string playerId, string statement)
+        private static void SetPlatform(Election election, string playerId, string statement, IEnumerable<ElectionPlatformEdict> edicts)
         {
             election.Platforms ??= new Dictionary<string, ElectionPlatform>();
             if (!election.Platforms.TryGetValue(playerId, out var platform))
@@ -176,6 +233,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             platform.Statement = ElectionRules.NormalizeStatement(statement);
+            platform.Edicts = ElectionPlatformRules.Normalize(edicts);
         }
 
         private static void RemoveFromBallot(Election election, string playerId)

@@ -20,17 +20,27 @@ namespace SWLOR.Game.Server.Service
             return city.Upgrades.GetValueOrDefault(PropertyUpgradeType.CityLevel, 1);
         }
 
-        /// <summary>Whether the player may decide the city's situations: the mayor, or an officer.</summary>
+        /// <summary>
+        /// Whether the player may decide the city's situations: the mayor, an Acting Mayor, or an officer. A mayor who
+        /// stepped down may not.
+        /// </summary>
         public static bool CanHandle(WorldProperty city, string playerId)
         {
             if (city == null || string.IsNullOrWhiteSpace(playerId))
                 return false;
 
-            if (playerId == city.OwnerPlayerId)
+            var role = CityPowers.GetRole(city, playerId);
+            if (role == CityRole.DepartedMayor)
+                return false;
+
+            if (role == CityRole.Mayor)
                 return true;
 
             var player = DB.Get<Player>(playerId);
             var isCitizen = player != null && ElectionRules.IsCitizenOf(player.CitizenPropertyId, city.Id, player.IsDeleted);
+            if (role == CityRole.ActingMayor)
+                return isCitizen;
+
             var permission = GetPermission(city.Id, playerId);
             var holdsPermission = permission != null &&
                                   permission.Permissions.TryGetValue(PropertyPermissionType.HandleCityAffairs, out var granted) &&
@@ -39,10 +49,12 @@ namespace SWLOR.Game.Server.Service
             return OfficerRules.CanHandleCityAffairs(playerId, city.OwnerPlayerId, isCitizen, city.Officers, holdsPermission);
         }
 
-        /// <summary>The title the player acts under in City Affairs.</summary>
+        /// <summary>The title the player acts under in City Affairs: Mayor, Acting Mayor, or the officer's title.</summary>
         public static string GetTitle(WorldProperty city, string playerId)
         {
-            return OfficerRules.GetTitle(playerId, city.OwnerPlayerId, city.Officers);
+            return CityPowers.GetRole(city, playerId) == CityRole.ActingMayor
+                ? CityPowerRules.ActingMayorTitle
+                : OfficerRules.GetTitle(playerId, city.OwnerPlayerId, city.Officers);
         }
 
         /// <summary>
@@ -54,6 +66,10 @@ namespace SWLOR.Game.Server.Service
             var city = LoadCity(cityId);
             if (city == null)
                 return "This city no longer exists.";
+
+            // Only the sitting mayor appoints. An Acting Mayor, an officer, and a mayor who stepped down do not.
+            if (!CityPowers.IsMayor(city, appointerId))
+                return "Only the mayor can appoint officers.";
 
             var target = string.IsNullOrWhiteSpace(targetId) ? null : DB.Get<Player>(targetId);
             var isCitizen = target != null && ElectionRules.IsCitizenOf(target.CitizenPropertyId, city.Id, target.IsDeleted);
@@ -87,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             if (city == null)
                 return "This city no longer exists.";
 
-            if (requesterId != city.OwnerPlayerId)
+            if (!CityPowers.IsMayor(city, requesterId))
                 return "Only the mayor can change an officer's title.";
 
             if (!city.Officers.TryGetValue(officerId ?? string.Empty, out var officer))
@@ -105,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             if (city == null)
                 return "This city no longer exists.";
 
-            if (requesterId != city.OwnerPlayerId)
+            if (!CityPowers.IsMayor(city, requesterId))
                 return "Only the mayor can remove an officer.";
 
             if (!city.Officers.ContainsKey(officerId ?? string.Empty))
@@ -118,7 +134,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Ends a player's office because they left the city or were deleted. Does nothing when they are not an officer.
+        /// A citizen left the city or was deleted. Their office ends if they were an officer, an Acting Mayor's term ends if
+        /// they held it, and a step-down waiting for them is cancelled. Does nothing when they held none of these.
         /// </summary>
         public static void OnCitizenLeft(string cityId, string playerId)
         {
@@ -126,11 +143,16 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var city = DB.Get<WorldProperty>(cityId);
-            if (city == null || !city.Officers.ContainsKey(playerId))
+            if (city == null)
                 return;
 
-            EndOffice(city, playerId);
-            DB.Set(city);
+            if (city.Officers.ContainsKey(playerId))
+            {
+                EndOffice(city, playerId);
+                DB.Set(city);
+            }
+
+            CitySuccession.OnCitizenLeft(city, playerId);
         }
 
         /// <summary>

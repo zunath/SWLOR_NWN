@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CityProjectService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.StationService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -52,10 +53,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HomeGroundLevel = built ? "Home Ground: Built"
                 : open != null ? "Home Ground: Under construction"
                 : "Home Ground: Not built";
+
+            // A Wild Space station has no planet ground, so its drill gets the bonus instead.
+            var effect = Edict.IsWildSpaceStation(dbCity)
+                ? $"crops harvested on the station yield 1 more item, and its Asteroid Drill mines {StationBuildingRules.HomeGroundDrillPercent}% faster."
+                : "citizens get a separate 5% chance of 1 more item per harvest on the planet's ground, and crops harvested here yield 1 more item.";
             HomeGroundTooltip = built
-                ? "Citizens get a separate 5% chance of 1 more item per harvest on the city's planet, and crops harvested in the city yield 1 more item."
-                : $"Costs {CityProjectRules.HomeGroundCredits:N0} credits and {DescribeMaterials(CityProjectCatalog.Get(CityProjectType.HomeGround, 0))}. " +
-                  "Citizens would get a separate 5% chance of 1 more item per harvest on the city's planet, and crops harvested in the city would yield 1 more item.";
+                ? $"Home Ground is built: {effect}"
+                : $"Costs {CityProjectRules.HomeGroundCredits:N0} credits and {DescribeMaterials(CityProjectCatalog.Get(CityProjectType.HomeGround, 0))}. Once built, {effect}";
         }
 
         private static string DescribeMaterials(CityProjectRecipe recipe)

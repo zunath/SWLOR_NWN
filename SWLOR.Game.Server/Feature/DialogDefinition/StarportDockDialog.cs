@@ -325,6 +325,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     DB.Set(dbProperty);
 
+                    // A ship docked at a player Starport starts its pilot's and owner's departure pass there, when they may use it.
+                    if (!dockPoint.IsNPC)
+                        StarportDeparture.OnArrived(playerId, dbProperty.OwnerPlayerId, dbStarport.Id);
+
                     Close();
                     Space.WarpPlayerInsideShip(player);
                 });

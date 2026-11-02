@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -58,19 +59,14 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             if (!string.IsNullOrWhiteSpace(GetLocalString(terminal, Station.StationCityVariable)))
                 return true;
 
-            if (dbPlayer.CitizenPropertyId != cityId)
-            {
-                SendMessageToPC(player, "Only citizens may use starport facilities.");
-                return false;
-            }
+            // Embargo, citizenship, Alliance and Open Gates decide, in that order. A character who is refused may still take a flight
+            // out for 7 days after their ship docked here while they were allowed in (the departure pass).
+            var failure = EdictEffects.GetFacilityFailure(dbPlayer, cityId, FacilityAccessRules.StarportNotWelcomeMessage);
+            if (string.IsNullOrEmpty(failure) || StarportDeparture.HasPass(dbPlayer, cityId))
+                return true;
 
-            if (dbPlayer.PropertyOwedTaxes > 0)
-            {
-                SendMessageToPC(player, $"You owe {dbPlayer.PropertyOwedTaxes} credits in taxes to this city. You cannot use its facilities until these are paid. Use the Citizenship Terminal in City Hall to pay these.");
-                return false;
-            }
-
-            return true;
+            SendMessageToPC(player, failure);
+            return false;
         }
 
         [NWNEventHandler(ScriptName.OnPropertyStarportTerminal)]

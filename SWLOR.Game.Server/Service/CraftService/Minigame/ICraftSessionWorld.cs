@@ -114,6 +114,18 @@ public interface ICraftSessionWorld
     /// <summary>True when the player can be given skill XP now. A dead player cannot, so XP earned then waits on the record.</summary>
     bool CanReceiveXp(uint player);
 
+    /// <summary>
+    /// The id of the city the player's crafting station stands in (a building, a house or the city's land), or an empty string when it is
+    /// not in a city. A craft records it when it starts.
+    /// </summary>
+    string GetStationCityId(uint player);
+
+    /// <summary>
+    /// The points Artisans' Charter adds to the XP of a craft made at a station in <paramref name="craftCityId"/>, judged when the XP is
+    /// settled: 10 for a citizen in good standing of that city whose city has the Edict in effect, otherwise 0.
+    /// </summary>
+    int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId);
+
     void SaveRecord(Player dbPlayer);
 
     /// <summary>

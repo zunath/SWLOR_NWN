@@ -98,6 +98,7 @@ namespace SWLOR.Game.Server.Entity
             PendingHarvestReturns = new List<PendingHarvestReturn>();
             HarvestAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
+            StarportDeparturePasses = new Dictionary<string, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
             CharacterType = CharacterType.Invalid;
@@ -242,6 +243,13 @@ namespace SWLOR.Game.Server.Entity
         /// character is not a citizen.
         /// </summary>
         public DateTime? CitizenSinceUtc { get; set; }
+
+        /// <summary>
+        /// The 7-day departure passes (Player City Revamp, "Who may use the Bank and Starport") by city id: when the character last had a
+        /// ship docked at that city's Starport while allowed to use it. Until 7 days after that time the character may still use the
+        /// Starport's flights terminal to leave, whatever happened to their access since.
+        /// </summary>
+        public Dictionary<string, DateTime> StarportDeparturePasses { get; set; }
 
         /// <summary>The id of the latest city election result this character has read at login.</summary>
         public string SeenElectionResultId { get; set; }

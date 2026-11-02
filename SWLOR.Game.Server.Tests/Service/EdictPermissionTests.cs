@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -88,7 +90,10 @@ public class EdictPermissionTests
         var property = ReadServer("Service", "Property.cs");
         var open = Between(property, "public static void OpenCityManagementMenu()", "public static string GetCityLevelName(int level)");
 
-        open.Should().Contain("permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageEdicts)");
+        // The terminal asks the city powers, which count Manage Edicts among the permissions that open the window.
+        open.Should().Contain("CityPowers.CanOpenManageCity(");
+        var onlyManageEdicts = new Dictionary<PropertyPermissionType, bool> { [PropertyPermissionType.ManageEdicts] = true };
+        CityPowerRules.CanOpenManageCity(CityRole.None, onlyManageEdicts, false).Should().BeTrue();
     }
 
     [Test]
@@ -97,11 +102,13 @@ public class EdictPermissionTests
         var edicts = ReadServer("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.Edicts.cs");
         var main = ReadServer("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.cs");
 
-        main.Should().Contain("CanManageEdicts = permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageEdicts);");
+        // Enacting needs the power to enact, repealing the power to repeal: an Acting Mayor has the first but not the second.
+        main.Should().Contain("CanManageEdicts = access.Can(CityPower.EnactEdicts);");
+        main.Should().Contain("CanRepealEdicts = access.Can(CityPower.RepealEdicts);");
         Between(edicts, "public Action EnactEdict()", "private void ConfirmEnact(").Should().Contain("!CanManageEdicts");
         Between(edicts, "private void ConfirmEnact(", "public Action RepealEdict()").Should().Contain("!CanManageEdicts");
-        Between(edicts, "public Action RepealEdict()", "private void ConfirmRepeal(").Should().Contain("!CanManageEdicts");
-        Between(edicts, "private void ConfirmRepeal(", "private string DescribeRefusal(").Should().Contain("!CanManageEdicts");
+        Between(edicts, "public Action RepealEdict()", "private void ConfirmRepeal(").Should().Contain("!CanRepealEdicts");
+        Between(edicts, "private void ConfirmRepeal(", "private string DescribeRefusal(").Should().Contain("!CanRepealEdicts");
     }
 
     private static string Between(string source, string start, string end)

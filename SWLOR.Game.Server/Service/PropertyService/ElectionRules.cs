@@ -133,6 +133,20 @@ namespace SWLOR.Game.Server.Service.PropertyService
                    citizenSinceUtc.Value <= registrationOpenedUtc;
         }
 
+        /// <summary>
+        /// Whether a result leaves the incumbent in the seat without anyone winning outright: nobody ran or voted, No won
+        /// against a challenger, or Yes and No or the candidates tied. After a mayor steps down, the incumbent is the
+        /// interim holder, so these results seat them.
+        /// </summary>
+        public static bool IsStatusQuo(ElectionOutcomeType type)
+        {
+            return type == ElectionOutcomeType.NoCandidates ||
+                   type == ElectionOutcomeType.NoVotes ||
+                   type == ElectionOutcomeType.ChallengerRejected ||
+                   type == ElectionOutcomeType.ConfidenceTie ||
+                   type == ElectionOutcomeType.Tie;
+        }
+
         /// <summary>Trims a candidate statement and cuts it to <see cref="StatementMaxLength"/> characters.</summary>
         public static string NormalizeStatement(string statement)
         {

@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Service
                 CityGazetteEntryType.Edict,
                 EdictRules.BuildEnactedText(type, target?.CustomName, enactment.TakesEffect),
                 officialPlayerId,
-                EdictRules.GetOfficialTitle(officialPlayerId == city.OwnerPlayerId));
+                CityPowers.GetDelegateTitle(city, officialPlayerId));
             return EdictRefusal.None;
         }
 
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Service
                 CityGazetteEntryType.Edict,
                 EdictRules.BuildRepealedText(type, target?.CustomName),
                 officialPlayerId,
-                EdictRules.GetOfficialTitle(officialPlayerId == city.OwnerPlayerId));
+                CityPowers.GetDelegateTitle(city, officialPlayerId));
             return EdictRefusal.None;
         }
 

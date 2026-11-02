@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Notes();
             CreatureManager();
             DMTools();
+            Cities();
             BattleGrid();
             MusicWindow();
             Broadcast();
@@ -1113,6 +1114,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     DMPresence.ToggleWindow(user, GuiWindowType.DMTools);
+                });
+        }
+
+        private void Cities()
+        {
+            _builder.Create("cities", "citywindow")
+                .Description("Toggles the City window: every city's mayor, officers, recent logins, Edicts, Gazette, and story request, with a planetary council summons.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    DMPresence.ToggleWindow(user, GuiWindowType.DMCities);
                 });
         }
 

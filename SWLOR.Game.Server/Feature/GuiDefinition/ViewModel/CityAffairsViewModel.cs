@@ -17,16 +17,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string TabContentElement = "cityaffairs_content";
         public const string SituationsTabPartial = "CITYAFFAIRS_SITUATIONS";
         public const string OfficersTabPartial = "CITYAFFAIRS_OFFICERS";
+        public const string StoryTabPartial = "CITYAFFAIRS_STORY";
 
         private const int SituationsTabId = 0;
         private const int OfficersTabId = 1;
+        private const int StoryTabId = 2;
 
         private static readonly GuiTabGroup<CityAffairsViewModel, CityAffairsPayload> Tabs =
             new GuiTabGroup<CityAffairsViewModel, CityAffairsPayload>()
                 .AddTab(SituationsTabId, SituationsTabPartial, model => model.RefreshSituations())
-                .AddTab(OfficersTabId, OfficersTabPartial, model => model.RefreshOfficers());
+                .AddTab(OfficersTabId, OfficersTabPartial, model => model.RefreshOfficers())
+                .AddTab(StoryTabId, StoryTabPartial, model => model.RefreshStory());
 
-        private static readonly GuiToggleGroupSync TabToggles = new(SituationsTabId, OfficersTabId);
+        private static readonly GuiToggleGroupSync TabToggles = new(SituationsTabId, OfficersTabId, StoryTabId);
 
         private string _cityId = string.Empty;
         private bool _isMayor;
@@ -77,11 +80,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool CanAppoint { get => Get<bool>(); set => Set(value); }
         public bool HasSelectedOfficer { get => Get<bool>(); set => Set(value); }
 
+        // Story request tab
+        public string StoryStatusText { get => Get<string>(); set => Set(value); }
+        public string CurrentStoryText { get => Get<string>(); set => Set(value); }
+        public bool HasCurrentStory { get => Get<bool>(); set => Set(value); }
+        public string StoryInput { get => Get<string>(); set => Set(value); }
+        public bool CanPostStory { get => Get<bool>(); set => Set(value); }
+
         protected override void Initialize(CityAffairsPayload initialPayload)
         {
             _cityId = initialPayload?.CityId ?? string.Empty;
             var city = string.IsNullOrWhiteSpace(_cityId) ? null : DB.Get<WorldProperty>(_cityId);
-            _isMayor = city != null && GetObjectUUID(Player) == city.OwnerPlayerId;
+            // Only the sitting mayor appoints. An Acting Mayor and the officers decide situations and post requests only.
+            _isMayor = city != null && CityPowers.IsMayor(city, GetObjectUUID(Player));
 
             TabToggleValue = SituationsTabId;
             SelectedTabId = SituationsTabId;
@@ -112,9 +123,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanAppoint = false;
             HasSelectedOfficer = false;
 
+            StoryStatusText = string.Empty;
+            CurrentStoryText = string.Empty;
+            HasCurrentStory = false;
+            StoryInput = string.Empty;
+            CanPostStory = false;
+
             WatchOnClient(model => model.TabToggleValue);
             WatchOnClient(model => model.SelectedCitizenIndex);
             WatchOnClient(model => model.TitleInput);
+            WatchOnClient(model => model.StoryInput);
 
             SelectTab(SituationsTabId);
         }
@@ -123,10 +141,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SelectedTabId = tabId;
             TabToggles.SyncTo(tabId, value => TabToggleValue = value);
-            Tabs.Select(this, TabContentElement, tabId);
+            Tabs.Select(this, TabContentElement, tabId, RestoreStoryInput);
         }
 
-        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
+        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId, RestoreStoryInput);
+
+        /// <summary>
+        /// Pushes the story request field again once its tab exists, since the client does not keep what was typed into a
+        /// field that was off screen.
+        /// </summary>
+        private void RestoreStoryInput()
+        {
+            if (SelectedTabId == StoryTabId)
+                StoryInput = StoryInput;
+        }
 
         private void ShowError(string message)
         {
@@ -455,6 +483,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 },
                 null,
                 "Remove",
+                "Cancel");
+        };
+
+        #endregion
+
+        #region Story request
+
+        private void RefreshStory()
+        {
+            var city = DB.Get<WorldProperty>(_cityId);
+            if (city == null)
+            {
+                ShowError("This city no longer exists.");
+                return;
+            }
+
+            var request = city.StoryRequest;
+            HasCurrentStory = request != null;
+            CurrentStoryText = request?.Text ?? string.Empty;
+            StoryStatusText = request == null
+                ? "Your city has no story request. Post one to invite the DMs to run a story, such as a plot or a hint about ruins near the city."
+                : $"Posted {request.PostedUtc:yyyy-MM-dd} UTC by the {request.PosterTitle}. DM status: {StoryRequestRules.DescribeStatus(request.Status)}. " +
+                  "A new request replaces this one.";
+            CanPostStory = CityPowerRules.RoleHoldsPower(CityPowers.GetRole(city, GetObjectUUID(Player)), CityPower.PostRequests);
+        }
+
+        public Action OnClickPostStory() => () =>
+        {
+            var error = StoryRequestRules.CheckPost(CityPowers.GetRole(DB.Get<WorldProperty>(_cityId), GetObjectUUID(Player)), StoryInput);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ShowError(error);
+                return;
+            }
+
+            var text = StoryInput;
+            ShowModal(
+                $"Post this story request? It goes to the DMs and replaces your city's current request. It is up to {StoryRequestRules.MaxLength} characters.",
+                () =>
+                {
+                    var result = CityStoryRequests.Post(_cityId, GetObjectUUID(Player), text);
+                    if (string.IsNullOrEmpty(result))
+                    {
+                        StoryInput = string.Empty;
+                        ShowSuccess("Story request posted. The DMs have it.");
+                    }
+                    else
+                    {
+                        ShowError(result);
+                    }
+
+                    RefreshStory();
+                },
+                null,
+                "Post",
                 "Cancel");
         };
 

@@ -952,6 +952,13 @@
     "Call": "FloatingTextStringOnCreature(\"Could not locate item to destroy. Notify an admin.\", player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/DuelingRingDialog.Tournaments.cs",
+    "Line": 359,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(error, Player, false)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/GuildMasterDialog.cs",
     "Line": 119,
     "Member": "GuildStorePageInit",
@@ -3955,6 +3962,13 @@
     "Call": "SendMessageToPC(master, ColorToken.Red(\"Items cannot be directly sold from your henchman's inventory.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/TournamentNotices.cs",
+    "Line": 42,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(TournamentText.BuildSignUpNotice(\n                    city.CustomName, areaName, tournament.Prize, tournament.EntryFee, tournament.StartsUtc, now)))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/TrapDefinition/PitfallTrap.cs",
     "Line": 28,
     "Member": "TriggeringTrap",
@@ -4677,21 +4691,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 61,
+    "Line": 62,
     "Member": "PayStationFounding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer have the credits, so the station was not founded.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 121,
+    "Line": 122,
     "Member": "SettlePendingFoundings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    \"A restart stopped your station's founding before its price was paid, so the station was not founded. You keep the Station Core and your credits.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CreditPayments.cs",
-    "Line": 148,
+    "Line": 149,
     "Member": "SettleInterruptedPayment",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    $\"A restart interrupted a payment of {credits} credits before what it paid for was saved. The credits were returned.\"))"
@@ -4775,77 +4789,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 147,
+    "Line": 79,
+    "Member": "UseRing",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are barred from the Dueling Ring until the tournament ends.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Duels.cs",
+    "Line": 159,
     "Member": "Challenge",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, challenger, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 157,
+    "Line": 169,
     "Member": "Challenge",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(challenger,\n                $\"You challenge {PlayerName.GetDisplayName(challenger, target)} to a duel. They have {DuelRules.ChallengeSeconds:0} seconds to answer.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 185,
+    "Line": 197,
     "Member": "Decline",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(challenge.Challenger, $\"{PlayerName.GetDisplayName(challenge.Challenger, target)} declined your challenge.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 194,
+    "Line": 206,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The challenge has expired.\", target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 202,
+    "Line": 214,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The challenge is no longer valid.\", target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 204,
+    "Line": 216,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(error, challenge.Challenger, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 235,
+    "Line": 247,
     "Member": "StartDuel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(challenger, ColorToken.Combat(Rules))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 236,
+    "Line": 248,
     "Member": "StartDuel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Combat(Rules))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 420,
+    "Line": 461,
     "Member": "Cancel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(duelist, ColorToken.Combat(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 499,
+    "Line": 541,
     "Member": "TellInterruption",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(duelist, ColorToken.Combat(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Duels.cs",
-    "Line": 525,
+    "Line": 567,
     "Member": "TellOutcome",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(duelist, message)"
@@ -5614,6 +5635,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/PendingCredits.cs",
+    "Line": 123,
+    "Member": "Deliver",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{record.Reason} ({record.Credits} credits)\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Perk.cs",
     "Line": 1398,
     "Member": "RemovePerkLevelOnSkillDecay",
@@ -6014,147 +6042,147 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 2905,
+    "Line": 2909,
     "Member": "CreateStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your station stands at the anchor site in {anchor.SystemName}. Use its docking point to dock at its Starport and go aboard.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3318,
+    "Line": 3322,
     "Member": "EnterProperty",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3407,
+    "Line": 3411,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3437,
+    "Line": 3441,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3501,
+    "Line": 3505,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3518,
+    "Line": 3522,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3531,
+    "Line": 3535,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3538,
+    "Line": 3542,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is listed for sale. Its furniture cannot change until the listing ends.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3591,
+    "Line": 3595,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3599,
+    "Line": 3603,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3606,
+    "Line": 3610,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3616,
+    "Line": 3620,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This property holds at most {plotLimit} garden plots.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3628,
+    "Line": 3632,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(stationBuildingError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3642,
+    "Line": 3646,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationDeckRules.DescribeRefusal(placement), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3669,
+    "Line": 3673,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3810,
+    "Line": 3814,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3817,
+    "Line": 3821,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3850,
+    "Line": 3854,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3885,
+    "Line": 3889,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3904,
+    "Line": 3908,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3944,
+    "Line": 3948,
     "Member": "OpenCityManagementMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"
@@ -8419,6 +8447,76 @@
     "Member": "RegisterTaxiDestination",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"'{detail.Name}' registered into taxi destinations!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 178,
+    "Member": "CompleteSignUp",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 214,
+    "Member": "CompleteSignUp",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"You signed up for the tournament{paid}. The entry fee is returned only if the tournament is cancelled.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.cs",
+    "Line": 247,
+    "Member": "Begin",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(online, ColorToken.Green(\"The tournament has begun. Stay near the Dueling Ring: you have 5 minutes to reach it once your match is called.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 203,
+    "Member": "EjectBarred",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are barred from the Dueling Ring until the tournament ends.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 238,
+    "Member": "OnDuelInterrupted",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(interrupter, ColorToken.Red(\"You interrupted a tournament match. You are barred from the Dueling Ring until the tournament ends.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 329,
+    "Member": "TellMatchCalled",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, ColorToken.Green(\n                    $\"Your match in {round} of the tournament is called against {GetName(duelist, tournament, opponentId)}. \" +\n                    $\"Stand in the Dueling Ring within {TournamentRules.NoShowMinutes:0} minutes or you forfeit.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 347,
+    "Member": "TellNoShow",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, missed\n                    ? ColorToken.Red(\"You did not reach the Dueling Ring in time, so you forfeited the match.\")\n                    : ColorToken.Green(\"Your opponent did not reach the Dueling Ring in time, so you advance.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 362,
+    "Member": "TellInterruption",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(official, ColorToken.Green(\"A tournament match was interrupted three times. Use the Dueling Ring to pick its winner.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Matches.cs",
+    "Line": 377,
+    "Member": "TellToDuelists",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(duelist, ColorToken.Green(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Tournaments.Settlement.cs",
+    "Line": 119,
+    "Member": "Settle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(online, ColorToken.Red(\"The tournament you entered was cancelled.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",

@@ -291,6 +291,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(35f)
                                     .SetWidth(350f);
                             });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddLabel()
+                                    .SetText("City Affairs")
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHeight(25f);
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddButton()
+                                    .SetText("Open City Affairs")
+                                    .SetTooltip("Decide the city's open situations and appoint officers.")
+                                    .BindOnClicked(model => model.OpenCityAffairs())
+                                    .SetHeight(35f)
+                                    .SetWidth(350f);
+                            });
                         });
                     });
 

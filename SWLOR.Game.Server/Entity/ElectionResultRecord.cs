@@ -36,6 +36,9 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>True when this result opened a snap confidence election at once.</summary>
         public bool OpenedSnapElection { get; set; }
 
+        /// <summary>True when this result was an empty recall that opened the second recall at once.</summary>
+        public bool OpenedSecondRecall { get; set; }
+
         /// <summary>When the next regular election opens. Null when a snap election opened instead.</summary>
         public DateTime? NextElectionUtc { get; set; }
 

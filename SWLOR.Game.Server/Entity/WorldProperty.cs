@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Entity
@@ -17,6 +18,8 @@ namespace SWLOR.Game.Server.Entity
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
             Taxes = new Dictionary<PropertyTaxType, int>();
             Upgrades = new Dictionary<PropertyUpgradeType, int>();
+            Officers = new Dictionary<string, CityOfficer>();
+            Modifiers = new Dictionary<CityModifierType, CityModifier>();
         }
 
         /// <summary>
@@ -168,5 +171,29 @@ namespace SWLOR.Game.Server.Entity
         /// load with none.
         /// </summary>
         public ElectionResultRecord LastElectionResult { get; set; }
+
+        /// <summary>
+        /// The officers the mayor appointed, by player id. The limit is 1 plus 1 per city level. Cities only; older
+        /// records load with none.
+        /// </summary>
+        public Dictionary<string, CityOfficer> Officers { get; set; }
+
+        /// <summary>
+        /// Effects City Affairs situations put on the city, until they expire. A repeat refreshes the expiry instead of
+        /// stacking. Cities only; older records load with none.
+        /// </summary>
+        public Dictionary<CityModifierType, CityModifier> Modifiers { get; set; }
+
+        /// <summary>
+        /// How many City Affairs situations in a row expired unhandled. Any decision resets it to 0, and at 5 a recall
+        /// election opens.
+        /// </summary>
+        public int NeglectCount { get; set; }
+
+        /// <summary>
+        /// 0 normally. 1 after a recall election ended empty: the city is marked Abandoned and the second recall is
+        /// open. Cleared when the second recall ends.
+        /// </summary>
+        public int RecallStage { get; set; }
     }
 }

@@ -33,7 +33,7 @@ A creature in stealth or invisible (`Stealth.IsConcealed`) must not be announced
 - `Messaging.SendMessageNearbyToPlayers` delivers only to the sender (and the hidden actor a message names, such as the activator in an ability's combat-log line) while either is hidden. This covers ability "readies", "queues", interruption and expiry lines, status application and worn-off lines, and paralysis warnings.
 - Ability sounds (`UsePerkFeat.PlayAbilitySound`) play only for a hidden activator; casting effects are skipped; success bursts on a hidden recipient are shown only to that player (`Ability.ShowVisualEffectToPlayer`).
 - Abilities that hide the caster (Ghost Protocol, Shared Presence) show their smoke and bursts only to the players they hide. Cloud Mind from a hidden caster shows its target puff only to the caster, and Clouded Mind sends no application or worn-off line.
-- A held lightsaber's hum is silenced while its owner is in stealth and returns when they are seen; igniting a saber while hidden plays only for the owner. The HoloCom buzz over a hidden receiver is not floated to others.
+- A held lightsaber's hum is silenced while its owner is in stealth and returns when they leave stealth (invisibility does not silence it); igniting or shutting off a saber while hidden plays only for the owner. The HoloCom buzz over a hidden receiver is not floated to others.
 - Anything that reveals the creature (an attack, a stealth-breaking ability, detection) shows normally once it is revealed.
 
 ## Optional messages enabled only in Testing/Development

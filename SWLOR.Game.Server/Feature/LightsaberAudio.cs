@@ -27,8 +27,12 @@ namespace SWLOR.Game.Server.Feature
                 type != BaseItem.Saberstaff)
                 return;
 
-            // A hidden player's hum and ignition sound would tell everyone nearby where they are.
-            // The hum returns when they are seen again (RestoreAfterHidden).
+            // The hum would tell everyone nearby where a player in stealth is. It is tied to stealth
+            // mode only, because leaving stealth is what gives it back (RestoreAfterHidden).
+            if (!GetActionMode(player, ActionMode.Stealth))
+                ApplyHum(player);
+
+            // The ignition sound is heard only by a hidden player (in stealth or invisible).
             if (Stealth.IsConcealed(player))
             {
                 if (GetIsPC(player))
@@ -36,7 +40,6 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            ApplyHum(player);
             AssignCommand(player, () => PlaySound("saberon"));
         }
 
@@ -47,18 +50,18 @@ namespace SWLOR.Game.Server.Feature
             ApplyEffectToObject(DurationType.Permanent, effect, player);
         }
 
-        /// <summary>Silences every saber hum while the player is hidden.</summary>
+        /// <summary>Silences every saber hum while the player is in stealth.</summary>
         public static void SilenceWhileHidden(uint player)
         {
             RemoveHum(player, OBJECT_INVALID, silenceAll: true);
         }
 
         /// <summary>
-        /// Gives each held lightsaber or saberstaff its hum back once the player is no longer hidden.
+        /// Gives each held lightsaber or saberstaff its hum back once the player leaves stealth.
         /// </summary>
         public static void RestoreAfterHidden(uint player)
         {
-            if (!GetIsObjectValid(player) || Stealth.IsConcealed(player))
+            if (!GetIsObjectValid(player) || GetActionMode(player, ActionMode.Stealth))
                 return;
 
             var missing = CountHeldSabers(player) - CountHums(player);

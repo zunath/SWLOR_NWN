@@ -303,6 +303,8 @@ public class ForceSensitiveEspionageTests
         var saber = ReadSource("Feature", "LightsaberAudio.cs");
         saber.Should().Contain("if (Stealth.IsConcealed(player))\n            {\n                if (GetIsPC(player))\n                    PlayerPlugin.PlaySound(player, \"saberon\", player);");
         saber.Should().Contain("PlayerPlugin.PlaySound(player, \"saberoff\", player);", "unequipping while hidden is heard only by the hidden player");
+        saber.Should().Contain("if (!GetActionMode(player, ActionMode.Stealth))\n                ApplyHum(player);", "the hum is tied to stealth, whose exit restores it");
+        saber.Should().Contain("if (!GetIsObjectValid(player) || GetActionMode(player, ActionMode.Stealth))", "leaving stealth restores the hum even while invisible");
         var stealthSource = ReadSource("Service", "Stealth.cs");
         stealthSource.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);", "entering stealth silences held sabers");
         stealthSource.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);", "leaving stealth gives the hum back");

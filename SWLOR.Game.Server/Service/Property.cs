@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -170,13 +171,16 @@ namespace SWLOR.Game.Server.Service
 
         public static void BroadcastCityUpkeepPaid(WorldProperty city)
         {
-            if (city.Upkeep > 0)
-                return;
+            // An Edict that resumed because of the payment adds its part-week to what the city owes next.
+            var resumedEdictsText = city.Upkeep > 0
+                ? $"**Owed For Resumed Edicts**: {city.Upkeep:N0} cr\n"
+                : string.Empty;
 
             BroadcastPropertyEvent(
                 city,
                 "City Upkeep Paid",
                 $"The outstanding city upkeep has been paid.\n" +
+                resumedEdictsText +
                 $"**Next Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep])}");
         }
 
@@ -300,7 +304,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditTaxes,
                 PropertyPermissionType.AccessTreasury,
                 PropertyPermissionType.ManageUpgrades,
-                PropertyPermissionType.ManageUpkeep
+                PropertyPermissionType.ManageUpkeep,
+                PropertyPermissionType.ManageEdicts
             };
 
             _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
@@ -2040,6 +2045,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Property, $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
             city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
+            Edict.ApplyCityLevelPauses(city, DateTime.UtcNow, billResumes: false);
             DB.Set(city);
             SpawnExclusion.InvalidateCity(city.Id);
 
@@ -2121,8 +2127,13 @@ namespace SWLOR.Game.Server.Service
                 city.Upgrades[PropertyUpgradeType.CantinaLevel],
                 city.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1));
 
+            // Edicts in effect, or paused only by a situation, add a full week. The check above already decided disrepair.
+            var edictBill = Edict.GetWeeklyBill(city);
+            var unbilledEdicts = EdictRules.GetUnbilledDescriptions(city.Edicts, Edict.GetConditions(city), now);
+
             Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {weeklyUpkeep} credits.");
             city.Upkeep += weeklyUpkeep;
+            city.Upkeep += CityUpkeepRules.GetEdictUpkeep(edictBill);
             DB.Set(city);
             Log.Write(LogGroup.Property, $"Total upkeep owed: {city.Upkeep} credits.");
             BroadcastPropertyEvent(
@@ -2130,6 +2141,7 @@ namespace SWLOR.Game.Server.Service
                 "City Upkeep Due",
                 $"Weekly upkeep has been assessed for this city.\n" +
                 $"**Upkeep Status**: Payment due\n" +
+                CityUpkeepRules.BuildUpkeepBreakdownText(weeklyUpkeep, edictBill, unbilledEdicts, city.Upkeep) + "\n" +
                 $"**Next Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep].AddDays(7))}");
 
             Log.Write(LogGroup.Property, $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
@@ -2257,6 +2269,7 @@ namespace SWLOR.Game.Server.Service
             {
                 CityGazette.DeleteAll(property.Id);
                 ElectionBallot.DeleteCityElections(property.Id);
+                Edict.OnCityDeleted(property);
             }
 
             _propertyInstances.Remove(property.Id);
@@ -3863,7 +3876,8 @@ namespace SWLOR.Game.Server.Service
                                        permission.Permissions[PropertyPermissionType.EditTaxes] ||
                                        permission.Permissions[PropertyPermissionType.AccessTreasury] ||
                                        permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
-                                       permission.Permissions[PropertyPermissionType.ManageUpkeep]))
+                                       permission.Permissions[PropertyPermissionType.ManageUpkeep] ||
+                                       permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageEdicts)))
             {
                 Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }

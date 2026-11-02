@@ -174,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var isTargetOwner = targetPlayerId == ownerPlayerId;
             return grantorPermissions.GrantPermissions[type] // Player must have grantor permission
+                   && !PropertyPermissionRules.IsGrantRightOwnerOnly(type) // The owner keeps this grant right for themselves
                    && playerId == ownerPlayerId // Can't adjust owner's permissions
                    && playerId != targetPlayerId // Can't adjust your own permissions
                    && !isTargetOwner; // Can't adjust owner's permissions
@@ -537,7 +538,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Only permissions the player can grant should be updated.
                     if (grantorPermissions.GrantPermissions[permission])
                     {
-                        var canGrant = PermissionGrantingStates[index];
+                        var canGrant = PermissionGrantingStates[index] && !PropertyPermissionRules.IsGrantRightOwnerOnly(permission);
 
                         // Automatically assign permission if the grant permission is assigned.
                         if (canGrant)

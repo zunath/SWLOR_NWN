@@ -76,6 +76,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // Starships
         [PropertyPermission("Dock Ship", "Can dock a Small or Medium starship with this Large or Capital starship in space.", true)]
         Dock = 18,
+
+        // City
+        [PropertyPermission("Manage Edicts", "Can enact and repeal the city's Edicts. Only the mayor can give it to someone else.", true)]
+        ManageEdicts = 19,
     }
 
     public class PropertyPermissionAttribute : Attribute

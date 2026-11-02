@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .SkillType(SkillType.Espionage)
                 .HasImpactAction(ApplyGhostProtocol)
                 .IsCastedAbility()
+                // The "readies" line would tell nearby players someone is entering stealth.
+                .HideActivationMessage()
                 .RequirementStamina(15);
 
             return builder.Build();

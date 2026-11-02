@@ -306,6 +306,8 @@ public class ForceSensitiveEspionageTests
         var stealthSource = ReadSource("Service", "Stealth.cs");
         stealthSource.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);", "entering stealth silences held sabers");
         stealthSource.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);", "leaving stealth gives the hum back");
+        new GhostProtocolAbilityDefinition().BuildAbilities()[FeatType.GhostProtocol].DisplaysActivationMessage
+            .Should().BeFalse("the nearby broadcast would announce that someone is entering stealth");
     }
 
     [TestCase(false, false, true)]

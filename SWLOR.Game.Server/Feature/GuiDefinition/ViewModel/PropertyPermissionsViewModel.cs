@@ -275,7 +275,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _cityId = initialPayload.CityId;
             IsPlayerSelected = false;
 
-            AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType);
+            AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType)
+                .Where(type => Property.GetPermissionByType(type).ShowInPermissionWindow)
+                .ToList();
 
             if (_isCategory)
             {

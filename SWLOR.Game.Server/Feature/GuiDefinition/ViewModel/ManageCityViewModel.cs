@@ -585,6 +585,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HandleUpgrade(PropertyUpgradeType.JumpBeaconLevel, PropertyType.Invalid);
         };
 
+        public Action OpenCityAffairs() => () =>
+        {
+            var error = CityAffairs.TryOpenWindow(Player, _cityId, TetherObject);
+            if (string.IsNullOrEmpty(error))
+                return;
+
+            Instructions = error;
+            InstructionsColor = GuiColor.Red;
+        };
+
         public Action PayUpkeep() => () =>
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);

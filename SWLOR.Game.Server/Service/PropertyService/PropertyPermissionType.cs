@@ -76,6 +76,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // Starships
         [PropertyPermission("Dock Ship", "Can dock a Small or Medium starship with this Large or Capital starship in space.", true)]
         Dock = 18,
+
+        // City. The mayor sets it by appointing an officer, so it is not in the permission window.
+        [PropertyPermission("Handle City Affairs", "Can decide City Affairs situations. Given by appointing an officer.", true,
+            ShowInPermissionWindow = false)]
+        HandleCityAffairs = 20,
     }
 
     public class PropertyPermissionAttribute : Attribute
@@ -83,6 +88,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
+
+        /// <summary>False for a permission that is set some other way and never appears in the permission window.</summary>
+        public bool ShowInPermissionWindow { get; set; } = true;
 
         public PropertyPermissionAttribute(string name, string description, bool isActive)
         {

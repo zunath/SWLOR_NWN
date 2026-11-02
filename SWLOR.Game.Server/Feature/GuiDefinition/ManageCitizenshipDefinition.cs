@@ -60,6 +60,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Read the City Gazette")
                             .BindOnClicked(model => model.OpenGazette())
                             .SetHeight(35f);
+
+                        row.AddButton()
+                            .SetText("City Affairs")
+                            .SetTooltip("For the mayor and officers: decide the city's situations.")
+                            .BindIsEnabled(model => model.CanHandleCityAffairs)
+                            .BindOnClicked(model => model.OpenCityAffairs())
+                            .SetHeight(35f);
                     });
                 });
 

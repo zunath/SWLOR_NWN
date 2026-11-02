@@ -501,9 +501,9 @@ public class SpaceW11nReviewFixTests
     [Test]
     public void UnregisteringAShip_ReturnsItsPostedDroids()
     {
-        var unregister = Between(ReadSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs").Replace("\r\n", "\n"),
-            "public Action OnClickUnregisterShip()", "_myShips.RemoveAll(ship => ship.Id == shipId);");
-        Index(unregister, "Space.ReturnShipDroidCrew(dbShip, \"was unregistered\");")
+        var unregister = Between(ReadSource("Service", "SpaceShipItemMoves.cs").Replace("\r\n", "\n"),
+            "public static void RemoveUnregisteredShip(", "public static void SettleShipItemMoves()");
+        Index(unregister, "ReturnShipDroidCrew(dbShip, \"was unregistered\");")
             .Should().BeLessThan(Index(unregister, "DB.Delete<PlayerShip>(shipId);"),
                 "posted droids go back to their owners before the ship record is gone");
     }
@@ -534,7 +534,7 @@ public class SpaceW11nReviewFixTests
         Index(deliver, "unplaced.Add((resref, trait));").Should().BeLessThan(Index(deliver, "KeepUnplacedYield(pilot, unplaced);"));
 
         var keep = Between(source, "public static void KeepUnplacedYield(", "private static void SaveNewHold(");
-        keep.Should().Contain("AddNewStack(hold, resref, Math.Min(left, maxStack));");
+        keep.Should().Contain("AddNewStack(hold, resref, Math.Min(left, maxStack), NextKey());");
         keep.Should().Contain("DB.Set(hold);");
         keep.Should().Contain("CreateObject(ObjectType.Item, resref, location);", "without a hold the yield is left at the pilot");
     }

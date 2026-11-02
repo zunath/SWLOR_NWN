@@ -564,7 +564,6 @@ namespace SWLOR.Game.Server.Service
             return online;
         }
 
-        /// <summary>Gives a payout's credits and items; <paramref name="heading"/> names the event with the area in {0}.</summary>
         /// <summary>
         /// Gives what of the payout the character does not hold yet: the credits, then the items in order until the
         /// inventory is full. They are saved in one character save with a mark of what was given, and the number of items

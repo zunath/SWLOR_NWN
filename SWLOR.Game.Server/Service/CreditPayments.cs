@@ -141,10 +141,7 @@ namespace SWLOR.Game.Server.Service
             if (mark == null)
                 return;
 
-            var recordPaymentId = mark.Kind is CreditPaymentKind.HullRefit or CreditPaymentKind.CustomsFine && !string.IsNullOrWhiteSpace(mark.RecordId)
-                ? DB.Get<PlayerShip>(mark.RecordId)?.LastPaymentId
-                : null;
-            if (!mark.KeepsPayment(recordPaymentId))
+            if (!mark.KeepsPayment(GetRecordPaymentId(mark)))
             {
                 GiveGoldToCreature(player, mark.Credits);
                 var credits = mark.Credits;
@@ -154,6 +151,21 @@ namespace SWLOR.Game.Server.Service
             }
 
             Retire(player);
+        }
+
+        /// <summary>The payment id saved with the mark's change on its record, or null when the record is gone.</summary>
+        private static string GetRecordPaymentId(CreditPaymentMark mark)
+        {
+            if (string.IsNullOrWhiteSpace(mark.RecordId))
+                return null;
+
+            return mark.Kind switch
+            {
+                CreditPaymentKind.HullRefit or CreditPaymentKind.CustomsFine or CreditPaymentKind.ShipRepair
+                    => DB.Get<PlayerShip>(mark.RecordId)?.LastPaymentId,
+                CreditPaymentKind.ShuttleTicket => DB.Get<ShuttleRide>(mark.RecordId)?.PaymentId,
+                _ => null
+            };
         }
     }
 }

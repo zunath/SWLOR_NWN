@@ -91,20 +91,41 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The character-file local naming the last freight contract whose deposit was taken.</summary>
         private const string DepositPaidVariable = "FREIGHT_DEPOSIT_PAID";
 
-        /// <summary>Takes a contract's deposit, saves it in the character file with a mark naming the contract, then marks the contract paid.</summary>
+        /// <summary>
+        /// Takes a contract's deposit, saves it in the character file with a mark naming the contract, then marks the
+        /// contract paid. A player who no longer has the credits (another debit ran first) has the contract cancelled.
+        /// </summary>
         private static void PayFreightDeposit(uint player, string contractId, int deposit)
         {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var contract = dbPlayer?.FreightContracts.FirstOrDefault(x => x.Id == contractId);
+            if (contract == null || !contract.DepositPending)
+                return;
+
+            if (GetGold(player) < deposit)
+            {
+                CancelUnpaidContract(dbPlayer, contract);
+                DB.Set(dbPlayer);
+                SendMessageToPC(player, ColorToken.Red("You no longer have the credits for the deposit, so the freight contract was cancelled."));
+                Log.Write(LogGroup.Space, $"FREIGHT ACCEPT - {PlayerName.GetAuditName(player)} - cancelled contract {contract.Id} whose deposit could not be paid.");
+                return;
+            }
+
             TakeGoldFromCreature(deposit, player, true);
             ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);
             ExportSingleCharacter(player);
 
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            var contract = dbPlayer?.FreightContracts.FirstOrDefault(x => x.Id == contractId);
-            if (contract == null)
-                return;
-
             contract.DepositPending = false;
             DB.Set(dbPlayer);
+        }
+
+        /// <summary>Removes a contract whose deposit was never taken: its sealed load first, then the contract (the caller saves it).</summary>
+        private static void CancelUnpaidContract(Player dbPlayer, FreightContract contract)
+        {
+            var ship = DB.Get<PlayerShip>(contract.ShipId);
+            if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
+                DB.Set(ship);
+            dbPlayer.FreightContracts.Remove(contract);
         }
 
         /// <summary>
@@ -132,10 +153,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                var ship = DB.Get<PlayerShip>(contract.ShipId);
-                if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
-                    DB.Set(ship);
-                dbPlayer.FreightContracts.Remove(contract);
+                CancelUnpaidContract(dbPlayer, contract);
                 Log.Write(LogGroup.Space, $"FREIGHT ACCEPT - {PlayerName.GetAuditName(player)} - removed contract {contract.Id} whose deposit a restart never took.");
             }
 

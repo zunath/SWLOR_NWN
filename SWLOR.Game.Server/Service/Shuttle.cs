@@ -6,7 +6,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.ShuttleService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -744,37 +746,58 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Attempts to purchase a shuttle ticket for a route, which may start or end at a player station.
-        /// Charges the fare plus city transportation tax and deposits the tax into the city treasury.
+        /// Attempts to purchase a shuttle ticket for a route, which may start or end at a player station. The purchase
+        /// completes on the player's queue (TakeGoldFromCreature does nothing from a dialog): the fare plus the city
+        /// transportation tax is taken, and the tax goes to the city treasury. Returns whether the purchase went ahead.
         /// </summary>
         public static bool TryPurchaseTicket(uint player, ShuttleRoute route, string cityPropertyId, float taxRate)
         {
+            if (!CanPurchaseTicket(player, route, taxRate, out _, out _))
+                return false;
+
+            AssignCommand(player, () => CompleteTicketPurchase(player, route, cityPropertyId, taxRate));
+            return true;
+        }
+
+        /// <summary>Whether the player can buy a ticket for the route now, telling them why not.</summary>
+        private static bool CanPurchaseTicket(uint player, ShuttleRoute route, float taxRate, out int fare, out int tax)
+        {
+            fare = 0;
+            tax = 0;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return false;
 
             if (!ShuttleRouteRules.IsValid(route))
                 return false;
 
-            var playerId = GetObjectUUID(player);
-            var existingRide = GetRide(playerId);
-            if (existingRide != null)
+            if (GetRide(GetObjectUUID(player)) != null)
             {
                 SendMessageToPC(player, ColorToken.Red("You already have a shuttle ticket."));
                 return false;
             }
 
-            var fare = ShuttleRouteRules.GetFare(route);
-            var tax = (int)(taxRate * fare);
-            var price = fare + tax;
-
-            if (GetGold(player) < price)
+            fare = ShuttleRouteRules.GetFare(route);
+            tax = (int)(taxRate * fare);
+            if (GetGold(player) < fare + tax)
             {
                 SendMessageToPC(player, ColorToken.Red("You do not have enough credits to purchase this flight!"));
                 return false;
             }
 
-            TakeGoldFromCreature(price, player, true);
+            return true;
+        }
 
+        /// <summary>
+        /// Runs on the player's queue: checks the purchase again, takes the price with a mark naming the ticket, then
+        /// saves the ticket with the payment's id. A restart before that save returns the price at the next login
+        /// (<see cref="CreditPayments"/>). The tax is credited once the ticket is saved.
+        /// </summary>
+        private static void CompleteTicketPurchase(uint player, ShuttleRoute route, string cityPropertyId, float taxRate)
+        {
+            if (!CanPurchaseTicket(player, route, taxRate, out var fare, out var tax))
+                return;
+
+            var playerId = GetObjectUUID(player);
             var ride = new ShuttleRide(playerId)
             {
                 Status = ShuttleRideStatus.Ticketed,
@@ -785,10 +808,17 @@ namespace SWLOR.Game.Server.Service
                 FarePaid = fare,
                 TaxPaid = tax
             };
+            var mark = CreditPayments.NewMark(CreditPaymentKind.ShuttleTicket, ride.Id, fare + tax);
+            CreditPayments.Take(player, mark);
+            ride.PaymentId = mark.Id;
             DB.Set(ride);
+            CreditPayments.Retire(player);
             _ticketHolders[playerId] = route;
             _boardingNotBeforeUtc[playerId] = DateTime.UtcNow;
             _missedBoardings.Clear(playerId);
+
+            var countdown = Time.GetTimeLongIntervals(GetNextDepartureUtc(route) - DateTime.UtcNow, false);
+            SendMessageToPC(player, ColorToken.Green($"Ticket purchased! Your shuttle to {Station.GetStopName(route.Destination)} departs in {countdown}."));
 
             if (tax > 0 && !string.IsNullOrWhiteSpace(cityPropertyId))
             {
@@ -800,8 +830,28 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {Station.GetStopName(route.Destination)}.");
                 }
             }
+        }
 
-            return true;
+        /// <summary>The character-file local naming the last ticket refunded, saved with its fare.</summary>
+        private const string RefundedRideVariable = "SHUTTLE_TICKET_REFUNDED";
+
+        /// <summary>Deletes a ticket whose refund the character file holds but whose deletion a restart interrupted.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void SettleRefundedTicket()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var rideId = ObjectPlugin.GetString(player, RefundedRideVariable);
+            var ride = string.IsNullOrWhiteSpace(rideId) ? null : DB.Get<ShuttleRide>(rideId);
+            var playerId = GetObjectUUID(player);
+            if (ride == null || ride.PlayerId != playerId || ride.Status != ShuttleRideStatus.Ticketed)
+                return;
+
+            DB.Delete<ShuttleRide>(ride.Id);
+            _ticketHolders.Remove(playerId);
+            Log.Write(LogGroup.Server, $"Shuttle ticket {ride.Id} of {playerId} was deleted after a restart: its refund was already paid.");
         }
 
         /// <summary>
@@ -817,7 +867,11 @@ namespace SWLOR.Game.Server.Service
             if (ride == null || ride.Status != ShuttleRideStatus.Ticketed)
                 return false;
 
+            // The fare is saved in the character file with a mark naming the ticket before the ticket is deleted: a
+            // restart in between deletes it at the next login (SettleRefundedTicket), never refunding twice.
             GiveGoldToCreature(player, ride.FarePaid);
+            ObjectPlugin.SetString(player, RefundedRideVariable, ride.Id, true);
+            ExportSingleCharacter(player);
             DB.Delete<ShuttleRide>(ride.Id);
             _ticketHolders.Remove(playerId);
             _boardingNotBeforeUtc.Remove(playerId);

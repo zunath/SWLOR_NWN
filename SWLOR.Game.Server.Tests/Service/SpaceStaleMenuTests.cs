@@ -70,15 +70,16 @@ public class SpaceStaleMenuTests
         var refit = Between(ShipManagement(), "private void CompleteRefit(", "private void SetMidSlot(");
         Index(refit, "var dbShip = GetShipToRefit(shipId);").Should().BeLessThan(Index(refit, "CreditPayments.Take(player, mark);"));
 
-        var repair = Between(ShipManagement(), "public Action OnClickRepair()", "dbShip.Status.Hull = dbShip.Status.MaxHull;");
+        var repair = Between(ShipManagement(), "public Action OnClickRepair()", "private void CompleteRepair(");
         var modal = repair[Index(repair, "ShowModal(")..];
-        Index(modal, "dbShip = GetShipDockedHere(shipId);").Should().BeLessThan(Index(modal, "if (CalculateRepairBill(dbShip) != price)"));
-        Index(modal, "if (CalculateRepairBill(dbShip) != price)").Should().BeLessThan(Index(modal, "TakeGoldFromCreature(price, Player, true);"));
+        Index(modal, "if (GetShipDockedHere(shipId) == null)").Should().BeLessThan(Index(modal, "AssignCommand(player, () => CompleteRepair(player, shipId, price));"));
+        var completeRepair = Between(ShipManagement(), "private void CompleteRepair(", "dbShip.Status.Hull = dbShip.Status.MaxHull;");
+        Index(completeRepair, "var dbShip = GetShipDockedHere(shipId);").Should().BeLessThan(Index(completeRepair, "if (CalculateRepairBill(dbShip) != price)"));
 
-        var unregister = Between(ShipManagement(), "public Action OnClickUnregisterShip()", "DB.Delete<PlayerShip>(shipId);");
+        var unregister = Between(ShipManagement(), "public Action OnClickUnregisterShip()", "Space.RemoveUnregisteredShip(shipId);");
         Index(unregister, "var dbShip = GetShipDockedHere(shipId);").Should().BeLessThan(Index(unregister, "if (dbProperty.OwnerPlayerId != playerId)"));
         Index(unregister, "if (dbProperty.OwnerPlayerId != playerId)")
-            .Should().BeLessThan(Index(unregister, "Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbShip.SerializedItem))"),
+            .Should().BeLessThan(Index(unregister, "var deed = ObjectPlugin.Deserialize(dbShip.SerializedItem);"),
                 "a ship sold or given away while the prompt was open is never turned back into its former owner's deed");
 
         var board = Between(ShipManagement(), "public Action OnClickBoardShip()", "public Action OnClickRemoveAccess()");

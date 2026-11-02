@@ -47,8 +47,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// <summary>
         /// The structures spawns keep clear of: city buildings and houses. Decorations, garden plots and every other
         /// structure do not count, so cheap structures cannot be used to clear the land.
-        /// The city structures still to come (Traveler's Lodge) are added here
-        /// when their StructureType values exist. A new building must be listed here too: the tests fail until it is.
+        /// A new building or working structure must be listed here too: the tests fail until it is.
         /// </summary>
         private static readonly HashSet<StructureType> _qualifyingStructures = new()
         {
@@ -61,6 +60,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
             StructureType.DuelingRing,
             StructureType.Corral,
             StructureType.MarketStall,
+            StructureType.TravelersLodge,
 
             StructureType.SmallHouseStyle1,
             StructureType.SmallHouseStyle2,

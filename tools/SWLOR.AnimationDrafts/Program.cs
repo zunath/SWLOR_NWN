@@ -292,9 +292,9 @@ try
     {
         var definition = typeof(IAbilityListDefinition).Assembly.GetType(
             "SWLOR.Game.Server.Feature.AbilityDefinition." + motion.AbilityDefinition);
-        var activity = motion.Activity != null &&
+        var activity = motion.Activity != null && (PreviewWriter.WorkActivities.Contains(motion.Activity) ||
             System.Enum.TryParse<SWLOR.Game.Server.Service.ActivityService.ActivityStatusType>(motion.Activity, out var activityType) &&
-            System.Enum.IsDefined(activityType) && activityType != SWLOR.Game.Server.Service.ActivityService.ActivityStatusType.Invalid;
+            System.Enum.IsDefined(activityType) && activityType != SWLOR.Game.Server.Service.ActivityService.ActivityStatusType.Invalid);
         if (motion.Activity != null && (!activity || !string.IsNullOrEmpty(motion.AbilityDefinition)))
             throw new InvalidDataException($"{motion.Id}: activity motions require a valid activity and no ability definition.");
         if (!activity && (definition == null || definition.IsAbstract || !typeof(IAbilityListDefinition).IsAssignableFrom(definition)))

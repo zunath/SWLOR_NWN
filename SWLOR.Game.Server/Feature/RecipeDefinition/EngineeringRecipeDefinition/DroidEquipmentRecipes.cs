@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
-                .Component("ref_veldite", 3);
+                .Component("ref_veldite", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DHBE-001
             _builder.Create(RecipeType.DHBE001, SkillType.Engineering)
@@ -43,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
-                .Component("ref_veldite", 3);
+                .Component("ref_veldite", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // DHRG-001
             _builder.Create(RecipeType.DHRG001, SkillType.Engineering)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 1)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // DHNK-001
             _builder.Create(RecipeType.DHNK001, SkillType.Engineering)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DHAR-001
             _builder.Create(RecipeType.DHAR001, SkillType.Engineering)
@@ -73,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 4)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DHHL-001
             _builder.Create(RecipeType.DHHL001, SkillType.Engineering)
@@ -83,7 +88,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // DHBR-001
             _builder.Create(RecipeType.DHBR001, SkillType.Engineering)
@@ -93,7 +99,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // DHLG-001
             _builder.Create(RecipeType.DHLG001, SkillType.Engineering)
@@ -103,7 +110,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // DLCL-001
             _builder.Create(RecipeType.DLCL001, SkillType.Engineering)
@@ -113,7 +121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
-                .Component("ref_veldite", 3);
+                .Component("ref_veldite", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DLBE-001
             _builder.Create(RecipeType.DLBE001, SkillType.Engineering)
@@ -123,7 +132,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
-                .Component("ref_veldite", 3);
+                .Component("ref_veldite", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // DLRG-001
             _builder.Create(RecipeType.DLRG001, SkillType.Engineering)
@@ -133,7 +143,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 1)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DLNK-001
             _builder.Create(RecipeType.DLNK001, SkillType.Engineering)
@@ -143,7 +154,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DLAR-001
             _builder.Create(RecipeType.DLAR001, SkillType.Engineering)
@@ -153,7 +165,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 4)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DLHL-001
             _builder.Create(RecipeType.DLHL001, SkillType.Engineering)
@@ -163,7 +176,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DLBR-001
             _builder.Create(RecipeType.DLBR001, SkillType.Engineering)
@@ -173,7 +187,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DLLG-001
             _builder.Create(RecipeType.DLLG001, SkillType.Engineering)
@@ -183,7 +198,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
-                .Component("ref_veldite", 2);
+                .Component("ref_veldite", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DSCL-001
             _builder.Create(RecipeType.DSCL001, SkillType.Engineering)
@@ -194,7 +210,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DECL-001
             _builder.Create(RecipeType.DECL001, SkillType.Engineering)
@@ -205,7 +222,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // DACL-001
             _builder.Create(RecipeType.DACL001, SkillType.Engineering)
@@ -216,7 +234,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DFCL-001
             _builder.Create(RecipeType.DFCL001, SkillType.Engineering)
@@ -227,7 +246,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DSBE-001
             _builder.Create(RecipeType.DSBE001, SkillType.Engineering)
@@ -238,7 +258,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DEBE-001
             _builder.Create(RecipeType.DEBE001, SkillType.Engineering)
@@ -249,7 +270,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DABE-001
             _builder.Create(RecipeType.DABE001, SkillType.Engineering)
@@ -260,7 +282,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DFBE-001
             _builder.Create(RecipeType.DFBE001, SkillType.Engineering)
@@ -271,7 +294,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DSRG-001
             _builder.Create(RecipeType.DSRG001, SkillType.Engineering)
@@ -282,7 +306,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DERG-001
             _builder.Create(RecipeType.DERG001, SkillType.Engineering)
@@ -293,7 +318,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DARG-001
             _builder.Create(RecipeType.DARG001, SkillType.Engineering)
@@ -304,7 +330,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // DFRG-001
             _builder.Create(RecipeType.DFRG001, SkillType.Engineering)
@@ -315,7 +342,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DSNK-001
             _builder.Create(RecipeType.DSNK001, SkillType.Engineering)
@@ -326,7 +354,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DENK-001
             _builder.Create(RecipeType.DENK001, SkillType.Engineering)
@@ -337,7 +366,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DANK-001
             _builder.Create(RecipeType.DANK001, SkillType.Engineering)
@@ -348,7 +378,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // DFNK-001
             _builder.Create(RecipeType.DFNK001, SkillType.Engineering)
@@ -359,7 +390,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DSAR-001
             _builder.Create(RecipeType.DSAR001, SkillType.Engineering)
@@ -370,7 +402,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 57);
 
             // DEAR-001
             _builder.Create(RecipeType.DEAR001, SkillType.Engineering)
@@ -381,7 +414,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // DAAR-001
             _builder.Create(RecipeType.DAAR001, SkillType.Engineering)
@@ -392,7 +426,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // DFAR-001
             _builder.Create(RecipeType.DFAR001, SkillType.Engineering)
@@ -403,7 +438,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DSHL-001
             _builder.Create(RecipeType.DSHL001, SkillType.Engineering)
@@ -414,7 +450,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DEHL-001
             _builder.Create(RecipeType.DEHL001, SkillType.Engineering)
@@ -425,7 +462,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // DAHL-001
             _builder.Create(RecipeType.DAHL001, SkillType.Engineering)
@@ -436,7 +474,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DFHL-001
             _builder.Create(RecipeType.DFHL001, SkillType.Engineering)
@@ -447,7 +486,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DSBR-001
             _builder.Create(RecipeType.DSBR001, SkillType.Engineering)
@@ -458,7 +498,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // DEBR-001
             _builder.Create(RecipeType.DEBR001, SkillType.Engineering)
@@ -469,7 +510,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // DABR-001
             _builder.Create(RecipeType.DABR001, SkillType.Engineering)
@@ -480,7 +522,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DFBR-001
             _builder.Create(RecipeType.DFBR001, SkillType.Engineering)
@@ -491,7 +534,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DSLG-001
             _builder.Create(RecipeType.DSLG001, SkillType.Engineering)
@@ -502,7 +546,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DELG-001
             _builder.Create(RecipeType.DELG001, SkillType.Engineering)
@@ -513,7 +558,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DALG-001
             _builder.Create(RecipeType.DALG001, SkillType.Engineering)
@@ -524,7 +570,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // DFLG-001
             _builder.Create(RecipeType.DFLG001, SkillType.Engineering)
@@ -535,7 +582,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 45);
         }
 
         private void Tier2()
@@ -548,7 +596,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DHBE-002
             _builder.Create(RecipeType.DHBE002, SkillType.Engineering)
@@ -558,7 +607,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // DHRG-002
             _builder.Create(RecipeType.DHRG002, SkillType.Engineering)
@@ -568,7 +618,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 1)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DHNK-002
             _builder.Create(RecipeType.DHNK002, SkillType.Engineering)
@@ -578,7 +629,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DHAR-002
             _builder.Create(RecipeType.DHAR002, SkillType.Engineering)
@@ -588,7 +640,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 4)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DHHL-002
             _builder.Create(RecipeType.DHHL002, SkillType.Engineering)
@@ -598,7 +651,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DHBR-002
             _builder.Create(RecipeType.DHBR002, SkillType.Engineering)
@@ -608,7 +662,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DHLG-002
             _builder.Create(RecipeType.DHLG002, SkillType.Engineering)
@@ -618,7 +673,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DLCL-002
             _builder.Create(RecipeType.DLCL002, SkillType.Engineering)
@@ -628,7 +684,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // DLBE-002
             _builder.Create(RecipeType.DLBE002, SkillType.Engineering)
@@ -638,7 +695,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DLRG-002
             _builder.Create(RecipeType.DLRG002, SkillType.Engineering)
@@ -648,7 +706,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 1)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DLNK-002
             _builder.Create(RecipeType.DLNK002, SkillType.Engineering)
@@ -658,7 +717,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DLAR-002
             _builder.Create(RecipeType.DLAR002, SkillType.Engineering)
@@ -668,7 +728,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 4)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // DLHL-002
             _builder.Create(RecipeType.DLHL002, SkillType.Engineering)
@@ -678,7 +739,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DLBR-002
             _builder.Create(RecipeType.DLBR002, SkillType.Engineering)
@@ -688,7 +750,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
-                .Component("ref_scordspar", 1);
+                .Component("ref_scordspar", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DLLG-002
             _builder.Create(RecipeType.DLLG002, SkillType.Engineering)
@@ -698,7 +761,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
-                .Component("ref_scordspar", 2);
+                .Component("ref_scordspar", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // DSCL-002
             _builder.Create(RecipeType.DSCL002, SkillType.Engineering)
@@ -709,7 +773,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DECL-002
             _builder.Create(RecipeType.DECL002, SkillType.Engineering)
@@ -720,7 +785,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // DACL-002
             _builder.Create(RecipeType.DACL002, SkillType.Engineering)
@@ -731,7 +797,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DFCL-002
             _builder.Create(RecipeType.DFCL002, SkillType.Engineering)
@@ -742,7 +809,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DSBE-002
             _builder.Create(RecipeType.DSBE002, SkillType.Engineering)
@@ -753,7 +821,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // DEBE-002
             _builder.Create(RecipeType.DEBE002, SkillType.Engineering)
@@ -764,7 +833,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DABE-002
             _builder.Create(RecipeType.DABE002, SkillType.Engineering)
@@ -775,7 +845,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DFBE-002
             _builder.Create(RecipeType.DFBE002, SkillType.Engineering)
@@ -786,7 +857,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // DSRG-002
             _builder.Create(RecipeType.DSRG002, SkillType.Engineering)
@@ -797,7 +869,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DERG-002
             _builder.Create(RecipeType.DERG002, SkillType.Engineering)
@@ -808,7 +881,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // DARG-002
             _builder.Create(RecipeType.DARG002, SkillType.Engineering)
@@ -819,7 +893,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DFRG-002
             _builder.Create(RecipeType.DFRG002, SkillType.Engineering)
@@ -830,7 +905,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DSNK-002
             _builder.Create(RecipeType.DSNK002, SkillType.Engineering)
@@ -841,7 +917,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // DENK-002
             _builder.Create(RecipeType.DENK002, SkillType.Engineering)
@@ -852,7 +929,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DANK-002
             _builder.Create(RecipeType.DANK002, SkillType.Engineering)
@@ -863,7 +941,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // DFNK-002
             _builder.Create(RecipeType.DFNK002, SkillType.Engineering)
@@ -874,7 +953,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DSAR-002
             _builder.Create(RecipeType.DSAR002, SkillType.Engineering)
@@ -885,7 +965,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 56);
 
             // DEAR-002
             _builder.Create(RecipeType.DEAR002, SkillType.Engineering)
@@ -896,7 +977,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DAAR-002
             _builder.Create(RecipeType.DAAR002, SkillType.Engineering)
@@ -907,7 +989,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // DFAR-002
             _builder.Create(RecipeType.DFAR002, SkillType.Engineering)
@@ -918,7 +1001,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DSHL-002
             _builder.Create(RecipeType.DSHL002, SkillType.Engineering)
@@ -929,7 +1013,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DEHL-002
             _builder.Create(RecipeType.DEHL002, SkillType.Engineering)
@@ -940,7 +1025,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DAHL-002
             _builder.Create(RecipeType.DAHL002, SkillType.Engineering)
@@ -951,7 +1037,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DFHL-002
             _builder.Create(RecipeType.DFHL002, SkillType.Engineering)
@@ -962,7 +1049,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DSBR-002
             _builder.Create(RecipeType.DSBR002, SkillType.Engineering)
@@ -973,7 +1061,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DEBR-002
             _builder.Create(RecipeType.DEBR002, SkillType.Engineering)
@@ -984,7 +1073,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DABR-002
             _builder.Create(RecipeType.DABR002, SkillType.Engineering)
@@ -995,7 +1085,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DFBR-002
             _builder.Create(RecipeType.DFBR002, SkillType.Engineering)
@@ -1006,7 +1097,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DSLG-002
             _builder.Create(RecipeType.DSLG002, SkillType.Engineering)
@@ -1017,7 +1109,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DELG-002
             _builder.Create(RecipeType.DELG002, SkillType.Engineering)
@@ -1028,7 +1121,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DALG-002
             _builder.Create(RecipeType.DALG002, SkillType.Engineering)
@@ -1039,7 +1133,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // DFLG-002
             _builder.Create(RecipeType.DFLG002, SkillType.Engineering)
@@ -1050,7 +1145,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 45);
         }
 
         private void Tier3()
@@ -1063,7 +1159,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DHBE-003
             _builder.Create(RecipeType.DHBE003, SkillType.Engineering)
@@ -1073,7 +1170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DHRG-003
             _builder.Create(RecipeType.DHRG003, SkillType.Engineering)
@@ -1083,7 +1181,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 1)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // DHNK-003
             _builder.Create(RecipeType.DHNK003, SkillType.Engineering)
@@ -1093,7 +1192,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DHAR-003
             _builder.Create(RecipeType.DHAR003, SkillType.Engineering)
@@ -1103,7 +1203,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 4)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // DHHL-003
             _builder.Create(RecipeType.DHHL003, SkillType.Engineering)
@@ -1113,7 +1214,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DHBR-003
             _builder.Create(RecipeType.DHBR003, SkillType.Engineering)
@@ -1123,7 +1225,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DHLG-003
             _builder.Create(RecipeType.DHLG003, SkillType.Engineering)
@@ -1133,7 +1236,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // DLCL-003
             _builder.Create(RecipeType.DLCL003, SkillType.Engineering)
@@ -1143,7 +1247,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DLBE-003
             _builder.Create(RecipeType.DLBE003, SkillType.Engineering)
@@ -1153,7 +1258,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // DLRG-003
             _builder.Create(RecipeType.DLRG003, SkillType.Engineering)
@@ -1163,7 +1269,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 1)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DLNK-003
             _builder.Create(RecipeType.DLNK003, SkillType.Engineering)
@@ -1173,7 +1280,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DLAR-003
             _builder.Create(RecipeType.DLAR003, SkillType.Engineering)
@@ -1183,7 +1291,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 4)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 60);
 
             // DLHL-003
             _builder.Create(RecipeType.DLHL003, SkillType.Engineering)
@@ -1193,7 +1302,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DLBR-003
             _builder.Create(RecipeType.DLBR003, SkillType.Engineering)
@@ -1203,7 +1313,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
-                .Component("ref_plagionite", 1);
+                .Component("ref_plagionite", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DLLG-003
             _builder.Create(RecipeType.DLLG003, SkillType.Engineering)
@@ -1213,7 +1324,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
-                .Component("ref_plagionite", 2);
+                .Component("ref_plagionite", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DSCL-003
             _builder.Create(RecipeType.DSCL003, SkillType.Engineering)
@@ -1224,7 +1336,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DECL-003
             _builder.Create(RecipeType.DECL003, SkillType.Engineering)
@@ -1235,7 +1348,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // DACL-003
             _builder.Create(RecipeType.DACL003, SkillType.Engineering)
@@ -1246,7 +1360,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DFCL-003
             _builder.Create(RecipeType.DFCL003, SkillType.Engineering)
@@ -1257,7 +1372,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DSBE-003
             _builder.Create(RecipeType.DSBE003, SkillType.Engineering)
@@ -1268,7 +1384,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DEBE-003
             _builder.Create(RecipeType.DEBE003, SkillType.Engineering)
@@ -1279,7 +1396,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DABE-003
             _builder.Create(RecipeType.DABE003, SkillType.Engineering)
@@ -1290,7 +1408,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DFBE-003
             _builder.Create(RecipeType.DFBE003, SkillType.Engineering)
@@ -1301,7 +1420,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DSRG-003
             _builder.Create(RecipeType.DSRG003, SkillType.Engineering)
@@ -1312,7 +1432,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // DERG-003
             _builder.Create(RecipeType.DERG003, SkillType.Engineering)
@@ -1323,7 +1444,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DARG-003
             _builder.Create(RecipeType.DARG003, SkillType.Engineering)
@@ -1334,7 +1456,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DFRG-003
             _builder.Create(RecipeType.DFRG003, SkillType.Engineering)
@@ -1345,7 +1468,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DSNK-003
             _builder.Create(RecipeType.DSNK003, SkillType.Engineering)
@@ -1356,7 +1480,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DENK-003
             _builder.Create(RecipeType.DENK003, SkillType.Engineering)
@@ -1367,7 +1492,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DANK-003
             _builder.Create(RecipeType.DANK003, SkillType.Engineering)
@@ -1378,7 +1504,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DFNK-003
             _builder.Create(RecipeType.DFNK003, SkillType.Engineering)
@@ -1389,7 +1516,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DSAR-003
             _builder.Create(RecipeType.DSAR003, SkillType.Engineering)
@@ -1400,7 +1528,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DEAR-003
             _builder.Create(RecipeType.DEAR003, SkillType.Engineering)
@@ -1411,7 +1540,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // DAAR-003
             _builder.Create(RecipeType.DAAR003, SkillType.Engineering)
@@ -1422,7 +1552,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 58);
 
             // DFAR-003
             _builder.Create(RecipeType.DFAR003, SkillType.Engineering)
@@ -1433,7 +1564,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DSHL-003
             _builder.Create(RecipeType.DSHL003, SkillType.Engineering)
@@ -1444,7 +1576,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DEHL-003
             _builder.Create(RecipeType.DEHL003, SkillType.Engineering)
@@ -1455,7 +1588,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DAHL-003
             _builder.Create(RecipeType.DAHL003, SkillType.Engineering)
@@ -1466,7 +1600,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DFHL-003
             _builder.Create(RecipeType.DFHL003, SkillType.Engineering)
@@ -1477,7 +1612,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DSBR-003
             _builder.Create(RecipeType.DSBR003, SkillType.Engineering)
@@ -1488,7 +1624,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DEBR-003
             _builder.Create(RecipeType.DEBR003, SkillType.Engineering)
@@ -1499,7 +1636,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // DABR-003
             _builder.Create(RecipeType.DABR003, SkillType.Engineering)
@@ -1510,7 +1648,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DFBR-003
             _builder.Create(RecipeType.DFBR003, SkillType.Engineering)
@@ -1521,7 +1660,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // DSLG-003
             _builder.Create(RecipeType.DSLG003, SkillType.Engineering)
@@ -1532,7 +1672,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DELG-003
             _builder.Create(RecipeType.DELG003, SkillType.Engineering)
@@ -1543,7 +1684,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DALG-003
             _builder.Create(RecipeType.DALG003, SkillType.Engineering)
@@ -1554,7 +1696,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DFLG-003
             _builder.Create(RecipeType.DFLG003, SkillType.Engineering)
@@ -1565,7 +1708,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 46);
         }
 
         private void Tier4()
@@ -1578,7 +1722,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DHBE-004
             _builder.Create(RecipeType.DHBE004, SkillType.Engineering)
@@ -1588,7 +1733,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // DHRG-004
             _builder.Create(RecipeType.DHRG004, SkillType.Engineering)
@@ -1598,7 +1744,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 1)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DHNK-004
             _builder.Create(RecipeType.DHNK004, SkillType.Engineering)
@@ -1608,7 +1755,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DHAR-004
             _builder.Create(RecipeType.DHAR004, SkillType.Engineering)
@@ -1618,7 +1766,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // DHHL-004
             _builder.Create(RecipeType.DHHL004, SkillType.Engineering)
@@ -1628,7 +1777,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DHBR-004
             _builder.Create(RecipeType.DHBR004, SkillType.Engineering)
@@ -1638,7 +1788,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DHLG-004
             _builder.Create(RecipeType.DHLG004, SkillType.Engineering)
@@ -1648,7 +1799,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // DLCL-004
             _builder.Create(RecipeType.DLCL004, SkillType.Engineering)
@@ -1658,7 +1810,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DLBE-004
             _builder.Create(RecipeType.DLBE004, SkillType.Engineering)
@@ -1668,7 +1821,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DLRG-004
             _builder.Create(RecipeType.DLRG004, SkillType.Engineering)
@@ -1678,7 +1832,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 1)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DLNK-004
             _builder.Create(RecipeType.DLNK004, SkillType.Engineering)
@@ -1688,7 +1843,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // DLAR-004
             _builder.Create(RecipeType.DLAR004, SkillType.Engineering)
@@ -1698,7 +1854,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 4)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // DLHL-004
             _builder.Create(RecipeType.DLHL004, SkillType.Engineering)
@@ -1708,7 +1865,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DLBR-004
             _builder.Create(RecipeType.DLBR004, SkillType.Engineering)
@@ -1718,7 +1876,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
-                .Component("ref_keromber", 1);
+                .Component("ref_keromber", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DLLG-004
             _builder.Create(RecipeType.DLLG004, SkillType.Engineering)
@@ -1728,7 +1887,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
-                .Component("ref_keromber", 2);
+                .Component("ref_keromber", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DSCL-004
             _builder.Create(RecipeType.DSCL004, SkillType.Engineering)
@@ -1739,7 +1899,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DECL-004
             _builder.Create(RecipeType.DECL004, SkillType.Engineering)
@@ -1750,7 +1911,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // DACL-004
             _builder.Create(RecipeType.DACL004, SkillType.Engineering)
@@ -1761,7 +1923,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // DFCL-004
             _builder.Create(RecipeType.DFCL004, SkillType.Engineering)
@@ -1772,7 +1935,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DSBE-004
             _builder.Create(RecipeType.DSBE004, SkillType.Engineering)
@@ -1783,7 +1947,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // DEBE-004
             _builder.Create(RecipeType.DEBE004, SkillType.Engineering)
@@ -1794,7 +1959,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DABE-004
             _builder.Create(RecipeType.DABE004, SkillType.Engineering)
@@ -1805,7 +1971,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // DFBE-004
             _builder.Create(RecipeType.DFBE004, SkillType.Engineering)
@@ -1816,7 +1983,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // DSRG-004
             _builder.Create(RecipeType.DSRG004, SkillType.Engineering)
@@ -1827,7 +1995,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DERG-004
             _builder.Create(RecipeType.DERG004, SkillType.Engineering)
@@ -1838,7 +2007,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DARG-004
             _builder.Create(RecipeType.DARG004, SkillType.Engineering)
@@ -1849,7 +2019,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DFRG-004
             _builder.Create(RecipeType.DFRG004, SkillType.Engineering)
@@ -1860,7 +2031,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // DSNK-004
             _builder.Create(RecipeType.DSNK004, SkillType.Engineering)
@@ -1871,7 +2043,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // DENK-004
             _builder.Create(RecipeType.DENK004, SkillType.Engineering)
@@ -1882,7 +2055,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DANK-004
             _builder.Create(RecipeType.DANK004, SkillType.Engineering)
@@ -1893,7 +2067,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DFNK-004
             _builder.Create(RecipeType.DFNK004, SkillType.Engineering)
@@ -1904,7 +2079,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DSAR-004
             _builder.Create(RecipeType.DSAR004, SkillType.Engineering)
@@ -1915,7 +2091,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // DEAR-004
             _builder.Create(RecipeType.DEAR004, SkillType.Engineering)
@@ -1926,7 +2103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DAAR-004
             _builder.Create(RecipeType.DAAR004, SkillType.Engineering)
@@ -1937,7 +2115,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 58);
 
             // DFAR-004
             _builder.Create(RecipeType.DFAR004, SkillType.Engineering)
@@ -1948,7 +2127,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DSHL-004
             _builder.Create(RecipeType.DSHL004, SkillType.Engineering)
@@ -1959,7 +2139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // DEHL-004
             _builder.Create(RecipeType.DEHL004, SkillType.Engineering)
@@ -1970,7 +2151,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // DAHL-004
             _builder.Create(RecipeType.DAHL004, SkillType.Engineering)
@@ -1981,7 +2163,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DFHL-004
             _builder.Create(RecipeType.DFHL004, SkillType.Engineering)
@@ -1992,7 +2175,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DSBR-004
             _builder.Create(RecipeType.DSBR004, SkillType.Engineering)
@@ -2003,7 +2187,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DEBR-004
             _builder.Create(RecipeType.DEBR004, SkillType.Engineering)
@@ -2014,7 +2199,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // DABR-004
             _builder.Create(RecipeType.DABR004, SkillType.Engineering)
@@ -2025,7 +2211,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // DFBR-004
             _builder.Create(RecipeType.DFBR004, SkillType.Engineering)
@@ -2036,7 +2223,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DSLG-004
             _builder.Create(RecipeType.DSLG004, SkillType.Engineering)
@@ -2047,7 +2235,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DELG-004
             _builder.Create(RecipeType.DELG004, SkillType.Engineering)
@@ -2058,7 +2247,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DALG-004
             _builder.Create(RecipeType.DALG004, SkillType.Engineering)
@@ -2069,7 +2259,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // DFLG-004
             _builder.Create(RecipeType.DFLG004, SkillType.Engineering)
@@ -2080,7 +2271,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
         }
 
         private void Tier5()
@@ -2093,7 +2285,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DHBE-005
             _builder.Create(RecipeType.DHBE005, SkillType.Engineering)
@@ -2103,7 +2296,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DHRG-005
             _builder.Create(RecipeType.DHRG005, SkillType.Engineering)
@@ -2113,7 +2307,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 1)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DHNK-005
             _builder.Create(RecipeType.DHNK005, SkillType.Engineering)
@@ -2123,7 +2318,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DHAR-005
             _builder.Create(RecipeType.DHAR005, SkillType.Engineering)
@@ -2133,7 +2329,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 4)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DHHL-005
             _builder.Create(RecipeType.DHHL005, SkillType.Engineering)
@@ -2143,7 +2340,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DHBR-005
             _builder.Create(RecipeType.DHBR005, SkillType.Engineering)
@@ -2153,7 +2351,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DHLG-005
             _builder.Create(RecipeType.DHLG005, SkillType.Engineering)
@@ -2163,7 +2362,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // DLCL-005
             _builder.Create(RecipeType.DLCL005, SkillType.Engineering)
@@ -2173,7 +2373,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DLBE-005
             _builder.Create(RecipeType.DLBE005, SkillType.Engineering)
@@ -2183,7 +2384,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DLRG-005
             _builder.Create(RecipeType.DLRG005, SkillType.Engineering)
@@ -2193,7 +2395,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 1)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DLNK-005
             _builder.Create(RecipeType.DLNK005, SkillType.Engineering)
@@ -2203,7 +2406,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // DLAR-005
             _builder.Create(RecipeType.DLAR005, SkillType.Engineering)
@@ -2213,7 +2417,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 4)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 59);
 
             // DLHL-005
             _builder.Create(RecipeType.DLHL005, SkillType.Engineering)
@@ -2223,7 +2428,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DLBR-005
             _builder.Create(RecipeType.DLBR005, SkillType.Engineering)
@@ -2233,7 +2439,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
-                .Component("ref_jasioclase", 1);
+                .Component("ref_jasioclase", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DLLG-005
             _builder.Create(RecipeType.DLLG005, SkillType.Engineering)
@@ -2243,7 +2450,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
-                .Component("ref_jasioclase", 2);
+                .Component("ref_jasioclase", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 47);
 
 // DSCL-005
             _builder.Create(RecipeType.DSCL005, SkillType.Engineering)
@@ -2254,7 +2462,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DECL-005
             _builder.Create(RecipeType.DECL005, SkillType.Engineering)
@@ -2265,7 +2474,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // DACL-005
             _builder.Create(RecipeType.DACL005, SkillType.Engineering)
@@ -2276,7 +2486,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // DFCL-005
             _builder.Create(RecipeType.DFCL005, SkillType.Engineering)
@@ -2287,7 +2498,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DSBE-005
             _builder.Create(RecipeType.DSBE005, SkillType.Engineering)
@@ -2298,7 +2510,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DEBE-005
             _builder.Create(RecipeType.DEBE005, SkillType.Engineering)
@@ -2309,7 +2522,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DABE-005
             _builder.Create(RecipeType.DABE005, SkillType.Engineering)
@@ -2320,7 +2534,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DFBE-005
             _builder.Create(RecipeType.DFBE005, SkillType.Engineering)
@@ -2331,7 +2546,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DSRG-005
             _builder.Create(RecipeType.DSRG005, SkillType.Engineering)
@@ -2342,7 +2558,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DERG-005
             _builder.Create(RecipeType.DERG005, SkillType.Engineering)
@@ -2353,7 +2570,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // DARG-005
             _builder.Create(RecipeType.DARG005, SkillType.Engineering)
@@ -2364,7 +2582,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DFRG-005
             _builder.Create(RecipeType.DFRG005, SkillType.Engineering)
@@ -2375,7 +2594,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // DSNK-005
             _builder.Create(RecipeType.DSNK005, SkillType.Engineering)
@@ -2386,7 +2606,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DENK-005
             _builder.Create(RecipeType.DENK005, SkillType.Engineering)
@@ -2397,7 +2618,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DANK-005
             _builder.Create(RecipeType.DANK005, SkillType.Engineering)
@@ -2408,7 +2630,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DFNK-005
             _builder.Create(RecipeType.DFNK005, SkillType.Engineering)
@@ -2419,7 +2642,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DSAR-005
             _builder.Create(RecipeType.DSAR005, SkillType.Engineering)
@@ -2430,7 +2654,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // DEAR-005
             _builder.Create(RecipeType.DEAR005, SkillType.Engineering)
@@ -2441,7 +2666,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DAAR-005
             _builder.Create(RecipeType.DAAR005, SkillType.Engineering)
@@ -2452,7 +2678,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // DFAR-005
             _builder.Create(RecipeType.DFAR005, SkillType.Engineering)
@@ -2463,7 +2690,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 56);
 
             // DSHL-005
             _builder.Create(RecipeType.DSHL005, SkillType.Engineering)
@@ -2474,7 +2702,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DEHL-005
             _builder.Create(RecipeType.DEHL005, SkillType.Engineering)
@@ -2485,7 +2714,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DAHL-005
             _builder.Create(RecipeType.DAHL005, SkillType.Engineering)
@@ -2496,7 +2726,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DFHL-005
             _builder.Create(RecipeType.DFHL005, SkillType.Engineering)
@@ -2507,7 +2738,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DSBR-005
             _builder.Create(RecipeType.DSBR005, SkillType.Engineering)
@@ -2518,7 +2750,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DEBR-005
             _builder.Create(RecipeType.DEBR005, SkillType.Engineering)
@@ -2529,7 +2762,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DABR-005
             _builder.Create(RecipeType.DABR005, SkillType.Engineering)
@@ -2540,7 +2774,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // DFBR-005
             _builder.Create(RecipeType.DFBR005, SkillType.Engineering)
@@ -2551,7 +2786,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DSLG-005
             _builder.Create(RecipeType.DSLG005, SkillType.Engineering)
@@ -2562,7 +2798,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // DELG-005
             _builder.Create(RecipeType.DELG005, SkillType.Engineering)
@@ -2573,7 +2810,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // DALG-005
             _builder.Create(RecipeType.DALG005, SkillType.Engineering)
@@ -2584,7 +2822,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // DFLG-005
             _builder.Create(RecipeType.DFLG005, SkillType.Engineering)
@@ -2595,7 +2834,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
-                .Component("emerald", 3);
+                .Component("emerald", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 50);
         }
 
         private void Tier1A()
@@ -2609,7 +2849,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 8)
                 .Component("ref_veldite", 5)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // DHBE-001 A
             _builder.Create(RecipeType.DHBE001A, SkillType.Engineering)
@@ -2620,7 +2861,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 8)
                 .Component("ref_veldite", 5)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DHRG-001 A
             _builder.Create(RecipeType.DHRG001A, SkillType.Engineering)
@@ -2631,7 +2873,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
                 .Component("ref_veldite", 2)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DHNK-001 A
             _builder.Create(RecipeType.DHNK001A, SkillType.Engineering)
@@ -2642,7 +2885,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DHAR-001 A
             _builder.Create(RecipeType.DHAR001A, SkillType.Engineering)
@@ -2653,7 +2897,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 6)
                 .Component("ref_veldite", 3)
-                .Component("fiberp_ruined", 3);
+                .Component("fiberp_ruined", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 57);
 
             // DHHL-001 A
             _builder.Create(RecipeType.DHHL001A, SkillType.Engineering)
@@ -2664,7 +2909,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DHBR-001 A
             _builder.Create(RecipeType.DHBR001A, SkillType.Engineering)
@@ -2675,7 +2921,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2)
-                .Component("fiberp_ruined", 1);
+                .Component("fiberp_ruined", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // DHLG-001 A
             _builder.Create(RecipeType.DHLG001A, SkillType.Engineering)
@@ -2686,7 +2933,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("fiberp_ruined", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DLCL-001 A
             _builder.Create(RecipeType.DLCL001A, SkillType.Engineering)
@@ -2697,7 +2945,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 8)
                 .Component("ref_veldite", 5)
-                .Component("jade", 2);
+                .Component("jade", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DLBE-001 A
             _builder.Create(RecipeType.DLBE001A, SkillType.Engineering)
@@ -2708,7 +2957,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 8)
                 .Component("ref_veldite", 5)
-                .Component("jade", 2);
+                .Component("jade", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DLRG-001 A
             _builder.Create(RecipeType.DLRG001A, SkillType.Engineering)
@@ -2719,7 +2969,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
                 .Component("ref_veldite", 2)
-                .Component("jade", 1);
+                .Component("jade", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DLNK-001 A
             _builder.Create(RecipeType.DLNK001A, SkillType.Engineering)
@@ -2730,7 +2981,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2)
-                .Component("jade", 1);
+                .Component("jade", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DLAR-001 A
             _builder.Create(RecipeType.DLAR001A, SkillType.Engineering)
@@ -2741,7 +2993,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 6)
                 .Component("ref_veldite", 3)
-                .Component("jade", 3);
+                .Component("jade", 3)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DLHL-001 A
             _builder.Create(RecipeType.DLHL001A, SkillType.Engineering)
@@ -2752,7 +3005,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3)
-                .Component("jade", 2);
+                .Component("jade", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DLBR-001 A
             _builder.Create(RecipeType.DLBR001A, SkillType.Engineering)
@@ -2763,7 +3017,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2)
-                .Component("jade", 1);
+                .Component("jade", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DLLG-001 A
             _builder.Create(RecipeType.DLLG001A, SkillType.Engineering)
@@ -2774,7 +3029,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3)
-                .Component("jade", 2);
+                .Component("jade", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 55);
         }
 
         private void Tier2A()
@@ -2788,7 +3044,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 8)
                 .Component("ref_scordspar", 5)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DHBE-002 A
             _builder.Create(RecipeType.DHBE002A, SkillType.Engineering)
@@ -2799,7 +3056,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 8)
                 .Component("ref_scordspar", 5)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // DHRG-002 A
             _builder.Create(RecipeType.DHRG002A, SkillType.Engineering)
@@ -2810,7 +3068,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 2)
                 .Component("ref_scordspar", 2)
-                .Component("fiberp_flawed", 1);
+                .Component("fiberp_flawed", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DHNK-002 A
             _builder.Create(RecipeType.DHNK002A, SkillType.Engineering)
@@ -2821,7 +3080,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2)
-                .Component("fiberp_flawed", 1);
+                .Component("fiberp_flawed", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DHAR-002 A
             _builder.Create(RecipeType.DHAR002A, SkillType.Engineering)
@@ -2832,7 +3092,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 6)
                 .Component("ref_scordspar", 3)
-                .Component("fiberp_flawed", 3);
+                .Component("fiberp_flawed", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // DHHL-002 A
             _builder.Create(RecipeType.DHHL002A, SkillType.Engineering)
@@ -2843,7 +3104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // DHBR-002 A
             _builder.Create(RecipeType.DHBR002A, SkillType.Engineering)
@@ -2854,7 +3116,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2)
-                .Component("fiberp_flawed", 1);
+                .Component("fiberp_flawed", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // DHLG-002 A
             _builder.Create(RecipeType.DHLG002A, SkillType.Engineering)
@@ -2865,7 +3128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("fiberp_flawed", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DLCL-002 A
             _builder.Create(RecipeType.DLCL002A, SkillType.Engineering)
@@ -2876,7 +3140,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 8)
                 .Component("ref_scordspar", 5)
-                .Component("agate", 2);
+                .Component("agate", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // DLBE-002 A
             _builder.Create(RecipeType.DLBE002A, SkillType.Engineering)
@@ -2887,7 +3152,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 8)
                 .Component("ref_scordspar", 5)
-                .Component("agate", 2);
+                .Component("agate", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // DLRG-002 A
             _builder.Create(RecipeType.DLRG002A, SkillType.Engineering)
@@ -2898,7 +3164,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 2)
                 .Component("ref_scordspar", 2)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // DLNK-002 A
             _builder.Create(RecipeType.DLNK002A, SkillType.Engineering)
@@ -2909,7 +3176,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DLAR-002 A
             _builder.Create(RecipeType.DLAR002A, SkillType.Engineering)
@@ -2920,7 +3188,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 6)
                 .Component("ref_scordspar", 3)
-                .Component("agate", 3);
+                .Component("agate", 3)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // DLHL-002 A
             _builder.Create(RecipeType.DLHL002A, SkillType.Engineering)
@@ -2931,7 +3200,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3)
-                .Component("agate", 2);
+                .Component("agate", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DLBR-002 A
             _builder.Create(RecipeType.DLBR002A, SkillType.Engineering)
@@ -2942,7 +3212,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2)
-                .Component("agate", 1);
+                .Component("agate", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // DLLG-002 A
             _builder.Create(RecipeType.DLLG002A, SkillType.Engineering)
@@ -2953,7 +3224,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3)
-                .Component("agate", 2);
+                .Component("agate", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 46);
         }
 
         private void Tier3A()
@@ -2967,7 +3239,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 8)
                 .Component("ref_plagionite", 5)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // DHBE-003 A
             _builder.Create(RecipeType.DHBE003A, SkillType.Engineering)
@@ -2978,7 +3251,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 8)
                 .Component("ref_plagionite", 5)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DHRG-003 A
             _builder.Create(RecipeType.DHRG003A, SkillType.Engineering)
@@ -2989,7 +3263,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
                 .Component("ref_plagionite", 2)
-                .Component("fiberp_good", 1);
+                .Component("fiberp_good", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // DHNK-003 A
             _builder.Create(RecipeType.DHNK003A, SkillType.Engineering)
@@ -3000,7 +3275,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2)
-                .Component("fiberp_good", 1);
+                .Component("fiberp_good", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // DHAR-003 A
             _builder.Create(RecipeType.DHAR003A, SkillType.Engineering)
@@ -3011,7 +3287,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 6)
                 .Component("ref_plagionite", 3)
-                .Component("fiberp_good", 3);
+                .Component("fiberp_good", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 56);
 
             // DHHL-003 A
             _builder.Create(RecipeType.DHHL003A, SkillType.Engineering)
@@ -3022,7 +3299,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // DHBR-003 A
             _builder.Create(RecipeType.DHBR003A, SkillType.Engineering)
@@ -3033,7 +3311,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2)
-                .Component("fiberp_good", 1);
+                .Component("fiberp_good", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // DHLG-003 A
             _builder.Create(RecipeType.DHLG003A, SkillType.Engineering)
@@ -3044,7 +3323,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3)
-                .Component("fiberp_good", 2);
+                .Component("fiberp_good", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // DLCL-003 A
             _builder.Create(RecipeType.DLCL003A, SkillType.Engineering)
@@ -3055,7 +3335,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 8)
                 .Component("ref_plagionite", 5)
-                .Component("citrine", 2);
+                .Component("citrine", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // DLBE-003 A
             _builder.Create(RecipeType.DLBE003A, SkillType.Engineering)
@@ -3066,7 +3347,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 8)
                 .Component("ref_plagionite", 5)
-                .Component("citrine", 2);
+                .Component("citrine", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DLRG-003 A
             _builder.Create(RecipeType.DLRG003A, SkillType.Engineering)
@@ -3077,7 +3359,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
                 .Component("ref_plagionite", 2)
-                .Component("citrine", 1);
+                .Component("citrine", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DLNK-003 A
             _builder.Create(RecipeType.DLNK003A, SkillType.Engineering)
@@ -3088,7 +3371,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2)
-                .Component("citrine", 1);
+                .Component("citrine", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // DLAR-003 A
             _builder.Create(RecipeType.DLAR003A, SkillType.Engineering)
@@ -3099,7 +3383,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 6)
                 .Component("ref_plagionite", 3)
-                .Component("citrine", 3);
+                .Component("citrine", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // DLHL-003 A
             _builder.Create(RecipeType.DLHL003A, SkillType.Engineering)
@@ -3110,7 +3395,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3)
-                .Component("citrine", 2);
+                .Component("citrine", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DLBR-003 A
             _builder.Create(RecipeType.DLBR003A, SkillType.Engineering)
@@ -3121,7 +3407,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2)
-                .Component("citrine", 1);
+                .Component("citrine", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // DLLG-003 A
             _builder.Create(RecipeType.DLLG003A, SkillType.Engineering)
@@ -3132,7 +3419,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3)
-                .Component("citrine", 2);
+                .Component("citrine", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 45);
         }
 
         private void Tier4A()
@@ -3146,7 +3434,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 8)
                 .Component("ref_keromber", 5)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // DHBE-004 A
             _builder.Create(RecipeType.DHBE004A, SkillType.Engineering)
@@ -3157,7 +3446,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 8)
                 .Component("ref_keromber", 5)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // DHRG-004 A
             _builder.Create(RecipeType.DHRG004A, SkillType.Engineering)
@@ -3168,7 +3458,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
                 .Component("ref_keromber", 2)
-                .Component("fiberp_imperfect", 1);
+                .Component("fiberp_imperfect", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // DHNK-004 A
             _builder.Create(RecipeType.DHNK004A, SkillType.Engineering)
@@ -3179,7 +3470,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2)
-                .Component("fiberp_imperfect", 1);
+                .Component("fiberp_imperfect", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DHAR-004 A
             _builder.Create(RecipeType.DHAR004A, SkillType.Engineering)
@@ -3190,7 +3482,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 6)
                 .Component("ref_keromber", 3)
-                .Component("fiberp_imperfect", 3);
+                .Component("fiberp_imperfect", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // DHHL-004 A
             _builder.Create(RecipeType.DHHL004A, SkillType.Engineering)
@@ -3201,7 +3494,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DHBR-004 A
             _builder.Create(RecipeType.DHBR004A, SkillType.Engineering)
@@ -3212,7 +3506,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2)
-                .Component("fiberp_imperfect", 1);
+                .Component("fiberp_imperfect", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DHLG-004 A
             _builder.Create(RecipeType.DHLG004A, SkillType.Engineering)
@@ -3223,7 +3518,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("fiberp_imperfect", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // DLCL-004 A
             _builder.Create(RecipeType.DLCL004A, SkillType.Engineering)
@@ -3234,7 +3530,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 8)
                 .Component("ref_keromber", 5)
-                .Component("ruby", 2);
+                .Component("ruby", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // DLBE-004 A
             _builder.Create(RecipeType.DLBE004A, SkillType.Engineering)
@@ -3245,7 +3542,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 8)
                 .Component("ref_keromber", 5)
-                .Component("ruby", 2);
+                .Component("ruby", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // DLRG-004 A
             _builder.Create(RecipeType.DLRG004A, SkillType.Engineering)
@@ -3256,7 +3554,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
                 .Component("ref_keromber", 2)
-                .Component("ruby", 1);
+                .Component("ruby", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // DLNK-004 A
             _builder.Create(RecipeType.DLNK004A, SkillType.Engineering)
@@ -3267,7 +3566,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2)
-                .Component("ruby", 1);
+                .Component("ruby", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // DLAR-004 A
             _builder.Create(RecipeType.DLAR004A, SkillType.Engineering)
@@ -3278,7 +3578,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 6)
                 .Component("ref_keromber", 3)
-                .Component("ruby", 3);
+                .Component("ruby", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // DLHL-004 A
             _builder.Create(RecipeType.DLHL004A, SkillType.Engineering)
@@ -3289,7 +3590,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3)
-                .Component("ruby", 2);
+                .Component("ruby", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // DLBR-004 A
             _builder.Create(RecipeType.DLBR004A, SkillType.Engineering)
@@ -3300,7 +3602,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2)
-                .Component("ruby", 1);
+                .Component("ruby", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // DLLG-004 A
             _builder.Create(RecipeType.DLLG004A, SkillType.Engineering)
@@ -3311,7 +3614,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3)
-                .Component("ruby", 2);
+                .Component("ruby", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 50);
         }
 
 }

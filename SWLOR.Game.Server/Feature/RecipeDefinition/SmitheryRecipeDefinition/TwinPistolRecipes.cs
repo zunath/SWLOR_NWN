@@ -36,6 +36,7 @@ public sealed class TwinPistolRecipes : IRecipeListDefinition
                 IsActive = source.IsActive, EnhancementType = source.EnhancementType,
                 EnhancementSlots = source.EnhancementSlots, ResearchCostModifier = source.ResearchCostModifier,
                 IsItemIntendedForCrafting = source.IsItemIntendedForCrafting,
+                MinigameParameters = source.MinigameParameters,
                 Components = source.Components.ToDictionary(component => component.Key, component => component.Value * 2),
                 Requirements = new List<IRecipeRequirement>(source.Requirements),
                 EffectLines = new List<string>(source.EffectLines)

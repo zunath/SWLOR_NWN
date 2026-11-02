@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(1)
                 .Quantity(2)
                 .Component("moat_carp", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 28, targetSweet: 5, targetSpice: 3, innerRadius: 11, outerRadius: 28, freshness: 87);
 
             // Coarse Fish Substitute I
             _builder.Create(RecipeType.CoarseFishSubstitute1, SkillType.Agriculture)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(2)
                 .Quantity(2)
                 .Component("lamp_marimo", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 27, targetSweet: 4, targetSpice: 11, innerRadius: 11, outerRadius: 26, freshness: 99);
 
             // Cooked Fish Substitute I
             _builder.Create(RecipeType.CookedFishSubstitute1, SkillType.Agriculture)
@@ -45,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(3)
                 .Quantity(2)
                 .Component("moat_carp", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 32, targetSweet: 7, targetSpice: 7, innerRadius: 12, outerRadius: 29, freshness: 92);
 
             // Cooked Meat Substitute I
             _builder.Create(RecipeType.CookedMeatSubstitute1, SkillType.Agriculture)
@@ -54,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(4)
                 .Quantity(3)
                 .Component("warocas_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 27, targetSweet: 0, targetSpice: 12, innerRadius: 10, outerRadius: 28, freshness: 83);
 
             // Dry Fruit Substitute I
             _builder.Create(RecipeType.DryFruitSubstitute1, SkillType.Agriculture)
@@ -63,7 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(5)
                 .Quantity(3)
                 .Component("herb_v", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 7, targetSweet: 0, targetSpice: 33, innerRadius: 7, outerRadius: 29, freshness: 89);
 
             // Fatty Fish Substitute I
             _builder.Create(RecipeType.FattyFishSubstitute1, SkillType.Agriculture)
@@ -72,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(6)
                 .Quantity(2)
                 .Component("phan_newt", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 33, targetSweet: 7, targetSpice: 8, innerRadius: 8, outerRadius: 30, freshness: 93);
 
             // Fatty Meat Substitute I
             _builder.Create(RecipeType.FattyMeatSubstitute1, SkillType.Agriculture)
@@ -81,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(7)
                 .Quantity(2)
                 .Component("hamsi", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 35, targetSweet: 4, targetSpice: 8, innerRadius: 8, outerRadius: 27, freshness: 90);
 
             // Juicy Fruit Substitute I
             _builder.Create(RecipeType.JuicyFruitSubstitute1, SkillType.Agriculture)
@@ -90,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(8)
                 .Quantity(3)
                 .Component("v_orange", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 2, targetSweet: 28, targetSpice: 9, innerRadius: 9, outerRadius: 24, freshness: 98);
 
             // Sour Fruit Substitute I
             _builder.Create(RecipeType.SourFruitSubstitute1, SkillType.Agriculture)
@@ -99,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(9)
                 .Quantity(3)
                 .Component("v_lemon", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 4, targetSweet: 21, targetSpice: 21, innerRadius: 8, outerRadius: 29, freshness: 101);
 
             // Stringy Meat Substitute I
             _builder.Create(RecipeType.StringyMeatSubstitute1, SkillType.Agriculture)
@@ -108,7 +117,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(10)
                 .Quantity(3)
                 .Component("mynock_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 38, targetSweet: 3, targetSpice: 3, innerRadius: 8, outerRadius: 29, freshness: 88);
 
             // Sweet Fruit Substitute I
             _builder.Create(RecipeType.SweetFruitSubstitute1, SkillType.Agriculture)
@@ -117,7 +127,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(5)
                 .Quantity(3)
                 .Component("v_apple", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 5, targetSweet: 31, targetSpice: 10, innerRadius: 7, outerRadius: 23, freshness: 93);
 
             // Tender Meat Substitute I
             _builder.Create(RecipeType.TenderMeatSubstitute1, SkillType.Agriculture)
@@ -126,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(8)
                 .Quantity(3)
                 .Component("kath_meat_1", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 33, targetSweet: 3, targetSpice: 6, innerRadius: 7, outerRadius: 22, freshness: 85);
 
 
         }
@@ -139,7 +151,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(11)
                 .Quantity(2)
                 .Component("sen_sardine", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 31, targetSweet: 2, targetSpice: 13, innerRadius: 7, outerRadius: 29, freshness: 90);
 
             // Coarse Fish Substitute II
             _builder.Create(RecipeType.CoarseFishSubstitute2, SkillType.Agriculture)
@@ -148,7 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(12)
                 .Quantity(2)
                 .Component("rakaz_shellfish", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 34, targetSweet: 10, targetSpice: 1, innerRadius: 7, outerRadius: 23, freshness: 93);
 
             // Cooked Fish Substitute II
             _builder.Create(RecipeType.CookedFishSubstitute2, SkillType.Agriculture)
@@ -157,7 +171,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(13)
                 .Quantity(2)
                 .Component("bast_sweeper", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 33, targetSweet: 1, targetSpice: 8, innerRadius: 6, outerRadius: 25, freshness: 92);
 
             // Cooked Meat Substitute II
             _builder.Create(RecipeType.CookedMeatSubstitute2, SkillType.Agriculture)
@@ -166,7 +181,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(14)
                 .Quantity(3)
                 .Component("raivor_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 32, targetSweet: 4, targetSpice: 10, innerRadius: 7, outerRadius: 20, freshness: 84);
 
             // Dry Fruit Substitute II
             _builder.Create(RecipeType.DryFruitSubstitute2, SkillType.Agriculture)
@@ -175,7 +191,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(15)
                 .Quantity(3)
                 .Component("v_peas", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 21, targetSweet: 21, targetSpice: 3, innerRadius: 10, outerRadius: 28, freshness: 106);
 
             // Fatty Fish Substitute II
             _builder.Create(RecipeType.FattyFishSubstitute2, SkillType.Agriculture)
@@ -184,7 +201,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(16)
                 .Quantity(2)
                 .Component("greedie", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 29, targetSweet: 8, targetSpice: 5, innerRadius: 8, outerRadius: 21, freshness: 86);
 
             // Fatty Meat Substitute II
             _builder.Create(RecipeType.FattyMeatSubstitute2, SkillType.Agriculture)
@@ -193,7 +211,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(17)
                 .Quantity(2)
                 .Component("muddy_siredon", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 30, targetSweet: 2, targetSpice: 3, innerRadius: 6, outerRadius: 25, freshness: 91);
 
             // Juicy Fruit Substitute II
             _builder.Create(RecipeType.JuicyFruitSubstitute2, SkillType.Agriculture)
@@ -202,7 +221,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(18)
                 .Quantity(3)
                 .Component("v_apple", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 0, targetSweet: 38, targetSpice: 8, innerRadius: 10, outerRadius: 20, freshness: 98);
 
             // Sour Fruit Substitute II
             _builder.Create(RecipeType.SourFruitSubstitute2, SkillType.Agriculture)
@@ -211,7 +231,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(19)
                 .Quantity(3)
                 .Component("v_peas", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 26, targetSweet: 25, targetSpice: 3, innerRadius: 10, outerRadius: 24, freshness: 105);
 
             // Stringy Meat Substitute II
             _builder.Create(RecipeType.StringyMeatSubstitute2, SkillType.Agriculture)
@@ -220,7 +241,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(20)
                 .Quantity(3)
                 .Component("cairnmog_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 28, targetSweet: 0, targetSpice: 7, innerRadius: 8, outerRadius: 25, freshness: 86);
 
             // Sweet Fruit Substitute II
             _builder.Create(RecipeType.SweetFruitSubstitute2, SkillType.Agriculture)
@@ -229,7 +251,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(15)
                 .Quantity(3)
                 .Component("herb_m", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 9, targetSweet: 3, targetSpice: 36, innerRadius: 10, outerRadius: 28, freshness: 92);
 
             // Tender Meat Substitute II
             _builder.Create(RecipeType.TenderMeatSubstitute2, SkillType.Agriculture)
@@ -238,7 +261,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(18)
                 .Quantity(3)
                 .Component("klorslug_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 30, targetSweet: 6, targetSpice: 0, innerRadius: 7, outerRadius: 24, freshness: 81);
 
 
         }
@@ -251,7 +275,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(21)
                 .Quantity(2)
                 .Component("quus", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 30, targetSweet: 4, targetSpice: 3, innerRadius: 8, outerRadius: 18, freshness: 86);
 
             // Coarse Fish Substitute III
             _builder.Create(RecipeType.CoarseFishSubstitute3, SkillType.Agriculture)
@@ -260,7 +285,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(22)
                 .Quantity(2)
                 .Component("forest_carp", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 30, targetSweet: 7, targetSpice: 7, innerRadius: 5, outerRadius: 18, freshness: 88);
 
             // Cooked Fish Substitute III
             _builder.Create(RecipeType.CookedFishSubstitute3, SkillType.Agriculture)
@@ -269,7 +295,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(23)
                 .Quantity(2)
                 .Component("cheval_salmon", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 26, targetSweet: 0, targetSpice: 1, innerRadius: 5, outerRadius: 22, freshness: 94);
 
             // Cooked Meat Substitute III
             _builder.Create(RecipeType.CookedMeatSubstitute3, SkillType.Agriculture)
@@ -278,7 +305,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(24)
                 .Quantity(3)
                 .Component("aradile_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 32, targetSweet: 0, targetSpice: 5, innerRadius: 5, outerRadius: 23, freshness: 88);
 
             // Dry Fruit Substitute III
             _builder.Create(RecipeType.DryFruitSubstitute3, SkillType.Agriculture)
@@ -287,7 +315,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(25)
                 .Quantity(3)
                 .Component("h_acorn", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 25, targetSweet: 19, targetSpice: 4, innerRadius: 5, outerRadius: 18, freshness: 104);
 
             // Fatty Fish Substitute III
             _builder.Create(RecipeType.FattyFishSubstitute3, SkillType.Agriculture)
@@ -296,7 +325,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(26)
                 .Quantity(2)
                 .Component("yorchete", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 29, targetSweet: 4, targetSpice: 10, innerRadius: 7, outerRadius: 21, freshness: 90);
 
             // Fatty Meat Substitute III
             _builder.Create(RecipeType.FattyMeatSubstitute3, SkillType.Agriculture)
@@ -305,7 +335,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(27)
                 .Quantity(2)
                 .Component("moorish_idol", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 29, targetSweet: 3, targetSpice: 4, innerRadius: 6, outerRadius: 18, freshness: 92);
 
             // Juicy Fruit Substitute III
             _builder.Create(RecipeType.JuicyFruitSubstitute3, SkillType.Agriculture)
@@ -314,7 +345,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(28)
                 .Quantity(3)
                 .Component("s_pineapple", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 2, targetSweet: 29, targetSpice: 1, innerRadius: 5, outerRadius: 18, freshness: 91);
 
             // Sour Fruit Substitute III
             _builder.Create(RecipeType.SourFruitSubstitute3, SkillType.Agriculture)
@@ -323,7 +355,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(29)
                 .Quantity(3)
                 .Component("nash_blood", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 27, targetSweet: 8, targetSpice: 21, innerRadius: 6, outerRadius: 18, freshness: 94);
 
             // Stringy Meat Substitute III
             _builder.Create(RecipeType.StringyMeatSubstitute3, SkillType.Agriculture)
@@ -332,7 +365,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(30)
                 .Quantity(3)
                 .Component("tiger_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 26, targetSweet: 0, targetSpice: 4, innerRadius: 6, outerRadius: 19, freshness: 86);
 
             // Sweet Fruit Substitute III
             _builder.Create(RecipeType.SweetFruitSubstitute3, SkillType.Agriculture)
@@ -341,7 +375,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(25)
                 .Quantity(3)
                 .Component("ginger", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 0, targetSweet: 5, targetSpice: 36, innerRadius: 8, outerRadius: 18, freshness: 90);
 
             // Tender Meat Substitute III
             _builder.Create(RecipeType.TenderMeatSubstitute3, SkillType.Agriculture)
@@ -350,7 +385,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(28)
                 .Quantity(3)
                 .Component("byysk_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 35, targetSweet: 0, targetSpice: 12, innerRadius: 7, outerRadius: 22, freshness: 83);
 
 
         }
@@ -363,7 +399,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(31)
                 .Quantity(2)
                 .Component("nebimonite", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 26, targetSweet: 5, targetSpice: 11, innerRadius: 4, outerRadius: 21, freshness: 88);
 
             // Coarse Fish Substitute IV
             _builder.Create(RecipeType.CoarseFishSubstitute4, SkillType.Agriculture)
@@ -372,7 +409,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(32)
                 .Quantity(2)
                 .Component("tricolored_carp", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 31, targetSweet: 9, targetSpice: 11, innerRadius: 6, outerRadius: 20, freshness: 88);
 
             // Cooked Fish Substitute IV
             _builder.Create(RecipeType.CookedFishSubstitute4, SkillType.Agriculture)
@@ -381,7 +419,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(33)
                 .Quantity(2)
                 .Component("blindfish", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 33, targetSweet: 0, targetSpice: 10, innerRadius: 5, outerRadius: 19, freshness: 93);
 
             // Cooked Meat Substitute IV
             _builder.Create(RecipeType.CookedMeatSubstitute4, SkillType.Agriculture)
@@ -390,7 +429,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(34)
                 .Quantity(3)
                 .Component("wompratmeat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 28, targetSweet: 4, targetSpice: 1, innerRadius: 6, outerRadius: 18, freshness: 84);
 
             // Dry Fruit Substitute IV
             _builder.Create(RecipeType.DryFruitSubstitute4, SkillType.Agriculture)
@@ -399,7 +439,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(35)
                 .Quantity(3)
                 .Component("herb_c", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 27, targetSweet: 0, targetSpice: 16, innerRadius: 8, outerRadius: 18, freshness: 90);
 
             // Fatty Fish Substitute IV
             _builder.Create(RecipeType.FattyFishSubstitute4, SkillType.Agriculture)
@@ -408,7 +449,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(36)
                 .Quantity(2)
                 .Component("bonefish", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 28, targetSweet: 6, targetSpice: 9, innerRadius: 5, outerRadius: 18, freshness: 89);
 
             // Fatty Meat Substitute IV
             _builder.Create(RecipeType.FattyMeatSubstitute4, SkillType.Agriculture)
@@ -417,7 +459,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(37)
                 .Quantity(2)
                 .Component("yayinbaligi", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 30, targetSweet: 6, targetSpice: 3, innerRadius: 4, outerRadius: 20, freshness: 87);
 
             // Juicy Fruit Substitute IV
             _builder.Create(RecipeType.JuicyFruitSubstitute4, SkillType.Agriculture)
@@ -426,7 +469,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(38)
                 .Quantity(3)
                 .Component("tomato", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 31, targetSweet: 13, targetSpice: 12, innerRadius: 5, outerRadius: 19, freshness: 98);
 
             // Sour Fruit Substitute IV
             _builder.Create(RecipeType.SourFruitSubstitute4, SkillType.Agriculture)
@@ -435,7 +479,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(39)
                 .Quantity(3)
                 .Component("plant_butter", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 27, targetSweet: 20, targetSpice: 2, innerRadius: 6, outerRadius: 20, freshness: 98);
 
             // Stringy Meat Substitute IV
             _builder.Create(RecipeType.StringyMeatSubstitute4, SkillType.Agriculture)
@@ -444,7 +489,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(40)
                 .Quantity(3)
                 .Component("sanddemon_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 38, targetSweet: 0, targetSpice: 1, innerRadius: 4, outerRadius: 20, freshness: 87);
 
             // Sweet Fruit Substitute IV
             _builder.Create(RecipeType.SweetFruitSubstitute4, SkillType.Agriculture)
@@ -453,7 +499,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(35)
                 .Quantity(3)
                 .Component("herb_t", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 13, targetSweet: 0, targetSpice: 28, innerRadius: 6, outerRadius: 18, freshness: 93);
 
             // Tender Meat Substitute IV
             _builder.Create(RecipeType.TenderMeatSubstitute4, SkillType.Agriculture)
@@ -462,7 +509,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(38)
                 .Quantity(3)
                 .Component("giant_catfish", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 31, targetSweet: 6, targetSpice: 6, innerRadius: 7, outerRadius: 19, freshness: 92);
 
 
         }
@@ -475,7 +523,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(41)
                 .Quantity(2)
                 .Component("dark_bass", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 35, targetSweet: 1, targetSpice: 4, innerRadius: 7, outerRadius: 18, freshness: 93);
 
             // Coarse Fish Substitute V
             _builder.Create(RecipeType.CoarseFishSubstitute5, SkillType.Agriculture)
@@ -484,7 +533,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(42)
                 .Quantity(2)
                 .Component("crystal_bass", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 26, targetSweet: 9, targetSpice: 7, innerRadius: 7, outerRadius: 18, freshness: 90);
 
             // Cooked Fish Substitute V
             _builder.Create(RecipeType.CookedFishSubstitute5, SkillType.Agriculture)
@@ -493,7 +543,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(43)
                 .Quantity(2)
                 .Component("ogre_eel", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 27, targetSweet: 1, targetSpice: 2, innerRadius: 6, outerRadius: 18, freshness: 87);
 
             // Cooked Meat Substitute V
             _builder.Create(RecipeType.CookedMeatSubstitute5, SkillType.Agriculture)
@@ -502,7 +553,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(44)
                 .Quantity(3)
                 .Component("wild_meat", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 28, targetSweet: 0, targetSpice: 1, innerRadius: 4, outerRadius: 18, freshness: 85);
 
             // Dry Fruit Substitute V
             _builder.Create(RecipeType.DryFruitSubstitute5, SkillType.Agriculture)
@@ -511,7 +563,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(45)
                 .Quantity(3)
                 .Component("turnip", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 35, targetSweet: 15, targetSpice: 6, innerRadius: 4, outerRadius: 22, freshness: 100);
 
             // Fatty Fish Substitute V
             _builder.Create(RecipeType.FattyFishSubstitute5, SkillType.Agriculture)
@@ -520,7 +573,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(46)
                 .Quantity(2)
                 .Component("nosteau_herring", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 26, targetSweet: 10, targetSpice: 9, innerRadius: 6, outerRadius: 22, freshness: 88);
 
             // Fatty Meat Substitute V
             _builder.Create(RecipeType.FattyMeatSubstitute5, SkillType.Agriculture)
@@ -529,7 +583,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(47)
                 .Quantity(2)
                 .Component("lakerda", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 28, targetSweet: 7, targetSpice: 13, innerRadius: 4, outerRadius: 18, freshness: 87);
 
             // Juicy Fruit Substitute V
             _builder.Create(RecipeType.JuicyFruitSubstitute5, SkillType.Agriculture)
@@ -538,7 +593,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(48)
                 .Quantity(3)
                 .Component("turnip", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 24, targetSweet: 18, targetSpice: 13, innerRadius: 5, outerRadius: 18, freshness: 106);
 
             // Sour Fruit Substitute V
             _builder.Create(RecipeType.SourFruitSubstitute5, SkillType.Agriculture)
@@ -547,7 +603,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(49)
                 .Quantity(3)
                 .Component("dried_bonito", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 35, targetSweet: 0, targetSpice: 5, innerRadius: 4, outerRadius: 21, freshness: 90);
 
             // Stringy Meat Substitute V
             _builder.Create(RecipeType.StringyMeatSubstitute5, SkillType.Agriculture)
@@ -556,7 +613,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(50)
                 .Quantity(3)
                 .Component("wild_innards", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 32, targetSweet: 4, targetSpice: 10, innerRadius: 4, outerRadius: 19, freshness: 93);
 
             // Sweet Fruit Substitute V
             _builder.Create(RecipeType.SweetFruitSubstitute5, SkillType.Agriculture)
@@ -565,7 +623,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(45)
                 .Quantity(3)
                 .Component("herb_x", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 4, targetSweet: 3, targetSpice: 26, innerRadius: 7, outerRadius: 21, freshness: 89);
 
             // Tender Meat Substitute V
             _builder.Create(RecipeType.TenderMeatSubstitute5, SkillType.Agriculture)
@@ -574,7 +633,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Level(48)
                 .Quantity(3)
                 .Component("shining_trout", 2)
-                .Component("distilled_water", 1);
+                .Component("distilled_water", 1)
+                .KitchenParameters(dish: KitchenDish.PetFood, targetSavory: 35, targetSweet: 7, targetSpice: 7, innerRadius: 4, outerRadius: 19, freshness: 90);
 
 
         }

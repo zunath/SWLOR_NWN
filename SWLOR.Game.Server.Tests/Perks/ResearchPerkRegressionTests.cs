@@ -1,10 +1,6 @@
-using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -19,37 +15,7 @@ public class ResearchPerkRegressionTests
     }
 
     [Test]
-    public void ResearchPerkDefinitions_MatchCurrentApprovedRanks()
-    {
-        var perks = BuildResearchPerksWithout2daLookup();
-
-        AssertPerk(
-            perks[PerkType.Research],
-            "Research",
-            FeatType.ResearchTrait,
-            (2, 10, "Grants ability to research tier 1 blueprints."),
-            (2, 20, "Grants ability to research tier 2 blueprints."),
-            (3, 30, "Grants ability to research tier 3 blueprints."),
-            (3, 40, "Grants ability to research tier 4 blueprints."),
-            (4, 50, "Grants ability to research tier 5 blueprints."));
-
-        AssertPerk(
-            perks[PerkType.ScientificNetworking],
-            "Scientific Networking",
-            FeatType.ScientificNetworkingTrait,
-            (3, 25, "Blueprints are created with one additional licensed run per rank."),
-            (4, 50, "Blueprints are created with one additional licensed run per rank."));
-
-        AssertPerk(
-            perks[PerkType.ResearchProjects],
-            "Research Projects",
-            FeatType.ResearchProjectsTrait,
-            (2, 25, "Increases the maximum number of concurrent research jobs by 1, for a total of 2."),
-            (3, 50, "Increases the maximum number of concurrent research jobs by 1, for a total of 3."));
-    }
-
-    [Test]
-    public void Research_PreservesTerminalAccessAndRecipeTierGates()
+    public void Research_GatesTerminalAccessAndRecipeTiersByFabricationRank()
     {
         var craft = ReadSource("Service", "Craft.cs");
         var canResearchRecipe = ExtractMethod(
@@ -64,33 +30,42 @@ public class ResearchPerkRegressionTests
         var recipesViewModel = ReadSource("Feature", "GuiDefinition", "ViewModel", "RecipesViewModel.cs");
         var validateBlueprint = ExtractMethod(recipesViewModel, "private bool ValidateBlueprint(uint item)");
 
-        useResearchTerminal.Should().Contain("Perk.GetPerkLevel(player, PerkType.Research)");
-        useResearchTerminal.Should().Contain("if (researchLevel <= 0)");
-        useResearchTerminal.Should().Contain("Perk 'Research I' is required to use research terminals.");
+        useResearchTerminal.Should().Contain("if (CraftRankMilestones.GetResearchTier(player) <= 0)");
+        useResearchTerminal.Should().Contain("Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.");
+        useResearchTerminal.Should().NotContain("Perk");
 
         canResearchRecipe.Should().Contain("var tier = recipe.Level / 10 + 1;");
         canResearchRecipe.Should().Contain("if (tier > 5)");
-        canResearchRecipe.Should().Contain("Perk.GetPerkLevel(player, PerkType.Research) >= tier");
+        canResearchRecipe.Should().Contain("CraftRankMilestones.GetResearchTier(player) >= tier");
 
-        buildJob.Should().Contain("var perkLevel = recipe.Level / 10 + 1;");
-        buildJob.Should().Contain("if (perkLevel > 5)");
-        buildJob.Should().Contain("RequiredPerkLevel = perkLevel");
-        validateJob.Should().Contain("Perk.GetPerkLevel(Player, PerkType.Research) < researchJob.RequiredPerkLevel");
+        buildJob.Should().Contain("var researchTier = recipe.Level / 10 + 1;");
+        buildJob.Should().Contain("if (researchTier > 5)");
+        buildJob.Should().Contain("RequiredResearchTier = researchTier");
+        validateJob.Should().Contain("CraftRankMilestones.GetResearchTier(Player) < researchJob.RequiredResearchTier");
+        validateJob.Should().Contain("CraftRankMilestones.RequiredFabricationRankForResearchTier(researchJob.RequiredResearchTier)");
         validateJob.Should().Contain("researchJob.CurrentLevel >= Craft.MaxResearchLevel");
 
-        validateBlueprint.Should().Contain("var requiredLevel = recipe.Level / 10 + 1;");
-        validateBlueprint.Should().Contain("if (requiredLevel > 5)");
-        validateBlueprint.Should().Contain("if (researchLevel < requiredLevel)");
+        validateBlueprint.Should().Contain("var requiredTier = recipe.Level / 10 + 1;");
+        validateBlueprint.Should().Contain("if (requiredTier > 5)");
+        validateBlueprint.Should().Contain("if (researchTier < requiredTier)");
+        validateBlueprint.Should().Contain("CraftRankMilestones.RequiredFabricationRankForResearchTier(requiredTier)");
         validateBlueprint.Should().Contain("blueprint.Level >= Craft.MaxResearchLevel");
     }
 
-    [TestCase(0, 1, 3)]
-    [TestCase(1, 2, 4)]
-    [TestCase(2, 3, 5)]
-    public void ScientificNetworking_PreservesLicensedRunRanges(
-        int rank,
-        int expectedMinimum,
-        int expectedMaximum)
+    [Test]
+    public void ResearchTerminalMessages_NameResearchJobsAndNoRetiredPerks()
+    {
+        var craft = ReadSource("Service", "Craft.cs");
+        var useResearchTerminal = ExtractMethod(craft, "public static void UseResearchTerminal()");
+
+        useResearchTerminal.Should().Contain("Another player's research job is active. This job will complete in: {completionTime}.");
+        useResearchTerminal.Should().Contain("Another player's research job is active. This job has completed.");
+        useResearchTerminal.Should().NotContain("incubation");
+        useResearchTerminal.Should().NotContain("Perk '");
+    }
+
+    [Test]
+    public void ScientificNetworking_AddsLicensedRunsFromFabricationRank()
     {
         var researchViewModel = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
         var buildJob = ExtractMethod(
@@ -98,86 +73,21 @@ public class ResearchPerkRegressionTests
             "private ResearchJobDetails BuildResearchJobDetails(RecipeType recipeType, uint blueprintItem)");
         var completeJob = ExtractMethod(researchViewModel, "public Action ClickCompleteJob() => () =>");
 
-        (1 + rank).Should().Be(expectedMinimum);
-        (expectedMinimum + 2).Should().Be(expectedMaximum);
-        buildJob.Should().Contain("var licensedRunsMinimum = 1 + Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);");
+        buildJob.Should().Contain("var licensedRunsMinimum = 1 + CraftRankMilestones.GetBlueprintLicensedRunBonus(Player);");
         buildJob.Should().Contain("var licensedRunsMaximum = licensedRunsMinimum + 2;");
-        completeJob.Should().Contain("var scientificNetworking = Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);");
-        completeJob.Should().Contain("blueprintDetails.LicensedRuns = Random.D3(1) + scientificNetworking;");
+        completeJob.Should().Contain("var licensedRunBonus = CraftRankMilestones.GetBlueprintLicensedRunBonus(Player);");
+        completeJob.Should().Contain("blueprintDetails.LicensedRuns = Random.D3(1) + licensedRunBonus;");
     }
 
-    [TestCase(0, 1)]
-    [TestCase(1, 2)]
-    [TestCase(2, 3)]
-    public void ResearchProjects_PreservesOnePlusRankConcurrentJobLimit(int rank, int expectedMaximum)
+    [Test]
+    public void ResearchProjects_LimitsConcurrentJobsByFabricationRank()
     {
         var researchViewModel = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
         var validation = ExtractMethod(researchViewModel, "private string ValidateJob()");
 
-        (rank + 1).Should().Be(expectedMaximum);
-        validation.Should().Contain("Perk.GetPerkLevel(Player, PerkType.ResearchProjects) + 1");
+        validation.Should().Contain("var maxConcurrentJobs = CraftRankMilestones.GetMaxConcurrentResearchJobs(Player);");
         validation.Should().Contain("currentJobs.Count(x => x.ParentPropertyId != _researchTerminalPropertyId)");
         validation.Should().Contain("if (currentJobCount >= maxConcurrentJobs)");
-    }
-
-    private static void AssertPerk(
-        PerkDetail perk,
-        string name,
-        FeatType traitFeat,
-        params (int Price, int SkillRank, string Description)[] expectedLevels)
-    {
-        perk.Category.Should().Be(PerkCategoryType.Fabrication);
-        perk.Name.Should().Be(name);
-        perk.PerkLevels.Keys.OrderBy(x => x).Should().Equal(Enumerable.Range(1, expectedLevels.Length));
-
-        for (var rank = 1; rank <= expectedLevels.Length; rank++)
-        {
-            var expected = expectedLevels[rank - 1];
-            var level = perk.PerkLevels[rank];
-
-            level.Price.Should().Be(expected.Price);
-            level.Description.Should().Be(expected.Description);
-            level.StatBonuses.Should().BeEmpty();
-
-            var requirement = level.Requirements
-                .OfType<PerkRequirementSkill>()
-                .Should()
-                .ContainSingle()
-                .Which;
-            requirement.Type.Should().Be(SkillType.Fabrication);
-            requirement.RequiredRank.Should().Be(expected.SkillRank);
-
-            if (rank == 1)
-                level.GrantedFeats.Should().ContainSingle().Which.Should().Be(traitFeat);
-            else
-                level.GrantedFeats.Should().BeEmpty();
-        }
-    }
-
-    private static Dictionary<PerkType, PerkDetail> BuildResearchPerksWithout2daLookup()
-    {
-        var definition = new FabricationPerkDefinition();
-        var methodNames = new[]
-        {
-            "Research",
-            "ScientificNetworking",
-            "ResearchProjects"
-        };
-
-        foreach (var methodName in methodNames)
-        {
-            typeof(FabricationPerkDefinition)
-                .GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)!
-                .Invoke(definition, null);
-        }
-
-        var builder = typeof(FabricationPerkDefinition)
-            .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .GetValue(definition);
-
-        return (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
-            .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .GetValue(builder)!;
     }
 
     private static string ReadSource(params string[] relativePath)

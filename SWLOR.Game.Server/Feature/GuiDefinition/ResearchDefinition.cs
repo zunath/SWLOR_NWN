@@ -167,10 +167,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col.AddRow(row =>
                         {
+                            row.AddList(template =>
+                            {
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddLabel()
+                                        .BindText(model => model.ExperimentLines)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetHeight(20f);
+                                });
+                            })
+                                .SetHeight(90f)
+                                .BindRowCount(model => model.ExperimentLines);
+                        });
+
+                        col.AddRow(row =>
+                        {
                             row.AddSpacer();
 
                             row.AddButton()
                                 .SetText("Cancel Job")
+                                .BindIsEnabled(model => model.IsCancelEnabled)
                                 .BindOnClicked(model => model.ClickCancelJob());
 
                             row.AddSpacer();
@@ -210,6 +227,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         text.BindText(model => model.JobProgressTime);
                                     });
                                 });
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddList(template =>
+                            {
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddLabel()
+                                        .BindText(model => model.ExperimentLines)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetHeight(20f);
+                                });
+                            })
+                                .SetHeight(90f)
+                                .BindRowCount(model => model.ExperimentLines);
                         });
 
                         col.AddRow(row =>

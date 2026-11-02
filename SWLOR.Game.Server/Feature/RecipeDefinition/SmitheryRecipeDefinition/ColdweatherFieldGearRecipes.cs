@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("esh_wolf_pelt", 1)
                 .Component("lth_high", 4)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 1, startingThermal: 44, shapeShare: 70);
 
             _builder.Create(RecipeType.FrostFangGauntlet, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove)
@@ -31,7 +32,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("esh_frost_fang", 1)
                 .Component("lth_high", 3)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 47, shapeShare: 62);
 
             _builder.Create(RecipeType.RidgedHideMantle, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cloak)
@@ -42,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("esh_gorak_hide", 1)
                 .Component("fiberp_high", 3)
-                .Component("elec_high", 1);
+                .Component("elec_high", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 5, startingThermal: 45, shapeShare: 54);
 
             _builder.Create(RecipeType.ReclaimedScopewrightCap, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cap)
@@ -53,7 +56,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("esh_mando_salv", 1)
                 .Component("elec_high", 3)
-                .Component("fiberp_high", 2);
+                .Component("fiberp_high", 2)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 4, startingThermal: 43, shapeShare: 62);
 
             _builder.Create(RecipeType.ReclaimedWarbandHelm, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet)
@@ -64,7 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("esh_sun_insignia", 1)
                 .Component("lth_high", 3)
-                .Component("elec_high", 2);
+                .Component("elec_high", 2)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 2, startingThermal: 45, shapeShare: 62);
 
             return _builder.Build();
         }

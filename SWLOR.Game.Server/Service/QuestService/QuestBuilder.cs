@@ -185,6 +185,22 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Adds the skill XP a guild task gives for the item it collects (<see cref="GuildTaskXpReward"/>). The reward is nothing for a guild whose
+        /// tasks give no XP.
+        /// </summary>
+        /// <param name="guild">The guild the task belongs to.</param>
+        /// <param name="resref">The resref of the item the task collects.</param>
+        /// <param name="quantity">How many the task collects.</param>
+        /// <param name="playerProduced">True when the task asks for a player-crafted item, so its level is the recipe's; false for raw goods such as fish.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder AddGuildTaskXpReward(GuildType guild, string resref, int quantity, bool playerProduced)
+        {
+            _activeQuest.Rewards.Add(new GuildTaskXpReward(guild, resref, quantity, playerProduced));
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a faction standing reward for completing this quest.
         /// </summary>
         /// <param name="faction">The type of faction to use.</param>

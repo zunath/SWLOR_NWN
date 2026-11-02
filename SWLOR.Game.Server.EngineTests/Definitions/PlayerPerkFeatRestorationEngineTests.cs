@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var restored = SavedCharacterMigration.Load(ctx, upgraded);
                 AssertPurchasedFeats(ctx, restored);
                 ctx.AssertEqual(166, upgraded.Record.UnallocatedSP, "Migration does not charge for restored abilities");
-                ctx.AssertEqual(3, upgraded.Record.Currencies[CurrencyType.RebuildToken], "File replay grants only migration 24's token, not migration 15's again");
+                ctx.AssertEqual(4, upgraded.Record.Currencies[CurrencyType.RebuildToken], "File replay grants only migration 24's and migration 26's tokens, not migration 15's again");
                 ctx.AssertEqual(SavedCharacterMigration.LatestVersion, upgraded.Record.Version, "The record reaches the latest version");
             });
         }

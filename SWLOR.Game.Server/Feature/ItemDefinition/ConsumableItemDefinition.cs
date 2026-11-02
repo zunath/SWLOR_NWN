@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -209,6 +210,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                                 throw new ArgumentOutOfRangeException();
                         }
                     }
+
+                    // Crafted food keeps the extra duration its quality earned in seconds, finer than the 5-minute steps of a property.
+                    duration += GetLocalInt(item, CraftOutcomeRules.FoodDurationBonusSecondsVariable);
 
                     StatusEffect.ApplyStatusEffect(user, user, new FoodStatusEffect(foodEffect), duration);
                 });

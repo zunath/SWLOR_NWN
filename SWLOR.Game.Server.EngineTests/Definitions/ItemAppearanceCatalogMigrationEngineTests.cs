@@ -205,11 +205,11 @@ public static partial class MigrationEngineTests
             record.Version = 23;
             DB.Set(record);
             SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 23);
-            ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).Single(),
-                "The last released character checkpoint schedules exactly one combined item migration");
+            ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).First(),
+                "The last released character checkpoint schedules the combined item migration next");
             upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
             ctx.Assert(upgraded != null, "The character upgrade converts the legacy items");
-            ctx.AssertEqual(24, upgraded.Record.Version, "The player record checkpoint advances");
+            ctx.AssertEqual(SavedCharacterMigration.LatestVersion, upgraded.Record.Version, "The player record checkpoint advances");
             var character = SavedCharacterMigration.Load(ctx, upgraded);
             var migratedArmor = GetItemInSlot(InventorySlot.Chest, character);
             ctx.AssertEqual("ark_armor", GetResRef(migratedArmor), "The revised breastplate stays equipped");

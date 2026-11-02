@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_flawed", 4)
                 .Component("fiberp_flawed", 2)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Lightsaber Upgrade Kit III
             _builder.Create(RecipeType.LightsaberUpgradeKit3, SkillType.Engineering)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_good", 4)
                 .Component("fiberp_good", 2)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 42);
 
             // Lightsaber Upgrade Kit IV
             _builder.Create(RecipeType.LightsaberUpgradeKit4, SkillType.Engineering)
@@ -46,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_imperfect", 4)
                 .Component("fiberp_imperfect", 2)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 42);
 
             // Lightsaber Upgrade Kit V
             _builder.Create(RecipeType.LightsaberUpgradeKit5, SkillType.Engineering)
@@ -56,7 +59,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_high", 4)
                 .Component("fiberp_high", 2)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 46);
 
             // Chiro Lightsaber Upgrade Kit
             _builder.Create(RecipeType.ChiroLightsaberUpgradeKit, SkillType.Engineering)
@@ -74,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
+                .Component("ref_keromber", 5)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 46);
         }
 
         private void SaberstaffKits()
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_flawed", 5)
                 .Component("fiberp_flawed", 2)
-                .Component("ref_scordspar", 3);
+                .Component("ref_scordspar", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 45);
 
             // Saberstaff Upgrade Kit III
             _builder.Create(RecipeType.SaberstaffUpgradeKit3, SkillType.Engineering)
@@ -97,7 +103,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_good", 5)
                 .Component("fiberp_good", 2)
-                .Component("ref_plagionite", 3);
+                .Component("ref_plagionite", 3)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 43);
 
             // Saberstaff Upgrade Kit IV
             _builder.Create(RecipeType.SaberstaffUpgradeKit4, SkillType.Engineering)
@@ -107,7 +114,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_imperfect", 5)
                 .Component("fiberp_imperfect", 2)
-                .Component("ref_keromber", 3);
+                .Component("ref_keromber", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // Saberstaff Upgrade Kit V
             _builder.Create(RecipeType.SaberstaffUpgradeKit5, SkillType.Engineering)
@@ -117,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("elec_high", 5)
                 .Component("fiberp_high", 2)
-                .Component("ref_jasioclase", 3);
+                .Component("ref_jasioclase", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 41);
 
             // Chiro Saberstaff Upgrade Kit
             _builder.Create(RecipeType.ChiroSaberstaffUpgradeKit, SkillType.Engineering)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
+                .Component("ref_keromber", 5)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 46);
         }
     }
 }

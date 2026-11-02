@@ -255,8 +255,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             tableCol.AddTable<CharacterSheetViewModel>(t => t
                                 .AddColumn("CRAFT", 135f, "Crafting skill.", model => model.CraftNames)
-                                .AddColumn("CONTROL", 82f, "Craft quality and auto-craft chance.", model => model.CraftControls)
-                                .AddColumn("CRAFTSMANSHIP", 0f, "Craft progress and auto-craft chance.", model => model.CraftCraftsmanship)
+                                .AddColumn("CONTROL", 82f, "Powers the quality actions of crafting.", model => model.CraftControls)
+                                .AddColumn("CRAFTSMANSHIP", 0f, "Powers the progress actions of crafting.", model => model.CraftCraftsmanship)
                                 .SetRowHeight(28f));
                         });
                     })

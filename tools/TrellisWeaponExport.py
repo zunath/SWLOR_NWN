@@ -1454,7 +1454,7 @@ def package(args, repo, out):
                 seam_helper=load_module_snapshot('native_tangent_seams',Path(__file__).with_name('NativeTangentSeams.py')) if policy=='authored_tangent_seams' else None
                 for model in record['models']+record.get('aliases',[]):
                     target_model=runtime/(model+'.mdl')
-                    authored_reports.append(seam_helper.preserve_authored_tangent_seams(target_model,sources,helper) if seam_helper else helper.preserve_authored_tangents(target_model,sources))
+                    authored_reports.append(seam_helper.preserve_authored_tangent_seams(target_model,sources,helper) if seam_helper else helper.preserve_authored_tangents(target_model,sources,float(record.get('authored_angle_limit_degrees',.5))))
             native=[mesh for model in record['models'] for mesh in helper.native_meshes(runtime/(model+'.mdl'))]
             for material in record['materials']:
                 group={key:arrays[material+'__'+key] for key in ('positions','normals','tangents','signs','uv')}

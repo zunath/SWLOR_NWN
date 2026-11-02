@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -17,6 +18,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _plotId;
         private readonly List<CropDefinition> _seeds = new();
         private int _selectedSeedIndex = -1;
+        private readonly List<int> _fertilizerTiers = new();
+        private bool _refreshing;
         private int _cropManagementRank;
         private int _growingCrops;
 
@@ -40,9 +43,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> SeedNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<bool> SeedToggles { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
+        public GuiBindingList<GuiComboEntry> FertilizerOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public bool CanPickFertilizer { get => Get<bool>(); set => Set(value); }
+
+        /// <summary>The fertilizer picked with the seed: 0 for none, then one entry per tier the player carries.</summary>
+        public int SelectedFertilizerIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_refreshing)
+                    RefreshPlantButton();
+            }
+        }
+
         protected override void Initialize(GardenPlotPayload initialPayload)
         {
             _plotId = initialPayload?.PlotId ?? string.Empty;
+            _refreshing = true;
 
             // Every bound property gets a value before the view is shown.
             CropText = string.Empty;
@@ -61,6 +80,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearTooltip = string.Empty;
             SeedNames = new GuiBindingList<string>();
             SeedToggles = new GuiBindingList<bool>();
+            FertilizerOptions = new GuiBindingList<GuiComboEntry>();
+            CanPickFertilizer = false;
+            SelectedFertilizerIndex = 0;
+            WatchOnClient(model => model.SelectedFertilizerIndex);
 
             Farmhands.CatchUpForPlot(_plotId);
             var withered = Farming.RemoveWitheredCrop(_plotId, DateTime.UtcNow);
@@ -74,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>Reads the plot and the player again and sets what the window shows and which actions are on.</summary>
         private void Refresh()
         {
+            _refreshing = true;
             var now = DateTime.UtcNow;
             var structure = Farming.GetPlotStructure(_plotId);
             var record = Farming.GetPlot(_plotId);
@@ -95,7 +119,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _cropManagementRank = Perk.GetPlayerEffectivePerkLevel(Player, PerkType.CropManagement);
             _growingCrops = Farming.CountGrowingCrops(GetPCPublicCDKey(Player), playerId, now);
             LoadSeeds(record == null);
+            LoadFertilizers(record == null);
+            _refreshing = false;
             UpdatePlantButton(structure, record, hasPermission, now);
+        }
+
+        private void LoadFertilizers(bool plotIsEmpty)
+        {
+            _fertilizerTiers.Clear();
+            var options = new GuiBindingList<GuiComboEntry> { new("No fertilizer", 0) };
+            if (plotIsEmpty)
+            {
+                foreach (var (tier, count) in Farming.GetFertilizerCarried(Player))
+                {
+                    _fertilizerTiers.Add(tier);
+                    options.Add(new GuiComboEntry(FertilizerRules.DescribeOption(tier, count), tier));
+                }
+            }
+
+            FertilizerOptions = options;
+            SelectedFertilizerIndex = 0;
+            CanPickFertilizer = _fertilizerTiers.Count > 0;
+        }
+
+        /// <summary>The fertilizer item picked, or empty for none.</summary>
+        private string GetSelectedFertilizer()
+        {
+            var index = SelectedFertilizerIndex - 1;
+            return index >= 0 && index < _fertilizerTiers.Count ? FertilizerRules.GetResref(_fertilizerTiers[index]) : string.Empty;
+        }
+
+        private void RefreshPlantButton()
+        {
+            var structure = Farming.GetPlotStructure(_plotId);
+            UpdatePlantButton(
+                structure,
+                Farming.GetPlot(_plotId),
+                structure != null && Farming.HasGardenPermission(Player, structure),
+                DateTime.UtcNow);
         }
 
         private void LoadSeeds(bool plotIsEmpty)
@@ -132,6 +193,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var crop = _seeds[_selectedSeedIndex];
+            var fertilizer = GetSelectedFertilizer();
             var refusal = FarmingRules.CheckPlant(
                 true,
                 structure != null,
@@ -139,10 +202,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 now,
                 hasPermission,
                 _cropManagementRank,
-                _seeds[_selectedSeedIndex].Tier,
+                crop.Tier,
                 _growingCrops,
                 true,
-                Farming.GetSiteRefusal(structure, _seeds[_selectedSeedIndex]));
+                Farming.GetSiteRefusal(structure, crop),
+                WoodlotRules.GetFertilizerRefusal(crop.IsSapling, fertilizer.Length > 0),
+                FertilizerRules.GetRefusal(fertilizer, true, crop.Tier));
             CanPlant = refusal == FarmingRefusal.None;
             PlantTooltip = FarmingRules.Describe(refusal);
         }
@@ -190,12 +255,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var seed = 0; seed < SeedToggles.Count; seed++)
                 SeedToggles[seed] = seed == index;
 
-            var structure = Farming.GetPlotStructure(_plotId);
-            UpdatePlantButton(
-                structure,
-                Farming.GetPlot(_plotId),
-                structure != null && Farming.HasGardenPermission(Player, structure),
-                DateTime.UtcNow);
+            RefreshPlantButton();
         };
 
         public Action OnClickPlant() => () =>
@@ -203,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_selectedSeedIndex < 0 || _selectedSeedIndex >= _seeds.Count)
                 return;
 
-            Show(Farming.Plant(Player, _plotId, _seeds[_selectedSeedIndex].SeedResref));
+            Show(Farming.Plant(Player, _plotId, _seeds[_selectedSeedIndex].SeedResref, GetSelectedFertilizer()));
         };
 
         public Action OnClickTend() => () => Show(Farming.Tend(Player, _plotId));

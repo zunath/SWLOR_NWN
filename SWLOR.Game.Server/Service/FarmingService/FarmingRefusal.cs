@@ -58,5 +58,14 @@ namespace SWLOR.Game.Server.Service.FarmingService
 
         /// <summary>Fertilizer does nothing for a sapling, so a sapling planted with it is refused and the fertilizer is not used.</summary>
         NoFertilizerOnSaplings = 18,
+
+        /// <summary>The item offered as fertilizer is not a fertilizer.</summary>
+        NotFertilizer = 19,
+
+        /// <summary>The planter carries none of the fertilizer offered.</summary>
+        NoFertilizer = 20,
+
+        /// <summary>The fertilizer is of a lower tier than the crop, so it would do nothing and is not used.</summary>
+        FertilizerTooWeak = 21,
     }
 }

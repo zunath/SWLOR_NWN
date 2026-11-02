@@ -85,6 +85,7 @@ public class CityStaffStoreWiringTests
             utc["Plot"]!["value"]!.Value<int>().Should().Be(1, "staff cannot be harmed");
             utc["IsImmortal"]!["value"]!.Value<int>().Should().Be(1);
             Text(utc, "ScriptDialogue").Should().Be("x2_def_onconv");
+            Text(utc, "Conversation").Should().BeEmpty("the conversation is the code menu named by the CONVERSATION local, not a graph");
 
             var locals = ((JArray)utc["VarTable"]!["value"]!).ToDictionary(
                 local => local["Name"]!["value"]!.Value<string>()!,

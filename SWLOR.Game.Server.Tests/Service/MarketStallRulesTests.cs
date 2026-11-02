@@ -242,6 +242,7 @@ public class MarketStallRulesTests
         Text(utc, "TemplateResRef").Should().Be("cs_stallvendor");
         utc.GetProperty("Plot").GetProperty("value").GetInt32().Should().Be(1, "vendors cannot be harmed");
         Text(utc, "ScriptDialogue").Should().Be("x2_def_onconv");
+        Text(utc, "Conversation").Should().BeEmpty("the conversation is the code menu named by the CONVERSATION local, not a graph");
 
         var conversation = utc.GetProperty("VarTable").GetProperty("value").EnumerateArray()
             .Single(local => Text(local, "Name") == "CONVERSATION");

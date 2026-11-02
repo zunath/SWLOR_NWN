@@ -145,7 +145,7 @@
   },
   "Conversation": {
     "type": "resref",
-    "value": "mcdce_doctor"
+    "value": ""
   },
   "CRAdjust": {
     "type": "int",

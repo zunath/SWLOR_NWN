@@ -88,7 +88,15 @@ public class EshanModuleWiringTests
             var waypoints = Value(git.RootElement, "WaypointList").EnumerateArray().ToArray();
             Assert.That(waypoints.Count(point => Value(point, "Tag").GetString() == "STUCK_WAYPOINT"),
                 Is.EqualTo(1), area + " must recover locally rather than falling back to CZ-220");
-            Assert.That(Value(gic.RootElement, "WaypointList").GetArrayLength(), Is.EqualTo(waypoints.Length), area);
+            var editorWaypoints = Value(gic.RootElement, "WaypointList").EnumerateArray().ToArray();
+            Assert.That(editorWaypoints.Length, Is.EqualTo(waypoints.Length), area);
+            var stuckIndex = Array.FindIndex(waypoints,
+                point => Value(point, "Tag").GetString() == "STUCK_WAYPOINT");
+            var expectedComment = area == "esh_nc_redoubt"
+                ? "Area recovery waypoint."
+                : "Local /stuck recovery at the area entrance or medical terminal";
+            Assert.That(Value(editorWaypoints[stuckIndex], "Comment").GetString(),
+                Is.EqualTo(expectedComment), area);
         }
     }
 

@@ -250,13 +250,15 @@ public class ForceSensitiveEspionageTests
     [TestCase(true, false, false)]
     [TestCase(false, true, false)]
     [TestCase(true, true, false)]
-    public void StatusApplicationMessages_StayPrivateWhileTheBearerOrSourceIsHidden(bool bearerHidden, bool sourceHidden, bool nearby)
+    public void StatusMessages_StayPrivateWhileTheBearerOrSourceIsHidden(bool bearerHidden, bool sourceHidden, bool nearby)
     {
         // Covers buffs a hidden caster's FP spend triggers (Danger Sense, Force Convergence) and
         // any status applied by or to a creature in stealth.
-        StatusEffect.ShouldAnnounceApplicationNearby(bearerHidden, sourceHidden).Should().Be(nearby);
+        StatusEffect.ShouldAnnounceNearby(bearerHidden, sourceHidden).Should().Be(nearby);
         var source = ReadSource("Service", "StatusEffect.cs");
-        source.Should().Contain("if (ShouldAnnounceApplicationNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))");
+        source.Should().Contain("if (ShouldAnnounceNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))",
+            "application messages");
+        source.Should().Contain("if (ShouldAnnounceNearby(IsHiddenFromView(creature), false))", "worn-off messages");
     }
 
     [TestCase(false, false, true)]

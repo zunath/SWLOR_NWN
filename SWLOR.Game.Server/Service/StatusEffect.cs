@@ -769,7 +769,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var sourceIsOther = GetIsObjectValid(source) && source != creature;
-                if (ShouldAnnounceApplicationNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))
+                if (ShouldAnnounceNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))
                 {
                     Messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage);
                 }
@@ -786,10 +786,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Application messages go to every nearby player only while neither the bearer nor the
-        /// applying creature is hidden; otherwise they would reveal who is there.
+        /// Application and worn-off messages go to every nearby player only while neither the bearer
+        /// nor the applying creature is hidden; otherwise they would reveal who is there.
         /// </summary>
-        public static bool ShouldAnnounceApplicationNearby(bool bearerHidden, bool sourceHidden)
+        public static bool ShouldAnnounceNearby(bool bearerHidden, bool sourceHidden)
         {
             return !bearerHidden && !sourceHidden;
         }
@@ -2083,8 +2083,12 @@ namespace SWLOR.Game.Server.Service
                 IsLastInstanceOfType(creatureEffects, statusEffect))
             {
                 var effectName = statusEffect.Name;
-                Messaging.SendMessageNearbyToPlayers(creature,
-                    receiver => $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.");
+                string BuildWornOffMessage(uint receiver) =>
+                    $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.";
+                if (ShouldAnnounceNearby(IsHiddenFromView(creature), false))
+                    Messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage);
+                else
+                    SendMessageToPC(creature, BuildWornOffMessage(creature));
             }
 
             if (removeNativeEffect)

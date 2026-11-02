@@ -165,9 +165,9 @@ public class FertilizerRulesTests
     [Test]
     public void TheNewRefusalsCarryTheirOwnNumbers_AndTellThePlayerWhatToDo()
     {
-        ((int)FarmingRefusal.NotFertilizer).Should().Be(19);
-        ((int)FarmingRefusal.NoFertilizer).Should().Be(20);
-        ((int)FarmingRefusal.FertilizerTooWeak).Should().Be(21);
+        ((int)FarmingRefusal.NotFertilizer).Should().Be(20);
+        ((int)FarmingRefusal.NoFertilizer).Should().Be(21);
+        ((int)FarmingRefusal.FertilizerTooWeak).Should().Be(22);
 
         foreach (var refusal in new[] { FarmingRefusal.NotFertilizer, FarmingRefusal.NoFertilizer, FarmingRefusal.FertilizerTooWeak })
             FarmingRules.Describe(refusal).Should().NotBeNullOrWhiteSpace().And.MatchRegex("^[\\x20-\\x7E]+$");

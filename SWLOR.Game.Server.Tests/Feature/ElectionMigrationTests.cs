@@ -66,6 +66,37 @@ public class ElectionMigrationTests
     }
 
     [Test]
+    public void ElectionAlreadyInVoting_FinishesWithoutPlatformsSoItsWinnerKeepsTheCitysEdicts()
+    {
+        var election = new Election { Stage = ElectionStageType.Voting };
+        election.CandidatePlayerIds.Add("a");
+        election.CandidatePlayerIds.Add("b");
+
+        ElectionMigration.MigrateElection(election, ElectionStart);
+
+        election.Platforms.Should().BeEmpty("the migration adds no platforms to a vote already under way");
+        ElectionPlatformRules.GetPlatformToEnact(election.Platforms, "a").Should().BeNull("its winner fills Edict slots from Manage City");
+        ElectionPlatformRules.GetPlatformToEnact(election.Platforms, "b").Should().BeNull();
+    }
+
+    [Test]
+    public void ElectionStillInRegistration_AcceptsPlatformsWhileItsCandidatesHaveNone()
+    {
+        var election = new Election { Stage = ElectionStageType.Registration };
+        election.CandidatePlayerIds.Add("a");
+
+        ElectionMigration.MigrateElection(election, ElectionStart);
+
+        election.Platforms.Should().BeEmpty("a candidate who registered earlier adds a platform by editing theirs");
+        ElectionRules.IsRegistrationOpen(election.Stage, ElectionStart.AddDays(10), election.RegistrationClosesUtc)
+            .Should().BeTrue("registration is still open under the 14-day calendar, so candidates can add platforms");
+        ElectionPlatformRules.GetPlatformToEnact(election.Platforms, "a").Should().BeNull("until they add one, winning leaves the Edicts alone");
+
+        election.Platforms["a"] = new ElectionPlatform();
+        ElectionPlatformRules.GetPlatformToEnact(election.Platforms, "a").Should().NotBeNull();
+    }
+
+    [Test]
     public void ElectionWhoseCityIsGone_UsesItsCreationTime()
     {
         var election = new Election();

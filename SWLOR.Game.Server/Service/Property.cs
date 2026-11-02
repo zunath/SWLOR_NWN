@@ -1799,7 +1799,7 @@ namespace SWLOR.Game.Server.Service
         /// Who counts as the incumbent in this election's result. For now it is always the sitting mayor; in a step-down
         /// snap election it is the interim holder.
         /// </summary>
-        private static string GetElectionIncumbentId(WorldProperty city, Election election)
+        internal static string GetElectionIncumbentId(WorldProperty city, Election election)
         {
             return city.OwnerPlayerId;
         }
@@ -1922,7 +1922,8 @@ namespace SWLOR.Game.Server.Service
                 : ElectionRules.GetNextRegularElectionUtc(endedUtc);
 
             // Someone new takes the seat.
-            if (!string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId)
+            var seatChanged = !string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId;
+            if (seatChanged)
             {
                 transferPermissions(outcome.WinnerPlayerId);
                 city.OwnerPlayerId = outcome.WinnerPlayerId;
@@ -1941,6 +1942,16 @@ namespace SWLOR.Game.Server.Service
 
             // An empty recall opens the second, and an empty second recall removes the city or pauses it for neglect.
             CityRecall.Apply(now, city, election.Kind, outcome.ClearsNeglect, recallStep);
+
+            // Only an outright win enacts a platform, replacing every Edict over its lock. It comes after the pauses the
+            // election ends are cleared, so what still holds keeps the new Edicts paused. A winner with no platform (the
+            // election opened before platforms) leaves the Edicts as they are; a new mayor's inherited ones stop counting as promises.
+            var winnerPlatform = outcome.HasMandate
+                ? ElectionPlatformRules.GetPlatformToEnact(election.Platforms, outcome.WinnerPlayerId)
+                : null;
+            var platformEnactment = winnerPlatform == null ? null : Edict.EnactPlatform(city, winnerPlatform, now);
+            if (platformEnactment == null && seatChanged)
+                EdictChanges.ClearPlatformOrigin(city);
 
             city.LastElectionResult = new ElectionResultRecord
             {
@@ -1971,6 +1982,9 @@ namespace SWLOR.Game.Server.Service
             DB.Delete<Election>(election.Id);
 
             BroadcastElectionResult(city, outcome, nextRegularUtc);
+            if (platformEnactment != null)
+                Edict.AnnouncePlatform(city, platformEnactment, outcome.WinnerPlayerId);
+
             CityRecall.Announce(city, recallStep);
         }
 
@@ -2034,9 +2048,7 @@ namespace SWLOR.Game.Server.Service
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
                 .AddFieldSearch(nameof(Player.IsDeleted), false));
             var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
-            var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
-                ? mayor.Perks[PerkType.CityManagement] + 1
-                : 1;
+            var mayorLevel = CityLevelRules.GetMayorLevel(GetCityManagementRank(mayor));
 
             // Mayor's perk level has fallen below the city level.
             if (mayorLevel < currentLevel)
@@ -2045,23 +2057,9 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
             }
 
-            var maxLevelThisCycle = 1;
-            for (var level = 1; level <= 5; level++)
-            {
-                // Mayor can't support a higher city level.
-                if (level > mayorLevel)
-                {
-                    Log.Write(LogGroup.Property, $"Mayor cannot support city level {level} or higher.");
-                    break;
-                }
-
-                // The citizen count requirements are met
-                if (citizenCount >= _citizensRequired[level])
-                {
-                    maxLevelThisCycle = level;
-                    Log.Write(LogGroup.Property, $"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
-                }
-            }
+            // The highest level the mayor and the citizen count both support.
+            var maxLevelThisCycle = CityLevelRules.GetMaxSupportedLevel(mayorLevel, citizenCount, _citizensRequired);
+            Log.Write(LogGroup.Property, $"The mayor and {citizenCount} citizens support city level {maxLevelThisCycle} at most.");
 
             // Current level is higher than max level this cycle. Drop it down that value.
             if (currentLevel > maxLevelThisCycle)
@@ -3953,6 +3951,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// The rank a character has trained in the City Management perk, which caps the level of the city they run, or null
+        /// when they have not trained it.
+        /// </summary>
+        public static int? GetCityManagementRank(Player dbPlayer)
+        {
+            return dbPlayer != null && dbPlayer.Perks.TryGetValue(PerkType.CityManagement, out var rank) ? rank : null;
+        }
+
+        /// <summary>
+        /// The citizens each city level needs, by level, as the weekly check reads them.
+        /// </summary>
+        internal static IReadOnlyDictionary<int, int> GetCitizensRequiredByLevel()
+        {
+            return _citizensRequired;
         }
 
         /// <summary>

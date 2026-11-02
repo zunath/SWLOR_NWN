@@ -11,13 +11,15 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     /// <summary>
-    /// A city's election window (Player City Revamp, "Election changes"): the candidates and their statements, the
-    /// statement editor during registration, and the vote. A lone candidate gets a Yes or No confidence vote.
+    /// A city's election window (Player City Revamp, "Election changes"): the candidates with their Edicts, weekly cost
+    /// and statements (and the incumbent's record), the platform step a candidate fills in during registration (see
+    /// <c>ElectionViewModel.Platform.cs</c>), and the vote. A lone candidate gets a Yes or No confidence vote.
     /// </summary>
-    public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
+    public partial class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
     {
         public const string MainContentElement = "election_content";
         public const string MainContentPartial = "ELECTION_MAIN";
+        public const string PlatformPartial = "ELECTION_PLATFORM";
 
         private const string AbstainName = "[ABSTAIN]";
         private const string NoStatementText = "This candidate has not written a statement.";
@@ -25,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Row i of the candidate list shows _candidatePlayerIds[i]. When the list starts with the abstain row,
         // the first entry is empty.
         private readonly List<string> _candidatePlayerIds = new();
-        private readonly List<string> _statements = new();
+        private readonly List<string> _candidateDetails = new();
         private int _selectedCandidateIndex;
         private string _electionId = string.Empty;
         private bool _hasAbstainRow;
@@ -61,14 +63,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        /// <summary>The statement of the candidate selected in the list.</summary>
-        public string SelectedStatement
+        /// <summary>
+        /// What the selected candidate stands for: their Edicts, weekly cost and statement, and for the incumbent their
+        /// record and recent decisions.
+        /// </summary>
+        public string SelectedCandidateDetails
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        /// <summary>The text in the candidate's statement editor.</summary>
+        /// <summary>The text in the platform step's statement editor.</summary>
         public string StatementInput
         {
             get => Get<string>();
@@ -94,24 +99,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        /// <summary>Enter or Exit Race during registration, Cast Vote in a contested vote.</summary>
+        /// <summary>Exit Race for a candidate during registration, Cast Vote in a contested vote.</summary>
         public bool IsMainActionVisible
         {
             get => Get<bool>();
             set => Set(value);
         }
 
-        /// <summary>The statement editor and its Save button: registration, for a citizen.</summary>
-        public bool IsStatementEditorVisible
+        /// <summary>Enter Race or Edit Platform, which opens the platform step: registration, for a citizen.</summary>
+        public bool IsPlatformButtonVisible
         {
             get => Get<bool>();
             set => Set(value);
         }
 
-        /// <summary>Save Statement is offered once the player is in the race.</summary>
-        public bool IsSaveStatementVisible
+        public string PlatformButtonText
         {
-            get => Get<bool>();
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -131,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             LoadData(false);
+            InitializePlatformStep();
 
             // The statement is the only value the client changes.
             WatchOnClient(model => model.StatementInput);
@@ -163,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var toggles = new GuiBindingList<bool>();
             var enables = new GuiBindingList<bool>();
             _candidatePlayerIds.Clear();
-            _statements.Clear();
+            _candidateDetails.Clear();
             _selectedCandidateIndex = 0;
             _hasAbstainRow = false;
 
@@ -172,13 +177,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _electionId = string.Empty;
                 Instructions = "There is no election open right now. Check the Manage Citizenship window for the date the next one opens.";
                 ScheduleText = string.Empty;
-                SelectedStatement = string.Empty;
+                SelectedCandidateDetails = string.Empty;
                 VoteStatusText = string.Empty;
                 MainActionButtonText = string.Empty;
                 MainActionButtonColor = GuiColor.White;
                 IsMainActionVisible = false;
-                IsStatementEditorVisible = false;
-                IsSaveStatementVisible = false;
+                IsPlatformButtonVisible = false;
+                PlatformButtonText = string.Empty;
                 IsConfidenceVoteVisible = false;
                 IsVoteStatusVisible = false;
                 if (!keepStatementInput)
@@ -208,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 _hasAbstainRow = true;
                 _candidatePlayerIds.Add(string.Empty);
-                _statements.Add("Select this to vote for nobody. If you have already voted, pressing Cast Vote takes your vote back.");
+                _candidateDetails.Add("Select this to vote for nobody. If you have already voted, pressing Cast Vote takes your vote back.");
                 names.Add(AbstainName);
                 toggles.Add(false);
                 enables.Add(true);
@@ -220,20 +225,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .ToDictionary(candidate => candidate.Id)
                 : new Dictionary<string, Entity.Player>();
 
+            // The incumbent's row shows their record and the recent decisions on the Gazette.
+            var city = DB.Get<WorldProperty>(election.PropertyId);
+            var incumbentId = Property.GetElectionIncumbentId(city, election);
+            var incumbentSection = string.Empty;
+            if (election.CandidatePlayerIds.Contains(incumbentId))
+            {
+                var decisions = ElectionPlatformRules.SelectRecentDecisions(CityGazette.GetEntries(city.Id, false));
+                incumbentSection = ElectionPlatformRules.BuildIncumbentSection(
+                    incumbentId == city.OwnerPlayerId ? city.MayorRecord : null,
+                    decisions);
+            }
+
+            var cityNames = new Dictionary<string, string>();
+            string GetCityName(string cityId)
+            {
+                if (!cityNames.TryGetValue(cityId, out var name))
+                {
+                    name = DB.Get<WorldProperty>(cityId)?.CustomName ?? string.Empty;
+                    cityNames[cityId] = name;
+                }
+
+                return name;
+            }
+
             foreach (var candidateId in election.CandidatePlayerIds)
             {
                 if (!candidates.TryGetValue(candidateId, out var candidate))
                     continue;
 
+                var isIncumbent = candidateId == incumbentId;
+                var displayName = PlayerName.GetPlainDisplayNameByPlayerId(Player, candidateId, candidate.Name);
+                ElectionPlatform platform = null;
+                election.Platforms?.TryGetValue(candidateId, out platform);
+
                 _candidatePlayerIds.Add(candidateId);
-                names.Add(PlayerName.GetPlainDisplayNameByPlayerId(Player, candidateId, candidate.Name));
+                names.Add(ElectionPlatformRules.BuildCandidateRowText(displayName, isIncumbent, platform));
                 toggles.Add(false);
                 enables.Add(true);
-
-                var statement = election.Platforms != null && election.Platforms.TryGetValue(candidateId, out var platform)
-                    ? platform.Statement
-                    : string.Empty;
-                _statements.Add(string.IsNullOrWhiteSpace(statement) ? NoStatementText : statement);
+                _candidateDetails.Add(ElectionPlatformRules.BuildCandidateDetails(
+                    platform,
+                    GetCityName,
+                    NoStatementText,
+                    isIncumbent ? incumbentSection : string.Empty));
             }
 
             // A contested voter starts on their current choice; otherwise the list starts on its first row.
@@ -249,21 +283,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CandidateNames = names;
             CandidateToggles = toggles;
             CandidateEnables = enables;
-            SelectedStatement = _statements.Count > 0 ? _statements[_selectedCandidateIndex] : "No candidates have registered yet.";
+            SelectedCandidateDetails = _candidateDetails.Count > 0 ? _candidateDetails[_selectedCandidateIndex] : "No candidates have registered yet.";
 
             ScheduleText = BuildScheduleText(election, now, registrationOpen, votingOpen);
             Instructions = BuildInstructions(election, isCitizen, canVote, registrationOpen, votingOpen);
 
-            IsStatementEditorVisible = isRegistration && registrationOpen && isCitizen;
-            IsSaveStatementVisible = IsStatementEditorVisible && isCandidate;
-            IsMainActionVisible = (isRegistration && registrationOpen && isCitizen) || (isContested && votingOpen && canVote);
+            IsPlatformButtonVisible = isRegistration && registrationOpen && isCitizen;
+            PlatformButtonText = isCandidate ? "Edit Platform" : "Enter Race";
+            IsMainActionVisible = (isRegistration && registrationOpen && isCitizen && isCandidate) || (isContested && votingOpen && canVote);
             IsConfidenceVoteVisible = isConfidence && votingOpen && canVote;
             IsVoteStatusVisible = election.Stage == ElectionStageType.Voting;
 
             if (isRegistration)
             {
-                MainActionButtonText = isCandidate ? "Exit Race" : "Enter Race";
-                MainActionButtonColor = isCandidate ? GuiColor.Red : GuiColor.White;
+                MainActionButtonText = "Exit Race";
+                MainActionButtonColor = GuiColor.Red;
             }
             else
             {
@@ -319,9 +353,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var text = kindNote +
-                           "Candidate registration is open. Any citizen may run for mayor and write a statement of up to " +
-                           $"{ElectionRules.StatementMaxLength} characters. Candidates can edit their statement or withdraw until registration closes. " +
-                           "Select a candidate to read their statement. If only one candidate registers, citizens vote Yes or No on them; otherwise citizens vote for one candidate.";
+                           "Candidate registration is open. Any citizen may run for mayor. Enter Race opens your platform: the Edicts you promise, " +
+                           $"up to what the city's level allows, and a statement of up to {ElectionRules.StatementMaxLength} characters. " +
+                           "If you win outright, your platform replaces every Edict the city holds. Candidates can edit their platform or withdraw until registration closes. " +
+                           "Select a candidate to read their platform. If only one candidate registers, citizens vote Yes or No on them; otherwise citizens vote for one candidate.";
                 return isCitizen ? text : text + " Only citizens of this city can run.";
             }
 
@@ -374,11 +409,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _selectedCandidateIndex = index;
             CandidateToggles[_selectedCandidateIndex] = true;
-            SelectedStatement = _statements[_selectedCandidateIndex];
+            SelectedCandidateDetails = _candidateDetails[_selectedCandidateIndex];
         };
 
         /// <summary>
-        /// Enters or leaves the race during registration, and casts the selected vote in a contested vote.
+        /// Takes a candidate out of the race during registration, and casts the selected vote in a contested vote.
         /// </summary>
         public Action MainAction() => () =>
         {
@@ -393,27 +428,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (election.Stage == ElectionStageType.Registration)
             {
-                var dbCity = DB.Get<WorldProperty>(election.PropertyId);
-                if (election.CandidatePlayerIds.Contains(playerId))
-                {
-                    ShowModal("Are you sure you want to withdraw the race? Any votes cast for you will be lost should you decide to enter again.",
-                        () =>
-                        {
-                            var error = ElectionBallot.WithdrawCandidate(_electionId, playerId);
-                            SendMessageToPC(Player, string.IsNullOrEmpty(error) ? "You have withdrawn from the race." : error);
-                            LoadData(true);
-                        });
-                }
-                else
-                {
-                    ShowModal($"Are you sure you want to enter the race? If you win the vote, you will immediately become the mayor of {dbCity.CustomName}. This includes being responsible for paying maintenance and upkeep fees. Your statement is saved with your entry, and you can edit it until registration closes. Will you enter the race?",
-                        () =>
-                        {
-                            var error = ElectionBallot.RegisterCandidate(_electionId, playerId, StatementInput);
-                            SendMessageToPC(Player, string.IsNullOrEmpty(error) ? "You have entered the race!" : error);
-                            LoadData(false);
-                        });
-                }
+                ShowModal("Are you sure you want to withdraw the race? Your platform is discarded, and any votes cast for you will be lost should you decide to enter again.",
+                    () =>
+                    {
+                        var error = ElectionBallot.WithdrawCandidate(_electionId, playerId);
+                        SendMessageToPC(Player, string.IsNullOrEmpty(error) ? "You have withdrawn from the race." : error);
+                        LoadData(false);
+                    });
 
                 return;
             }
@@ -431,13 +452,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CastVoteAndReport(_candidatePlayerIds[_selectedCandidateIndex], false);
         };
 
-        /// <summary>Saves the statement of a candidate who is already in the race.</summary>
-        public Action SaveStatement() => () =>
-        {
-            var error = ElectionBallot.UpdateStatement(_electionId, GetObjectUUID(Player), StatementInput);
-            SendMessageToPC(Player, string.IsNullOrEmpty(error) ? "Your statement has been saved." : error);
-            LoadData(false);
-        };
 
         public Action VoteYes() => () => CastConfidenceVote(false);
 

@@ -131,6 +131,18 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual(1, committed.count(
             ".IncreasesStat(StatType.DamageTakenNextSkillAbilityRequiredCategory, (int)StatusEffectCategory.Control)"))
 
+    def test_redirecting_guard_enmity_targets_a_controlled_enemy_attacking_an_ally(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["Tab"] == "Katar" and row["PerkName"] == "Redirecting Guard")
+        self.assertIn("control a target attacking an ally", row["Description"].lower())
+        self.assertIn("enmity toward that target", row["Description"].lower())
+        stats = dict(GENERATOR.description_stat_entries(row, row["PerkName"]))
+        self.assertEqual("(int)StatusEffectCategory.Control", stats["StatusAppliedRequiredCategory"])
+        self.assertEqual("15", stats["StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment"])
+        self.assertEqual("30", stats["StatusAppliedTargetAttackingAllyEnmityDurationSeconds"])
+        self.assertNotIn("StatusAppliedSelfEnmityPercentAdjustment", stats)
+        self.assertNotIn("StatusAppliedSelfDurationSeconds", stats)
+
     def test_regeneration_preserves_steel_shoulder_ally_only_target_selection(self):
         rows = [row for row in GENERATOR.read_manifest()
                 if row["PerkName"] in {"Steel Shoulder", "Gambler Stance"}]

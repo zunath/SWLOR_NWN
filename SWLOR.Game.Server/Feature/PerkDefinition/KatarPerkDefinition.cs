@@ -396,8 +396,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RedirectingGuardTrait)
                 .Description("When you control a target attacking an ally, gain +15% Enmity toward that target for 30 seconds.")
                 .IncreasesStat(StatType.StatusAppliedRequiredCategory, (int)StatusEffectCategory.Control)
-                .IncreasesStat(StatType.StatusAppliedSelfEnmityPercentAdjustment, 15)
-                .IncreasesStat(StatType.StatusAppliedSelfDurationSeconds, 30)
+                .IncreasesStat(StatType.StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment, 15)
+                .IncreasesStat(StatType.StatusAppliedTargetAttackingAllyEnmityDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 15);
         }

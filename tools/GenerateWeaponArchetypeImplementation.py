@@ -1478,8 +1478,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "GuardedHitNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     elif base == "Redirecting Guard":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
-        add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
-        add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
+        add_stat(stats, "StatusAppliedTargetAttackingAllyEnmityDurationSeconds", parse_duration(description) or 30)
     if base == "Covering Presence":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))

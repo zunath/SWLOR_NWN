@@ -4029,9 +4029,8 @@ namespace SWLOR.Game.Server.Service.StatService
         StatusAppliedSelfEnmityPercentAdjustment = 711,
 
         /// <summary>
-        /// Duration in seconds for status-applied self stat riders. Guard Training and
-        /// Redirecting Guard each author 30 seconds, so the longest authored window applies
-        /// instead of the sum.
+        /// Duration in seconds for status-applied self stat riders. When several perks author it,
+        /// the longest authored window applies instead of the sum.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         StatusAppliedSelfDurationSeconds = 712,
@@ -4418,6 +4417,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
         DamageTakenNextSkillAbilityRequiredCategory = 1322,
+
+        /// <summary>
+        /// Enmity percent the target generates toward the activator after the activator applies a
+        /// StatusAppliedRequiredCategory status to it while it was attacking one of the activator's allies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment = 1324,
+
+        /// <summary>
+        /// Duration in seconds of StatusAppliedTargetAttackingAllyEnmityToSourcePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        StatusAppliedTargetAttackingAllyEnmityDurationSeconds = 1325,
 
         /// <summary>
         /// Flat damage bonus granted to the next matching ability after avoiding an attack.

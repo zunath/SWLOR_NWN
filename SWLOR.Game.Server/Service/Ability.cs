@@ -2637,6 +2637,8 @@ namespace SWLOR.Game.Server.Service
             bool firstHostileAbilityHitDamageBonusApplied = false)
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
+            // Read before this hit's damage and enmity can turn the target onto the activator.
+            var targetWasAttackingAlly = Combat.IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var allowsHitProcs = trackedImpact?.Ability.MeleeTechnique == null ||
                 trackedImpact.Sequence.TryTriggerDamageRider($"TechniqueHitProcs:{target}");
@@ -2731,7 +2733,8 @@ namespace SWLOR.Game.Server.Service
                 firstHostileAbilityHitDamageBonusApplied,
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
                 appliedStatusCategories,
-                allowsHitProcs);
+                allowsHitProcs,
+                targetWasAttackingAlly);
 
             if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&
                 impactAbility.DamageImpactVisualEffect != VisualEffect.None)

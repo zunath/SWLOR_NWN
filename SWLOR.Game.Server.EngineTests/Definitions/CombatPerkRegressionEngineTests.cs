@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -289,6 +290,86 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "Reprisal Dazes a target that recently damaged you");
                 ctx.AssertEqual(10, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
                     "the conditional Daze triggers Charged Blows like any applied Control status");
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
+        }
+
+        [EngineTest("Redirecting Guard draws Enmity only from a controlled target attacking an ally", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task RedirectingGuardRequiresTargetAttackingAlly(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var ally = ctx.SpawnCreature("nw_bandit001", 1.5f);
+            var allyAttacker = ctx.SpawnCreature("nw_rat001", 2f);
+            var casterAttacker = ctx.SpawnCreature("nw_rat001", 2.5f);
+            var idleTarget = ctx.SpawnCreature("nw_rat001", 3f);
+            var challengedTarget = ctx.SpawnCreature("nw_rat001", 3.5f);
+            await ctx.WaitFrameAsync();
+            foreach (var creature in new[] { caster, ally, allyAttacker, casterAttacker, idleTarget, challengedTarget })
+                Prepare(ctx, creature);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.RedirectingGuard, 1);
+            ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.StatusAppliedSelfEnmityPercentAdjustment),
+                "Redirecting Guard no longer raises the caster's Enmity against every enemy");
+
+            await ctx.ExecuteInCreatureContextAsync(caster, () => AddHenchman(caster, ally));
+            await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the ally to join the caster's party");
+
+            var jointLock = Ability.GetAbilityDetail(FeatType.JointLock1);
+            async Task ApplyJointLock(uint target)
+            {
+                ctx.MakeHostile(target);
+                Ability.BeginAbilityImpact(caster, jointLock);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => jointLock.ImpactAction(caster, target, 1, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+                ChangeToStandardFaction(target, StandardFaction.Defender);
+            }
+
+            int ChallengeFromCaster(uint target) => StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .Where(effect => effect is ChallengeEnmityStatusEffect && effect.Source == caster && !effect.IsFlaggedForRemoval)
+                .Select(effect => effect.StatGroup.Stats.GetValueOrDefault(StatType.EnmityToStatusSourcePercentAdjustment))
+                .DefaultIfEmpty(0)
+                .Max();
+
+            // A small lead, so Joint Lock's own damage and Enmity would make the caster the top target
+            // if the check ran after the hit.
+            Enmity.ModifyEnmity(ally, allyAttacker, 1);
+            Enmity.ModifyEnmity(caster, casterAttacker, 100);
+            Enmity.ModifyEnmity(ally, challengedTarget, 1);
+            StatusEffect.ApplyStatusEffect(caster, challengedTarget, new ChallengeEnmityStatusEffect(25), 60f);
+
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ApplyJointLock(allyAttacker);
+                ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(allyAttacker), "Joint Lock Dazes the ally's attacker");
+                ctx.AssertEqual(15, ChallengeFromCaster(allyAttacker),
+                    "controlling a target attacking an ally gives +15% Enmity toward the caster on that target");
+                ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.EnmityPercentAdjustment),
+                    "the caster's Enmity against other enemies is unchanged");
+
+                await ApplyJointLock(casterAttacker);
+                ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(casterAttacker), "Joint Lock Dazes the caster's attacker");
+                ctx.AssertEqual(0, ChallengeFromCaster(casterAttacker), "a target attacking the caster is not attacking an ally");
+
+                await ApplyJointLock(idleTarget);
+                ctx.AssertEqual(0, ChallengeFromCaster(idleTarget), "a target attacking no one is not attacking an ally");
+
+                await ApplyJointLock(challengedTarget);
+                ctx.AssertEqual(25, ChallengeFromCaster(challengedTarget),
+                    "Redirecting Guard does not replace a stronger Challenge from the same caster");
             }
             finally
             {

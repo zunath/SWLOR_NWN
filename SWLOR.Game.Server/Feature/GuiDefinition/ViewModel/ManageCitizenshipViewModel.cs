@@ -298,5 +298,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Election, null, TetherObject);
         };
+
+        public Action OpenGazette() => () =>
+        {
+            CityGazette.OpenWindow(Player, _cityPropertyId, TetherObject);
+        };
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityGazetteService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -656,6 +657,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var dbCity = DB.Get<WorldProperty>(_cityId);
+            var citizenshipTaxBefore = dbCity.Taxes[PropertyTaxType.Citizenship];
+            var transportationTaxBefore = dbCity.Taxes[PropertyTaxType.Transportation];
+            var exchangeTariffBefore = GetStoredExchangeTariff(dbCity);
+            var shipyardFeeBefore = Station.IsStation(dbCity) ? StationBuildings.GetShipyardFee(dbCity) : 0;
 
             ResolveTaxes(
                 CanEditTaxes,
@@ -702,6 +707,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbCity);
+            PostTaxChangesToGazette(dbCity, citizenshipTaxBefore, transportationTaxBefore, exchangeTariffBefore, shipyardFeeBefore);
 
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
@@ -712,6 +718,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             InstructionsColor = tariffRefused ? GuiColor.Red : GuiColor.Green;
 
         };
+
+        /// <summary>Publishes the taxes and fees that changed in the Gazette, under the name and title of whoever saved them.</summary>
+        private void PostTaxChangesToGazette(
+            WorldProperty dbCity,
+            int citizenshipTaxBefore,
+            int transportationTaxBefore,
+            int exchangeTariffBefore,
+            int shipyardFeeBefore)
+        {
+            var changes = new List<(string Name, string Before, string After)>
+            {
+                ("Citizenship tax", $"{citizenshipTaxBefore} cr per week", $"{dbCity.Taxes[PropertyTaxType.Citizenship]} cr per week"),
+                ("Transportation tax", $"{transportationTaxBefore}%", $"{dbCity.Taxes[PropertyTaxType.Transportation]}%"),
+                ("Trade Exchange tariff", $"{exchangeTariffBefore}%", $"{GetStoredExchangeTariff(dbCity)}%")
+            };
+
+            if (Station.IsStation(dbCity))
+                changes.Add(("Shipyard fee", $"{shipyardFeeBefore} cr", $"{StationBuildings.GetShipyardFee(dbCity)} cr"));
+
+            var text = CityGazetteRules.BuildTaxChangeText(changes);
+            if (text.Length == 0)
+                return;
+
+            var playerId = GetObjectUUID(Player);
+            CityGazette.Post(
+                dbCity.Id,
+                CityGazetteEntryType.Tax,
+                text,
+                playerId,
+                CityGazetteRules.GetTaxOfficialTitle(playerId == dbCity.OwnerPlayerId));
+        }
 
         public Action ResetChanges() => () =>
         {

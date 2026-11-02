@@ -114,18 +114,22 @@ namespace SWLOR.Game.Server.Service.FarmingService
             };
         }
 
+        /// <summary>The items a harvest loses while the Pests in the Gardens situation is ignored in the city.</summary>
+        public const int PestYieldPenalty = 1;
+
         /// <summary>
         /// Items in one harvest: 3, plus 1 if tended, 1 if fertilized, one per Bountiful Harvest rank (up to 3), and 1 each from a
-        /// Greenhouse and Home Ground. The most is 10.
+        /// Greenhouse and Home Ground. The most is 10. While pests plague the city's gardens a harvest yields 1 less, never below 1.
         /// </summary>
-        public static int GetYield(bool tended, bool fertilized, int bountifulHarvestRank, bool greenhouse, bool homeGround)
+        public static int GetYield(bool tended, bool fertilized, int bountifulHarvestRank, bool greenhouse, bool homeGround, bool pests = false)
         {
-            return BaseYield +
-                   (tended ? 1 : 0) +
-                   (fertilized ? 1 : 0) +
-                   Math.Clamp(bountifulHarvestRank, 0, MaxBountifulHarvestRank) +
-                   (greenhouse ? 1 : 0) +
-                   (homeGround ? 1 : 0);
+            var yield = BaseYield +
+                        (tended ? 1 : 0) +
+                        (fertilized ? 1 : 0) +
+                        Math.Clamp(bountifulHarvestRank, 0, MaxBountifulHarvestRank) +
+                        (greenhouse ? 1 : 0) +
+                        (homeGround ? 1 : 0);
+            return pests ? Math.Max(1, yield - PestYieldPenalty) : yield;
         }
 
         /// <summary>The chance, in percent, that a harvest also returns its seed: 0, 15 or 30 for a Seed Saver rank of 0 to 2.</summary>

@@ -105,9 +105,36 @@ namespace SWLOR.Game.Server.Service
                 IsStation = Station.IsStation(city),
                 Planet = Station.GetCityPlanet(city),
                 FacilityLevels = facilities,
+                StructureTypes = GetStructureTypes(city),
                 ActiveEdicts = GetActiveEdictNames(city),
                 SkillRanks = skillRanks ?? new Dictionary<SkillType, int>()
             };
+        }
+
+        /// <summary>
+        /// The types of structure the city has: those standing on its land, and the garden plots inside its houses, so a city whose
+        /// farmers only garden indoors still counts as having gardens.
+        /// </summary>
+        private static IReadOnlyCollection<StructureType> GetStructureTypes(WorldProperty city)
+        {
+            var types = new HashSet<StructureType>();
+            var childQuery = new DBQuery<WorldProperty>().AddFieldSearch(nameof(WorldProperty.ParentPropertyId), city.Id, false);
+            var count = (int)DB.SearchCount(childQuery);
+            var children = count <= 0 ? new List<WorldProperty>() : DB.Search(childQuery.AddPaging(count, 0)).ToList();
+            foreach (var child in children.Where(child => child.PropertyType == PropertyType.Structure))
+                types.Add(child.StructureType);
+
+            var houseIds = children.Where(child => child.PropertyType == PropertyType.House).Select(child => child.Id).ToList();
+            if (houseIds.Count > 0 && !types.Contains(StructureType.GardenPlot))
+            {
+                var plotQuery = new DBQuery<WorldProperty>()
+                    .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), houseIds)
+                    .AddFieldSearch(nameof(WorldProperty.StructureType), (int)StructureType.GardenPlot);
+                if (DB.SearchCount(plotQuery) > 0)
+                    types.Add(StructureType.GardenPlot);
+            }
+
+            return types;
         }
 
         /// <summary>The skill ranks of a character, for the requirements of a choice.</summary>
@@ -398,6 +425,14 @@ namespace SWLOR.Game.Server.Service
                 else if (effect.Type == SituationEffectType.FollowUp)
                 {
                     QueueFollowUp(city, effect, now, situations, secretEntryId);
+                }
+                else if (effect.Type == SituationEffectType.StartHunt)
+                {
+                    LivestockHunts.Start(city, now);
+                }
+                else if (effect.Type == SituationEffectType.LivestockNoProducts)
+                {
+                    Corrals.ApplyPredatorPenalty(city, now);
                 }
             }
 

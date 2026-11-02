@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SeedNames = new GuiBindingList<string>();
             SeedToggles = new GuiBindingList<bool>();
 
+            Farmhands.CatchUpForPlot(_plotId);
             var withered = Farming.RemoveWitheredCrop(_plotId, DateTime.UtcNow);
             Refresh();
             if (withered != CropType.Invalid)

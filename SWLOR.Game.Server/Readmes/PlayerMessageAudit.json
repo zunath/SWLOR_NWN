@@ -952,6 +952,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Green(city.CouncilSummons.Text))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
+    "Line": 96,
+    "Member": "PlacePageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CoxxionTerminalDialog.cs",
     "Line": 55,
     "Member": "MainPageInit",
@@ -980,6 +987,20 @@
     "Call": "FloatingTextStringOnCreature(error, Player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/FarmhandDialog.cs",
+    "Line": 60,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(FarmhandRules.Describe(refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/FarmhandDialog.cs",
+    "Line": 193,
+    "Member": "FeedPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Green($\"You loaded {loaded} {crop.Name} into the feed hopper.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/GuildMasterDialog.cs",
     "Line": 119,
     "Member": "GuildStorePageInit",
@@ -1006,6 +1027,13 @@
     "Member": "ConfirmationPageInit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(message, player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/LivestockDialog.cs",
+    "Line": 54,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/LockedDoorDialog.cs",
@@ -4669,6 +4697,20 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/Corrals.cs",
+    "Line": 634,
+    "Member": "Notify",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(text))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Corrals.cs",
+    "Line": 654,
+    "Member": "DeliverNotices",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(notice.Text))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
     "Line": 1040,
     "Member": "UseResearchTerminal",
@@ -5145,8 +5187,36 @@
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 223,
+    "Member": "AssignDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} now works {(farmhand.TargetType == FarmhandTargetType.House ? \"your crops here\" : \"the corral\")}. It handles tier 1 to {farmhand.DroidTier}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 246,
+    "Member": "RecallDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{farmhand.DroidName} was sent back to its owner.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 253,
+    "Member": "RecallDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Farmhands.cs",
+    "Line": 262,
+    "Member": "RecallDroid",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{farmhand.DroidName} returns to you.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Farming.cs",
-    "Line": 335,
+    "Line": 352,
     "Member": "OnPlotRetrieved",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(planter, inOverflow\n                    ? $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed is in your overflow storage; use /overflow to claim it.\"\n                    : $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed came back to you.\")"
@@ -6063,175 +6133,182 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 775,
+    "Line": 776,
     "Member": "NotifyPropertyLoadWaiters",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 809,
+    "Line": 810,
     "Member": "NotifyPropertyLoadWaitersWithoutClearing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 815,
+    "Line": 816,
     "Member": "SendPropertyLoadingMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property is still loading. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 820,
+    "Line": 821,
     "Member": "SendPropertyLoadFailedMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property could not be loaded. Please notify staff.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 2975,
+    "Line": 2976,
     "Member": "CreateStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your station stands at the anchor site in {anchor.SystemName}. Use its docking point to dock at its Starport and go aboard.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3388,
+    "Line": 3389,
     "Member": "EnterProperty",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3477,
+    "Line": 3478,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3507,
+    "Line": 3508,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3571,
+    "Line": 3572,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3588,
+    "Line": 3589,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3601,
+    "Line": 3602,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3608,
+    "Line": 3609,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is listed for sale. Its furniture cannot change until the listing ends.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3661,
+    "Line": 3663,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3669,
+    "Line": 3671,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3676,
+    "Line": 3678,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3686,
+    "Line": 3688,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This property holds at most {plotLimit} garden plots.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3698,
+    "Line": 3701,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(stationBuildingError, player, false)"
+    "Call": "FloatingTextStringOnCreature(corralError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
     "Line": 3712,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(stationBuildingError, player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Property.cs",
+    "Line": 3726,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationDeckRules.DescribeRefusal(placement), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3739,
+    "Line": 3753,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3880,
+    "Line": 3894,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3887,
+    "Line": 3901,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3920,
+    "Line": 3934,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3955,
+    "Line": 3969,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3974,
+    "Line": 3988,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4007,
+    "Line": 4021,
     "Member": "OpenCityManagementMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"

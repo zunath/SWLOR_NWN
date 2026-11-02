@@ -167,9 +167,11 @@ public class SituationDefinitionTests
     }
 
     [Test]
-    public void FarmSituationsAreLeftForTheFarmingSlices()
+    public void TheFarmSituationsAreDefined_PestsAndPredators()
     {
-        Enum.GetNames<SituationType>().Should().NotContain(name => name.Contains("Pest") || name.Contains("Predator"));
+        Enum.GetNames<SituationType>().Should().Contain(new[] { "PestsInTheGardens", "PredatorsAtTheCorrals" });
+        ((int)SituationType.PestsInTheGardens).Should().Be(12);
+        ((int)SituationType.PredatorsAtTheCorrals).Should().Be(13);
     }
 
     #endregion

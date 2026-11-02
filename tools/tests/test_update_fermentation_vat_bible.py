@@ -55,6 +55,32 @@ class FermentationVatBibleTests(unittest.TestCase):
         self.assertEqual(once, twice)
         self.assertEqual(twice.count("FermentationVat"), 1)
 
+
+    def test_a_current_row_keeps_the_parameter_columns_another_script_added(self):
+        once, _ = VAT.rewrite(sheet(EXISTING), VAT.ROWS)
+        with_parameters = once.replace('</row><autoFilter', '</row><autoFilter').replace(
+            '<c r="AD4" s="14" t="n"><v>0</v></c></row>',
+            '<c r="AD4" s="14" t="n"><v>0</v></c><c r="AE4" s="14"><v>39</v></c><c r="AF4" s="14"><v>33</v></c></row>')
+        self.assertIn('<c r="AE4" s="14"><v>39</v></c>', with_parameters)
+
+        again, end = VAT.rewrite(with_parameters, VAT.ROWS)
+
+        self.assertEqual(again, with_parameters, "the row is current, so nothing is rewritten and the parameter cells stay")
+        self.assertEqual(end, 4)
+
+    def test_a_row_that_differs_loses_its_parameter_columns_so_they_can_be_written_again(self):
+        once, _ = VAT.rewrite(sheet(EXISTING), VAT.ROWS)
+        stale = once.replace('<t>structure_5105</t>', '<t>structure_9999</t>').replace(
+            '<c r="AD4" s="14" t="n"><v>0</v></c></row>',
+            '<c r="AD4" s="14" t="n"><v>0</v></c><c r="AE4" s="14"><v>39</v></c></row>')
+
+        fixed, _ = VAT.rewrite(stale, VAT.ROWS)
+
+        self.assertIn('structure_5105', fixed)
+        self.assertNotIn('structure_9999', fixed)
+        self.assertNotIn('<c r="AE4"', fixed)
+        self.assertEqual(fixed.count("FermentationVat"), 1)
+
     def test_a_stale_row_is_replaced_in_place_and_other_rows_are_untouched(self):
         stale = EXISTING.replace(
             '<row r="4"><c r="A4" s="14" /></row>',

@@ -3,10 +3,10 @@
 usage: python tools/UpdateFermentationVatBible.py [--check] [--workbook PATH]
 
 The row is the Cookpot's (the other Agriculture crafting station): the same level and bill, laid out like the tab's Cookpot row,
-and appended after the tab's last row. Re-running removes the row written before (matched by Recipe Enum) and writes it again,
-so a workbook that took another branch's rows can be fixed by taking the base workbook and running this script again;
---check only reports whether the workbook is current and exits 1 when it is not. Every other zip entry is copied byte for byte,
-and the rest of the worksheet XML is left untouched.
+and appended after the tab's last row. Re-running leaves a row that is already current exactly as it is, parameter columns
+included, and replaces one that differs. A workbook that took another branch's rows is fixed by taking the base workbook, running
+this script, and then running tools/UpdateRecipeParameterBible.py. --check only reports whether the row is current and exits 1
+when it is not. Every other zip entry is copied byte for byte, and the rest of the worksheet XML is left untouched.
 
 The recipe's Fabricator parameter columns are not written here: run `tools/UpdateRecipeParameterBible.py` afterwards, as
 `tools/SWLOR.RecipeParameters/README.md` describes. The enzyme cultures have no recipe rows, since a culture is a job picked at
@@ -52,7 +52,7 @@ def cell(ref, value):
     return f'<c r="{ref}" s="{STYLE}" t="inlineStr"><is><t>{html.escape(value, quote=False)}</t></is></c>'
 
 
-def row_xml(number, r):
+def row_cells(r):
     cells = [("A", "Fabrication"), ("C", r["perk"]), ("D", r["enum"]), ("E", r["category"]), ("F", r["perk_level"]),
              ("G", r["name"]), ("H", r["level"]), ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["storage"]),
              ("L", r["enhancement"]), ("M", r["slots"])]
@@ -61,7 +61,21 @@ def row_xml(number, r):
         cells.append((column, resref))
         cells.append((col_after(column), quantity))
     cells.append((RESEARCH_COLUMN, 0))
-    return f'<row r="{number}">' + "".join(cell(f"{col}{number}", v) for col, v in cells) + "</row>"
+    return cells
+
+
+def row_xml(number, r):
+    return f'<row r="{number}">' + "".join(cell(f"{col}{number}", v) for col, v in row_cells(r)) + "</row>"
+
+
+def row_is_current(row_text, r):
+    """True when the row already holds every cell this script writes, whatever else it carries (the parameter columns)."""
+    found = {}
+    for match in re.finditer(r'<c r="([A-Z]+)\d+"[^>]*?(?:/>|>(.*?)</c>)', row_text, re.S):
+        body = match.group(2) or ""
+        text = re.search(r"<t[^>]*>(.*?)</t>", body, re.S) or re.search(r"<v>(.*?)</v>", body, re.S)
+        found[match.group(1)] = html.unescape(text.group(1)) if text else ""
+    return all(found.get(col) == str(value) for col, value in row_cells(r))
 
 
 def sheet_path(zf, name):
@@ -74,13 +88,22 @@ def sheet_path(zf, name):
 
 
 def rewrite(xml, rows):
-    """Drops the rows this script wrote before (by Recipe Enum) and appends them after the last row with a value."""
-    enums = {r["enum"] for r in rows}
+    """
+    Writes the rows after the last row with a value. A row this script wrote before (matched by Recipe Enum) that already holds
+    every cell it writes is left exactly as it is, parameter columns included; one that differs is dropped and written again.
+    """
+    by_enum = {r["enum"]: r for r in rows}
+    unchanged = set()
 
     def written_before(match):
         number = match.group(1)
         d = re.search(r'<c r="D%s"[^>]*t="inlineStr"><is><t[^>]*>([^<]*)</t>' % number, match.group(0))
-        return d is not None and d.group(1) in enums
+        if d is None or d.group(1) not in by_enum:
+            return False
+        if row_is_current(match.group(0), by_enum[d.group(1)]):
+            unchanged.add(d.group(1))
+            return False
+        return True
 
     def blank(text):
         return "<v>" not in text and "<is>" not in text
@@ -98,7 +121,8 @@ def rewrite(xml, rows):
         if not blank(match.group(0)):
             last = max(last, number)
     # New rows follow the last row with a value; formatting-only blank rows they land on are replaced.
-    new_rows = [(last + 1 + i, row_xml(last + 1 + i, r)) for i, r in enumerate(rows)]
+    to_write = [r for r in rows if r["enum"] not in unchanged]
+    new_rows = [(last + 1 + i, row_xml(last + 1 + i, r)) for i, r in enumerate(to_write)]
     taken = {n for n, _ in new_rows}
     merged = sorted([x for x in kept if x[0] not in taken] + new_rows, key=lambda x: x[0])
     end = last + len(new_rows)

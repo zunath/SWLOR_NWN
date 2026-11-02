@@ -915,6 +915,17 @@ Every Edict except Industrial Charter changes one calculation that exists today.
 | Industrial Charter | The setback roll in `HoldingRules.Advance` (space revamp): half the setback chance and half the repair goods for a citizen's holding on the city's planet. `Advance` settles a holding lazily over elapsed days, so call it up to the moment the owner's citizenship or the Edict changes; each interval then uses the state that held during it |
 | Shadowport | Contraband pricing and customs bust rolls in the space revamp's Trade Exchange (W7), read from the city's active Edicts |
 
+**As built (workstream 2, Edict effects).** Each hook calls one `EdictEffects` method (`Service/EdictEffects.cs`), which looks up the citizen, city and planet and hands them to `EdictBonusRules` or `FacilityAccessRules` (pure, unit-tested):
+- Festival Season and a funded festival add to the RP award as 10% and 5% of the 1,500 base, in `RoleplayXP`. The Medical Center reduction is halved in `Death.ApplyPenalties` for every citizen while the situation holds.
+- Guild Charter adds 10% of the base in `Guild.CalculateGPReward` and, for guild quests, `Quest.CalculateQuestGoldReward`, so the task window's preview matches the hand-in.
+- Prospectors' Charter and Home Ground roll when a Prospecting session or Quick Harvest finishes (`ProspectingLifecycle`), on the action or unit that ends it, and only when the session gathered something. The extra items join that delivery as plain rolls of the node's table and pay no Gathering XP. `EdictEffects.HasHomeGround` returns false until the City Projects arrive.
+- Hunting Grounds passes 10 points to `Skill.GiveSkillXP` (`extraBonusPoints`) from both awards in `CombatPoint`. Drydock Subsidy is the new `cityDiscount` argument of `ShipRepairBill`, inside the 90% cap.
+- Artisans' Charter records the station's city on `CraftSessionRecord.CityId` when a craft starts and scales the XP in `CraftSessionLifecycle.PacedBaseXp` when it settles, so a success and a failure both get it. Quick Craft pays no XP, and Search, Fishing and research are not crafts at a station, so none of them is touched.
+- Breeders' Charter adds the bonus in `IncubatorViewModel.StartJob` for the citizen at the incubator, in any area of their city.
+- `Property.GetCityIdForArea` walks the interior, building and city chain.
+- Bank and flights terminal doors call `EdictEffects.GetFacilityFailure` (Embargo, own citizens, allies, Open Gates). The departure pass is `Player.StarportDeparturePasses` (city id to start time): docking at a player Starport starts it for the pilot and the ship's owner when they may use the city, and the server-start sweep (`StarportDeparture.ReturnStrandedShip`, from `Property.CleanUpData`) renews it while the owner has access and moves the ship to its safe dock once the owner has lost access and 7 days have passed. The pass opens the flights terminal only. Docking itself is not gated.
+- A station's Jump Beacon and Shipyard refuse an Embargoed city's citizens (`StationBuildingRules.CanUseBeacon` and `GetShipyardRefusal`), and `StationBuildings.IsAllyCitizen` counts the citizens of a city the station has an Alliance with.
+
 ### Data and services
 
 Edicts are an enum plus a definition list stored on the city record. City processing runs only at module load (`Property.OnModuleLoad`), so every scheduled change lands at a server start, and `ProcessCityLevel` and `ProcessUpkeep` run only when the weekly upkeep date has passed (`ProcessCities`).

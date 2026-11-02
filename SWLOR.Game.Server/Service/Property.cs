@@ -1941,6 +1941,7 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
             city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
             DB.Set(city);
+            SpawnExclusion.InvalidateCity(city.Id);
 
             Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
@@ -2168,6 +2169,9 @@ namespace SWLOR.Game.Server.Service
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
+
+            // A deleted city, or a structure removed from one, changes where spawns may appear.
+            SpawnExclusion.InvalidateCity(property.PropertyType == PropertyType.City ? property.Id : property.ParentPropertyId);
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
@@ -3680,6 +3684,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="placeable">The placeable to target</param>
         public static void RunStructureChangedEvent(StructureType structureType, StructureChangeType changeType, WorldProperty property, uint placeable)
         {
+            // A placed, moved or retrieved structure changes where spawns may appear in its city.
+            SpawnExclusion.InvalidateCity(property?.ParentPropertyId);
+
             if (!_structureChangedActions.ContainsKey(structureType))
                 return;
 

@@ -250,6 +250,19 @@ public class ForceSensitiveEspionageTests
     [TestCase(true, false, false)]
     [TestCase(false, true, false)]
     [TestCase(true, true, false)]
+    public void StatusApplicationMessages_StayPrivateWhileTheBearerOrSourceIsHidden(bool bearerHidden, bool sourceHidden, bool nearby)
+    {
+        // Covers buffs a hidden caster's FP spend triggers (Danger Sense, Force Convergence) and
+        // any status applied by or to a creature in stealth.
+        StatusEffect.ShouldAnnounceApplicationNearby(bearerHidden, sourceHidden).Should().Be(nearby);
+        var source = ReadSource("Service", "StatusEffect.cs");
+        source.Should().Contain("if (ShouldAnnounceApplicationNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))");
+    }
+
+    [TestCase(false, false, true)]
+    [TestCase(true, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(true, true, false)]
     public void BypassXp_IsWithheldForGrantedStealthAndCloudedEnemies(bool granted, bool clouded, bool expected)
     {
         EspionageInfiltration.IsBypassXpEligible(granted, clouded).Should().Be(expected);

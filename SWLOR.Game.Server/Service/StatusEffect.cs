@@ -751,7 +751,7 @@ namespace SWLOR.Game.Server.Service
 
             if (statusEffect.SendsApplicationMessage)
             {
-                Messaging.SendMessageNearbyToPlayers(creature, receiver =>
+                string BuildApplicationMessage(uint receiver)
                 {
                     var name = PlayerName.GetDisplayName(receiver, creature);
                     var effectName = statusEffect.Name;
@@ -766,10 +766,38 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     return applicationMessage;
-                });
+                }
+
+                var sourceIsOther = GetIsObjectValid(source) && source != creature;
+                if (ShouldAnnounceApplicationNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))
+                {
+                    Messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage);
+                }
+                else
+                {
+                    // A nearby announcement would name a hidden creature to everyone around it.
+                    SendMessageToPC(creature, BuildApplicationMessage(creature));
+                    if (sourceIsOther && GetIsPC(source))
+                        SendMessageToPC(source, BuildApplicationMessage(source));
+                }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Application messages go to every nearby player only while neither the bearer nor the
+        /// applying creature is hidden; otherwise they would reveal who is there.
+        /// </summary>
+        public static bool ShouldAnnounceApplicationNearby(bool bearerHidden, bool sourceHidden)
+        {
+            return !bearerHidden && !sourceHidden;
+        }
+
+        private static bool IsHiddenFromView(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   (GetActionMode(creature, ActionMode.Stealth) || Stealth.IsInvisible(creature));
         }
 
         /// <summary>

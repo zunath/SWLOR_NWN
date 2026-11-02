@@ -286,6 +286,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
+        private bool HasManageUpgradesPermission()
+        {
+            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), GetObjectUUID(Player), false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
+                .SingleOrDefault();
+            return permission != null && permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageUpgrades);
+        }
+
         /// <summary>A station's Jump Beacon upgrade level; stations founded before beacons existed start at 1.</summary>
         private static int GetJumpBeaconLevel(WorldProperty dbCity) =>
             dbCity.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1);
@@ -443,6 +452,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)
         {
+            // The window's upgrade buttons reflect when it loaded: the permission may have been revoked since.
+            if (!HasManageUpgradesPermission())
+            {
+                RefreshPermissions();
+                Instructions = "Insufficient permissions.";
+                InstructionsColor = GuiColor.Red;
+                return false;
+            }
+
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var mayor = DB.Get<Player>(dbCity.OwnerPlayerId);
             var currentLevel = dbCity.Upgrades.GetValueOrDefault(upgradeType, 1);

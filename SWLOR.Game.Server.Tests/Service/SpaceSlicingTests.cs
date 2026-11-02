@@ -505,8 +505,8 @@ public class SpaceSlicingTests
         // The lockbox goes only after its rewards are in hand (DestroyObject runs at the end of the script anyway, so
         // destroying it first would not free its slot).
         var complete = Between(source, "case SlicingSourceType.SpaceLockbox:", "case SlicingSourceType.DataCan:");
-        complete.IndexOf("GiveRewardsToPlayer(slicer, rewards);", StringComparison.Ordinal)
-            .Should().BeLessThan(complete.IndexOf("DestroyObject(target);", StringComparison.Ordinal));
+        complete.IndexOf("GiveRewardsToPlayer(slicer, rewards, fromLockbox: true);", StringComparison.Ordinal)
+            .Should().BeGreaterThanOrEqualTo(0).And.BeLessThan(complete.IndexOf("DestroyObject(target);", StringComparison.Ordinal));
     }
 
     private static string Between(string source, string start, string end)

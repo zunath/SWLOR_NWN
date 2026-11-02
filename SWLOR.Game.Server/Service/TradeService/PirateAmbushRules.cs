@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.TradeService
 {
@@ -19,6 +20,22 @@ namespace SWLOR.Game.Server.Service.TradeService
                 .Sum(x => (long)x.Value.Units * (TradeLookup.GetCommodity(x.Key)?.BasePrice ?? 0));
             var sealedVolume = (sealedFreight ?? Enumerable.Empty<SealedFreightLot>()).Sum(x => (long)Math.Max(0, x.Volume));
             return (int)Math.Min(int.MaxValue, goods + sealedVolume * TradeTuning.SealedValuePerVolume);
+        }
+
+        /// <summary>
+        /// What pirates think a ship carries with the ships docked aboard it, which travel in its hold: every bay's
+        /// commodities at base price and sealed freight.
+        /// </summary>
+        public static int GetCargoValue(PlayerShip ship, IEnumerable<PlayerShip> dockedShips)
+        {
+            if (ship == null)
+                return 0;
+
+            var value = (long)GetCargoValue(ship.Cargo, ship.SealedFreight);
+            foreach (var docked in (dockedShips ?? Enumerable.Empty<PlayerShip>()).Where(x => x != null && x.Id != ship.Id))
+                value += GetCargoValue(docked.Cargo, docked.SealedFreight);
+
+            return (int)Math.Min(int.MaxValue, value);
         }
 
         /// <summary>The chance (0-1) of an ambush on entering an orbit of this tier with cargo of this value.</summary>

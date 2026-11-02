@@ -89,7 +89,7 @@ public class CreditPaymentTests
         InOrder(Method(payments, "private static void SettlePendingFoundings("),
             "CreditPaymentMark.PaysPendingFounding(mark, station.PendingPaymentId)", "UndoStationFounding(station, OBJECT_INVALID);");
         var settle = Method(payments, "public static void SettleInterruptedPayment(");
-        InOrder(settle, "SettlePendingFoundings(player, mark);", "if (!mark.KeepsPayment(recordPaymentId))",
+        InOrder(settle, "SettlePendingFoundings(player, mark);", "if (!mark.KeepsPayment(GetRecordPaymentId(mark)))",
             "GiveGoldToCreature(player, mark.Credits);", "Retire(player);");
         payments.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
     }
@@ -103,7 +103,7 @@ public class CreditPaymentTests
         click.Should().Contain("AssignCommand(player, () => CompleteRefit(player, shipId, appearance, fee, designName));");
 
         InOrder(Method(viewModel, "private void CompleteRefit("),
-            "var dbShip = DB.Get<PlayerShip>(shipId);", "if (GetGold(player) < fee)",
+            "var dbShip = GetShipToRefit(shipId);", "if (GetGold(player) < fee)",
             "CreditPayments.Take(player, mark);", "dbShip.LastPaymentId = mark.Id;", "DB.Set(dbShip);", "CreditPayments.Retire(player);");
     }
 
@@ -112,8 +112,8 @@ public class CreditPaymentTests
     {
         var customs = Source("Service", "TradeCustoms.cs");
         customs.Should().NotContain("TakeGoldFromCreature(", "every fine goes through CollectCustomsFine");
-        Method(customs, "public static void PayCustomsFine(").Should().Contain("var (fine, taken) = CollectCustomsFine(player, scan.Authority, scan.Fine, true);");
-        Method(customs, "public static void ResolveCustomsSpoof(").Should().Contain("CollectCustomsFine(player, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);");
+        Method(customs, "public static void PayCustomsFine(").Should().Contain("var (fine, taken) = CollectCustomsFine(player, scan.ShipId, scan.Authority, scan.Fine, true);");
+        Method(customs, "public static void ResolveCustomsSpoof(").Should().Contain("CollectCustomsFine(player, scan.ShipId, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);");
         InOrder(Method(customs, "private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine("),
             "fine = Math.Max(0, Math.Min(fine, GetGold(player)));",
             "CreditPayments.Take(player, mark);",
@@ -171,13 +171,16 @@ public class CreditPaymentTests
                      new[] { "Service", "TradeCustoms.cs" },
                      new[] { "Service", "PlanetaryHoldings.cs" },
                      new[] { "Service", "ShipTransfer.cs" },
+                     new[] { "Service", "Shuttle.cs" },
+                     new[] { "Feature", "DialogDefinition", "StarportFlightsDialog.cs" },
                  })
         {
             Source(path).Should().NotContain("() => TakeGoldFromCreature(", string.Join("/", path));
         }
 
-        Method(Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs"), "public Action OnClickRefitDesign()")
-            .Should().NotContain("TakeGoldFromCreature(");
+        var shipManagement = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        Method(shipManagement, "public Action OnClickRefitDesign()").Should().NotContain("TakeGoldFromCreature(");
+        Method(shipManagement, "public Action OnClickRepair()").Should().NotContain("TakeGoldFromCreature(");
     }
 
     private static void InOrder(string source, params string[] parts)

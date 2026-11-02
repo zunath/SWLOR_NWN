@@ -241,7 +241,8 @@ public class ShipDockingRulesTests
         space.Should().Contain("IsDockedAboardHost(dbShip, out var hostName)");
 
         var management = ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
-        management.Should().Contain("Space.UndockAllToStarport(dbShip, \"was unregistered\");");
+        management.Should().Contain("Space.RemoveUnregisteredShip(shipId);");
+        ReadServerSource("Service", "SpaceShipItemMoves.cs").Should().Contain("UndockAllToStarport(dbShip, \"was unregistered\");");
         management.Should().Contain("Space.HasShipDockedAboard(Player, propertyId)");
 
         var commands = ReadServerSource("Feature", "ChatCommandDefinition", "SpaceChatCommand.cs");

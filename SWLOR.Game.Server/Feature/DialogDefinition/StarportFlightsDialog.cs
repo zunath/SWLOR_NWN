@@ -223,11 +223,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Confirm Flight", () =>
                 {
+                    // The ticket is paid for and saved on the player's queue, which says when it is purchased.
                     if (!Shuttle.TryPurchaseTicket(player, route, model.CityPropertyId, model.Tax))
                         return;
-
-                    var confirmedCountdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route) - DateTime.UtcNow, false);
-                    SendMessageToPC(player, ColorToken.Green($"Ticket purchased! Your shuttle to {destinationName} departs in {confirmedCountdown}."));
 
                     Close();
                 });

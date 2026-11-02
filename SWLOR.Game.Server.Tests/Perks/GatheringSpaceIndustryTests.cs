@@ -320,7 +320,7 @@ public class GatheringSpaceIndustryTests
         var mining = ExtractMethod(actions, "private static void GiveMiningExperience(");
         var salvage = ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs");
 
-        mining.Should().Contain("ShipSalvageActions.GiveGatheringExperience(activator, GetLocalInt(target, \"ASTEROID_TIER\"))");
+        mining.Should().Contain("ShipSalvageActions.GiveGatheringExperience(player, GetLocalInt(target, \"ASTEROID_TIER\"))");
         mining.Should().NotContain("SkillType.Piloting");
         salvage.Should().Contain("cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);")
             .And.Contain("Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceGasYieldBonus)")
@@ -330,10 +330,39 @@ public class GatheringSpaceIndustryTests
                 "Trait Hunter is the operator's too");
         ReadSource("Service", "SpaceStances.cs").Should().Contain(
             "(operatorSource != ship && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, operatorSource, stat) : 0)");
-        salvage.Should().Contain("internal static void GiveGatheringExperience(uint activator, int tier)")
-            .And.Contain("Skill.GiveSkillXP(activator, SkillType.Gathering, Skill.GetDeltaXP(delta));");
-        ExtractMethod(actions, "public static void MineAsteroid(").Should().Contain("GiveMiningExperience(activator, target);");
-        ExtractMethod(actions, "public static void StripAsteroid(").Should().Contain("GiveMiningExperience(activator, target);");
+        salvage.Should().Contain("internal static void GiveGatheringExperience(uint player, int tier)")
+            .And.Contain("Skill.GiveSkillXP(player, SkillType.Gathering, Skill.GetDeltaXP(delta));");
+        ExtractMethod(actions, "public static void MineAsteroid(").Should().Contain("GiveMiningExperience(creditedPlayer, target);");
+        ExtractMethod(actions, "public static void StripAsteroid(").Should().Contain("GiveMiningExperience(creditedPlayer, target);");
+    }
+
+    [Test]
+    public void ExtractionXp_GoesToWhoeverRanTheCycle_CapturedAtItsStart()
+    {
+        // A crew member running a station's mining, gas or salvage gear meets its Gathering rank with their own, so the
+        // Gathering XP is theirs, not the pilot's; a droid's goes to the pilot, as its combat points do.
+        var actions = ReadSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");
+        var salvage = ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs");
+        var cycles = new[]
+        {
+            ExtractMethod(actions, "public static void MineAsteroid("),
+            ExtractMethod(actions, "public static void StripAsteroid("),
+            ExtractMethod(salvage, "public static void HarvestGasCloud("),
+            ExtractMethod(salvage, "public static void SalvageWreck("),
+        };
+
+        foreach (var cycle in cycles)
+        {
+            var captured = cycle.IndexOf("var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);", StringComparison.Ordinal);
+            captured.Should().BeGreaterThan(0, "the credit is read while the station's fire context is open");
+            captured.Should().BeLessThan(cycle.IndexOf("DelayCommand(", StringComparison.Ordinal), "not when the cycle ends");
+            cycle.Should().NotContain("Experience(activator,", "the pilot does not earn a crew member's XP");
+        }
+
+        ExtractMethod(salvage, "public static void HarvestGasCloud(").Should().Contain("GiveGatheringExperience(creditedPlayer, GetLocalInt(target, GasCloudTierVariable));");
+        ExtractMethod(salvage, "public static void SalvageWreck(").Should().Contain("GiveGatheringExperience(creditedPlayer, tier);");
+        ExtractMethod(salvage, "internal static void GiveGatheringExperience(").Should().Contain("!GetIsObjectValid(player)",
+            "a crew member who logged out before the cycle ended earns nothing");
     }
 
     [TestCase("RevampModuleDefinition.cs")]

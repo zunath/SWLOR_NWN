@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Feature.TradeDefinition;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -433,6 +434,67 @@ public class TradeRiskTests
             objectsDefined.Should().ContainKey(tag);
             File.Exists(Path.Combine(RepositoryRoot(), "Module", "utc", $"{tag}.utc.json")).Should().BeTrue(tag);
         }
+    }
+
+    [Test]
+    public void PiratesAndCustoms_SeeTheCargoOfShipsDockedAboard()
+    {
+        var host = new PlayerShip { Id = "host" };
+        CargoHoldRules.AddUnits(host.Cargo, CommodityType.Grain, 40, 0);
+        var visitor = new PlayerShip { Id = "visitor", DockedToShipId = "host" };
+        CargoHoldRules.AddUnits(visitor.Cargo, CommodityType.Moonspice, 10, 0);
+        CargoHoldRules.AddUnits(visitor.Cargo, CommodityType.SithRelics, 5, 0);
+        visitor.SealedFreight.Add(new SealedFreightLot { ContractId = "c1", Volume = 30, Destination = TradeExchangeType.Tatooine });
+        var other = new PlayerShip { Id = "other" };
+        CargoHoldRules.AddUnits(other.Cargo, CommodityType.Moonspice, 2, 0);
+
+        // Pirates value every bay aboard, as a Jump Beacon's fuel does.
+        var own = PirateAmbushRules.GetCargoValue(host.Cargo, host.SealedFreight);
+        var carried = PirateAmbushRules.GetCargoValue(visitor.Cargo, visitor.SealedFreight);
+        PirateAmbushRules.GetCargoValue(host, null).Should().Be(own);
+        PirateAmbushRules.GetCargoValue(host, new[] { visitor, null, host }).Should().Be(own + carried, "the host is never counted twice");
+        PirateAmbushRules.GetCargoValue((PlayerShip)null, new[] { visitor }).Should().Be(0);
+        StationBuildingRules.GetJumpCargoValue(host, new[] { visitor }).Should().Be(PirateAmbushRules.GetCargoValue(host, new[] { visitor }));
+
+        // Customs scans the docked ships' bays too.
+        CustomsRules.GetBannedValue(host, null, TradeAuthority.Republic).Should().Be(0);
+        CustomsRules.GetBannedValue(host, new[] { visitor, other, host }, TradeAuthority.Republic).Should().Be(12 * 250 + 5 * 782);
+        CustomsRules.GetBannedValue(null, new[] { visitor }, TradeAuthority.Republic).Should().Be(0);
+        CustomsRules.GetBannedUnits(host, new[] { visitor, other }, TradeAuthority.Republic).Should().Equal(
+            new Dictionary<CommodityType, int> { [CommodityType.Moonspice] = 12, [CommodityType.SithRelics] = 5 });
+
+        var risk = ReadServerSource("Service", "TradeOrbitRisk.cs");
+        risk.Should().Contain("var value = PirateAmbushRules.GetCargoValue(ship, Space.GetDockedShips(ship.Id));");
+
+        var customs = ReadServerSource("Service", "TradeCustoms.cs");
+        customs.Should().Contain("var bannedValue = CustomsRules.GetBannedValue(ship, docked, authority);")
+            .And.Contain("Goods = CustomsRules.GetBannedUnits(ship, docked, authority),");
+        var collect = customs.Substring(customs.IndexOf("private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine(", StringComparison.Ordinal));
+        collect = collect.Substring(0, collect.IndexOf("private static void RollCustomsScan(", StringComparison.Ordinal));
+        var hostSave = collect.IndexOf("DB.Set(ship);", StringComparison.Ordinal);
+        var dockedSeize = collect.IndexOf("CustomsRules.Confiscate(visitor.Cargo, authority);", StringComparison.Ordinal);
+        dockedSeize.Should().BeGreaterThan(hostSave, "the docked bays are taken after the host saves the payment's id");
+        collect.IndexOf("DB.Set(visitor);", StringComparison.Ordinal).Should().BeGreaterThan(dockedSeize)
+            .And.BeLessThan(collect.IndexOf("CreditPayments.Retire(player);", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void ACustomsFine_ConfiscatesFromTheScannedShipEvenAfterThePilotDocked()
+    {
+        new CustomsScan().ShipId.Should().BeEmpty();
+
+        var customs = ReadServerSource("Service", "TradeCustoms.cs");
+        customs.Should().Contain("ShipId = ship.Id,", "the scan remembers the ship it found the goods aboard");
+        customs.Should().Contain("CollectCustomsFine(player, scan.ShipId, scan.Authority, scan.Fine, true);")
+            .And.Contain("CollectCustomsFine(player, scan.ShipId, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);");
+
+        var collect = customs.Substring(customs.IndexOf("private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine(", StringComparison.Ordinal));
+        collect = collect.Substring(0, collect.IndexOf("private static void RollCustomsScan(", StringComparison.Ordinal));
+        collect.Should().Contain("var ship = string.IsNullOrWhiteSpace(shipId) ? GetActiveShip(player) : DB.Get<PlayerShip>(shipId);",
+            "a pilot who docked or took another ship has no active ship, or the wrong one");
+        collect.IndexOf("var ship =", StringComparison.Ordinal).Should()
+            .BeLessThan(collect.IndexOf("CreditPayments.NewMark(CreditPaymentKind.CustomsFine, ship?.Id, fine)", StringComparison.Ordinal),
+                "the payment mark names the scanned ship, whose save settles it");
     }
 
     private static string RepositoryRoot()

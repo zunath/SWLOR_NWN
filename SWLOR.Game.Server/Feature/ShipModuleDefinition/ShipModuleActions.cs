@@ -568,6 +568,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
+            var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
             cycleSeconds = MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
@@ -639,7 +640,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 }
 
                 ShipHold.DeliverYield(activator, ore);
-                GiveMiningExperience(activator, target);
+                GiveMiningExperience(creditedPlayer, target);
             });
         }
 
@@ -649,6 +650,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
+            var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
             seconds = MiningCycleSeconds(activator, operatorSource, seconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
@@ -698,7 +700,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 }
 
                 ShipHold.DeliverYield(activator, ore);
-                GiveMiningExperience(activator, target);
+                GiveMiningExperience(creditedPlayer, target);
             });
         }
 
@@ -706,9 +708,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// Gathering XP for a mining cycle (plan section 9: mining modules are Gathering's, and so is their XP): the
         /// asteroid's level (tier x 10) against the player's Gathering rank, the same rule as gas and salvage.
         /// </summary>
-        private static void GiveMiningExperience(uint activator, uint target)
+        private static void GiveMiningExperience(uint player, uint target)
         {
-            ShipSalvageActions.GiveGatheringExperience(activator, GetLocalInt(target, "ASTEROID_TIER"));
+            ShipSalvageActions.GiveGatheringExperience(player, GetLocalInt(target, "ASTEROID_TIER"));
         }
 
         // Support

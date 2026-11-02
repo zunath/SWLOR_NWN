@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
+            var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
             cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
             if (GetLocalInt(target, GasCloudUnitsVariable) <= 0)
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 }
 
                 ShipHold.DeliverYield(activator, gas);
-                GiveGatheringExperience(activator, GetLocalInt(target, GasCloudTierVariable));
+                GiveGatheringExperience(creditedPlayer, GetLocalInt(target, GasCloudTierVariable));
             });
         }
 
@@ -163,6 +164,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // The station operator's Gathering perks apply (a crew member at a station, the pilot at the Helm; a droid
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
+            var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
             cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
 
@@ -224,7 +226,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 }
 
                 ShipHold.DeliverYield(activator, yield, components);
-                GiveGatheringExperience(activator, tier);
+                GiveGatheringExperience(creditedPlayer, tier);
             });
         }
 
@@ -250,17 +252,22 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return components;
         }
 
-        /// <summary>Gathering XP for a mining, gas or salvage cycle: the target's level (tier x 10) against the player's Gathering rank.</summary>
-        internal static void GiveGatheringExperience(uint activator, int tier)
+        /// <summary>
+        /// Gathering XP for a mining, gas or salvage cycle: the target's level (tier x 10) against the player's Gathering
+        /// rank. The player is whoever ran the cycle (SpaceCrew.GetCreditedPlayer at its start): the crew member at a
+        /// station, otherwise the pilot, who also takes a droid's.
+        /// </summary>
+        internal static void GiveGatheringExperience(uint player, int tier)
         {
-            if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
+            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(activator));
-            var rank = dbPlayer.Skills[SkillType.Gathering].Rank;
-            var delta = Math.Clamp(tier, 1, 6) * 10 - rank;
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer?.Skills == null || !dbPlayer.Skills.TryGetValue(SkillType.Gathering, out var gathering))
+                return;
 
-            Skill.GiveSkillXP(activator, SkillType.Gathering, Skill.GetDeltaXP(delta));
+            var delta = Math.Clamp(tier, 1, 6) * 10 - gathering.Rank;
+            Skill.GiveSkillXP(player, SkillType.Gathering, Skill.GetDeltaXP(delta));
         }
     }
 }

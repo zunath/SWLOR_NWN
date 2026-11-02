@@ -11,6 +11,12 @@ namespace SWLOR.Game.Server.Service.TradeService
         public TradeAuthority Authority { get; set; }
         public string PatrolGroup { get; set; }
 
+        /// <summary>
+        /// The ship the patrol scanned. The fine's confiscation reads it by id, so a pilot who docked or changed ships
+        /// before answering still loses the goods aboard it.
+        /// </summary>
+        public string ShipId { get; set; } = string.Empty;
+
         /// <summary>The banned goods the scan found, by units.</summary>
         public Dictionary<CommodityType, int> Goods { get; set; } = new();
 

@@ -96,7 +96,7 @@ public class CargoExpanderTests
             .Should().Contain("if (ShipCargoRules.IsHelmOnlyModule(itemTag))")
             .And.Contain("SendMessageToPC(Player, \"Cargo Expanders and Smuggling Compartments fit Helm slots only.\");",
                 "a station slot refuses an expander")
-            .And.Contain("ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(dbShip.Status)");
+            .And.Contain("ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(current.Status)");
     }
 
     [Test]

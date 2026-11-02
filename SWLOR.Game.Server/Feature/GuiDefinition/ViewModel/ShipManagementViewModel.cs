@@ -1622,7 +1622,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         private void CompleteRefit(uint player, string shipId, AppearanceType appearance, int fee, string designName)
         {
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            // The ship may have flown, or the Refit Ship permission been revoked, while the fee was confirmed.
+            var dbShip = GetShipToRefit(shipId);
             if (dbShip == null)
                 return;
 
@@ -1698,6 +1699,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             return area;
+        }
+
+        /// <summary>
+        /// The ship as saved now, when it is still docked where the player stands. The window's buttons reflect when it
+        /// loaded the ship, which may since have flown, been unregistered or moved.
+        /// </summary>
+        private PlayerShip GetShipDockedHere(string shipId)
+        {
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
+            if (dbProperty != null && GetShipLocation(dbShip, dbProperty, out _) == GetArea(Player))
+                return dbShip;
+
+            FloatingTextStringOnCreature("That ship is no longer docked here.", Player, false);
+            RefreshShipIfOpen(dbShip);
+            return null;
+        }
+
+        /// <summary>The ship as saved now, when the player may still refit it here (its modules and its design).</summary>
+        private PlayerShip GetShipToRefit(string shipId)
+        {
+            var dbShip = GetShipDockedHere(shipId);
+            if (dbShip == null)
+                return null;
+
+            var access = GetShipPermission(dbShip.PropertyId);
+            if (access != null && access.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip))
+                return dbShip;
+
+            FloatingTextStringOnCreature("You no longer have permission to refit that ship.", Player, false);
+            RefreshShipIfOpen(dbShip);
+            return null;
+        }
+
+        private void RefreshShipIfOpen(PlayerShip dbShip)
+        {
+            if (dbShip != null && Gui.IsWindowOpen(Player, GuiWindowType.ShipManagement))
+                LoadShip();
         }
 
         private void ToggleRegisterButtons()
@@ -1820,6 +1859,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 };
                 // A revamp hull takes its stats from the hull and the pilot, and starts full.
                 Space.RecalculateShipStats(ship.Status, GetAbilityScore(Player, AbilityType.Willpower), true);
+                // The deed is marked and saved with the character before the ship is saved: a login after a restart in
+                // between removes a marked deed whose ship exists (Space.SettleShipItemMoves).
+                Space.MarkDeedRegistering(Player, item, ship.Id);
                 DB.Set(ship);
 
                 // Update the UI with the new ship details.
@@ -1841,15 +1883,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Unregistering a ship will convert it back into a deed item. Any structures contained inside will be permanently lost. Are you sure you wish to unregister this ship?",
                 () =>
                 {
-                    var playerId = GetObjectUUID(Player);
                     var shipId = _shipIds[SelectedShipIndex];
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    var dbShip = DB.Get<PlayerShip>(shipId);
+                    var playerId = GetObjectUUID(Player);
+
+                    // The ship may have been sold, transferred or flown away since the window loaded it.
+                    var dbShip = GetShipDockedHere(shipId);
+                    if (dbShip == null)
+                        return;
+
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                    if (dbProperty.OwnerPlayerId != playerId)
+                    {
+                        FloatingTextStringOnCreature("You no longer own this ship.", Player, false);
+                        LoadShip();
+                        return;
+                    }
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
                         dbShip.Status.MidPowerModules.Count > 0 ||
-                        dbShip.Status.LowPowerModules.Count > 0)
+                        dbShip.Status.LowPowerModules.Count > 0 ||
+                        dbShip.Status.ConfigurationModules.Count > 0)
                     {
                         FloatingTextStringOnCreature($"Please uninstall all modules before unregistering your ship.", Player, false);
                         return;
@@ -1874,23 +1927,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    if (!Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbShip.SerializedItem)))
+                    var deed = ObjectPlugin.Deserialize(dbShip.SerializedItem);
+                    if (!Item.TryAcquireItem(Player, deed))
                     {
                         FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
                         return;
                     }
 
-                    if (dbPlayer.ActiveShipId == shipId)
-                        dbPlayer.ActiveShipId = Guid.Empty.ToString();
-
-                    Space.UndockAllToStarport(dbShip, "was unregistered");
-                    Space.ReturnShipDroidCrew(dbShip, "was unregistered");
-                    ShipTransfer.RemoveListings(shipId);
-                    dbProperty.IsQueuedForDeletion = true;
-
-                    DB.Delete<PlayerShip>(shipId);
-                    DB.Set(dbPlayer);
-                    DB.Set(dbProperty);
+                    // The deed is marked and saved with the character before the ship goes: a login after a restart in
+                    // between finishes removing a ship whose marked deed the character holds (Space.SettleShipItemMoves).
+                    Space.MarkDeedUnregistered(Player, deed, shipId);
+                    Space.RemoveUnregisteredShip(shipId);
+                    Space.ClearDeedUnregistered(deed);
 
                     _myShips.RemoveAll(ship => ship.Id == shipId);
                     _shipIds.RemoveAt(SelectedShipIndex);
@@ -1947,6 +1995,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ShowModal("Cancel this ship's market listing?", () =>
                 {
+                    // The ship may have sold (and been listed again by its new owner) while the prompt was open.
+                    if (DB.Get<PlayerShip>(shipId)?.OwnerPlayerId != GetObjectUUID(Player))
+                    {
+                        FloatingTextStringOnCreature("You no longer own this ship.", Player, false);
+                        return;
+                    }
+
                     ShipTransfer.RemoveListings(shipId);
                     FloatingTextStringOnCreature("Listing cancelled.", Player, false);
                     LoadShip();
@@ -2115,8 +2170,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, $"Please click on a ship {rowName}-powered module within your inventory.",
                     item =>
                 {
-                    dbShip = DB.Get<PlayerShip>(shipId);
+                    dbShip = GetShipToRefit(shipId);
+                    if (dbShip == null)
+                        return;
+
                     modules = GetPowerModules(dbShip.Status, row);
+                    if (modules.ContainsKey(slot))
+                    {
+                        SendMessageToPC(Player, "That slot already holds a module.");
+                        LoadShip();
+                        return;
+                    }
+
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
@@ -2150,7 +2215,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
                     Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
 
+                    // The module is marked and saved with the character before the ship saves it (Space.SettleShipItemMoves).
+                    Space.MarkModuleFitting(Player, item, shipId);
                     DB.Set(dbShip);
+                    Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);
                     Space.GrantModuleFittedAchievement(Player, moduleDetails);
 
                     DestroyObject(item);
@@ -2163,16 +2231,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to {rowName} slot #{slot}. Would you like to uninstall it?", () =>
                 {
+                    // The ship and the slot are read again: the module may already be out, or the ship changed since.
+                    var current = GetShipToRefit(shipId);
+                    if (current == null)
+                        return;
+
+                    var currentModules = GetPowerModules(current.Status, row);
+                    if (!currentModules.TryGetValue(slot, out var fitted) || fitted.SerializedItem != module.SerializedItem)
+                    {
+                        SendMessageToPC(Player, "That module is no longer in this slot.");
+                        LoadShip();
+                        return;
+                    }
+
                     // A Cargo Expander stays while the cargo bay would overflow without it.
-                    var hullCargo = Space.FindShipDetail(dbShip.Status.ItemTag)?.Hull?.Cargo ?? 0;
-                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(dbShip.Status).ToList(),
-                            module.ItemTag, Trade.GetUsedVolume(dbShip)))
+                    var hullCargo = Space.FindShipDetail(current.Status.ItemTag)?.Hull?.Cargo ?? 0;
+                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(current.Status).ToList(),
+                            fitted.ItemTag, Trade.GetUsedVolume(current)))
                     {
                         SendMessageToPC(Player, "Unload the cargo bay first: its cargo would not fit without this Cargo Expander.");
                         return;
                     }
 
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    var item = ObjectPlugin.Deserialize(fitted.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
@@ -2180,10 +2261,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    modules.Remove(slot);
-                    Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
-                    DB.Set(dbShip);
+                    // The removal record is saved before the ship drops the module, and the character after (Space.SettleShipItemMoves).
+                    Space.BeginModuleRemoval(Player, item, shipId, fitted);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(current.Status, moduleBonus);
+                    currentModules.Remove(slot);
+                    Space.RecalculateShipStats(current.Status, GetAbilityScore(Player, AbilityType.Willpower));
+                    DB.Set(current);
+                    Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);
                     LoadShip();
                 });
             }
@@ -2204,7 +2288,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
                     item =>
                     {
-                        dbShip = DB.Get<PlayerShip>(shipId);
+                        dbShip = GetShipToRefit(shipId);
+                        if (dbShip == null)
+                            return;
+
+                        if (dbShip.Status.ConfigurationModules.ContainsKey(slot))
+                        {
+                            SendMessageToPC(Player, "That slot already holds a module.");
+                            LoadShip();
+                            return;
+                        }
+
                         var itemTag = GetTag(item);
                         if (!Space.IsRegisteredShipModule(itemTag))
                         {
@@ -2236,7 +2330,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
+                        // The module is marked and saved with the character before the ship saves it (Space.SettleShipItemMoves).
+                        Space.MarkModuleFitting(Player, item, shipId);
                         DB.Set(dbShip);
+                        Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);
 
                         DestroyObject(item);
                         LoadShip();
@@ -2248,7 +2345,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to ship configuration slot #{slot}. Would you like to uninstall it?", () =>
                 {
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    // The ship and the slot are read again: the module may already be out, or the ship changed since.
+                    var current = GetShipToRefit(shipId);
+                    if (current == null)
+                        return;
+
+                    if (!current.Status.ConfigurationModules.TryGetValue(slot, out var fitted) || fitted.SerializedItem != module.SerializedItem)
+                    {
+                        SendMessageToPC(Player, "That module is no longer in this slot.");
+                        LoadShip();
+                        return;
+                    }
+
+                    var item = ObjectPlugin.Deserialize(fitted.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
@@ -2256,9 +2365,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.ConfigurationModules.Remove(slot);
-                    DB.Set(dbShip);
+                    // The removal record is saved before the ship drops the module, and the character after (Space.SettleShipItemMoves).
+                    Space.BeginModuleRemoval(Player, item, shipId, fitted);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(current.Status, moduleBonus);
+                    current.Status.ConfigurationModules.Remove(slot);
+                    DB.Set(current);
+                    Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);
                     LoadShip();
                 });
             }
@@ -2421,8 +2533,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            // The ship may have launched since it was selected: it is boarded only where it is docked.
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = GetShipDockedHere(shipId);
+            if (dbShip == null)
+                return;
 
             // Access can be revoked after the ship was selected.
             if (!CanBoardShip(dbShip.PropertyId))
@@ -2543,26 +2658,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>
             {
-                var gold = GetGold(Player);
-
-                if (gold < price)
-                {
-                    FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), Player, false);
+                // The ship must still be docked here; CompleteRepair re-reads it and re-checks the bill on the queue.
+                if (GetShipDockedHere(shipId) == null)
                     return;
-                }
 
-                AssignCommand(Player, () =>
-                {
-                    TakeGoldFromCreature(price, Player, true);
-                });
-
-                dbShip.Status.Shield = dbShip.Status.MaxShield;
-                dbShip.Status.Hull = dbShip.Status.MaxHull;
-                DB.Set(dbShip);
-
-                FloatingTextStringOnCreature(ColorToken.Green("Ship repaired!"), Player, false);
-                LoadShip();
+                var player = Player;
+                AssignCommand(player, () => CompleteRepair(player, shipId, price));
             });
         };
+
+        /// <summary>
+        /// Runs on the player's queue (TakeGoldFromCreature does nothing from a NUI handler): checks the bill again on the
+        /// ship as saved now, takes it with a mark naming the ship, then saves the repair with the payment's id. A restart
+        /// before that save returns the credits at the next login (<see cref="CreditPayments"/>).
+        /// </summary>
+        private void CompleteRepair(uint player, string shipId, int price)
+        {
+            var dbShip = GetShipDockedHere(shipId);
+            if (dbShip == null)
+                return;
+
+            if (CalculateRepairBill(dbShip) != price)
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("The repair bill has changed. Please try again."), player, false);
+                return;
+            }
+
+            if (GetGold(player) < price)
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), player, false);
+                return;
+            }
+
+            var mark = CreditPayments.NewMark(CreditPaymentKind.ShipRepair, dbShip.Id, price);
+            CreditPayments.Take(player, mark);
+            dbShip.Status.Shield = dbShip.Status.MaxShield;
+            dbShip.Status.Hull = dbShip.Status.MaxHull;
+            dbShip.LastPaymentId = mark.Id;
+            DB.Set(dbShip);
+            CreditPayments.Retire(player);
+
+            FloatingTextStringOnCreature(ColorToken.Green("Ship repaired!"), player, false);
+            if (Gui.IsWindowOpen(player, GuiWindowType.ShipManagement))
+                LoadShip();
+        }
     }
 }

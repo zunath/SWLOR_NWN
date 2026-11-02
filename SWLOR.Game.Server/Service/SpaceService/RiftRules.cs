@@ -62,29 +62,33 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static int PassageMass(ShipSize hull) =>
             WildSpaceTuning.PassageMass.TryGetValue(hull, out var mass) ? mass : WildSpaceTuning.PassageMass[ShipSize.Capital];
 
+        /// <summary>The mass one passage of a hull spends with the ships docked aboard it, which cross with it.</summary>
+        public static int PassageMass(ShipSize hull, IEnumerable<ShipSize> carried) =>
+            PassageMass(hull) + (carried ?? Enumerable.Empty<ShipSize>()).Sum(PassageMass);
+
         /// <summary>Whether a rift is still open: not collapsed and before its collapse time.</summary>
         public static bool IsOpen(RiftConnection rift, DateTime now) =>
             rift != null && !rift.Collapsed && now < rift.CollapsesAt;
 
-        /// <summary>Why a hull cannot cross a rift right now, or None.</summary>
-        public static RiftPassageRefusal GetPassageRefusal(RiftConnection rift, ShipSize hull, DateTime now)
+        /// <summary>Why a hull (with the ships docked aboard it) cannot cross a rift right now, or None.</summary>
+        public static RiftPassageRefusal GetPassageRefusal(RiftConnection rift, ShipSize hull, DateTime now, IEnumerable<ShipSize> carried = null)
         {
             if (!IsOpen(rift, now))
                 return RiftPassageRefusal.Collapsed;
             if (!Admits(rift.Size, hull))
                 return RiftPassageRefusal.HullTooLarge;
-            if (rift.MassRemaining < PassageMass(hull))
+            if (rift.MassRemaining < PassageMass(hull, carried))
                 return RiftPassageRefusal.MassSpent;
             return RiftPassageRefusal.None;
         }
 
         /// <summary>
-        /// Spends a passage's mass. A rift whose budget is spent starts to collapse: it closes after the warning time
-        /// (or at its own end, if sooner), and the warning goes out on the next network check.
+        /// Spends a passage's mass, the docked ships' included. A rift whose budget is spent starts to collapse: it closes
+        /// after the warning time (or at its own end, if sooner), and the warning goes out on the next network check.
         /// </summary>
-        public static void SpendPassage(RiftConnection rift, ShipSize hull, DateTime now)
+        public static void SpendPassage(RiftConnection rift, ShipSize hull, DateTime now, IEnumerable<ShipSize> carried = null)
         {
-            rift.MassRemaining = Math.Max(0, rift.MassRemaining - PassageMass(hull));
+            rift.MassRemaining = Math.Max(0, rift.MassRemaining - PassageMass(hull, carried));
             if (rift.MassRemaining >= PassageMass(ShipSize.Small))
                 return;
 
@@ -105,10 +109,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// Whether a ship of this hull in an area still has a way out: an open rift touching the area that takes the
-        /// hull and has the mass for its passage.
+        /// hull and has the mass for its passage, with the ships docked aboard it.
         /// </summary>
-        public static bool HasExit(string areaResref, ShipSize hull, IEnumerable<RiftConnection> rifts, DateTime now) =>
-            rifts.Any(x => x.Touches(areaResref) && GetPassageRefusal(x, hull, now) == RiftPassageRefusal.None);
+        public static bool HasExit(string areaResref, ShipSize hull, IEnumerable<RiftConnection> rifts, DateTime now, IEnumerable<ShipSize> carried = null)
+        {
+            var docked = carried?.ToList();
+            return rifts.Any(x => x.Touches(areaResref) && GetPassageRefusal(x, hull, now, docked) == RiftPassageRefusal.None);
+        }
 
         /// <summary>
         /// Where a new rift from a Wild Space system leads: a random known orbit, or (the rest of the time) another

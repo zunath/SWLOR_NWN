@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             AccrueDrill(station, state);
-            var collected = new List<string>();
+            var collection = new DrillCollection { Id = Guid.NewGuid().ToString(), BuildingId = buildingId };
             foreach (var (resref, units) in state.DrillStorage.ToList())
             {
                 var given = 0;
@@ -342,26 +342,54 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (given > 0)
-                    collected.Add($"{given}x {Cache.GetItemNameByResref(resref)}");
+                    collection.Units[resref] = given;
 
-                if (given >= units)
-                    state.DrillStorage.Remove(resref);
-                else
-                {
-                    state.DrillStorage[resref] = units - given;
+                if (given < units)
                     break;
-                }
             }
 
-            // The ore is saved with the character before the drill's stock is, so the window in which a restart could
-            // let it be collected twice is as short as it can be.
-            if (collected.Count > 0)
-                ExportSingleCharacter(player);
+            if (collection.Units.Count == 0)
+            {
+                SendMessageToPC(player, ColorToken.Red("The Asteroid Drill has no ore to collect."));
+                return;
+            }
+
+            // The ore is saved in the character file with a mark naming the collection, then the drill's stock: a restart
+            // in between leaves a mark the next login takes from the stock once (SettleDrillCollection).
+            ObjectPlugin.SetString(player, DrillCollectionVariable, collection.Serialize(), true);
+            ExportSingleCharacter(player);
+            state.LastDrillCollectionIds ??= new Dictionary<string, string>();
+            collection.ApplyTo(state.DrillStorage, state.LastDrillCollectionIds, GetObjectUUID(player));
+            DB.Set(state);
+
+            var collected = collection.Units.Select(x => $"{x.Value}x {Cache.GetItemNameByResref(x.Key)}");
+            SendMessageToPC(player, ColorToken.Green($"Collected from the Asteroid Drill: {string.Join(", ", collected)}."));
+        }
+
+        /// <summary>The character-file local naming the last drill collection (<see cref="DrillCollection"/>).</summary>
+        private const string DrillCollectionVariable = "STATION_DRILL_COLLECTION";
+
+        /// <summary>Takes a collection from the drill's stock when the character file holds its ore but a restart kept the stock.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void SettleDrillCollection()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!DrillCollection.TryParse(ObjectPlugin.GetString(player, DrillCollectionVariable), out var collection))
+                return;
+
+            var state = DB.Get<StationBuildingState>(StationBuildingState.KeyFor(collection.BuildingId));
+            if (state == null)
+                return;
+
+            state.LastDrillCollectionIds ??= new Dictionary<string, string>();
+            if (!collection.ApplyTo(state.DrillStorage, state.LastDrillCollectionIds, GetObjectUUID(player)))
+                return;
 
             DB.Set(state);
-            SendMessageToPC(player, collected.Count > 0
-                ? ColorToken.Green($"Collected from the Asteroid Drill: {string.Join(", ", collected)}.")
-                : ColorToken.Red("The Asteroid Drill has no ore to collect."));
+            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - took drill collection {collection.Id} from building {collection.BuildingId} after a restart.");
         }
 
         // Droids
@@ -658,11 +686,15 @@ namespace SWLOR.Game.Server.Service
                 .FirstOrDefault();
         }
 
-        /// <summary>Whether the ship is docked at one of these Starports, with nobody flying it.</summary>
+        /// <summary>
+        /// Whether the ship is docked at one of these Starports, with nobody flying it. A ship docked aboard a host or at a
+        /// derelict keeps its last dock but is away from it, and so is a ship whose pilot is launching it.
+        /// </summary>
         private static bool IsDockedAt(WorldProperty ship, PlayerShip record, ICollection<string> starportInteriorIds)
         {
             return record != null &&
-                   string.IsNullOrWhiteSpace(record.DockedToShipId) &&
+                   !Space.IsDockedAboardHost(record, out _) &&
+                   !Space.IsShipLaunchPending(record.Id) &&
                    !ship.Positions.ContainsKey(PropertyLocationType.CurrentPosition) &&
                    ship.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock) &&
                    string.IsNullOrWhiteSpace(dock.AreaResref) &&

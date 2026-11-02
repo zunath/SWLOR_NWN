@@ -224,6 +224,12 @@ namespace SWLOR.Game.Server.Entity
         /// the character file holds is charged once, at the next login if a restart came first. Older records load empty.
         /// </summary>
         public string LastAgentPurchaseId { get; set; }
+
+        /// <summary>
+        /// The last space lockbox grant whose agent intel was kept, saved with the intel, so a grant kept again after a
+        /// restart adds none. Older records load empty.
+        /// </summary>
+        public string LastLockboxGrantId { get; set; } = string.Empty;
         public int OutfitSlotLimit { get; set; }
         public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }

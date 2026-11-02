@@ -89,7 +89,7 @@ public class CreditPaymentTests
         InOrder(Method(payments, "private static void SettlePendingFoundings("),
             "CreditPaymentMark.PaysPendingFounding(mark, station.PendingPaymentId)", "UndoStationFounding(station, OBJECT_INVALID);");
         var settle = Method(payments, "public static void SettleInterruptedPayment(");
-        InOrder(settle, "SettlePendingFoundings(player, mark);", "if (!mark.KeepsPayment(recordPaymentId))",
+        InOrder(settle, "SettlePendingFoundings(player, mark);", "if (!mark.KeepsPayment(GetRecordPaymentId(mark)))",
             "GiveGoldToCreature(player, mark.Credits);", "Retire(player);");
         payments.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
     }
@@ -171,13 +171,16 @@ public class CreditPaymentTests
                      new[] { "Service", "TradeCustoms.cs" },
                      new[] { "Service", "PlanetaryHoldings.cs" },
                      new[] { "Service", "ShipTransfer.cs" },
+                     new[] { "Service", "Shuttle.cs" },
+                     new[] { "Feature", "DialogDefinition", "StarportFlightsDialog.cs" },
                  })
         {
             Source(path).Should().NotContain("() => TakeGoldFromCreature(", string.Join("/", path));
         }
 
-        Method(Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs"), "public Action OnClickRefitDesign()")
-            .Should().NotContain("TakeGoldFromCreature(");
+        var shipManagement = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        Method(shipManagement, "public Action OnClickRefitDesign()").Should().NotContain("TakeGoldFromCreature(");
+        Method(shipManagement, "public Action OnClickRepair()").Should().NotContain("TakeGoldFromCreature(");
     }
 
     private static void InOrder(string source, params string[] parts)

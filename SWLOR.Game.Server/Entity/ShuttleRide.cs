@@ -36,6 +36,9 @@ namespace SWLOR.Game.Server.Entity
         public string DestinationStationId { get; set; } = string.Empty;
         public int FarePaid { get; set; }
         public int TaxPaid { get; set; }
+
+        /// <summary>The credit payment that bought the ticket (CreditPayments), saved with it. Older records load empty.</summary>
+        public string PaymentId { get; set; } = string.Empty;
         public DateTime DepartureUtc { get; set; }
         public DateTime ArrivalUtc { get; set; }
     }

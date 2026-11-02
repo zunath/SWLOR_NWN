@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -354,7 +355,7 @@ namespace SWLOR.Game.Server.Service
             switch (source)
             {
                 case SlicingSourceType.SpaceLockbox:
-                    GiveRewardsToPlayer(slicer, rewards);
+                    GiveRewardsToPlayer(slicer, rewards, fromLockbox: true);
                     DestroyObject(target);
                     break;
                 case SlicingSourceType.DataCan:
@@ -458,11 +459,14 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Space lockbox rewards, and a site's rewards with no ship to take them: everything goes to the player who sliced
         /// it, with <paramref name="extraItems"/> (a locked cache's loot, one entry per item). An item a full inventory
-        /// refuses goes the way a yield that fits nowhere does (ShipHold.KeepUnplacedYield), so no reward is lost.
+        /// refuses goes the way a yield that fits nowhere does (ShipHold.KeepUnplacedYield), so no reward is lost. A
+        /// lockbox's intel and refused items wait for a save without the lockbox (<see cref="KeepLockboxGrantAfterSave"/>).
         /// </summary>
-        private static void GiveRewardsToPlayer(uint player, IReadOnlyList<SpaceSlicingReward> rewards, IReadOnlyCollection<string> extraItems = null)
+        private static void GiveRewardsToPlayer(uint player, IReadOnlyList<SpaceSlicingReward> rewards, IReadOnlyCollection<string> extraItems = null,
+            bool fromLockbox = false)
         {
             var unplaced = new List<(string Resref, ShipComponentTraitType? Trait)>();
+            var intel = 0;
             foreach (var reward in rewards)
             {
                 switch (reward.Kind)
@@ -471,7 +475,7 @@ namespace SWLOR.Game.Server.Service
                         GiveGoldToCreature(player, reward.Credits);
                         break;
                     case SpaceSlicingRewardKind.AgentIntel:
-                        GrantAgentIntel(player);
+                        intel++;
                         break;
                     default:
                         var item = CreateItemOnObject(reward.Resref, player, reward.Quantity);
@@ -490,8 +494,70 @@ namespace SWLOR.Game.Server.Service
             }
 
             SendMessageToPC(player, ColorToken.Green($"You recover {DescribeRewards(rewards)}."));
+            if (fromLockbox)
+            {
+                KeepLockboxGrantAfterSave(player, new SpaceLockboxGrant { Id = Guid.NewGuid().ToString(), Intel = intel, Unplaced = unplaced });
+                return;
+            }
+
+            for (var count = 0; count < intel; count++)
+                GrantAgentIntel(player);
             if (unplaced.Count > 0)
                 ShipHold.KeepUnplacedYield(player, unplaced);
+        }
+
+        /// <summary>The character-file local naming a space lockbox's rewards the database keeps (<see cref="SpaceLockboxGrant"/>).</summary>
+        private const string LockboxGrantVariable = "SPACE_LOCKBOX_GRANT";
+
+        /// <summary>
+        /// The lockbox leaves the character file only after this script, so what the database keeps waits for a save
+        /// without it, with a mark naming the grant: a restart before that save leaves the lockbox to open again, and one
+        /// after keeps the grant at the next login (<see cref="SettleLockboxGrant"/>).
+        /// </summary>
+        private static void KeepLockboxGrantAfterSave(uint player, SpaceLockboxGrant grant)
+        {
+            if (grant.IsEmpty)
+                return;
+
+            ObjectPlugin.SetString(player, LockboxGrantVariable, grant.Serialize(), true);
+            AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>
+            {
+                // A player who logged out first saved the mark without the lockbox; their next login keeps the grant.
+                if (!GetIsObjectValid(player))
+                    return;
+
+                ExportSingleCharacter(player);
+                KeepLockboxGrant(player, grant);
+            }));
+        }
+
+        /// <summary>Keeps a lockbox grant (again after a restart, changing nothing kept before), then retires its mark.</summary>
+        private static void KeepLockboxGrant(uint player, SpaceLockboxGrant grant)
+        {
+            FactionAgents.GrantLockboxIntel(player, grant.Intel, grant.Id);
+            if (grant.Unplaced.Count > 0)
+                ShipHold.KeepUnplacedYield(player, grant.Unplaced, grant.Id);
+
+            if (ObjectPlugin.GetString(player, LockboxGrantVariable) != grant.Serialize())
+                return;
+
+            ObjectPlugin.DeleteString(player, LockboxGrantVariable);
+            ExportSingleCharacter(player);
+        }
+
+        /// <summary>Keeps the lockbox grant a restart interrupted after the character file was saved without the lockbox.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void SettleLockboxGrant()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!SpaceLockboxGrant.TryParse(ObjectPlugin.GetString(player, LockboxGrantVariable), out var grant))
+                return;
+
+            KeepLockboxGrant(player, grant);
+            Log.Write(LogGroup.Space, $"SPACE LOCKBOX - {PlayerName.GetAuditName(player)} - kept grant {grant.Id} ({grant.Intel} intel, {grant.Unplaced.Count} item(s)) after a restart");
         }
 
         private static string DescribeRewards(IEnumerable<SpaceSlicingReward> rewards)

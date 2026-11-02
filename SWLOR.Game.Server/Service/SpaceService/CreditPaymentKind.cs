@@ -7,5 +7,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         StationFounding = 1,
         HullRefit = 2,
         CustomsFine = 3,
+        ShipRepair = 4,
+        ShuttleTicket = 5,
     }
 }

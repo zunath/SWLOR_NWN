@@ -380,6 +380,19 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, ColorToken.Green($"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead."));
         }
 
+        /// <summary>A space lockbox's agent intel, kept once per grant: the grant's id is saved with the intel.</summary>
+        public static void GrantLockboxIntel(uint player, int count, string grantId)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null || count <= 0 || dbPlayer.LastLockboxGrantId == grantId)
+                return;
+
+            dbPlayer.AgentIntel += count;
+            dbPlayer.LastLockboxGrantId = grantId;
+            DB.Set(dbPlayer);
+            SendMessageToPC(player, ColorToken.Green($"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead."));
+        }
+
         // Faction token stores
 
         /// <summary>Buys a store item with the agent's faction tokens.</summary>

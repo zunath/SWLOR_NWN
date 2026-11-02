@@ -216,22 +216,25 @@ namespace SWLOR.Game.Server.Service
         /// Yield that fit neither the hold nor the pilot's inventory is packed into the hold past its entry limit, so it is
         /// never lost: taking items out works as usual, and storing more waits for room. Without a hold the pilot may use,
         /// it is left at the pilot's location. Other rewards a full inventory refused (a space lockbox's) are kept the same
-        /// way: one entry per item, a component with its trait.
+        /// way: one entry per item, a component with its trait. With <paramref name="entryPrefix"/> the hold entries are
+        /// named from it, so keeping the same yield again (after a restart) rewrites the same entries.
         /// </summary>
-        public static void KeepUnplacedYield(uint pilot, List<(string Resref, ShipComponentTraitType? Trait)> unplaced)
+        public static void KeepUnplacedYield(uint pilot, List<(string Resref, ShipComponentTraitType? Trait)> unplaced, string entryPrefix = null)
         {
             var names = string.Join(", ", unplaced.GroupBy(x => x.Resref).Select(x => $"{x.Count()}x {Cache.GetItemNameByResref(x.Key)}"));
             if (TryGetHold(pilot, out var property, out _, out var hold, out var holdIsNew))
             {
+                var entry = 0;
+                string NextKey() => entryPrefix == null ? null : $"{entryPrefix}:{entry++}";
                 foreach (var (resref, quantity) in unplaced.Where(x => x.Trait == null).GroupBy(x => x.Resref).Select(x => (x.Key, x.Count())))
                 {
                     var maxStack = GetMaxStack(resref);
                     for (var left = quantity; left > 0; left -= maxStack)
-                        AddNewStack(hold, resref, Math.Min(left, maxStack));
+                        AddNewStack(hold, resref, Math.Min(left, maxStack), NextKey());
                 }
 
                 foreach (var (resref, trait) in unplaced.Where(x => x.Trait != null))
-                    StoreComponent(hold, (resref, trait.Value));
+                    StoreComponent(hold, (resref, trait.Value), NextKey());
 
                 if (holdIsNew)
                     SaveNewHold(pilot, property, hold);
@@ -306,8 +309,8 @@ namespace SWLOR.Game.Server.Service
             return kept;
         }
 
-        /// <summary>Adds a new hold entry of the item and returns how many it holds, or 0 when it could not be made.</summary>
-        private static int AddNewStack(WorldPropertyCategory hold, string resref, int quantity)
+        /// <summary>Adds a new hold entry of the item (under <paramref name="key"/>, or a new one) and returns how many it holds, or 0 when it could not be made.</summary>
+        private static int AddNewStack(WorldPropertyCategory hold, string resref, int quantity, string key = null)
         {
             var storage = GetObjectByTag(TemporaryStorageTag);
             if (!GetIsObjectValid(storage))
@@ -318,7 +321,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var stackSize = GetItemStackSize(item);
-            hold.Items[Guid.NewGuid().ToString()] = new WorldPropertyItem
+            hold.Items[key ?? Guid.NewGuid().ToString()] = new WorldPropertyItem
             {
                 Name = GetName(item),
                 Tag = GetTag(item),
@@ -331,8 +334,8 @@ namespace SWLOR.Game.Server.Service
             return stackSize;
         }
 
-        /// <summary>Stores one salvaged component with its trait in a new hold entry and returns its name, or null.</summary>
-        private static string StoreComponent(WorldPropertyCategory hold, (string Resref, ShipComponentTraitType Trait) component)
+        /// <summary>Stores one salvaged component with its trait in a hold entry (under <paramref name="key"/>, or a new one) and returns its name, or null.</summary>
+        private static string StoreComponent(WorldPropertyCategory hold, (string Resref, ShipComponentTraitType Trait) component, string key = null)
         {
             var storage = GetObjectByTag(TemporaryStorageTag);
             if (!GetIsObjectValid(storage))
@@ -344,7 +347,7 @@ namespace SWLOR.Game.Server.Service
 
             ShipComponents.SetTraits(item, new[] { component.Trait });
             var name = GetName(item);
-            hold.Items[Guid.NewGuid().ToString()] = new WorldPropertyItem
+            hold.Items[key ?? Guid.NewGuid().ToString()] = new WorldPropertyItem
             {
                 Name = name,
                 Tag = GetTag(item),

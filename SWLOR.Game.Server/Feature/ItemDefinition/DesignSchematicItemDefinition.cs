@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -29,21 +28,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         ? "This schematic has a configuration problem. Please inform a DM."
                         : string.Empty;
                 })
-                .ApplyAction((user, item, _, _, _) =>
-                {
-                    var design = HullDesignRules.FindBySchematic(GetResRef(item));
-                    var dbPlayer = DB.Get<Player>(GetObjectUUID(user));
-                    if (!HullDesignRules.Unlock(dbPlayer.UnlockedHullDesigns, design, DateTime.UtcNow))
-                    {
-                        SendMessageToPC(user, $"You already know the {design.ShipName} - {design.Name} Hull Design.");
-                        return;
-                    }
-
-                    DB.Set(dbPlayer);
-                    SendMessageToPC(user, ColorToken.Green(
-                        $"You learn the {design.ShipName} - {design.Name} Hull Design. Refit a {design.ShipName} to it in Ship Management at a starport."));
-                    Item.ReduceItemStack(item, 1);
-                });
+                .ApplyAction((user, item, _, _, _) => Space.LearnHullDesign(user, item));
 
             return _builder.Build();
         }

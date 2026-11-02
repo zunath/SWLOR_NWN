@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         /// <summary>A follow-up is never drawn at random. Another decision queues it.</summary>
         public bool IsFollowUp { get; set; }
 
+        /// <summary>An event elsewhere in the game raises it, about one subject such as a holding. It is never drawn at random.</summary>
+        public bool IsEventDriven { get; set; }
+
         /// <summary>When it arrives, the secret entry it carries is exposed in the Gazette.</summary>
         public bool ExposesSecret { get; set; }
 

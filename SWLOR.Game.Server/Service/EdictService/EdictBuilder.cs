@@ -55,6 +55,13 @@ namespace SWLOR.Game.Server.Service.EdictService
             return this;
         }
 
+        /// <summary>The Edict only means something at a lawful port, so a city whose Starport exchange is an open port cannot enact it.</summary>
+        public EdictBuilder LawfulPortOnly()
+        {
+            _active.RequiresLawfulPort = true;
+            return this;
+        }
+
         /// <summary>The Edict is an access rule for outsiders or allies, not a benefit for the city's own citizens.</summary>
         public EdictBuilder NotACitizenBenefit()
         {

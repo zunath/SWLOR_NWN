@@ -61,7 +61,8 @@ namespace SWLOR.Game.Server.Service
                 (int)city.Taxes.GetValueOrDefault(PropertyTaxType.Citizenship),
                 candidateMayorLevel,
                 candidateSupported,
-                baselineSupported);
+                baselineSupported,
+                Edict.IsOpenPort(city));
         }
 
         /// <summary>The cities an Alliance or Embargo can name from the city, by name.</summary>

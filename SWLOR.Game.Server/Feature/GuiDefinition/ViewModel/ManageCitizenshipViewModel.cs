@@ -158,6 +158,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
+                        // The Industrial Charter ends with the citizenship, so the holdings settle under it first.
+                        IndustrialCharter.SettleOwner(playerId);
+
                         // Remove the player's citizenship property Id.
                         dbPlayer = DB.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = string.Empty;
@@ -237,7 +240,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         AssignCommand(Player, () => TakeGoldFromCreature(5000, Player, true));
 
+                        // A new citizenship starts its 7 days without Edict benefits, so the holdings settle before it changes.
+                        IndustrialCharter.SettleOwner(playerId);
+
                         var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
+                        dbPlayer = DB.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
                         // Joining again resets the citizen-since time, which decides who may vote in an election.
                         dbPlayer.CitizenSinceUtc = DateTime.UtcNow;
@@ -261,7 +268,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"You owe {dbPlayer.PropertyOwedTaxes} credits. Will you pay this now?", () =>
             {
                 var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
-                dbPlayer = DB.Get<Player>(playerId);
                 var gold = GetGold(Player);
 
                 if (gold <= 0)
@@ -269,6 +275,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     FloatingTextStringOnCreature("You do not have any credits.", Player, false);
                     return;
                 }
+
+                // Clearing the debt returns the citizen to good standing, so the holdings settle under the debt first.
+                IndustrialCharter.SettleOwner(playerId);
+                dbPlayer = DB.Get<Player>(playerId);
 
                 // Not enough to cover everything, but take what they have.
                 if (gold < dbPlayer.PropertyOwedTaxes)

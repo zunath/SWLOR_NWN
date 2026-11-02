@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.DuelingRing, StructureChangeType.PositionChanged, Duels.OnRingPlaced);
             Assign(StructureType.MarketStall, StructureChangeType.PositionChanged, MarketStalls.OnStallPlaced);
             Assign(StructureType.GardenPlot, StructureChangeType.PositionChanged, Farming.OnPlotSpawned);
+            Assign(StructureType.Corral, StructureChangeType.PositionChanged, Corrals.OnCorralSpawned);
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
@@ -69,6 +70,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.DuelingRing, StructureChangeType.Retrieved, Duels.OnRingRetrieved);
             Assign(StructureType.MarketStall, StructureChangeType.Retrieved, MarketStalls.OnStallRetrieved);
             Assign(StructureType.GardenPlot, StructureChangeType.Retrieved, Farming.OnPlotRetrieved);
+            Assign(StructureType.Corral, StructureChangeType.Retrieved, Corrals.OnCorralRetrieved);
 
             return _actions;
         }

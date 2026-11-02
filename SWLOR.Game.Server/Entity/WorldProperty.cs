@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Entity
             Escrow = new Dictionary<string, CityEscrowEntry>();
             Officers = new Dictionary<string, CityOfficer>();
             Modifiers = new Dictionary<CityModifierType, CityModifier>();
+            ActingMayorPlayerId = string.Empty;
         }
 
         /// <summary>
@@ -222,6 +223,28 @@ namespace SWLOR.Game.Server.Entity
         /// open. Cleared when the second recall ends.
         /// </summary>
         public int RecallStage { get; set; }
+
+        /// <summary>
+        /// The citizen the mayor named Acting Mayor, or empty. The term ends at <see cref="ActingMayorEndsUtc"/>, and sooner
+        /// when the mayor ends it, the Acting Mayor leaves the city, or an election seats a mayor. Cities only; older
+        /// records load empty.
+        /// </summary>
+        public string ActingMayorPlayerId { get; set; }
+
+        /// <summary>When the Acting Mayor's term ends, or null when there is none. At most 30 days after it began.</summary>
+        public DateTime? ActingMayorEndsUtc { get; set; }
+
+        /// <summary>
+        /// The mayor's step-down in progress, or null. While it is pending the mayor keeps every power; once accepted the
+        /// mayor has none and the interim holder has the Acting Mayor's powers, until the snap election ends. Cities only.
+        /// </summary>
+        public CityStepDown StepDown { get; set; }
+
+        /// <summary>The city's one story request for the DMs, or null. Cities only.</summary>
+        public CityStoryRequest StoryRequest { get; set; }
+
+        /// <summary>The planetary council a DM last called for the city's planet, or null. Cities only.</summary>
+        public CityCouncilSummons CouncilSummons { get; set; }
 
         /// <summary>
         /// The stock theme the mayor picked for a Market Stall. Only used when the StructureType is a Market Stall;

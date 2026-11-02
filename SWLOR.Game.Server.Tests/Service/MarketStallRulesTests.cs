@@ -291,6 +291,17 @@ public class MarketStallRulesTests
     }
 
     [Test]
+    public void ThePickOfATheme_FollowsTheCityRoles_AndNeverTheDepartedMayor()
+    {
+        var stalls = Source("Service", "MarketStalls.cs");
+
+        stalls.Should().Contain("CityPowers.GetRole(city, playerId)");
+        stalls.Should().Contain("role is CityRole.Mayor or CityRole.ActingMayor");
+        stalls.Should().Contain("if (role == CityRole.DepartedMayor)");
+        stalls.Should().Contain("PropertyPermissionType.EditStructures");
+    }
+
+    [Test]
     public void AClosedStall_KeepsItsStructure_AndOnlyLosesItsVendor()
     {
         var stalls = Source("Service", "MarketStalls.cs");

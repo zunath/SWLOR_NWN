@@ -31,6 +31,8 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
 
         public SkillType Skill { get; private init; }
 
+        public StructureType Structure { get; private init; }
+
         public static SituationRequirement CityLevel(int level)
         {
             return new SituationRequirement(SituationRequirementType.CityLevel) { Level = level };
@@ -55,6 +57,12 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         public static SituationRequirement ActiveEdict(string edictName)
         {
             return new SituationRequirement(SituationRequirementType.ActiveEdict) { EdictName = edictName ?? string.Empty };
+        }
+
+        /// <summary>The city has at least one structure of the type.</summary>
+        public static SituationRequirement WithStructure(StructureType structure)
+        {
+            return new SituationRequirement(SituationRequirementType.Structure) { Structure = structure };
         }
 
         public static SituationRequirement SkillRank(SkillType skill, int rank)

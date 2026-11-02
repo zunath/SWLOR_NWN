@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// <item>Sales tax (<see cref="SalesTaxMigration"/>): the Sales tax key, at 0, on every city.</item>
 /// <item>Gardens (<see cref="GardenPermissionMigration"/>): the Tend Gardens permission on every House and City permission
 /// record, true for the owner or mayor.</item>
+/// <item>Acting Mayor (<see cref="ActingMayorMigration"/>): the Acting Mayor and step-down started empty.</item>
 /// </list>
 /// </summary>
 public sealed class _32_PlayerCityRevamp : IServerMigration
@@ -27,5 +28,6 @@ public sealed class _32_PlayerCityRevamp : IServerMigration
         CityAffairsMigration.Run(Version);
         SalesTaxMigration.Run(Version);
         GardenPermissionMigration.Run(Version);
+        ActingMayorMigration.Run(Version);
     }
 }

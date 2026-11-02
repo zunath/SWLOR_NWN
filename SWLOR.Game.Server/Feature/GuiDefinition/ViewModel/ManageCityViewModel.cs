@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityGazetteService;
 using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.CityTreasuryService;
@@ -23,6 +24,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int MaxUpgradeLevel = 5;
         private string _cityId;
+
+        // Whether the player has a permission record on the city. Only a record holder's save changes the city's name.
+        private bool _hasPermissionRecord;
 
         public string Instructions
         {
@@ -252,23 +256,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectTab(CityTabId);
         }
 
+        /// <summary>
+        /// Reads what the player may do in this window: their role (mayor, Acting Mayor, or a departed mayor with no
+        /// powers) and the permissions on their record. Returns false when they have no standing here.
+        /// </summary>
         private bool RefreshPermissions()
         {
             var playerId = GetObjectUUID(Player);
             var dbCity = DB.Get<WorldProperty>(_cityId);
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
-                .SingleOrDefault();
+            var access = CityPowers.Resolve(dbCity, playerId);
             IsStation = Station.IsStation(dbCity);
+            _hasPermissionRecord = access.HasRecord && access.HasAccess;
 
-            // The permission row is deleted when another manager revokes the player's last permission.
-            if (permission == null)
+            // The permission row is deleted when another manager revokes the player's last permission. A mayor who stepped
+            // down has none of the mayor's powers, and a stand-in has only the Acting Mayor's.
+            if (!access.HasAccess)
             {
                 CanAccessTreasury = false;
                 CanEditTaxes = false;
                 CanManageUpkeep = false;
                 CanManageEdicts = false;
+                CanRepealEdicts = false;
                 CanUpgradeMedicalCenters = false;
                 CanUpgradeStarports = false;
                 CanUpgradeCantinas = false;
@@ -276,27 +284,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
-            // Permissions
-            CanAccessTreasury = permission.Permissions[PropertyPermissionType.AccessTreasury];
-            CanEditTaxes = permission.Permissions[PropertyPermissionType.EditTaxes];
-            CanManageUpkeep = permission.Permissions[PropertyPermissionType.ManageUpkeep];
-            CanManageEdicts = permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageEdicts);
+            // Permissions, by role and by what the player's record grants.
+            CanAccessTreasury = access.Can(CityPower.WithdrawTreasury);
+            CanEditTaxes = access.Can(CityPower.ChangeTaxes);
+            CanManageUpkeep = access.Can(CityPower.PayUpkeep);
+            CanManageEdicts = access.Can(CityPower.EnactEdicts);
+            CanRepealEdicts = access.Can(CityPower.RepealEdicts);
 
             // Upgrades
-            CanUpgradeMedicalCenters = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+            var canStartProjects = access.Can(CityPower.StartProjects);
+            CanUpgradeMedicalCenters = canStartProjects &&
                               dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] + 1;
-            CanUpgradeStarports = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+            CanUpgradeStarports = canStartProjects &&
                               dbCity.Upgrades[PropertyUpgradeType.StarportLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.StarportLevel] + 1;
-            CanUpgradeCantinas = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+            CanUpgradeCantinas = canStartProjects &&
                               dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1;
 
             // A player station's Jump Beacon level (1-3) caps the hulls it jumps.
             var beaconLevel = GetJumpBeaconLevel(dbCity);
             CanUpgradeJumpBeacons = IsStation &&
-                              permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+                              canStartProjects &&
                               beaconLevel < StationTuning.BeaconMaxLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= beaconLevel + 1;
 
@@ -305,11 +315,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool HasManageUpgradesPermission()
         {
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), GetObjectUUID(Player), false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
-                .SingleOrDefault();
-            return permission != null && permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageUpgrades);
+            // Facility upgrades are the City Projects the Acting Mayor may start, as well as what Manage Upgrades grants.
+            return CityPowers.Can(DB.Get<WorldProperty>(_cityId), GetObjectUUID(Player), CityPower.StartProjects);
         }
 
         /// <summary>A station's Jump Beacon upgrade level; stations founded before beacons existed start at 1.</summary>
@@ -627,6 +634,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action PayUpkeep() => () =>
         {
+            // The window's buttons reflect when it loaded: the permission may have been revoked, or the mayor may have stepped down, since.
+            RefreshPermissions();
+            if (!CanManageUpkeep)
+            {
+                Instructions = "Insufficient permissions.";
+                InstructionsColor = GuiColor.Red;
+                return;
+            }
+
             var dbCity = DB.Get<WorldProperty>(_cityId);
             if (dbCity.Upkeep == 0)
             {
@@ -638,7 +654,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Your upkeep bill is {dbCity.Upkeep} cr. Note that credits must be deposited into your city's treasury. Will you pay this fee now?",
                 () =>
                 {
+                    RefreshPermissions();
                     dbCity = DB.Get<WorldProperty>(_cityId);
+                    if (!CanManageUpkeep)
+                    {
+                        Instructions = "Insufficient permissions.";
+                        InstructionsColor = GuiColor.Red;
+                        return;
+                    }
+
                     if (dbCity.Upkeep == 0)
                     {
                         return;
@@ -728,9 +752,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 out var citizenshipTax,
                 out var transportationTax);
 
-            dbCity.CustomName = CityName;
-            if (Station.IsStation(dbCity))
-                Station.RenameExterior(dbCity);
+            // A stand-in with no record, such as an Acting Mayor, has no say in the city's name.
+            if (_hasPermissionRecord)
+            {
+                dbCity.CustomName = CityName;
+                if (Station.IsStation(dbCity))
+                    Station.RenameExterior(dbCity);
+            }
 
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;
             dbCity.Taxes[PropertyTaxType.Transportation] = transportationTax;
@@ -818,7 +846,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CityGazetteEntryType.Tax,
                 text,
                 playerId,
-                CityGazetteRules.GetTaxOfficialTitle(playerId == dbCity.OwnerPlayerId));
+                CityPowers.GetDelegateTitle(dbCity, playerId));
         }
 
         public Action ResetChanges() => () =>

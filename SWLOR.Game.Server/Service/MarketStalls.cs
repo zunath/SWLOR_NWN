@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
@@ -106,22 +107,25 @@ namespace SWLOR.Game.Server.Service
             return GetStalls(cityId).Count;
         }
 
-        /// <summary>Whether this player may pick a stall's stock theme: the mayor, or anyone who may edit the city's structures.</summary>
+        /// <summary>
+        /// Whether this player may pick a stall's stock theme: the mayor or Acting Mayor, or anyone who may edit the city's
+        /// structures. A mayor who stepped down may not.
+        /// </summary>
         public static bool CanPickTheme(uint player, WorldProperty city)
         {
             if (city == null || !GetIsPC(player) || GetIsDM(player))
                 return false;
 
             var playerId = GetObjectUUID(player);
-            if (city.OwnerPlayerId == playerId)
+            var role = CityPowers.GetRole(city, playerId);
+            if (role is CityRole.Mayor or CityRole.ActingMayor)
                 return true;
 
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
-                .FirstOrDefault();
+            if (role == CityRole.DepartedMayor)
+                return false;
 
-            return permission != null && permission.Permissions.GetValueOrDefault(PropertyPermissionType.EditStructures);
+            var record = CityPowers.GetPermissionRecord(city.Id, playerId);
+            return record != null && record.Permissions.GetValueOrDefault(PropertyPermissionType.EditStructures);
         }
 
         /// <summary>

@@ -3115,6 +3115,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             PropertyType.City)]
         MarketStall = 5102,
+
+        // Player City Revamp: livestock. A city-only structure on open ground that counts against the city's structure limit.
+        [Structure("Corral",
+            "swlor_0094",
+            "An open pen for a city's animals. It holds 3 animals, and a city can have 2 corrals for each city level. Young animals are raised here: talk to an animal to feed it, collect from it, butcher it or crate it.",
+            true,
+            0,
+            PropertyType.City)]
+        Corral = 5104,
     }
 
     public class StructureAttribute : Attribute

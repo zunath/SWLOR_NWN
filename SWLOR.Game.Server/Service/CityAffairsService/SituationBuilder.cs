@@ -90,6 +90,20 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
             return this;
         }
 
+        /// <summary>The choice calls a hunt: an NPC wave attacks the city's corrals for 30 minutes.</summary>
+        public SituationBuilder CallHunt()
+        {
+            _choice.Effects.Add(SituationEffect.CallHunt());
+            return this;
+        }
+
+        /// <summary>The choice leaves the city's animals giving no products for 72 hours.</summary>
+        public SituationBuilder LivestockLoseProducts()
+        {
+            _choice.Effects.Add(SituationEffect.LivestockLoseProducts());
+            return this;
+        }
+
         public SituationBuilder FollowUp(SituationType followUp, int delayDays, int oneIn = 1, bool carriesSecret = false)
         {
             _choice.Effects.Add(SituationEffect.QueueFollowUp(followUp, delayDays, oneIn, carriesSecret));
@@ -125,6 +139,12 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         public SituationBuilder IgnoredModifier(CityModifierType modifier)
         {
             _situation.IgnoredEffects.Add(SituationEffect.AddModifier(modifier));
+            return this;
+        }
+
+        public SituationBuilder IgnoredLivestockLoseProducts()
+        {
+            _situation.IgnoredEffects.Add(SituationEffect.LivestockLoseProducts());
             return this;
         }
 

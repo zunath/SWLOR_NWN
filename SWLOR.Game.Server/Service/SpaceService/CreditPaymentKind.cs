@@ -9,5 +9,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         CustomsFine = 3,
         ShipRepair = 4,
         ShuttleTicket = 5,
+        TournamentEntry = 6,
     }
 }

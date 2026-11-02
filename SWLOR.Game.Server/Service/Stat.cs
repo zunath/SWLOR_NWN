@@ -183,6 +183,17 @@ namespace SWLOR.Game.Server.Service
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
+            RestoreWalkMode(player);
+        }
+
+        /// <summary>
+        /// The engine keeps a player's local variables across a relog until the server resets,
+        /// but the forced walk set through NWNX belongs to the old creature object.
+        /// Reapply it so a player who logged out walking still walks.
+        /// </summary>
+        public static void RestoreWalkMode(uint player)
+        {
+            PlayerPlugin.SetAlwaysWalk(player, IsWalkModeEnabled(player));
             ApplyCreatureMovementRate(player);
         }
 

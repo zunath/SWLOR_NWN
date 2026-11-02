@@ -132,7 +132,8 @@ public class CityProjectWiringTests
         var service = ReadServerSource("Service", "HouseSpecializations.cs");
         var keeper = ExtractMethod(service, "public static bool IsKeeper(string houseId, string playerId)");
 
-        keeper.Should().Contain("WorldPropertyPermission").And.Contain("HouseSpecializationRules.IsKeeper(record)");
+        keeper.Should().Contain("HouseSpecializationRules.IsKeeper(GetPermissionRecord(houseId, playerId))");
+        ExtractMethod(service, "public static WorldPropertyPermission GetPermissionRecord(string houseId, string playerId)").Should().Contain("WorldPropertyPermission");
         service.Should().NotContain("OwnerPlayerId", "a house in a city is owned by the mayor at the time, whoever placed it");
         ReadServerSource("Feature", "GuiDefinition", "ViewModel", "HouseSpecializationViewModel.cs").Should().NotContain("OwnerPlayerId");
         ExtractMethod(service, "public static HouseSpecializationRefusal CheckChange(").Should().Contain("IsKeeper(house.Id, playerId)");

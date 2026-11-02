@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -22,6 +23,39 @@ namespace SWLOR.Game.Server.Service.TradeService
             return cargo
                 .Where(x => x.Value.Units > 0 && IsBanned(x.Key, authority))
                 .Sum(x => x.Value.Units * (TradeLookup.GetCommodity(x.Key)?.BasePrice ?? 0));
+        }
+
+        /// <summary>
+        /// The base value of the banned goods a scan of a ship finds: its own bay and the bays of the ships docked
+        /// aboard it, which travel in its hold.
+        /// </summary>
+        public static int GetBannedValue(PlayerShip ship, IEnumerable<PlayerShip> dockedShips, TradeAuthority authority)
+        {
+            var value = GetScannedShips(ship, dockedShips).Sum(x => (long)GetBannedValue(x.Cargo, authority));
+            return (int)Math.Min(int.MaxValue, value);
+        }
+
+        /// <summary>The banned goods by units in a ship's bay and the bays of the ships docked aboard it.</summary>
+        public static Dictionary<CommodityType, int> GetBannedUnits(PlayerShip ship, IEnumerable<PlayerShip> dockedShips, TradeAuthority authority)
+        {
+            var units = new Dictionary<CommodityType, int>();
+            foreach (var scanned in GetScannedShips(ship, dockedShips))
+            {
+                foreach (var (commodity, count) in GetBannedUnits(scanned.Cargo, authority))
+                    units[commodity] = units.GetValueOrDefault(commodity) + count;
+            }
+
+            return units;
+        }
+
+        private static IEnumerable<PlayerShip> GetScannedShips(PlayerShip ship, IEnumerable<PlayerShip> dockedShips)
+        {
+            if (ship == null)
+                return Enumerable.Empty<PlayerShip>();
+
+            return (dockedShips ?? Enumerable.Empty<PlayerShip>())
+                .Where(x => x != null && x.Id != ship.Id)
+                .Prepend(ship);
         }
 
         /// <summary>Whether this authority bans the commodity.</summary>

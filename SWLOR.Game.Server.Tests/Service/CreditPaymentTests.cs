@@ -112,8 +112,8 @@ public class CreditPaymentTests
     {
         var customs = Source("Service", "TradeCustoms.cs");
         customs.Should().NotContain("TakeGoldFromCreature(", "every fine goes through CollectCustomsFine");
-        Method(customs, "public static void PayCustomsFine(").Should().Contain("var (fine, taken) = CollectCustomsFine(player, scan.Authority, scan.Fine, true);");
-        Method(customs, "public static void ResolveCustomsSpoof(").Should().Contain("CollectCustomsFine(player, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);");
+        Method(customs, "public static void PayCustomsFine(").Should().Contain("var (fine, taken) = CollectCustomsFine(player, scan.ShipId, scan.Authority, scan.Fine, true);");
+        Method(customs, "public static void ResolveCustomsSpoof(").Should().Contain("CollectCustomsFine(player, scan.ShipId, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);");
         InOrder(Method(customs, "private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine("),
             "fine = Math.Max(0, Math.Min(fine, GetGold(player)));",
             "CreditPayments.Take(player, mark);",

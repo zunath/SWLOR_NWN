@@ -105,13 +105,16 @@ public class KatarAnimationRemapPlanTests
     }
 
     [Test]
-    public void PowerGloves_DropTheRightArmSwordCarryLayers()
+    public void PowerGloves_DropBothArmsSwordCarryLayers()
     {
+        // Bug report 1566576106402742506: the left companion glove kept the left-arm carry while walking.
         KatarAnimationRemapPlan.GetChanges(true, true, new Dictionary<string, string>(), NoActiveSwing)
             .Should().BeEquivalentTo(KatarAnimationRemapPlan.Pairs.Concat(new[]
             {
                 ("walk_swordr", NamedAnimationPlayback.NoHoldName),
                 ("run_swordr", NamedAnimationPlayback.NoHoldName),
+                ("walk_swordl", NamedAnimationPlayback.NoHoldName),
+                ("run_swordl", NamedAnimationPlayback.NoHoldName),
             }));
     }
 
@@ -133,7 +136,11 @@ public class KatarAnimationRemapPlanTests
             current[source] = replacement;
 
         KatarAnimationRemapPlan.GetChanges(true, false, current, NoActiveSwing)
-            .Should().BeEquivalentTo(new[] { ("walk_swordr", string.Empty), ("run_swordr", string.Empty) });
+            .Should().BeEquivalentTo(new[]
+            {
+                ("walk_swordr", string.Empty), ("run_swordr", string.Empty),
+                ("walk_swordl", string.Empty), ("run_swordl", string.Empty),
+            });
     }
 
     [Test]

@@ -49,6 +49,171 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "City Cantina Bar (Level 1)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_cantina_1"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Cantina Bar (Level 2)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_cantina_2"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Cantina Bar (Level 3)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_cantina_3"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Crafting Supplies Stall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_stall_craft"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Decor Stall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_stall_decor"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City General Goods Stall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_stall_goods"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Hall Supplies (Level 1)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_hall_1"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Hall Supplies (Level 2)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_hall_2"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Hall Supplies (Level 3)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_hall_3"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Medical Supplies"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_medical_1"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Starport Ship Supplies (Level 1)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_port_1"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Starport Ship Supplies (Level 2)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_port_2"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Starport Ship Supplies (Level 3)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_port_3"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Starport Ship Supplies (Level 4)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_port_4"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Starport Ship Supplies (Level 5)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_port_5"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Cooking Ingredients"
               },
               "RESREF": {

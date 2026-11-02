@@ -329,7 +329,7 @@ public class StationTests
             .Should().Contain(p => Value(p, "TemplateResRef").GetString() == "cloning_reg");
 
         ReadServer("Feature", "PropertyLayoutDefinition", "MedicalCenterLayoutDefinition.cs")
-            .Should().Contain(".OnSpawn(RemoveRegistrationOutsideStations)")
+            .Should().Contain("RemoveRegistrationOutsideStations(instance);")
             .And.Contain("if (Station.IsStationInterior(Property.GetPropertyId(instance)))");
         ReadServer("Feature", "DialogDefinition", "MedicalRegistrationDialog.cs")
             .Should().Contain("if (!Station.IsStationInterior(property.Id))");

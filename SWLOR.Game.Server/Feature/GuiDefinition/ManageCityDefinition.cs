@@ -232,6 +232,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddLabel()
                                 .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                 .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                .SetText("Sales Tax:")
+                                .SetHeight(25f)
+                                .SetTooltip("A percentage added to every price in your city's stores and stalls, paid into the treasury. Stores only sell. (Range: 0%-10%)");
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddTextEdit()
+                                .BindValue(model => model.SalesTax);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddLabel()
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetVerticalAlign(NuiVerticalAlign.Middle)
                                 .SetText("Shipyard Fee:")
                                 .SetHeight(25f)
                                 .SetTooltip("Flat credits charged for each Capital hull built at your station's Shipyard, paid into the treasury. (Range: 0-50000)");

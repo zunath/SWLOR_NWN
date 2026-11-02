@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.AsteroidDrill, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
             Assign(StructureType.JumpBeacon, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
             Assign(StructureType.DuelingRing, StructureChangeType.PositionChanged, Duels.OnRingPlaced);
+            Assign(StructureType.MarketStall, StructureChangeType.PositionChanged, MarketStalls.OnStallPlaced);
             Assign(StructureType.GardenPlot, StructureChangeType.PositionChanged, Farming.OnPlotSpawned);
             Assign(StructureType.Corral, StructureChangeType.PositionChanged, Corrals.OnCorralSpawned);
 
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.AsteroidDrill, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
             Assign(StructureType.JumpBeacon, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
             Assign(StructureType.DuelingRing, StructureChangeType.Retrieved, Duels.OnRingRetrieved);
+            Assign(StructureType.MarketStall, StructureChangeType.Retrieved, MarketStalls.OnStallRetrieved);
             Assign(StructureType.GardenPlot, StructureChangeType.Retrieved, Farming.OnPlotRetrieved);
             Assign(StructureType.Corral, StructureChangeType.Retrieved, Corrals.OnCorralRetrieved);
 

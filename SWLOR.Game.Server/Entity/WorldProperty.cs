@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -256,5 +257,11 @@ namespace SWLOR.Game.Server.Entity
         /// so no migration is needed.
         /// </summary>
         public bool CrittersHidden { get; set; }
+
+        /// <summary>
+        /// The stock theme the mayor picked for a Market Stall. Only used when the StructureType is a Market Stall;
+        /// older records load with none, which sells general goods.
+        /// </summary>
+        public MarketStallTheme MarketStallTheme { get; set; }
     }
 }

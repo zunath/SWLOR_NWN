@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// <item>Edicts (<see cref="EdictMigration"/>): the Manage Edicts key on every city permission record.</item>
 /// <item>City Affairs (<see cref="CityAffairsMigration"/>): the Handle City Affairs permission on city permission
 /// records, and officers, modifiers, and neglect counts started empty.</item>
+/// <item>Sales tax (<see cref="SalesTaxMigration"/>): the Sales tax key, at 0, on every city.</item>
 /// <item>Gardens (<see cref="GardenPermissionMigration"/>): the Tend Gardens permission on every House and City permission
 /// record, true for the owner or mayor.</item>
 /// <item>Acting Mayor (<see cref="ActingMayorMigration"/>): the Acting Mayor and step-down started empty.</item>
@@ -25,6 +26,7 @@ public sealed class _32_PlayerCityRevamp : IServerMigration
         ElectionMigration.Run(Version);
         EdictMigration.Run(Version);
         CityAffairsMigration.Run(Version);
+        SalesTaxMigration.Run(Version);
         GardenPermissionMigration.Run(Version);
         ActingMayorMigration.Run(Version);
     }

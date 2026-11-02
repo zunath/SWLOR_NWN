@@ -2131,6 +2131,9 @@ namespace SWLOR.Game.Server.Service
             DB.Set(city);
             SpawnExclusion.InvalidateCity(city.Id);
 
+            // The street life follows the current level: townsfolk, guards, and critters are added or removed to match.
+            Townsfolk.OnCityChanged(city.Id);
+
             Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
 
@@ -2357,6 +2360,7 @@ namespace SWLOR.Game.Server.Service
                 Edict.OnCityDeleted(property);
                 Tournaments.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
+                Townsfolk.OnCityDeleted(property.Id);
             }
 
             _propertyInstances.Remove(property.Id);
@@ -2376,6 +2380,10 @@ namespace SWLOR.Game.Server.Service
 
             // A deleted city, or a structure removed from one, changes where spawns may appear.
             SpawnExclusion.InvalidateCity(property.PropertyType == PropertyType.City ? property.Id : property.ParentPropertyId);
+
+            // A building removed from a city changes where its street life walks.
+            if (property.PropertyType == PropertyType.Structure)
+                Townsfolk.OnStructureChanged(property);
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
@@ -3916,6 +3924,9 @@ namespace SWLOR.Game.Server.Service
         {
             // A placed, moved or retrieved structure changes where spawns may appear in its city.
             SpawnExclusion.InvalidateCity(property?.ParentPropertyId);
+
+            // A building changes where the city's street life walks.
+            Townsfolk.OnStructureChanged(property);
 
             if (!_structureChangedActions.ContainsKey(structureType))
                 return;

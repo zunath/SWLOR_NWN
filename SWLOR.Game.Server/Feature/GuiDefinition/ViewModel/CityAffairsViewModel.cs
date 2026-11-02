@@ -272,8 +272,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var choice = detail.Choices[choiceIndex];
             var effects = SituationRules.DescribeEffects(choice.Effects, choice.IsSecret);
+            var publication = choice.IsSecret
+                ? "The decision is final."
+                : "The decision is final and goes in the City Gazette under your name and title.";
             ShowModal(
-                $"{detail.Title}: {choice.Text}? {effects} The decision is final and goes in the City Gazette under your name and title.",
+                $"{detail.Title}: {choice.Text}? {effects} {publication}",
                 () =>
                 {
                     var result = CityAffairs.Decide(Player, _cityId, situationId, choiceIndex);

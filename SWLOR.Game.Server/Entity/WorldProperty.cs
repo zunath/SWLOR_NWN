@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Entity
@@ -17,6 +19,11 @@ namespace SWLOR.Game.Server.Entity
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
             Taxes = new Dictionary<PropertyTaxType, int>();
             Upgrades = new Dictionary<PropertyUpgradeType, int>();
+            Edicts = new Dictionary<EdictType, CityEdict>();
+            MayorRecord = new MayorRecord();
+            Escrow = new Dictionary<string, CityEscrowEntry>();
+            Officers = new Dictionary<string, CityOfficer>();
+            Modifiers = new Dictionary<CityModifierType, CityModifier>();
         }
 
         /// <summary>
@@ -130,10 +137,32 @@ namespace SWLOR.Game.Server.Entity
         public HashSet<string> PaidCraftFees { get; set; }
 
         /// <summary>
+        /// Credits earned from sources that cannot be withdrawn, such as City Affairs gains. Upkeep, Edicts and projects
+        /// spend them before <see cref="Treasury"/>; the treasury withdrawal never touches them. Only applicable to City
+        /// property types.
+        /// </summary>
+        public long RestrictedTreasury { get; set; }
+
+        /// <summary>
+        /// Credits held out of both balances for a bounty, tournament or project, keyed by that thing's id. Each entry
+        /// remembers which balance every portion came from, so a refund returns it there.
+        /// </summary>
+        public Dictionary<string, CityEscrowEntry> Escrow { get; set; }
+
+        /// <summary>
         /// Tracks the amount of credits required to pay off the upkeep for this property.
         /// Only applicable to City property types.
         /// </summary>
         public int Upkeep { get; set; }
+
+        /// <summary>
+        /// The Edicts this city holds, whatever their state (Pending or Active) and whether or not a pause covers them.
+        /// Each takes one of the city's Edict slots.
+        /// </summary>
+        public Dictionary<EdictType, CityEdict> Edicts { get; set; }
+
+        /// <summary>The sitting mayor's promised and broken Edict counts. Reset when the seat changes hands.</summary>
+        public MayorRecord MayorRecord { get; set; }
 
         /// <summary>
         /// The anchor site a player station stands at (plan section 25). Empty for every other property, including
@@ -168,5 +197,29 @@ namespace SWLOR.Game.Server.Entity
         /// load with none.
         /// </summary>
         public ElectionResultRecord LastElectionResult { get; set; }
+
+        /// <summary>
+        /// The officers the mayor appointed, by player id. The limit is 1 plus 1 per city level. Cities only; older
+        /// records load with none.
+        /// </summary>
+        public Dictionary<string, CityOfficer> Officers { get; set; }
+
+        /// <summary>
+        /// Effects City Affairs situations put on the city, until they expire. A repeat refreshes the expiry instead of
+        /// stacking. Cities only; older records load with none.
+        /// </summary>
+        public Dictionary<CityModifierType, CityModifier> Modifiers { get; set; }
+
+        /// <summary>
+        /// How many City Affairs situations in a row expired unhandled. Any decision resets it to 0, and at 5 a recall
+        /// election opens.
+        /// </summary>
+        public int NeglectCount { get; set; }
+
+        /// <summary>
+        /// 0 normally. 1 after a recall election ended empty: the city is marked Abandoned and the second recall is
+        /// open. Cleared when the second recall ends.
+        /// </summary>
+        public int RecallStage { get; set; }
     }
 }

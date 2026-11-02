@@ -229,6 +229,7 @@ public class SpawnExclusionRulesTests
     [TestCase(StructureType.MedicalCenter)]
     [TestCase(StructureType.Starport)]
     [TestCase(StructureType.LabStyle1)]
+    [TestCase(StructureType.DuelingRing)]
     [TestCase(StructureType.SmallHouseStyle1)]
     [TestCase(StructureType.MediumHouseStyle3)]
     [TestCase(StructureType.LargeHouseStyle4)]
@@ -279,6 +280,9 @@ public class SpawnExclusionRulesTests
         buildings.Where(t => !SpawnExclusionRules.IsQualifyingStructure(t)).Should().BeEmpty();
     }
 
+    // Working structures that stand in the open: restricted to cities like a building, but with no interior layout.
+    private static readonly StructureType[] OutdoorCityStructures = { StructureType.DuelingRing };
+
     [Test]
     public void QualifyingStructures_AreAllBuildings()
     {
@@ -287,9 +291,16 @@ public class SpawnExclusionRulesTests
         {
             var attribute = type.GetAttribute<StructureType, StructureAttribute>();
 
-            attribute.LayoutType.Should().NotBe(PropertyLayoutType.Invalid, $"{type} must be a building");
+            if (!OutdoorCityStructures.Contains(type))
+                attribute.LayoutType.Should().NotBe(PropertyLayoutType.Invalid, $"{type} must be a building");
             attribute.RestrictedPropertyTypes.Should().Be(PropertyType.City, $"{type} must be a city structure");
         }
+    }
+
+    [Test]
+    public void QualifyingStructures_IncludeEveryOutdoorCityStructure()
+    {
+        OutdoorCityStructures.Should().OnlyContain(t => SpawnExclusionRules.IsQualifyingStructure(t));
     }
 
     // Picking a legal position

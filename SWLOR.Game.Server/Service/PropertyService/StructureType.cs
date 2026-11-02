@@ -3097,6 +3097,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             PropertyType.City | PropertyType.House)]
         GardenPlot = 5100,
+
+        // City structures for duels
+        [Structure("Dueling Ring",
+            "swlor_0049",
+            "A referee's console beside a marked ring. One player challenges another inside the ring, and while the duel lasts, a blow that would kill a duelist subdues them instead.",
+            true,
+            0,
+            PropertyType.City)]
+        DuelingRing = 5101,
     }
 
     public class StructureAttribute : Attribute

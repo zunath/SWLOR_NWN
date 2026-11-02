@@ -33,6 +33,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public bool CanCraft(uint player, RecipeType recipe) => Craft.CanPlayerCraftRecipe(player, recipe);
 
+    public string GetRequirementProblem(uint player, RecipeType recipe) => Craft.GetRequirementProblem(player, recipe);
+
     public string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe)
     {
         if (!GetIsObjectValid(blueprintItem) || GetItemPossessor(blueprintItem) != player)

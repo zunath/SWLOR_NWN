@@ -363,6 +363,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                         // A candidate who is deleted during an election leaves the ballot, and the votes for them are dropped.
                         ElectionBallot.RemoveDepartedCandidate(entity.CitizenPropertyId, playerId);
+                        CityOfficers.OnCitizenLeft(entity.CitizenPropertyId, playerId);
 
                         var playerName = GetPCPlayerName(user);
                         var characterName = GetName(user);

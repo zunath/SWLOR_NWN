@@ -80,6 +80,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // City
         [PropertyPermission("Manage Edicts", "Can enact and repeal the city's Edicts. Only the mayor can give it to someone else.", true)]
         ManageEdicts = 19,
+
+        // City. The mayor sets it by appointing an officer, so it is not in the permission window.
+        [PropertyPermission("Handle City Affairs", "Can decide City Affairs situations. Given by appointing an officer.", true,
+            ShowInPermissionWindow = false)]
+        HandleCityAffairs = 20,
     }
 
     public class PropertyPermissionAttribute : Attribute
@@ -87,6 +92,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
+
+        /// <summary>False for a permission that is set some other way and never appears in the permission window.</summary>
+        public bool ShowInPermissionWindow { get; set; } = true;
 
         public PropertyPermissionAttribute(string name, string description, bool isActive)
         {

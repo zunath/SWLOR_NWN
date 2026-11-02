@@ -51,6 +51,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool CanHandleCityAffairs
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
@@ -105,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _cityPropertyId = dbCity.Id;
             _electionId = dbElection == null ? string.Empty : dbElection.Id;
             IsElectionActive = !string.IsNullOrWhiteSpace(_electionId);
+            CanHandleCityAffairs = CityOfficers.CanHandle(dbCity, playerId);
 
             // Player is already a citizen. Provide the "Revoke Citizenship" option.
             if (dbPlayer.CitizenPropertyId == dbCity.Id)
@@ -164,6 +171,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         {
                             ElectionBallot.RemoveDepartedCandidate(_cityPropertyId, playerId);
                         }
+
+                        // Leaving the city ends the office of an officer.
+                        CityOfficers.OnCitizenLeft(_cityPropertyId, playerId);
 
                         // Retrieve all structure Ids
                         var structureIds = dbCity.ChildPropertyIds.ContainsKey(PropertyChildType.Structure)
@@ -293,6 +303,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OpenGazette() => () =>
         {
             CityGazette.OpenWindow(Player, _cityPropertyId, TetherObject);
+        };
+
+        public Action OpenCityAffairs() => () =>
+        {
+            CityAffairs.TryOpenWindow(Player, _cityPropertyId, TetherObject);
         };
     }
 }

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -113,7 +114,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public const int ElectionVotingDays = ElectionRules.VotingDays;
 
-        private static void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyBroadcastColor)
+        internal static void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyBroadcastColor)
         {
             CityGazette.RecordPropertyBroadcast(city, title, details);
 
@@ -305,7 +306,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.AccessTreasury,
                 PropertyPermissionType.ManageUpgrades,
                 PropertyPermissionType.ManageUpkeep,
-                PropertyPermissionType.ManageEdicts
+                PropertyPermissionType.ManageEdicts,
+                PropertyPermissionType.HandleCityAffairs
             };
 
             _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
@@ -1582,6 +1584,14 @@ namespace SWLOR.Game.Server.Service
 
                 ProcessCityElections(now, city);
 
+                // A recall that found nobody using the city queues it for deletion.
+                if (city.IsQueuedForDeletion)
+                {
+                    continue;
+                }
+
+                CityAffairs.Process(now, city);
+
                 if (now < city.Dates[PropertyDateType.Upkeep])
                 {
                     Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
@@ -1705,6 +1715,9 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 DB.Set(winnerPermission);
+
+                // Officers and the permissions the old mayor granted end with the old mayor's term.
+                CityOfficers.EndAllOnNewMayor(city, winnerPlayerId);
             }
 
             // No reason to process deleted cities. Skip.
@@ -1754,6 +1767,11 @@ namespace SWLOR.Game.Server.Service
                 return OpenElection(now, city, ElectionKind.SnapConfidence, GetSnapElectionId(concluded.Id));
             }
 
+            if (finishedElections.Count > 0 && elections.Count == 0 && concluded.OpenedSecondRecall)
+            {
+                return OpenElection(now, city, ElectionKind.Recall, GetSecondRecallElectionId(concluded.Id));
+            }
+
             return elections
                 .OrderByDescending(x => x.RegistrationOpenedUtc)
                 .FirstOrDefault();
@@ -1768,6 +1786,12 @@ namespace SWLOR.Game.Server.Service
             return $"{concludedElectionId}:snap";
         }
 
+        /// <summary>The second recall's id comes from the empty recall that called for it, for the same reason.</summary>
+        private static string GetSecondRecallElectionId(string concludedElectionId)
+        {
+            return $"{concludedElectionId}:recall";
+        }
+
         /// <summary>
         /// Who counts as the incumbent in this election's result. For now it is always the sitting mayor; in a step-down
         /// snap election it is the interim holder.
@@ -1780,7 +1804,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Opens an election for registration, with its stage dates fixed from now. Saves the election and the city.
         /// </summary>
-        private static Election OpenElection(DateTime now, WorldProperty city, ElectionKind kind, string electionId)
+        internal static Election OpenElection(DateTime now, WorldProperty city, ElectionKind kind, string electionId)
         {
             var registrationCloses = ElectionRules.GetRegistrationCloseUtc(now);
             var election = new Election
@@ -1888,7 +1912,11 @@ namespace SWLOR.Game.Server.Service
         {
             var endedUtc = ElectionRules.GetEndUtc(election.RegistrationClosesUtc, election.VotingClosesUtc, outcome.VoteWasHeld);
             var opensSnapElection = outcome.OpensSnapElection;
-            DateTime? nextRegularUtc = opensSnapElection ? null : ElectionRules.GetNextRegularElectionUtc(endedUtc);
+            var recallStep = CityRecall.Decide(city, election.Kind, outcome.IsEmpty, endedUtc);
+            var opensSecondRecall = recallStep == RecallStep.OpenSecondRecall;
+            DateTime? nextRegularUtc = opensSnapElection || opensSecondRecall
+                ? null
+                : ElectionRules.GetNextRegularElectionUtc(endedUtc);
 
             // Someone new takes the seat.
             if (!string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId)
@@ -1908,6 +1936,9 @@ namespace SWLOR.Game.Server.Service
             if (outcome.ClearsNeglect)
                 city.NeglectSinceUtc = null;
 
+            // An empty recall opens the second, and an empty second recall removes the city or pauses it for neglect.
+            CityRecall.Apply(now, city, election.Kind, outcome.ClearsNeglect, recallStep);
+
             city.LastElectionResult = new ElectionResultRecord
             {
                 Id = election.Id,
@@ -1917,6 +1948,7 @@ namespace SWLOR.Game.Server.Service
                 CandidateCount = outcome.CandidateCount,
                 VotesCast = outcome.VotesCast,
                 OpenedSnapElection = opensSnapElection,
+                OpenedSecondRecall = opensSecondRecall,
                 NextElectionUtc = nextRegularUtc,
                 PostedUtc = now
             };
@@ -1930,9 +1962,13 @@ namespace SWLOR.Game.Server.Service
             if (opensSnapElection)
                 OpenElection(now, city, ElectionKind.SnapConfidence, GetSnapElectionId(election.Id));
 
+            if (opensSecondRecall)
+                OpenElection(now, city, ElectionKind.Recall, GetSecondRecallElectionId(election.Id));
+
             DB.Delete<Election>(election.Id);
 
             BroadcastElectionResult(city, outcome, nextRegularUtc);
+            CityRecall.Announce(city, recallStep);
         }
 
         private static void BroadcastElectionResult(WorldProperty city, ElectionOutcome outcome, DateTime? nextRegularUtc)
@@ -2046,6 +2082,10 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
             city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
             Edict.ApplyCityLevelPauses(city, DateTime.UtcNow, billResumes: false);
+
+            // A smaller city can have fewer officers: the newest appointments above the new limit end.
+            CityOfficers.EndAppointmentsAboveLimit(city);
+
             DB.Set(city);
             SpawnExclusion.InvalidateCity(city.Id);
 
@@ -2270,6 +2310,7 @@ namespace SWLOR.Game.Server.Service
                 CityGazette.DeleteAll(property.Id);
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
+                CityAffairs.DeleteCityData(property.Id);
             }
 
             _propertyInstances.Remove(property.Id);

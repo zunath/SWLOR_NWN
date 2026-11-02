@@ -214,6 +214,13 @@ namespace SWLOR.Game.Server.Service
                 EdictChanges.GetInEffect(city, EdictType.OpenGates, now) != null);
         }
 
+        /// <summary>What the city (by id) does with the character at its Bank and Starport.</summary>
+        public static FacilityAccessResult GetFacilityAccess(Player dbPlayer, string cityId, DateTime? nowUtc = null)
+        {
+            var city = string.IsNullOrWhiteSpace(cityId) ? null : DB.Get<WorldProperty>(cityId);
+            return GetFacilityAccess(dbPlayer, city, cityId, nowUtc);
+        }
+
         /// <summary>
         /// Why the character may not use the city's facility, worded for them, or an empty string when they may.
         /// </summary>

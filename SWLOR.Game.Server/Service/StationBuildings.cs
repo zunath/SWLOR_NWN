@@ -865,6 +865,10 @@ namespace SWLOR.Game.Server.Service
 
             FinishJump(ship, record);
 
+            // The beacon's own access setting let the ship in, so its pilot and owner can board it and leave for 7 days whatever the
+            // Starport's access rules say.
+            StarportDeparture.OnArrived(GetObjectUUID(player), ship.OwnerPlayerId, dock.PropertyId);
+
             var landing = dock.Location;
             AssignCommand(player, () =>
             {

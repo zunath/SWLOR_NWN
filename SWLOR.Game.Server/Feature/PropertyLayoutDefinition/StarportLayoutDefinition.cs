@@ -61,11 +61,15 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
             // Embargo, citizenship, Alliance and Open Gates decide, in that order. A character who is refused may still take a flight
             // out for 7 days after their ship docked here while they were allowed in (the departure pass).
-            var failure = EdictEffects.GetFacilityFailure(dbPlayer, cityId, FacilityAccessRules.StarportNotWelcomeMessage);
-            if (string.IsNullOrEmpty(failure) || StarportDeparture.HasPass(dbPlayer, cityId))
+            var access = EdictEffects.GetFacilityAccess(dbPlayer, cityId);
+            if (FacilityAccessRules.CanUseFlightsTerminal(access, StarportDeparture.HasPass(dbPlayer, cityId), false))
                 return true;
 
-            SendMessageToPC(player, failure);
+            SendMessageToPC(player, FacilityAccessRules.DescribeRefusal(
+                access,
+                dbPlayer.PropertyOwedTaxes,
+                dbPlayer.CitizenPropertyId == cityId,
+                FacilityAccessRules.StarportNotWelcomeMessage));
             return false;
         }
 

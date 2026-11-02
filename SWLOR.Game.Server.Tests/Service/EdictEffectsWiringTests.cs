@@ -138,10 +138,10 @@ public class EdictEffectsWiringTests
 
         bank.Should().Contain("EdictEffects.GetFacilityFailure(dbPlayer, cityId, FacilityAccessRules.BankNotWelcomeMessage)");
         bank.Should().NotContain("StarportDeparture", "the departure pass reaches no Bank");
-        starport.Should().Contain("EdictEffects.GetFacilityFailure(dbPlayer, cityId, FacilityAccessRules.StarportNotWelcomeMessage)");
-        starport.Should().Contain("StarportDeparture.HasPass(dbPlayer, cityId)");
+        starport.Should().Contain("EdictEffects.GetFacilityAccess(dbPlayer, cityId)");
+        starport.Should().Contain("FacilityAccessRules.CanUseFlightsTerminal(access, StarportDeparture.HasPass(dbPlayer, cityId), false)");
         starport.IndexOf("Station.StationCityVariable", StringComparison.Ordinal)
-            .Should().BeLessThan(starport.IndexOf("GetFacilityFailure", StringComparison.Ordinal), "a station's flights terminal still admits everyone first");
+            .Should().BeLessThan(starport.IndexOf("GetFacilityAccess", StringComparison.Ordinal), "a station's flights terminal still admits everyone first");
     }
 
     [Test]
@@ -151,6 +151,13 @@ public class EdictEffectsWiringTests
         var property = ReadServerSource("Service", "Property.cs");
 
         dock.Should().Contain("StarportDeparture.OnArrived(playerId, dbProperty.OwnerPlayerId, dbStarport.Id)");
+
+        // Docking is gated by the access order before anything about the ship is saved, and the pass is not consulted.
+        dock.Should().Contain("FacilityAccessRules.CanDock(access)");
+        dock.Should().Contain("FacilityAccessRules.StarportDockingNotWelcomeMessage");
+        dock.Should().NotContain("HasPass");
+        dock.IndexOf("FacilityAccessRules.CanDock(access)", StringComparison.Ordinal)
+            .Should().BePositive().And.BeLessThan(dock.IndexOf("dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition)", StringComparison.Ordinal));
         property.IndexOf("StarportDeparture.ReturnStrandedShip(property);", StringComparison.Ordinal)
             .Should().BePositive().And.BeLessThan(property.IndexOf("ReturnStarshipToSafeDock(property);", StringComparison.Ordinal));
     }
@@ -163,5 +170,6 @@ public class EdictEffectsWiringTests
         source.Should().Contain("EdictEffects.IsAllyOf(DB.Get<WorldProperty>(beacon.StationId), dbPlayer)");
         source.Should().Contain("EdictEffects.IsEmbargoedBy(station, DB.Get<Player>(GetObjectUUID(player)))");
         source.Split("IsEmbargoed(player,").Length.Should().Be(5, "the shipyard check and the three beacon checks");
+        source.Should().Contain("StarportDeparture.OnArrived(GetObjectUUID(player), ship.OwnerPlayerId, dock.PropertyId);", "a ship that jumped in can be boarded and left");
     }
 }

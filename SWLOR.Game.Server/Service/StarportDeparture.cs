@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A ship has just docked at a player Starport. Its pilot and its owner start their departure pass for the city when they may
-        /// use the city's facilities, so the pass stays a way out for someone who later loses access and never a way in for someone who
-        /// never had it. Call it after the dock is saved. Arrivals by shuttle call it too, with no ship owner.
+        /// A ship has just arrived at a player Starport, by docking (which the Starport's access rules gate) or by a Jump Beacon (which
+        /// has its own access setting). Its pilot and its owner start their departure pass for the city, so they can board the ship and
+        /// leave if they later lose access. Call it after the dock is saved. Arrivals by shuttle call it too, with no ship owner.
         /// </summary>
         /// <param name="pilotPlayerId">The player who docked, or who landed.</param>
         /// <param name="shipOwnerPlayerId">The ship's owner, or empty.</param>
@@ -46,10 +46,8 @@ namespace SWLOR.Game.Server.Service
             foreach (var playerId in new[] { pilotPlayerId, shipOwnerPlayerId }.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct())
             {
                 var dbPlayer = DB.Get<Player>(playerId);
-                if (dbPlayer == null || EdictEffects.GetFacilityAccess(dbPlayer, city, nowUtc: now) != FacilityAccessResult.Allowed)
-                    continue;
-
-                StartPass(dbPlayer, city.Id, now);
+                if (dbPlayer != null)
+                    StartPass(dbPlayer, city.Id, now);
             }
         }
 
@@ -57,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         /// The start-of-server check of a ship docked at a player Starport, judged by its owner (call it for every starship property
         /// before the dock safety check). An owner who may use the city's facilities starts their pass over. An owner who lost the
         /// right and whose pass has run out has the ship moved to its safe dock, the way a ship whose Starport is picked up is, and
-        /// collects it there. An owner who never held a pass is left alone: docking stays open to everyone, as it has been.
+        /// collects it there. An owner with no pass and no access has a ship that docked before docking was gated, so their pass starts now.
         /// </summary>
         public static void ReturnStrandedShip(WorldProperty starship, DateTime? nowUtc = null)
         {
@@ -84,6 +82,7 @@ namespace SWLOR.Game.Server.Service
             switch (FacilityAccessRules.GetDockedShipAction(canUse, passStarted, now))
             {
                 case DockedShipAction.RefreshPass:
+                case DockedShipAction.StartPass:
                     StartPass(owner, city.Id, now);
                     break;
                 case DockedShipAction.ReturnToSafeDock:

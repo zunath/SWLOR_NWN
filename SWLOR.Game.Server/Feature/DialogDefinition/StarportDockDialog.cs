@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -178,6 +179,24 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         {
                             SendMessageToPC(player, ColorToken.Red("This starport is no longer available for docking."));
                             return;
+                        }
+
+                        // Docking follows the Starport's access order (Embargo, citizens, allies, Open Gates). A departure pass is
+                        // a way out for ships already docked, never a way to dock another.
+                        var starportCity = Station.GetCityOfInterior(dockPoint.PropertyId);
+                        if (starportCity != null)
+                        {
+                            var dockerRecord = DB.Get<Player>(playerId);
+                            var access = EdictEffects.GetFacilityAccess(dockerRecord, starportCity);
+                            if (!FacilityAccessRules.CanDock(access))
+                            {
+                                SendMessageToPC(player, ColorToken.Red(FacilityAccessRules.DescribeRefusal(
+                                    access,
+                                    dockerRecord?.PropertyOwedTaxes ?? 0,
+                                    dockerRecord?.CitizenPropertyId == starportCity.Id,
+                                    FacilityAccessRules.StarportDockingNotWelcomeMessage)));
+                                return;
+                            }
                         }
 
                         var starportLoadState = Property.GetPropertyLoadState(dockPoint.PropertyId);

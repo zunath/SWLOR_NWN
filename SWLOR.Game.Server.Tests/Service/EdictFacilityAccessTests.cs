@@ -115,9 +115,64 @@ public class EdictFacilityAccessTests
     }
 
     [Test]
-    public void AShipOfAnOwnerWhoNeverHeldAPassIsLeftAlone_DockingStaysOpenToEveryone()
+    public void AShipOfAnOwnerWithNoAccessAndNoPass_ADockingFromBeforeTheGate_GetsItsSevenDaysStartingNow()
     {
-        FacilityAccessRules.GetDockedShipAction(false, null, Now).Should().Be(DockedShipAction.Leave);
+        FacilityAccessRules.GetDockedShipAction(false, null, Now).Should().Be(DockedShipAction.StartPass);
+    }
+
+    #endregion
+
+    #region Docking and the flights terminal
+
+    [Test]
+    public void DockingFollowsTheAccessOrder_OnlyAllowedCharactersMayDock()
+    {
+        // Allowed: own citizen, allied citizen, anyone under Open Gates.
+        FacilityAccessRules.CanDock(FacilityAccessRules.Decide(false, true, false, 0, false)).Should().BeTrue();
+        FacilityAccessRules.CanDock(FacilityAccessRules.Decide(false, false, true, 0, false)).Should().BeTrue();
+        FacilityAccessRules.CanDock(FacilityAccessRules.Decide(false, false, false, 0, true)).Should().BeTrue();
+
+        // Refused: Embargoed, a citizen who owes taxes (even under Open Gates), an allied citizen who owes taxes at home, a stranger.
+        FacilityAccessRules.CanDock(FacilityAccessRules.Decide(true, false, false, 0, true)).Should().BeFalse();
+        FacilityAccessRules.CanDock(FacilityAccessRules.Decide(false, true, false, 10, true)).Should().BeFalse();
+        FacilityAccessRules.CanDock(FacilityAccessRules.Decide(false, false, true, 10, false)).Should().BeFalse();
+        FacilityAccessRules.CanDock(FacilityAccessRules.Decide(false, false, false, 0, false)).Should().BeFalse();
+    }
+
+    [Test]
+    public void ADeparturePassNeverLetsAShipDock()
+    {
+        // CanDock takes no pass: a character with a valid pass who is refused is still refused at the dock.
+        FacilityAccessRules.CanDock(FacilityAccessResult.Embargoed).Should().BeFalse();
+        FacilityAccessRules.CanDock(FacilityAccessResult.NotWelcome).Should().BeFalse();
+        FacilityAccessRules.CanDock(FacilityAccessResult.OwesTaxes).Should().BeFalse();
+        FacilityAccessRules.CanDock(FacilityAccessResult.Allowed).Should().BeTrue();
+    }
+
+    [TestCase(FacilityAccessResult.Allowed, false, false, true)]
+    [TestCase(FacilityAccessResult.NotWelcome, false, false, false)]
+    [TestCase(FacilityAccessResult.Embargoed, false, false, false)]
+    [TestCase(FacilityAccessResult.OwesTaxes, false, false, false)]
+    [TestCase(FacilityAccessResult.NotWelcome, true, false, true)]
+    [TestCase(FacilityAccessResult.Embargoed, true, false, true)]
+    [TestCase(FacilityAccessResult.OwesTaxes, true, false, true)]
+    [TestCase(FacilityAccessResult.Embargoed, false, true, true)]
+    [TestCase(FacilityAccessResult.NotWelcome, false, true, true)]
+    public void TheFlightsTerminalAdmitsThoseAllowedThoseWithAPass_AndEveryoneOnAStation(
+        FacilityAccessResult result, bool hasPass, bool isStation, bool expected)
+    {
+        FacilityAccessRules.CanUseFlightsTerminal(result, hasPass, isStation).Should().Be(expected);
+    }
+
+    [Test]
+    public void ARefusedDockIsToldWhy()
+    {
+        FacilityAccessRules.DescribeRefusal(FacilityAccessResult.NotWelcome, 0, false, FacilityAccessRules.StarportDockingNotWelcomeMessage)
+            .Should().Be("Only citizens may dock at this starport.");
+        FacilityAccessRules.DescribeRefusal(FacilityAccessResult.Embargoed, 0, false, FacilityAccessRules.StarportDockingNotWelcomeMessage)
+            .Should().Be(FacilityAccessRules.EmbargoedMessage);
+        FacilityAccessRules.DescribeRefusal(FacilityAccessResult.OwesTaxes, 40, true, FacilityAccessRules.StarportDockingNotWelcomeMessage)
+            .Should().Contain("40 credits");
     }
 
     [Test]

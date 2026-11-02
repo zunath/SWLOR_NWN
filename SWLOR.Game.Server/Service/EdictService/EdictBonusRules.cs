@@ -54,6 +54,19 @@ namespace SWLOR.Game.Server.Service.EdictService
 
         #endregion
 
+        #region Transportation tax
+
+        /// <summary>
+        /// What reaches a city's treasury from a transportation tax a passenger paid: all of it, or half rounded down while a dock workers'
+        /// strike has the city's income halved. The passenger pays the same either way.
+        /// </summary>
+        public static int GetTransportationIncome(int tax, bool incomeHalved)
+        {
+            return incomeHalved ? Math.Max(0, tax) / 2 : tax;
+        }
+
+        #endregion
+
         #region Prospectors' Charter and Home Ground
 
         /// <summary>The chance, in percent, that Prospectors' Charter adds 1 item to a finished harvest.</summary>

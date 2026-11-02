@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Service.EdictService
 
         public const string BankNotWelcomeMessage = "Only citizens may use this terminal.";
 
+        public const string StarportDockingNotWelcomeMessage = "Only citizens may dock at this starport.";
+
         /// <summary>
         /// Applies the access order, first match wins:
         /// 1. a citizen of a city this city has an Embargo against is refused;
@@ -75,6 +77,28 @@ namespace SWLOR.Game.Server.Service.EdictService
             }
         }
 
+        #region Docking and the flights terminal
+
+        /// <summary>
+        /// Whether a ship may dock at a player city's or station's Starport: only a character who may use the city's facilities, by the
+        /// same order. A departure pass is a way out and never a way to dock another ship.
+        /// </summary>
+        public static bool CanDock(FacilityAccessResult result)
+        {
+            return result == FacilityAccessResult.Allowed;
+        }
+
+        /// <summary>
+        /// Whether a character may use a Starport's flights terminal: anyone who may use the Starport, anyone holding a departure pass,
+        /// and everyone at a station's terminal, which is the only way off the station without a ship.
+        /// </summary>
+        public static bool CanUseFlightsTerminal(FacilityAccessResult result, bool hasDeparturePass, bool isStationTerminal)
+        {
+            return isStationTerminal || result == FacilityAccessResult.Allowed || hasDeparturePass;
+        }
+
+        #endregion
+
         #region Departure pass
 
         /// <summary>When a pass that began at <paramref name="startedUtc"/> runs out.</summary>
@@ -90,7 +114,8 @@ namespace SWLOR.Game.Server.Service.EdictService
         }
 
         /// <summary>
-        /// What the daily sweep does with a ship docked at a player Starport, judged by its owner.
+        /// What the start-of-server sweep does with a ship docked at a player Starport, judged by its owner. An owner who has no pass and
+        /// no access has a ship that docked before docking was gated, so their 7 days start now.
         /// </summary>
         /// <param name="ownerCanUseFacility">The owner may use the city's facilities now.</param>
         /// <param name="passStartedUtc">When the owner's pass for this city began, or null for none.</param>
@@ -101,7 +126,7 @@ namespace SWLOR.Game.Server.Service.EdictService
                 return DockedShipAction.RefreshPass;
 
             if (!passStartedUtc.HasValue)
-                return DockedShipAction.Leave;
+                return DockedShipAction.StartPass;
 
             return IsDeparturePassValid(passStartedUtc, nowUtc)
                 ? DockedShipAction.Leave

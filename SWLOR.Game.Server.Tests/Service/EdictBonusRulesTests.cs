@@ -13,6 +13,16 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class EdictBonusRulesTests
 {
+    private static string ReadServerSource(params string[] path)
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent;
+
+        root.Should().NotBeNull();
+        return File.ReadAllText(Path.Combine(new[] { root!.FullName, "SWLOR.Game.Server" }.Concat(path).ToArray()));
+    }
+
     #region Festival Season
 
     [TestCase(false, false, 0)]
@@ -71,6 +81,32 @@ public class EdictBonusRulesTests
         // Guild.CalculateGPReward and Quest.CalculateQuestGoldReward add the charter as one more share of the base, as Guild Relations
         // and Social do, so the shares add together and none scales another.
         ((int)(baseAmount * EdictBonusRules.GetGuildCharterBonus(true))).Should().Be(expectedExtra);
+    }
+
+    #endregion
+
+    #region Transportation tax
+
+    [TestCase(100, false, 100)]
+    [TestCase(100, true, 50)]
+    [TestCase(25, true, 12)]
+    [TestCase(1, true, 0)]
+    [TestCase(0, true, 0)]
+    [TestCase(0, false, 0)]
+    public void TransportationTax_ADockWorkersStrikeHalvesTheCitysIncomeRoundedDown(int tax, bool halved, int expectedIncome)
+    {
+        EdictBonusRules.GetTransportationIncome(tax, halved).Should().Be(expectedIncome);
+    }
+
+    [Test]
+    public void TransportationTax_PassengersPayTheSameWhileTheIncomeIsHalved()
+    {
+        // The ticket price is fare + tax, worked out from the city's rate before the income is judged, so the strike never touches it.
+        var shuttle = ReadServerSource("Service", "Shuttle.cs");
+
+        shuttle.Should().Contain("CityAffairs.IsModifierActive(dbCity, CityModifierType.TransportationIncomeHalved)");
+        shuttle.Should().Contain("dbCity.Treasury += income;");
+        shuttle.Should().Contain("fare + tax", "the passenger is still charged the full tax");
     }
 
     #endregion

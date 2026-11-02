@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service.TournamentService
 {
@@ -78,6 +79,39 @@ namespace SWLOR.Game.Server.Service.TournamentService
             }
 
             return new TournamentSettlement(payouts, 0);
+        }
+
+        /// <summary>
+        /// Settles the tournament against the city's records in memory, without saving anything. The city's escrow entry is
+        /// released: a completed tournament pays its prize out and credits the fees to the ordinary treasury, and any other
+        /// ending returns each portion of the prize to the balance it came from. A city with no escrow entry for the
+        /// tournament (it was released already, or the city is gone) is left alone, so repeating the settlement after a
+        /// restart never pays or credits twice. The caller writes the payouts first, then saves the city when
+        /// <see cref="TournamentSettlement.ReleasedEscrow"/> is set.
+        /// </summary>
+        /// <param name="city">The city that holds the tournament, or null when it is gone.</param>
+        /// <param name="tournament">The tournament.</param>
+        /// <param name="outcome">How it ended.</param>
+        public static TournamentSettlement Apply(WorldProperty city, CityTournament tournament, TournamentOutcome outcome)
+        {
+            CityEscrowEntry escrow = null;
+            city?.Escrow.TryGetValue(tournament.Id, out escrow);
+
+            var settlement = Build(tournament, outcome, escrow);
+            if (city == null || escrow == null)
+                return settlement;
+
+            if (outcome == TournamentOutcome.Completed)
+            {
+                CityTreasuryRules.PayOutEscrow(city, tournament.Id);
+                city.Treasury += settlement.FeesToTreasury;
+            }
+            else
+            {
+                CityTreasuryRules.RefundEscrow(city, tournament.Id);
+            }
+
+            return settlement with { ReleasedEscrow = true };
         }
 
         /// <summary>The id of a player's payout from a tournament ending a given way.</summary>

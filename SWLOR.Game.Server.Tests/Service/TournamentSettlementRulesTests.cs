@@ -237,38 +237,100 @@ public class TournamentSettlementRulesTests
         city.Escrow.Should().BeEmpty();
     }
 
-    [Test]
-    public void WhenTheFinalEnds_TheChampionIsOwedThePrize_AndTheCityKeepsTheFees()
+    private static WorldProperty FundedCity(CityTournament tournament, long treasury = 80_000, long restricted = 0)
     {
-        var city = City(treasury: 80_000);
-        var tournament = Tournament(4);
+        var city = City(treasury, restricted);
         CityTreasuryRules.PostEscrow(city, tournament.Id, Prize, restrictedFirst: false);
         foreach (var entrant in tournament.Entrants)
             CityTreasuryRules.AddEntryFee(city, tournament.Id, entrant.PlayerId, entrant.FeePaid);
 
-        var settlement = TournamentSettlementRules.Build(tournament, TournamentOutcome.Completed, city.Escrow[tournament.Id]);
-        CityTreasuryRules.PayOutEscrow(city, tournament.Id);
-        city.Treasury += settlement.FeesToTreasury;
+        return city;
+    }
 
+    [Test]
+    public void WhenTheFinalEnds_TheChampionIsOwedThePrize_AndTheCityKeepsTheFees()
+    {
+        var tournament = Tournament(4);
+        var city = FundedCity(tournament);
+
+        var settlement = TournamentSettlementRules.Apply(city, tournament, TournamentOutcome.Completed);
+
+        settlement.ReleasedEscrow.Should().BeTrue();
         city.Escrow.Should().BeEmpty();
         city.Treasury.Should().Be(80_000 - Prize + 4 * Fee);
         settlement.Payouts.Sum(x => x.Credits).Should().Be(Prize);
+        settlement.Payouts.Single().PlayerId.Should().Be("p1");
     }
 
     [Test]
     public void WhenTheTournamentIsCancelled_NothingIsCreatedOrLost()
     {
-        var city = City(treasury: 80_000);
         var tournament = Tournament(4);
-        CityTreasuryRules.PostEscrow(city, tournament.Id, Prize, restrictedFirst: false);
-        foreach (var entrant in tournament.Entrants)
-            CityTreasuryRules.AddEntryFee(city, tournament.Id, entrant.PlayerId, entrant.FeePaid);
+        var city = FundedCity(tournament);
 
-        var settlement = TournamentSettlementRules.Build(tournament, TournamentOutcome.Cancelled, city.Escrow[tournament.Id]);
-        CityTreasuryRules.RefundEscrow(city, tournament.Id);
+        var settlement = TournamentSettlementRules.Apply(city, tournament, TournamentOutcome.Cancelled);
 
         city.Escrow.Should().BeEmpty();
         city.Treasury.Should().Be(80_000, "the prize is back where it came from");
         settlement.Payouts.Sum(x => x.Credits).Should().Be(4 * Fee, "every fee goes back to the player who paid it");
+    }
+
+    [Test]
+    public void RestrictedFunds_AreNeverTouchedByAPrize_OnAnyEnding()
+    {
+        foreach (var outcome in new[] { TournamentOutcome.Completed, TournamentOutcome.Cancelled })
+        {
+            var tournament = Tournament(3);
+            var city = FundedCity(tournament, restricted: 500_000);
+
+            TournamentSettlementRules.Apply(city, tournament, outcome);
+
+            city.RestrictedTreasury.Should().Be(500_000);
+        }
+    }
+
+    [TestCase(TournamentOutcome.Completed)]
+    [TestCase(TournamentOutcome.Cancelled)]
+    public void SettlingTwice_AfterARestart_ReleasesTheEscrowAndCreditsTheFeesOnce(TournamentOutcome outcome)
+    {
+        var tournament = Tournament(4);
+        var city = FundedCity(tournament);
+
+        var first = TournamentSettlementRules.Apply(city, tournament, outcome);
+        var treasuryAfterFirst = city.Treasury;
+        var second = TournamentSettlementRules.Apply(city, tournament, outcome);
+
+        second.ReleasedEscrow.Should().BeFalse("the escrow entry is already gone");
+        city.Treasury.Should().Be(treasuryAfterFirst, "the fees are not credited a second time");
+        second.Payouts.Select(x => x.Id).Should().Equal(first.Payouts.Select(x => x.Id), "the owed credits keep their ids, so they are written once");
+    }
+
+    [Test]
+    public void ARestartBeforeTheCityWasSaved_RepeatsTheWholeSettlement()
+    {
+        var tournament = Tournament(4);
+        var saved = FundedCity(tournament);
+        var unsavedCopy = City(saved.Treasury);
+        unsavedCopy.Escrow[tournament.Id] = saved.Escrow[tournament.Id];
+
+        TournamentSettlementRules.Apply(unsavedCopy, tournament, TournamentOutcome.Completed);
+
+        // The city record that reached the database still holds the escrow entry, so the next run settles it in full.
+        var again = TournamentSettlementRules.Apply(saved, tournament, TournamentOutcome.Completed);
+
+        again.ReleasedEscrow.Should().BeTrue();
+        saved.Treasury.Should().Be(80_000 - Prize + 4 * Fee);
+    }
+
+    [Test]
+    public void ARemovedCity_OnlyOwesTheFees()
+    {
+        var tournament = Tournament(3);
+
+        var settlement = TournamentSettlementRules.Apply(null, tournament, TournamentOutcome.CityRemoved);
+
+        settlement.ReleasedEscrow.Should().BeFalse();
+        settlement.Payouts.Sum(x => x.Credits).Should().Be(3 * Fee);
+        settlement.FeesToTreasury.Should().Be(0);
     }
 }

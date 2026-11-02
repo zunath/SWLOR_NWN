@@ -1,6 +1,5 @@
 using System.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CityTreasuryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -79,29 +78,16 @@ namespace SWLOR.Game.Server.Service
             if (city == null)
                 outcome = TournamentOutcome.CityRemoved;
 
-            CityEscrowEntry escrow = null;
-            city?.Escrow.TryGetValue(tournament.Id, out escrow);
-
-            var settlement = TournamentSettlementRules.Build(tournament, outcome, escrow);
+            // Worked out against the city in memory; the payouts are written before the city is saved, so a restart between the
+            // two repeats the payouts under the same ids and releases the escrow once.
+            var settlement = TournamentSettlementRules.Apply(city, tournament, outcome);
             foreach (var payout in settlement.Payouts)
             {
                 PendingCredits.Add(payout.Id, payout.PlayerId, payout.Credits, payout.Reason);
             }
 
-            if (city != null && escrow != null)
-            {
-                if (outcome == TournamentOutcome.Completed)
-                {
-                    CityTreasuryRules.PayOutEscrow(city, tournament.Id);
-                    city.Treasury += settlement.FeesToTreasury;
-                }
-                else
-                {
-                    CityTreasuryRules.RefundEscrow(city, tournament.Id);
-                }
-
+            if (settlement.ReleasedEscrow)
                 DB.Set(city);
-            }
 
             DB.Delete<CityTournament>(tournament.Id);
             Log.Write(LogGroup.Property, $"Tournament '{tournament.Id}' of city '{tournament.CityId}' settled as {outcome}: {settlement.Payouts.Count} payments owed, {settlement.FeesToTreasury} credits in fees kept by the city.");

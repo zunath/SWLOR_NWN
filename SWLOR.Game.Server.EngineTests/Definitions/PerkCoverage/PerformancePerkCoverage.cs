@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 },
                 new()
                 {
-                    Perk = PerkType.SteadyHands,
+                    Perk = PerkType.PerformanceSteadyHands,
                     MaxLevel = 2,
                     Prices = new[] { 2, 4 },
                     GrantedFeats = new[] { FeatType.SteadyHandsTrait, FeatType.SteadyHands2Trait },

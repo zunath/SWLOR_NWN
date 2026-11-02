@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Level(FeatType.PlayInstrument3, (StatType.PerformanceMusicXPBonus, 18), (StatType.PerformanceMusicDebtClearPercent, 3)),
                 Level(FeatType.PlayInstrument4, (StatType.PerformanceMusicXPBonus, 24), (StatType.PerformanceMusicDebtClearPercent, 4)),
             }),
-            (PerkType.SteadyHands, new[]
+            (PerkType.PerformanceSteadyHands, new[]
             {
                 Level(FeatType.SteadyHandsTrait, (StatType.PerformanceSteadyHandsBonus, 2)),
                 Level(FeatType.SteadyHands2Trait, (StatType.PerformanceSteadyHandsBonus, 4)),
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static readonly (PerformanceSetType Set, PerkType Perk)[] Sets =
         {
             (PerformanceSetType.CantinaStandards, PerkType.PlayInstrument),
-            (PerformanceSetType.SteadyHands, PerkType.SteadyHands),
+            (PerformanceSetType.SteadyHands, PerkType.PerformanceSteadyHands),
             (PerformanceSetType.KeenEar, PerkType.KeenEar),
             (PerformanceSetType.AnglersLullaby, PerkType.AnglersLullaby),
             (PerformanceSetType.StillWaters, PerkType.StillWaters),
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     record.Perks[PerkType.PowerStep] = 1;
                     record.Perks[PerkType.LightFeet] = 1;
                     record.Perks[PerkType.KeenEar] = 1;
-                    record.Perks[PerkType.SteadyHands] = 1;
+                    record.Perks[PerkType.PerformanceSteadyHands] = 1;
                 });
                 ctx.Assert(Performance.SetRoutine(player, PerformanceRoutineType.PowerStep), "Power Step can be chosen after its perk");
                 ctx.AssertEqual(PerformanceRoutineType.PowerStep, preference.Routine, "the chosen routine is remembered");

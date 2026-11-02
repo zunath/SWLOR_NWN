@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
@@ -59,6 +60,24 @@ public class GuardCounterControlTests
         var configure = () => ConfigureProbe.Configure(null, true);
 
         configure.Should().NotThrow();
+    }
+
+    [Test]
+    public void BreakerReversal_RequiresAControlAbility()
+    {
+        // Building the perk list needs the engine, so read the generated definition instead.
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
+            directory = directory.Parent;
+        var source = File.ReadAllText(Path.Combine(
+            directory!.FullName, "SWLOR.Game.Server", "Feature", "PerkDefinition", "KatarPerkDefinition.cs"));
+        var start = source.IndexOf("private void BreakerReversal()", StringComparison.Ordinal);
+        var breakerReversal = source[start..source.IndexOf("private void IronGrip()", start, StringComparison.Ordinal)];
+
+        breakerReversal.Should().Contain("your next control ability");
+        breakerReversal.Should().Contain(
+            ".IncreasesStat(StatType.DamageTakenNextSkillAbilityRequiredCategory, (int)StatusEffectCategory.Control)",
+            "the description promises the bonus to the next control ability, not any Katar ability");
     }
 
     private sealed class ConfigureProbe : WeaponActiveAbilityDefinitionBase

@@ -446,6 +446,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.DamageTakenNextSkillAbilitySkillType, (int)SkillType.Katar)
                 .IncreasesStat(StatType.DamageTakenNextSkillAbilityDamageBonus, 20)
                 .IncreasesStat(StatType.DamageTakenNextSkillAbilityWindowSeconds, 30)
+                .IncreasesStat(StatType.DamageTakenNextSkillAbilityRequiredCategory, (int)StatusEffectCategory.Control)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 25);
         }

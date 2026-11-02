@@ -214,6 +214,99 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "the guarded Daze makes Guard Counter III a Control ability for Guard Training");
         }
 
+        [EngineTest("A conditional Control status counts for Control riders when it lands", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task ConditionalControlStatusTriggersControlRiders(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var quietTarget = ctx.SpawnCreature("nw_rat001", 2f);
+            var attackingTarget = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            foreach (var target in new[] { quietTarget, attackingTarget })
+                Prepare(ctx, target);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.ChargedBlows, 1);
+
+            // Reprisal has no status of its own: it Dazes (a Control status) only a target that recently damaged you.
+            var reprisal = Ability.GetAbilityDetail(FeatType.Reprisal1);
+            ctx.AssertEqual(StatusEffectCategory.None, reprisal.ResolveImpactStatusCategories(caster),
+                "Reprisal authors no impact status, so only its conditional Daze can make it Control");
+            async Task ApplyReprisal(uint target)
+            {
+                ctx.MakeHostile(target);
+                Ability.BeginAbilityImpact(caster, reprisal);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => reprisal.ImpactAction(caster, target, 1, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+                ChangeToStandardFaction(target, StandardFaction.Defender);
+            }
+
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ApplyReprisal(quietTarget);
+                ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(quietTarget),
+                    "Reprisal does not Daze a target that has not damaged you");
+                ctx.AssertEqual(0, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                    "without its Daze Reprisal does not trigger Charged Blows");
+
+                Combat.ApplyDamageDealtEffects(attackingTarget, caster, 5, SkillType.Invalid);
+                ctx.Assert(Combat.HasRecentDamageTarget(attackingTarget, caster, 30f), "the target recently damaged the caster");
+                await ApplyReprisal(attackingTarget);
+                ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(attackingTarget),
+                    "Reprisal Dazes a target that recently damaged you");
+                ctx.AssertEqual(10, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                    "the conditional Daze triggers Charged Blows like any applied Control status");
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
+        }
+
+        [EngineTest("Breaker Reversal's bonus waits for the next Katar control ability", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task BreakerReversalRequiresControlAbility(EngineTestContext ctx)
+        {
+            var defender = ctx.SpawnCreature("nw_bandit001");
+            var attacker = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, defender);
+            Prepare(ctx, attacker);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(defender, perk, 0);
+            ctx.SetNPCPerkLevel(defender, PerkType.BreakerReversal, 1);
+            ctx.AssertEqual((int)StatusEffectCategory.Control,
+                Stat.GetStatAdjustment(defender, StatType.DamageTakenNextSkillAbilityRequiredCategory),
+                "Breaker Reversal requires a Control ability");
+
+            StatusEffectCategory Categories(FeatType feat) =>
+                Ability.GetAbilityDetail(feat).ResolveImpactStatusCategories(defender);
+
+            Combat.ApplyDamageTakenEffects(defender, attacker, 5);
+            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter1)),
+                "a Katar ability without a Control status does not spend Breaker Reversal");
+            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
+                "Guard Counter III without a guarded hit is not a Control ability");
+            ctx.AssertEqual((20, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
+                "the next Katar control ability spends Breaker Reversal's +20 DMG");
+            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
+                "the bonus is spent once");
+
+            Combat.ApplyDamageTakenEffects(defender, attacker, 5);
+            Combat.TrackGuardedHit(defender);
+            ctx.AssertEqual((20, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
+                "Guard Counter III after a guarded hit is a control ability for Breaker Reversal");
+        }
+
         [EngineTest("Beast areas select a single enemy and self-centered impacts select the beast", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
         public static async Task BeastAreaTargets(EngineTestContext ctx)
         {

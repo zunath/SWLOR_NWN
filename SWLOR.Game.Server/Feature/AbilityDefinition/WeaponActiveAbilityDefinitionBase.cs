@@ -531,9 +531,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 ApplyResourceConditionalRestore(activator);
                 ApplyResourceConditionalDrain(activator, target);
-                ApplyTargetUsingAbilityEffects(activator, target, damageType);
-                ApplyConditionalStatus(activator, target, damageType);
-                ApplyTargetConditionalStatus(activator, target, damageType);
                 ApplyTargetTemporaryModifiers(target);
                 ApplyProtectedTargetHitSelfModifiers(activator, target);
                 ApplyStatusSpread(activator, target, damageType, spreadSnapshot);
@@ -554,7 +551,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
             }
 
-            public void BeforeSuccessfulImpactRiders(uint activator, uint target)
+            /// <summary>
+            /// Runs on a successful hit before the shared impact riders. Returns the categories of the
+            /// conditional statuses it applied (null when none landed), so they count like the impact's own status.
+            /// </summary>
+            public StatusEffectCategory? BeforeSuccessfulImpactRiders(uint activator, uint target, CombatDamageType damageType)
+            {
+                ExtendSourceStatusEffects(activator, target);
+
+                StatusEffectCategory? appliedCategories = null;
+                void Track(StatusEffectCategory? categories)
+                {
+                    if (categories is { } applied)
+                        appliedCategories = (appliedCategories ?? StatusEffectCategory.None) | applied;
+                }
+
+                Track(ApplyTargetUsingAbilityEffects(activator, target, damageType));
+                Track(ApplyConditionalStatus(activator, target, damageType));
+                Track(ApplyTargetConditionalStatus(activator, target, damageType));
+                return appliedCategories;
+            }
+
+            private static StatusEffectCategory? GetAppliedCategories(bool applied, Type statusEffectType) =>
+                applied ? StatusEffect.CreateStatusEffect(statusEffectType).Categories : null;
+
+            private void ExtendSourceStatusEffects(uint activator, uint target)
             {
                 if (SourceStatusExtensionSeconds <= 0 || SourceStatusEffectsToExtend == null)
                     return;
@@ -1125,70 +1146,74 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return maxStamina > 0 && Stat.GetCurrentStamina(creature) >= maxStamina * (thresholdPercent / 100f);
             }
 
-            private void ApplyConditionalStatus(uint activator, uint target, CombatDamageType damageType)
+            private StatusEffectCategory? ApplyConditionalStatus(uint activator, uint target, CombatDamageType damageType)
             {
                 if (ConditionalStatusEffect == null ||
                     ConditionalStatusDurationSeconds <= 0 ||
                     ConditionalStatusAfterDeflectionWindowSeconds <= 0 ||
                     !Combat.HasRecentDeflection(activator, DeflectionSource.Ranged, ConditionalStatusAfterDeflectionWindowSeconds))
                 {
-                    return;
+                    return null;
                 }
 
-                StatusEffect.ApplyStatusEffect(
-                    activator,
-                    target,
-                    ConditionalStatusEffect,
-                    ConditionalStatusDurationSeconds,
-                    damageType);
+                return GetAppliedCategories(
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        target,
+                        ConditionalStatusEffect,
+                        ConditionalStatusDurationSeconds,
+                        damageType),
+                    ConditionalStatusEffect);
             }
 
-            private void ApplyTargetConditionalStatus(uint activator, uint target, CombatDamageType damageType)
+            private StatusEffectCategory? ApplyTargetConditionalStatus(uint activator, uint target, CombatDamageType damageType)
             {
                 if (ConditionalTargetStatusEffect == null || ConditionalTargetStatusDurationSeconds <= 0)
-                    return;
+                    return null;
 
                 if (RequireBehindForConditionalStatus && !Combat.IsTargetNotFacingAttacker(activator, target))
-                    return;
+                    return null;
 
                 if (RequiredTargetStatusEffectForConditionalStatus != null &&
                     !StatusEffect.HasStatusEffect(target, RequiredTargetStatusEffectForConditionalStatus))
                 {
-                    return;
+                    return null;
                 }
 
                 if (RequiredTargetStatusCategoryForConditionalStatus != 0 &&
                     !StatusEffect.HasStatusEffectCategory(target, RequiredTargetStatusCategoryForConditionalStatus))
                 {
-                    return;
+                    return null;
                 }
 
                 var window = ProtectedTargetHitWindowSeconds;
                 if (RequireRecentGuardedAllyHitForConditionalStatus &&
                     !GuardedStatusEffect.HasRecentGuardedAllyHit(activator, target, window))
                 {
-                    return;
+                    return null;
                 }
 
                 if (RequireRecentWardHitForConditionalStatus &&
                     !WardBondStatusEffect.HasRecentWardHit(activator, target, window))
                 {
-                    return;
+                    return null;
                 }
 
                 if (RequireTargetRecentlyDamagedActivatorForConditionalStatus &&
                     !Combat.HasRecentDamageTarget(target, activator, window))
                 {
-                    return;
+                    return null;
                 }
 
-                StatusEffect.ApplyStatusEffect(
-                    activator,
-                    target,
-                    ConditionalTargetStatusEffect,
-                    ConditionalTargetStatusDurationSeconds,
-                    damageType,
-                    ConvertsRequiredTargetStatusEffect ? RequiredTargetStatusEffectForConditionalStatus : null);
+                return GetAppliedCategories(
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        target,
+                        ConditionalTargetStatusEffect,
+                        ConditionalTargetStatusDurationSeconds,
+                        damageType,
+                        ConvertsRequiredTargetStatusEffect ? RequiredTargetStatusEffectForConditionalStatus : null),
+                    ConditionalTargetStatusEffect);
             }
 
             private void ApplyTargetTemporaryModifiers(uint target)
@@ -1222,10 +1247,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
             }
 
-            private void ApplyTargetUsingAbilityEffects(uint activator, uint target, CombatDamageType damageType)
+            private StatusEffectCategory? ApplyTargetUsingAbilityEffects(uint activator, uint target, CombatDamageType damageType)
             {
                 if (!Combat.IsUsingAbility(target))
-                    return;
+                    return null;
 
                 if (TargetUsingAbilityDrainStamina > 0)
                     Stat.ReduceStamina(target, TargetUsingAbilityDrainStamina);
@@ -1233,14 +1258,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Stat.ReduceFP(target, TargetUsingAbilityDrainFP);
 
                 if (TargetUsingAbilityStatusEffect == null || TargetUsingAbilityStatusDurationSeconds <= 0)
-                    return;
+                    return null;
 
-                StatusEffect.ApplyStatusEffect(
-                    activator,
-                    target,
-                    TargetUsingAbilityStatusEffect,
-                    TargetUsingAbilityStatusDurationSeconds,
-                    damageType);
+                return GetAppliedCategories(
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        target,
+                        TargetUsingAbilityStatusEffect,
+                        TargetUsingAbilityStatusDurationSeconds,
+                        damageType),
+                    TargetUsingAbilityStatusEffect);
             }
 
             private void ApplyStatusSpread(uint activator, uint target, CombatDamageType damageType, StatusSpreadSnapshot spreadSnapshot)
@@ -1539,6 +1566,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             ability.HasActivationDelay(activationDelay)
                 .SkillType(skill)
+                .ResolvesImpactStatusCategories(activator => isHostile
+                    ? Ability.GetCombatImpactStatusCategories(
+                        profile.ResolveImpactStatus(activator, statusEffect, duration).StatusEffect,
+                        additionalStatusEffects,
+                        profile.StatusEffectFactory)
+                    : StatusEffectCategory.None)
                 .UsesImpactAnimation(impactAnimation)
                 .HasActivationAction((activator, target, level, targetLocation) =>
                 {
@@ -1645,7 +1678,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                     profile.AfterSuccessfulHit(activator, impactedTarget, Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
                                     Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                                 },
-                                beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
+                                beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(
+                                    activator,
+                                    impactedTarget,
+                                    Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
                                 hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                                 criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
                                     activator,
@@ -1697,7 +1733,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 profile.AfterSuccessfulHit(activator, impactedTarget, Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
                                 Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                             },
-                            beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
+                            beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(
+                                activator,
+                                impactedTarget,
+                                Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
                                 activator,

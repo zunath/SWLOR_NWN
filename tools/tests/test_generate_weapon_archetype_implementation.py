@@ -121,6 +121,16 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                     self.assertNotIn("ConditionalTargetStatus", ability)
                     self.assertNotIn("RequireRecentGuardedHit", ability)
 
+    def test_breaker_reversal_bonus_requires_a_control_ability(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["Tab"] == "Katar" and row["PerkName"] == "Breaker Reversal")
+        self.assertIn("next control ability", row["Description"].lower())
+        stats = dict(GENERATOR.description_stat_entries(row, row["PerkName"]))
+        self.assertEqual("(int)StatusEffectCategory.Control", stats["DamageTakenNextSkillAbilityRequiredCategory"])
+        committed = (ROOT / "SWLOR.Game.Server/Feature/PerkDefinition/KatarPerkDefinition.cs").read_text()
+        self.assertEqual(1, committed.count(
+            ".IncreasesStat(StatType.DamageTakenNextSkillAbilityRequiredCategory, (int)StatusEffectCategory.Control)"))
+
     def test_regeneration_preserves_steel_shoulder_ally_only_target_selection(self):
         rows = [row for row in GENERATOR.read_manifest()
                 if row["PerkName"] in {"Steel Shoulder", "Gambler Stance"}]

@@ -1188,6 +1188,13 @@ namespace SWLOR.Game.Server.Service.StatService
         NextSkillAbilityDamageBonus = 224,
 
         /// <summary>
+        /// Internal temporary StatusEffectCategory flags the next matching skill ability must apply
+        /// to consume the stored next-skill-ability bonuses. 0 means any ability of the skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NextSkillAbilityRequiredCategory = 1323,
+
+        /// <summary>
         /// Internal temporary critical chance bonus consumed by the next matching skill ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -4404,6 +4411,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         DamageTakenNextSkillAbilityWindowSeconds = 775,
+
+        /// <summary>
+        /// StatusEffectCategory flags the next ability must apply to receive DamageTakenNextSkillAbilityDamageBonus.
+        /// 0 lets any ability of the matching skill take it.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
+        DamageTakenNextSkillAbilityRequiredCategory = 1322,
 
         /// <summary>
         /// Flat damage bonus granted to the next matching ability after avoiding an attack.

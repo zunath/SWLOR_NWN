@@ -1492,6 +1492,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "DamageTakenNextSkillAbilitySkillType", skill_expr)
         add_stat(stats, "DamageTakenNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
         add_stat(stats, "DamageTakenNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        if "next control ability" in lowered:
+            add_stat(stats, "DamageTakenNextSkillAbilityRequiredCategory", status_category_expression("Control"))
     if base == "Covering Claws":
         if "ally-protection abilities" in lowered:
             add_stat(stats, "AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId", "(int)PerkCategoryType.KatarIronGuard")

@@ -2464,6 +2464,14 @@ namespace SWLOR.Game.Server.Service
                 defenseIgnore,
                 duration,
                 StatType.NextSkillAbilitySkillType);
+
+            // The newest grant decides which abilities may spend the shared next-ability bonuses.
+            TemporaryStatModifier.Replace(
+                attacker,
+                StatType.NextSkillAbilityRequiredCategory,
+                0,
+                duration,
+                StatType.NextSkillAbilitySkillType);
         }
 
         private static void ApplyCriticalNextAbilityDamageBonus(uint attacker, SkillType skillType)
@@ -2682,7 +2690,10 @@ namespace SWLOR.Game.Server.Service
             if (damageBonus <= 0 || window <= 0)
                 return;
 
-            GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window);
+            var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                defender,
+                StatType.DamageTakenNextSkillAbilityRequiredCategory));
+            GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window, requiredCategory: requiredCategory);
         }
 
         public static void ApplyLowHPDamageTakenEffects(uint defender, int damage)
@@ -9563,9 +9574,12 @@ namespace SWLOR.Game.Server.Service
                        GetSkillTypeFromStat(source[StatType.NextSkillAbilityStaminaCostAdjustmentSkillType]));
         }
 
+        /// <param name="abilityStatusCategories">Status categories the ability applies; a bonus stored with
+        /// a required category (Breaker Reversal: Control) waits for an ability that applies it.</param>
         public static (int DamageBonus, int CriticalRatePercentAdjustment, int DefenseIgnorePercentAdjustment) ConsumeNextSkillAbilityBonuses(
             uint creature,
-            SkillType skillType)
+            SkillType skillType,
+            StatusEffectCategory abilityStatusCategories = StatusEffectCategory.None)
         {
             if (skillType == SkillType.Invalid)
                 return (0, 0, 0);
@@ -9576,6 +9590,16 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextSkillAbilitySkillType));
             if (!SkillTypeMatches(skillType, storedSkillType))
                 return (0, 0, 0);
+
+            var requiredCategory = GetStatusEffectCategoryFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
+                StatType.NextSkillAbilitySkillType));
+            if (requiredCategory != StatusEffectCategory.None &&
+                (abilityStatusCategories & requiredCategory) == 0)
+            {
+                return (0, 0, 0);
+            }
 
             var damageBonus = TemporaryStatModifier.Consume(
                 creature,
@@ -9588,6 +9612,10 @@ namespace SWLOR.Game.Server.Service
             var defenseIgnore = TemporaryStatModifier.Consume(
                 creature,
                 StatType.NextSkillAbilityDefenseIgnorePercentAdjustment,
+                StatType.NextSkillAbilitySkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
                 StatType.NextSkillAbilitySkillType);
             TemporaryStatModifier.Consume(
                 creature,
@@ -11939,7 +11967,8 @@ namespace SWLOR.Game.Server.Service
             int damageBonus,
             int criticalRatePercentAdjustment,
             int durationSeconds,
-            int defenseIgnorePercentAdjustment = 0)
+            int defenseIgnorePercentAdjustment = 0,
+            StatusEffectCategory requiredCategory = StatusEffectCategory.None)
         {
             if (!GetIsObjectValid(creature) ||
                 durationSeconds <= 0 ||
@@ -11950,6 +11979,14 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.NextSkillAbilitySkillType,
                 (int)skillType,
+                durationSeconds,
+                StatType.NextSkillAbilitySkillType);
+
+            // The newest grant decides which abilities may spend the shared next-ability bonuses.
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextSkillAbilityRequiredCategory,
+                (int)requiredCategory,
                 durationSeconds,
                 StatType.NextSkillAbilitySkillType);
 

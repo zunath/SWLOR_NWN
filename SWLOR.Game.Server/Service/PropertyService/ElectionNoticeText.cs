@@ -80,22 +80,25 @@ namespace SWLOR.Game.Server.Service.PropertyService
             var label = DescribeKind(result.Kind);
             var text = new StringBuilder($"The city's {label} has ended. ");
 
+            // After a mayor stepped down, the incumbent is the interim holder, who takes the seat when nobody wins outright.
+            var staysMayor = result.Kind == ElectionKind.SnapStepDown ? "becomes mayor" : "stays mayor";
+
             switch (result.Outcome)
             {
                 case ElectionOutcomeType.NoCandidates:
-                    text.Append($"Nobody ran, so {mayorName} stays mayor.");
+                    text.Append($"Nobody ran, so {mayorName} {staysMayor}.");
                     break;
                 case ElectionOutcomeType.NoVotes:
-                    text.Append($"No votes were cast, so {mayorName} stays mayor.");
+                    text.Append($"No votes were cast, so {mayorName} {staysMayor}.");
                     break;
                 case ElectionOutcomeType.NewMayor:
                     text.Append($"{mayorName} won and is now mayor.");
                     break;
                 case ElectionOutcomeType.IncumbentConfirmed:
-                    text.Append($"{mayorName} won and stays mayor.");
+                    text.Append(result.Kind == ElectionKind.SnapStepDown ? $"{mayorName} won and is now mayor." : $"{mayorName} won and stays mayor.");
                     break;
                 case ElectionOutcomeType.ChallengerRejected:
-                    text.Append($"Citizens voted No on the lone candidate, so {mayorName} stays mayor.");
+                    text.Append($"Citizens voted No on the lone candidate, so {mayorName} {staysMayor}.");
                     break;
                 case ElectionOutcomeType.NoConfidence:
                     text.Append(result.OpenedSnapElection
@@ -103,10 +106,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
                         : $"Citizens voted No on {mayorName}, who stays mayor until the next regular election.");
                     break;
                 case ElectionOutcomeType.ConfidenceTie:
-                    text.Append($"Yes and No tied, so {mayorName} stays mayor.");
+                    text.Append($"Yes and No tied, so {mayorName} {staysMayor}.");
                     break;
                 case ElectionOutcomeType.Tie:
-                    text.Append($"Candidates tied for the most votes, so {mayorName} stays mayor.");
+                    text.Append($"Candidates tied for the most votes, so {mayorName} {staysMayor}.");
                     break;
                 default:
                     return string.Empty;
@@ -120,6 +123,29 @@ namespace SWLOR.Game.Server.Service.PropertyService
             }
 
             return text.ToString();
+        }
+
+        /// <summary>
+        /// The Discord and Gazette summary of a step-down snap election's result. The incumbent is the interim holder, who
+        /// takes the seat in every result except a challenger's outright win. Empty for that win, which reads like any other
+        /// new mayor.
+        /// </summary>
+        public static string BuildStepDownSummary(ElectionOutcomeType type)
+        {
+            const string Opening = "The snap mayoral election after the mayor stepped down has concluded";
+
+            if (ElectionRules.IsStatusQuo(type))
+                return $"{Opening} without a winner, so the interim holder is now mayor.";
+
+            switch (type)
+            {
+                case ElectionOutcomeType.IncumbentConfirmed:
+                    return $"{Opening}. The interim holder won and is now mayor.";
+                case ElectionOutcomeType.NoConfidence:
+                    return $"{Opening}. Citizens voted No on the interim holder, who is now mayor with Edicts paused until the next regular election.";
+                default:
+                    return string.Empty;
+            }
         }
 
         private static string DescribeKind(ElectionKind kind)

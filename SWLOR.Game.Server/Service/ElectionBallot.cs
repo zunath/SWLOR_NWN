@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
@@ -75,6 +76,10 @@ namespace SWLOR.Game.Server.Service
             var error = CheckRegistrationChange(election, playerId);
             if (string.IsNullOrEmpty(error))
                 error = CheckPlatform(election, edicts);
+            if (!string.IsNullOrEmpty(error))
+                return error;
+
+            error = CheckCanRun(election, playerId);
             if (!string.IsNullOrEmpty(error))
                 return error;
 
@@ -188,6 +193,18 @@ namespace SWLOR.Game.Server.Service
             }
 
             return changed;
+        }
+
+        /// <summary>
+        /// Why the character may not run in this election, beyond the registration rules: the mayor who stepped down cannot
+        /// run in the snap election that follows. Empty when they may.
+        /// </summary>
+        private static string CheckCanRun(Election election, string playerId)
+        {
+            if (election.Kind != ElectionKind.SnapStepDown)
+                return string.Empty;
+
+            return StepDownRules.CheckCandidate(election.Kind, playerId, DB.Get<WorldProperty>(election.PropertyId)?.OwnerPlayerId);
         }
 
         private static string CheckRegistrationChange(Election election, string playerId)

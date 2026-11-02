@@ -31,6 +31,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float OfficerTitleWidth = 190f;
         private const float OfficerDateWidth = 90f;
         private const float ComboWidth = 360f;
+        private const float StoryNoteHeight = 72f;
+        private const float StoryCurrentHeight = 120f;
+        private const float StoryEditorHeight = 140f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -40,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .DefinePartialView(CityAffairsViewModel.SituationsTabPartial, AddSituationsTab)
-                .DefinePartialView(CityAffairsViewModel.OfficersTabPartial, AddOfficersTab);
+                .DefinePartialView(CityAffairsViewModel.OfficersTabPartial, AddOfficersTab)
+                .DefinePartialView(CityAffairsViewModel.StoryTabPartial, AddStoryTab);
 
             window.AddStandardLayout(layout =>
             {
@@ -51,8 +55,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddToggles()
                         .AddOption("Situations")
                         .AddOption("Officers")
+                        .AddOption("Story Request")
                         .BindSelectedValue(model => model.TabToggleValue)
-                        .SetWidth(232f)
+                        .SetWidth(420f)
                         .SetHeight(TabRowHeight);
                 });
                 layout.SetContentPartialElement(CityAffairsViewModel.TabContentElement);
@@ -190,6 +195,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindRowCount(model => model.ChoiceTexts)
                         .SetRowHeight(ChoiceRowHeight);
                     row.SetHeight(ChoiceListHeight);
+                });
+            });
+        }
+
+        private static void AddStoryTab(GuiGroup<CityAffairsViewModel> host)
+        {
+            AddPanel(host, content =>
+            {
+                AddInstructions(content);
+
+                content.AddRow(row =>
+                {
+                    row.AddText()
+                        .BindText(model => model.StoryStatusText)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None)
+                        .SetHeight(StoryNoteHeight);
+                });
+
+                content.AddRow(row =>
+                {
+                    row.BindIsVisible(model => model.HasCurrentStory);
+                    row.AddLabel()
+                        .SetText("Current request")
+                        .SetColor(GuiColor.Cyan)
+                        .SetHeight(LabelHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                });
+
+                content.AddRow(row =>
+                {
+                    row.BindIsVisible(model => model.HasCurrentStory);
+                    row.AddText()
+                        .BindText(model => model.CurrentStoryText)
+                        .SetScrollbars(NuiScrollbars.Auto)
+                        .SetHeight(StoryCurrentHeight);
+                });
+
+                content.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .SetText($"New request (up to {StoryRequestRules.MaxLength} characters)")
+                        .SetColor(GuiColor.Cyan)
+                        .SetHeight(LabelHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                });
+
+                content.AddRow(row =>
+                {
+                    row.AddTextEdit()
+                        .SetPlaceholder("An invitation for a plot, or a hint about ruins near the city.")
+                        .SetMaxLength(StoryRequestRules.MaxLength)
+                        .SetIsMultiline(true)
+                        .BindValue(model => model.StoryInput)
+                        .SetHeight(StoryEditorHeight);
+                });
+
+                content.AddRow(row =>
+                {
+                    row.AddSpacer();
+                    row.AddButton()
+                        .SetText("Post Request")
+                        .BindIsEnabled(model => model.CanPostStory)
+                        .SetTooltip("Sends the request to the DMs. A new request replaces the old one.")
+                        .BindOnClicked(model => model.OnClickPostStory())
+                        .SetHeight(ButtonHeight);
+                    row.AddSpacer();
                 });
             });
         }

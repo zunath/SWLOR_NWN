@@ -108,6 +108,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int ExtraDamagePerSourceStack { get; init; }
             public int ExtraDamageIfRecentGuardedHit { get; init; }
             public float RecentGuardedHitWindowSeconds { get; init; }
+            /// <summary>
+            /// Status the impact inflicts as the ability's own status when you guarded a hit within
+            /// <see cref="RecentGuardedHitWindowSeconds"/>. Status-category perks (Control riders,
+            /// control damage and duration bonuses) then treat it like a status the ability always applies.
+            /// </summary>
+            public Type RecentGuardedHitStatusEffect { get; init; }
+            public int RecentGuardedHitStatusDurationSeconds { get; init; }
             public int TargetLowHPThresholdPercent { get; init; }
             public int DamagePercentIfTargetDebuffed { get; init; }
             public int DamagePercentIfTargetControlled { get; init; }
@@ -234,7 +241,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public Type RequiredTargetStatusEffectForConditionalStatus { get; init; }
             public bool ConvertsRequiredTargetStatusEffect { get; init; }
             public StatusEffectCategory RequiredTargetStatusCategoryForConditionalStatus { get; init; }
-            public bool RequireRecentGuardedHitForConditionalStatus { get; init; }
             public bool RequireRecentGuardedAllyHitForConditionalStatus { get; init; }
             public bool RequireRecentWardHitForConditionalStatus { get; init; }
             public Type ConditionalTargetStatusEffect { get; init; }
@@ -469,6 +475,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 return adjustment;
+            }
+
+            public (Type StatusEffect, int DurationSeconds) ResolveImpactStatus(
+                uint activator,
+                Type statusEffect,
+                int durationSeconds)
+            {
+                if (RecentGuardedHitStatusEffect == null ||
+                    RecentGuardedHitStatusDurationSeconds <= 0 ||
+                    !Combat.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
+                {
+                    return (statusEffect, durationSeconds);
+                }
+
+                return (RecentGuardedHitStatusEffect, RecentGuardedHitStatusDurationSeconds);
             }
 
             public void SpendHitPoints(uint activator)
@@ -1143,12 +1164,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 var window = ProtectedTargetHitWindowSeconds;
-                if (RequireRecentGuardedHitForConditionalStatus &&
-                    !Combat.HasRecentGuardedHit(activator, window))
-                {
-                    return;
-                }
-
                 if (RequireRecentGuardedAllyHitForConditionalStatus &&
                     !GuardedStatusEffect.HasRecentGuardedAllyHit(activator, target, window))
                 {
@@ -1510,6 +1525,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect areaVisualEffect = VisualEffect.None)
         {
             profile ??= WeaponAbilityProfile.Empty;
+            // The guarded-hit status replaces the impact status, so the ability must not author another one.
+            if (profile.RecentGuardedHitStatusEffect != null &&
+                (statusEffect != null || profile.StatusEffectFactory != null || !isHostile))
+            {
+                throw new InvalidOperationException(
+                    "A recent guarded-hit status needs a hostile weapon ability without its own impact status.");
+            }
+
             var temporaryHPEffectKey = $"WEAPON_{ability.ActiveEffectiveLevelPerkType}";
 
             ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
@@ -1569,6 +1592,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     profile.SpendHitPoints(activator);
                     profile.AfterHostileActivation(activator);
+                    var (impactStatusEffect, impactDuration) = profile.ResolveImpactStatus(activator, statusEffect, duration);
                     var spreadSnapshot = new WeaponAbilityProfile.StatusSpreadSnapshot(profile.MaximumStatusSpreadsPerCast);
                     Action<uint> captureSpreadPrerequisites = profile.SpreadBleedFromTarget || profile.SpreadHemorrhageFromTarget || profile.SpreadSunderFromTarget
                         ? impactedTarget => spreadSnapshot.Capture(impactedTarget)
@@ -1589,8 +1613,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 targetLocation,
                                 skill,
                                 baseDamage,
-                                duration,
-                                statusEffect,
+                                impactDuration,
+                                impactStatusEffect,
                                 ToCombatImpactAreaShape(targetingShape),
                                 profile.TelegraphDuration,
                                 targetingSizeX > 0f ? targetingSizeX : 5.0f,
@@ -1654,8 +1678,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             targetLocation,
                             skill,
                             baseDamage,
-                            duration,
-                            statusEffect,
+                            impactDuration,
+                            impactStatusEffect,
                             isArea,
                             additionalStatusEffects,
                             profile.StatusEffectFactory,

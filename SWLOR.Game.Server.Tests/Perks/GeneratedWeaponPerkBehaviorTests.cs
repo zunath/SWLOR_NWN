@@ -1191,8 +1191,8 @@ public class GeneratedWeaponPerkBehaviorTests
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 8");
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 12");
         guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 17");
-        guardCounterSource.Should().Contain("RequireRecentGuardedHitForConditionalStatus = true");
-        guardCounterSource.Should().Contain("ConditionalTargetStatusEffect = typeof(DazedStatusEffect)");
+        guardCounterSource.Should().Contain("RecentGuardedHitStatusEffect = typeof(DazedStatusEffect)");
+        guardCounterSource.Should().NotContain("ConditionalTargetStatusEffect");
 
         var explosiveToss = new ExplosiveTossAbilityDefinition().BuildAbilities();
         foreach (var feat in new[]

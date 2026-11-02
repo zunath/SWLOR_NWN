@@ -2578,10 +2578,9 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("ExtraDamageIfRecentGuardedHit", str(max(0, guarded_damage - base_damage)))
         add_profile_property("RecentGuardedHitWindowSeconds", recent_guard_counter.group(1))
         if recent_guard_counter.group(3):
-            add_profile_property("ProtectedTargetHitWindowSeconds", recent_guard_counter.group(1))
-            add_profile_property("RequireRecentGuardedHitForConditionalStatus", "true")
-            add_profile_property("ConditionalTargetStatusEffect", "typeof(DazedStatusEffect)")
-            add_profile_property("ConditionalTargetStatusDurationSeconds", recent_guard_counter.group(3))
+            # The impact's own status, so Control perks count the guarded Daze like Joint Lock's.
+            add_profile_property("RecentGuardedHitStatusEffect", "typeof(DazedStatusEffect)")
+            add_profile_property("RecentGuardedHitStatusDurationSeconds", recent_guard_counter.group(3))
 
     ward_daze = re.search(
         r"If the target attacked your ward in the last (\d+) seconds, also inflicts Dazed for (\d+) seconds",

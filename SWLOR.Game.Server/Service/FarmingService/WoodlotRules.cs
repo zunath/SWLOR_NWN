@@ -102,6 +102,14 @@ namespace SWLOR.Game.Server.Service.FarmingService
             return FarmingRefusal.None;
         }
 
+        /// <summary>
+        /// Why fertilizer offered with a seed is refused, or <see cref="FarmingRefusal.None"/>. A sapling's harvest is flat, so
+        /// fertilizer cannot add to it: planting one with fertilizer is refused before anything is used up, rather than taking the
+        /// fertilizer for nothing. A crop takes fertilizer, so it is never refused here.
+        /// </summary>
+        public static FarmingRefusal GetFertilizerRefusal(bool isSapling, bool fertilizerOffered) =>
+            isSapling && fertilizerOffered ? FarmingRefusal.NoFertilizerOnSaplings : FarmingRefusal.None;
+
         /// <summary>The logs a CD key's woodlot gets each day when <paramref name="saplings"/> saplings are replanted as soon as they ripen.</summary>
         public static double GetLogsPerDay(int saplings) =>
             Math.Clamp(saplings, 0, FarmingRules.MaxCropsPerCdKey) * (double)LogsPerHarvest / GrowDays;

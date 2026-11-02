@@ -55,5 +55,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
 
         /// <summary>A station deck has no open ground for a sapling.</summary>
         NoOpenGroundOnStation = 17,
+
+        /// <summary>Fertilizer does nothing for a sapling, so a sapling planted with it is refused and the fertilizer is not used.</summary>
+        NoFertilizerOnSaplings = 18,
     }
 }

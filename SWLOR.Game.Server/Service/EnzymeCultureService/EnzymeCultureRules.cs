@@ -107,6 +107,50 @@ namespace SWLOR.Game.Server.Service.EnzymeCultureService
         public static bool CanBeStarter(string itemResref, bool isCultured, EnzymeType type, EnzymeColorType color) =>
             !isCultured && string.Equals(itemResref, GetResref(type, color), StringComparison.OrdinalIgnoreCase);
 
+        // The memory travels with the vat
+
+        /// <summary>The character that joins the remembered resrefs in the text kept on the structure item.</summary>
+        public const char StarterSeparator = ',';
+
+        /// <summary>
+        /// The text a picked up vat keeps on its structure item: the remembered enzymes, as resrefs in the vat's own order (type, then
+        /// the colors as the loot tables list them) joined by <see cref="StarterSeparator"/>. Anything that is not one of the 15
+        /// enzymes is left out, and so is a repeat. Empty for a vat that remembers nothing.
+        /// </summary>
+        public static string EncodeStarters(IEnumerable<string> starters)
+        {
+            var known = starters?.ToList() ?? new List<string>();
+            return string.Join(StarterSeparator, GetAll()
+                .Select(enzyme => GetResref(enzyme.Type, enzyme.Color))
+                .Where(resref => known.Contains(resref, StringComparer.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>The remembered enzymes in the text a structure item keeps, in the vat's own order. Unknown entries and repeats are dropped.</summary>
+        public static List<string> DecodeStarters(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return new List<string>();
+
+            var named = text.Split(StarterSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return GetAll()
+                .Select(enzyme => GetResref(enzyme.Type, enzyme.Color))
+                .Where(resref => named.Contains(resref, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        /// <summary>
+        /// What a vat being picked up takes with it: everything it remembers, except the color of a batch that is still running on
+        /// a starter. That starter goes back to its owner with the rest of the batch's ingredients, so the vat must not also keep the
+        /// color, or one hunted enzyme would teach two vats. A batch that had finished is done, and its color stays.
+        /// </summary>
+        public static List<string> GetCarriedStarters(IEnumerable<string> starters, FermentationJob job, DateTime now)
+        {
+            var carried = starters?.ToList() ?? new List<string>();
+            if (IsRunning(job, now) && !string.IsNullOrEmpty(job.StarterData))
+                carried.RemoveAll(resref => string.Equals(resref, GetResref(job.Type, job.Color), StringComparison.OrdinalIgnoreCase));
+            return carried;
+        }
+
         // Timing
 
         public static DateTime GetCompleteUtc(DateTime startedUtc) => startedUtc.AddHours(Hours);

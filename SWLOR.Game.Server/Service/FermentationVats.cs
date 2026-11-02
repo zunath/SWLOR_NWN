@@ -37,6 +37,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public const string CulturedVariable = "ENZYME_CULTURED";
 
+        /// <summary>
+        /// The item local that carries a vat's remembered colors while it is a structure item in a pack: the resrefs of the enzymes
+        /// it has copied, joined by commas (<see cref="EnzymeCultureRules.EncodeStarters"/>). Picking the vat up writes it, and
+        /// placing the item again restores it, so moving a vat to another house does not start it over.
+        /// </summary>
+        public const string StartersVariable = "VAT_STARTERS";
+
         /// <summary>What a cultured enzyme's name ends with, so a player can tell it from a hunted one.</summary>
         public const string CulturedSuffix = " (Cultured)";
 
@@ -239,12 +246,59 @@ namespace SWLOR.Game.Server.Service
 
         // The structure
 
-        /// <summary>A vat is placed or moved, or the house it stands in loads: make it usable and name it.</summary>
+        /// <summary>
+        /// A vat is placed or moved, or the house it stands in loads: make it usable and name it. A vat that has no record yet is
+        /// new in the world, so it takes the colors its structure item carried (<see cref="StartersVariable"/>), and gets its record.
+        /// </summary>
         public static void OnVatSpawned(WorldProperty vat, uint placeable)
         {
             SetName(placeable, VatName);
             SetUseableFlag(placeable, true);
             SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnFermentationVatUsed);
+            RestoreStarters(vat);
+        }
+
+        /// <summary>
+        /// A vat is being picked up: writes the colors it remembers onto the structure item the player is about to receive, so the
+        /// next place it is put down it still knows them. A color a running batch is using a starter for is left off, as that
+        /// starter goes back to its owner with the batch (<see cref="EnzymeCultureRules.GetCarriedStarters"/>).
+        /// </summary>
+        public static void WriteStarters(string vatId, uint item)
+        {
+            if (!GetIsObjectValid(item))
+                return;
+
+            var carried = EnzymeCultureRules.GetCarriedStarters(GetRecord(vatId)?.Starters, GetJob(vatId), DateTime.UtcNow);
+            var text = EnzymeCultureRules.EncodeStarters(carried);
+            if (string.IsNullOrEmpty(text))
+                DeleteLocalString(item, StartersVariable);
+            else
+                SetLocalString(item, StartersVariable, text);
+        }
+
+        /// <summary>
+        /// Gives a vat that has no record the colors its placed item carried, which the structure keeps a copy of, and saves the
+        /// record. A vat with a record is left alone, so a house loading does not read the item again.
+        /// </summary>
+        private static void RestoreStarters(WorldProperty vat)
+        {
+            if (vat == null || DB.Exists<FermentationVat>(FermentationVat.KeyFor(vat.Id)))
+                return;
+
+            var starters = new List<string>();
+            if (!string.IsNullOrWhiteSpace(vat.SerializedItem))
+            {
+                var item = ObjectPlugin.Deserialize(vat.SerializedItem);
+                if (GetIsObjectValid(item))
+                {
+                    starters = EnzymeCultureRules.DecodeStarters(GetLocalString(item, StartersVariable));
+                    DestroyObject(item);
+                }
+            }
+
+            DB.Set(new FermentationVat { Id = FermentationVat.KeyFor(vat.Id), VatId = vat.Id, Starters = starters });
+            if (starters.Count > 0)
+                Log.Write(LogGroup.Property, $"Fermentation vat {vat.Id} was placed with {starters.Count} remembered enzymes: {string.Join(", ", starters)}.");
         }
 
         /// <summary>A vat was used: open its menu.</summary>

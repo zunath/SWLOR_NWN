@@ -183,8 +183,15 @@ namespace SWLOR.Game.Server.Service
 
         // Actions
 
-        /// <summary>Plants the seed in the plot, using the seed up. The character needs garden permission and the crop's tier.</summary>
-        public static FarmingResult Plant(uint player, string plotId, string seedResref)
+        /// <summary>
+        /// Plants the seed in the plot, using the seed up. The character needs garden permission and the crop's tier.
+        /// </summary>
+        /// <param name="fertilizerResref">
+        /// The fertilizer the planter offers, or empty for none. A sapling refuses it (<see cref="WoodlotRules.GetFertilizerRefusal"/>)
+        /// before the seed or the fertilizer is used. A crop takes fertilizer with the fertilizer items, which add it to the plot's
+        /// record; until then a crop ignores what is offered.
+        /// </param>
+        public static FarmingResult Plant(uint player, string plotId, string seedResref, string fertilizerResref = "")
         {
             Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
@@ -210,7 +217,8 @@ namespace SWLOR.Game.Server.Service
                 crop.Tier,
                 isPlayer ? CountGrowingCrops(cdKey, playerId, now) : 0,
                 GetIsObjectValid(seed),
-                GetSiteRefusal(structure, crop));
+                GetSiteRefusal(structure, crop),
+                WoodlotRules.GetFertilizerRefusal(crop.IsSapling, !string.IsNullOrWhiteSpace(fertilizerResref)));
             if (refusal != FarmingRefusal.None)
                 return FarmingResult.Refused(refusal);
 

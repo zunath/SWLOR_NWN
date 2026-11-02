@@ -172,6 +172,10 @@ namespace SWLOR.Game.Server.Service.FarmingService
         /// What the plot's site rules say about this seed (<see cref="WoodlotRules.GetSiteRefusal"/>): a sapling needs an outdoor
         /// city plot. Checked after the permission.
         /// </param>
+        /// <param name="fertilizerRefusal">
+        /// What the seed says about the fertilizer offered with it (<see cref="WoodlotRules.GetFertilizerRefusal"/>): a sapling
+        /// refuses it. Checked right after the site, so the refusal comes before anything is used up.
+        /// </param>
         public static FarmingRefusal CheckPlant(
             bool isPlayer,
             bool plotExists,
@@ -182,7 +186,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
             int cropTier,
             int growingCrops,
             bool hasSeed,
-            FarmingRefusal siteRefusal = FarmingRefusal.None)
+            FarmingRefusal siteRefusal = FarmingRefusal.None,
+            FarmingRefusal fertilizerRefusal = FarmingRefusal.None)
         {
             if (!isPlayer)
                 return FarmingRefusal.NotAPlayer;
@@ -194,6 +199,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 return FarmingRefusal.NoPermission;
             if (siteRefusal != FarmingRefusal.None)
                 return siteRefusal;
+            if (fertilizerRefusal != FarmingRefusal.None)
+                return fertilizerRefusal;
             if (!CanPlantTier(cropManagementRank, cropTier))
                 return FarmingRefusal.TierLocked;
             if (!HasRoomForCrop(growingCrops))
@@ -281,6 +288,7 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 FarmingRefusal.NeedsNoTending => "A sapling needs no tending.",
                 FarmingRefusal.OutdoorPlotOnly => "A sapling needs an outdoor garden plot in a city, not one inside a house.",
                 FarmingRefusal.NoOpenGroundOnStation => "A station deck has no open ground for a sapling.",
+                FarmingRefusal.NoFertilizerOnSaplings => "Fertilizer does nothing for a sapling, since its harvest is always 4 logs. Plant it without fertilizer; yours was not used.",
                 _ => string.Empty
             };
         }

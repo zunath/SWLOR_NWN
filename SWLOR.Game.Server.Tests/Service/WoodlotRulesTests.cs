@@ -282,10 +282,52 @@ public class WoodlotRulesTests
         new CropDefinition { Name = "Tomato" }.GetSeedLabel().Should().Be("Tomato seed");
     }
 
+
+    // Fertilizer: a sapling refuses it, and nothing is used up
+
+    [Test]
+    public void ASaplingPlantedWithFertilizerIsRefused_AnythingElseIsNot()
+    {
+        WoodlotRules.GetFertilizerRefusal(isSapling: true, fertilizerOffered: true).Should().Be(FarmingRefusal.NoFertilizerOnSaplings);
+        WoodlotRules.GetFertilizerRefusal(isSapling: true, fertilizerOffered: false).Should().Be(FarmingRefusal.None, "a sapling without fertilizer plants as usual");
+        WoodlotRules.GetFertilizerRefusal(isSapling: false, fertilizerOffered: true).Should().Be(FarmingRefusal.None, "a crop takes fertilizer");
+        WoodlotRules.GetFertilizerRefusal(isSapling: false, fertilizerOffered: false).Should().Be(FarmingRefusal.None);
+    }
+
+    [Test]
+    public void ThePlantCheckRefusesTheFertilizer_AfterThePermissionAndTheSite_AndBeforeTheTierCapAndSeed()
+    {
+        var fertilizer = FarmingRefusal.NoFertilizerOnSaplings;
+
+        FarmingRules.CheckPlant(true, true, null, Planted, true, 5, 3, 0, true, FarmingRefusal.None, fertilizer).Should().Be(FarmingRefusal.NoFertilizerOnSaplings);
+        FarmingRules.CheckPlant(true, true, null, Planted, false, 5, 3, 0, true, FarmingRefusal.None, fertilizer).Should().Be(FarmingRefusal.NoPermission);
+        FarmingRules.CheckPlant(true, true, null, Planted, true, 5, 3, 0, true, FarmingRefusal.OutdoorPlotOnly, fertilizer).Should().Be(FarmingRefusal.OutdoorPlotOnly);
+        FarmingRules.CheckPlant(true, true, null, Planted, true, 1, 3, 10, false, FarmingRefusal.None, fertilizer).Should().Be(FarmingRefusal.NoFertilizerOnSaplings, "before the tier, the cap and the seed");
+        FarmingRules.CheckPlant(true, true, null, Planted, true, 5, 3, 0, true, FarmingRefusal.None, FarmingRefusal.None).Should().Be(FarmingRefusal.None);
+    }
+
+    [Test]
+    public void TheRefusalSaysTheFertilizerWasNotUsed()
+    {
+        var message = FarmingRules.Describe(FarmingRefusal.NoFertilizerOnSaplings);
+
+        message.Should().Contain("sapling").And.Contain("4 logs").And.Contain("not used").And.MatchRegex("^[\\x20-\\x7E]+$");
+        FarmingResult.Refused(FarmingRefusal.NoFertilizerOnSaplings).Succeeded.Should().BeFalse();
+        FarmingResult.Refused(FarmingRefusal.NoFertilizerOnSaplings).Message.Should().Be(message);
+    }
+
+    [Test]
+    public void ACropsPlantCheckIsUnchangedByTheFertilizerInput()
+    {
+        // The input is optional, and a crop is never given the refusal, so every crop check behaves as before.
+        FarmingRules.CheckPlant(true, true, null, Planted, true, 5, 3, 0, true).Should().Be(FarmingRefusal.None);
+        FarmingRules.CheckPlant(true, true, null, Planted, true, 1, 3, 0, true, FarmingRefusal.None, WoodlotRules.GetFertilizerRefusal(false, true)).Should().Be(FarmingRefusal.TierLocked);
+    }
+
     [Test]
     public void EveryDescriptionOfASaplingRefusalIsPlainAscii()
     {
-        foreach (var refusal in new[] { FarmingRefusal.NeedsNoTending, FarmingRefusal.OutdoorPlotOnly, FarmingRefusal.NoOpenGroundOnStation })
+        foreach (var refusal in new[] { FarmingRefusal.NeedsNoTending, FarmingRefusal.OutdoorPlotOnly, FarmingRefusal.NoOpenGroundOnStation, FarmingRefusal.NoFertilizerOnSaplings })
             FarmingRules.Describe(refusal).Should().NotBeNullOrWhiteSpace().And.MatchRegex("^[\\x20-\\x7E]+$");
     }
 }

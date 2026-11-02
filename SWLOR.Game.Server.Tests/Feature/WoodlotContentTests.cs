@@ -214,6 +214,26 @@ public class WoodlotContentTests
         }
     }
 
+
+    // Plant refuses the fertilizer before it uses up anything
+
+    [Test]
+    public void PlantChecksTheFertilizerBeforeItUsesUpTheSeed()
+    {
+        var source = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "Farming.cs"));
+        var plant = source.IndexOf("public static FarmingResult Plant(", StringComparison.Ordinal);
+        var refusal = source.IndexOf("WoodlotRules.GetFertilizerRefusal(", plant, StringComparison.Ordinal);
+        var check = source.IndexOf("FarmingRules.CheckPlant(", plant, StringComparison.Ordinal);
+        var useUp = source.IndexOf("UseUpOne(seed);", plant, StringComparison.Ordinal);
+
+        plant.Should().BeGreaterThan(0);
+        source.Substring(plant, 200).Should().Contain("string fertilizerResref", "Plant takes the fertilizer the planter offers");
+        check.Should().BeGreaterThan(plant);
+        refusal.Should().BeGreaterThan(check, "the refusal is an argument of the plant check");
+        useUp.Should().BeGreaterThan(refusal, "the seed is used up only after the check, so a refused planting costs nothing");
+        source.Substring(check, useUp - check).Should().Contain("if (refusal != FarmingRefusal.None)");
+    }
+
     // Prospecting still reads the tables as it did
 
     [Test]

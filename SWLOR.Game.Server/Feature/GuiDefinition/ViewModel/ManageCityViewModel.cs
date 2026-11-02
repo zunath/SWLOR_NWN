@@ -5,7 +5,9 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CityGazetteService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
@@ -16,7 +18,7 @@ using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
+    public partial class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
     {
         private const int MaxUpgradeLevel = 5;
         private string _cityId;
@@ -229,12 +231,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
             RefreshUpkeep();
+            InitializeTabs();
 
             WatchOnClient(model => model.CityName);
             WatchOnClient(model => model.TransportationTax);
             WatchOnClient(model => model.CitizenshipTax);
             WatchOnClient(model => model.ExchangeTariff);
             WatchOnClient(model => model.ShipyardFee);
+            WatchOnClient(model => model.TabToggleValue);
+
+            SelectTab(CityTabId);
         }
 
         private bool RefreshPermissions()
@@ -253,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CanAccessTreasury = false;
                 CanEditTaxes = false;
                 CanManageUpkeep = false;
+                CanManageEdicts = false;
                 CanUpgradeMedicalCenters = false;
                 CanUpgradeStarports = false;
                 CanUpgradeCantinas = false;
@@ -264,6 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanAccessTreasury = permission.Permissions[PropertyPermissionType.AccessTreasury];
             CanEditTaxes = permission.Permissions[PropertyPermissionType.EditTaxes];
             CanManageUpkeep = permission.Permissions[PropertyPermissionType.ManageUpkeep];
+            CanManageEdicts = permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageEdicts);
 
             // Upgrades
             CanUpgradeMedicalCenters = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
@@ -614,7 +622,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    if (dbCity.Upkeep > dbCity.Treasury)
+                    if (!CityTreasuryRules.CanSpend(dbCity, dbCity.Upkeep))
                     {
                         Instructions = "Insufficient treasury funds.";
                         InstructionsColor = GuiColor.Red;
@@ -623,10 +631,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) paid city upkeep of {dbCity.Upkeep} credits for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
-                    dbCity.Treasury -= dbCity.Upkeep;
-                    dbCity.Upkeep = 0;
-
-                    DB.Set(dbCity);
+                    // Restricted funds pay first, and an Edict the payment lifts out of disrepair adds its part-week.
+                    CityTreasury.PayUpkeep(dbCity, DateTime.UtcNow);
                     Property.BroadcastCityUpkeepPaid(dbCity);
 
                     Instructions = "Upkeep paid successfully.";

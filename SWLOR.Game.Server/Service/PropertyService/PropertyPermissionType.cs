@@ -77,6 +77,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
         [PropertyPermission("Dock Ship", "Can dock a Small or Medium starship with this Large or Capital starship in space.", true)]
         Dock = 18,
 
+        // City
+        [PropertyPermission("Manage Edicts", "Can enact and repeal the city's Edicts. Only the mayor can give it to someone else.", true)]
+        ManageEdicts = 19,
+
         // City. The mayor sets it by appointing an officer, so it is not in the permission window.
         [PropertyPermission("Handle City Affairs", "Can decide City Affairs situations. Given by appointing an officer.", true,
             ShowInPermissionWindow = false)]

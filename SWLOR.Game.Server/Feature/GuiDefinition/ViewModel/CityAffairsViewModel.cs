@@ -176,7 +176,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 toggles.Add(index == _selectedSituationIndex);
             }
 
-            StatusText = $"Treasury: {SituationRules.FormatCredits((int)Math.Min(int.MaxValue, city.Treasury))}. " +
+            var restrictedText = city.RestrictedTreasury > 0
+                ? $", plus {SituationRules.FormatCredits((int)Math.Min(int.MaxValue, city.RestrictedTreasury))} that cannot be withdrawn"
+                : string.Empty;
+            StatusText = $"Treasury: {SituationRules.FormatCredits((int)Math.Min(int.MaxValue, city.Treasury))}{restrictedText}. " +
                          $"Ignored in a row: {city.NeglectCount} of {RecallRules.NeglectThreshold}.";
             SituationNames = names;
             SituationToggles = toggles;
@@ -215,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 foreach (var choice in detail.Choices)
                 {
                     var unmet = SituationRules.DescribeUnmet(choice.Requirements, context);
-                    var affordable = SituationRules.CanAfford(choice.Cost, city.Treasury);
+                    var affordable = SituationRules.CanAfford(choice.Cost, SituationTreasury.GetSpendable(city));
                     choiceTexts.Add(choice.Text);
                     choiceInfos.Add(DescribeChoice(choice, unmet, affordable));
                     choiceEnabled.Add(canDecide && unmet.Count == 0 && affordable);

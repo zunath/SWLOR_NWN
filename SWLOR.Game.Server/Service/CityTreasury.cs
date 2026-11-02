@@ -12,23 +12,28 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class CityTreasury
     {
-        /// <summary>Spends credits from the city and saves it. Nothing changes when the city cannot pay.</summary>
-        public static TreasurySpend Spend(WorldProperty city, long amount, bool restrictedFirst = true)
+        /// <summary>
+        /// Spends credits from the city and saves it. Nothing changes when the city cannot pay. A caller that saves the city
+        /// itself in an order that matters passes <paramref name="save"/> as false.
+        /// </summary>
+        public static TreasurySpend Spend(WorldProperty city, long amount, bool restrictedFirst = true, bool save = true)
         {
             var spend = CityTreasuryRules.Spend(city, amount, restrictedFirst);
-            if (spend.Succeeded)
+            if (spend.Succeeded && save)
                 DB.Set(city);
 
             return spend;
         }
 
-        /// <summary>Adds income that cannot be withdrawn and saves the city.</summary>
-        public static bool CreditRestricted(WorldProperty city, long amount)
+        /// <summary>Adds income that cannot be withdrawn and saves the city, unless <paramref name="save"/> is false.</summary>
+        public static bool CreditRestricted(WorldProperty city, long amount, bool save = true)
         {
             if (!CityTreasuryRules.CreditRestricted(city, amount))
                 return false;
 
-            DB.Set(city);
+            if (save)
+                DB.Set(city);
+
             return true;
         }
 

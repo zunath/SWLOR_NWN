@@ -1718,6 +1718,9 @@ namespace SWLOR.Game.Server.Service
 
                 // Officers and the permissions the old mayor granted end with the old mayor's term.
                 CityOfficers.EndAllOnNewMayor(city, winnerPlayerId);
+
+                // The record of promises kept and broken belongs to the mayor who made them.
+                city.MayorRecord = new MayorRecord();
             }
 
             // No reason to process deleted cities. Skip.

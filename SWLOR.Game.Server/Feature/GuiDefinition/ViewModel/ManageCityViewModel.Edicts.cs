@@ -176,7 +176,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var canRepeal = CanManageEdicts && EdictRules.CanRepeal(edict, now);
 
                 _heldEdictTypes.Add(type);
-                texts.Add(EdictRules.BuildHeldText(type, edict, targetName, conditions, now));
+                texts.Add(EdictRules.BuildHeldText(
+                    type, edict, targetName, conditions, now, EdictChanges.IsPausedBySituation(city, type, edict, now)));
                 tooltips.Add(EdictCatalog.Get(type)?.Description ?? string.Empty);
                 repealEnabled.Add(canRepeal);
                 repealTooltips.Add(GetRepealTooltip(edict, now));

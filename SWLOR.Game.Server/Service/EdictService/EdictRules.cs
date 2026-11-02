@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Service.EdictService
         }
 
         /// <summary>Why a held Edict is not working, or an empty string when it is.</summary>
-        public static string DescribePause(CityEdict edict, CityWideCondition conditions, DateTime nowUtc)
+        public static string DescribePause(CityEdict edict, CityWideCondition conditions, DateTime nowUtc, bool pausedBySituationModifier = false)
         {
             if (edict.State == EdictState.Pending)
                 return "waiting for the other city";
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service.EdictService
                 return "city " + DescribeConditions(conditions);
             if (edict.IsPausedByCityLevel)
                 return "city level too low";
-            if (IsPausedBySituation(edict, nowUtc))
+            if (pausedBySituationModifier || IsPausedBySituation(edict, nowUtc))
                 return "a situation outcome";
 
             return string.Empty;
@@ -419,7 +419,14 @@ namespace SWLOR.Game.Server.Service.EdictService
         /// <param name="targetCityName">The named city's name, or null when that city is gone.</param>
         /// <param name="conditions">The city-wide conditions.</param>
         /// <param name="nowUtc">The time.</param>
-        public static string BuildHeldText(EdictType type, CityEdict edict, string targetCityName, CityWideCondition conditions, DateTime nowUtc)
+        /// <param name="pausedBySituationModifier">True when a city modifier from a situation pauses the Edict.</param>
+        public static string BuildHeldText(
+            EdictType type,
+            CityEdict edict,
+            string targetCityName,
+            CityWideCondition conditions,
+            DateTime nowUtc,
+            bool pausedBySituationModifier = false)
         {
             var title = GetName(type);
             if (!string.IsNullOrWhiteSpace(edict.TargetCityId))
@@ -433,7 +440,7 @@ namespace SWLOR.Game.Server.Service.EdictService
             }
             else
             {
-                var pause = DescribePause(edict, conditions, nowUtc);
+                var pause = DescribePause(edict, conditions, nowUtc, pausedBySituationModifier);
                 parts.Add(pause.Length == 0 ? "In effect" : "Paused: " + pause);
                 parts.Add(CanRepeal(edict, nowUtc)
                     ? "can be repealed"

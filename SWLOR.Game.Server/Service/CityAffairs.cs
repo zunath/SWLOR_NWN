@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityGazetteService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -118,10 +119,10 @@ namespace SWLOR.Game.Server.Service
                 : player.Skills.ToDictionary(pair => pair.Key, pair => pair.Value.Rank);
         }
 
-        // No Edict is in force until Edicts exist; the Edict service supplies their names then.
+        // The names are EdictType members, such as "OpenGates". Only an Edict in effect counts.
         private static IReadOnlyCollection<string> GetActiveEdictNames(WorldProperty city)
         {
-            return Array.Empty<string>();
+            return EdictChanges.GetInEffectTypes(city, DateTime.UtcNow).Select(type => type.ToString()).ToList();
         }
 
         #region Server start
@@ -310,7 +311,7 @@ namespace SWLOR.Game.Server.Service
             if (unmet.Count > 0)
                 return CityDecisionResult.Refused($"This choice needs: {string.Join(", ", unmet)}.");
 
-            if (!SituationRules.CanAfford(choice.Cost, city.Treasury))
+            if (!SituationRules.CanAfford(choice.Cost, SituationTreasury.GetSpendable(city)))
                 return CityDecisionResult.Refused($"The treasury cannot afford {SituationRules.FormatCredits(choice.Cost)}.");
 
             var situations = LoadSituations(city.Id);
@@ -380,7 +381,7 @@ namespace SWLOR.Game.Server.Service
         {
             var change = SituationRules.ResolveTreasuryChange(
                 SituationRules.GetRequestedChange(effects),
-                city.Treasury,
+                SituationTreasury.GetSpendable(city),
                 SituationRules.GetGainsInWindow(situations, now));
             if (change != 0)
                 SituationTreasury.Apply(city, change);

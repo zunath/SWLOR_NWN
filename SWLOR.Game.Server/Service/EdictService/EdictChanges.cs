@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityTreasuryService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -40,13 +41,35 @@ namespace SWLOR.Game.Server.Service.EdictService
             return EdictRules.GetBilledTypes(city.Edicts, GetConditions(city));
         }
 
+        /// <summary>
+        /// Whether a situation outcome on the city pauses the Edict: the Edict's own situation pause, or the city modifier
+        /// that stands for one (Open Gates suspended). The Edict is still billed while it is paused.
+        /// </summary>
+        public static bool IsPausedBySituation(WorldProperty city, EdictType type, CityEdict edict, DateTime nowUtc)
+        {
+            return EdictRules.IsPausedBySituation(edict, nowUtc) ||
+                   (type == EdictType.OpenGates &&
+                    SituationRules.IsModifierActive(city.Modifiers, CityModifierType.OpenGatesSuspended, nowUtc));
+        }
+
         /// <summary>The Edict if the city has it in effect, otherwise null.</summary>
         public static CityEdict GetInEffect(WorldProperty city, EdictType type, DateTime nowUtc)
         {
             if (city == null || !city.Edicts.TryGetValue(type, out var edict))
                 return null;
 
-            return EdictRules.IsInEffect(edict, GetConditions(city), nowUtc) ? edict : null;
+            return EdictRules.IsInEffect(edict, GetConditions(city), nowUtc) && !IsPausedBySituation(city, type, edict, nowUtc)
+                ? edict
+                : null;
+        }
+
+        /// <summary>Every Edict the city has in effect, in type order.</summary>
+        public static List<EdictType> GetInEffectTypes(WorldProperty city, DateTime nowUtc)
+        {
+            return city.Edicts.Keys
+                .Where(type => GetInEffect(city, type, nowUtc) != null)
+                .OrderBy(type => (int)type)
+                .ToList();
         }
 
         /// <summary>

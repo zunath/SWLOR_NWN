@@ -85,7 +85,7 @@ public class RandomWalkLeashTests
                 public static bool IsLeashEvading(uint creature) => false;
                 public static bool TryEndLeashEvadeAtHome(uint creature, Location home) => false;
                 public static void ContinueLeashEvadeReturn(uint creature, Location home) => Commands.Add("evade-return");
-                public static bool ShouldStartCombatLeashEvade(uint creature, uint target, Location home) => false;
+                public static bool TryStartLeashEvade(uint creature, uint target) => false;
                 public static void StartLeashEvade(uint creature, Location home) => Commands.Add("evade");
                 public static bool GetIsInCombat(uint creature) => Combat;
                 public static bool IsInConversation(uint creature) => Conversation;

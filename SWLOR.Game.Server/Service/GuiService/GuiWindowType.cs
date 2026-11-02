@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         HoloNetBoard = 102,
         CustomsScan = 103,
         PlanetaryHoldings = 104,
+        CityGazette = 110,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

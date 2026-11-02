@@ -114,6 +114,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyBroadcastColor)
         {
+            CityGazette.RecordPropertyBroadcast(city, title, details);
+
             var url = _appSettings.PropertyBroadcastWebhookUrl;
             if (string.IsNullOrWhiteSpace(url))
                 return;
@@ -154,7 +156,7 @@ namespace SWLOR.Game.Server.Service
             return date.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture);
         }
 
-        private static string SanitizeDiscordText(string text)
+        public static string SanitizeDiscordText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return string.Empty;
@@ -2250,6 +2252,9 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(citizen);
             }
 
+            if (property.PropertyType == PropertyType.City)
+                CityGazette.DeleteAll(property.Id);
+
             _propertyInstances.Remove(property.Id);
             _propertyLoadStates.Remove(property.Id);
             _propertyLoadFailures.Remove(property.Id);
@@ -3810,12 +3815,13 @@ namespace SWLOR.Game.Server.Service
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
 
             // Player is a citizen of another city. Their citizenship needs to be revoked before
-            // they're able to access this terminal.
+            // they can manage citizenship here, but anyone can read the Gazette.
             if (!string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId) &&
                 dbPlayer.CitizenPropertyId != Guid.Empty.ToString() &&
                 dbBuilding.ParentPropertyId != dbPlayer.CitizenPropertyId)
             {
-                SendMessageToPC(player, ColorToken.Red("You are a citizen of another city. You cannot access this terminal unless you revoke your citizenship first."));
+                SendMessageToPC(player, ColorToken.Red("You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette."));
+                CityGazette.OpenWindow(player, dbBuilding.ParentPropertyId, terminal);
             }
             else
             {

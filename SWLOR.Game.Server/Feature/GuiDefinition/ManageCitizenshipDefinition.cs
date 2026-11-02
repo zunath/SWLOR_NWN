@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.ManageCitizenship)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 545f, 340f)
                 .SetTitle("Manage Citizenship")
 
                 .AddColumn(col =>
@@ -51,6 +51,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Election")
                             .BindIsEnabled(model => model.IsElectionActive)
                             .BindOnClicked(model => model.OpenElectionMenu())
+                            .SetHeight(35f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .SetText("Read the City Gazette")
+                            .BindOnClicked(model => model.OpenGazette())
                             .SetHeight(35f);
                     });
                 });

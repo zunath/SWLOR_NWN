@@ -37,11 +37,11 @@ Every bonus a citizen, official, or visitor can get, in one place. Who qualifies
 | House | Workshop | Craftsmanship and Control bonus for one chosen crafting skill | Anyone crafting in the house | Owner's choice, changeable every 30 days |
 | House | Storehouse | 50% more storage: 60, 90, or 120 items for a small, medium, or large house | Anyone using the house's storage | Owner's choice, changeable every 30 days |
 | House | Greenhouse | 10 garden plots instead of 5; crops yield 1 more item per harvest | Anyone farming in the house | Owner's choice, changeable every 30 days |
-| Farming perk | Bountiful Harvest I-III | +1, +2, or +3 items per harvest | The farmer | 1, 2, and 3 SP |
-| Farming perk | Seed Saver I-III | 10%, 20%, or 30% chance a harvest returns its seed | The farmer | 1, 2, and 2 SP |
+| Farming perk | Bountiful Harvest I-III | +1, +2, or +3 items per harvest | The farmer | 1, 3, and 4 SP |
+| Farming perk | Seed Saver I-II | 15% or 30% chance a harvest returns its seed | The farmer | 2 and 3 SP |
 | Farming | Tending and fertilizer | +1 item each per harvest | The farmer | Tend once per crop; Fertilizer I-V recipes |
 | Civic Exchange | Long buff | About as strong as a top-tier food buff; does not stack with food | Citizens | Available XP |
-| Civic Exchange | Crates, research time, cosmetics | Random crafting materials, time off a Lab research job, container and weapon appearances | Citizens | Available XP |
+| Civic Exchange | Crates and cosmetics | Random crafting materials, container and weapon appearances | Citizens | Available XP |
 | Travel | Home Port | Fly to the city's Starport from any shuttle terminal | Citizens and allied citizens | Ticket price |
 | City Affairs | Situation outcomes | Bonuses or penalties lasting 72 hours, such as +5% RP XP after a funded festival | Citizens | Decided by the mayor and officers |
 | Office | Leadership XP | XP for each City Affairs decision | Mayor and officers | None |
@@ -76,17 +76,9 @@ A player can have characters in different cities. Each character gets only its o
 
 **Harvesting bonuses**
 
-Harvesting already gives a second item on a d100 roll of up to 25 per Might modifier, so it is certain from Might 18 (modifier +4). Adding points to that roll would do nothing for established gatherers. Prospectors' Charter and Home Ground are separate rolls instead: a 10% and a 5% chance of 1 more item from the same node, without using up the node. The Might roll is unchanged.
+The crafting revamp, which ships before this plan, replaces today's harvesting with Prospecting sessions and Quick Harvest, and drops the Might roll that used to give a second item. Prospectors' Charter and Home Ground each add their own chance of 1 more item when a Prospecting session or Quick Harvest on the city's planet finishes: 10% and 5%.
 
-| Might modifier | Items per harvest today | With Prospectors' Charter | With the Charter and Home Ground |
-| --- | --- | --- | --- |
-| 0 | 1.00 | 1.10 (+10%) | 1.15 (+15%) |
-| +1 | 1.25 | 1.35 (+8%) | 1.40 (+12%) |
-| +2 | 1.50 | 1.60 (+7%) | 1.65 (+10%) |
-| +3 | 1.75 | 1.85 (+6%) | 1.90 (+9%) |
-| +4 or more | 2.00 | 2.10 (+5%) | 2.15 (+8%) |
-
-The two rolls are independent, so a harvest can give up to 2 more items. On average they add 0.15 items per harvest, so a fully skilled gatherer gets about 8% more.
+The two rolls are independent, so a harvest can give up to 2 more items. On average they add 0.15 items to every harvest, whatever the gatherer's attributes.
 
 ## What players and staff asked for
 
@@ -104,17 +96,17 @@ Nearly every suggestion is in the plan. Four were changed or dropped: the crafti
 | Settlements in the style of No Man's Sky | Seraph | Adopted as City Projects. Its settler requests are City Affairs, and its settlers are the townsfolk | Big upgrades become group efforts that anyone can supply. |
 | Force an election when the mayor ignores events, and remove the city if nobody votes | Seraph | Adopted with a second chance: a recall election, then removal only after two empty recalls in a row and when almost no citizens still log in | Unused cities free up land, and one quiet week never costs a city. |
 | Fly to the city from any shuttle terminal, with faster flights as an upgrade | Varle | Adopted as Home Port; Starport levels shorten flights | Living in a city stops costing extra travel. |
-| A facility where citizens spend RP XP on benefits | Varle | Adopted as the Civic Exchange: material crates, research time, cosmetics, and a long buff. Faster training not adopted | Roleplay pays off inside the city. RP XP can already go straight into skills. |
+| A facility where citizens spend RP XP on benefits | Varle | Adopted as the Civic Exchange: material crates, cosmetics, and a long buff. Faster training not adopted | Roleplay pays off inside the city. RP XP can already go straight into skills. |
 | Invite a planet's mayors to planet-wide story events | Varle | Adopted as Planetary Councils, with a DM tool to summon them | Mayors get a seat in the wider story. |
 | Farming and garden plots in settlements | pastius | Adopted as Garden Plots, city only | Agriculture lists farming but has none today, and gardens give daily reasons to visit. |
 | Law Edicts are redundant because RP enforces laws | pastius | Agreed. The PvP Edicts are cut | PvP is rare, and law is better left to roleplay. |
 | Give houses a type with crafting or storage benefits, changeable about monthly | pastius | Adopted as House Specializations: Workshop, Storehouse, Greenhouse, changeable every 30 days | Houses get used even by players who don't live in them. |
 | Planet-specific benefits that make some land worth contesting | Varle | Changed: every planet gets the same Home Ground bonus, plus its own decor and signature recipes | Equal power keeps lore travel limits, like Jedi and Korriban, from locking anyone out. Planets still differ in look, content, and level range. |
-| Flesh out the Farming line of Agriculture | Zunath | Adopted: Crop Management I-V from the Bible plus Bountiful Harvest and Seed Saver, 26 crops in 5 tiers, seeds, and fertilizer | Agriculture lists farming, but the game has none today. |
+| Flesh out the Farming line of Agriculture | Zunath | Adopted: the Farmer line (Crop Management from the Bible, Bountiful Harvest, Seed Saver), 26 crops in 5 tiers, seeds, and fertilizer | Agriculture lists farming, but the game has none today. |
 | Let a city's Starport accept contraband, with a bust risk and lower prices for normal goods | pastius | Adopted as the Shadowport Edict, with lawful city ports buying contraband only at low prices and high risk | A trade stance becomes a campaign issue. Built on the space revamp's contraband and customs rules. |
 | A resource for cities to fight over, scheduled so nobody is raided offline | Varle, AsuraKing | Adopted as Contested Sites, then cut after the next player review | Most cities sit where an NPC power rules in lore, so routine fights over them would break the setting. Wild Space is the place to fight over resources. |
 | Hand off the mayor's duties while the mayor is away | Raen | Adopted as Acting Mayor for up to 30 days, plus a way to step down | A vacation should not cost a city its Edicts or trigger a recall. |
-| Raise animals for meat instead of hunting them (Agriculture thread) | Scorchys | Adopted as Livestock with Husbandry I-V. You talk to an animal to feed, collect, or butcher it, as Zunath proposed in the thread | Cooks get meat without mass hunting, and farmers get a use for their crops. |
+| Raise animals for meat instead of hunting them (Agriculture thread) | Scorchys | Adopted as Livestock, unlocked by the Farmer line's Crop Management ranks. You talk to an animal to feed, collect, or butcher it, as Zunath proposed in the thread | Cooks get meat without mass hunting, and farmers get a use for their crops. |
 | City resource buildings that rival cities can raid | Valo | Covered by the space revamp's holdings and Wild Space. Cities themselves are never raided | Raids on a settlement stay roleplay that DMs oversee. |
 | Active harvesting should stay the fastest source by an order of magnitude | Valo, Zunath | Adopted as a design rule for every passive source in this plan | Farming and crates supplement gathering instead of replacing it. |
 | NPC attacks on farms | Zunath | Adopted as City Affairs situations: pests in the gardens and predators at the corrals | An official chooses to fight, so attacks only happen while players are online. |
@@ -436,7 +428,7 @@ Cities fill with staff, stalls, and travelers whose stores sell items found nowh
 **Civic Exchange**
 
 - A store in the Cantina where citizens spend Available XP, the RP XP currency the Training Store uses, so roleplay pays off inside the city.
-- Stock: crates of random crafting materials, time off a research job running in the city's Labs, cosmetic unlocks such as container and weapon appearances, and a long buff about as strong as a top-tier food buff that does not stack with food. Crates are limited to 3 a week per CD key, each worth under 20 minutes of harvesting at its tier.
+- Stock: crates of random crafting materials, cosmetic unlocks such as container and weapon appearances, and a long buff about as strong as a top-tier food buff that does not stack with food. Crates are limited to 3 a week per CD key, each worth under 20 minutes of harvesting at its tier.
 - Higher Cantina levels unlock more of the stock.
 - Not included: spending RP XP to train a skill faster, because Available XP can already go straight into skills.
 
@@ -474,7 +466,7 @@ Houses get a job, cities get gardens, and big upgrades become group projects, so
 
 ## Farming (Agriculture)
 
-Farming completes the Agriculture skill. The Design Bible already lists a Farming line, Crop Management I-V, marked Not Started; this builds it out in full. Crops grow in city garden plots and livestock in city corrals, producing cooking ingredients, meat, and fiberplast that today come only from harvesting and hunting.
+Farming completes the Agriculture skill. The Design Bible already lists a Farming line, Crop Management I-V, marked Not Started; this builds it out as the Farmer line, 25 SP like every crafting line. Crops grow in city garden plots and livestock in city corrals, producing cooking ingredients, meat, and fiberplast that today come only from harvesting and hunting.
 
 **How it works**
 
@@ -491,14 +483,13 @@ Farming completes the Agriculture skill. The Design Bible already lists a Farmin
 
 **Perks**
 
-| Perk | SP per rank | Agriculture rank | Effect | Basis |
-| --- | --- | --- | --- | --- |
-| Crop Management I-V | 1, 1, 2, 2, 3 | 0, 10, 20, 30, 40 | Plant and maintain tier 1 to 5 crops | Design Bible, unchanged |
-| Bountiful Harvest I-III | 1, 2, 3 | 15, 30, 45 | Harvests yield 1, 2, or 3 more items | New; rank steps follow Treasure Hunter |
-| Seed Saver I-III | 1, 2, 2 | 10, 25, 40 | 10%, 20%, or 30% chance a harvest also returns its seed | New |
-| Husbandry I-V | 1, 1, 2, 2, 3 | 0, 10, 20, 30, 40 | Raise tier 1 to 5 livestock. Bountiful Harvest also adds to butchering | New; mirrors Crop Management |
+| Perk | Agriculture rank | SP | Effect |
+| --- | --- | --- | --- |
+| Crop Management I-V | 5, 15, 25, 35, 45 | 1, 2, 3, 3, 3 | Plant tier 1 to 5 crops and raise tier 1 to 5 livestock |
+| Bountiful Harvest I-III | 10, 30, 50 | 1, 3, 4 | Crop harvests and butchering yield 1, 2, or 3 more items |
+| Seed Saver I-II | 20, 40 | 2, 3 | 15% or 30% chance a harvest also returns its seed |
 
-The full line costs 29 SP. For comparison, Gathering's five lines cost 51 SP.
+These form the Farmer line. Like every crafting line (Chef, Angler, Builder, Researcher), it is 10 purchases at Agriculture 5, 10, 15 and so on to 50, costing 1, 1, 2, 2, 3, 3, 3, 3, 3 and 4 SP, for 25 SP in all. Each crop tier unlocks at its crop level: 5, 15, 25, 35 and 45.
 
 **Crops**
 
@@ -524,13 +515,13 @@ The full line costs 29 SP. For comparison, Gathering's five lines cost 51 SP.
 **Livestock**
 
 - A Corral is an outdoor city structure that holds 3 animals and counts against the city's structure limit. A city can have 2 corrals per city level, so 30 animals at most.
-- Each CD key can raise up to 6 animals. Young animals are sold by the traveling beast trader and can be resold on the market. Husbandry rank sets the highest tier you can raise.
+- Each CD key can raise up to 6 animals. Young animals are sold by the traveling beast trader and can be resold on the market. Crop Management rank sets the highest tier you can raise.
 - Talk to an animal to tend it, as the owner suggested in the feedback thread:
   - Feed: 2 crops of the animal's tier or lower, at most once every 20 hours. An animal unfed for 72 hours wanders off.
   - Grow: a young animal becomes an adult 72 hours after it is placed if it has been fed at least 3 times by then, or otherwise at its third feeding.
   - Collect: once every 20 hours from an adult fed in the last 24 hours: 1 manure for Fertilizer, plus 1 milk from Thune.
   - Butcher: adults only. Ends the animal and yields 4 of its meat plus Bountiful Harvest, and 1 of its second product where the table lists one.
-  - Crate: packs the animal into an item to move, sell, or trade. A crated animal is paused, with no hunger, growth, or products. Every timer and any penalty it carries resume where they stopped when it is placed again, so crating can't clear a penalty. It doesn't count toward the 6 while crated, since it produces nothing, and placing it needs the Husbandry tier and room under the 6.
+  - Crate: packs the animal into an item to move, sell, or trade. A crated animal is paused, with no hunger, growth, or products. Every timer and any penalty it carries resume where they stopped when it is placed again, so crating can't clear a penalty. It doesn't count toward the 6 while crated, since it produces nothing, and placing it needs the Crop Management tier and room under the 6.
 - Collecting and butchering give Agriculture XP by the same formula as crops.
 - An owner who can't reach their corral can collect from, butcher, or crate their animals from the City Hall clerk, and what that produces goes to their overflow store (/overflow). If the city is removed, its animals go to their owners' overflow stores, crated.
 
@@ -770,7 +761,7 @@ Every number in this plan is a proposal until approved. Edict effects and costs 
 | Woodlots | 3 days to grow, 4 logs; counts toward the 10-crop cap | Harvesting trees, 5 tiers |
 | Enzyme cultures | 2 days per enzyme, one vat per CD key; lowest brackets only, up to 3% primary and 2% secondary; a hunted starter per color; Agriculture recipe level 20 | Hunted enzymes roll up to 10% primary and 5% secondary |
 | Home Ground (Wild Space station) | +5% Asteroid Drill output; crops yield 1 more item per harvest | Space revamp drill: 150 ore a day, +50% to +70% with a droid |
-| Harvesting chance | Prospectors' Charter 10% and Home Ground 5%, each a separate roll for 1 more item | Might roll: 25 per modifier on a d100, certain at +4 |
+| Harvesting chance | Prospectors' Charter 10% and Home Ground 5%, each a separate roll for 1 more item | Crafting revamp: Prospecting and Quick Harvest yields, with no Might roll |
 | Breeders' Charter | A tenth of each stage's purity gain per raised stat, rounded down to 0.1%, after the stage cap | Stage cap 10% per stat; total cap 100% |
 | Civic Exchange crates | 3 a week per CD key, each worth under 20 minutes of harvesting | New |
 | Step-down acceptance and departure pass | 7 days each | New |
@@ -831,19 +822,19 @@ Every open question now has a decision for the player review. The rules behind t
 | Facility upgrades as City Projects | Yes: the same credit cost, plus donated materials and 2 days to build. Upgrades already bought are unaffected. |
 | Garden crops | Existing cooking ingredients and fiberplast only at launch. |
 | Civic Exchange stock and prices | Staff draft them, and players review them before release. |
-| Farming perks | Bountiful Harvest and Seed Saver join Crop Management I-V. |
+| Farming perks | The Farmer line: Crop Management I-V (crops and livestock), Bountiful Harvest I-III, and Seed Saver I-II, 25 SP on the crafting revamp's standard schedule. |
 | Tier 3 to 5 seeds | Only from rare node drops, the traveling prospector, and Seed Saver, which keeps high-tier farming within the passive cap. |
 | Planet bonuses | Equal everywhere. Planets differ in decor, recipes, content, and level range. |
 | Contested Sites | Cut. Cities are not fought over: taking a settlement stays roleplay that DMs oversee, and Wild Space is where PvP over resources happens. |
 | Contraband without Shadowport | City ports buy it at low prices with a high bust chance. |
 | Acting Mayor powers | Caretaker powers: City Affairs, taxes, upkeep, projects, and filling empty Edict slots. No treasury withdrawals, repeals, appointments, or granting permissions. |
-| Livestock | Livestock and Husbandry I-V join the Farming line, for 29 SP in total. |
+| Livestock | Livestock join the Farmer line; Crop Management ranks also unlock animal tiers. |
 | Passive output cap | Everything one CD key gets passively in a day stays under one measured harvest hour at the same tier. Holdings and station drills follow the space revamp's own budget. |
 | Enzyme cultures | Breeders pick type and color from colors they have found, rolling only the lowest purity brackets. |
 | Woodlots | Grow the five harvesting wood tiers on a 3-day cycle. |
 | Breeding and crop bonuses | Breeders' Charter adds a tenth of each stage's purity gain, and Greenhouse and Home Ground add crop yield. None of them shortens a timer that most players only check once a day. |
 | Ambient NPCs | Townsfolk and critters each have their own mayor switch. |
-| Harvesting bonuses | Separate rolls for 1 more item, since the Might roll is already certain for skilled gatherers. The Might roll is unchanged. |
+| Harvesting bonuses | Separate rolls for 1 more item at the end of a Prospecting session or Quick Harvest, since the crafting revamp removes the Might roll. |
 | Who gets Edict bonuses | Citizens in good standing get every citizen Edict, Breeders' Charter included. Access Edicts follow the order under Edict catalog. |
 | City Affairs consequences | Nothing permanent. Gains are capped at 20,000 a week and can't be withdrawn. |
 | Spawn zones | Only buildings and working structures count, and the Settled zone stays under about a fifth of any area. A city is not a safe zone. |
@@ -873,6 +864,16 @@ Every open question now has a decision for the player review. The rules behind t
   - Craft XP: `CraftMinigameXp` (base XP and scaling) and the `CraftSessionLifecycle` settlement. Artisans' Charter adds its points there, so every craft path gets them.
   - Craftsmanship and Control: `Stat.CalculateCraftsmanship` and `Stat.CalculateControl`, which each minigame view model calls when it builds its setup at session open. The Workshop bonus is read there, so it is captured at open.
   - Agriculture: crafting owns the Chef (904-912) and Angler (913-918) perks. New cooking ingredients (crops, meat, milk) need `KitchenComponentTable` flavor rows. New cooking recipes need Kitchen parameters from `tools/SWLOR.RecipeParameters`, then `tools/UpdateRecipeParameterBible.py`.
+- Findings from the hook audit (2026-11-02, against space d690216 and crafting 563e035):
+  - Harvesting: the extra items go into `HarvestDelivery`, through `NwnProspectingWorld.ReservePayout` (Prospecting board and Quick Harvest, from `ProspectingLifecycle`). Gathering XP is `delivery.Items x XpPerItem`, so the extra items must be left out of XP. Re-run the CraftSim gathering gates.
+  - Artisans' Charter: craft XP is stored as an integer per skill (`Player.PendingCraftXp`) and paid later with no city attached. Record the city on the session at start (`CraftSessionRecord`, from `Property.GetCityIdForArea`) and scale the XP at settlement (`CraftSessionLifecycle.PacedBaseXp`/`CraftOutcomeRules.CalculateXp`). The Workshop bonus also needs a field on `CraftSessionRecord`, because sessions persist across logout.
+  - Farming line: the Bible's Agriculture tab already has Farming rows 9-13 (Crop Management I-V), the Chef line from row 16 and the Angler line from row 29. `tools/UpdateAgriculturePerkBible.py` hard-codes those rows, and `AgriculturePerkBibleTests` pins line totals {9, 25, 25}. The crafting plan reserves a third Agriculture line at 25 SP; settle Farming's SP against that parity in workstream 5.
+  - New Agriculture recipes (Fertilizer, cultures, dishes) use the Kitchen parameter profile, and Garden Plot uses Fabricator's. Each needs generated parameters and coverage (`KitchenParameterCoverageTests`).
+  - Civic Exchange: the crafting plan allows only the experiment's capped Analyze cut to shorten research, so the Civic Exchange sells no research time.
+  - Home Port: `ShuttleStop` treats a stop with a station id as a station, and `ShuttleRouteRules` rejects same-planet and station-to-station routes. Planet-city Starports need a new stop kind.
+  - Treasury: `Treasury +=` is written directly at Shuttle (transport tax), `TradeCity.PayTariff`, `StationBuildings` (Shipyard fee) and `ManageCitizenshipViewModel`. Route each through the restricted-funds and escrow rules.
+  - Industrial Charter: `HoldingRules.Advance(holding, detail, now, random)` has no owner or city input, and the setback roll uses the `HoldingTuning.SetbackChance` constant. Adding the halving needs a parameter there, agreed with Space.
+  - Stations run the same election and upkeep code, so Edicts reach stations unless the code branches on `Station.IsStation`.
 - Space revamp interactions:
   - Farmhands reuse `StationDroidReceipt` and `SettleDroidMoves`.
   - City deletion and Starport pickup go through `StarshipDockReturn.ReturnToSafeDock` (#3058).
@@ -906,11 +907,11 @@ Every Edict except Industrial Charter changes one calculation that exists today.
 | Festival Season | `RoleplayXP` award: adds `BaseXP` x 0.10 beside the Cantina's `BaseXP` x 0.05 per level |
 | Alliance, Embargo, Open Gates | One `CanUseCityFacility(player, city)` helper applying the Plan's access order, called from `Bank` and `StarportLayoutDefinition` entry, plus a 7-day departure pass for a docked ship or a Home Port arrival; transportation tax in `StarportFlightsDialog` and `Shuttle` |
 | Guild Charter | `Guild.CalculateGPReward` and the guild reward in `Quest` |
-| Prospectors' Charter | Two independent rolls after the Might roll in `HarvesterItemDefinition`: d100 <= 10 for Prospectors' Charter, then a separate d100 <= 5 for Home Ground. Each success creates 1 more item from the node's loot table without using up the node, so a harvest gains 0, 1, or 2. The Might roll (d100 <= 25 x Might modifier, line 119) is unchanged. Planet from `Planet.GetPlanetType` |
+| Prospectors' Charter | Two independent rolls when a Prospecting session (`ProspectingLifecycle`) or Quick Harvest (`ProspectingQuickHarvest`) finishes: d100 <= 10 for Prospectors' Charter, then a separate d100 <= 5 for Home Ground. Each success adds 1 more item of the node's yield, so a harvest gains 0, 1, or 2. Planet from `Planet.GetPlanetType` |
 | Drydock Subsidy | `ShipManagementViewModel.CalculateRepairBill`, inside the 90% cap |
 | Hunting Grounds | `CombatPoint` XP awards only: +10 added to the `bonusPercentage` that `Skill.GiveSkillXP` already sums (Social, status, DM bonus), passed for that award. Planet from `Planet.GetPlanetType` |
 | Artisans' Charter | `CraftViewModel` crafting XP: +10 to the same `bonusPercentage`; city from the crafting device's area |
-| Breeders' Charter | `IncubatorViewModel``.StartJob`: for each purity stat except `MutationChance` and `XPPenalty`, add min(stage gain, `MaxStageIncrease`) / 10 (integer, 0.1% units) after the stage cap and before the `MaxStat` clamp. Read when the stage starts, for the citizen starting it. Confirm `BeastResistanceCalculator.CreateResistancePurities` keeps the resistance bonus |
+| Breeders' Charter | `IncubatorViewModel.StartJob`: for each purity stat except `MutationChance` and `XPPenalty`, add min(stage gain, `MaxStageIncrease`) / 10 (integer, 0.1% units) after the stage cap and before the `MaxStat` clamp. Read when the stage starts, for the citizen starting it. Confirm `BeastResistanceCalculator.CreateResistancePurities` keeps the resistance bonus |
 | Industrial Charter | The setback roll in `HoldingRules.Advance` (space revamp): half the setback chance and half the repair goods for a citizen's holding on the city's planet. `Advance` settles a holding lazily over elapsed days, so call it up to the moment the owner's citizenship or the Edict changes; each interval then uses the state that held during it |
 | Shadowport | Contraband pricing and customs bust rolls in the space revamp's Trade Exchange (W7), read from the city's active Edicts |
 
@@ -966,7 +967,7 @@ Staff and stores live in the building layout templates, and outdoor NPCs anchor 
 - **Market stalls:** a new City-only structure with a vendor spawn point. The stock theme is stored on the structure's record.
 - **Ambient townsfolk:** spawned when the city area loads, counted by city level, walking between building entrances taken from `WorldProperty.Positions`. All townsfolk are plot (unkillable). The two mayor switches are stored on the city as TownsfolkHidden and CrittersHidden, false by default so existing cities need no migration. Hiding a group despawns it from the loaded area and stops it spawning.
 - **Travelers:** `TravelerType` enum and definitions, a Traveler's Lodge structure, and a weekly rotation in `ProcessCities` with each traveler's host and history stored. The traveler spawns at the lodge when the host city loads, or at a fixed hub waypoint when no city qualifies.
-- **Spawn buffer:** `Spawn``Spacing.PickSpacedPosition` returns its best candidate even when every candidate breaks the spacing, so it can't enforce exclusion. Add `SpawnExclusion.TryPickLegalPosition(area, nextCandidate, attempts, out position)`, which draws candidates, keeps only those outside the zones (15 m from a qualifying structure: city buildings, houses, Market Stall, Corral, Dueling Ring, Traveler's Lodge; or inside the Settled radius, min(10 m x level, the area's shorter side / 4)), applies the existing spacing among them, and returns false when none qualify. Both branches of `Spawn` (serialized objects at line 890 and spawn tables at 909) call it for random locations and skip the spawn on false. For fixed positions inside a zone, both branches read a new `IsQuestCritical` flag on the spawn detail, loaded from a `QUEST_CRITICAL` local on the spawn source: quest-critical spawns take the nearest walkable spot outside the zones within 40 m, checked the same way, or else their original point; others are skipped. Area sizes checked: 21 of the 29 `IS_BUILDABLE` areas are 32 x 32 tiles, one is 24 x 24, and seven are 9 to 16 tiles on their shorter side.
+- **Spawn buffer:** `SpawnSpacing.PickSpacedPosition` returns its best candidate even when every candidate breaks the spacing, so it can't enforce exclusion. Add `SpawnExclusion.TryPickLegalPosition(area, nextCandidate, attempts, out position)`, which draws candidates, keeps only those outside the zones (15 m from a qualifying structure: city buildings, houses, Market Stall, Corral, Dueling Ring, Traveler's Lodge; or inside the Settled radius, min(10 m x level, the area's shorter side / 4)), applies the existing spacing among them, and returns false when none qualify. Both branches of `Spawn` (serialized objects at line 890 and spawn tables at 909) call it for random locations and skip the spawn on false. For fixed positions inside a zone, both branches read a new `IsQuestCritical` flag on the spawn detail, loaded from a `QUEST_CRITICAL` local on the spawn source: quest-critical spawns take the nearest walkable spot outside the zones within 40 m, checked the same way, or else their original point; others are skipped. Area sizes checked: 21 of the 29 `IS_BUILDABLE` areas are 32 x 32 tiles, one is 24 x 24, and seven are 9 to 16 tiles on their shorter side.
 
 ### Conflict
 
@@ -974,7 +975,7 @@ No combat formula changes. Duels and bounties hook the existing death and subdua
 
 - **Dueling Ring:** a new City-only structure with a ring terminal and a trigger radius. Duel state (challenger, target, ring, state, `ProtectedUntil`) lives in memory, so a restart voids it. Order on every damage event to a duelist, before `Death` runs: if the source (or its master, or the creator of a damaging effect) is not a duelist, mark the duel Interrupted and set `ProtectedUntil` to now + 6 s for both duelists, then let the damage land. `Death` takes the subdual path while the duel is Active or `ProtectedUntil` is in the future, so the voiding blow still subdues. A duelist's pets and effects they applied during the duel count as duel damage. Both falling in the same death pass is a draw with both subdued. A disconnect or leaving the radius forfeits. The result goes to the Gazette.
 - **Tournaments:** `CityTournament` entity (city, ring, schedule, entry fee, entrants, match results, interruption count per match, and barred players). Fees and the prize sit in `Escrow`. A no-show forfeits after 5 minutes, a restart replays the current match, an interrupter is barred from the ring until the tournament ends, and a third interruption hands the match to the running official. Cancellation refunds fees to entrants and the prize to its balance. On city deletion, fees become pending credits paid at each entrant's next login. All players get a login notice while sign-ups are open.
-- **City bounties:** `CityBounty` entity (city, target identity as player id plus disguise id or none, reward in `Escrow`, poster, expiry). Requested and effective state are separate: `PlayerList.``S``etFlag` and `Disguise.Activate`/`Deactivate` change immediately today, so during a PvP combat window (`PvPCombatUntilUtc` on the player, set to now + 60 s on any PvP damage dealt or taken) a PvP flag-off or identity change is queued and applied when the window ends. A claim checks the identity shown at the defeat: it pays if that identity's flag is on, or the window is open. Consent: a `BountyNoticeAcceptedUtc` on the player and on each disguise, unset for everyone at launch, so identities flagged before launch can't be targeted until accepted. Weekly claim limit per identity. Claims run in `Death` on a defeat or subdual, credit a pet's or droid's master and a damaging effect's creator, and reject a killer who shares the target's CD key or party.
+- **City bounties:** `CityBounty` entity (city, target identity as player id plus disguise id or none, reward in `Escrow`, poster, expiry). Requested and effective state are separate: `PlayerList.SetFlag` and `Disguise.Activate`/`Deactivate` change immediately today, so during a PvP combat window (`PvPCombatUntilUtc` on the player, set to now + 60 s on any PvP damage dealt or taken) a PvP flag-off or identity change is queued and applied when the window ends. A claim checks the identity shown at the defeat: it pays if that identity's flag is on, or the window is open. Consent: a `BountyNoticeAcceptedUtc` on the player and on each disguise, unset for everyone at launch, so identities flagged before launch can't be targeted until accepted. Weekly claim limit per identity. Claims run in `Death` on a defeat or subdual, credit a pet's or droid's master and a damaging effect's creator, and reject a killer who shares the target's CD key or party.
 
 ### Homes, travel, and planets
 
@@ -982,7 +983,7 @@ Each piece reuses an existing system where one exists. Garden plots are the only
 
 - **Neglect and recall:** `NeglectCount` resets on any decision; at 5, open a Recall election unless one is open. An empty recall (no candidates, no votes, or every candidate gone) sets `RecallStage` and opens the second. An empty second recall sets `IsQueuedForDeletion`, the same path as failed upkeep, when fewer than 5 citizens logged in during its last 14 days; otherwise it clears the Abandoned mark and sets `NeglectSinceUtc`, which pauses every Edict and stops situation drawing until an election with a candidate and a vote ends.
 - **Home Port:** add city Starports as shuttle destinations. `StarportFlightsDialog` and `Shuttle.TryPurchaseTicket` route between `PlanetType` values today. The space revamp's station work adds `ShuttleStop`, `ShuttleRoute`, and `ShuttleRide.DestinationStationId`; extend those to planet-city Starports instead of building new routing. Fare and tax are the terminal's existing ones to that planet; eligibility needs the CZ-220 pass and no taxes owed. Flight time comes from `GalaxyMap` (300 s interplanetary) minus 30 s per effective Starport level, once per trip on the interplanetary leg.
-- **Civic Exchange:** a city mode of `TrainingStoreViewModel`, paid from `UnallocatedXP`. Research time comes off the job's `DateCompleted` (set in `ResearchViewModel`). The buff is a status effect that replaces food buffs and is replaced by them.
+- **Civic Exchange:** a city mode of `TrainingStoreViewModel`, paid from `UnallocatedXP`. The buff is a status effect that replaces food buffs and is replaced by them.
 - **House specializations:** the type, chosen skill, last change date, and applied Storehouse bonus live on the house's `WorldProperty`, so the timer survives a change of owner. Storehouse multiplies only the layout's base capacity: switching to it adds 0.5 x the layout's `ItemStorageLimit` to `ItemStorageCount` and records that amount, and leaving it subtracts the recorded amount. Furniture contributions, which placement adds and retrieval subtracts today (`Property.cs:2705`), are never touched, so they survive switches, placement, retrieval, and reload. Deposits are refused while over the limit. Greenhouse allows 10 plots; leaving it lets planted crops finish and refuses new plantings above 5. Workshop: `CraftViewModel` captures the house's Workshop bonus when the craft session opens and adds that captured value each time it recalculates Craftsmanship and Control (`CraftViewModel.cs:1359`, `1374`), so a mid-craft type change doesn't affect it.
 - **Garden plots:** see Farming below.
 - **City Projects:** a `CityProject` entity (city, project type, credit cost held in `Escrow` with its restricted and unrestricted portions, required and donated materials, donors, completion date). Manage City's upgrade buttons start a project instead of upgrading at once, donations are taken only up to the remaining need, and completion applies at server start. Cancelling returns each credit portion to its balance and sends donated materials to each donor's overflow store.
@@ -994,15 +995,15 @@ Each piece reuses an existing system where one exists. Garden plots are the only
 
 Farming follows fishing and harvesting: data-driven definitions, a level-difference XP formula, and perk-gated tiers.
 
-- **Perks:** a new Agriculture perk definition with Crop Management I-V (Bible rows exist, Dev Status Not Started), Bountiful Harvest I-III, and Seed Saver I-III, using new `PerkType` values. Each perk needs an icon or ships inactive (`PassivePerkIconTests`). Agriculture is out of scope for `CombatUpgradeBibleSyncTests`, but its Bible rows are still updated.
+- **Perks:** a new Agriculture perk definition for the Farmer line: Crop Management I-V (gates crop and livestock tiers), Bountiful Harvest I-III, and Seed Saver I-II, on the crafting revamp's standard schedule (10 purchases, 25 SP, `CraftingRevampPlan.md` lines 500-501), using `PerkType` values in City's range. Each perk needs an icon or ships inactive (`PassivePerkIconTests`). Agriculture is out of scope for `CombatUpgradeBibleSyncTests`, but its Bible rows are still updated.
 - **Data:** a `CropType` enum and `CropDefinition` builder list (tier, crop level, grow time, seed resref, harvest resref), and a `GardenPlot` entity (plot structure id, planter id and CD key, crop, planted time, tend-ready time, tended, fertilized, ripe time, wither time, `LastProcessedUtc`).
 - **Farming service:** Plant, Tend, Harvest, and Clear with the Crop Management tier gate, the 10-crop cap per CD key (the planter's CD key is stored on the plot), wither 72 hours after ripening (checked on use and at server start), yields, Seed Saver rolls, and Agriculture XP per item from `Skill.GetDeltaXP(cropLevel - rank)`, as `Fishing` and `HarvesterItemDefinition` do.
 - **Garden Plot structure:** restricted to City and House, with growth-stage appearances taken from existing placeables first. A Garden Plot window shows the crop, stage, time left, and the four actions.
 - **Permission:** a `TendGardens` permission on the House and City lists. The server migration adds the key to existing permission records, true for owners and mayors, as it does for `ManageEdicts`.
 - **Items and recipes:** 26 seed items with icons per `Readmes/IconStandards.md`. Seed drops are added to `HERBS_n`, `VEGETABLES_PATCH_n`, and `SCAVENGING_BUSH_n` in `HarvestingLootTableDefinition`, and tier 1-2 seeds to city store blueprints. Fertilizer I-V are Agriculture recipes in a new Fertilizer category, and Garden Plot is a Fabrication recipe; both need Bible recipe rows (`CombatUpgradeBibleRecipeParityTests`).
-- **Bible:** on the Agriculture tab, update the Crop Management rows, add Bountiful Harvest and Seed Saver, and add a crop table (tier, level, grow time, seed, harvest) like the Fishing tab's fish table.
+- **Bible:** on the Agriculture tab, replace the Farming rows with the Farmer line, updating `tools/UpdateAgriculturePerkBible.py` and `AgriculturePerkBibleTests` (line totals {25, 25, 25}), and add a crop table (tier, level, grow time, seed, harvest) like the Fishing tab's fish table.
 - **Tests:** filter `FullyQualifiedName~Farming` for the farming service and crop definitions.
-- **Livestock:** a `LivestockType` enum and definitions (tier, source creature, products, butcher yield), a `Livestock` entity (owner, owner CD key, corral id, species, `PlacedUtc`, feedings, `L``ast``FedUtc`, `L``ast``C``ollected``Utc`, `NoProductsUntilUtc` for the predator penalty, `LastProcessedUtc`), a Corral structure restricted to City and capped at 2 per city level, and young-animal items sold by the beast trader. An animal is an adult once 72 hours have passed since placement and it has 3 feedings. Six placed animals per CD key. Crating writes every timer and penalty to the item as remaining durations and restores them on placement. The Feed, Collect, Butcher, and Crate menu is a conversation on the animal, per `Readmes/Conversations.md`. Husbandry I-V joins the Agriculture perk definition. Manure is a new item and an alternative Fertilizer component. Meat and milk are the existing items.
+- **Livestock:** a `LivestockType` enum and definitions (tier, source creature, products, butcher yield), a `Livestock` entity (owner, owner CD key, corral id, species, `PlacedUtc`, feedings, `LastFedUtc`, `LastCollectedUtc`, `NoProductsUntilUtc` for the predator penalty, `LastProcessedUtc`), a Corral structure restricted to City and capped at 2 per city level, and young-animal items sold by the beast trader. An animal is an adult once 72 hours have passed since placement and it has 3 feedings. Six placed animals per CD key. Crating writes every timer and penalty to the item as remaining durations and restores them on placement. The Feed, Collect, Butcher, and Crate menu is a conversation on the animal, per `Readmes/Conversations.md`. Crop Management ranks gate animal tiers. Manure is a new item and an alternative Fertilizer component. Meat and milk are the existing items.
 - **Farmhands:** a droid assignment on one of its owner's houses or corrals with a 20-item feed hopper, a 20-item output hopper, and `LastProcessedUtc`. Processing runs at server start, on area entry, and before any owner action, and replays time from `LastProcessedUtc` to now: list every due event in that span (crop tend-ready, ripe, and wither times; each animal's next feed time while feed lasts, maturity, collection, and wander-off at last meal + 72 h), sort by time, and apply them in order against the hopper state, so feed runs out, hunger starts, and collection stops at the right moments. Then set `LastProcessedUtc` to now. Replaying an empty span does nothing, so repeated entry neither accelerates production nor repeats an action. Reuse the space revamp's droid-staff assignment if it lands first.
 - **Farm situations:** Pests in the Gardens and Predators at the Corrals as `SituationDefinition` entries. The predator choice spawns an NPC wave at the city's corrals for 30 minutes, with the animals plot while it runs. Ignored or lost, each animal in the city gets `NoProductsUntilUtc` = now + 72 h, which crating preserves; pests take 1 from city harvests for 72 hours, never below 1.
 - **Passive output budget:** measure a harvest hour per tier from harvest logs (store value gathered per hour by characters with full Gathering perks) and compare it with the Plan's sustained daily averages per CD key, measured over 7 days: crops 100 to 200 items, livestock 14 meat (72-hour raising) or 7.2 collections a day (20-hour interval), 0.5 enzymes, 0.43 crates. Record the comparison in the balance evidence. Lower the base crop yield first, then the crop cap, if a figure is over.
@@ -1013,7 +1014,7 @@ Farming follows fishing and harvesting: data-driven definitions, a level-differe
 
 A station is `PropertyType.City` with the Station layout, so most of this plan reaches stations through the city code paths with no extra work. Branch on `Station.IsStation` only where the plan differs.
 
-- **Source:** `SWLOR.Game.Server/Readmes/SpaceRevampPlan.md` on `feature/space-revamp` (commit f67f512), sections 13 (trade, customs, tariffs), 25 (stations), 26 (holdings), and 27 (droids). Already in the space revamp, not new work here: `S``tation``Buildings.OnDeleted` returns an assigned droid to its owner through `OverflowStorage`, and the W11o holdings update sells holdings at city and station Starports, collects and delivers there, and moves a holding to its exchange's NPC dock when its Starport is gone. New here: moving an existing NPC-dock holding to the city Starport (the Depot), Embargo and Alliance feeding the Jump Beacon and Shipyard access lists, and the same droid return for farmhands.
+- **Source:** `SWLOR.Game.Server/Readmes/SpaceRevampPlan.md` on `feature/space-revamp` (commit f67f512), sections 13 (trade, customs, tariffs), 25 (stations), 26 (holdings), and 27 (droids). Already in the space revamp, not new work here: `StationBuildings.OnDeleted` returns an assigned droid to its owner through `OverflowStorage`, and the W11o holdings update sells holdings at city and station Starports, collects and delivers there, and moves a holding to its exchange's NPC dock when its Starport is gone. New here: moving an existing NPC-dock holding to the city Starport (the Depot), Embargo and Alliance feeding the Jump Beacon and Shipyard access lists, and the same droid return for farmhands.
 - **Wild Space:** read it from the station's anchor (`StationRules`). Hide planet-based Edicts there, refuse Corral and Woodlot, and map planetary councils through `StationRules.GetExchange` (Vesh Pulsar to Dathomir, every other system to Hutlar). The Jump Beacon is already refused there.
 - **Deck placement:** new structures obey the `StationDeckRules` slot clearance. Corral and Woodlot refuse placement on a deck in their placement check.
 - **Interiors:** staff spawn in the shared building interiors. The Medical Center interior keeps its station-only registration terminal.

@@ -26,6 +26,21 @@ namespace SWLOR.Game.Server.Service
                 .FirstOrDefault();
         }
 
+        /// <summary>Deletes every election record of a city that is being deleted.</summary>
+        public static void DeleteCityElections(string cityId)
+        {
+            if (string.IsNullOrWhiteSpace(cityId))
+                return;
+
+            foreach (var election in DB.Search(new DBQuery<Election>()
+                         .AddFieldSearch(nameof(Election.PropertyId), cityId, false))
+                     .ToList())
+            {
+                DB.Delete<Election>(election.Id);
+                Log.Write(LogGroup.Property, $"Deleted election '{election.Id}' of deleted city '{cityId}'.");
+            }
+        }
+
         /// <summary>Whether the character may vote in the election: a citizen since registration opened or earlier.</summary>
         public static bool IsEligibleVoter(Player dbPlayer, Election election)
         {

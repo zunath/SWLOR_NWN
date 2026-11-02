@@ -2253,7 +2253,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (property.PropertyType == PropertyType.City)
+            {
                 CityGazette.DeleteAll(property.Id);
+                ElectionBallot.DeleteCityElections(property.Id);
+            }
 
             _propertyInstances.Remove(property.Id);
             _propertyLoadStates.Remove(property.Id);

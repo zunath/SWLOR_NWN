@@ -10,10 +10,11 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class ArkanianEquipmentTests
 {
-    [TestCase("bp_arkhelm", RecipeType.ArkanianDragonHelm, "ark_helm", 10)]
-    [TestCase("bp_arkward", RecipeType.ArkanianDragonWardRing, "ark_ward_ring", 5)]
-    [TestCase("bp_arkforce", RecipeType.ArkanianDragonForceRing, "ark_force_ring", 5)]
-    public void DragonLoot_TeachesCraftableEquipment(string book, RecipeType id, string resref, int scales)
+    [TestCase("bp_arkhelm", RecipeType.ArkanianDragonHelm, "ark_helm", 10, 1)]
+    [TestCase("bp_arkward", RecipeType.ArkanianDragonWardRing, "ark_ward_ring", 5, 1)]
+    [TestCase("bp_arkforce", RecipeType.ArkanianDragonForceRing, "ark_force_ring", 5, 1)]
+    [TestCase("recipe_arkarmor", RecipeType.ArkanianDragonArmor, "ark_armor", 20, 3)]
+    public void DragonLoot_TeachesCraftableEquipment(string book, RecipeType id, string resref, int scales, int trophies)
     {
         var loot = new NarShaddaaLootTableDefinition().BuildLootTables()["NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES"];
         loot.IsRare.Should().BeTrue();
@@ -29,6 +30,7 @@ public class ArkanianEquipmentTests
         locals.Should().NotContainKey("NO_ECONOMY", "these books are obtainable player rewards");
 
         var recipes = new HeadRecipes().BuildRecipes().Concat(new RingRecipes().BuildRecipes())
+            .Concat(new ArmorRecipes().BuildRecipes())
             .ToDictionary(pair => pair.Key, pair => pair.Value);
         var recipe = recipes[id];
         recipe.Resref.Should().Be(resref);
@@ -36,7 +38,7 @@ public class ArkanianEquipmentTests
         recipe.Level.Should().Be(52);
         recipe.Requirements.Should().ContainSingle(r => r is RecipeUnlockRequirement);
         recipe.Components["ark_drg_scales"].Should().Be(scales);
-        recipe.Components["ark_dragon_troph"].Should().Be(1);
+        recipe.Components["ark_dragon_troph"].Should().Be(trophies);
         recipe.EnhancementType.Should().Be(RecipeEnhancementType.Armor);
         recipe.EnhancementSlots.Should().Be(2);
         foreach (var component in recipe.Components.Keys)

@@ -3088,6 +3088,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         HoloStarGlobe = 5024,
         // END space decor
+
+        // City structures for duels and tournaments
+        [Structure("Dueling Ring",
+            "swlor_0049",
+            "A referee's console beside a marked ring. One player challenges another inside the ring, and while the duel lasts, a blow that would kill a duelist subdues them instead.",
+            true,
+            0,
+            PropertyType.City)]
+        DuelingRing = 5101,
     }
 
     public class StructureAttribute : Attribute

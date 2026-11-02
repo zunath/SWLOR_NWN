@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.HouseSpecializationService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -11,8 +12,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
 /// The garden part of the Player City Revamp server migration (<see cref="_32_PlayerCityRevamp"/>): adds the Tend Gardens
-/// permission to every existing House and City permission record, true for the property's owner (a house's owner, a city's
-/// mayor) and false for everyone else. Permission checks index the dictionary directly, so a record without the key would
+/// permission to every existing House and City permission record, true for a city's mayor and for a house's keeper (the player
+/// who holds its Edit Structures permission with the right to grant it, as the player who placed it does) and its owner of
+/// record, and false for everyone else. A house in a city is owned by the mayor at the time, whoever placed it, so the owner
+/// field alone would leave the player who placed the house unable to garden in it or let anyone else. Permission checks index the dictionary directly, so a record without the key would
 /// throw. A record that already has the key is left alone, so running the migration again changes nothing.
 /// </summary>
 public static class GardenPermissionMigration
@@ -21,10 +24,12 @@ public static class GardenPermissionMigration
     /// Gives a permission record the Tend Gardens permission and its grant right if it lacks them. Returns true if it changed.
     /// </summary>
     /// <param name="permission">The record, for one player on one House or City.</param>
-    /// <param name="ownerPlayerId">The property's owner: the house's owner or the city's mayor.</param>
-    public static bool Migrate(WorldPropertyPermission permission, string ownerPlayerId)
+    /// <param name="ownerPlayerId">The property's owner of record: the house's owner or the city's mayor.</param>
+    /// <param name="keepersHoldIt">True for a house, whose keeper holds the permission too.</param>
+    public static bool Migrate(WorldPropertyPermission permission, string ownerPlayerId, bool keepersHoldIt = false)
     {
-        var holdsIt = !string.IsNullOrWhiteSpace(ownerPlayerId) && permission.PlayerId == ownerPlayerId;
+        var holdsIt = !string.IsNullOrWhiteSpace(ownerPlayerId) && permission.PlayerId == ownerPlayerId ||
+                      keepersHoldIt && HouseSpecializationRules.IsKeeper(permission);
         var changed = false;
 
         if (!permission.Permissions.ContainsKey(PropertyPermissionType.TendGardens))
@@ -68,7 +73,7 @@ public static class GardenPermissionMigration
             {
                 foreach (var permission in DB.Search(permissionQuery.AddPaging(permissionCount, 0)).ToList())
                 {
-                    if (!Migrate(permission, property.OwnerPlayerId))
+                    if (!Migrate(permission, property.OwnerPlayerId, property.PropertyType == PropertyType.House))
                         continue;
 
                     DB.Set(permission);

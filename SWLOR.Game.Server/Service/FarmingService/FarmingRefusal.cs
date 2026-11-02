@@ -59,13 +59,16 @@ namespace SWLOR.Game.Server.Service.FarmingService
         /// <summary>Fertilizer does nothing for a sapling, so a sapling planted with it is refused and the fertilizer is not used.</summary>
         NoFertilizerOnSaplings = 18,
 
+        /// <summary>The house lost its Greenhouse and this plot is past the first 5, so it cannot be planted again.</summary>
+        PlotAboveLimit = 19,
+
         /// <summary>The item offered as fertilizer is not a fertilizer.</summary>
-        NotFertilizer = 19,
+        NotFertilizer = 20,
 
         /// <summary>The planter carries none of the fertilizer offered.</summary>
-        NoFertilizer = 20,
+        NoFertilizer = 21,
 
         /// <summary>The fertilizer is of a lower tier than the crop, so it would do nothing and is not used.</summary>
-        FertilizerTooWeak = 21,
+        FertilizerTooWeak = 22,
     }
 }

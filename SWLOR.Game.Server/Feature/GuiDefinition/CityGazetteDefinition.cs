@@ -56,6 +56,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             content.AddRow(line =>
                             {
+                                line.AddSpacer();
+                                line.AddButton()
+                                    .SetText("City Projects")
+                                    .SetWidth(150f)
+                                    .BindOnClicked(model => model.OpenCityProjects());
+                            });
+
+                            content.AddRow(line =>
+                            {
                                 line.AddLabel()
                                     .BindText(model => model.EmptyText)
                                     .BindIsVisible(model => model.IsEmpty)

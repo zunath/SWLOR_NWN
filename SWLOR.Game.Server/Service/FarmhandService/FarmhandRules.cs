@@ -98,6 +98,15 @@ namespace SWLOR.Game.Server.Service.FarmhandService
 
         // Checks
 
+        /// <summary>
+        /// Whether a character may put a droid to work at a house: they keep it, which is what the player who placed a house holds
+        /// (<see cref="HouseSpecializationService.HouseSpecializationRules.IsKeeper"/>). A house in a city is owned by the mayor at the
+        /// time whoever placed it, so the house's owner field is not who "their own house" means.
+        /// </summary>
+        /// <param name="record">The character's permission record on the house, or null when they have none.</param>
+        public static bool HasHouseAccess(WorldPropertyPermission record) =>
+            HouseSpecializationService.HouseSpecializationRules.IsKeeper(record);
+
         /// <summary>Why a character cannot assign a droid, or <see cref="FarmhandRefusal.None"/>. Checked in this order.</summary>
         public static FarmhandRefusal CheckAssign(bool isPlayer, bool targetExists, bool hasAccess, bool alreadyAssigned, bool droidAvailable)
         {

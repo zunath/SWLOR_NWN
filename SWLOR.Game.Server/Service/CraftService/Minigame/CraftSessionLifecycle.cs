@@ -107,7 +107,8 @@ public sealed class CraftSessionLifecycle
             Enhancements = enhancements,
             StationFee = stationFee?.Fee ?? 0,
             StationFeePropertyId = stationFee?.PropertyId,
-            CityId = _world.GetStationCityId(player)
+            CityId = _world.GetStationCityId(player),
+            WorkshopBonus = _world.GetWorkshopBonus(player, recipe.Skill)
         };
         _world.SaveRecord(dbPlayer);
         _world.PersistCharacter(player);

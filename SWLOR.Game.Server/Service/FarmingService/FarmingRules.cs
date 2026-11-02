@@ -296,6 +296,7 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 FarmingRefusal.OutdoorPlotOnly => "A sapling needs an outdoor garden plot in a city, not one inside a house.",
                 FarmingRefusal.NoOpenGroundOnStation => "A station deck has no open ground for a sapling.",
                 FarmingRefusal.NoFertilizerOnSaplings => "Fertilizer does nothing for a sapling, since its harvest is always 4 logs. Plant it without fertilizer; yours was not used.",
+                FarmingRefusal.PlotAboveLimit => $"This house is no longer a Greenhouse, so it plants only its first {HousePlotLimit} plots. This one can be harvested, not replanted.",
                 FarmingRefusal.NotFertilizer => "That is not a fertilizer.",
                 FarmingRefusal.NoFertilizer => "You do not carry that fertilizer.",
                 FarmingRefusal.FertilizerTooWeak => "That fertilizer is too weak for this crop. Use Fertilizer of the crop's tier or higher; yours was not used.",

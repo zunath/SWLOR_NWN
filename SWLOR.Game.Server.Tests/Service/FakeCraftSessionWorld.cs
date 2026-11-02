@@ -272,6 +272,11 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     public string GetStationCityId(uint player) => StationCityId;
 
+    /// <summary>The Workshop bonus the house the player stands in gives a craft that starts now.</summary>
+    public int WorkshopBonus { get; set; }
+
+    public int GetWorkshopBonus(uint player, SkillType skill) => WorkshopBonus;
+
     public int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId) =>
         !string.IsNullOrEmpty(craftCityId) && craftCityId == CharterCityId ? CharterPoints : 0;
 

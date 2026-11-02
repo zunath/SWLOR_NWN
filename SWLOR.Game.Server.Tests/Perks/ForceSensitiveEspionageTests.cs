@@ -233,6 +233,8 @@ public class ForceSensitiveEspionageTests
         stealth.Should().Contain("return Stat.GetStatAdjustment(observer, StatType.StealthDetectionBlocked) > 0;");
         stealth.Should().NotContain("CloudedMindStatusEffect", "shared detection reads the stat, never the perk's status class");
         new CloudedMindStatusEffect().StatGroup.Stats[StatType.StealthDetectionBlocked].Should().Be(1);
+        new CloudedMindStatusEffect().SendsApplicationMessage.Should().BeFalse(
+            "the nearby application message would name a hidden caster");
 
         var status = ReadSource("Feature", "StatusEffectDefinition", "CloudedMindStatusEffect.cs");
         status.Should().Contain("Stealth.ClearVerdictsForObserver(creature);", "cached verdicts must not outlive a change in sight");

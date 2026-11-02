@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
         public override bool PersistsOnLogout => false;
+        // The nearby application message names the source, which would reveal a hidden caster.
+        // Cloud Mind tells its caster privately instead.
+        public override bool SendsApplicationMessage => false;
 
         public CloudedMindStatusEffect()
         {

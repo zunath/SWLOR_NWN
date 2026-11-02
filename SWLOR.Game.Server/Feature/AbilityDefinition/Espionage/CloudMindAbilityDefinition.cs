@@ -108,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 return false;
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
+            SendMessageToPC(activator, $"You cloud the mind of {PlayerName.GetDisplayName(activator, target)}.");
             return true;
         }
     }

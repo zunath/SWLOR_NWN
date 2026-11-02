@@ -2019,11 +2019,13 @@ namespace SWLOR.Game.Server.Service
 
             accuracy += GetNpcLevelBonus(attacker, attackerStatus, level => 8 + 2 * level);
 
-            // The pilot's Accuracy and Accuracy % stats apply as they do on the ground.
+            // The pilot's Accuracy and Accuracy % stats apply as they do on the ground. A station shot also takes the
+            // ship's Accuracy % (Mark Target), once.
             return SpaceCombatMath.AdjustRating(
                 accuracy,
                 Stat.GetStatAdjustment(attacker, StatType.Accuracy),
                 Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment) +
+                (ship != attacker && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, attacker, StatType.AccuracyPercentAdjustment) : 0) +
                 Stat.GetStatAdjustment(attacker, StatType.SpaceAccuracyPercentAdjustment) +
                 (ship != attacker && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, attacker, StatType.SpaceAccuracyPercentAdjustment) : 0));
         }
@@ -2219,9 +2221,10 @@ namespace SWLOR.Game.Server.Service
 
             // The weapon critical rate stat belongs to the weapon's own cycles, as "weapon cycles have +N% Critical
             // Rate" reads; an ability shot takes only the general critical rate stat. The hull's critical bonus (a
-            // Sith signature) applies to every shot the ship fires.
+            // Sith signature) applies to every shot the ship fires. A station shot takes the ship's Critical Rate % too
+            // (Fleet Action), once.
             var criticalRate = SpaceCombatMath.CriticalRateModifier(
-                Stat.GetStatAdjustment(source, StatType.CriticalRatePercentAdjustment),
+                GetShotStatAdjustment(activator, source, StatType.CriticalRatePercentAdjustment),
                 GetShotStatAdjustment(activator, source, StatType.WeaponCriticalRatePercentAdjustment),
                 shot.IsAbility,
                 activatorStatus.CriticalBonus);
@@ -2235,10 +2238,11 @@ namespace SWLOR.Game.Server.Service
                 Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
             }
 
-            // Consecutive energy weapon hits against one target add their stacks' DMG to this same shot.
-            var shotDmg = shot.Dmg + SpaceSustainedFire.RegisterHit(
+            // Consecutive energy weapon hits against one target add their stacks' DMG to this same shot, at the
+            // station's effectiveness like the rest of its DMG.
+            var shotDmg = shot.Dmg + ShipCrewSeats.ScaleByEffectiveness(SpaceSustainedFire.RegisterHit(
                 activator, target, shot.Family, source, shot.WeaponSlot ?? 0,
-                SpaceSustainedFire.CountFiringEnergyWeapons(activator, activatorStatus));
+                SpaceSustainedFire.CountFiringEnergyWeapons(activator, activatorStatus)), SpaceCrew.GetFireEffectiveness(activator));
 
             var (minimum, maximum) = SpaceCombatMath.DamageRange(
                 attack, shotDmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);

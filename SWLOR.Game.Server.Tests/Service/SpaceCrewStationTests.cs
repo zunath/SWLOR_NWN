@@ -1,10 +1,13 @@
 using System;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -299,6 +302,38 @@ public class SpaceCrewStationTests
         using (SpaceCrew.BeginStationFire(null))
         {
             SpaceCrew.GetStatSource(Ship).Should().Be(Ship, "the pilot's own fire passes no context");
+        }
+    }
+
+    [Test]
+    public void StationShots_TakeTheShipsOrdersOnce_AndRunTheirBonusDmgAtTheStationsEffectiveness()
+    {
+        // Mark Target's Accuracy % and Fleet Action's Critical Rate % sit on the ship and on the crew aboard when they land.
+        // A droid has no creature to hold them, and a crew member who boards later has none, so a station shot takes
+        // the ship's copy unless its source holds the same status (GetShipWideAdjustment); the pilot's shot reads the ship.
+        new HostileAbilityPartyBuffStatusEffect(8, 6, 1, EffectIconType.Invalid).StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(6);
+
+        var space = ReadServerSource("Service", "Space.cs");
+        space.Should().Contain("(ship != attacker && GetIsObjectValid(ship) ? GetShipWideAdjustment(ship, attacker, StatType.AccuracyPercentAdjustment) : 0)",
+            "a droid gunner's shot takes Mark Target's Accuracy on the ship");
+        space.Should().Contain("GetShotStatAdjustment(activator, source, StatType.CriticalRatePercentAdjustment),",
+            "a droid gunner's shot takes Fleet Action's Critical Rate on the ship");
+        space.Should().NotContain("Stat.GetStatAdjustment(source, StatType.CriticalRatePercentAdjustment)");
+
+        // Sustained Fire's DMG joins the shot's roll, so it runs at the station's effectiveness like the weapon's own DMG.
+        space.Should().Contain("var shotDmg = shot.Dmg + ShipCrewSeats.ScaleByEffectiveness(SpaceSustainedFire.RegisterHit(");
+        space.Should().Contain("SpaceSustainedFire.CountFiringEnergyWeapons(activator, activatorStatus)), SpaceCrew.GetFireEffectiveness(activator));");
+        ShipCrewSeats.ScaleByEffectiveness(10, 1.05).Should().Be(11, "a crew member at 105% adds a half point and rounds up");
+        ShipCrewSeats.ScaleByEffectiveness(10, 1.0).Should().Be(10, "the pilot's stacks are unchanged");
+
+        // A droid's work is credited to the pilot; a crew member's to the crew member.
+        using (SpaceCrew.BeginStationFire(new SpaceCrewFireContext
+               {
+                   Ship = Ship, CrewMember = 0x7F000000u, Droid = new ShipDroidCrew { Seat = ShipCrewSeat.Gunner }, Seat = ShipCrewSeat.Gunner, Effectiveness = 0.5,
+               }))
+        {
+            SpaceCrew.GetCreditedPlayer(Ship).Should().Be(Ship);
+            SpaceCrew.GetFireEffectiveness(Ship).Should().Be(0.5);
         }
     }
 

@@ -388,11 +388,12 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Ends a duel that has a result: tells the duelists and posts it to the Gazette. A duel nobody lost, or that
-        /// is already over, ends without one.
+        /// is already over, ends without one. A duel a third party voided never has a result; it stays only for the
+        /// protection it gave, until that lapses.
         /// </summary>
         private static void Finish(DuelRecord record)
         {
-            if (!Forget(record))
+            if (record.State != DuelState.Active || !Forget(record))
                 return;
 
             var outcome = DuelRules.GetOutcome(record);

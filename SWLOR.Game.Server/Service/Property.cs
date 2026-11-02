@@ -2314,6 +2314,7 @@ namespace SWLOR.Game.Server.Service
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
+                CityStockAllowances.DeleteAll(property.Id);
             }
 
             _propertyInstances.Remove(property.Id);
@@ -2830,6 +2831,7 @@ namespace SWLOR.Game.Server.Service
             property.Taxes[PropertyTaxType.Citizenship] = 0;
             property.Taxes[PropertyTaxType.Transportation] = 0;
             property.Taxes[PropertyTaxType.Exchange] = 0;
+            property.Taxes[PropertyTaxType.Sales] = 0;
 
             // Upgrades
             property.Upgrades[PropertyUpgradeType.CityLevel] = 1;

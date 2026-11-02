@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TransportationTax = TransportationTax;
             CitizenshipTax = CitizenshipTax;
             ExchangeTariff = ExchangeTariff;
+            SalesTax = SalesTax;
             ShipyardFee = ShipyardFee;
         }
     }

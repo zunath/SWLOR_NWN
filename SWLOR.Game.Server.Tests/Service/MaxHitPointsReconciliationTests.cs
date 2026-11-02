@@ -50,6 +50,7 @@ public class MaxHitPointsReconciliationTests
             using SWLOR.Game.Server.Core.Bioware;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
+            using PowerGloveEquipment = SWLOR.Game.Server.Service.PowerGloveEquipment;
             using Stat = HitPointHarness;
 
             public static class HitPointHarness
@@ -117,6 +118,7 @@ public class MaxHitPointsReconciliationTests
                 private static int GetLevelByPosition(int position, uint creature) => position == 1 ? HitDice.Length : 0;
                 private static void SetCurrentHitPoints(uint creature, int hp) => CurrentHP = hp;
                 private static uint GetItemInSlot(InventorySlot slot, uint creature) => Slots[(int)slot];
+                private static BaseItem GetBaseItemType(uint item) => BaseItem.Armor;
                 private static ItemProperty GetFirstItemProperty(uint item) => new(item, 0);
                 private static ItemProperty GetNextItemProperty(uint item)
                 {

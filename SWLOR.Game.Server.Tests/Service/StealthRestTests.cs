@@ -33,9 +33,12 @@ public class StealthRestTests
             {
                 public const uint OBJECT_SELF = 1;
                 public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
+                public const string TimedExitActiveVariable = "STEALTH_TIMED_EXIT_ACTIVE";
                 public enum ActionMode { Stealth }
-                public enum PerkType { Stealth }
                 public static bool Player, DM, NativeStealth, Combat, CombatWindow, OwnsPerk, ActionsCleared, EnemiesReevaluated;
+                public static bool CanUseStealth(uint creature) => OwnsPerk;
+                public static void DeleteLocalInt(uint creature, string name) { }
+                public static void ClearGrantedStealth(uint creature) { }
                 public static bool GetIsPC(uint creature) => Player;
                 public static bool GetIsDM(uint creature) => DM;
                 public static bool GetIsInCombat(uint creature) => Combat;
@@ -54,9 +57,9 @@ public class StealthRestTests
             }
             public class RestStatusEffect { }
             public class StealthStatusEffect { }
-            public static class Perk
+            public static class LightsaberAudio
             {
-                public static int GetPerkLevel(uint creature, PerkType perk) => OwnsPerk ? 1 : 0;
+                public static void SilenceWhileHidden(uint creature) { }
             }
             public static class StatusEffect
             {

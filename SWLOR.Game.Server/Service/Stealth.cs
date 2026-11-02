@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.LogService;
@@ -105,6 +106,7 @@ namespace SWLOR.Game.Server.Service
 
             ClearVerdictsForTarget(creature);
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+            LightsaberAudio.SilenceWhileHidden(creature);
 
             // Enemies already fighting the player (Ghost Protocol) must roll detection now and
             // drop the player as a target if they fail, instead of swinging until their next round.
@@ -359,6 +361,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
+            LightsaberAudio.RestoreAfterHidden(creature);
+
             // Enemies that lost the player while hidden hold without attacking; resume them now
             // instead of waiting for their next AI event. Deferred because stealth can end inside
             // the native Spot check.
@@ -446,6 +450,16 @@ namespace SWLOR.Game.Server.Service
         {
             var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(observer);
             return creature?.GetSpotCheckDistance() ?? 0f;
+        }
+
+        /// <summary>
+        /// Returns whether the creature is hidden from other players: in stealth or invisible. Signals
+        /// that would tell nearby players such a creature is there go only to the creature itself.
+        /// </summary>
+        public static bool IsConcealed(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   (GetActionMode(creature, ActionMode.Stealth) || IsInvisible(creature));
         }
 
         /// <summary>

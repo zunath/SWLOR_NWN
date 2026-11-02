@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
@@ -542,6 +543,18 @@ namespace SWLOR.Game.Server.Service
             return recipient => PlaySuccessfulImpactVisualEffect(visuals, recipient);
         }
 
+        /// <summary>
+        /// Shows an instant visual effect on <paramref name="target"/> to one player only, so feedback
+        /// for a hidden creature never marks its position for anyone else.
+        /// </summary>
+        public static void ShowVisualEffectToPlayer(uint player, uint target, VisualEffect visualEffect)
+        {
+            if (visualEffect == VisualEffect.None || !GetIsObjectValid(target) || !GetIsPC(player) || GetIsDM(player))
+                return;
+
+            PlayerPlugin.ApplyInstantVisualEffectToObject(player, target, visualEffect);
+        }
+
         /// <summary>Returns the current impact's visual reference for a later independent combat event.</summary>
         public static VisualEffect GetSuccessfulImpactVisualEffect(uint activator)
         {
@@ -552,6 +565,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (visuals == null || !GetIsObjectValid(recipient) || !visuals.TryRecordRecipient(recipient))
                 return;
+
+            if (Stealth.IsConcealed(recipient))
+            {
+                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);
+                return;
+            }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visuals.Effect), recipient);
         }
@@ -3033,7 +3052,8 @@ namespace SWLOR.Game.Server.Service
                     ability.Name,
                     attackResultType,
                     hitRate),
-                60f);
+                60f,
+                activator);
         }
 
         private static void SendCombatImpactNoTargetsMessage(

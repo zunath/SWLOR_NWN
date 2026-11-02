@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         // The nearby application message names the source, which would reveal a hidden caster.
         // Cloud Mind tells its caster privately instead.
         public override bool SendsApplicationMessage => false;
+        public override bool SendsWornOffMessage => false;
 
         public CloudedMindStatusEffect()
         {

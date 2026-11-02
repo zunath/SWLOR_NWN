@@ -770,7 +770,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var sourceIsOther = GetIsObjectValid(source) && source != creature;
-                if (ShouldAnnounceNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))
+                if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), sourceIsOther && Stealth.IsConcealed(source)))
                 {
                     Messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage);
                 }
@@ -793,12 +793,6 @@ namespace SWLOR.Game.Server.Service
         public static bool ShouldAnnounceNearby(bool bearerHidden, bool sourceHidden)
         {
             return !bearerHidden && !sourceHidden;
-        }
-
-        private static bool IsHiddenFromView(uint creature)
-        {
-            return GetIsObjectValid(creature) &&
-                   (GetActionMode(creature, ActionMode.Stealth) || Stealth.IsInvisible(creature));
         }
 
         /// <summary>
@@ -2066,7 +2060,7 @@ namespace SWLOR.Game.Server.Service
                 var effectName = statusEffect.Name;
                 string BuildWornOffMessage(uint receiver) =>
                     $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.";
-                if (ShouldAnnounceNearby(IsHiddenFromView(creature), false))
+                if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), false))
                     Messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage);
                 else
                     SendMessageToPC(creature, BuildWornOffMessage(creature));

@@ -256,9 +256,56 @@ public class ForceSensitiveEspionageTests
         // any status applied by or to a creature in stealth.
         StatusEffect.ShouldAnnounceNearby(bearerHidden, sourceHidden).Should().Be(nearby);
         var source = ReadSource("Service", "StatusEffect.cs");
-        source.Should().Contain("if (ShouldAnnounceNearby(IsHiddenFromView(creature), sourceIsOther && IsHiddenFromView(source)))",
+        source.Should().Contain("if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), sourceIsOther && Stealth.IsConcealed(source)))",
             "application messages");
-        source.Should().Contain("if (ShouldAnnounceNearby(IsHiddenFromView(creature), false))", "worn-off messages");
+        source.Should().Contain("if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), false))", "worn-off messages");
+    }
+
+    [TestCase(false, false, true)]
+    [TestCase(true, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(true, true, false)]
+    public void NearbyMessages_GoOnlyToTheHiddenSenderOrActor(bool senderHidden, bool actorHidden, bool nearby)
+    {
+        Messaging.ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
+        var messaging = ReadSource("Service", "Messaging.cs");
+        messaging.Should().Contain("if (!ShouldDeliverNearby(Stealth.IsConcealed(sender), Stealth.IsConcealed(concealedActor)))");
+        var ability = ReadSource("Service", "Ability.cs");
+        ability.Should().Contain("                60f,\n                activator);", "ability combat-log lines name the activator");
+    }
+
+    [Test]
+    public void HiddenPlayers_EmitNoSoundsEffectsOrHumsForOthers()
+    {
+        var stealth = ReadSource("Service", "Stealth.cs");
+        stealth.Should().Contain("(GetActionMode(creature, ActionMode.Stealth) || IsInvisible(creature))");
+        stealth.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);");
+        stealth.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);");
+
+        var usePerkFeat = ReadSource("Feature", "UsePerkFeat.cs");
+        usePerkFeat.Should().Contain("if (Stealth.IsConcealed(activator))\n                return;", "ability sounds reach only the hidden activator");
+        usePerkFeat.Should().Contain("ability.ActivationVisualEffect != VisualEffect.None && !Stealth.IsConcealed(activator)");
+
+        var ability = ReadSource("Service", "Ability.cs");
+        ability.Should().Contain("if (Stealth.IsConcealed(recipient))\n            {\n                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);");
+
+        foreach (var file in new[] { "GhostProtocolAbilityDefinition.cs", "SharedPresenceAbilityDefinition.cs" })
+        {
+            var source = ReadSource("Feature", "AbilityDefinition", "Espionage", file);
+            source.Should().NotContain("ApplyEffectToObject", $"{file} must not show its stealth-entry effects to others");
+            source.Should().NotContain("PlaySuccessfulImpactVisualEffect", $"{file} shows its burst only to the hidden player");
+        }
+
+        ReadSource("Feature", "AbilityDefinition", "Espionage", "CloudMindAbilityDefinition.cs")
+            .Should().Contain("Ability.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);");
+        new CloudedMindStatusEffect().SendsWornOffMessage.Should().BeFalse("its expiry would hint at a hidden caster");
+        ReadSource("Service", "HoloCom.cs").Should().Contain("FloatingTextStringOnCreature(message, receiver, !Stealth.IsConcealed(receiver));");
+        var saber = ReadSource("Feature", "LightsaberAudio.cs");
+        saber.Should().Contain("if (Stealth.IsConcealed(player))\n            {\n                if (GetIsPC(player))\n                    PlayerPlugin.PlaySound(player, \"saberon\", player);");
+        saber.Should().Contain("PlayerPlugin.PlaySound(player, \"saberoff\", player);", "unequipping while hidden is heard only by the hidden player");
+        var stealthSource = ReadSource("Service", "Stealth.cs");
+        stealthSource.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);", "entering stealth silences held sabers");
+        stealthSource.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);", "leaving stealth gives the hum back");
     }
 
     [TestCase(false, false, true)]

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.NWNX;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -26,11 +27,71 @@ namespace SWLOR.Game.Server.Feature
                 type != BaseItem.Saberstaff)
                 return;
 
+            // A hidden player's hum and ignition sound would tell everyone nearby where they are.
+            // The hum returns when they are seen again (RestoreAfterHidden).
+            if (Stealth.IsConcealed(player))
+            {
+                if (GetIsPC(player))
+                    PlayerPlugin.PlaySound(player, "saberon", player);
+                return;
+            }
+
+            ApplyHum(player);
+            AssignCommand(player, () => PlaySound("saberon"));
+        }
+
+        private static void ApplyHum(uint player)
+        {
             var effect = EffectVisualEffect(VisualEffect.LightsaberHum);
             effect = TagEffect(effect, "LIGHTSABER_HUM");
-
             ApplyEffectToObject(DurationType.Permanent, effect, player);
-            AssignCommand(player, () => PlaySound("saberon"));
+        }
+
+        /// <summary>Silences every saber hum while the player is hidden.</summary>
+        public static void SilenceWhileHidden(uint player)
+        {
+            RemoveHum(player, OBJECT_INVALID, silenceAll: true);
+        }
+
+        /// <summary>
+        /// Gives each held lightsaber or saberstaff its hum back once the player is no longer hidden.
+        /// </summary>
+        public static void RestoreAfterHidden(uint player)
+        {
+            if (!GetIsObjectValid(player) || Stealth.IsConcealed(player))
+                return;
+
+            var missing = CountHeldSabers(player) - CountHums(player);
+            for (var hum = 0; hum < missing; hum++)
+                ApplyHum(player);
+        }
+
+        private static int CountHeldSabers(uint player, uint ignoredItem = OBJECT_INVALID)
+        {
+            var count = 0;
+            foreach (var slot in new[] { InventorySlot.RightHand, InventorySlot.LeftHand })
+            {
+                var equipped = GetItemInSlot(slot, player);
+                if (equipped == ignoredItem) continue;
+                var type = GetBaseItemType(equipped);
+                if (type == BaseItem.Lightsaber || type == BaseItem.Saberstaff) count++;
+            }
+
+            return count;
+        }
+
+        private static int CountHums(uint player)
+        {
+            var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player)?.AsNWSCreature();
+            if (creature == null) return 0;
+
+            var count = 0;
+            foreach (var effect in creature.m_appliedEffects)
+            {
+                if (effect.m_sCustomTag.ToString() == "LIGHTSABER_HUM") count++;
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -48,11 +109,17 @@ namespace SWLOR.Game.Server.Feature
                 type != BaseItem.Saberstaff)
                 return;
 
-            if (RemoveHum(player, item))
+            var removed = RemoveHum(player, item);
+            if (Stealth.IsConcealed(player))
+            {
+                if (GetIsPC(player))
+                    PlayerPlugin.PlaySound(player, "saberoff", player);
+            }
+            else if (removed)
                 AssignCommand(player, () => PlaySound("saberoff"));
         }
 
-        internal static bool RemoveHum(uint player, uint unequippedItem = OBJECT_INVALID)
+        internal static bool RemoveHum(uint player, uint unequippedItem = OBJECT_INVALID, bool silenceAll = false)
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var creature = server.GetGameObject(player)?.AsNWSCreature();
@@ -60,15 +127,8 @@ namespace SWLOR.Game.Server.Feature
 
             // One hum belongs to each equipped saber. Clear all stale duplicates when
             // unequipping, without silencing a second saber that is still being held.
-            var retained = 0;
-            foreach (var slot in new[] { InventorySlot.RightHand, InventorySlot.LeftHand })
-            {
-                var equipped = GetItemInSlot(slot, player);
-                // The unequip event can fire before the inventory slot is cleared.
-                if (equipped == unequippedItem) continue;
-                var type = GetBaseItemType(equipped);
-                if (type == BaseItem.Lightsaber || type == BaseItem.Saberstaff) retained++;
-            }
+            // The unequip event can fire before the inventory slot is cleared.
+            var retained = silenceAll ? 0 : CountHeldSabers(player, unequippedItem);
             var removed = new List<ulong>();
             foreach (var effect in creature.m_appliedEffects)
             {

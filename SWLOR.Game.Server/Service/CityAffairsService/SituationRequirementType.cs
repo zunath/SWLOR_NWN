@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         PlanetCity = 3,
         Facility = 4,
         ActiveEdict = 5,
-        SkillRank = 6
+        SkillRank = 6,
+
+        /// <summary>The city has a structure of the type, such as a corral or a garden plot.</summary>
+        Structure = 7
     }
 }

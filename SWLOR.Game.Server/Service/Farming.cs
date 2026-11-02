@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.FarmingService;
@@ -149,11 +150,23 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Whether the plot's city has completed its Home Ground project, which adds 1 to a harvest. The Home Ground project supplies it.</summary>
         public static bool HasHomeGround(WorldProperty plot) => false;
 
+        /// <summary>
+        /// Whether pests plague the city the plot stands in (the Pests in the Gardens situation was ignored in the last 72 hours),
+        /// which takes 1 from every harvest there. A plot in a house counts for the house's city.
+        /// </summary>
+        public static bool HasPests(WorldProperty plot)
+        {
+            var parent = plot == null ? null : DB.Get<WorldProperty>(plot.ParentPropertyId);
+            var city = parent is { PropertyType: PropertyType.House } ? DB.Get<WorldProperty>(parent.ParentPropertyId) : parent;
+            return city is { PropertyType: PropertyType.City } && CityAffairs.IsModifierActive(city, CityModifierType.CropPests);
+        }
+
         // Actions
 
         /// <summary>Plants the seed in the plot, using the seed up. The character needs garden permission and the crop's tier.</summary>
         public static FarmingResult Plant(uint player, string plotId, string seedResref)
         {
+            Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
             var isPlayer = IsFarmer(player);
             var structure = GetPlotStructure(plotId);
@@ -203,6 +216,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Tends the crop, once. The planter can, and so can anyone with garden permission, and the tender earns the tending XP.</summary>
         public static FarmingResult Tend(uint player, string plotId)
         {
+            Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
             var isPlayer = IsFarmer(player);
             var structure = GetPlotStructure(plotId);
@@ -239,6 +253,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static FarmingResult Harvest(uint player, string plotId)
         {
+            Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
             var isPlayer = IsFarmer(player);
             var structure = GetPlotStructure(plotId);
@@ -261,7 +276,8 @@ namespace SWLOR.Game.Server.Service
                 record.Fertilized,
                 Perk.GetPlayerEffectivePerkLevel(player, PerkType.BountifulHarvest),
                 IsGreenhouse(DB.Get<WorldProperty>(structure.ParentPropertyId)),
-                HasHomeGround(structure));
+                HasHomeGround(structure),
+                HasPests(structure));
             var seedPercent = FarmingRules.GetSeedSaverPercent(Perk.GetPlayerEffectivePerkLevel(player, PerkType.SeedSaver));
             var seedReturned = FarmingRules.ReturnsSeed(seedPercent, Random.D100(1));
             var rank = Skill.GetCreatureSkillRank(player, SkillType.Agriculture);
@@ -280,6 +296,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Clears the crop, whatever its stage. Its seed is lost. A planter can always clear their own crop.</summary>
         public static FarmingResult Clear(uint player, string plotId)
         {
+            Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
             var isPlayer = IsFarmer(player);
             if (GetPlotStructure(plotId) == null)

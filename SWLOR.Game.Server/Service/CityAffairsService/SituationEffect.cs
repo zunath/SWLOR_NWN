@@ -36,6 +36,18 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
             return new SituationEffect(SituationEffectType.Modifier) { Modifier = modifier };
         }
 
+        /// <summary>Calls a hunt: an NPC wave attacks the city's corrals until it is driven off or 30 minutes pass.</summary>
+        public static SituationEffect CallHunt()
+        {
+            return new SituationEffect(SituationEffectType.StartHunt);
+        }
+
+        /// <summary>Every animal in the city gives no products for 72 hours. Crating keeps the penalty.</summary>
+        public static SituationEffect LivestockLoseProducts()
+        {
+            return new SituationEffect(SituationEffectType.LivestockNoProducts);
+        }
+
         public static SituationEffect QueueFollowUp(SituationType followUp, int delayDays, int oneIn = 1, bool carriesSecret = false)
         {
             return new SituationEffect(SituationEffectType.FollowUp)

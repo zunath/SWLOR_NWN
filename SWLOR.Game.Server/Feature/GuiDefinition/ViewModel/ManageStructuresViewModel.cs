@@ -401,6 +401,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
+                var corralError = structure.StructureType == StructureType.Corral
+                    ? Corrals.GetRetrieveError(structure, GetObjectUUID(Player))
+                    : string.Empty;
+                if (!string.IsNullOrEmpty(corralError))
+                {
+                    Instructions = corralError;
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
                 if (structure.StructureType == StructureType.Starport &&
                     Station.IsStation(parentProperty) &&
                     Station.CountStarports(parentProperty.Id) <= 1)

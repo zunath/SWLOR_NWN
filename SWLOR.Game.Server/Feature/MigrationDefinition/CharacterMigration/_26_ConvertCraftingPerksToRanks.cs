@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
 /// Retires the perks whose tiers now unlock with skill rank, and refunds the perks whose category and requirements
-/// changed. Every owned rank returns its SP, the perk leaves the record and the character's feats, and the record
-/// gains one optional rebuild token.
+/// changed, including Ghost Protocol's new Stealth I prerequisite. Every owned rank returns its SP, the perk leaves
+/// the record and the character's feats, and the record gains one optional rebuild token.
 /// </summary>
 internal sealed class _26_ConvertCraftingPerksToRanks : ICharacterMigration
 {
@@ -56,6 +56,11 @@ internal sealed class _26_ConvertCraftingPerksToRanks : ICharacterMigration
         new(PerkType.DroidAssembly, "Droid Assembly", new[] { 1, 1, 2, 3, 4 },
             "was retired. Droid tiers now unlock at Engineering ranks 0, 10, 20, 30 and 40.",
             FeatType.DroidAssemblyTrait),
+        // Shared Espionage: Ghost Protocol now requires Stealth I, a functional change, so every owner gets a
+        // free refund, including owners who already have Stealth I.
+        new(PerkType.GhostProtocol, "Ghost Protocol", new[] { 6 },
+            "now requires Stealth I, so it was refunded for free.",
+            FeatType.GhostProtocol),
     };
 
     public int Version => 26;

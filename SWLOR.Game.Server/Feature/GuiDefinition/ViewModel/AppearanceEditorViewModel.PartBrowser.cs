@@ -720,6 +720,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetIfChanged($"Body{name}Custom", hasCustom);
                 SetIfChanged($"Body{name}Selected", SelectedColorCategoryIndex == index);
             }
+            RefreshHeadColorSwatches();
             RefreshPaletteSelection();
         }
 
@@ -772,7 +773,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickBodySwatch(int index) => () =>
         {
-            if (!IsAppearanceSelected || index < 0 || index >= BodyColorSwatches.Length)
+            if (!IsAppearanceSelected || index < 0 || index >= _appearanceColorLayers.Count)
                 return;
             if (ColorCategorySelected != null && SelectedColorCategoryIndex < ColorCategorySelected.Count)
                 ColorCategorySelected[SelectedColorCategoryIndex] = false;
@@ -796,8 +797,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshPaletteSelection()
         {
             string source = null;
-            if (IsAppearanceSelected && SelectedColorCategoryIndex >= 0 && SelectedColorCategoryIndex < BodyColorSwatches.Length)
-                source = $"Body{BodyColorSwatches[SelectedColorCategoryIndex].Name}";
+            if (IsAppearanceSelected)
+                source = "HeadSelected";
             else if (IsEquipmentSelected && SelectedItemTypeIndex is 0 or 1 or 2)
                 source = $"{(SelectedItemTypeIndex == 0 ? _colorTarget : ColorTarget.Global)}{_selectedColorChannel}";
 

@@ -67,6 +67,21 @@ public class AppearanceEditorLayoutTests
     // ------------------------------------------------------------------ whole window
 
     [Test]
+    public void SettingsExposeFourHeadRowsWithMinusPlusAndReadout()
+    {
+        var widgets = Walk(_partials[AppearanceEditorViewModel.SettingsPartial]).ToArray();
+        foreach (var id in new[] { "ae_head", "ae_head_x", "ae_head_y", "ae_head_z" })
+        {
+            widgets.Should().ContainSingle(w => w.Id == id + "_decrease");
+            widgets.Should().ContainSingle(w => w.Id == id + "_increase");
+            widgets.Should().ContainSingle(w => w.Id == id + "_value");
+        }
+        var reset = widgets.Single(w => w.Id == "ae_head_reset");
+        reset.Events.Values.Should().ContainSingle(e => e.Method.Name == nameof(AppearanceEditorViewModel.OnResetHead));
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
+    [Test]
     public void EveryPartialIsDefinedAndHasNoLayoutFindings()
     {
         _partials.Keys.Should().Contain(AllPanels.Append(WindowMain));
@@ -171,8 +186,9 @@ public class AppearanceEditorLayoutTests
         column.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
 
         var rows = column.Elements.ToList();
-        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Where(combo => combo.Id != "ae_quick_outfit")
-            .Should().BeEmpty("the equipment slots are tabs, not a list");
+        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>()
+            .Where(combo => combo.Id != "ae_quick_outfit")
+            .Should().BeEmpty("equipment slots stay tabs; only outfit and head-color choices use combos");
         if (partialName == AppearanceEditorViewModel.EditorMainPartial)
         {
             // No hidden rows above the editors: a hidden row still takes up height.
@@ -570,18 +586,26 @@ public class AppearanceEditorLayoutTests
     public void AppearanceSwatchesBindRegionTintCustomAndSelected()
     {
         var main = _partials[AppearanceEditorViewModel.EditorMainPartial];
-        var expected = new[]
+        foreach (var side in new[] { "Left", "Right" })
         {
-            ("Skin", "gui_pal_skin"), ("Hair", "gui_pal_hair01"), ("Tattoo1", "gui_pal_tattoo"), ("Tattoo2", "gui_pal_tattoo")
-        };
-        for (var index = 0; index < expected.Length; index++)
-        {
-            var (name, texture) = expected[index];
-            var swatch = Walk(main).Single(widget => widget.Id == $"ae_body_swatch_{name}");
-            AssertSwatch(main, swatch, $"Body{name}", texture);
-            AssertSingleHandler(swatch, "click", nameof(AppearanceEditorViewModel.OnClickBodySwatch), (typeof(int), index));
+            var swatch = Walk(main).Single(widget => widget.Id == "ae_body_swatch_" + side.ToLowerInvariant());
+            var name = "HeadSwatch" + side;
+            ReadProperty<string>(swatch, "IsVisibleBindName").Should().Be(name + "Visible");
+            ReadProperty<string>(swatch, "VisibilityOverrideBindName").Should().Be(name + "Visible",
+                "each column needs its own final visibility vector for an odd channel count");
+            ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
+            var items = DrawItems(swatch).ToArray();
+            items.Should().HaveCount(4);
+            ReadProperty<string>(items[0], "TextBindName").Should().Be(name + "Label");
+            ReadProperty<string>(items[1], "ResrefBindName").Should().Be(name + "Texture");
+            ReadProperty<string>(items[1], "DrawTextureRegionBindName").Should().Be(name + "Region");
+            ReadProperty<string>(items[2], "IsEnabledBindName").Should().Be(name + "Custom");
+            ReadProperty<string>(items[2], "ColorBindName").Should().Be(name + "Tint");
+            ReadProperty<string>(items[3], "IsEnabledBindName").Should().Be(name + "Selected");
+            AssertSingleHandler(swatch, "click", nameof(AppearanceEditorViewModel.OnClickHeadColorSwatch),
+                (typeof(int), side == "Left" ? 0 : 1));
         }
-        Walk(main).Where(widget => widget.Id?.Contains("_swatch_") == true).Should().HaveCount(4);
+        Walk(main).Where(widget => widget.Id?.Contains("_swatch_") == true).Should().HaveCount(2);
     }
 
     [Test]
@@ -795,6 +819,12 @@ public class AppearanceEditorLayoutTests
         Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
             .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= 256f,
                 "fixed controls must leave the surrounding spacers free to follow the client width");
+        foreach (var id in new[] { "ae_head_value", "ae_head_x_value", "ae_head_y_value", "ae_head_z_value" })
+        {
+            var value = Walk(settings).Single(widget => widget.Id == id);
+            NaturalWidth(PathTo(settings, value).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
+                .Should().BeLessThanOrEqualTo(208f, "head values must leave room for native margins and the scrollbar in a 300px client window");
+        }
     }
 
     [Test]
@@ -814,6 +844,19 @@ public class AppearanceEditorLayoutTests
             PathTo(settings, button).Should().NotContain(ancestor =>
                 ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPlayerSettingsVisible));
         }
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
+    [Test]
+    public void HeadAccessoryColorsRemainSelectableInTheBodyMapLayout()
+    {
+        var panel = _partials[AppearanceEditorViewModel.EditorMainPartial];
+        var picker = Walk(panel).Single(widget => widget.Id == "ae_head_color_swatches");
+        picker.Should().BeOfType<GuiList<AppearanceEditorViewModel>>();
+        ReadProperty<string>(picker, "RowCountBindName").Should().Be(nameof(AppearanceEditorViewModel.HeadSwatchLeftLabel) + "_RowCount");
+        ReadProperty<float>(picker, "RowHeight").Should().Be(24f);
+        ReadProperty<float>(picker, "Height").Should().Be(150f, "five compact rows fit all ten head channels without moving the palette");
+        Walk(panel).Should().NotContain(widget => widget.Id == "ae_head_color_channel");
         _window.LayoutFindings.Should().BeEmpty();
     }
 

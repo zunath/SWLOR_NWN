@@ -170,6 +170,65 @@ class PlainTextureTests(unittest.TestCase):
         self.assertFalse(is_see_through("transparency 0\n"))
 
 
+class HeadPreviewTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.palette = self.root / "palette.png"
+        Image.new("RGBA", (256, 2048), (128, 128, 128, 255)).save(self.palette)
+        pixels = np.zeros((2, 2, 3), np.uint8)
+        pixels[..., 0] = 128
+        pixels[..., 1] = [[0, 38], [38, 0]]
+        self.tint = self.root / "tint.png"
+        Image.fromarray(pixels).save(self.tint)
+        self.mask = self.root / "mask.png"
+        Image.fromarray(np.array([[0, 0], [255, 0]], np.uint8)).save(self.mask)
+
+    def test_hair_only_mask_preserves_the_face(self):
+        from appearance_previews.heads import bake_head
+        rgba, _ = bake_head(self.tint, self.palette,
+                            "parameter float maskMode 4\nparameter float alphaCutoff 0.5\n",
+                            {6: self.mask}, {})
+        np.testing.assert_array_equal(rgba[..., 3], [[255, 0], [255, 255]])
+
+    def test_head_tint_maps_do_not_require_a_tm_filename_prefix(self):
+        from appearance_previews.__main__ import prepare_textures
+        raw = self.root / "raw"
+        raw.mkdir()
+        (raw / "head_demo.mtr").write_text("customshaderFS fs_head_plain\ntexture7 head_demo\n")
+        Image.new("RGB", (2, 2), (128, 0, 0)).save(raw / "head_demo.tga")
+        class Index:
+            def extract(self, names, destination):
+                return []
+        textures = prepare_textures(Index(), ["head_demo"], self.root, self.palette)
+        with Image.open(textures["head_demo"]["color"]) as baked:
+            np.testing.assert_array_equal(np.asarray(baked)[..., :3], np.full((2, 2, 3), 128))
+
+    def test_whole_material_mask_clips_all_layers(self):
+        from appearance_previews.heads import bake_head
+        rgba, _ = bake_head(self.tint, self.palette, "parameter float maskMode 1\n", {6: self.mask}, {})
+        np.testing.assert_array_equal(rgba[..., 3], [[0, 0], [255, 0]])
+
+    def test_a_normal_alpha_is_not_used_without_its_parameter(self):
+        from appearance_previews.heads import bake_head
+        normal = self.root / "normal.png"
+        Image.new("RGBA", (2, 2), (128, 128, 255, 0)).save(normal)
+        rgba, _ = bake_head(self.tint, self.palette, "", {1: normal}, {})
+        self.assertTrue((rgba[..., 3] == 255).all())
+        rgba, _ = bake_head(self.tint, self.palette, "parameter float useTexture1Alpha 1\n", {1: normal}, {})
+        self.assertTrue((rgba[..., 3] == 0).all())
+
+    def test_soft_lip_overlay_uses_the_authored_rgb_default(self):
+        from appearance_previews.heads import bake_head
+        lips = self.root / "lips.png"
+        Image.new("RGB", (2, 2), (255, 128, 0)).save(lips)
+        rgba, _ = bake_head(self.tint, self.palette,
+                            "parameter float lipMode 3\nparameter float lipUSpan 1\nparameter float lipVSpan 1\n",
+                            {9: lips}, {7: 0x01000000 | 142 << 16 | 65 << 8 | 72})
+        np.testing.assert_allclose(rgba[..., :3], np.tile([142, 65, 72], (2, 2, 1)), atol=1)
+
+
 class CloakTileTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

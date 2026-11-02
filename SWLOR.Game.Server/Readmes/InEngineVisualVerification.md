@@ -101,6 +101,7 @@ Prerequisites: Docker Desktop, Python 3.12+, a Release build from your worktree 
 python tools/NwnLiveClient.py up --name my-check --character <test character>.bic --play
 python tools/NwnLiveClient.py capture <run dir> in-area
 python tools/NwnLiveClient.py ui <run dir> click 742 591   # also rightclick, doubleclick, drag, move, key, type
+python tools/NwnLiveClient.py ui <run dir> scroll up 8     # camera zoom; up/down, 1..20 wheel steps
 python tools/NwnLiveClient.py console <run dir> status      # one nwserver console line
 python tools/NwnLiveClient.py down <run dir>
 ```

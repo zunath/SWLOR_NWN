@@ -1802,7 +1802,7 @@ namespace SWLOR.Game.Server.Service
         /// Who counts as the incumbent in this election's result. For now it is always the sitting mayor; in a step-down
         /// snap election it is the interim holder.
         /// </summary>
-        private static string GetElectionIncumbentId(WorldProperty city, Election election)
+        internal static string GetElectionIncumbentId(WorldProperty city, Election election)
         {
             return city.OwnerPlayerId;
         }
@@ -1925,7 +1925,8 @@ namespace SWLOR.Game.Server.Service
                 : ElectionRules.GetNextRegularElectionUtc(endedUtc);
 
             // Someone new takes the seat.
-            if (!string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId)
+            var seatChanged = !string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId;
+            if (seatChanged)
             {
                 transferPermissions(outcome.WinnerPlayerId);
                 city.OwnerPlayerId = outcome.WinnerPlayerId;
@@ -1944,6 +1945,16 @@ namespace SWLOR.Game.Server.Service
 
             // An empty recall opens the second, and an empty second recall removes the city or pauses it for neglect.
             CityRecall.Apply(now, city, election.Kind, outcome.ClearsNeglect, recallStep);
+
+            // Only an outright win enacts a platform, replacing every Edict over its lock. It comes after the pauses the
+            // election ends are cleared, so what still holds keeps the new Edicts paused. A winner with no platform (the
+            // election opened before platforms) leaves the Edicts as they are; a new mayor's inherited ones stop counting as promises.
+            var winnerPlatform = outcome.HasMandate
+                ? ElectionPlatformRules.GetPlatformToEnact(election.Platforms, outcome.WinnerPlayerId)
+                : null;
+            var platformEnactment = winnerPlatform == null ? null : Edict.EnactPlatform(city, winnerPlatform, now);
+            if (platformEnactment == null && seatChanged)
+                EdictChanges.ClearPlatformOrigin(city);
 
             city.LastElectionResult = new ElectionResultRecord
             {
@@ -1974,6 +1985,9 @@ namespace SWLOR.Game.Server.Service
             DB.Delete<Election>(election.Id);
 
             BroadcastElectionResult(city, outcome, nextRegularUtc);
+            if (platformEnactment != null)
+                Edict.AnnouncePlatform(city, platformEnactment, outcome.WinnerPlayerId);
+
             CityRecall.Announce(city, recallStep);
         }
 

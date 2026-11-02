@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             cityDetails.Add($"City Name: {dbCity.CustomName}");
             cityDetails.Add($"Mayor: {mayorName}");
+            cityDetails.Add($"Mayor's record: {ElectionPlatformRules.BuildRecordText(dbCity.MayorRecord)}");
             cityDetails.Add($"# Citizens: {dbCitizenCount}");
             cityDetails.Add($"Level: {Property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
             cityDetails.Add($"Established: {dbCity.DateCreated:yyyy-MM-dd hh:mm:ss}");

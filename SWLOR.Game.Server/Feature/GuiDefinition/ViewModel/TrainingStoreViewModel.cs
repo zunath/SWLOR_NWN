@@ -156,8 +156,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var cratesRemaining = CivicExchange.GetCratesRemaining(Player);
 
             WindowTitle = $"Civic Exchange - {city?.CustomName ?? "City"}";
-            AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP.ToString("N0", CultureInfo.InvariantCulture)}   |   " +
-                          $"Crates left this week: {cratesRemaining} of {CivicExchangeCatalog.WeeklyCrateLimit}   |   Cantina level {cantinaLevel}";
+            AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP.ToString("N0", CultureInfo.InvariantCulture)} | " +
+                          $"Crates left: {cratesRemaining} of {CivicExchangeCatalog.WeeklyCrateLimit} | Cantina Lv {cantinaLevel}";
 
             var icons = new GuiBindingList<string>();
             var names = new GuiBindingList<string>();

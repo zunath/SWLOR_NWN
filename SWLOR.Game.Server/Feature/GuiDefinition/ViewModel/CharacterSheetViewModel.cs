@@ -931,15 +931,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         /// <summary>
         /// Explains a dual-wield cycle: the delay covers one attack with each hand, so the time per attack is half
-        /// of it. Off-Hand Haste shortens only the off hand's share.
+        /// of it. Off-Hand Haste shortens only the off hand's share. NUI tooltips show one line, so this appends
+        /// to the delay tooltip on the same line.
         /// </summary>
         public static string FormatPairedDelay(int mainHandDelay, int offHandDelay, int offHandHastePercent,
             int effectiveDelayMilliseconds)
         {
-            var offHandHaste = offHandHastePercent > 0 ? $" (-{offHandHastePercent}% Off-Hand Haste)" : string.Empty;
-            return $"\nMain hand: Delay {mainHandDelay}" +
-                   $"\nOff hand: Delay {offHandDelay}{offHandHaste}" +
-                   $"\nEach cycle attacks once with each hand: about {effectiveDelayMilliseconds / 2000f:0.##}s per attack.";
+            var offHandHaste = offHandHastePercent > 0 ? $", off hand -{offHandHastePercent}%" : string.Empty;
+            return $" | 2 attacks per cycle, about {effectiveDelayMilliseconds / 2000f:0.##}s each " +
+                   $"(Delay {mainHandDelay} main + {offHandDelay} off{offHandHaste})";
         }
 
         private static uint SelectForceAccuracyWeapon(uint mainHand, uint offHand, bool isMainHandValid)

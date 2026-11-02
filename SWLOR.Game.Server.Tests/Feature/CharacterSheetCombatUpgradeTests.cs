@@ -159,11 +159,13 @@ public class CharacterSheetCombatUpgradeTests
         offHandAttack.Should().BeGreaterThan(attack, "the off-hand Attack sits under the main-hand Attack");
     }
 
-    [TestCase(220, 220, 0, 3833, "\nMain hand: Delay 220\nOff hand: Delay 220\nEach cycle attacks once with each hand: about 1.92s per attack.")]
-    [TestCase(230, 220, 30, 3258, "\nMain hand: Delay 230\nOff hand: Delay 220 (-30% Off-Hand Haste)\nEach cycle attacks once with each hand: about 1.63s per attack.")]
+    [TestCase(220, 220, 0, 3833, " | 2 attacks per cycle, about 1.92s each (Delay 220 main + 220 off)")]
+    [TestCase(230, 220, 30, 3258, " | 2 attacks per cycle, about 1.63s each (Delay 230 main + 220 off, off hand -30%)")]
     public void PairedDelayTooltip_ShowsEachHandAndTheTimePerAttack(int main, int off, int haste, int effective, string expected)
     {
-        CharacterSheetViewModel.FormatPairedDelay(main, off, haste, effective).Should().Be(expected);
+        var tooltip = CharacterSheetViewModel.FormatPairedDelay(main, off, haste, effective);
+        tooltip.Should().Be(expected);
+        tooltip.Should().NotContain("\n", "NUI tooltips render a line break as a question mark");
     }
 
     [Test]

@@ -48,12 +48,18 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
 
         #region Effects
 
-        /// <summary>The credits an effect list takes from the treasury, as a positive number, up to <see cref="MaxCost"/>.</summary>
-        public static int GetCost(IEnumerable<SituationEffect> effects)
+        /// <summary>
+        /// The credits an effect list takes from the treasury, as a positive number, up to <see cref="MaxCost"/>. An effect that pays
+        /// what the situation's subject owes, such as a customs fine, costs <paramref name="subjectCredits"/>.
+        /// </summary>
+        public static int GetCost(IEnumerable<SituationEffect> effects, int subjectCredits = 0)
         {
-            var cost = (effects ?? Enumerable.Empty<SituationEffect>())
+            var list = (effects ?? Enumerable.Empty<SituationEffect>()).ToList();
+            var cost = list
                 .Where(effect => effect.Type == SituationEffectType.TreasuryChange && effect.Credits < 0)
                 .Sum(effect => -effect.Credits);
+            if (list.Any(effect => effect.Type == SituationEffectType.HoldingFine))
+                cost += Math.Max(0, subjectCredits);
 
             return Math.Min(cost, MaxCost);
         }
@@ -69,10 +75,10 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         }
 
         /// <summary>The treasury change an effect list asks for: its gain minus its cost, within the limits.</summary>
-        public static int GetRequestedChange(IEnumerable<SituationEffect> effects)
+        public static int GetRequestedChange(IEnumerable<SituationEffect> effects, int subjectCredits = 0)
         {
             var list = (effects ?? Enumerable.Empty<SituationEffect>()).ToList();
-            return Math.Clamp(GetGain(list) - GetCost(list), -MaxCost, MaxGain);
+            return Math.Clamp(GetGain(list) - GetCost(list, subjectCredits), -MaxCost, MaxGain);
         }
 
         /// <summary>
@@ -228,7 +234,10 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
             return !isInDisrepair && !isNeglected && openCount < MaxOpenSituations;
         }
 
-        /// <summary>The definitions a city can draw at random: not a follow-up, requirements met, and no situation of the type open.</summary>
+        /// <summary>
+        /// The definitions a city can draw at random: not a follow-up or an event-driven situation, requirements met, and no
+        /// situation of the type open.
+        /// </summary>
         public static List<SituationDetail> SelectEligible(
             IEnumerable<SituationDetail> definitions,
             SituationContext context,
@@ -236,6 +245,7 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         {
             return (definitions ?? Enumerable.Empty<SituationDetail>())
                 .Where(detail => !detail.IsFollowUp &&
+                                 !detail.IsEventDriven &&
                                  detail.Weight > 0 &&
                                  detail.Choices.Count > 0 &&
                                  !unavailableTypes.Contains(detail.Type) &&
@@ -448,13 +458,21 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         }
 
         /// <summary>What a choice does, for the tooltip: its cost or gain, modifiers, and follow-ups.</summary>
-        public static string DescribeEffects(IEnumerable<SituationEffect> effects, bool isSecret = false)
+        public static string DescribeEffects(IEnumerable<SituationEffect> effects, bool isSecret = false, int subjectCredits = 0)
         {
             var parts = new List<string>();
             foreach (var effect in effects ?? Enumerable.Empty<SituationEffect>())
             {
                 switch (effect.Type)
                 {
+                    case SituationEffectType.HoldingHelp:
+                        parts.Add("The city's guards drive the raiders off the holding.");
+                        break;
+                    case SituationEffectType.HoldingFine:
+                        parts.Add(subjectCredits > 0
+                            ? $"Pays the holding's customs fine from the treasury: {FormatCredits(Math.Min(subjectCredits, MaxCost))}."
+                            : $"Pays the holding's customs fine from the treasury, up to {FormatCredits(MaxCost)}.");
+                        break;
                     case SituationEffectType.TreasuryChange when effect.Credits < 0:
                         parts.Add($"Costs {FormatCredits(-effect.Credits)}.");
                         break;

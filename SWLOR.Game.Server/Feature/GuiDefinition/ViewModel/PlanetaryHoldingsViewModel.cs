@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.HoldingService;
+using SWLOR.Game.Server.Service.IndustryService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -92,6 +93,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool CanCollect { get => Get<bool>(); set => Set(value); }
         public bool CanPayUpkeep { get => Get<bool>(); set => Set(value); }
         public bool CanVisit { get => Get<bool>(); set => Set(value); }
+        public string DepotText { get => Get<string>(); set => Set(value); }
+        public bool DepotVisible { get => Get<bool>(); set => Set(value); }
+        public bool CanMoveHere { get => Get<bool>(); set => Set(value); }
         public string FineText { get => Get<string>(); set => Set(value); }
         public bool FineVisible { get => Get<bool>(); set => Set(value); }
 
@@ -168,6 +172,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanCollect = false;
             CanPayUpkeep = false;
             CanVisit = false;
+            DepotText = string.Empty;
+            DepotVisible = false;
+            CanMoveHere = false;
             FineText = string.Empty;
             FineVisible = false;
             NeedNames = new GuiBindingList<string>();
@@ -304,6 +311,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanCollect = false;
             CanPayUpkeep = false;
             CanVisit = false;
+            DepotVisible = false;
+            CanMoveHere = false;
             FineVisible = false;
             _needs = new List<CommodityType>();
             NeedNames = new GuiBindingList<string>();
@@ -375,6 +384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanCollect = atDock && ship != null && holding.Warehouse.Values.Sum() > 0;
             CanPayUpkeep = holding.UpkeepOwed > 0;
             CanVisit = atDock;
+            RefreshDepot(holding, atDock);
 
             RefreshNeeds(holding, detail, atDock ? ship : null);
 
@@ -400,6 +410,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var line in Enumerable.Reverse(holding.Log ?? new List<string>()))
                 lines.Add(line);
             LogLines = lines;
+        }
+
+        /// <summary>The Planetary Depot line for a holding that waits at another dock of this planet: bring it here, or why not.</summary>
+        private void RefreshDepot(PlanetaryHolding holding, bool atDock)
+        {
+            var now = DateTime.UtcNow;
+            var refusal = atDock ? DepotRefusal.AlreadyHere : PlanetaryDepot.GetRefusal(Player, holding, _exchange, _dockId, now);
+            DepotVisible = refusal != DepotRefusal.AlreadyHere && refusal != DepotRefusal.WrongPlanet &&
+                           refusal != DepotRefusal.NotYourHolding && refusal != DepotRefusal.NotACityMove;
+            CanMoveHere = refusal == DepotRefusal.None;
+            DepotText = refusal == DepotRefusal.None
+                ? $"Planetary Depot: bring this holding here, once every {PlanetaryDepotRules.CooldownDays} days."
+                : PlanetaryDepotRules.GetRefusalMessage(refusal, PlanetaryDepotRules.GetDaysLeft(holding.LastDepotMoveUtc, now));
         }
 
         private void RefreshNeeds(PlanetaryHolding holding, HoldingDetail detail, PlayerShip ship)
@@ -493,6 +516,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickPayUpkeep() => () => RunOnSelected(id => PlanetaryHoldings.PayUpkeep(Player, id));
 
         public Action OnClickPayFine() => () => RunOnSelected(id => PlanetaryHoldings.PayFine(Player, id));
+
+        public Action OnClickMoveHere() => () => RunOnSelected(id => PlanetaryDepot.MoveHere(Player, id, _exchange, _dockId));
 
         public Action OnClickUpgrade() => () => RunOnSelected(id => PlanetaryHoldings.Upgrade(Player, id));
 

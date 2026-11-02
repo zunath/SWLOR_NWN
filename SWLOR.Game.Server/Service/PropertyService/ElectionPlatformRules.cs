@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         /// <summary>
         /// The first reason the Edicts cannot make up a platform for the city, or none. A platform holds at most the city's
-        /// slot count, one of each Edict, each at or below the city's level, none that Wild Space stations lack, and a
+        /// slot count, one of each Edict, each at or below the city's level, none that Wild Space stations or open ports lack, and a
         /// valid city for every Alliance and Embargo, never an Alliance and an Embargo against the same city.
         /// </summary>
         /// <param name="edicts">The Edicts, in the order they were chosen.</param>
@@ -31,12 +31,14 @@ namespace SWLOR.Game.Server.Service.PropertyService
         /// <param name="cityLevel">The city's level.</param>
         /// <param name="isWildSpaceStation">Whether the city is a Wild Space station.</param>
         /// <param name="isValidTarget">Whether a named city exists and is not being removed.</param>
+        /// <param name="isOpenPort">Whether the city's Starport exchange is an open port, where Shadowport is not offered.</param>
         public static (EdictRefusal Refusal, EdictType Type) GetRefusal(
             IEnumerable<ElectionPlatformEdict> edicts,
             string cityId,
             int cityLevel,
             bool isWildSpaceStation,
-            Func<string, bool> isValidTarget)
+            Func<string, bool> isValidTarget,
+            bool isOpenPort = false)
         {
             var held = new Dictionary<EdictType, CityEdict>();
             foreach (var edict in edicts ?? Enumerable.Empty<ElectionPlatformEdict>())
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                     cityLevel,
                     isWildSpaceStation,
                     CityWideCondition.None,
-                    held);
+                    held,
+                    isOpenPort);
                 if (refusal != EdictRefusal.None)
                     return (refusal, edict.Type);
 

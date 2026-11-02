@@ -87,6 +87,9 @@ namespace SWLOR.Game.Server.Service
             if (city.Upkeep <= 0 || !CityTreasuryRules.CanSpend(city, city.Upkeep))
                 return false;
 
+            // Paying lifts the city out of disrepair, which can resume a paused Industrial Charter.
+            IndustrialCharter.SettleCity(city);
+
             var billedBefore = Edict.GetBilledTypes(city);
             CityTreasuryRules.PayUpkeep(city);
             Edict.AddResumedBilling(city, billedBefore, nowUtc);

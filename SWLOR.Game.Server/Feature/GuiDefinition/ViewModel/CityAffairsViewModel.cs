@@ -236,19 +236,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 SelectedTitle = detail.Title;
-                SelectedText = detail.Text;
+                SelectedText = string.IsNullOrWhiteSpace(situation.SubjectNote) ? detail.Text : $"{detail.Text} {situation.SubjectNote}";
                 SelectedTimeLeft = SituationRules.CanDecide(situation, now)
                     ? SituationRules.FormatTimeLeft(situation.ExpiresUtc, now)
                     : "Out of time. It takes its ignored outcome at the next restart.";
 
                 var context = CityAffairs.BuildContext(city, CityAffairs.GetSkillRanks(GetObjectUUID(Player)));
                 var canDecide = SituationRules.CanDecide(situation, now);
+                var subjectCredits = CityAffairs.GetSubjectCredits(situation);
                 foreach (var choice in detail.Choices)
                 {
                     var unmet = SituationRules.DescribeUnmet(choice.Requirements, context);
-                    var affordable = SituationRules.CanAfford(choice.Cost, SituationTreasury.GetSpendable(city));
+                    var affordable = SituationRules.CanAfford(choice.GetCost(subjectCredits), SituationTreasury.GetSpendable(city));
                     choiceTexts.Add(choice.Text);
-                    choiceInfos.Add(DescribeChoice(choice, unmet, affordable));
+                    choiceInfos.Add(DescribeChoice(choice, unmet, affordable, subjectCredits));
                     choiceEnabled.Add(canDecide && unmet.Count == 0 && affordable);
                 }
             }
@@ -258,10 +259,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChoiceEnabled = choiceEnabled;
         }
 
-        private static string DescribeChoice(SituationChoice choice, List<string> unmet, bool affordable)
+        private static string DescribeChoice(SituationChoice choice, List<string> unmet, bool affordable, int subjectCredits)
         {
             var parts = new List<string>();
-            var effects = SituationRules.DescribeEffects(choice.Effects, choice.IsSecret);
+            var effects = SituationRules.DescribeEffects(choice.Effects, choice.IsSecret, subjectCredits);
             if (effects.Length > 0)
                 parts.Add(effects);
             else
@@ -302,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var choice = detail.Choices[choiceIndex];
-            var effects = SituationRules.DescribeEffects(choice.Effects, choice.IsSecret);
+            var effects = SituationRules.DescribeEffects(choice.Effects, choice.IsSecret, CityAffairs.GetSubjectCredits(situation));
             var publication = choice.IsSecret
                 ? "The decision is final."
                 : "The decision is final and goes in the City Gazette under your name and title.";

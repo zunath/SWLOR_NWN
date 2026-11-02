@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.EdictDefinition
                 .Name("Shadowport")
                 .Description("The Starport exchange buys contraband at close to black-market prices, with a small chance per sale of a customs bust. Normal goods sell 15% lower.")
                 .WeeklyCost(10000)
+                .LawfulPortOnly()
                 .NotACitizenBenefit();
         }
     }

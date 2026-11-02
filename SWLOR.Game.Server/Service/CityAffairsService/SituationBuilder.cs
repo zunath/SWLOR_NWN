@@ -43,6 +43,13 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
             return this;
         }
 
+        /// <summary>An event elsewhere in the game raises the situation, so it is never drawn at random.</summary>
+        public SituationBuilder EventOnly()
+        {
+            _situation.IsEventDriven = true;
+            return this;
+        }
+
         /// <summary>The situation exposes the secret Gazette entry it carries when it arrives.</summary>
         public SituationBuilder ExposesSecret()
         {
@@ -101,6 +108,20 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         public SituationBuilder LivestockLoseProducts()
         {
             _choice.Effects.Add(SituationEffect.LivestockLoseProducts());
+            return this;
+        }
+
+        /// <summary>The choice sends the city's help to the holding the situation is about, ending its raid.</summary>
+        public SituationBuilder SendHelp()
+        {
+            _choice.Effects.Add(SituationEffect.SendHoldingHelp());
+            return this;
+        }
+
+        /// <summary>The choice pays the customs fine of the holding the situation is about from the treasury, up to the cost limit.</summary>
+        public SituationBuilder PayHoldingFine()
+        {
+            _choice.Effects.Add(SituationEffect.PayHoldingFine());
             return this;
         }
 

@@ -1,8 +1,13 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.EdictService;
+using SWLOR.Game.Server.Service.HoldingService;
+using SWLOR.Game.Server.Service.IndustryService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.StationService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -176,6 +181,71 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             return Edict.GetCitizenEdict(dbPlayer, type, nowUtc) != null;
+        }
+
+        #endregion
+
+        #region Planetary industry
+
+        /// <summary>
+        /// The NPC exchange of the planet the city's Starport serves: a planet city's planet, or an orbit station's anchor exchange.
+        /// Invalid for a Wild Space station, which has no planet.
+        /// </summary>
+        public static TradeExchangeType GetCityExchange(WorldProperty city)
+        {
+            return city == null || Edict.IsWildSpaceStation(city) ? TradeExchangeType.Invalid : GetTradeExchange(city);
+        }
+
+        /// <summary>
+        /// The NPC exchange the city's Trade Exchange trades through: a planet city's planet, an orbit station's anchor exchange, or
+        /// for a Wild Space station the nearest open port. Invalid for no city.
+        /// </summary>
+        public static TradeExchangeType GetTradeExchange(WorldProperty city)
+        {
+            if (city == null)
+                return TradeExchangeType.Invalid;
+
+            return Station.IsStation(city)
+                ? StationRules.GetExchange(city.StationAnchorId)
+                : TradeLookup.GetExchangeForPlanet(Planet.GetPlanetTypeByAreaResref(city.ParentPropertyId));
+        }
+
+        /// <summary>Whether the city has the Shadowport Edict in effect, which turns its Starport exchange into a smugglers' port.</summary>
+        public static bool IsShadowportActive(WorldProperty city)
+        {
+            return Edict.IsActive(city, EdictType.Shadowport);
+        }
+
+        /// <summary>
+        /// Advances a holding to <paramref name="nowUtc"/> under the owner's city: with the Industrial Charter in effect, a citizen in
+        /// good standing has half the setback chance and needs half the repair goods on a holding standing on the city's planet. A
+        /// stretch of days uses the Charter as it stood at its start, so the waiting period after joining and a situation's pause end
+        /// where they end. The Edict, a citizenship and a tax debt settle the owner's holdings when they change (<see cref="IndustrialCharter"/>).
+        /// </summary>
+        public static HoldingAdvanceResult AdvanceHolding(PlanetaryHolding holding, HoldingDetail detail, DateTime nowUtc, System.Random random)
+        {
+            var owner = string.IsNullOrWhiteSpace(holding.OwnerPlayerId) ? null : DB.Get<Player>(holding.OwnerPlayerId);
+            var city = owner == null || string.IsNullOrWhiteSpace(owner.CitizenPropertyId) ? null : Edict.GetLiveCity(owner.CitizenPropertyId);
+            var charter = city?.Edicts.GetValueOrDefault(EdictType.IndustrialCharter);
+            if (charter == null || !IndustrialCharterRules.IsOnCityPlanet(detail.Exchange, GetCityExchange(city), Edict.IsWildSpaceStation(city)))
+                return HoldingRules.Advance(holding, detail, nowUtc, random);
+
+            var changeTimes = new List<DateTime>();
+            if (owner.CitizenSinceUtc.HasValue)
+                changeTimes.Add(owner.CitizenSinceUtc.Value.AddDays(EdictRules.CitizenDelayDays));
+            if (charter.SituationPauseEndsUtc.HasValue)
+                changeTimes.Add(charter.SituationPauseEndsUtc.Value);
+
+            return HoldingSettlementRules.Advance(
+                holding,
+                detail,
+                nowUtc,
+                random,
+                at => IndustrialCharterRules.GetModifiers(
+                    EdictChanges.GetInEffect(city, EdictType.IndustrialCharter, at) != null,
+                    EdictRules.IsEligibleCitizen(owner.CitizenPropertyId, city.Id, owner.IsDeleted, owner.PropertyOwedTaxes, owner.CitizenSinceUtc, at),
+                    true),
+                changeTimes);
         }
 
         #endregion

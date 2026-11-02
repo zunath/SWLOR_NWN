@@ -1614,6 +1614,10 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var city in cities)
             {
+                // Everything below can change what the Industrial Charter does (an election, disrepair, a tax debt, a level), so the
+                // holdings of the city's citizens settle first, under the Charter as it stood.
+                IndustrialCharter.SettleCity(city);
+
                 ProcessCityCitizenRequirement(now, city);
                 if (city.IsQueuedForDeletion)
                 {
@@ -2378,6 +2382,10 @@ namespace SWLOR.Game.Server.Service
                 DB.Delete<WorldPropertyCategory>(category.Id);
                 Log.Write(LogGroup.Property, $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
             }
+
+            // The city's citizens lose the Industrial Charter with their citizenship, so their holdings settle first.
+            if (property.PropertyType == PropertyType.City)
+                IndustrialCharter.SettleCity(property);
 
             // Clear any citizenship assignments on players who may be citizens of this property.
             var citizenQuery = new DBQuery<Player>()

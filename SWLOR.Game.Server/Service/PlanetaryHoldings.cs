@@ -73,6 +73,16 @@ namespace SWLOR.Game.Server.Service
             return holdings;
         }
 
+        /// <summary>Brings every holding of a character up to now, online or not. A city calls it before a change to its modifiers.</summary>
+        public static void SettleHoldings(string playerId)
+        {
+            var owner = FindOnlinePlayer(playerId);
+            foreach (var holding in GetHoldingRecords(playerId))
+            {
+                Process(holding, owner);
+            }
+        }
+
         /// <summary>
         /// The holdings the player's account owns: <paramref name="ownHoldings"/> (the player's, already loaded) plus those
         /// of the account's other characters that still exist. The limit is per account so that more characters do not
@@ -119,7 +129,10 @@ namespace SWLOR.Game.Server.Service
             if (detail == null)
                 return false;
 
-            var result = HoldingRules.Advance(holding, detail, DateTime.UtcNow, new System.Random(Random.Next()));
+            var hadRaid = holding.RaidPending;
+            var hadFine = holding.CustomsFine > 0;
+            var now = DateTime.UtcNow;
+            var result = EdictEffects.AdvanceHolding(holding, detail, now, new System.Random(Random.Next()));
             if (result.Foreclosed)
             {
                 Foreclose(holding, detail, owner);
@@ -127,7 +140,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (result.Days > 0)
+            {
                 DB.Set(holding);
+                HoldingCityAffairs.RaiseSituations(holding, detail, hadRaid, hadFine, now);
+            }
 
             if (GetIsObjectValid(owner))
             {

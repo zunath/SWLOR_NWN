@@ -48,6 +48,18 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
             return new SituationEffect(SituationEffectType.LivestockNoProducts);
         }
 
+        /// <summary>The city drives the raiders off the citizen's holding, so the raid ends and the warehouse is safe.</summary>
+        public static SituationEffect SendHoldingHelp()
+        {
+            return new SituationEffect(SituationEffectType.HoldingHelp);
+        }
+
+        /// <summary>The treasury pays the holding's customs fine, up to the cost limit. The cost is read when the choice is picked.</summary>
+        public static SituationEffect PayHoldingFine()
+        {
+            return new SituationEffect(SituationEffectType.HoldingFine);
+        }
+
         public static SituationEffect QueueFollowUp(SituationType followUp, int delayDays, int oneIn = 1, bool carriesSecret = false)
         {
             return new SituationEffect(SituationEffectType.FollowUp)

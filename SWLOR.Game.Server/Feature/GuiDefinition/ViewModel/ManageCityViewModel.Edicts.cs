@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var toggles = new GuiBindingList<bool>();
 
             _offeredEdictTypes.Clear();
-            foreach (var detail in EdictRules.GetOfferedEdicts(Edict.IsWildSpaceStation(city)).Where(x => !city.Edicts.ContainsKey(x.Type)))
+            foreach (var detail in EdictRules.GetOfferedEdicts(Edict.IsWildSpaceStation(city), Edict.IsOpenPort(city)).Where(x => !city.Edicts.ContainsKey(x.Type)))
             {
                 var levelNote = level < detail.MinimumCityLevel ? $" (needs level {detail.MinimumCityLevel})" : string.Empty;
                 _offeredEdictTypes.Add(detail.Type);

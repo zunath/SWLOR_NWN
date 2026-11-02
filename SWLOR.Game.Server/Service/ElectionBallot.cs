@@ -139,7 +139,8 @@ namespace SWLOR.Game.Server.Service
                 city.Id,
                 EdictChanges.GetCityLevel(city),
                 Edict.IsWildSpaceStation(city),
-                targetId => Edict.GetLiveCity(targetId) != null);
+                targetId => Edict.GetLiveCity(targetId) != null,
+                Edict.IsOpenPort(city));
             return refusal == EdictRefusal.None
                 ? string.Empty
                 : ElectionPlatformRules.DescribeRefusal(refusal, type, EdictChanges.GetCityLevel(city));

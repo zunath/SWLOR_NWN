@@ -3089,6 +3089,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
         HoloStarGlobe = 5024,
         // END space decor
 
+        // Player City Revamp: farming. The City Revamp reserves 5100-5129.
+        [Structure("Garden Plot",
+            "growing_plant",
+            "A plot of tilled earth where a seed grows into a crop. Place it outdoors in a city or inside a house.",
+            true,
+            0,
+            PropertyType.City | PropertyType.House)]
+        GardenPlot = 5100,
+
         // City structures for duels
         [Structure("Dueling Ring",
             "swlor_0049",

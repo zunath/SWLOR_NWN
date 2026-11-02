@@ -140,6 +140,9 @@ namespace SWLOR.Game.Server.Core
         public const string OnDerelictAirlockUsed = "derelict_airlock";
         public const string OnDerelictStrongboxUsed = "derelict_strbox";
 
+        // Farming events
+        public const string OnGardenPlotUsed = "garden_plot_used";
+
         // Aura events
         public const string OnAuraEnter = "aura_enter";
         public const string OnAuraExit = "aura_exit";

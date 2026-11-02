@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
+using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -303,6 +304,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.TendGardens,
                 PropertyPermissionType.EditTaxes,
                 PropertyPermissionType.AccessTreasury,
                 PropertyPermissionType.ManageUpgrades,
@@ -357,6 +359,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.EditCategories,
+                PropertyPermissionType.TendGardens,
             };
 
             _permissionsByPropertyType[PropertyType.Lab] = new List<PropertyPermissionType>
@@ -1800,7 +1803,7 @@ namespace SWLOR.Game.Server.Service
         /// Who counts as the incumbent in this election's result. For now it is always the sitting mayor; in a step-down
         /// snap election it is the interim holder.
         /// </summary>
-        private static string GetElectionIncumbentId(WorldProperty city, Election election)
+        internal static string GetElectionIncumbentId(WorldProperty city, Election election)
         {
             return city.OwnerPlayerId;
         }
@@ -1923,7 +1926,8 @@ namespace SWLOR.Game.Server.Service
                 : ElectionRules.GetNextRegularElectionUtc(endedUtc);
 
             // Someone new takes the seat.
-            if (!string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId)
+            var seatChanged = !string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId;
+            if (seatChanged)
             {
                 transferPermissions(outcome.WinnerPlayerId);
                 city.OwnerPlayerId = outcome.WinnerPlayerId;
@@ -1942,6 +1946,16 @@ namespace SWLOR.Game.Server.Service
 
             // An empty recall opens the second, and an empty second recall removes the city or pauses it for neglect.
             CityRecall.Apply(now, city, election.Kind, outcome.ClearsNeglect, recallStep);
+
+            // Only an outright win enacts a platform, replacing every Edict over its lock. It comes after the pauses the
+            // election ends are cleared, so what still holds keeps the new Edicts paused. A winner with no platform (the
+            // election opened before platforms) leaves the Edicts as they are; a new mayor's inherited ones stop counting as promises.
+            var winnerPlatform = outcome.HasMandate
+                ? ElectionPlatformRules.GetPlatformToEnact(election.Platforms, outcome.WinnerPlayerId)
+                : null;
+            var platformEnactment = winnerPlatform == null ? null : Edict.EnactPlatform(city, winnerPlatform, now);
+            if (platformEnactment == null && seatChanged)
+                EdictChanges.ClearPlatformOrigin(city);
 
             city.LastElectionResult = new ElectionResultRecord
             {
@@ -1972,6 +1986,9 @@ namespace SWLOR.Game.Server.Service
             DB.Delete<Election>(election.Id);
 
             BroadcastElectionResult(city, outcome, nextRegularUtc);
+            if (platformEnactment != null)
+                Edict.AnnouncePlatform(city, platformEnactment, outcome.WinnerPlayerId);
+
             CityRecall.Announce(city, recallStep);
         }
 
@@ -2228,6 +2245,9 @@ namespace SWLOR.Game.Server.Service
             if (property.PropertyType == PropertyType.Structure && StationBuildingRules.IsStationBuilding(property.StructureType))
                 StationBuildings.OnDeleted(property);
 
+            if (property.PropertyType == PropertyType.Structure && property.StructureType == StructureType.DuelingRing)
+                Tournaments.OnRingDeleted(property);
+
             // Recursively clear any children properties tied to this property.
             // Children are also found by their parent Id because loading spawns structures that way,
             // so a stale child list can't leave orphaned buildings or interiors behind.
@@ -2317,6 +2337,7 @@ namespace SWLOR.Game.Server.Service
                 CityGazette.DeleteAll(property.Id);
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
+                Tournaments.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
                 CityStockAllowances.DeleteAll(property.Id);
             }
@@ -3621,6 +3642,17 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrEmpty(stallError))
                 {
                     FloatingTextStringOnCreature(stallError, player, false);
+                    return;
+                }
+            }
+
+            // A house holds a limited number of garden plots. A city's plots count against its structure limit alone.
+            if (structureType == StructureType.GardenPlot)
+            {
+                var plotLimit = FarmingRules.GetPlotLimit(property.PropertyType, Farming.IsGreenhouse(property));
+                if (structures.Count(x => x.StructureType == StructureType.GardenPlot) >= plotLimit)
+                {
+                    FloatingTextStringOnCreature($"This property holds at most {plotLimit} garden plots.", player, false);
                     return;
                 }
             }

@@ -12,21 +12,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float ContentPanelWidth = 520f;
         private const float LabelHeight = 20f;
-        private const float InstructionsHeight = 100f;
+        private const float InstructionsHeight = 130f;
         private const float CandidateListHeight = 110f;
         private const float CandidateRowHeight = 28f;
-        private const float StatementHeight = 110f;
+        private const float CandidateDetailsHeight = 200f;
         private const float StatementEditorHeight = 100f;
         private const float ButtonHeight = 35f;
+        private const float PlatformInstructionsHeight = 92f;
+        private const float PlatformEdictRowHeight = 28f;
+        private const float PlatformEdictListHeight = 140f;
+        private const float FocusedEdictHeight = 56f;
+        private const float PlatformTargetRowHeight = 28f;
+        private const float PlatformTargetListHeight = 84f;
+        private const float PlatformMessageHeight = 40f;
+        private const float CostPreviewHeight = 150f;
+        private const float CityLevelWarningHeight = 100f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Election)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 580f, 760f)
+                .SetInitialGeometry(0, 0, 580f, 800f)
                 .SetTitle("Election")
-                .DefinePartialView(ElectionViewModel.MainContentPartial, AddMainContent);
+                .DefinePartialView(ElectionViewModel.MainContentPartial, AddMainContent)
+                .DefinePartialView(ElectionViewModel.PlatformPartial, AddPlatformContent);
 
             window.AddStandardLayout(layout => layout.SetContentPartialElement(ElectionViewModel.MainContentElement));
 
@@ -90,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             content.AddRow(line =>
                             {
                                 line.AddLabel()
-                                    .SetText("Statement")
+                                    .SetText("Platform")
                                     .SetHeight(LabelHeight)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
                             });
@@ -98,39 +108,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             content.AddRow(line =>
                             {
                                 line.AddText()
-                                    .BindText(model => model.SelectedStatement)
-                                    .SetHeight(StatementHeight);
+                                    .BindText(model => model.SelectedCandidateDetails)
+                                    .SetHeight(CandidateDetailsHeight);
                             });
 
-                            // Registration: a citizen writes or edits their own statement.
+                            // Registration: a citizen enters the race, or edits their platform, in the platform step.
                             content.AddRow(line =>
                             {
-                                line.BindIsVisible(model => model.IsStatementEditorVisible);
-                                line.AddLabel()
-                                    .SetText($"Your statement ({ElectionRules.StatementMaxLength} characters at most)")
-                                    .SetHeight(LabelHeight)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                            });
-
-                            content.AddRow(line =>
-                            {
-                                line.BindIsVisible(model => model.IsStatementEditorVisible);
-                                line.AddTextEdit()
-                                    .SetPlaceholder("Tell citizens what you stand for.")
-                                    .SetMaxLength(ElectionRules.StatementMaxLength)
-                                    .SetIsMultiline(true)
-                                    .BindValue(model => model.StatementInput)
-                                    .SetHeight(StatementEditorHeight);
-                            });
-
-                            content.AddRow(line =>
-                            {
-                                line.BindIsVisible(model => model.IsSaveStatementVisible);
+                                line.BindIsVisible(model => model.IsPlatformButtonVisible);
+                                line.AddSpacer();
                                 line.AddButton()
-                                    .SetText("Save Statement")
-                                    .SetTooltip("Save the statement shown above. You can edit it until registration closes.")
-                                    .BindOnClicked(model => model.SaveStatement())
+                                    .BindText(model => model.PlatformButtonText)
+                                    .SetTooltip("Choose the Edicts you promise, see what they cost, and write your statement. You can edit your platform until registration closes.")
+                                    .BindOnClicked(model => model.OpenPlatform())
                                     .SetHeight(ButtonHeight);
+                                line.AddSpacer();
                             });
 
                             // Voting: the player's current vote.
@@ -143,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
                             });
 
-                            // Registration (Enter or Exit Race) and a contested vote (Cast Vote).
+                            // Registration (Exit Race, for a candidate) and a contested vote (Cast Vote).
                             content.AddRow(line =>
                             {
                                 line.BindIsVisible(model => model.IsMainActionVisible);
@@ -174,6 +166,162 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetText("Clear Vote")
                                     .SetTooltip("Take your vote back. Clearing a vote never pays the voter reward again.")
                                     .BindOnClicked(model => model.ClearVote())
+                                    .SetHeight(ButtonHeight);
+                            });
+                        });
+                    })
+                        .SetWidth(ContentPanelWidth);
+                });
+            });
+        }
+
+        /// <summary>
+        /// The platform step: the Edicts a candidate promises, what they cost beside the city's upkeep and treasury, the
+        /// City Management warning, and the statement.
+        /// </summary>
+        private static void AddPlatformContent(GuiGroup<ElectionViewModel> host)
+        {
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(panel =>
+                    {
+                        panel.SetShowBorder(false);
+                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.AddColumn(content =>
+                        {
+                            content.AddRow(line =>
+                            {
+                                line.AddText()
+                                    .BindText(model => model.PlatformInstructions)
+                                    .SetHeight(PlatformInstructionsHeight);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddLabel()
+                                    .BindText(model => model.PlatformSlotsText)
+                                    .SetColor(GuiColor.Cyan)
+                                    .SetHeight(LabelHeight)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddList(template =>
+                                    {
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindIsToggled(model => model.PlatformEdictToggles)
+                                                .BindText(model => model.PlatformEdictNames)
+                                                .BindTooltip(model => model.PlatformEdictTooltips)
+                                                .BindIsEnabled(model => model.PlatformEdictEnables)
+                                                .BindOnClicked(model => model.TogglePlatformEdict());
+                                        });
+                                    })
+                                    .BindRowCount(model => model.PlatformEdictNames)
+                                    .SetRowHeight(PlatformEdictRowHeight)
+                                    .SetHeight(PlatformEdictListHeight);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddText()
+                                    .BindText(model => model.FocusedEdictText)
+                                    .SetHeight(FocusedEdictHeight);
+                            });
+
+                            // An Alliance or Embargo in the platform names a city.
+                            content.AddRow(line =>
+                            {
+                                line.BindIsVisible(model => model.IsPlatformTargetPickerVisible);
+                                line.AddLabel()
+                                    .BindText(model => model.PlatformTargetPrompt)
+                                    .SetHeight(LabelHeight)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.BindIsVisible(model => model.IsPlatformTargetPickerVisible);
+                                line.AddList(template =>
+                                    {
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindIsToggled(model => model.PlatformTargetToggles)
+                                                .BindText(model => model.PlatformTargetNames)
+                                                .BindOnClicked(model => model.SelectPlatformTarget());
+                                        });
+                                    })
+                                    .BindRowCount(model => model.PlatformTargetNames)
+                                    .SetRowHeight(PlatformTargetRowHeight)
+                                    .SetHeight(PlatformTargetListHeight);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.BindIsVisible(model => model.IsPlatformMessageVisible);
+                                line.AddText()
+                                    .BindText(model => model.PlatformMessage)
+                                    .SetHeight(PlatformMessageHeight);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddLabel()
+                                    .SetText("What your platform costs")
+                                    .SetHeight(LabelHeight)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddText()
+                                    .BindText(model => model.CostPreviewText)
+                                    .SetHeight(CostPreviewHeight);
+                            });
+
+                            // Shown only when the candidate's City Management rank would lower the city.
+                            content.AddRow(line =>
+                            {
+                                line.BindIsVisible(model => model.IsCityLevelWarningVisible);
+                                line.AddText()
+                                    .BindText(model => model.CityLevelWarningText)
+                                    .SetHeight(CityLevelWarningHeight);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddLabel()
+                                    .SetText($"Your statement ({ElectionRules.StatementMaxLength} characters at most)")
+                                    .SetHeight(LabelHeight)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddTextEdit()
+                                    .SetPlaceholder("Tell citizens what you stand for.")
+                                    .SetMaxLength(ElectionRules.StatementMaxLength)
+                                    .SetIsMultiline(true)
+                                    .BindValue(model => model.StatementInput)
+                                    .SetHeight(StatementEditorHeight);
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddButton()
+                                    .SetText("Back")
+                                    .SetTooltip("Return to the candidates without saving.")
+                                    .BindOnClicked(model => model.ClosePlatform())
+                                    .SetHeight(ButtonHeight);
+                                line.AddButton()
+                                    .BindText(model => model.PlatformSubmitText)
+                                    .SetTooltip("Enter the race with this platform, or save the changes to your platform. You can edit it until registration closes.")
+                                    .BindOnClicked(model => model.SubmitPlatform())
                                     .SetHeight(ButtonHeight);
                             });
                         });

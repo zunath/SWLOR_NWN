@@ -85,6 +85,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
         [PropertyPermission("Handle City Affairs", "Can decide City Affairs situations. Given by appointing an officer.", true,
             ShowInPermissionWindow = false)]
         HandleCityAffairs = 20,
+
+        // Houses, Cities
+        [PropertyPermission("Tend Gardens", "Can plant in and tend the property's garden plots.", true)]
+        TendGardens = 21,
     }
 
     public class PropertyPermissionAttribute : Attribute

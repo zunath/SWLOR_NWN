@@ -23543,6 +23543,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Fermentation Vat"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5105"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Holo Star Globe"
               },
               "RESREF": {

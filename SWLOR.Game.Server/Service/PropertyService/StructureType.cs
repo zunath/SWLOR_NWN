@@ -3115,6 +3115,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             PropertyType.City)]
         Corral = 5104,
+
+        // Player City Revamp: enzyme cultures. Inside a house, since a vat is farm equipment for a farmer's own home.
+        [Structure("Fermentation Vat",
+            "fermentation_vat",
+            "A vat that cultures enzymes for breeders. Place it inside a house in a city. Give it 2 crops, 1 manure and Distilled Water, and 2 days later it makes one enzyme of the type and color you pick. It copies a color only after you have shown it one hunted enzyme of that color.",
+            true,
+            0,
+            PropertyType.House)]
+        FermentationVat = 5105,
     }
 
     public class StructureAttribute : Attribute

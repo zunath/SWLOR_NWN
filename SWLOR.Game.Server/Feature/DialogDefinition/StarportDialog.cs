@@ -224,6 +224,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("Trade Exchange", () =>
             {
                 Close();
+
+                // The city's starport level (so its exchange) may have changed since the page was built.
+                dock = Trade.TryGetCityDock(starportId);
+                if (dock == null || dock.Exchange == TradeExchangeType.Invalid)
+                {
+                    SendMessageToPC(player, ColorToken.Red("This starport no longer has a Trade Exchange."));
+                    return;
+                }
+
                 if (!dock.HasExchange)
                 {
                     SendMessageToPC(player, ColorToken.Red(

@@ -62,8 +62,9 @@ edits must account for specialized owners and their derived robe aliases too.
 | --- | --- |
 | Canonical human pelvis 034 | `PelvisSkirtBindings.py` / `.json`, `TestPelvisSkirtBindings.py` |
 | Modular skirts/capes listed in the chest manifest | `ChestSkirtBindings.py` / `.json`, `TestChestSkirtBindings.py` |
+| Robe 236's native models (pinned Combat Upgrade release) | `RestoreRobe236Release.py`, `TestRobe236Release.py` |
 | Robe 236's generated skirt bindings | `RobeSkirtBindings.py`, `TestRobeSkirtBindings.py` |
-| Body-bound robe panels, hoods and belts | `BindRobePanels.py`, `MakeRobePanelsRigid.py`; `TestBoundRobePanels.py`, `TestRigidRobePanels.py` |
+| Body-bound robe panels, hoods and belts (all robes except 236) | `BindRobePanels.py`, `MakeRobePanelsRigid.py`; `TestBoundRobePanels.py`, `TestRigidRobePanels.py` |
 | Robe skeletons and animation bridges | `RobeSkeleton.py`, `GenerateRobeRgbModels.py`, `RobePoseAudit.py`; applicable `TestRobeSkeleton.py`, `TestRobeAnimations.py`, `TestSharedRobeFamilies.py` |
 | Body/flap tracks and missing emote cloth motion | Respective restore/fill generator; `TestRestoreRobeBodyTracks.py`, `TestFillRobeEmoteMotion.py`, `TestFillEmoteFlapTracks.py` as applicable |
 | External part skins on robe bodies | `GeneratePartSkinModels.py`, `TestPartSkinModels.py`, C# `PartSkinAppearanceTests` |

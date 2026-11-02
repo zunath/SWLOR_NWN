@@ -704,8 +704,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Sets a player's stored equipment Defense (per type), Evasion, maximum FP and maximum STM to what the worn
-        /// gear grants. Like max HP, these records are kept by adding and removing each equipment change, so one missed,
+        /// Sets a player's stored equipment Defense (per type), Evasion, maximum FP, maximum STM, and crafting Control,
+        /// Craftsmanship and CP Bonus to what the worn gear grants. Like max HP, these records are kept by adding and removing each equipment change, so one missed,
         /// failed or repeated change leaves them off for good.
         /// </summary>
         /// <param name="player">The player to reconcile</param>
@@ -760,8 +760,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Writes the gear totals into the selected records: Defense for every defense type, Evasion, and maximum FP
-        /// and STM above their bases. Pools are left alone.
+        /// Writes the gear totals into the selected records: Defense for every defense type, Evasion, maximum FP
+        /// and STM above their bases, and Control, Craftsmanship and CP Bonus for every crafting skill. Pools are left alone.
         /// </summary>
         /// <returns>The records that changed</returns>
         public static EquipmentRecordStats ApplyEquipmentStatTotals(Player entity, EquipmentStatTotals totals, EquipmentRecordStats stats)
@@ -801,7 +801,48 @@ namespace SWLOR.Game.Server.Service
                 corrected |= EquipmentRecordStats.Stamina;
             }
 
+            if (stats.HasFlag(EquipmentRecordStats.Control))
+            {
+                entity.Control ??= new Dictionary<SkillType, int>();
+                if (ApplyCraftStatTotals(entity.Control, totals.GetControl))
+                    corrected |= EquipmentRecordStats.Control;
+            }
+
+            if (stats.HasFlag(EquipmentRecordStats.Craftsmanship))
+            {
+                entity.Craftsmanship ??= new Dictionary<SkillType, int>();
+                if (ApplyCraftStatTotals(entity.Craftsmanship, totals.GetCraftsmanship))
+                    corrected |= EquipmentRecordStats.Craftsmanship;
+            }
+
+            if (stats.HasFlag(EquipmentRecordStats.CPBonus))
+            {
+                entity.CPBonus ??= new Dictionary<SkillType, int>();
+                if (ApplyCraftStatTotals(entity.CPBonus, totals.GetCPBonus))
+                    corrected |= EquipmentRecordStats.CPBonus;
+            }
+
             return corrected;
+        }
+
+        /// <summary>
+        /// Sets each crafting skill's record to what the gear grants. A missing entry already reads as zero.
+        /// </summary>
+        /// <returns>True if any skill changed</returns>
+        private static bool ApplyCraftStatTotals(Dictionary<SkillType, int> record, Func<SkillType, int> getTotal)
+        {
+            var changed = false;
+            foreach (var skill in EquipmentStatTotals.CraftSkills)
+            {
+                var amount = getTotal(skill);
+                if ((record.TryGetValue(skill, out var current) ? current : 0) == amount)
+                    continue;
+
+                record[skill] = amount;
+                changed = true;
+            }
+
+            return changed;
         }
 
         /// <summary>

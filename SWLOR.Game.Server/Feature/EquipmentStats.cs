@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void RefreshEquipmentRecordsAfterEquipmentChange()
         {
-            // Defense, Evasion, FP and STM are also added and removed before the change completes.
+            // Defense, Evasion, FP, STM, Control, Craftsmanship and CP Bonus are also added and removed before the change completes.
             // Rebuild the ones this item, and any item it displaced, feed from the slots.
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var stats = GetRecordStats(item) | (EquipmentRecordStats)GetLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);

@@ -6,8 +6,8 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
-    /// A garden plot's window: the crop, its stage and time left, a picker for the seeds the player carries, and the four
-    /// actions (Plant, Tend, Harvest and Clear). Anyone can open it to look; each action is enabled only when the player may
+    /// A garden plot's window: the crop, its stage and time left, a picker for the fertilizer and one for the seeds the player
+    /// carries, and the four actions (Plant, Tend, Harvest and Clear). Anyone can open it to look; each action is enabled only when the player may
     /// do it, with the reason as its tooltip.
     /// </summary>
     public class GardenPlotDefinition : IGuiWindowDefinition
@@ -18,11 +18,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float LabelHeight = 20f;
         private const float MessageHeight = 56f;
         private const float SeedRowHeight = 32f;
+        private const float FertilizerLabelWidth = 90f;
+        private const float FertilizerComboWidth = 320f;
+        private const float FertilizerComboHeight = 32f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.GardenPlot)
-                .SetInitialGeometry(0, 0, 480f, 460f)
+                .SetInitialGeometry(0, 0, 480f, 500f)
                 .SetTitle("Garden Plot")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -81,6 +84,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsEnabled(model => model.CanClear)
                                     .BindDisabledTooltip(model => model.ClearTooltip)
                                     .BindOnClicked(model => model.OnClickClear());
+                            });
+
+                            content.AddRow(line =>
+                            {
+                                line.AddLabel()
+                                    .SetText("Fertilizer:")
+                                    .SetWidth(FertilizerLabelWidth)
+                                    .SetHeight(LabelHeight)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                line.AddComboBox()
+                                    .BindOptions(model => model.FertilizerOptions)
+                                    .BindSelectedIndex(model => model.SelectedFertilizerIndex)
+                                    .BindIsEnabled(model => model.CanPickFertilizer)
+                                    .SetTooltip("Fertilizer of the crop's tier or higher adds 1 item to the harvest. It is used up when you plant.")
+                                    .SetWidth(FertilizerComboWidth)
+                                    .SetHeight(FertilizerComboHeight);
                             });
 
                             content.AddRow(line =>

@@ -203,8 +203,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="fertilizerResref">
         /// The fertilizer the planter offers, or empty for none. A sapling refuses it (<see cref="WoodlotRules.GetFertilizerRefusal"/>)
-        /// before the seed or the fertilizer is used. A crop takes fertilizer with the fertilizer items, which add it to the plot's
-        /// record; until then a crop ignores what is offered.
+        /// before the seed or the fertilizer is used. A crop takes Fertilizer of its tier or higher: one is used up and the plot's
+        /// record is marked fertilized, which adds 1 to the harvest. A fertilizer that is not carried, not a fertilizer or too weak
+        /// is refused before anything is used up.
         /// </param>
         public static FarmingResult Plant(uint player, string plotId, string seedResref, string fertilizerResref = "")
         {
@@ -221,6 +222,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = isPlayer ? GetObjectUUID(player) : string.Empty;
             var cdKey = isPlayer ? GetPCPublicCDKey(player) : string.Empty;
             var seed = isPlayer ? FindItem(player, crop.SeedResref) : OBJECT_INVALID;
+            var fertilizer = isPlayer && !string.IsNullOrWhiteSpace(fertilizerResref) ? FindItem(player, fertilizerResref) : OBJECT_INVALID;
 
             var refusal = FarmingRules.CheckPlant(
                 isPlayer,
@@ -233,11 +235,15 @@ namespace SWLOR.Game.Server.Service
                 isPlayer ? CountGrowingCrops(cdKey, playerId, now) : 0,
                 GetIsObjectValid(seed),
                 GetSiteRefusal(structure, crop),
-                WoodlotRules.GetFertilizerRefusal(crop.IsSapling, !string.IsNullOrWhiteSpace(fertilizerResref)));
+                WoodlotRules.GetFertilizerRefusal(crop.IsSapling, !string.IsNullOrWhiteSpace(fertilizerResref)),
+                FertilizerRules.GetRefusal(fertilizerResref, GetIsObjectValid(fertilizer), crop.Tier));
             if (refusal != FarmingRefusal.None)
                 return FarmingResult.Refused(refusal);
 
+            var fertilized = GetIsObjectValid(fertilizer);
             UseUpOne(seed);
+            if (fertilized)
+                UseUpOne(fertilizer);
             DB.Set(new GardenPlot
             {
                 Id = GardenPlot.KeyFor(plotId),
@@ -249,12 +255,13 @@ namespace SWLOR.Game.Server.Service
                 TendReadyUtc = FarmingRules.GetTendReadyUtc(now, crop.GrowHours),
                 RipeUtc = FarmingRules.GetRipeUtc(now, crop.GrowHours),
                 WitherUtc = FarmingRules.GetWitherUtc(FarmingRules.GetRipeUtc(now, crop.GrowHours)),
+                Fertilized = fertilized,
                 LastProcessedUtc = now
             });
 
             RefreshName(plotId);
-            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} planted {crop.Type} in garden plot {plotId}.");
-            return FarmingResult.Success(FarmingRules.DescribePlanted(crop.Name, crop.GrowHours));
+            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} planted {crop.Type} in garden plot {plotId}{(fertilized ? " with fertilizer" : string.Empty)}.");
+            return FarmingResult.Success(FarmingRules.DescribePlanted(crop.Name, crop.GrowHours, fertilized));
         }
 
         /// <summary>Tends the crop, once. The planter can, and so can anyone with garden permission, and the tender earns the tending XP.</summary>
@@ -478,6 +485,20 @@ namespace SWLOR.Game.Server.Service
                 .OrderBy(entry => entry.Crop.Tier)
                 .ThenBy(entry => entry.Crop.Name)
                 .ToList();
+        }
+
+        /// <summary>The fertilizer the player carries, one entry per tier with how many, lowest tier first.</summary>
+        public static List<(int Tier, int Count)> GetFertilizerCarried(uint player)
+        {
+            var counts = new SortedDictionary<int, int>();
+            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            {
+                var tier = FertilizerRules.GetTier(GetResRef(item));
+                if (tier > 0)
+                    counts[tier] = counts.GetValueOrDefault(tier) + GetItemStackSize(item);
+            }
+
+            return counts.Select(pair => (pair.Key, pair.Value)).ToList();
         }
 
         // Helpers

@@ -4214,6 +4214,21 @@ namespace SWLOR.Game.Server.Service.CraftService
         HoloStarGlobe = 7798,
         // END space decor
 
+        // Farm items and city structures (the city plan reserves 8000-8039 for them).
+        FertilizerFish1 = 8000,
+        FertilizerFish2 = 8001,
+        FertilizerFish3 = 8002,
+        FertilizerFish4 = 8003,
+        FertilizerFish5 = 8004,
+        FertilizerManure1 = 8005,
+        FertilizerManure2 = 8006,
+        FertilizerManure3 = 8007,
+        FertilizerManure4 = 8008,
+        FertilizerManure5 = 8009,
+        GardenPlot = 8010,
+        DuelingRing = 8011,
+        Corral = 8012,
+
         // Player City Revamp: the Fermentation Vat (slice 5d). The City Revamp reserves 8000-8199; this slice takes 8040-8079.
         FermentationVat = 8040,
     }

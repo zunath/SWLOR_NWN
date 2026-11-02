@@ -24,14 +24,6 @@ public class TravelerWiringTests
 {
     private const int LodgeId = 5103;
 
-    // The young animals and the tier 3 to 5 seeds belong to the farm items slice, so they may not be in the module yet.
-    private static IEnumerable<string> FarmItems()
-    {
-        var young = new LivestockListDefinition().BuildLivestock().Values.Select(animal => animal.YoungResref);
-        var seeds = new CropListDefinition().BuildCrops().Values.Select(crop => crop.SeedResref);
-        return young.Concat(seeds);
-    }
-
     #region The Lodge
 
     [Test]
@@ -254,21 +246,14 @@ public class TravelerWiringTests
     }
 
     [Test]
-    public void EveryPoolItem_IsAModuleItemOrAFarmItem_AndNothingNpcOnly()
+    public void EveryPoolItem_IsAModuleItem_AndNothingNpcOnly()
     {
-        var farm = FarmItems().ToHashSet();
-        var missing = new List<string>();
-
         foreach (var (_, _, item) in AllItems())
         {
             item.Resref.Length.Should().BeLessThanOrEqualTo(16, item.Resref);
 
             var path = Path.Combine(Root, "Module", "uti", $"{item.Resref}.uti.json");
-            if (!File.Exists(path))
-            {
-                missing.Add(item.Resref);
-                continue;
-            }
+            File.Exists(path).Should().BeTrue($"{item.Resref} is sold by a traveler, so it needs an item blueprint");
 
             using var document = JsonDocument.Parse(File.ReadAllText(path));
             var locals = document.RootElement.TryGetProperty("VarTable", out var table)
@@ -276,8 +261,6 @@ public class TravelerWiringTests
                 : new List<string>();
             locals.Should().NotContain("NO_ECONOMY", $"{item.Resref} is an NPC-only item, which a traveler should not sell");
         }
-
-        missing.Should().OnlyContain(resref => farm.Contains(resref), "only the farm items slice's items may be missing: " + string.Join(", ", missing));
     }
 
     [Test]

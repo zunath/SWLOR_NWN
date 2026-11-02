@@ -152,6 +152,9 @@ namespace SWLOR.Game.Server.Service.CraftService
 
         [RecipeCategory("Ship Component", true)]
         ShipComponent = 73,
+
+        [RecipeCategory("Fertilizer", true)]
+        Fertilizer = 74,
     }
 
     public class RecipeCategoryAttribute : Attribute

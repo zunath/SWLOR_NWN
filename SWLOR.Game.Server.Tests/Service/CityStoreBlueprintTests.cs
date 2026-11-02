@@ -1,13 +1,15 @@
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.FarmingDefinition;
 using SWLOR.Game.Server.Service.CityStoreService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
 /// The city store blueprints (<c>Module/utm/cs_*</c>) and the catalog that picks them: every blueprint exists, sells
-/// only, holds only items existing NPC stores already sell, and each higher level keeps everything the lower ones sold.
+/// only, holds only items existing NPC stores already sell (and the tier 1 and 2 crop seeds), and each higher level keeps
+/// everything the lower ones sold.
 /// </summary>
 public class CityStoreBlueprintTests
 {
@@ -119,6 +121,10 @@ public class CityStoreBlueprintTests
         }
     }
 
+    /// <summary>The tier 1 and 2 crop seeds, which the Cantina and the crafting supplies stall sell.</summary>
+    private static readonly HashSet<string> FarmSeeds = new CropListDefinition().BuildCrops().Values
+        .Where(crop => crop.Tier <= 2).Select(crop => crop.SeedResref).ToHashSet();
+
     [Test]
     public void EveryStoreItem_IsAnItemExistingNpcStoresAlreadySell()
     {
@@ -127,6 +133,7 @@ public class CityStoreBlueprintTests
             .SelectMany(path => Entries(JObject.Parse(File.ReadAllText(path))))
             .Select(x => x.Resref)
             .ToHashSet();
+        existing.UnionWith(FarmSeeds);
 
         foreach (var resref in AllBlueprints())
         {
@@ -189,14 +196,14 @@ public class CityStoreBlueprintTests
     }
 
     [Test]
-    public void TheCantinaSellsFoodAndDrinkOnly_AndTheMedicalCenterOnlyMedicalSupplies()
+    public void TheCantinaSellsFoodDrinkAndTheFirstSeedsOnly_AndTheMedicalCenterOnlyMedicalSupplies()
     {
         Entries(ReadStore("cs_medical_1")).Select(x => x.Resref)
             .Should().BeEquivalentTo("med_supplies", "med_supplies_50", "stim_pack", "stim_pack_50");
 
         foreach (var (_, blueprint) in CityStoreCatalog.Get(CityStoreKind.Cantina).Blueprints)
         {
-            foreach (var entry in Entries(ReadStore(blueprint)))
+            foreach (var entry in Entries(ReadStore(blueprint)).Where(entry => !FarmSeeds.Contains(entry.Resref)))
             {
                 var baseItem = ReadItem(entry.Resref)["BaseItem"]!["value"]!.Value<int>();
                 baseItem.Should().BeOneOf(new[] { 29, 211, 311 }, $"{entry.Resref} is not food or drink");

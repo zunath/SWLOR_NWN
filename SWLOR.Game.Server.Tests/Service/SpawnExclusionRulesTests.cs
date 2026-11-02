@@ -230,6 +230,7 @@ public class SpawnExclusionRulesTests
     [TestCase(StructureType.Starport)]
     [TestCase(StructureType.LabStyle1)]
     [TestCase(StructureType.DuelingRing)]
+    [TestCase(StructureType.MarketStall)]
     [TestCase(StructureType.SmallHouseStyle1)]
     [TestCase(StructureType.MediumHouseStyle3)]
     [TestCase(StructureType.LargeHouseStyle4)]
@@ -281,7 +282,7 @@ public class SpawnExclusionRulesTests
     }
 
     // Working structures that stand in the open: restricted to cities like a building, but with no interior layout.
-    private static readonly StructureType[] OutdoorCityStructures = { StructureType.DuelingRing };
+    private static readonly StructureType[] OutdoorCityStructures = { StructureType.DuelingRing, StructureType.MarketStall };
 
     [Test]
     public void QualifyingStructures_AreAllBuildings()

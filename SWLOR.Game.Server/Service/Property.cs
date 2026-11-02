@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -2092,6 +2093,9 @@ namespace SWLOR.Game.Server.Service
             DB.Set(city);
             SpawnExclusion.InvalidateCity(city.Id);
 
+            // A smaller city closes its newest market stalls above the new limit, and a larger one reopens them.
+            MarketStalls.Refresh(city.Id);
+
             Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
 
@@ -3553,8 +3557,10 @@ namespace SWLOR.Game.Server.Service
             // Special Case: Cities differentiate between structures and buildings.
             // They use the BuildingLimit value for buildings and StructureLimit for everything else.
             // Buildings are determined by structures whose restrictions are solely to "City" property types.
+            // A market stall is restricted the same way but stands in the open, so it counts as a structure.
             if (property.PropertyType == PropertyType.City &&
-                structureDetail.RestrictedPropertyTypes == PropertyType.City)
+                structureDetail.RestrictedPropertyTypes == PropertyType.City &&
+                structureType != StructureType.MarketStall)
             {
                 structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid ||
                                                        StationBuildingRules.IsStationBuilding(x.StructureType));
@@ -3604,6 +3610,19 @@ namespace SWLOR.Game.Server.Service
             {
                 FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
                 return;
+            }
+
+            // A city may place one market stall for each city level.
+            if (structureType == StructureType.MarketStall)
+            {
+                var stallError = MarketStallRules.GetPlacementError(
+                    property.Upgrades.GetValueOrDefault(PropertyUpgradeType.CityLevel, 1),
+                    structures.Count(x => x.StructureType == StructureType.MarketStall && !x.IsQueuedForDeletion));
+                if (!string.IsNullOrEmpty(stallError))
+                {
+                    FloatingTextStringOnCreature(stallError, player, false);
+                    return;
+                }
             }
 
             // The Shipyard, Asteroid Drill and Jump Beacon stand only on a station deck, and no beacon reaches Wild Space.

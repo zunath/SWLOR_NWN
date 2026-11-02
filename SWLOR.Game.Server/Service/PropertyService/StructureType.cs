@@ -3097,6 +3097,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             PropertyType.City)]
         DuelingRing = 5101,
+
+        // City structures for stores
+        [Structure("Market Stall",
+            "swd_mstnd01",
+            "A stall for a city market, tended by a vendor who sells the stock the mayor picks: general goods, crafting supplies or decor. A city may place one for each city level.",
+            true,
+            0,
+            PropertyType.City)]
+        MarketStall = 5102,
     }
 
     public class StructureAttribute : Attribute

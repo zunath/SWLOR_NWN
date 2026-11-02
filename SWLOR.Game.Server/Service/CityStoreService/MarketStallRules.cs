@@ -46,6 +46,26 @@ namespace SWLOR.Game.Server.Service.CityStoreService
                 .ToHashSet(StringComparer.Ordinal);
         }
 
+        /// <summary>How far from the stall the vendor stands.</summary>
+        public const float VendorDistanceMeters = 2.1f;
+
+        /// <summary>
+        /// Where a stall's vendor stands and which way they face: a fixed distance to the stall's side, looking out, as
+        /// the existing market stands and their vendors are laid out, turned with the stall.
+        /// </summary>
+        /// <param name="stallX">The stall's position.</param>
+        /// <param name="stallY">The stall's position.</param>
+        /// <param name="stallFacingDegrees">The stall's facing in degrees.</param>
+        public static (float X, float Y, float FacingDegrees) GetVendorPlacement(float stallX, float stallY, float stallFacingDegrees)
+        {
+            var facing = (stallFacingDegrees + 90f) % 360f;
+            if (facing < 0f)
+                facing += 360f;
+
+            var radians = facing * (MathF.PI / 180f);
+            return (stallX + VendorDistanceMeters * MathF.Cos(radians), stallY + VendorDistanceMeters * MathF.Sin(radians), facing);
+        }
+
         /// <summary>The theme a stall sells under: an unset theme means general goods.</summary>
         public static MarketStallTheme NormalizeTheme(MarketStallTheme theme)
         {

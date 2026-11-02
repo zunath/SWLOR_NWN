@@ -126,7 +126,7 @@ public class EspionageSystemTests
         refreshEnd.Should().BeGreaterThan(refreshStart);
         var refreshBody = stealthServiceSource[refreshStart..refreshEnd];
         refreshBody.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
-        refreshBody.Should().Contain("Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0");
+        refreshBody.Should().Contain("if (!CanUseStealth(creature))", "a full refund ends stealth unless it was granted");
         refreshBody.Should().Contain("SetActionMode(creature, ActionMode.Stealth, false);");
         refreshBody.Should().Contain("StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);");
         refreshBody.IndexOf("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);", StringComparison.Ordinal)

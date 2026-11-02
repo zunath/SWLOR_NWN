@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -111,6 +112,57 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectedActivatorStatAdjustments = new() { [StatType.EvasionPercentAdjustment] = 12 },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                },
+
+                // ForceDecoyAbilityDefinition - Force Sensitive self cast. Its impact drops enmity and
+                // decoys organic enemies attacking the caster; a bare caster has no attackers, so
+                // ForceEspionageEngineTests covers the Decoy on organic and droid attackers.
+                new()
+                {
+                    Feat = FeatType.ForceDecoy1,
+                    Target = AbilityTargetKind.Self,
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                    OutcomeAssertionWaiverReason = "Enmity drop and Decoy need attackers; ForceEspionageEngineTests asserts Decoy on organic attackers and none on droids.",
+                },
+                new()
+                {
+                    Feat = FeatType.ForceDecoy2,
+                    Target = AbilityTargetKind.Self,
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                    OutcomeAssertionWaiverReason = "Enmity drop and Decoy need attackers; ForceEspionageEngineTests asserts Decoy on organic attackers and none on droids.",
+                },
+
+                // CloudMindAbilityDefinition - single-target Force power on a hostile organic
+                // creature. Applies Clouded Mind without a hit roll.
+                new()
+                {
+                    Feat = FeatType.CloudMind1,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(CloudedMindStatusEffect) },
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                },
+                new()
+                {
+                    Feat = FeatType.CloudMind2,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(CloudedMindStatusEffect) },
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                },
+
+                // SharedPresenceAbilityDefinition - out-of-combat capstone that hides the caster and
+                // nearby party members. Stealth is an action mode, not a tracked status, on an NPC
+                // caster; ForceEspionageEngineTests covers granted stealth on a player fixture.
+                new()
+                {
+                    Feat = FeatType.SharedPresence,
+                    Target = AbilityTargetKind.Self,
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                    OutcomeAssertionWaiverReason = "Stealth is an action mode the sweep cannot assert; ForceEspionageEngineTests asserts granted stealth, its timed exit and death cleanup on player fixtures.",
                 },
             };
         }

@@ -864,6 +864,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         RichPickings = 936,
         Jackpot = 937,
 
-        // IDs 650, 860-863, 882-883, 902-903, 919-923 and 938+ are free.
+        ForceDecoy = 938,
+        CloudMind = 939,
+        SharedPresence = 940,
+
+        // IDs 650, 860-863, 882-883, 902-903, 919-923 and 941+ are free.
     }
 }

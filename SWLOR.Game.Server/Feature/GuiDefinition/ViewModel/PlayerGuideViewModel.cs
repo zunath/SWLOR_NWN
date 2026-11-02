@@ -754,16 +754,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Espionage",
                     "Activities",
-                    "Standard-character infiltration, slicing, poisoncraft, trapcraft, and how Espionage XP is earned.",
+                    "Infiltration, slicing, poisoncraft, trapcraft, Force Sensitive spies, and how Espionage XP is earned.",
                     "Stealth, locks, poisons, traps",
                     new[]
                     {
                         new ArticleBlock("Character Requirement",
-                            "Espionage perks are for Standard characters and use the Espionage skill. Their branches cover infiltration and back attacks, slicing and poisoncraft, traps, disguises, and utility."),
+                            "Standard and Force Sensitive characters both train the Espionage skill. Tradecraft (disguises) and most of Infiltrator (stealth, slicing, back attacks) are shared at the same ranks and prices. Standard characters keep Tactical Escape, Shadow Step, Ghost Protocol, and all of Saboteur, including poisons and traps. Force Sensitive characters get Force Decoy, Cloud Mind, and Shared Presence in those three Infiltrator slots instead."),
                         new ArticleBlock("Starting at Rank 0",
-                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops."),
+                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0; Force Sensitive characters start with Stealth I or Slicing I. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new ArticleBlock("Stealth and Back Attacks",
-                            "Stealth is activated out of combat and drains STM while maintained, and no STM recovers while hidden. Other players within 5m spot you more easily and more often, and a lucky player can always spot you. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
+                            "Stealth is activated out of combat and drains STM while maintained, and no STM recovers while hidden. Other players within 5m spot you more easily and more often, and a lucky player can always spot you. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters. The rank 50 capstones that hide you, Ghost Protocol and Shared Presence, require Stealth I."),
+                        new ArticleBlock("Force Sensitive Spies",
+                            "Force Decoy (ranks 12 and 35) drops your enmity and makes organic enemies attacking you miss you more often. Cloud Mind (ranks 25 and 45) stops an organic enemy from spotting anyone in stealth until it takes damage; a clouded player still spots stealthers on a natural 20. Shared Presence (rank 50, needs Stealth I) hides you and party members within 5m for up to 30 seconds out of combat, even members without the Stealth perk. These three count as Force powers and cost FP. Stealth itself still drains STM for everyone."),
                         new ArticleBlock("Slicing Lockboxes and Sealed Crates",
                             "Right-click a lockbox and choose Activate Item, or use a Sealed Field Crate to slice its electronic lock. Rotate or swap circuit tiles to connect the entry to the core before trace runs out. Every board is different and leaves little spare trace, so plan your route before you move. Each Slicing rank above a target's tier adds 1 trace, and Lockpicking gear plus Perception add up to 2 more. Tier 1 crates can be found in the Viscaran Wildlands, CZ-220 maintenance level, and Abandoned Nano Station. Slicing II-V unlock at Espionage ranks 22, 30, 42, and 48. Each tier awards XP until the next unlock; tier 5 trains to 50."),
                         new ArticleBlock("Slicing Supplies and Failure",
@@ -775,11 +777,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Detecting and Disarming",
                             "Kit-built traps are concealed. Matching Trapcraft training reveals nearby traps and allows disarming; Master Saboteur grants tier 5 access. A failed disarm triggers the trap. Disarming another player's trap grants no XP. Dismantling your own trap does not return a kit."),
                         new ArticleBlock("Espionage XP",
-                            "Espionage XP comes from bypassing hostile NPCs while stealthed, slicing, crafting espionage items, enemy trap triggers, and successful trap disarms. A stealth bypass requires you to evade Detection, move through the NPC's nearby threat area, and leave it while still hidden. Each NPC grants XP only once per life; being detected grants a smaller amount.")
+                            "Espionage XP comes from bypassing hostile NPCs while stealthed, slicing, crafting espionage items, enemy trap triggers, and successful trap disarms. A stealth bypass requires you to evade Detection, move through the NPC's nearby threat area, and leave it while still hidden. Each NPC grants XP only once per life; being detected grants a smaller amount. Enemies under Cloud Mind and stealth granted by Shared Presence give no bypass XP.")
                     },
                     new[]
                     {
-                        new QuestionAnswer("Who can use espionage perks?", "Standard characters who meet the relevant Espionage skill and perk requirements."),
+                        new QuestionAnswer("Who can use espionage perks?", "Both character types. Saboteur, Tactical Escape, Shadow Step, and Ghost Protocol are Standard-only; Force Decoy, Cloud Mind, and Shared Presence are Force Sensitive-only. Anyone can apply venom coatings."),
                         new QuestionAnswer("Do I need stealth to learn poisons or slicing?", "No. Poisoncraft I, Slicing I, and Trapcraft I each start at rank 0 and can train independently."),
                         new QuestionAnswer("Why did my recipe or slicing tier stop giving XP?", "You reached the next tier's unlock rank. Purchase that tier's perk and use its recipes or targets to continue training."),
                         new QuestionAnswer("Where do I craft poisons and snares?", "At a marked Espionage Workbench beside a market terminal in Veles Shops."),

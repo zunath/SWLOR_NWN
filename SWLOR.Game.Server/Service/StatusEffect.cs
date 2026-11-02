@@ -752,7 +752,7 @@ namespace SWLOR.Game.Server.Service
 
             if (statusEffect.SendsApplicationMessage)
             {
-                Messaging.SendMessageNearbyToPlayers(creature, receiver =>
+                string BuildApplicationMessage(uint receiver)
                 {
                     var name = PlayerName.GetDisplayName(receiver, creature);
                     var effectName = statusEffect.Name;
@@ -767,10 +767,32 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     return applicationMessage;
-                });
+                }
+
+                var sourceIsOther = GetIsObjectValid(source) && source != creature;
+                if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), sourceIsOther && Stealth.IsConcealed(source)))
+                {
+                    Messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage);
+                }
+                else
+                {
+                    // A nearby announcement would name a hidden creature to everyone around it.
+                    SendMessageToPC(creature, BuildApplicationMessage(creature));
+                    if (sourceIsOther && GetIsPC(source))
+                        SendMessageToPC(source, BuildApplicationMessage(source));
+                }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Application and worn-off messages go to every nearby player only while neither the bearer
+        /// nor the applying creature is hidden; otherwise they would reveal who is there.
+        /// </summary>
+        public static bool ShouldAnnounceNearby(bool bearerHidden, bool sourceHidden)
+        {
+            return !bearerHidden && !sourceHidden;
         }
 
         /// <summary>
@@ -2036,8 +2058,12 @@ namespace SWLOR.Game.Server.Service
                 IsLastInstanceOfType(creatureEffects, statusEffect))
             {
                 var effectName = statusEffect.Name;
-                Messaging.SendMessageNearbyToPlayers(creature,
-                    receiver => $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.");
+                string BuildWornOffMessage(uint receiver) =>
+                    $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.";
+                if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), false))
+                    Messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage);
+                else
+                    SendMessageToPC(creature, BuildWornOffMessage(creature));
             }
 
             if (removeNativeEffect)

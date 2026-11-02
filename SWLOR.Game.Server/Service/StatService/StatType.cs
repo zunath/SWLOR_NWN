@@ -6417,6 +6417,13 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         CircuitLoadBoostPercent = 1186,
 
+        /// <summary>
+        /// Non-zero prevents the creature from spotting anyone in stealth. A player observer still
+        /// spots on a natural 20.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        StealthDetectionBlocked = 1322,
+
         /// <summary>Percent added to the size of a Circuit Discharge burst.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         CircuitDischargePowerPercent = 1187,

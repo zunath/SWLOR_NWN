@@ -561,4 +561,17 @@ public class RiftRunTests
             .BeGreaterThan(0).And.BeLessThan(undockAll.IndexOf("DockAtHostStarport(visitor, hostProperty);", StringComparison.Ordinal),
                 "a ship put in the starport by an unregistered, sold or given host no longer rejoins the run it waited in");
     }
+
+    [Test]
+    public void AShipTowedHomeByAnEmergencyExit_LeavesItsRiftRun()
+    {
+        var space = ReadSource("Service", "Space.cs").Replace("\r\n", "\n");
+        var exit = space.Substring(space.IndexOf("public static void PerformEmergencyExit(", StringComparison.Ordinal));
+        exit = exit.Substring(0, exit.IndexOf("public static int GetModuleBonus(", StringComparison.Ordinal));
+        var stays = exit.IndexOf("if (playerCount > 1 || isPiloted)\n                return;", StringComparison.Ordinal);
+        var forget = exit.IndexOf("ForgetRiftRunShip(dbShip.Id);", StringComparison.Ordinal);
+        stays.Should().BeGreaterThan(0);
+        forget.Should().BeGreaterThan(stays, "only a ship actually towed home leaves the run")
+            .And.BeGreaterThan(exit.IndexOf("dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);", StringComparison.Ordinal));
+    }
 }

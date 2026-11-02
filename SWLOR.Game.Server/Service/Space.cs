@@ -756,6 +756,10 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        /// <summary>Whether a pilot is on their way to this ship's controls: it is leaving its dock.</summary>
+        public static bool IsShipLaunchPending(string shipId) =>
+            !string.IsNullOrWhiteSpace(shipId) && _pendingShipLaunches.Values.Any(x => x.ShipId == shipId);
+
         /// <summary>Commits ship state only after the player reaches the requested destination area.</summary>
         private static bool TryCompleteShipLaunch(uint player)
         {
@@ -3028,6 +3032,9 @@ namespace SWLOR.Game.Server.Service
             {
                 _shipClones.Remove(dbShip.Id);
             }
+
+            // A ship towed home from a Rift Run pocket has left the run: it no longer launches back into the pocket.
+            ForgetRiftRunShip(dbShip.Id);
 
             DestroyObject(shipClone);
         }

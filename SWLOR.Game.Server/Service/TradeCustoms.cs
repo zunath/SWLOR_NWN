@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Service
             // The fine is taken on the pilot's own queue (TakeGoldFromCreature does nothing from the slicer's handler).
             AssignCommand(player, () =>
             {
-                var (fine, taken) = CollectCustomsFine(player, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);
+                var (fine, taken) = CollectCustomsFine(player, scan.ShipId, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);
                 if (outcome.Standing is { } standing)
                     RecordStanding(player, scan.Authority, standing);
                 var message = taken.Count > 0
@@ -139,13 +139,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Runs on the pilot's queue: takes the fine (no more than they carry) with a mark naming their ship, then saves the
-        /// confiscation on the ship with the payment's id, confiscates from the ships docked aboard, and retires the mark. A restart before that save returns the fine
-        /// at the next login and leaves the goods, so the patrol's encounter is undone whole (<see cref="CreditPayments"/>).
+        /// Runs on the pilot's queue: takes the fine (no more than they carry) with a mark naming the scanned ship, then
+        /// saves the confiscation on the ship with the payment's id, confiscates from the ships docked aboard, and retires
+        /// the mark. A restart before that save returns the fine at the next login and leaves the goods, so the patrol's
+        /// encounter is undone whole (<see cref="CreditPayments"/>). The scanned ship is read by id, so a pilot who docked
+        /// or took another ship before answering still loses the goods the patrol found.
         /// </summary>
-        private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine(uint player, TradeAuthority authority, int fine, bool confiscate)
+        private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine(uint player, string shipId, TradeAuthority authority, int fine, bool confiscate)
         {
-            var ship = GetActiveShip(player);
+            var ship = string.IsNullOrWhiteSpace(shipId) ? GetActiveShip(player) : DB.Get<PlayerShip>(shipId);
             fine = Math.Max(0, Math.Min(fine, GetGold(player)));
             var mark = fine > 0 ? CreditPayments.NewMark(CreditPaymentKind.CustomsFine, ship?.Id, fine) : null;
             if (mark != null)
@@ -224,6 +226,7 @@ namespace SWLOR.Game.Server.Service
                 Area = area,
                 Authority = authority,
                 PatrolGroup = group,
+                ShipId = ship.Id,
                 Goods = CustomsRules.GetBannedUnits(ship, docked, authority),
                 Fine = CustomsRules.GetFine(bannedValue),
                 AnswerBy = DateTime.UtcNow.AddSeconds(TradeTuning.CustomsAnswerSeconds),
@@ -266,7 +269,7 @@ namespace SWLOR.Game.Server.Service
             // The fine is taken on the pilot's own queue (TakeGoldFromCreature does nothing from a NUI handler).
             AssignCommand(player, () =>
             {
-                var (fine, taken) = CollectCustomsFine(player, scan.Authority, scan.Fine, true);
+                var (fine, taken) = CollectCustomsFine(player, scan.ShipId, scan.Authority, scan.Fine, true);
                 RecordStanding(player, scan.Authority, TradeStandingEvent.CaughtSmuggling);
                 SendMessageToPC(player, ColorToken.Green(taken.Count > 0
                     ? $"You pay {fine} credits. The patrol confiscates {CustomsRules.Describe(taken)} and lets you go."

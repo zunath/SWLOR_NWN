@@ -660,12 +660,13 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Whether the ship is docked at one of these Starports, with nobody flying it. A ship docked aboard a host or at a
-        /// derelict keeps its last dock but is away from it.
+        /// derelict keeps its last dock but is away from it, and so is a ship whose pilot is launching it.
         /// </summary>
         private static bool IsDockedAt(WorldProperty ship, PlayerShip record, ICollection<string> starportInteriorIds)
         {
             return record != null &&
                    !Space.IsDockedAboardHost(record, out _) &&
+                   !Space.IsShipLaunchPending(record.Id) &&
                    !ship.Positions.ContainsKey(PropertyLocationType.CurrentPosition) &&
                    ship.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock) &&
                    string.IsNullOrWhiteSpace(dock.AreaResref) &&

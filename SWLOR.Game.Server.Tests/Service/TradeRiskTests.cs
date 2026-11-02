@@ -478,6 +478,25 @@ public class TradeRiskTests
             .And.BeLessThan(collect.IndexOf("CreditPayments.Retire(player);", StringComparison.Ordinal));
     }
 
+    [Test]
+    public void ACustomsFine_ConfiscatesFromTheScannedShipEvenAfterThePilotDocked()
+    {
+        new CustomsScan().ShipId.Should().BeEmpty();
+
+        var customs = ReadServerSource("Service", "TradeCustoms.cs");
+        customs.Should().Contain("ShipId = ship.Id,", "the scan remembers the ship it found the goods aboard");
+        customs.Should().Contain("CollectCustomsFine(player, scan.ShipId, scan.Authority, scan.Fine, true);")
+            .And.Contain("CollectCustomsFine(player, scan.ShipId, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);");
+
+        var collect = customs.Substring(customs.IndexOf("private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine(", StringComparison.Ordinal));
+        collect = collect.Substring(0, collect.IndexOf("private static void RollCustomsScan(", StringComparison.Ordinal));
+        collect.Should().Contain("var ship = string.IsNullOrWhiteSpace(shipId) ? GetActiveShip(player) : DB.Get<PlayerShip>(shipId);",
+            "a pilot who docked or took another ship has no active ship, or the wrong one");
+        collect.IndexOf("var ship =", StringComparison.Ordinal).Should()
+            .BeLessThan(collect.IndexOf("CreditPayments.NewMark(CreditPaymentKind.CustomsFine, ship?.Id, fine)", StringComparison.Ordinal),
+                "the payment mark names the scanned ship, whose save settles it");
+    }
+
     private static string RepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

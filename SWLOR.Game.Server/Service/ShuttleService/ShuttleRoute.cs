@@ -13,12 +13,22 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         public ShuttleStop StationStop => Origin.IsStation ? Origin : Destination.IsStation ? Destination : default;
 
         /// <summary>
-        /// A Home Port flight: from a planet's terminal to a city's own Starport, or to a player station from a terminal on another
-        /// planet than its home port. A station's ordinary shuttle from its home port is not one.
+        /// A Home Port flight: from a planet's terminal to a city's own Starport, from a station's terminal to a city's Starport on
+        /// the station's home planet, or to a player station from a terminal on another planet than its home port. A station's
+        /// ordinary shuttle from its home port is not one.
         /// </summary>
-        public bool IsHomePort =>
-            !Origin.IsStation &&
-            !Origin.IsCityStarport &&
-            (Destination.IsCityStarport || (Destination.IsStation && Origin.Planet != Destination.Planet));
+        public bool IsHomePort
+        {
+            get
+            {
+                if (Origin.IsCityStarport)
+                    return false;
+
+                if (Destination.IsCityStarport)
+                    return true;
+
+                return !Origin.IsStation && Destination.IsStation && Origin.Planet != Destination.Planet;
+            }
+        }
     }
 }

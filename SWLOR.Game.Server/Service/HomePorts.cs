@@ -20,21 +20,26 @@ namespace SWLOR.Game.Server.Service
     public static class HomePorts
     {
         /// <summary>
-        /// The Home Port stops a character may book from a planet's terminal: their own city's Starport and the Starport of the city
-        /// its Alliance joins it to, when they owe no taxes, hold the CZ-220 Shuttle Pass and are not embargoed. A terminal on the
-        /// city's own planet, or in a station, offers none (a station's terminal flies only to its home port).
+        /// The Home Port stops a character may book from a terminal: their own city's Starport and the Starport of the city its
+        /// Alliance joins it to, when they owe no taxes, hold the CZ-220 Shuttle Pass and are not embargoed. A planet's terminal offers
+        /// them on other planets; a station's terminal flies only to its home port, so it offers a planet city's Starport on that
+        /// planet, by the station's own shuttle. A terminal on the city's own planet offers none.
         /// </summary>
         public static List<ShuttleStop> GetDestinations(uint player, ShuttleStop origin)
         {
             var destinations = new List<ShuttleStop>();
-            if (origin.IsStation || origin.IsCityStarport || !GetIsPC(player))
+            if (origin.IsCityStarport || !GetIsPC(player))
                 return destinations;
 
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             foreach (var host in GetHostCities(dbPlayer))
             {
                 var stop = GetHomeStop(host);
-                if (stop.Planet == PlanetType.Invalid || stop.Planet == origin.Planet)
+                if (stop.Planet == PlanetType.Invalid)
+                    continue;
+
+                // A station's shuttle runs to its home port only, and never to another station.
+                if (origin.IsStation ? !stop.IsCityStarport || stop.Planet != origin.Planet : stop.Planet == origin.Planet)
                     continue;
 
                 if (!string.IsNullOrEmpty(GetRefusal(player, dbPlayer, host, stop)))
@@ -135,10 +140,13 @@ namespace SWLOR.Game.Server.Service
                 : Property.GetEffectiveUpgradeLevel(destination.HomeCityId, PropertyUpgradeType.StarportLevel);
         }
 
-        /// <summary>The flight time of a route in seconds, with the Starport level of the city a Home Port flight ends at.</summary>
+        /// <summary>
+        /// The flight time of a route in seconds, with the Starport level of the city a Home Port flight from a planet ends at. A
+        /// flight from a station is the station's own shuttle and reads no level.
+        /// </summary>
         public static int GetTransitSeconds(ShuttleRoute route)
         {
-            return route.IsHomePort
+            return route.IsHomePort && !route.Origin.IsStation
                 ? ShuttleRouteRules.GetTransitSeconds(route, GetStarportLevel(route.Destination))
                 : ShuttleRouteRules.GetTransitSeconds(route);
         }

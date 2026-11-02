@@ -172,7 +172,7 @@ public class ShuttleHomePortTests
     {
         ShuttleRouteRules.IsValid(HomeFlight()).Should().BeTrue();
         ShuttleRouteRules.IsValid(HomeFlight(PlanetType.Tatooine, PlanetType.Tatooine)).Should().BeFalse("a flight home from the same planet is a walk");
-        ShuttleRouteRules.IsValid(new ShuttleRoute(OrbitStation, CityStarport())).Should().BeFalse("a station flies only to its home port");
+        ShuttleRouteRules.IsValid(new ShuttleRoute(OrbitStation, CityStarport(PlanetType.Viscara))).Should().BeFalse("a station flies only to its home planet");
         ShuttleRouteRules.IsValid(new ShuttleRoute(CityStarport(PlanetType.Viscara), CityStarport(PlanetType.Tatooine, OtherCityId)))
             .Should().BeFalse("a city's Starport is only a destination");
         ShuttleRouteRules.IsValid(new ShuttleRoute(CityStarport(), ShuttleStop.ForPlanet(PlanetType.Viscara))).Should().BeFalse();
@@ -196,6 +196,8 @@ public class ShuttleHomePortTests
         new ShuttleRoute(ShuttleStop.ForPlanet(PlanetType.Tatooine), OrbitStation).IsHomePort.Should().BeFalse("a station's shuttle from its home port");
         new ShuttleRoute(OrbitStation, ShuttleStop.ForPlanet(PlanetType.Tatooine)).IsHomePort.Should().BeFalse();
         new ShuttleRoute(ShuttleStop.ForPlanet(PlanetType.Viscara), ShuttleStop.ForPlanet(PlanetType.Tatooine)).IsHomePort.Should().BeFalse();
+        new ShuttleRoute(OrbitStation, CityStarport()).IsHomePort.Should().BeTrue("a station's terminal sells a city Starport on its home planet");
+        new ShuttleRoute(CityStarport(), ShuttleStop.ForPlanet(PlanetType.Viscara)).IsHomePort.Should().BeFalse("a city's Starport is only a destination");
     }
 
     [Test]
@@ -214,6 +216,78 @@ public class ShuttleHomePortTests
 
         HomeFlight().IsStationRoute.Should().BeFalse();
         HomeFlight().IsCityRoute.Should().BeTrue();
+    }
+
+    // A station's terminal
+
+    [Test]
+    public void AStationsTerminalSellsACityStarportOnItsHomePlanet_AndNothingElse()
+    {
+        ShuttleRouteRules.IsValid(new ShuttleRoute(OrbitStation, CityStarport(PlanetType.Tatooine))).Should().BeTrue();
+        ShuttleRouteRules.IsValid(new ShuttleRoute(WildStation, CityStarport(PlanetType.Hutlar))).Should().BeTrue();
+        ShuttleRouteRules.IsValid(new ShuttleRoute(OrbitStation, CityStarport(PlanetType.Hutlar))).Should().BeFalse("not the station's home planet");
+        ShuttleRouteRules.IsValid(new ShuttleRoute(WildStation, CityStarport(PlanetType.Tatooine))).Should().BeFalse();
+        ShuttleRouteRules.IsValid(new ShuttleRoute(OrbitStation, ShuttleStop.ForStation("station-3", PlanetType.Tatooine, false))).Should().BeFalse("never to another station");
+        ShuttleRouteRules.IsValid(new ShuttleRoute(OrbitStation, CityStarport(PlanetType.Invalid))).Should().BeFalse();
+    }
+
+    [Test]
+    public void AFlightFromAStationIsItsOwnShuttle_NoStarportLevelShortensIt()
+    {
+        var orbit = new ShuttleRoute(OrbitStation, CityStarport(PlanetType.Tatooine));
+        foreach (var level in new[] { 0, 1, 3, 5 })
+            ShuttleRouteRules.GetTransitSeconds(orbit, level).Should().Be(StationTuning.OrbitHopSeconds, $"level {level}: the 60-second orbital hop is unchanged");
+
+        StationTuning.OrbitHopSeconds.Should().Be(60);
+        ShuttleRouteRules.GetFare(orbit).Should().Be(StationTuning.OrbitHopFare);
+        ShuttleRouteRules.GetPeriodSeconds(orbit).Should().Be(StationTuning.OrbitHopPeriodSeconds);
+
+        var wild = new ShuttleRoute(WildStation, CityStarport(PlanetType.Hutlar));
+        ShuttleRouteRules.GetTransitSeconds(wild, 5).Should().Be(StationTuning.WildSpaceSeconds);
+        ShuttleRouteRules.GetFare(wild).Should().Be(StationTuning.WildSpaceFare);
+        ShuttleRouteRules.GetPeriodSeconds(wild).Should().Be(StationTuning.WildSpacePeriodSeconds);
+    }
+
+    [Test]
+    public void AStationToACityRunsOnItsOwnScheduleAndKey_ApartFromTheStationsPlanetFlight()
+    {
+        var toCity = new ShuttleRoute(OrbitStation, CityStarport(PlanetType.Tatooine));
+        var toPlanet = new ShuttleRoute(OrbitStation, ShuttleStop.ForPlanet(PlanetType.Tatooine));
+        var fromPlanetNpcPort = new ShuttleRoute(ShuttleStop.ForPlanet(PlanetType.Tatooine), CityStarport(PlanetType.Tatooine));
+
+        toCity.IsStationRoute.Should().BeTrue();
+        toCity.IsCityRoute.Should().BeTrue();
+        toCity.StationStop.Should().Be(OrbitStation);
+        ShuttleSchedule.GetRouteHash(toCity).Should().NotBe(ShuttleSchedule.GetRouteHash(toPlanet));
+        ShuttleSchedule.BuildFlightId(toCity, DateTime.UnixEpoch).Should().Contain("station-1").And.Contain(CityId);
+
+        var start = new DateTime(2026, 11, 2, 0, 0, 0, DateTimeKind.Utc);
+        var departures = ShuttleSchedule.GetDeparturesBetween(toCity, start, start.AddMinutes(10)).ToList();
+        departures.Should().HaveCount(10, "an orbital hop departs every 60 seconds");
+        departures.Zip(departures.Skip(1), (a, b) => (b - a).TotalSeconds).Should().OnlyContain(x => x == StationTuning.OrbitHopPeriodSeconds);
+        ShuttleRouteRules.IsValid(fromPlanetNpcPort).Should().BeFalse("a flight home from the same planet is a walk");
+    }
+
+    [Test]
+    public void AStationToACityRideRebuildsBothStopsAfterARestart()
+    {
+        var route = new ShuttleRoute(OrbitStation, CityStarport(PlanetType.Tatooine));
+        var ride = new ShuttleRide("passenger")
+        {
+            Origin = route.Origin.Planet,
+            Destination = route.Destination.Planet,
+            OriginStationId = route.Origin.StationId,
+            DestinationCityId = route.Destination.CityId
+        };
+
+        var rebuilt = ShuttleRouteRules.BuildRideRoute(
+            ride.Origin, ride.OriginStationId, ride.OriginCityId,
+            ride.Destination, ride.DestinationStationId, ride.DestinationCityId,
+            id => id == "station-1" ? OrbitStation : default);
+
+        rebuilt.Should().Be(route);
+        rebuilt.IsHomePort.Should().BeTrue();
+        ShuttleSchedule.GetRouteHash(rebuilt).Should().Be(ShuttleSchedule.GetRouteHash(route));
     }
 
     // The stop key and the schedule
@@ -358,6 +432,7 @@ public class ShuttleHomePortTests
 
         var dialog = ReadServer("Feature", "DialogDefinition", "StarportFlightsDialog.cs");
         dialog.Should().Contain("HomePorts.GetDestinations(player, origin)");
+        System.Text.RegularExpressions.Regex.IsMatch(dialog, @"AddHomePorts\(\);\s+return;").Should().BeTrue("a station's terminal sells it too");
     }
 
     private static string ReadServer(params string[] path) =>

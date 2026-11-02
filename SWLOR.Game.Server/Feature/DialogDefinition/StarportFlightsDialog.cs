@@ -106,8 +106,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         /// <summary>
         /// Renders the list of destinations a passenger can book a ticket to. A player station's terminal flies only to
-        /// its home port; a planet's terminal also lists the stations it serves (plan section 25), and the Home Port
-        /// of a citizen or ally: their city's Starport, at the terminal's own fare.
+        /// its home port, and a planet city's Starport there for a citizen or ally; a planet's terminal also lists the stations
+        /// it serves (plan section 25), and the Home Port of a citizen or ally: their city's Starport, at the terminal's own fare.
         /// </summary>
         private void BuildTicketPurchasePage(ConversationMenuPage page, Model model, uint player, ShuttleStop origin)
         {
@@ -139,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 if (origin.Planet != PlanetType.SmugglersMoon || hasSmugglerPass)
                     AddDestination(ShuttleStop.ForPlanet(origin.Planet));
 
+                AddHomePorts();
                 return;
             }
 
@@ -161,9 +162,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 AddDestination(station);
             }
 
-            foreach (var homePort in HomePorts.GetDestinations(player, origin))
+            AddHomePorts();
+
+            // A citizen's or ally's Starport: from a planet's terminal on another planet, from a station's on its home planet.
+            void AddHomePorts()
             {
-                AddDestination(homePort, $"Home Port: {Station.GetStopName(homePort)}");
+                foreach (var homePort in HomePorts.GetDestinations(player, origin))
+                {
+                    AddDestination(homePort, $"Home Port: {Station.GetStopName(homePort)}");
+                }
             }
         }
 
@@ -223,7 +230,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (route.IsHomePort)
             {
-                page.Header += "\n\nThis is a Home Port flight. You will land inside the Starport, and its Starport upgrades shorten the flight. " +
+                // A flight from a station is the station's own shuttle, which Starport upgrades do not shorten.
+                var shortened = route.Origin.IsStation ? string.Empty : ", and its Starport upgrades shorten the flight";
+                page.Header += "\n\nThis is a Home Port flight. You will land inside the Starport" + shortened + ". " +
                                "You can use its flights terminal for 7 days after you land.";
             }
 

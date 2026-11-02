@@ -27,12 +27,13 @@ namespace SWLOR.Game.Server.Service.ShuttleService
             if (origin.Planet == PlanetType.Invalid || destination.Planet == PlanetType.Invalid)
                 return false;
 
-            // A city's Starport is only ever where a Home Port flight lands, from a planet's terminal on another planet.
+            // A city's Starport is only ever where a Home Port flight lands: from a planet's terminal on another planet, or from a
+            // station's terminal, which flies only to its own home planet.
             if (origin.IsCityStarport)
                 return false;
 
             if (destination.IsCityStarport)
-                return !origin.IsStation && origin.Planet != destination.Planet;
+                return origin.IsStation ? origin.Planet == destination.Planet : origin.Planet != destination.Planet;
 
             if (origin.IsStation && destination.IsStation)
                 return false;
@@ -49,7 +50,11 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         public static int GetFare(ShuttleRoute route)
         {
-            // The terminal's own fare to that planet, whichever city's Starport the flight ends at.
+            // From a station the fare is its own shuttle's. From a planet it is the terminal's own fare to that planet, whichever
+            // city's Starport the flight ends at.
+            if (route.IsHomePort && route.Origin.IsStation)
+                return GetStationHopFare(route.Origin);
+
             if (route.IsHomePort)
             {
                 var fare = GalaxyMap.GetFare(route.Origin.Planet, route.Destination.Planet);
@@ -70,13 +75,16 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         /// <summary>
         /// The flight time of a route. A Home Port flight loses 30 seconds per effective Starport level of the city it ends at, once, on
-        /// its interplanetary leg; a station's orbital or Wild Space shuttle after that leg is unchanged. Every other route ignores
-        /// the level.
+        /// its interplanetary leg; a station's orbital or Wild Space shuttle is unchanged, whether it follows that leg or is the whole
+        /// flight from a station's terminal. Every other route ignores the level.
         /// </summary>
         /// <param name="route">The route.</param>
         /// <param name="homeStarportLevel">The effective Starport level of the Home Port city, or 0.</param>
         public static int GetTransitSeconds(ShuttleRoute route, int homeStarportLevel)
         {
+            if (route.IsHomePort && route.Origin.IsStation)
+                return GetStationHopSeconds(route.Origin);
+
             if (route.IsHomePort)
             {
                 var flight = HomePortRules.GetInterplanetarySeconds(route.Origin.Planet, route.Destination.Planet, homeStarportLevel);
@@ -91,7 +99,11 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         public static int GetPeriodSeconds(ShuttleRoute route)
         {
-            // A Home Port flight leaves on the schedule of its interplanetary leg.
+            // A flight from a station leaves on its shuttle's schedule. Any other Home Port flight leaves on the schedule of its
+            // interplanetary leg.
+            if (route.IsHomePort && route.Origin.IsStation)
+                return route.Origin.IsWildSpace ? StationTuning.WildSpacePeriodSeconds : StationTuning.OrbitHopPeriodSeconds;
+
             if (route.IsHomePort || !route.IsStationRoute)
                 return ShuttleSchedule.GetPeriodSeconds(route.Origin.Planet, route.Destination.Planet);
 

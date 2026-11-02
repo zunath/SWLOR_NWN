@@ -76,6 +76,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // Starships
         [PropertyPermission("Dock Ship", "Can dock a Small or Medium starship with this Large or Capital starship in space.", true)]
         Dock = 18,
+
+        // Houses, Cities
+        [PropertyPermission("Tend Gardens", "Can plant in and tend the property's garden plots.", true)]
+        TendGardens = 21,
     }
 
     public class PropertyPermissionAttribute : Attribute

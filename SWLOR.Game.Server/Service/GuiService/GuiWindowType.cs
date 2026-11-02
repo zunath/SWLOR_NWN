@@ -103,6 +103,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         CustomsScan = 103,
         PlanetaryHoldings = 104,
         CityGazette = 110,
+        GardenPlot = 112,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

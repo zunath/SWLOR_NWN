@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.FarmingDefinition;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.FarmingService;
@@ -155,6 +156,24 @@ public class CropDefinitionTests
         Crops.Values.Where(crop => !crop.HarvestResref.StartsWith("fiberp_"))
             .Should().OnlyContain(crop => !KitchenComponentTable.Get(crop.HarvestResref).Equals(KitchenComponentTable.Unlisted),
                 "each food crop has a flavor of its own");
+    }
+
+    [Test]
+    public void TheFarmingServiceLoadsEveryCropByTypeAndBySeed()
+    {
+        Farming.CacheCrops();
+
+        Farming.GetAllCrops().Should().HaveCount(26);
+        foreach (var crop in Crops.Values)
+        {
+            Farming.GetCrop(crop.Type).Should().NotBeNull(crop.Name).And.Subject.As<CropDefinition>().Name.Should().Be(crop.Name);
+            Farming.GetCropBySeed(crop.SeedResref)!.Type.Should().Be(crop.Type, crop.Name);
+        }
+
+        Farming.GetCrop(CropType.Invalid).Should().BeNull();
+        Farming.GetCropBySeed("not_a_seed").Should().BeNull();
+        Farming.GetCropBySeed(string.Empty).Should().BeNull();
+        Farming.GetCropBySeed(null).Should().BeNull();
     }
 
     [Test]

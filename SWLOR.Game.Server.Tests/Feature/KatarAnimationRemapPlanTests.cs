@@ -107,7 +107,7 @@ public class KatarAnimationRemapPlanTests
     [Test]
     public void PowerGloves_DropBothArmsSwordCarryLayers()
     {
-        // Bug report 1566576106402742506: the left companion glove kept the left-arm carry while walking.
+        // The left companion glove triggers the left-arm carry, so both arms' layers are dropped.
         KatarAnimationRemapPlan.GetChanges(true, true, new Dictionary<string, string>(), NoActiveSwing)
             .Should().BeEquivalentTo(KatarAnimationRemapPlan.Pairs.Concat(new[]
             {

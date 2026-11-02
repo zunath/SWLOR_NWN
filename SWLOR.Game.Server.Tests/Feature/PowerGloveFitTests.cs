@@ -426,8 +426,8 @@ public class PowerGloveFitTests
         Invoke<float>("ResolveScale", "unknown", "pmo0_handr201", appearance).Should().Be(expected);
     }
 
-    // Bug report 1566558549319090308: an unmeasured armor hand (any part above 2) upscaled both gloves to the
-    // pre-compact clearance size. Playable families: human, elf, half-orc, dwarf and droid, both genders.
+    // An unmeasured armor hand (any part above 2) must not take the pre-compact clearance size.
+    // Playable families: human, elf, half-orc, dwarf and droid, both genders.
     private static readonly string[] PlayableNormalBodies =
         { "pmh0", "pfh0", "pme0", "pfe0", "pmo0", "pfo0", "pmd0", "pfd0", "pmz0", "pfz0" };
 

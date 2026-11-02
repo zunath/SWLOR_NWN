@@ -41,10 +41,12 @@ namespace SWLOR.Game.Server.Service.StationService
         // The Shipyard
 
         /// <summary>Why the player cannot build a Capital hull here, or <see cref="ShipyardRefusal.None"/>.</summary>
-        public static ShipyardRefusal GetShipyardRefusal(bool atShipyard, ShipyardAccessType access, bool isCitizen, int owedTaxes)
+        public static ShipyardRefusal GetShipyardRefusal(bool atShipyard, ShipyardAccessType access, bool isCitizen, int owedTaxes, bool isEmbargoed = false)
         {
             if (!atShipyard)
                 return ShipyardRefusal.NotAtShipyard;
+            if (isEmbargoed)
+                return ShipyardRefusal.Embargoed;
             if (access != ShipyardAccessType.Anyone && !isCitizen)
                 return ShipyardRefusal.CitizensOnly;
             if (isCitizen && owedTaxes > 0)
@@ -58,6 +60,7 @@ namespace SWLOR.Game.Server.Service.StationService
             ShipyardRefusal.NotAtShipyard => "Capital hulls can only be built at a station Shipyard.",
             ShipyardRefusal.CitizensOnly => "Only this station's citizens may build at its Shipyard.",
             ShipyardRefusal.OwesTaxes => "You owe taxes to this station. Pay them at the Citizenship Terminal before using its Shipyard.",
+            ShipyardRefusal.Embargoed => "This station has closed its Shipyard to citizens of your city.",
             _ => string.Empty,
         };
 
@@ -168,8 +171,8 @@ namespace SWLOR.Game.Server.Service.StationService
         public static int GetJumpFuel(JumpRequest request) =>
             GetJumpFuel(request.ShipSize, request.HullTag, request.CargoValue, request.Hops);
 
-        /// <summary>Whether a beacon's access setting admits the player.</summary>
-        public static bool CanUseBeacon(JumpBeaconAccessType access, bool isCitizen, bool isAllyCitizen) => access switch
+        /// <summary>Whether a beacon's access setting admits the player. A station's Embargo against the player's city refuses them whatever the setting.</summary>
+        public static bool CanUseBeacon(JumpBeaconAccessType access, bool isCitizen, bool isAllyCitizen, bool isEmbargoed = false) => !isEmbargoed && access switch
         {
             JumpBeaconAccessType.Anyone => true,
             JumpBeaconAccessType.Allies => isCitizen || isAllyCitizen,

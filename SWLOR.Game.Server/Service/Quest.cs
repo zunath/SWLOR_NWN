@@ -737,14 +737,19 @@ namespace SWLOR.Game.Server.Service
 
             // 5% credit bonus per Guild Relations perk level, if quest is associated with a guild.
             var guildRelations = 0f;
+            var guildCharter = 0f;
             if (isGuildQuest)
             {
                 var perkLevel = Perk.GetPerkLevel(player, PerkType.GuildRelations);
                 guildRelations = perkLevel * 0.05f;
+
+                // 10% credit bonus while the player's city has a Guild Charter.
+                guildCharter = EdictEffects.GetGuildCharterBonus(DB.Get<Player>(GetObjectUUID(player)));
             }
             var amount = baseAmount +
                          (int)(baseAmount * social) +
-                         (int)(baseAmount * guildRelations);
+                         (int)(baseAmount * guildRelations) +
+                         (int)(baseAmount * guildCharter);
 
             return amount;
         }

@@ -368,6 +368,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHeight(35f)
                                 .SetWidth(350f);
                         });
+
+                        AddStreetLifeSection(col);
                     });
                 });
             });

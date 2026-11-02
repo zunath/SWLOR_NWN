@@ -469,6 +469,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The id of the city an area belongs to: the city's own land (a planet area or a station deck), or the interior of a building
+        /// or house in it. Walks the instance, building, and city chain. An area outside any city, such as an apartment or a ship,
+        /// gives an empty string.
+        /// </summary>
+        /// <param name="area">The area to look up.</param>
+        public static string GetCityIdForArea(uint area)
+        {
+            if (!GetIsObjectValid(area))
+                return string.Empty;
+
+            // An interior's parent is its building, and the building's parent is the city.
+            var propertyId = GetPropertyId(area);
+            for (var depth = 0; depth < 4 && !string.IsNullOrWhiteSpace(propertyId); depth++)
+            {
+                var property = DB.Get<WorldProperty>(propertyId);
+                if (property == null)
+                    return string.Empty;
+
+                if (property.PropertyType == PropertyType.City)
+                    return property.Id;
+
+                propertyId = property.ParentPropertyId;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Registers an area instance to a given property Id.
         /// </summary>
         /// <param name="propertyId">The property Id</param>
@@ -1446,6 +1474,9 @@ namespace SWLOR.Game.Server.Service
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
                 }
 
+                // A ship whose owner lost the right to use its Starport, and whose 7-day departure pass ran out, leaves it.
+                StarportDeparture.ReturnStrandedShip(property);
+
                 ReturnStarshipToSafeDock(property);
 
                 DB.Set(property);
@@ -2132,6 +2163,9 @@ namespace SWLOR.Game.Server.Service
             DB.Set(city);
             SpawnExclusion.InvalidateCity(city.Id);
 
+            // The street life follows the current level: townsfolk, guards, and critters are added or removed to match.
+            Townsfolk.OnCityChanged(city.Id);
+
             // A smaller city closes its newest market stalls above the new limit, and a larger one reopens them.
             MarketStalls.Refresh(city.Id);
 
@@ -2361,6 +2395,7 @@ namespace SWLOR.Game.Server.Service
                 Edict.OnCityDeleted(property);
                 Tournaments.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
+                Townsfolk.OnCityDeleted(property.Id);
                 CityStockAllowances.DeleteAll(property.Id);
             }
 
@@ -2381,6 +2416,10 @@ namespace SWLOR.Game.Server.Service
 
             // A deleted city, or a structure removed from one, changes where spawns may appear.
             SpawnExclusion.InvalidateCity(property.PropertyType == PropertyType.City ? property.Id : property.ParentPropertyId);
+
+            // A building removed from a city changes where its street life walks.
+            if (property.PropertyType == PropertyType.Structure)
+                Townsfolk.OnStructureChanged(property);
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
@@ -3937,6 +3976,9 @@ namespace SWLOR.Game.Server.Service
         {
             // A placed, moved or retrieved structure changes where spawns may appear in its city.
             SpawnExclusion.InvalidateCity(property?.ParentPropertyId);
+
+            // A building changes where the city's street life walks.
+            Townsfolk.OnStructureChanged(property);
 
             if (!_structureChangedActions.ContainsKey(structureType))
                 return;

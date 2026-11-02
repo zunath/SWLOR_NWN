@@ -170,13 +170,23 @@ namespace SWLOR.Game.Server.Service
             return dbPlayer != null && station != null && dbPlayer.CitizenPropertyId == station.Id;
         }
 
-        /// <summary>Whether the player is a citizen of one of the stations the beacon lists as allies.</summary>
+        /// <summary>
+        /// Whether the player is a citizen of one of the stations the beacon lists as allies, or of a city the station has an Alliance
+        /// Edict in effect with.
+        /// </summary>
         public static bool IsAllyCitizen(uint player, StationBuildingState beacon)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             return dbPlayer != null &&
                    !string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId) &&
-                   beacon.BeaconAllyStationIds.Contains(dbPlayer.CitizenPropertyId);
+                   (beacon.BeaconAllyStationIds.Contains(dbPlayer.CitizenPropertyId) ||
+                    EdictEffects.IsAllyOf(DB.Get<WorldProperty>(beacon.StationId), dbPlayer));
+        }
+
+        /// <summary>Whether the station has an Embargo in effect against the player's city, which refuses them at its Shipyard and Jump Beacon.</summary>
+        public static bool IsEmbargoed(uint player, WorldProperty station)
+        {
+            return EdictEffects.IsEmbargoedBy(station, DB.Get<Player>(GetObjectUUID(player)));
         }
 
         // The Shipyard
@@ -207,7 +217,8 @@ namespace SWLOR.Game.Server.Service
                 true,
                 GetState(building).ShipyardAccess,
                 IsCitizen(player, station),
-                dbPlayer?.PropertyOwedTaxes ?? 0);
+                dbPlayer?.PropertyOwedTaxes ?? 0,
+                IsEmbargoed(player, station));
             return StationBuildingRules.DescribeShipyardRefusal(refusal);
         }
 
@@ -744,7 +755,7 @@ namespace SWLOR.Game.Server.Service
                 var anchor = Station.GetAnchor(station);
                 if (anchor == null || anchor.IsWildSpace || station.IsQueuedForDeletion ||
                     Station.GetDockPoints(station.Id).Count == 0 ||
-                    !StationBuildingRules.CanUseBeacon(beacon.BeaconAccess, IsCitizen(player, station), IsAllyCitizen(player, beacon)))
+                    !StationBuildingRules.CanUseBeacon(beacon.BeaconAccess, IsCitizen(player, station), IsAllyCitizen(player, beacon), IsEmbargoed(player, station)))
                     continue;
 
                 destinations.Add(station);
@@ -770,9 +781,9 @@ namespace SWLOR.Game.Server.Service
                 DestinationInWildSpace = Station.GetAnchor(destination)?.IsWildSpace ?? true,
                 SameStation = destination != null && destination.Id == origin.Id,
                 OriginPermits = originState != null &&
-                                StationBuildingRules.CanUseBeacon(originState.BeaconAccess, IsCitizen(player, origin), IsAllyCitizen(player, originState)),
+                                StationBuildingRules.CanUseBeacon(originState.BeaconAccess, IsCitizen(player, origin), IsAllyCitizen(player, originState), IsEmbargoed(player, origin)),
                 DestinationPermits = destinationState != null &&
-                                     StationBuildingRules.CanUseBeacon(destinationState.BeaconAccess, IsCitizen(player, destination), IsAllyCitizen(player, destinationState)),
+                                     StationBuildingRules.CanUseBeacon(destinationState.BeaconAccess, IsCitizen(player, destination), IsAllyCitizen(player, destinationState), IsEmbargoed(player, destination)),
                 OriginBeaconLevel = GetBeaconLevel(origin),
                 DestinationBeaconLevel = GetBeaconLevel(destination),
                 ShipSize = record == null ? ShipSize.Invalid : Space.GetShipSize(record),
@@ -853,6 +864,10 @@ namespace SWLOR.Game.Server.Service
             DB.Set(record);
 
             FinishJump(ship, record);
+
+            // The beacon's own access setting let the ship in, so its pilot and owner can board it and leave for 7 days whatever the
+            // Starport's access rules say.
+            StarportDeparture.OnArrived(GetObjectUUID(player), ship.OwnerPlayerId, dock.PropertyId);
 
             var landing = dock.Location;
             AssignCommand(player, () =>

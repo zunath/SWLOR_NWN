@@ -247,6 +247,18 @@ namespace SWLOR.Game.Server.Entity
         public CityCouncilSummons CouncilSummons { get; set; }
 
         /// <summary>
+        /// True when the mayor switched the city's wandering townsfolk and guards off in Manage City. They leave at once and
+        /// stay away until switched back on. Cities only; older records load false, so no migration is needed.
+        /// </summary>
+        public bool TownsfolkHidden { get; set; }
+
+        /// <summary>
+        /// True when the mayor switched the city's street critters off in Manage City. Cities only; older records load false,
+        /// so no migration is needed.
+        /// </summary>
+        public bool CrittersHidden { get; set; }
+
+        /// <summary>
         /// The stock theme the mayor picked for a Market Stall. Only used when the StructureType is a Market Stall;
         /// older records load with none, which sells general goods.
         /// </summary>

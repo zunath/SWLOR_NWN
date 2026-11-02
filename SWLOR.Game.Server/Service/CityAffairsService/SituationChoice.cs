@@ -31,5 +31,8 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
 
         /// <summary>The credits the treasury must hold for the choice to be picked. 0 for a free choice or a gain.</summary>
         public int Cost => SituationRules.GetCost(Effects);
+
+        /// <summary>The credits the choice costs for a situation whose subject owes <paramref name="subjectCredits"/>, such as a customs fine.</summary>
+        public int GetCost(int subjectCredits) => SituationRules.GetCost(Effects, subjectCredits);
     }
 }

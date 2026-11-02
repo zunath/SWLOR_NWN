@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Entity
             ChosenOption = -1;
             DecidedByPlayerId = string.Empty;
             SecretEntryId = string.Empty;
+            SubjectId = string.Empty;
+            SubjectNote = string.Empty;
         }
 
         /// <summary>The property id of the city (or station).</summary>
@@ -48,5 +50,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The secret Gazette entry a Scandal follow-up exposes when it arrives, or empty.</summary>
         public string SecretEntryId { get; set; }
+
+        /// <summary>The id of what an event-driven situation is about, such as a holding, or empty.</summary>
+        public string SubjectId { get; set; }
+
+        /// <summary>What the officials are told about the subject, shown beside the situation's text. Names no player.</summary>
+        public string SubjectNote { get; set; }
     }
 }

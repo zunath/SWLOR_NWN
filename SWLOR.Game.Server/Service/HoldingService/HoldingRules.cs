@@ -160,9 +160,9 @@ namespace SWLOR.Game.Server.Service.HoldingService
         /// <summary>
         /// Brings the holding up to now one whole day at a time: upkeep, an event roll every few days, an unanswered
         /// customs fine, repairs from delivered goods, and the day's output into the warehouse. Stops when the upkeep owed
-        /// reaches the foreclosure limit.
+        /// reaches the foreclosure limit. A city's <paramref name="modifiers"/> change the event rolls and a setback's repair need.
         /// </summary>
-        public static HoldingAdvanceResult Advance(PlanetaryHolding holding, HoldingDetail detail, DateTime now, System.Random random)
+        public static HoldingAdvanceResult Advance(PlanetaryHolding holding, HoldingDetail detail, DateTime now, System.Random random, HoldingModifiers modifiers = null)
         {
             var result = new HoldingAdvanceResult();
             while (holding.LastProcessedAt.AddDays(1) <= now)
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
                 {
                     holding.DaysUntilEvent = HoldingTuning.EventIntervalDays;
                     if (holding.Setback == HoldingSetbackType.Invalid && holding.CustomsFine <= 0 && !holding.RaidPending)
-                        ApplyEvent(holding, detail, RollEvent(detail, random.NextDouble()), day, result);
+                        ApplyEvent(holding, detail, RollEvent(detail, random.NextDouble(), modifiers), day, result, modifiers);
                 }
 
                 TryRepair(holding, detail, day, result);
@@ -199,15 +199,20 @@ namespace SWLOR.Game.Server.Service.HoldingService
             return result;
         }
 
-        /// <summary>The event a roll in [0, 1) gives: boom, setback, raid, then (contraband holdings) customs.</summary>
-        public static HoldingEventType RollEvent(HoldingDetail detail, double roll)
+        /// <summary>
+        /// The event a roll in [0, 1) gives: boom, setback, raid, then (contraband holdings) customs. A smaller setback scale
+        /// shortens only the setback band, so the raid and customs bands keep their place and width and the freed share is no event.
+        /// </summary>
+        public static HoldingEventType RollEvent(HoldingDetail detail, double roll, HoldingModifiers modifiers = null)
         {
             var threshold = HoldingTuning.BoomChance;
             if (roll < threshold)
                 return HoldingEventType.Boom;
+            if (roll < threshold + HoldingTuning.SetbackChance * ClampScale(modifiers?.SetbackChanceScale ?? 1.0))
+                return HoldingEventType.Setback;
             threshold += HoldingTuning.SetbackChance;
             if (roll < threshold)
-                return HoldingEventType.Setback;
+                return HoldingEventType.None;
             threshold += HoldingTuning.RaidChance;
             if (roll < threshold)
                 return HoldingEventType.Raid;
@@ -218,7 +223,16 @@ namespace SWLOR.Game.Server.Service.HoldingService
             return HoldingEventType.None;
         }
 
-        public static void ApplyEvent(PlanetaryHolding holding, HoldingDetail detail, HoldingEventType type, DateTime day, HoldingAdvanceResult result)
+        /// <summary>The repair goods a setback needs under a city's modifiers: the detail's units scaled and rounded up, at least 1.</summary>
+        public static int GetRepairUnits(HoldingDetail detail, HoldingModifiers modifiers = null)
+        {
+            if (detail.RepairUnits <= 0)
+                return 0;
+
+            return Math.Max(1, (int)Math.Ceiling(detail.RepairUnits * ClampScale(modifiers?.RepairUnitsScale ?? 1.0) - 1e-9));
+        }
+
+        public static void ApplyEvent(PlanetaryHolding holding, HoldingDetail detail, HoldingEventType type, DateTime day, HoldingAdvanceResult result, HoldingModifiers modifiers = null)
         {
             switch (type)
             {
@@ -227,11 +241,12 @@ namespace SWLOR.Game.Server.Service.HoldingService
                     AddLog(holding, day, $"Boom: the {detail.Name} doubles its output today.", result);
                     break;
                 case HoldingEventType.Setback:
+                    var repairUnits = GetRepairUnits(detail, modifiers);
                     holding.Setback = detail.Setback;
-                    holding.RepairUnitsNeeded = detail.RepairUnits;
+                    holding.RepairUnitsNeeded = repairUnits;
                     AddLog(holding, day,
                         $"{GetSetbackName(detail.Setback)}: {GetSetbackText(detail.Setback)} Output stops until " +
-                        $"{detail.RepairUnits} {TradeLookup.GetCommodity(detail.RepairGood)?.Name} are delivered.", result);
+                        $"{repairUnits} {TradeLookup.GetCommodity(detail.RepairGood)?.Name} are delivered.", result);
                     break;
                 case HoldingEventType.Raid:
                     // W11o: the raiders hold the site until they are driven off there or the answer window runs out.
@@ -589,6 +604,8 @@ namespace SWLOR.Game.Server.Service.HoldingService
         }
 
         private static int ClampLevel(int level) => Math.Clamp(level, 1, HoldingTuning.MaximumLevel);
+
+        private static double ClampScale(double scale) => Math.Clamp(scale, 0.0, 1.0);
 
         private static int Round(double value) => (int)Math.Round(value, MidpointRounding.AwayFromZero);
     }

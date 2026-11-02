@@ -133,6 +133,13 @@ namespace SWLOR.Game.Server.Service
             var namesTarget = EdictCatalog.Get(type)?.NamesTargetCity ?? false;
             var target = namesTarget ? GetLiveCity(targetCityId) : null;
 
+            // Holdings settle under the old state first, but only for an enactment that will go through.
+            if (type == EdictType.IndustrialCharter &&
+                EdictChanges.PlanEnact(city, target, targetCityId, type, IsWildSpaceStation(city), now).Refusal == EdictRefusal.None)
+            {
+                IndustrialCharter.SettleCity(city, aboutToEnact: true);
+            }
+
             var enactment = EdictChanges.Enact(city, target, targetCityId, type, IsWildSpaceStation(city), fromPlatform, now);
             if (enactment.Refusal != EdictRefusal.None)
                 return enactment.Refusal;
@@ -173,6 +180,10 @@ namespace SWLOR.Game.Server.Service
             var targetCityId = city.Edicts.TryGetValue(type, out var held) ? held.TargetCityId : string.Empty;
             var target = string.IsNullOrWhiteSpace(targetCityId) ? null : DB.Get<WorldProperty>(targetCityId);
 
+            // A repeal can also free a slot that lets a paused Industrial Charter resume.
+            if (city.Edicts.TryGetValue(type, out var repealing) && EdictRules.CanRepeal(repealing, now))
+                IndustrialCharter.SettleCity(city);
+
             var repeal = EdictChanges.Repeal(city, target, type, now);
             if (repeal.Refusal != EdictRefusal.None)
                 return repeal.Refusal;
@@ -207,6 +218,7 @@ namespace SWLOR.Game.Server.Service
         public static EdictPlatformEnactment EnactPlatform(WorldProperty city, ElectionPlatform platform, DateTime? nowUtc = null)
         {
             var now = nowUtc ?? DateTime.UtcNow;
+            IndustrialCharter.SettleCity(city, aboutToEnact: platform.Edicts.Any(promise => promise.Type == EdictType.IndustrialCharter));
             var enactment = EdictChanges.EnactPlatform(city, platform.Edicts, GetLiveCity, IsWildSpaceStation(city), now);
 
             // The other cities are saved first. If the server stops before the city is, the result is counted again at the
@@ -270,6 +282,10 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             foreach (var city in DB.Search(query.AddPaging(count, 0)).ToList().Where(x => x.Id != deletedCity.Id))
             {
+                // Freeing the Alliance's slot can let a paused Industrial Charter resume.
+                if (city.Edicts.TryGetValue(EdictType.Alliance, out var alliance) && alliance.TargetCityId == deletedCity.Id)
+                    IndustrialCharter.SettleCity(city);
+
                 if (!EdictChanges.RemoveAllianceNaming(city, deletedCity.Id, now))
                     continue;
 
@@ -326,6 +342,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void ApplyCityLevelPauses(WorldProperty city, DateTime nowUtc, bool billResumes)
         {
+            IndustrialCharter.SettleCity(city);
             EdictChanges.ApplyCityLevelPauses(city, nowUtc, billResumes);
         }
 

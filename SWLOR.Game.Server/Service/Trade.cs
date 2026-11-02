@@ -170,14 +170,14 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Sells units from the player's ship docked here and gives Piloting XP for the profit.</summary>
         public static void Sell(uint player, string shipId, TradeExchangeType exchangeType, string dockId, CommodityType commodity, int units)
         {
-            if (!TryGetTrade(player, shipId, exchangeType, dockId, commodity, out var ship, out var detail, out var market, out var dock))
+            if (!TryGetTrade(player, shipId, exchangeType, dockId, commodity, out var ship, out var detail, out var market, out var dock, selling: true))
                 return;
 
             var now = DateTime.UtcNow;
             var state = GetExchangeState(exchangeType, now);
             var order = TradeRules.PlanSell(
                 detail,
-                market,
+                GetSaleMarket(dock, exchangeType, commodity, market),
                 GetPressure(state, commodity),
                 GetAbilityScore(player, AbilityType.Social),
                 units,
@@ -190,6 +190,9 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)));
                 return;
             }
+
+            if (TryBustContrabandSale(player, ship, dock, exchangeType, commodity))
+                return;
 
             // The proceeds are saved in the character file with a mark naming the cargo change, then the cargo: a restart
             // in between leaves a mark the next login applies once (ApplyPendingTrade). The sale's cost basis is read
@@ -296,13 +299,16 @@ namespace SWLOR.Game.Server.Service
             out PlayerShip ship,
             out CommodityDetail detail,
             out TradeMarketDetail market,
-            out TradeDock dock)
+            out TradeDock dock,
+            bool selling = false)
         {
             ship = string.IsNullOrWhiteSpace(shipId) ? null : DB.Get<PlayerShip>(shipId);
             detail = TradeLookup.GetCommodity(commodity);
-            market = TradePricing.WithPriceMultiplier(
-                TradeLookup.GetExchange(exchangeType)?.FindMarket(commodity), Space.GetIncursionPriceMultiplier(exchangeType));
             dock = GetDock(dockId, exchangeType);
+            var sharedMarket = TradeLookup.GetExchange(exchangeType)?.FindMarket(commodity);
+            if (sharedMarket == null && selling)
+                sharedMarket = GetContrabandSaleMarket(dock, exchangeType, commodity);
+            market = TradePricing.WithPriceMultiplier(sharedMarket, Space.GetIncursionPriceMultiplier(exchangeType));
 
             if (ship == null || ship.OwnerPlayerId != GetObjectUUID(player) || !IsDockedAt(ship, dockId))
             {

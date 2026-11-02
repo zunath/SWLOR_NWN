@@ -36,6 +36,12 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         PredatorsAtTheCorrals = 13,
 
         /// <summary>Needs the exotic beast trader to be hosted by the city this week.</summary>
-        BeastTraderPens = 14
+        BeastTraderPens = 14,
+
+        /// <summary>Raised by a bandit raid at a citizen's holding on the city's planet.</summary>
+        HoldingRaid = 15,
+
+        /// <summary>Raised by a customs inspection at a citizen's holding on the city's planet.</summary>
+        HoldingCustoms = 16
     }
 }

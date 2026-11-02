@@ -9228,6 +9228,82 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "City Staff - City Hall Clerk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cs_clerk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "City Staff - Bartender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cs_bartender"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "City Staff - Medical Center Medic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cs_medic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "City Staff - Bank Teller"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cs_teller"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {

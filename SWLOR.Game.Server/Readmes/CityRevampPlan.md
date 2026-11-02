@@ -862,7 +862,7 @@ Every open question now has a decision for the player review. The rules behind t
   - PerkType 1100-1149
   - StatType 1500-1549
   - GuiWindowType 110-129
-  - StructureType 5100-5129
+  - StructureType 5100-5129, and 5130-5199 for planet and station decor sets
   - RecipeType 8000-8199
   - PropertyPermissionType 19-21: ManageEdicts 19, HandleCityAffairs 20, TendGardens 21
   - PropertyTaxType: Sales 5

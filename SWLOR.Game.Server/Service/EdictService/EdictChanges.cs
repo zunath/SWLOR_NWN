@@ -85,6 +85,7 @@ namespace SWLOR.Game.Server.Service.EdictService
         /// <param name="isWildSpaceStation">Whether the enacting city is a Wild Space station.</param>
         /// <param name="fromPlatform">True when the sitting mayor's election platform enacts it.</param>
         /// <param name="nowUtc">The time.</param>
+        /// <param name="isOpenPort">Whether the enacting city's Starport exchange is an open port.</param>
         public static EdictEnactment Enact(
             WorldProperty city,
             WorldProperty target,
@@ -92,9 +93,10 @@ namespace SWLOR.Game.Server.Service.EdictService
             EdictType type,
             bool isWildSpaceStation,
             bool fromPlatform,
-            DateTime nowUtc)
+            DateTime nowUtc,
+            bool isOpenPort = false)
         {
-            var plan = PlanEnact(city, target, targetCityId, type, isWildSpaceStation, nowUtc);
+            var plan = PlanEnact(city, target, targetCityId, type, isWildSpaceStation, nowUtc, isOpenPort);
             if (plan.Refusal != EdictRefusal.None)
                 return plan;
 
@@ -124,7 +126,8 @@ namespace SWLOR.Game.Server.Service.EdictService
             string targetCityId,
             EdictType type,
             bool isWildSpaceStation,
-            DateTime nowUtc)
+            DateTime nowUtc,
+            bool isOpenPort = false)
         {
             var refusal = EdictRules.GetEnactRefusal(
                 type,
@@ -134,7 +137,8 @@ namespace SWLOR.Game.Server.Service.EdictService
                 GetCityLevel(city),
                 isWildSpaceStation,
                 GetConditions(city),
-                city.Edicts);
+                city.Edicts,
+                isOpenPort);
             if (refusal != EdictRefusal.None)
                 return EdictEnactment.Refused(refusal);
 
@@ -192,12 +196,14 @@ namespace SWLOR.Game.Server.Service.EdictService
         /// <param name="findCity">A live city by id, or null when it is missing or being removed.</param>
         /// <param name="isWildSpaceStation">Whether the city is a Wild Space station.</param>
         /// <param name="nowUtc">The time the results post.</param>
+        /// <param name="isOpenPort">Whether the city's Starport exchange is an open port, where a promised Shadowport is dropped.</param>
         public static EdictPlatformEnactment EnactPlatform(
             WorldProperty city,
             IEnumerable<ElectionPlatformEdict> platform,
             Func<string, WorldProperty> findCity,
             bool isWildSpaceStation,
-            DateTime nowUtc)
+            DateTime nowUtc,
+            bool isOpenPort = false)
         {
             var previous = city.Edicts.ToList();
 
@@ -218,7 +224,8 @@ namespace SWLOR.Game.Server.Service.EdictService
                     CityLevelRules.MaxLevel,
                     isWildSpaceStation,
                     CityWideCondition.None,
-                    held);
+                    held,
+                    isOpenPort);
                 if (refusal != EdictRefusal.None)
                 {
                     dropped.Add((promise.Type, refusal));

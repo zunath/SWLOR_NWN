@@ -38,17 +38,22 @@ namespace SWLOR.Game.Server.Service.EdictService
             return detail != null && cityLevel >= detail.MinimumCityLevel;
         }
 
-        /// <summary>Whether a city can hold the Edict at all. Planet-based Edicts are hidden for Wild Space stations.</summary>
-        public static bool IsAvailableTo(EdictType type, bool isWildSpaceStation)
+        /// <summary>
+        /// Whether a city can hold the Edict at all. Planet-based Edicts are hidden for Wild Space stations, and Shadowport for a
+        /// city whose Starport exchange is an open port, where it would change nothing.
+        /// </summary>
+        public static bool IsAvailableTo(EdictType type, bool isWildSpaceStation, bool isOpenPort = false)
         {
             var detail = EdictCatalog.Get(type);
-            return detail != null && !(detail.IsPlanetBased && isWildSpaceStation);
+            return detail != null &&
+                   !(detail.IsPlanetBased && isWildSpaceStation) &&
+                   !(detail.RequiresLawfulPort && isOpenPort);
         }
 
         /// <summary>The Edicts a city sees in its Edicts tab, in type order.</summary>
-        public static IReadOnlyList<EdictDetail> GetOfferedEdicts(bool isWildSpaceStation)
+        public static IReadOnlyList<EdictDetail> GetOfferedEdicts(bool isWildSpaceStation, bool isOpenPort = false)
         {
-            return EdictCatalog.Ordered.Where(x => IsAvailableTo(x.Type, isWildSpaceStation)).ToList();
+            return EdictCatalog.Ordered.Where(x => IsAvailableTo(x.Type, isWildSpaceStation, isOpenPort)).ToList();
         }
 
         /// <summary>
@@ -285,6 +290,7 @@ namespace SWLOR.Game.Server.Service.EdictService
         /// <param name="isWildSpaceStation">Whether the enacting city is a Wild Space station.</param>
         /// <param name="conditions">The enacting city's city-wide conditions.</param>
         /// <param name="held">The Edicts the city already holds, whatever their state.</param>
+        /// <param name="isOpenPort">Whether the enacting city's Starport exchange is an open port.</param>
         public static EdictRefusal GetEnactRefusal(
             EdictType type,
             string cityId,
@@ -293,12 +299,13 @@ namespace SWLOR.Game.Server.Service.EdictService
             int cityLevel,
             bool isWildSpaceStation,
             CityWideCondition conditions,
-            IReadOnlyDictionary<EdictType, CityEdict> held)
+            IReadOnlyDictionary<EdictType, CityEdict> held,
+            bool isOpenPort = false)
         {
             var detail = EdictCatalog.Get(type);
             if (detail == null)
                 return EdictRefusal.UnknownEdict;
-            if (!IsAvailableTo(type, isWildSpaceStation))
+            if (!IsAvailableTo(type, isWildSpaceStation, isOpenPort))
                 return EdictRefusal.UnavailableHere;
             if (cityLevel < detail.MinimumCityLevel)
                 return EdictRefusal.LevelTooLow;
@@ -337,7 +344,9 @@ namespace SWLOR.Game.Server.Service.EdictService
                 case EdictRefusal.CityUnavailable:
                     return "This city is no longer available.";
                 case EdictRefusal.UnavailableHere:
-                    return $"{name} is not available to a station in Wild Space.";
+                    return detail is { RequiresLawfulPort: true }
+                        ? $"{name} is not available where the Starport exchange is an open port, such as a station in Wild Space."
+                        : $"{name} is not available to a station in Wild Space.";
                 case EdictRefusal.LevelTooLow:
                     return $"{name} needs city level {detail?.MinimumCityLevel ?? 1}.";
                 case EdictRefusal.AlreadyHeld:

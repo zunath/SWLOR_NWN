@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
     /// <param name="CandidateSupportedLevel">The level the weekly check would drop the city to under the candidate, never above
     /// the current level.</param>
     /// <param name="BaselineSupportedLevel">The level the check would drop the city to whoever is mayor, from the citizen count alone.</param>
+    /// <param name="IsOpenPort">Whether the city's Starport exchange is an open port, where Shadowport is not offered.</param>
     public sealed record ElectionPlatformContext(
         int CityLevel,
         bool IsWildSpaceStation,
@@ -27,5 +28,6 @@ namespace SWLOR.Game.Server.Service.PropertyService
         int CitizenshipTax,
         int CandidateMayorLevel,
         int CandidateSupportedLevel,
-        int BaselineSupportedLevel);
+        int BaselineSupportedLevel,
+        bool IsOpenPort = false);
 }

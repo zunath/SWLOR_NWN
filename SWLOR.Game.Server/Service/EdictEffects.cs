@@ -193,7 +193,16 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static TradeExchangeType GetCityExchange(WorldProperty city)
         {
-            if (city == null || Edict.IsWildSpaceStation(city))
+            return city == null || Edict.IsWildSpaceStation(city) ? TradeExchangeType.Invalid : GetTradeExchange(city);
+        }
+
+        /// <summary>
+        /// The NPC exchange the city's Trade Exchange trades through: a planet city's planet, an orbit station's anchor exchange, or
+        /// for a Wild Space station the nearest open port. Invalid for no city.
+        /// </summary>
+        public static TradeExchangeType GetTradeExchange(WorldProperty city)
+        {
+            if (city == null)
                 return TradeExchangeType.Invalid;
 
             return Station.IsStation(city)

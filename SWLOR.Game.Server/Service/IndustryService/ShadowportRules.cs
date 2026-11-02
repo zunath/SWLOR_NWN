@@ -24,6 +24,15 @@ namespace SWLOR.Game.Server.Service.IndustryService
             return shadowportInEffect ? ShadowportStance.Shadowport : ShadowportStance.Lawful;
         }
 
+        /// <summary>
+        /// Whether a city whose Trade Exchange trades through this exchange is at an open port, which has no customs authority and
+        /// no exchange for an unknown planet. Shadowport changes nothing there, so such a city cannot enact it.
+        /// </summary>
+        public static bool IsOpenPort(TradeExchangeType exchange)
+        {
+            return (TradeLookup.GetExchange(exchange)?.Authority ?? TradeAuthority.None) == TradeAuthority.None;
+        }
+
         /// <summary>The share of the usual price normal goods sell for: 0.85 under Shadowport, otherwise 1.</summary>
         public static double GetNormalGoodsSaleFactor(ShadowportStance stance)
         {

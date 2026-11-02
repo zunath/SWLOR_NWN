@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Service.DuelService
             State = DuelState.Active;
             ChallengerLabel = string.Empty;
             TargetLabel = string.Empty;
+            TournamentId = string.Empty;
+            ChallengerPlayerId = string.Empty;
+            TargetPlayerId = string.Empty;
         }
 
         public uint Challenger { get; }
@@ -63,5 +66,13 @@ namespace SWLOR.Game.Server.Service.DuelService
 
         /// <summary>The duelists have not yet been told the duel was voided.</summary>
         public bool InterruptionNoticePending { get; set; }
+
+        /// <summary>The tournament this duel is a match of, or empty for an ordinary duel. A tournament's duel posts no Gazette line of its own.</summary>
+        public string TournamentId { get; set; }
+
+        /// <summary>The challenger's player id, kept for a tournament duel whose duelist has logged out by the time it ends.</summary>
+        public string ChallengerPlayerId { get; set; }
+
+        public string TargetPlayerId { get; set; }
     }
 }

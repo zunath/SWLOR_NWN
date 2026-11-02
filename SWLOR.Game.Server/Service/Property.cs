@@ -2241,6 +2241,9 @@ namespace SWLOR.Game.Server.Service
             if (property.PropertyType == PropertyType.Structure && StationBuildingRules.IsStationBuilding(property.StructureType))
                 StationBuildings.OnDeleted(property);
 
+            if (property.PropertyType == PropertyType.Structure && property.StructureType == StructureType.DuelingRing)
+                Tournaments.OnRingDeleted(property);
+
             // Recursively clear any children properties tied to this property.
             // Children are also found by their parent Id because loading spawns structures that way,
             // so a stale child list can't leave orphaned buildings or interiors behind.
@@ -2330,6 +2333,7 @@ namespace SWLOR.Game.Server.Service
                 CityGazette.DeleteAll(property.Id);
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
+                Tournaments.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
             }
 

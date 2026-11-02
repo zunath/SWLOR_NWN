@@ -116,14 +116,16 @@ public class ForceSensitiveEspionageTests
         levels.Sum(level => level.Price).Should().Be(60);
     }
 
-    [Test]
-    public void SharedPresence_RequiresStealthI()
+    [TestCase(PerkType.SharedPresence, FeatType.SharedPresence)]
+    [TestCase(PerkType.GhostProtocol, FeatType.GhostProtocol)]
+    public void StealthCapstones_RequireStealthI(PerkType perkType, FeatType feat)
     {
-        var level = BuildEspionagePerks()[PerkType.SharedPresence].PerkLevels[1];
+        // Both capstones enter stealth, so both need the Stealth perk that stealth entry checks.
+        var level = BuildEspionagePerks()[perkType].PerkLevels[1];
         var mustHave = level.Requirements.OfType<PerkRequirementMustHavePerk>().Single();
         GetField<PerkType>(mustHave, "_mustHavePerkType").Should().Be(PerkType.Stealth);
         GetField<int>(mustHave, "_mustHavePerkLevel").Should().Be(1);
-        level.GrantedFeats.Should().Equal(FeatType.SharedPresence);
+        level.GrantedFeats.Should().Equal(feat);
     }
 
     [Test]

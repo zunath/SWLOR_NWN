@@ -195,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Reduces your enmity by 80%, enters stealth for up to 30 seconds, and causes your next back attack within 30 seconds to critically hit and inflict Exposed, reducing Defense by 20% for 30 seconds.")
                 .Price(6)
                 .RequirementCharacterType(CharacterType.Standard)
+                .RequirementMustHavePerk(PerkType.Stealth)
                 .RequirementSkill(SkillType.Espionage, 50);
         }
 

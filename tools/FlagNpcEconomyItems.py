@@ -22,14 +22,6 @@ import glob, json, os, re, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CREATURE_BASE = {69, 70, 71, 72, 73}
 
-# Farm items whose only source is a store a later part of the city work adds: the young animals (the traveling beast trader).
-# They stay unflagged so that store can sell them, and EconomyObtainabilityCoverageTests fails once one gains a source, so the
-# entry is removed then.
-PENDING_STORE_ITEMS = {
-    "livestock_waro", "livestock_cairn", "livestock_gimp", "livestock_klor",
-    "livestock_arad", "livestock_womp", "livestock_thune",
-}
-
 
 def read_text(path):
     # surrogateescape preserves any non-UTF-8 bytes (some blueprints use CP-1252).
@@ -195,7 +187,7 @@ def main():
     unflagged = []
     for f in sorted(glob.glob(os.path.join(ROOT, "Module", "uti", "*.uti.json"))):
         r = os.path.basename(f)[:-len(".uti.json")].lower()
-        if r in obtainable or r in PENDING_STORE_ITEMS:
+        if r in obtainable:
             continue
         a = uti_attrs(r)
         if a is None:

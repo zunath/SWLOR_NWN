@@ -20,17 +20,6 @@ public class EconomyObtainabilityCoverageTests
 {
     private static readonly HashSet<int> CreatureBaseItems = new() { 69, 70, 71, 72, 73 };
 
-    /// <summary>
-    /// Farm items whose only source is a store a later part of the city work adds: the young animals (the traveling beast trader).
-    /// They stay unflagged so that store can sell them; the test below fails once one gains a source, so the entry is removed then.
-    /// Keep in step with tools/FlagNpcEconomyItems.py.
-    /// </summary>
-    private static readonly HashSet<string> PendingStoreItems = new()
-    {
-        "livestock_waro", "livestock_cairn", "livestock_gimp", "livestock_klor",
-        "livestock_arad", "livestock_womp", "livestock_thune",
-    };
-
     [Test]
     public void NonObtainableItems_AreFlaggedNoEconomy()
     {
@@ -46,7 +35,7 @@ public class EconomyObtainabilityCoverageTests
             var resref = Path.GetFileName(utiPath);
             resref = resref.Substring(0, resref.Length - ".uti.json".Length).ToLowerInvariant();
 
-            if (obtainable.Contains(resref) || PendingStoreItems.Contains(resref))
+            if (obtainable.Contains(resref))
                 continue;
 
             using var uti = JsonDocument.Parse(File.ReadAllText(utiPath));
@@ -66,15 +55,6 @@ public class EconomyObtainabilityCoverageTests
         offenders.Should().BeEmpty(
             "every non-obtainable item must carry NO_ECONOMY (or be made obtainable). " +
             "Offenders:\n" + string.Join("\n", offenders.OrderBy(x => x)));
-    }
-
-    [Test]
-    public void PendingStoreItems_HaveNoSourceYet()
-    {
-        var obtainable = ReadObtainableResrefs(FindRepositoryRoot().FullName);
-
-        PendingStoreItems.Where(obtainable.Contains).Should().BeEmpty(
-            "an item that gained a source leaves the pending list, so the flag check covers it again");
     }
 
     private static bool IsRestrictedName(string name)

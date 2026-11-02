@@ -22,6 +22,16 @@ import glob, json, os, re, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CREATURE_BASE = {69, 70, 71, 72, 73}
 
+# Farm items whose only source is a store a later part of the city work adds: the tier 1 and 2 seeds (Cantina staff and market
+# stalls) and the young animals (the traveling beast trader). They stay unflagged so those stores can sell them, and
+# EconomyObtainabilityCoverageTests fails once one gains a source, so the entry is removed then.
+PENDING_STORE_ITEMS = {
+    "seed_orange", "seed_lemon", "seed_pebble", "seed_rosemary", "seed_fiber_1",
+    "seed_apple", "seed_peas", "seed_passion", "seed_thyme", "seed_fiber_2",
+    "livestock_waro", "livestock_cairn", "livestock_gimp", "livestock_klor",
+    "livestock_arad", "livestock_womp", "livestock_thune",
+}
+
 
 def read_text(path):
     # surrogateescape preserves any non-UTF-8 bytes (some blueprints use CP-1252).
@@ -100,9 +110,11 @@ def collect():
             for m in re.findall(r'\bTag = "([^"]+)"', s):
                 add(obtainable, m)
 
+    # The crate and the manure are created by the livestock code from constants, not literals at a call site.
     for r in ("beast_dna", "beast_egg", "blueprint", "survival_knife",
               "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
-              "ls_custom", "ss_custom"):
+              "ls_custom", "ss_custom", "livestock_crate",
+              "manure_t1", "manure_t2", "manure_t3", "manure_t4", "manure_t5"):
         add(obtainable, r)
 
     return equipped, obtainable
@@ -185,7 +197,7 @@ def main():
     unflagged = []
     for f in sorted(glob.glob(os.path.join(ROOT, "Module", "uti", "*.uti.json"))):
         r = os.path.basename(f)[:-len(".uti.json")].lower()
-        if r in obtainable:
+        if r in obtainable or r in PENDING_STORE_ITEMS:
             continue
         a = uti_attrs(r)
         if a is None:

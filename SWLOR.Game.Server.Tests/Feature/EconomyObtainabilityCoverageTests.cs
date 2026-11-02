@@ -20,6 +20,19 @@ public class EconomyObtainabilityCoverageTests
 {
     private static readonly HashSet<int> CreatureBaseItems = new() { 69, 70, 71, 72, 73 };
 
+    /// <summary>
+    /// Farm items whose only source is a store a later part of the city work adds: the tier 1 and 2 seeds (Cantina staff and market
+    /// stalls) and the young animals (the traveling beast trader). They stay unflagged so those stores can sell them; the test below
+    /// fails once one gains a source, so the entry is removed then. Keep in step with tools/FlagNpcEconomyItems.py.
+    /// </summary>
+    private static readonly HashSet<string> PendingStoreItems = new()
+    {
+        "seed_orange", "seed_lemon", "seed_pebble", "seed_rosemary", "seed_fiber_1",
+        "seed_apple", "seed_peas", "seed_passion", "seed_thyme", "seed_fiber_2",
+        "livestock_waro", "livestock_cairn", "livestock_gimp", "livestock_klor",
+        "livestock_arad", "livestock_womp", "livestock_thune",
+    };
+
     [Test]
     public void NonObtainableItems_AreFlaggedNoEconomy()
     {
@@ -35,7 +48,7 @@ public class EconomyObtainabilityCoverageTests
             var resref = Path.GetFileName(utiPath);
             resref = resref.Substring(0, resref.Length - ".uti.json".Length).ToLowerInvariant();
 
-            if (obtainable.Contains(resref))
+            if (obtainable.Contains(resref) || PendingStoreItems.Contains(resref))
                 continue;
 
             using var uti = JsonDocument.Parse(File.ReadAllText(utiPath));
@@ -55,6 +68,15 @@ public class EconomyObtainabilityCoverageTests
         offenders.Should().BeEmpty(
             "every non-obtainable item must carry NO_ECONOMY (or be made obtainable). " +
             "Offenders:\n" + string.Join("\n", offenders.OrderBy(x => x)));
+    }
+
+    [Test]
+    public void PendingStoreItems_HaveNoSourceYet()
+    {
+        var obtainable = ReadObtainableResrefs(FindRepositoryRoot().FullName);
+
+        PendingStoreItems.Where(obtainable.Contains).Should().BeEmpty(
+            "an item that gained a source leaves the pending list, so the flag check covers it again");
     }
 
     private static bool IsRestrictedName(string name)
@@ -174,10 +196,12 @@ public class EconomyObtainabilityCoverageTests
                     Add(m.Groups[1].Value);
         }
 
-        // Fixed resref constants that are granted directly.
+        // Fixed resref constants that are granted directly. The livestock crate and the manure are created by the livestock code
+        // from constants, not from a literal at a call site.
         foreach (var r in new[] { "beast_dna", "beast_egg", "blueprint", "survival_knife",
                                   "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
-                                  "ls_custom", "ss_custom" })
+                                  "ls_custom", "ss_custom", "livestock_crate",
+                                  "manure_t1", "manure_t2", "manure_t3", "manure_t4", "manure_t5" })
             Add(r);
 
         return obtainable;

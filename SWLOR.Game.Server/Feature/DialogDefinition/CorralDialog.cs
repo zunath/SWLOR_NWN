@@ -89,8 +89,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             foreach (var animalItem in animals)
             {
                 var item = animalItem;
-                var label = GetResRef(item) == LivestockRules.CrateResref ? GetName(item) : $"Young {GetName(item)}";
-                page.AddResponse(label, () =>
+                page.AddResponse(GetName(item), () =>
                 {
                     var result = Corrals.Place(Player, corralId, item);
                     SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message));

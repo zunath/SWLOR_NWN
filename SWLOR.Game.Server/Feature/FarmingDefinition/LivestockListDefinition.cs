@@ -6,8 +6,7 @@ namespace SWLOR.Game.Server.Feature.FarmingDefinition
     /// <summary>
     /// The seven animals of the Player City Revamp in five tiers. Each is raised from an existing creature whose meat cooking
     /// already uses, at the tier of its level in the Design Bible's World NPCs tab: Warocas 3, Valley Cairnmog 10, Gimpassa
-    /// 12, K'lor'slug 22, Aradile 25, Womp Rat 35 and Plains Thune 46. The young animal items (<c>livestock_*</c>) are
-    /// content for the farm items slice and are listed as missing until it lands.
+    /// 12, K'lor'slug 22, Aradile 25, Womp Rat 35 and Plains Thune 46.
     /// </summary>
     public class LivestockListDefinition : ILivestockListDefinition
     {

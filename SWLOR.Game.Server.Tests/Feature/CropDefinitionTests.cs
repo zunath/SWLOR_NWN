@@ -177,11 +177,9 @@ public class CropDefinitionTests
     }
 
     [Test]
-    public void SeedsTheModuleDoesNotHaveYetAreListedAndNotFailed()
+    public void EverySeedIsAnItemInTheModule()
     {
-        var missing = Crops.Values.Where(crop => !ModuleHasItem(crop.SeedResref)).Select(crop => crop.SeedResref).ToList();
-
-        TestContext.Out.WriteLine($"{missing.Count} of {Crops.Count} seed items are not in the module yet: {string.Join(", ", missing)}");
-        missing.Count.Should().BeLessThanOrEqualTo(Crops.Count);
+        foreach (var crop in Crops.Values)
+            ModuleHasItem(crop.SeedResref).Should().BeTrue($"{crop.Name} grows from '{crop.SeedResref}'");
     }
 }

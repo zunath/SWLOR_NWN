@@ -143,16 +143,15 @@ public class LivestockDefinitionTests
     }
 
     [Test]
-    public void ItemsTheFarmItemsSliceOwesAreListedAndNotFailed()
+    public void EveryYoungAnimalTheCrateAndEveryManureIsAnItemInTheModule()
     {
-        var owed = Animals.Values.Select(animal => animal.YoungResref)
+        var items = Animals.Values.Select(animal => animal.YoungResref)
             .Append(LivestockRules.CrateResref)
             .Concat(Enumerable.Range(1, 5).Select(LivestockRules.GetManureResref))
             .ToList();
-        var missing = owed.Where(resref => !ModuleHasItem(resref)).ToList();
 
-        TestContext.Out.WriteLine($"{missing.Count} of {owed.Count} livestock items are not in the module yet: {string.Join(", ", missing)}");
-        missing.Count.Should().BeLessThanOrEqualTo(owed.Count);
+        items.Should().HaveCount(13);
+        items.Where(resref => !ModuleHasItem(resref)).Should().BeEmpty();
     }
 
     // The Corral
@@ -198,11 +197,11 @@ public class LivestockDefinitionTests
     }
 
     [Test]
-    public void TheCorralsItemExistsAndIsOnThePalette_ButIsNotForSaleUntilARecipeMakesIt()
+    public void TheCorralsItemExistsAndIsOnThePalette_AndIsMadeByARecipe()
     {
         ModuleHasItem("structure_5104").Should().BeTrue();
         var item = File.ReadAllText(Path.Combine(Root, "Module", "uti", "structure_5104.uti.json"));
-        item.Should().Contain("\"NO_ECONOMY\"");
+        item.Should().NotContain("\"NO_ECONOMY\"", "a recipe makes the corral, so it is a player item");
         item.Should().Contain("\"structure_5104\"");
 
         File.ReadAllText(Path.Combine(Root, "Module", "itp", "itempalcus.itp.json")).Should().Contain("\"structure_5104\"");

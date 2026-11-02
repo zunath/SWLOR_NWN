@@ -2261,13 +2261,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    // The module is marked and saved with the character before the ship saves it as removed (Space.SettleShipItemMoves).
-                    Space.MarkModuleRemoved(Player, item, shipId, fitted.ItemInstanceId);
+                    // The removal record is saved before the ship drops the module, and the character after (Space.SettleShipItemMoves).
+                    Space.BeginModuleRemoval(Player, item, shipId, fitted);
                     moduleDetail.ModuleUnequippedAction?.Invoke(current.Status, moduleBonus);
                     currentModules.Remove(slot);
                     Space.RecalculateShipStats(current.Status, GetAbilityScore(Player, AbilityType.Willpower));
                     DB.Set(current);
-                    Space.ClearModuleRemoved(item);
+                    Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);
                     LoadShip();
                 });
             }
@@ -2365,12 +2365,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    // The module is marked and saved with the character before the ship saves it as removed (Space.SettleShipItemMoves).
-                    Space.MarkModuleRemoved(Player, item, shipId, fitted.ItemInstanceId);
+                    // The removal record is saved before the ship drops the module, and the character after (Space.SettleShipItemMoves).
+                    Space.BeginModuleRemoval(Player, item, shipId, fitted);
                     moduleDetail.ModuleUnequippedAction?.Invoke(current.Status, moduleBonus);
                     current.Status.ConfigurationModules.Remove(slot);
                     DB.Set(current);
-                    Space.ClearModuleRemoved(item);
+                    Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);
                     LoadShip();
                 });
             }

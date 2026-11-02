@@ -7763,6 +7763,13 @@
     "Call": "SendMessageToPC(user, ColorToken.Green($\"You open the {GetName(cache)}: {credits} credits.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/SpaceShipItemMoves.cs",
+    "Line": 235,
+    "Member": "SettleModuleRemovals",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"A ship module you removed before a restart is waiting for you. Make room in your inventory and log in again.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
     "Line": 49,
     "Member": "HandleJumpToSignatureFeat",

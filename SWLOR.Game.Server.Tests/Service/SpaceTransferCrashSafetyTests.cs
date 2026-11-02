@@ -260,13 +260,13 @@ public class SpaceTransferCrashSafetyTests
         var power = Method(viewModel, "private void ProcessPower(");
         InOrder(power, "SerializedItem = ObjectPlugin.Serialize(item),", "Space.MarkModuleFitting(Player, item, shipId);", "DB.Set(dbShip);",
             "Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);", "DestroyObject(item);");
-        InOrder(power, "if (!Item.TryAcquireItem(Player, item))", "Space.MarkModuleRemoved(Player, item, shipId, fitted.ItemInstanceId);",
-            "currentModules.Remove(slot);", "DB.Set(current);", "Space.ClearModuleRemoved(item);");
+        InOrder(power, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
+            "currentModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
         var config = Method(viewModel, "private void ProcessConfiguration(");
         InOrder(config, "SerializedItem = ObjectPlugin.Serialize(item),", "Space.MarkModuleFitting(Player, item, shipId);", "DB.Set(dbShip);",
             "Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);", "DestroyObject(item);");
-        InOrder(config, "if (!Item.TryAcquireItem(Player, item))", "Space.MarkModuleRemoved(Player, item, shipId, fitted.ItemInstanceId);",
-            "current.Status.ConfigurationModules.Remove(slot);", "DB.Set(current);", "Space.ClearModuleRemoved(item);");
+        InOrder(config, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
+            "current.Status.ConfigurationModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
 
         InOrder(Method(viewModel, "public Action OnClickRegisterShip()"),
             "SerializedItem = ObjectPlugin.Serialize(item),", "Space.MarkDeedRegistering(Player, item, ship.Id);", "DB.Set(ship);", "DestroyObject(item);");
@@ -278,7 +278,10 @@ public class SpaceTransferCrashSafetyTests
 
         var moves = Source("Service", "SpaceShipItemMoves.cs");
         InOrder(Method(moves, "public static void MarkModuleFitting("), "SetLocalString(item, ModuleFittingVariable,", "ExportSingleCharacter(player);");
-        InOrder(Method(moves, "public static void MarkModuleRemoved("), "SetLocalString(item, ModuleRemovedVariable,", "ExportSingleCharacter(player);");
+        var beginRemoval = Method(moves, "public static void BeginModuleRemoval(");
+        InOrder(beginRemoval, "DB.Set(new ShipModuleRemoval", "SetLocalString(item, ModuleRemovedVariable,");
+        beginRemoval.Should().NotContain("ExportSingleCharacter", "the character is saved only after the ship drops the module");
+        InOrder(Method(moves, "public static void FinishModuleRemoval("), "ExportSingleCharacter(player);", "DB.Delete<ShipModuleRemoval>(instanceId);");
         InOrder(Method(moves, "public static void MarkDeedRegistering("), "SetLocalString(deed, DeedRegisteringVariable, shipId);", "ExportSingleCharacter(player);");
         InOrder(Method(moves, "public static void MarkDeedUnregistered("), "SetLocalString(deed, DeedUnregisteredVariable, shipId);", "ExportSingleCharacter(player);");
         InOrder(Method(moves, "public static void RemoveUnregisteredShip("),
@@ -293,11 +296,32 @@ public class SpaceTransferCrashSafetyTests
             "DestroyObject(item);");
         InOrder(settle, "DelayCommand(1f, () =>", "ExportSingleCharacter(player);", "DB.Delete<ShipModuleReceipt>(receiptId);");
         new ShipModuleReceipt().OwnerPlayerId.Should().BeEmpty();
-        InOrder(settle, "TryReadShipMark(item, ModuleRemovedVariable, out shipId, out instanceId)",
-            "fitted.Value.Modules.Remove(fitted.Value.Slot);", "DB.Set(ship);");
+        InOrder(settle, "TryReadShipMark(item, ModuleRemovedVariable, out _, out instanceId)", "removedHeld.Add(instanceId);",
+            "SettleModuleRemovals(player, playerId, removedHeld)", "DB.Delete<ShipModuleRemoval>(removalId);");
+        settle.Should().NotContain("fitted.Value.Modules.Remove(", "a login never takes a module off a ship another refitter may already hold");
+        InOrder(Method(moves, "private static List<string> SettleModuleRemovals("),
+            "ShipModuleRemovalRules.Settle(removedHeld.Contains(removal.Id), stillFitted)",
+            "case ShipModuleRemovalOutcome.NeverHappened:", "DB.Delete<ShipModuleRemoval>(removal.Id);",
+            "case ShipModuleRemovalOutcome.GiveAgain:", "Item.TryAcquireItem(player, item)",
+            "SetLocalString(item, ModuleRemovedVariable,", "givenAgain.Add(removal.Id);");
+        new ShipModuleRemoval().OwnerPlayerId.Should().BeEmpty();
+        typeof(ShipModuleRemoval).GetProperty(nameof(ShipModuleRemoval.OwnerPlayerId))!
+            .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty();
         InOrder(settle, "GetLocalString(item, DeedRegisteringVariable)", "if (DB.Get<PlayerShip>(registering) != null)", "DestroyObject(item);");
         InOrder(settle, "GetLocalString(item, DeedUnregisteredVariable)", "ship.OwnerPlayerId == playerId",
             "RemoveUnregisteredShip(unregistered);");
+    }
+
+    [TestCase(true, true, ShipModuleRemovalOutcome.Finished)]
+    [TestCase(true, false, ShipModuleRemovalOutcome.Finished)]
+    [TestCase(false, true, ShipModuleRemovalOutcome.NeverHappened)]
+    [TestCase(false, false, ShipModuleRemovalOutcome.GiveAgain)]
+    public void AModuleRemovalARestartInterrupted_LeavesExactlyOneCopy(bool characterHolds, bool shipStillHas, ShipModuleRemovalOutcome expected)
+    {
+        // The record is saved before the ship drops the module and the character after it, so: the character holding it
+        // means done; the ship still having it means it never left (another refitter may now take it, replacing the
+        // record); neither means the ship dropped it before the character was saved, so it is given again.
+        ShipModuleRemovalRules.Settle(characterHolds, shipStillHas).Should().Be(expected);
     }
 
     private static void InOrder(string source, params string[] parts)

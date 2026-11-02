@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -45,15 +46,31 @@ namespace SWLOR.Game.Server.Service
             DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = GetObjectUUID(player), ShipId = shipId });
         }
 
-        /// <summary>Marks a module just taken out of a ship and saves the character, before the ship saves it as removed.</summary>
-        public static void MarkModuleRemoved(uint player, uint item, string shipId, string instanceId)
+        /// <summary>
+        /// Saves the removal record of a module just taken into the remover's inventory and marks the item, before the ship
+        /// saves the module as removed. The character is not saved yet: until <see cref="FinishModuleRemoval"/>, the record
+        /// is what says the module left the ship. A stale record of the same module (a restart before its ship saved the
+        /// removal) is replaced, since only a module the ship still has can be taken.
+        /// </summary>
+        public static void BeginModuleRemoval(uint player, uint item, string shipId, ShipStatus.ShipStatusModule module)
         {
-            SetLocalString(item, ModuleRemovedVariable, $"{shipId}|{instanceId}");
-            ExportSingleCharacter(player);
+            DB.Set(new ShipModuleRemoval
+            {
+                Id = module.ItemInstanceId,
+                OwnerPlayerId = GetObjectUUID(player),
+                ShipId = shipId,
+                SerializedItem = module.SerializedItem
+            });
+            SetLocalString(item, ModuleRemovedVariable, $"{shipId}|{module.ItemInstanceId}");
         }
 
-        /// <summary>The ship saved the module as removed: the mark goes with the next save.</summary>
-        public static void ClearModuleRemoved(uint item) => DeleteLocalString(item, ModuleRemovedVariable);
+        /// <summary>The ship saved the module as removed: the character is saved holding it, then the record goes.</summary>
+        public static void FinishModuleRemoval(uint player, uint item, string instanceId)
+        {
+            ExportSingleCharacter(player);
+            DB.Delete<ShipModuleRemoval>(instanceId);
+            DeleteLocalString(item, ModuleRemovedVariable);
+        }
 
         /// <summary>Marks a deed about to be saved as a ship and saves the character. Call after serializing it.</summary>
         public static void MarkDeedRegistering(uint player, uint deed, string shipId)
@@ -113,6 +130,7 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var settled = false;
+            var removedHeld = new HashSet<string>();
             foreach (var item in GetAllItems(player))
             {
                 if (TryReadShipMark(item, ModuleFittingVariable, out var shipId, out var instanceId))
@@ -126,20 +144,11 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                if (TryReadShipMark(item, ModuleRemovedVariable, out shipId, out instanceId))
+                if (TryReadShipMark(item, ModuleRemovedVariable, out _, out instanceId))
                 {
                     settled = true;
                     DeleteLocalString(item, ModuleRemovedVariable);
-                    var ship = DB.Get<PlayerShip>(shipId);
-                    var fitted = FindFittedModule(ship, instanceId);
-                    if (fitted != null)
-                    {
-                        fitted.Value.Modules.Remove(fitted.Value.Slot);
-                        GetShipModuleDetailByItemTag(fitted.Value.Module.ItemTag)?.ModuleUnequippedAction?.Invoke(ship.Status, fitted.Value.Module.ModuleBonus);
-                        RecalculateShipStats(ship.Status, GetAbilityScore(player, AbilityType.Willpower));
-                        DB.Set(ship);
-                        Log.Write(LogGroup.Space, $"{PlayerName.GetAuditName(player)} - removed module {instanceId} from ship {shipId}, whose removal a restart interrupted.");
-                    }
+                    removedHeld.Add(instanceId);
                 }
 
                 var registering = GetLocalString(item, DeedRegisteringVariable);
@@ -168,6 +177,10 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // The module removals a restart interrupted are settled from their records (ShipModuleRemovalRules).
+            var givenAgain = SettleModuleRemovals(player, playerId, removedHeld);
+            settled |= givenAgain.Count > 0;
+
             // The receipts go only once the character file is saved without the modules settled above (a destroyed
             // module is gone only after this script), so a restart before that save settles them again.
             var receiptQuery = new DBQuery<ShipModuleReceipt>()
@@ -187,7 +200,50 @@ namespace SWLOR.Game.Server.Service
                 ExportSingleCharacter(player);
                 foreach (var receiptId in receiptIds)
                     DB.Delete<ShipModuleReceipt>(receiptId);
+                foreach (var removalId in givenAgain)
+                    DB.Delete<ShipModuleRemoval>(removalId);
             });
+        }
+
+        /// <summary>
+        /// Settles the player's module removal records. A record whose module the character holds, or whose ship still has
+        /// the module, is deleted. A module neither has is given again, marked; its record goes only after the delayed save
+        /// (the ids returned), so a restart before it gives the module once more instead of losing it.
+        /// </summary>
+        private static List<string> SettleModuleRemovals(uint player, string playerId, HashSet<string> removedHeld)
+        {
+            var givenAgain = new List<string>();
+            var query = new DBQuery<ShipModuleRemoval>()
+                .AddFieldSearch(nameof(ShipModuleRemoval.OwnerPlayerId), playerId, false);
+            var count = (int)DB.SearchCount(query);
+            if (count <= 0)
+                return givenAgain;
+
+            foreach (var removal in DB.Search(query.AddPaging(count, 0)).ToList())
+            {
+                var stillFitted = FindFittedModule(DB.Get<PlayerShip>(removal.ShipId), removal.Id) != null;
+                switch (ShipModuleRemovalRules.Settle(removedHeld.Contains(removal.Id), stillFitted))
+                {
+                    case ShipModuleRemovalOutcome.Finished:
+                    case ShipModuleRemovalOutcome.NeverHappened:
+                        DB.Delete<ShipModuleRemoval>(removal.Id);
+                        break;
+                    case ShipModuleRemovalOutcome.GiveAgain:
+                        var item = ObjectPlugin.Deserialize(removal.SerializedItem);
+                        if (!Item.TryAcquireItem(player, item))
+                        {
+                            SendMessageToPC(player, "A ship module you removed before a restart is waiting for you. Make room in your inventory and log in again.");
+                            break;
+                        }
+
+                        SetLocalString(item, ModuleRemovedVariable, $"{removal.ShipId}|{removal.Id}");
+                        givenAgain.Add(removal.Id);
+                        Log.Write(LogGroup.Space, $"{PlayerName.GetAuditName(player)} - gave back module {removal.Id} removed from ship {removal.ShipId} before a restart.");
+                        break;
+                }
+            }
+
+            return givenAgain;
         }
 
         private static bool TryReadShipMark(uint item, string variable, out string shipId, out string instanceId)

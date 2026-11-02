@@ -276,7 +276,8 @@ public class MarketStallRulesTests
         var property = Source("Service", "Property.cs");
 
         property.Should().Contain("MarketStallRules.GetPlacementError(");
-        property.Should().Contain("structureType != StructureType.MarketStall");
+        property.Should().Contain("CityBuildingRules.CountsAsBuilding(structureType)");
+        CityBuildingRules.CountsAsBuilding(StructureType.MarketStall).Should().BeFalse();
     }
 
     [Test]

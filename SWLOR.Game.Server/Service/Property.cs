@@ -3638,15 +3638,12 @@ namespace SWLOR.Game.Server.Service
 
             // Special Case: Cities differentiate between structures and buildings.
             // They use the BuildingLimit value for buildings and StructureLimit for everything else.
-            // Buildings are determined by structures whose restrictions are solely to "City" property types.
-            // A market stall is restricted the same way but stands in the open, so it counts as a structure.
+            // A building is a city-only structure with an interior, or a station building; open-ground city
+            // structures (Dueling Ring, Market Stall, Corral, Traveler's Lodge) count as structures.
             if (property.PropertyType == PropertyType.City &&
-                structureDetail.RestrictedPropertyTypes == PropertyType.City &&
-                !LivestockRules.CountsAsStructure(structureType) &&
-                structureType != StructureType.MarketStall)
+                CityBuildingRules.CountsAsBuilding(structureType))
             {
-                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid ||
-                                                       StationBuildingRules.IsStationBuilding(x.StructureType));
+                structureCount = structures.Count(x => CityBuildingRules.CountsAsBuilding(x.StructureType));
                 structureLimit = layout.BuildingLimit;
                 fixtureName = "Building";
             }

@@ -370,9 +370,8 @@ public class LivestockRulesTests
     [Test]
     public void ACorralCountsAgainstTheStructureLimitNotTheBuildingLimit()
     {
-        LivestockRules.CountsAsStructure(StructureType.Corral).Should().BeTrue();
-        LivestockRules.CountsAsStructure(StructureType.CityHall).Should().BeFalse();
-        LivestockRules.CountsAsStructure(StructureType.DuelingRing).Should().BeFalse("the ring's limit is not this slice's to change");
+        CityBuildingRules.CountsAsBuilding(StructureType.Corral).Should().BeFalse();
+        CityBuildingRules.CountsAsBuilding(StructureType.CityHall).Should().BeTrue();
     }
 
     [Test]

@@ -13804,7 +13804,7 @@
         "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
-          "value": 3
+          "value": 2
         },
         "Appearance_Type": {
           "type": "word",
@@ -14707,7 +14707,7 @@
         },
         "xAppearance_Head": {
           "type": "word",
-          "value": 3
+          "value": 2
         },
         "xArmorPart_RFoot": {
           "type": "word",

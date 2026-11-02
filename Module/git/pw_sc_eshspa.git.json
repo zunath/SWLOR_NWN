@@ -49,7 +49,7 @@
       {
         "Appearance_Head": {
           "type": "byte",
-          "value": 3
+          "value": 1
         },
         "Appearance_Type": {
           "type": "word",
@@ -968,7 +968,7 @@
         },
         "xAppearance_Head": {
           "type": "word",
-          "value": 3
+          "value": 1
         },
         "xArmorPart_RFoot": {
           "type": "word",
@@ -1069,11 +1069,11 @@
         "__struct_id": 4,
         "XPosition": {
           "type": "float",
-          "value": 95.25
+          "value": 95.15
         },
         "YPosition": {
           "type": "float",
-          "value": 37.8
+          "value": 30.75
         },
         "ZPosition": {
           "type": "float",
@@ -1085,7 +1085,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -1.0
+          "value": 1.0
         }
       },
       {

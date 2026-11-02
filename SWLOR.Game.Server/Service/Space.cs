@@ -2271,9 +2271,10 @@ namespace SWLOR.Game.Server.Service
                     GetShotStatAdjustment(activator, source, StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment));
             }
 
+            // The operator's own Damage Dealt % plus the ship-wide part (a Magnetar system), counted once at the Helm.
             rolled = SpaceCombatMath.ApplyDamageDealt(
                 rolled,
-                Stat.GetStatAdjustment(source, StatType.DamageDealtPercentAdjustment),
+                GetOperatorStatAdjustment(activator, source, StatType.DamageDealtPercentAdjustment),
                 shapePercent);
 
             var bonusPercent = 0;

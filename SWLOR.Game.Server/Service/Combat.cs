@@ -1653,6 +1653,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;
+            if (appliesDirectDamageEffects)
+                CapstoneProof.RecordBeastDamage(attacker, defender);
+
             if (appliesDirectDamageEffects && attacker != defender &&
                 GetIsObjectValid(attacker) && GetIsObjectValid(defender) && GetIsReactionTypeHostile(attacker, defender) &&
                 PairedRangedTraits.HasDirectHostileDamageTrait(defender) &&

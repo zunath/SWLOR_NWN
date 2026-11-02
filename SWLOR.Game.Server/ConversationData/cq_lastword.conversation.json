@@ -284,7 +284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Holster's worn right. That buys you one conversation. Out the west trail there's a canyon range I marshaled for twenty years, and a crew is running a school on my name there. Last Word, taught by men who never heard one. Six of their adepts hold the near stretch. Put them down and bring me the Last Word Canyon Range Tally they keep score on.",
+          "Text": "Holster's worn right. That buys you one conversation. Out the west trail there's a canyon range I marshaled for twenty years, and a crew is running a school on my name there. Last Word, taught by men who never heard one. Six of their Canyon Drifters hold the rooms nearest the entrance, and any Canyon Drifter counts. But a kill only counts while your Disarming Shot weakens them; a kill the shot never touched teaches you nothing. Put six down that way and bring me the Last Word Canyon Range Tally they keep score on.",
           "Style": 0,
           "Color": null
         }
@@ -326,7 +326,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Key's yours. Cliff door in the Rocky Pass, near stretch, six adepts. Don't come back with almost.",
+          "Text": "Key's yours. Cliff door in the Rocky Pass, nearest rooms, six Canyon Drifters, each one under your Disarming Shot. Don't come back with almost.",
           "Style": 0,
           "Color": null
         }
@@ -399,7 +399,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Adepts. Young, fast, sloppy. They'll fan wide and talk to make you draw first. Don't. Six funerals, one conversation.",
+          "Text": "Canyon Drifters. Young, fast, sloppy. They'll fan wide and talk to make you draw first. Don't. Six funerals, one conversation.",
           "Style": 0,
           "Color": null
         }
@@ -425,7 +425,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts still breathing and my tally still in their hands. The argument isn't over till it's over.",
+          "Text": "Six Canyon Drifters not yet put down under your Disarming Shot, and my tally still in their hands. The argument isn't over till it's over.",
           "Style": 0,
           "Color": null
         }
@@ -493,7 +493,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came back. The adepts didn't. Next problem: five specialists working the long lanes deeper in. They've dialed my old sightlines into ambush work. Put all five down and bring back the Last Word Sightline Calibrator before they teach the rock itself to cheat.",
+          "Text": "You came back. The Drifters didn't. Next problem: five Canyon Sharpshooters working the long lanes deeper in. They've dialed my old sightlines into ambush work. Any Sharpshooter counts, but only while your Disarming Shot weakens them. Put five down that way and bring back the Last Word Sightline Calibrator before they teach the rock itself to cheat.",
           "Style": 0,
           "Color": null
         }
@@ -535,7 +535,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Long lanes, five shooters. Walk soft, shoot once.",
+          "Text": "Long lanes, five Sharpshooters. Weaken them with Disarming Shot first. Walk soft, shoot once.",
           "Style": 0,
           "Color": null
         }
@@ -608,7 +608,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Specialists don't miss twice. They'll hold the long lanes and let the suns do half the work. Keep rock at your back and make your first shot the whole conversation.",
+          "Text": "Sharpshooters don't miss twice. They'll hold the long lanes and let the suns do half the work. Keep rock at your back and make your first shot the whole conversation.",
           "Style": 0,
           "Color": null
         }
@@ -634,7 +634,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, still shooting. My calibrator, still theirs. The long lanes are waiting on your answer.",
+          "Text": "Five Sharpshooters, still shooting. My calibrator, still theirs. The long lanes are waiting on your answer.",
           "Style": 0,
           "Color": null
         }
@@ -702,7 +702,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the warden. He keeps the trial altar in the middle of the range, and he was the best I ever passed. Wears my crest like he earned all of it. Break him and bring me what's left of it, the Last Word Shattered Range Crest. And hear this plain: I'd take two guns I trust through that door. So will you.",
+          "Text": "Now the warden, Gruvo. He keeps the trial altar in the middle of the range, and he was the best I ever passed. Wears my crest like he earned all of it. Break him and bring me what's left of it, the Last Word Shattered Range Crest. And hear this plain: I'd take two guns I trust through that door. So will you.",
           "Style": 0,
           "Color": null
         }
@@ -911,7 +911,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left that matter. The inner circle, the ones who ran the school after they buried my name in it. They bank a challenge chit that used to mean something: lay it on the marshal's table and the marshal must answer. Kill the four and bring me the Last Word Marshal's Challenge Chit. We're going to use it properly.",
+          "Text": "Four left that matter. The High Table Guns, the crew's inner circle, the ones who ran the school after they buried my name in it. They hold the deepest part of the range. They bank a challenge chit that used to mean something: lay it on the marshal's table and the marshal must answer. Kill four of them, any High Table Gun, each while your Disarming Shot weakens them, and bring me the Last Word Marshal's Challenge Chit. We're going to use it properly.",
           "Style": 0,
           "Color": null
         }
@@ -953,7 +953,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them, spread across the range. Shoot the polite one first. He's the signal.",
+          "Text": "Four High Table Guns, deep in the range. Shoot the polite one first. He's the signal.",
           "Style": 0,
           "Color": null
         }
@@ -1052,7 +1052,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of the circle still walk the range, and the chit's still in their strongbox. Arguments don't settle themselves.",
+          "Text": "Four of the High Table still walk the deepest rooms, and the chit's still in their strongbox. Arguments don't settle themselves.",
           "Style": 0,
           "Color": null
         }
@@ -1120,7 +1120,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Chit's posted. He answered. Understand what's waiting: the master has the real Last Word, the shot that ends arguments, the thing you've been circling this whole climb. He has never lost one. He'll meet you in the Canyon Dueling Pit, through the door at the north end of the range. Take your two friends; nobody walks out of that pit alone. Nobody ever has.",
+          "Text": "Chit's posted. He answered. Understand what's waiting: Wuun Kalo, the master, has the real Last Word, the shot that ends arguments, the thing you've been circling this whole climb. He has never lost one. He'll meet you in the Canyon Dueling Pit, through the door at the north end of the range. Take your two friends; nobody walks out of that pit alone. Nobody ever has.",
           "Style": 0,
           "Color": null
         }
@@ -1633,7 +1633,7 @@
     "reply-00000": {
       "Id": "reply-00000",
       "Text": {
-        "Text": "Back to the adepts.",
+        "Text": "Back to the Canyon Drifters.",
         "Style": 4,
         "Color": null
       },
@@ -1656,7 +1656,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts. I'll bring your tally.",
+        "Text": "Six Canyon Drifters. I'll bring your tally.",
         "Style": 4,
         "Color": null
       },
@@ -1803,7 +1803,7 @@
     "reply-00007": {
       "Id": "reply-00007",
       "Text": {
-        "Text": "Back to the specialists.",
+        "Text": "Back to the Sharpshooters.",
         "Style": 4,
         "Color": null
       },
@@ -1826,7 +1826,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. Consider it argued.",
+        "Text": "Five Sharpshooters. Consider it argued.",
         "Style": 4,
         "Color": null
       },
@@ -1902,7 +1902,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "How do specialists fight?",
+        "Text": "How do Sharpshooters fight?",
         "Style": 4,
         "Color": null
       },

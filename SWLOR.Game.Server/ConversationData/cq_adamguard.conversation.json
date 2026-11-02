@@ -270,7 +270,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Work order. Signed, dated, unfilled. She slaps the flimsi flat against your chest. \"A wreck crew set up shop in the CZ-220 Breaker Yard, off this station's Maintenance Level, and they're drilling katar guard-work on my tonnage and my clock. Six adepts hold the outer floor. Put them down, pull the Adamantine Guard Breaker Yard Work Order they're cutting under, and get it on my desk. Take the job and I cut you a key for the bay they walled off my grid.\"",
+          "Text": "Work order. Signed, dated, unfilled. She slaps the flimsi flat against your chest. \"A wreck crew set up shop in the CZ-220 Breaker Yard, off this station's Maintenance Level, and they're drilling katar guard-work on my tonnage and my clock. Six Wreck Crew Scrappers hold the floor nearest the entrance. Any Scrapper counts, because the whole crew answers to one foreman, but a kill only counts if you stood guard while you made it: Steel Shoulder on an ally, or Whirling Guard or Iron Wall held. A guard that never held under pressure proves nothing. Put six down that way, pull the Adamantine Guard Breaker Yard Work Order they're cutting under, and get it on my desk. Take the job and I cut you a key for the bay they walled off my grid.\" Steel Shoulder needs someone else to guard. Going alone? Use Whirling Guard, or activate Iron Wall Stance.",
           "Style": 0,
           "Color": null
         }
@@ -316,7 +316,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Key's cut. Take the way down south of the command desks on this floor to the Maintenance Level, then cross to the far north-east corner. The Breaker Bay sits behind the force-field wall there - it reads the key, not your face, so don't bother smiling at it. Six adepts. One work order. My desk. The shift clock started when you nodded.",
+          "Text": "Key's cut. Take the way down south of the command desks on this floor to the Maintenance Level, then cross to the far north-east corner. The Breaker Bay sits behind the force-field wall there - it reads the key, not your face, so don't bother smiling at it. Six Scrappers, guard up for every kill. One work order. My desk. The shift clock started when you nodded.",
           "Style": 0,
           "Color": null
         }
@@ -432,7 +432,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Order's still open. Six adepts in the Breaker Yard, one work order, my desk. The shift clock doesn't care how your day is going and neither do I.",
+          "Text": "Order's still open. Six Scrappers by the entrance, each one dropped under your guard, one work order, my desk. The shift clock doesn't care how your day is going and neither do I.",
           "Style": 0,
           "Color": null
         }
@@ -514,7 +514,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You again. Good, saves me posting it. The crew rerouted my junkline - every conveyor down there feeds their drill pit now instead of my smelters, and my throughput is down forty tons a shift. Five specialists run the line. Break their guard, take back the Adamantine Guard Junkline Control Relay, and my belts start obeying people who actually work here.",
+          "Text": "You again. Good, saves me posting it. The crew rerouted my junkline - every conveyor down there feeds their drill pit now instead of my smelters, and my throughput is down forty tons a shift. Five Wreck Crew Riggers run the line, deeper in than the Scrappers. Any Rigger counts, and the same rule holds: a Rigger only counts if you guarded while you broke him, Steel Shoulder on an ally or Whirling Guard or Iron Wall held. Break their guard, take back the Adamantine Guard Junkline Control Relay, and my belts start obeying people who actually work here. Steel Shoulder needs someone else to guard. Going alone? Use Whirling Guard, or activate Iron Wall Stance.",
           "Style": 0,
           "Color": null
         }
@@ -560,7 +560,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same force field, same key. Follow the junkline until the belts run the wrong direction - that's their handiwork, and the specialists post where the reroute starts. The relay comes back in one piece. It bills as salvage, not scrap.",
+          "Text": "Same force field, same key. Follow the junkline until the belts run the wrong direction - that's their handiwork, and the Riggers post where the reroute starts. The relay comes back in one piece. It bills as salvage, not scrap.",
           "Style": 0,
           "Color": null
         }
@@ -586,7 +586,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A guard that doesn't break, drilled until it's true. You'd know what that's worth to a katar hand better than I would - I just know what it looks like from a crane cab. My cutters held a plasma lance on one of those adepts for a full minute and he didn't step back. Whatever they're perfecting down there, they didn't invent it. They're drilling it to sell it, and my yard is the free training floor.",
+          "Text": "A guard that doesn't break, drilled until it's true. You'd know what that's worth to a katar hand better than I would - I just know what it looks like from a crane cab. My cutters held a plasma lance on one of those Scrappers for a full minute and he didn't step back. Whatever they're perfecting down there, they didn't invent it. They're drilling it to sell it, and my yard is the free training floor.",
           "Style": 0,
           "Color": null
         }
@@ -676,7 +676,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My belts still feed their pit. Five specialists on the junkline, one control relay. Everything else in that yard is somebody else's problem.",
+          "Text": "My belts still feed their pit. Five Riggers on the junkline, each dropped under your guard, one control relay. Everything else in that yard is somebody else's problem.",
           "Style": 0,
           "Color": null
         }
@@ -758,7 +758,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Stop. Read the terms before you take this one. Their warden holds the sheared bay - the bay where a crane cable snapped years back and cut a barge hull like bread. He is the reason my recovery crews come back on stretchers. Put him down and pull the Adamantine Guard Sheared Bay Sigil off him. And you go in on my regs: two spotters, minimum. Nobody works a live bay alone, and that bay has been eating people since before this crew ever docked.",
+          "Text": "Stop. Read the terms before you take this one. Their warden, Crew Chief Rakkesh, holds the sheared bay - the bay where a crane cable snapped years back and cut a barge hull like bread. He is the reason my recovery crews come back on stretchers. Put him down and pull the Adamantine Guard Sheared Bay Sigil off him. And you go in on my regs: two spotters, minimum. Nobody works a live bay alone, and that bay has been eating people since before this crew ever docked.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now it's personal. Their inner circle - four of them, the foreman's own hands - pulled my override chip out of the yardmaster's board. That chip outranks every lock, belt, and crane in this yard, including the ones keeping stacked hulls from becoming weather. Put all four down and bring back the Adamantine Guard Foreman's Override Chip. And keep your spotters close. Every bay past the sheared line is live.",
+          "Text": "Now it's personal. Their inner circle - four Foreman's Hands, the foreman's own - pulled my override chip out of the yardmaster's board. That chip outranks every lock, belt, and crane in this yard, including the ones keeping stacked hulls from becoming weather. Put all four down and bring back the Adamantine Guard Foreman's Override Chip. Any Foreman's Hand counts, same rule as the rest: guard while you break them. And keep your spotters close. Every bay past the sheared line is live.",
           "Style": 0,
           "Color": null
         }
@@ -1048,7 +1048,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They hold the crane deck above the drill pit. High ground, narrow catwalks, and every gate between here and there answers to the chip they're carrying, so there is no clever way in. There's just through. Which, I'm told, is the entire philosophy you people climb down there to learn.",
+          "Text": "They hold the far south-east end of the Breaker Bay, and every gate between here and there answers to the chip they're carrying, so there is no clever way in. There's just through. Which, I'm told, is the entire philosophy you people climb down there to learn.",
           "Style": 0,
           "Color": null
         }
@@ -1074,7 +1074,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The foreman's original crew. The four who walked in with him the first day, back when I still thought they were a salvage bid. Each one has been drilled to hold a bay alone against a full cutting team. They rotate my crane deck in pairs, they sleep in shifts, and they have never once broken my safety regs. Model workers. I want their names off my roster by the weekend.",
+          "Text": "The foreman's original crew. The four who walked in with him the first day, back when I still thought they were a salvage bid. Each one has been drilled to hold a bay alone against a full cutting team. They hold the far end of my bay in pairs, they sleep in shifts, and they have never once broken my safety regs. Model workers. I want their names off my roster by the weekend.",
           "Style": 0,
           "Color": null
         }
@@ -1164,7 +1164,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four hands, one chip, crane deck over the drill pit. Until that chip is back in my board, every gate in this yard is a suggestion.",
+          "Text": "Four Foreman's Hands, each dropped under your guard, one chip, far south-east end of the bay, the deepest part of the yard. Until that chip is back in my board, every gate in this yard is a suggestion.",
           "Style": 0,
           "Color": null
         }
@@ -1246,7 +1246,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last order on the book. Bay One. Their foreman is alone in there now - no crew, no chip, no line out. Just him and the guard he taught the rest of them, the same one your katars have been learning the hard way. I've watched him on the bay feed: cutters, riggers, one of my cranes at full swing, and his feet haven't moved in a week. Put him down and there's nothing to carry back - the yard will know, and so will I. But you don't go in alone. That bay has ended better spotters than you, and I don't stock stretchers in threes for nothing.",
+          "Text": "Last order on the book. Bay One. Their foreman, Wreck Foreman Ssurgan, is alone in there now - no crew, no chip, no line out. Just him and the guard he taught the rest of them, the same one your katars have been learning the hard way. I've watched him on the bay feed: cutters, riggers, one of my cranes at full swing, and his feet haven't moved in a week. Put him down and there's nothing to carry back - the yard will know, and so will I. But you don't go in alone. That bay has ended better spotters than you, and I don't stock stretchers in threes for nothing.",
           "Style": 0,
           "Color": null
         }
@@ -1318,7 +1318,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The finished article. Everything his adepts drilled at, he already is. My crane operator swears the load alarm tripped when she swung at him - he caught the wreck ball on crossed blades and the system logged him as a structure. Maybe by now he is one. He came down here to stand in front of the one thing that never breaks, and he stayed until there were two of them. Your job is to put the count back at one.",
+          "Text": "The finished article. Everything his Scrappers drilled at, he already is. My crane operator swears the load alarm tripped when she swung at him - he caught the wreck ball on crossed blades and the system logged him as a structure. Maybe by now he is one. He came down here to stand in front of the one thing that never breaks, and he stayed until there were two of them. Your job is to put the count back at one.",
           "Style": 0,
           "Color": null
         }

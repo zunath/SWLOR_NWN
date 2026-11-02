@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Systemic Shutdown inner circle member in Viscara - Veles Militia Annex."
+    "value": "Holdout Honor Guard (Systemic Shutdown line) in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Kel Dor in black work clothes, one of four instructors in the annex who knew exactly what they were teaching. He keeps to quarters apart from the students, and his vibroknife goes for the nerves."
+      "0": "A Kel Dor in black work clothes, one of four honor guards in the annex who knew exactly what they were teaching. He keeps to quarters apart from the recruits, and his vibroknife goes for the nerves."
     }
   },
   "Dex": {
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Systemic Shutdown Inner Circle"
+      "0": "Holdout Honor Guard"
     }
   },
   "fortbonus": {
@@ -758,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 85
+          "value": 75
         }
       },
       {

@@ -3035,7 +3035,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Primal Overrun Master Spawn"
+            "0": "Dathomir Grotto Apex Den - Old Rancor Spawn (Primal Overrun line)"
           }
         },
         "MapNote": {
@@ -3098,7 +3098,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Untouchable Instinct Master Spawn"
+            "0": "Dathomir Grotto Apex Den - Old Giant Brown Lizard Spawn (Untouchable Instinct line)"
           }
         },
         "MapNote": {
@@ -3161,7 +3161,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Grotto Apex Den - Force-Bonded Beast Master Spawn"
+            "0": "Dathomir Grotto Apex Den - Old Wraid Spawn (Force-Bonded Beast line)"
           }
         },
         "MapNote": {

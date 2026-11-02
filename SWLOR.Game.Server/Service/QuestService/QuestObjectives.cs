@@ -126,4 +126,5 @@ namespace SWLOR.Game.Server.Service.QuestService
             return $"{_quantity - numberRemaining} / {_quantity} {itemName}";
         }
     }
+
 }

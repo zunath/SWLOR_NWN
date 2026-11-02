@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Service.QuestService
             Amount = amount;
         }
 
+        /// <summary>Whether this kill of the objective's group counts for this party member.</summary>
+        public virtual bool CountsKill(uint player, uint creature) => true;
+
         public void Initialize(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);

@@ -270,7 +270,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Where were you when the lower yard went into lockdown? Don't answer - I already pulled the records. You were off-station, which makes you the only katar hand on CZ-220 I can't place inside the breach. That makes you useful. A crew sealed off the CZ-220 Breaker Yard off the Maintenance Level and they're running katar drills behind my own containment doors. Six adepts hold the outer bays under a work order my office never issued. Put all six down and bring me the Scrapheap Lockdown Breaker Yard Work Order. The flimsi is forged, and forgeries name their forgers.",
+          "Text": "Where were you when the lower yard went into lockdown? Don't answer - I already pulled the records. You were off-station, which makes you the only katar hand on CZ-220 I can't place inside the breach. That makes you useful. A crew sealed off the CZ-220 Breaker Yard off the Maintenance Level and they're running katar drills behind my own containment doors. Six Wreck Crew Scrappers hold the outer bays nearest the entrance under a work order my office never issued. Any Scrapper counts, because the whole crew drills one doctrine, but a kill only counts if you hobbled him with Hooking Strike or dazed him with Joint Lock first. Lockdown is control; a kill that never felt yours proves nothing. Put all six down and bring me the Scrapheap Lockdown Breaker Yard Work Order. The flimsi is forged, and forgeries name their forgers.",
           "Style": 0,
           "Color": null
         }
@@ -316,7 +316,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No codes. A key - physical, logged to you, and if it walks I know exactly who walked it. Through the hangar doors into the Offices & Labs, take the way down south of the command desks to the Maintenance Level, and cross to the far north-east corner. The Breaker Bay is behind the force-field wall my own board insists isn't there. Six adepts. One flimsi. Touch carefully.",
+          "Text": "No codes. A key - physical, logged to you, and if it walks I know exactly who walked it. Through the hangar doors into the Offices & Labs, take the way down south of the command desks to the Maintenance Level, and cross to the far north-east corner. The Breaker Bay is behind the force-field wall my own board insists isn't there. Six Scrappers. One flimsi. Touch carefully.",
           "Style": 0,
           "Color": null
         }
@@ -432,7 +432,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer bays are still theirs and my evidence is still on the wrong side of a containment door. Six adepts. One work order. Report back.",
+          "Text": "The outer bays are still theirs and my evidence is still on the wrong side of a containment door. Six Scrappers, each hobbled or dazed before he fell. One work order. Report back.",
           "Style": 0,
           "Color": null
         }
@@ -514,7 +514,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Second incident. While you were clearing the outer bays, their specialists pulled the junkline control relay and wired it into a stand-off grid of their own design. Every belt down there is a wall that moves now. Five specialists run the grid in rotation - I've timed them through the door sensors. Break the rotation, put all five down, and recover the Scrapheap Lockdown Junkline Control Relay. Without it, their lockdown starts eating its own power.",
+          "Text": "Second incident. While you were clearing the outer bays, their Riggers pulled the junkline control relay and wired it into a stand-off grid of their own design. Every belt down there is a wall that moves now. Five Wreck Crew Riggers run the grid in rotation, deeper in than the Scrappers - I've timed them through the door sensors. Any Rigger counts, and the same rule holds: hobble him with Hooking Strike or daze him with Joint Lock before he falls, or the kill is not yours. Break the rotation, put all five down, and recover the Scrapheap Lockdown Junkline Control Relay. Without it, their lockdown starts eating its own power.",
           "Style": 0,
           "Color": null
         }
@@ -560,7 +560,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The reroute hub is along the junkline, deeper in the Breaker Bay. You'll hear it before you see it - belts running against their own load rating. The five keep a two-on watch, and they are better than the adepts you filed away. Assume everything I tell you is understatement. It usually is.",
+          "Text": "The reroute hub is along the junkline, deeper in the Breaker Bay. You'll hear it before you see it - belts running against their own load rating. The five keep a two-on watch, and they are better than the Scrappers you filed away. Assume everything I tell you is understatement. It usually is.",
           "Style": 0,
           "Color": null
         }
@@ -676,7 +676,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their walls still move. Five specialists at the reroute hub, one relay. My board goes quiet the moment you pull it, so I'll know before you do.",
+          "Text": "Their walls still move. Five Riggers at the reroute hub, each hobbled or dazed before he falls, one relay. My board goes quiet the moment you pull it, so I'll know before you do.",
           "Style": 0,
           "Color": null
         }
@@ -758,7 +758,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "New classification: containment failure. Their warden has fortified the sheared bay, the deepest sealed section, and every probe I send past his line stops existing. He wears the bay's sigil plate as authorization - as long as it hangs on him, the old dock systems read his lockdown as legitimate. Kill the warden and take the Scrapheap Lockdown Sheared Bay Sigil, and their authority down there dies with him. Regulation applies: you go three-strong or you don't go. That's not advice. That's the section of the protocol written in other people's blood.",
+          "Text": "New classification: containment failure. Their warden, Crew Chief Tobin Rask, has fortified the sheared bay, the deepest sealed section, and every probe I send past his line stops existing. He wears the bay's sigil plate as authorization - as long as it hangs on him, the old dock systems read his lockdown as legitimate. Kill the warden and take the Scrapheap Lockdown Sheared Bay Sigil, and their authority down there dies with him. Regulation applies: you go three-strong or you don't go. That's not advice. That's the section of the protocol written in other people's blood.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This one is a conspiracy charge. Four remain of the crew's inner circle, and between them they hold the foreman's override chip - the master key to every containment system on the lower decks. My lockdown, their lockdown, anyone's: whoever holds that chip owns the concept. They know their warden is gone. They've stopped drilling and started fortifying, which means they've stopped being students and become accomplices. All four go down, and the Scrapheap Lockdown Foreman's Override Chip comes to me. Keep your two with you. This is still deep-yard work.",
+          "Text": "This one is a conspiracy charge. Four Foreman's Hands remain, the crew's inner circle, and between them they hold the foreman's override chip - the master key to every containment system on the lower decks. My lockdown, their lockdown, anyone's: whoever holds that chip owns the concept. They know their warden is gone. They've stopped drilling and started fortifying, which means they've stopped being students and become accomplices. All four go down, and the Scrapheap Lockdown Foreman's Override Chip comes to me. Any Foreman's Hand counts, and the same rule holds: hobbled or dazed before he falls. Keep your two with you. This is still deep-yard work.",
           "Style": 0,
           "Color": null
         }
@@ -1048,7 +1048,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They hold the crane deck above the drill pit, and every gate on the way answers to the chip they carry - expect each door to be a decision they've already made. Don't try to out-lock lockdown students. Go through them. It's the one argument their doctrine respects.",
+          "Text": "They hold the east side of the Breaker Bay, and every gate on the way answers to the chip they carry - expect each door to be a decision they've already made. Don't try to out-lock lockdown students. Go through them. It's the one argument their doctrine respects.",
           "Style": 0,
           "Color": null
         }
@@ -1164,7 +1164,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four believers on the crane deck, one override chip. Until it seats in my board, every sealed door on this station is arguing about who it works for.",
+          "Text": "Four Foreman's Hands on the east side of the bay, the deepest part of the yard, each hobbled or dazed before he falls, one override chip. Until it seats in my board, every sealed door on this station is arguing about who it works for.",
           "Style": 0,
           "Color": null
         }
@@ -1348,7 +1348,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The finished form of everything they drilled at you. The adepts held floors. The specialists held rooms. The warden held a line for two quarters against everything I could send. He taught all of them, and I hold exactly one recording of him working: a boarding raid, eleven years back, four raiders sealed in a cargo lock with him. The door cycled once. He walked out carrying the manifest they came for. That lock is still classified. Whatever your katars learned on the way down to him - it's his, and he will use it back at you without the copies' flaws.",
+          "Text": "The finished form of everything they drilled at you. The Scrappers held floors. The Riggers held rooms. The warden held a line for two quarters against everything I could send. He taught all of them, and I hold exactly one recording of him working: a boarding raid, eleven years back, four raiders sealed in a cargo lock with him. The door cycled once. He walked out carrying the manifest they came for. That lock is still classified. Whatever your katars learned on the way down to him - it's his, and he will use it back at you without the copies' flaws.",
           "Style": 0,
           "Color": null
         }
@@ -1915,7 +1915,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. I'll break the rotation.",
+        "Text": "Five Riggers. I'll break the rotation.",
         "Style": 4,
         "Color": null
       },

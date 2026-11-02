@@ -16446,7 +16446,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A pharmacy station in the Protected Ward, its shelves emptied into one overflowing mixing bench. The ward's master mixes his doses here."
+            "0": "A pharmacy station in the Protected Ward, its shelves emptied into one overflowing mixing bench. The ward chief mixes his doses here."
           }
         },
         "DisarmDC": {
@@ -17263,7 +17263,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line Master Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Chief Anchor Spawn (Hold the Line line)"
           }
         },
         "MapNote": {
@@ -17326,7 +17326,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Cocktail Master Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Chief Koth Davin Spawn (Emergency Cocktail line)"
           }
         },
         "MapNote": {
@@ -17389,7 +17389,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Infinite Conduit Master Spawn"
+            "0": "Mon Cala Medical Sublevel - Ward Chief Idris Voh Spawn (Infinite Conduit line)"
           }
         },
         "MapNote": {

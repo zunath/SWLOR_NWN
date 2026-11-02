@@ -21,14 +21,12 @@ public class EconomyObtainabilityCoverageTests
     private static readonly HashSet<int> CreatureBaseItems = new() { 69, 70, 71, 72, 73 };
 
     /// <summary>
-    /// Farm items whose only source is a store a later part of the city work adds: the tier 1 and 2 seeds (Cantina staff and market
-    /// stalls) and the young animals (the traveling beast trader). They stay unflagged so those stores can sell them; the test below
-    /// fails once one gains a source, so the entry is removed then. Keep in step with tools/FlagNpcEconomyItems.py.
+    /// Farm items whose only source is a store a later part of the city work adds: the young animals (the traveling beast trader).
+    /// They stay unflagged so that store can sell them; the test below fails once one gains a source, so the entry is removed then.
+    /// Keep in step with tools/FlagNpcEconomyItems.py.
     /// </summary>
     private static readonly HashSet<string> PendingStoreItems = new()
     {
-        "seed_orange", "seed_lemon", "seed_pebble", "seed_rosemary", "seed_fiber_1",
-        "seed_apple", "seed_peas", "seed_passion", "seed_thyme", "seed_fiber_2",
         "livestock_waro", "livestock_cairn", "livestock_gimp", "livestock_klor",
         "livestock_arad", "livestock_womp", "livestock_thune",
     };

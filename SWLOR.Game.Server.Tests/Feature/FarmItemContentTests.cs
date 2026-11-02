@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.FarmingDefinition;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition;
+using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.FishingService;
@@ -164,6 +165,53 @@ public class FarmItemContentTests
             .Should().Equal(("herb_c", 50));
         HarvestTables["VEGETABLES_PATCH_5"].Where(item => !item.Resref.StartsWith("seed_")).Select(item => item.Resref)
             .Should().Equal("herb_x", "turnip", "tofu", "dried_bonito", "tomato");
+    }
+
+    [Test]
+    public void TheCantinaAndTheCraftingSuppliesStallSellTheTenTierOneAndTwoSeedsWithoutLimit()
+    {
+        var seeds = Crops.Values.Where(crop => crop.Tier <= 2).Select(crop => crop.SeedResref).ToList();
+        var stores = new[] { CityStoreKind.Cantina, CityStoreKind.StallCraftingSupplies }
+            .SelectMany(kind => CityStoreCatalog.Get(kind).Blueprints.Select(blueprint => blueprint.Blueprint)).ToList();
+
+        seeds.Should().HaveCount(10);
+        stores.Should().HaveCount(4, "three Cantina levels and the stall");
+        foreach (var blueprint in stores)
+        {
+            var entries = StoreEntries(blueprint);
+            entries.Where(entry => seeds.Contains(entry.Resref)).Select(entry => entry.Resref).Should().BeEquivalentTo(seeds, blueprint);
+            entries.Where(entry => seeds.Contains(entry.Resref)).Should().OnlyContain(entry => entry.Infinite == 1, blueprint);
+        }
+    }
+
+    [Test]
+    public void NoOtherCityStoreSellsASeed()
+    {
+        var sellers = new[] { CityStoreKind.Cantina, CityStoreKind.StallCraftingSupplies };
+        var others = CityStoreCatalog.All.Where(detail => !sellers.Contains(detail.Kind))
+            .SelectMany(detail => detail.Blueprints.Select(blueprint => blueprint.Blueprint)).ToList();
+
+        others.Should().NotBeEmpty();
+        foreach (var blueprint in others)
+            StoreEntries(blueprint).Select(entry => entry.Resref).Should().NotContain(resref => resref.StartsWith("seed_"), blueprint);
+    }
+
+    private static List<(string Resref, int Infinite)> StoreEntries(string blueprint)
+    {
+        var path = Path.Combine(Root, "Module", "utm", blueprint + ".utm.json");
+        File.Exists(path).Should().BeTrue(blueprint);
+        using var store = JsonDocument.Parse(File.ReadAllText(path));
+        var entries = new List<(string, int)>();
+        foreach (var panel in store.RootElement.GetProperty("StoreList").GetProperty("value").EnumerateArray())
+        {
+            if (!panel.TryGetProperty("ItemList", out var items))
+                continue;
+
+            foreach (var item in items.GetProperty("value").EnumerateArray())
+                entries.Add((item.GetProperty("InventoryRes").GetProperty("value").GetString(), item.GetProperty("Infinite").GetProperty("value").GetInt32()));
+        }
+
+        return entries;
     }
 
     // Manure and Fertilizer

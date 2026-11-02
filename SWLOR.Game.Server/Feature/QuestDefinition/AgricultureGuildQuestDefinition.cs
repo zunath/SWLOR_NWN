@@ -292,7 +292,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective(resref, amount, producerForObjective)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.AgricultureGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.AgricultureGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.AgricultureGuild, resref, amount, producerForObjective == CollectItemProducerRequirementType.PlayerProduced);
         }
     }
 }

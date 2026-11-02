@@ -512,26 +512,23 @@ namespace SWLOR.Game.Server.Service.QuestService
             quest.KillProgresses.Clear();
             quest.DateLastCompleted = DateTime.UtcNow;
             dbPlayer.Quests[QuestId] = quest;
+
+            // No selected reward: every reward is given. A selected reward: it and every reward that is not selectable (gold, GP, etc).
+            var given = selectedReward == null
+                ? Rewards.ToList()
+                : Rewards.Where(x => !x.IsSelectable).Append(selectedReward).ToList();
+
+            // Rewards that record what they owe do it in the completion's own save, so a stop before they are given cannot lose them.
+            foreach (var reward in given.OfType<IQuestRewardSavedWithCompletion>())
+            {
+                reward.SaveWithCompletion(player, dbPlayer);
+            }
+
             DB.Set(dbPlayer);
 
-            // No selected reward, simply give all available rewards to the player.
-            if (selectedReward == null)
+            foreach (var reward in given)
             {
-                foreach (var reward in Rewards)
-                {
-                    reward.GiveReward(player);
-                }
-            }
-            // There is a selected reward. Give that reward and any rewards which are not selectable to the player.
-            else
-            {
-                // Non-selectable rewards (gold, GP, etc) are granted to the player.
-                foreach (var reward in Rewards.Where(x => !x.IsSelectable))
-                {
-                    reward.GiveReward(player);
-                }
-
-                selectedReward.GiveReward(player);
+                reward.GiveReward(player);
             }
 
             foreach (var action in OnCompleteActions)

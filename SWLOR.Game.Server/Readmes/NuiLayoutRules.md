@@ -141,6 +141,14 @@ a player's persisted window geometry is small. `Gui.CreatePlayerWindows` discard
 only non-positive persisted dimensions; legitimate compact HUD windows are as small
 as 72x52 and must retain their saved positions.
 
+A page whose fixed-height content can be taller than the window (the crafting and gathering
+minigame windows: Forge, Circuit, Fabricator, Kitchen, Reaction, Line, Prospecting, Search,
+Research Experiment) makes its panel `Scrollbars(Auto)` instead. The host group only hands a
+flexible panel the viewport height, so a `None` panel clips at 1280x720 (Forge: 660 high)
+and nothing scrolls; the Auto panel is then what scrolls. Keep the action buttons inside
+that scrolled content, and wrap result sentences in a borderless `AddText` instead of a
+one-line label (`CraftWindowLayoutTests` guards both).
+
 ### R6 — Re-select the current tab after any modal closes (framework hook)
 Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root with
 every group layout assigned through `ChangePartialView`/`SetGroupLayout` already

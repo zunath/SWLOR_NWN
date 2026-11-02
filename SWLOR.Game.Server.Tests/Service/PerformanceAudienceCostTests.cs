@@ -146,8 +146,8 @@ public class PerformanceAudienceCostTests
 
         File.ReadAllText(SourcePath("Service", "Stat.cs"))
             .Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
-        File.ReadAllText(SourcePath("Service", "Fishing.cs"))
-            .Should().Contain("StatType.FishingCatchChancePercentAdjustment");
+        File.ReadAllText(SourcePath("Service", "CraftService", "Minigame", "Line", "LineAnglerEffects.cs"))
+            .Should().Contain("StatType.AnglerTensionCap");
         File.ReadAllText(SourcePath("Service", "Death.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");
     }
 
@@ -162,9 +162,9 @@ public class PerformanceAudienceCostTests
                 .Where(file => !file.EndsWith(Path.Combine("Service", "StatService", "StatType.cs"), StringComparison.OrdinalIgnoreCase))
                 .Select(File.ReadAllText));
 
-        var stats = Enum.GetValues<StatType>().Where(stat => (int)stat >= 1300 && (int)stat <= 1314).ToArray();
+        var stats = Enum.GetValues<StatType>().Where(stat => (int)stat >= 1300 && (int)stat <= 1313).ToArray();
 
-        stats.Should().HaveCount(15);
+        stats.Should().HaveCount(14);
         stats.Where(stat => !corpus.Contains($"StatType.{stat}", StringComparison.Ordinal))
             .Should().BeEmpty("a Performance stat nothing reads is an unimplemented promise");
     }

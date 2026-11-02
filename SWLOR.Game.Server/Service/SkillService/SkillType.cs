@@ -483,8 +483,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             true,
             false,
-            CombatPointCategoryType.Utility,
-            CharacterType.Standard)]
+            CombatPointCategoryType.Utility)]
         Espionage = 49,
 
         [Skill(SkillCategoryType.Languages,

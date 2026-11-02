@@ -739,10 +739,12 @@
     "BibleAnimationRow": 137,
     "PerkId": "GhostProtocol",
     "Feats": [
-      "GhostProtocol"
+      "GhostProtocol",
+      "SharedPresence"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/GhostProtocolAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/GhostProtocolAbilityDefinition.cs",
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/SharedPresenceAbilityDefinition.cs"
     ],
     "CurrentPlayback": "CastOutAnimation"
   },
@@ -828,10 +830,13 @@
     "PerkId": "TacticalEscape",
     "Feats": [
       "TacticalEscape1",
-      "TacticalEscape2"
+      "TacticalEscape2",
+      "ForceDecoy1",
+      "ForceDecoy2"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/TacticalEscapeAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/TacticalEscapeAbilityDefinition.cs",
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/ForceDecoyAbilityDefinition.cs"
     ],
     "CurrentPlayback": "CastOutAnimation",
     "SourceAnimation": "dodgelr",
@@ -1478,10 +1483,13 @@
     "PerkId": "MindTrick",
     "Feats": [
       "MindTrick1",
-      "MindTrick2"
+      "MindTrick2",
+      "CloudMind1",
+      "CloudMind2"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/MindTrickAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/MindTrickAbilityDefinition.cs",
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/CloudMindAbilityDefinition.cs"
     ],
     "CurrentPlayback": "CastOutAnimation"
   },

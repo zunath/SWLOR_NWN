@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Service.ActivityService
         Resting = 3,
         Quest = 4,
         Fishing = 5,
+        Prospecting = 6,
         Performing = 7
     }
 }

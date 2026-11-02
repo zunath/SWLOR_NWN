@@ -143,7 +143,7 @@ public class PerformanceWindowTextTests
         PerformanceRiderText.GetRider(PerformanceRoutineType.VigorReel, 0, 1).Should().Be("+2 VIT");
         PerformanceRiderText.GetRider(PerformanceSetType.SteadyHands, 2, 0, 0).Should().Be("+2 Control, +2 Craftsmanship");
         PerformanceRiderText.GetRider(PerformanceSetType.SilverTongue, 0, 0, 1).Should().Be("+2 SOC");
-        PerformanceRiderText.GetRider(PerformanceSetType.AnglersLullaby, 0, 10, 0).Should().Be("+10% fishing");
+        PerformanceRiderText.GetRider(PerformanceSetType.AnglersLullaby, 0, 2, 0).Should().Be("+2 Tension cap");
         PerformanceRiderText.GetLockedText(25).Should().Be("Performance 25");
     }
 

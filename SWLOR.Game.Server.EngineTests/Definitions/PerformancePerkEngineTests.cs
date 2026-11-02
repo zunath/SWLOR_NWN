@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Level(FeatType.ResonanceTrait, (StatType.PerformanceRangeBonusMeters, 3)),
                 Level(FeatType.Resonance2Trait, (StatType.PerformanceRangeBonusMeters, 6)),
             }),
-            (PerkType.AnglersLullaby, new[] { Level(FeatType.AnglersLullabyTrait, (StatType.PerformanceAnglersLullabyBonus, 10)) }),
+            (PerkType.AnglersLullaby, new[] { Level(FeatType.AnglersLullabyTrait, (StatType.PerformanceAnglersLullabyBonus, 2)) }),
             (PerkType.StillWaters, new[] { Level(FeatType.StillWatersTrait) }),
             (PerkType.Duet, new[] { Level(FeatType.DuetTrait) }),
             (PerkType.Requiem, new[] { Level(FeatType.RequiemTrait) }),

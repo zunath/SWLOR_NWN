@@ -301,7 +301,8 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             RemoveAllStatusEffects(player);
-            RemoveCreature(player);
+            if (!_creatureEffects.TryGetValue(player, out var remaining) || remaining.GetAllEffects().Count == 0)
+                RemoveCreature(player);
         }
 
         /// <summary>
@@ -751,7 +752,7 @@ namespace SWLOR.Game.Server.Service
 
             if (statusEffect.SendsApplicationMessage)
             {
-                Messaging.SendMessageNearbyToPlayers(creature, receiver =>
+                string BuildApplicationMessage(uint receiver)
                 {
                     var name = PlayerName.GetDisplayName(receiver, creature);
                     var effectName = statusEffect.Name;
@@ -766,10 +767,32 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     return applicationMessage;
-                });
+                }
+
+                var sourceIsOther = GetIsObjectValid(source) && source != creature;
+                if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), sourceIsOther && Stealth.IsConcealed(source)))
+                {
+                    Messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage);
+                }
+                else
+                {
+                    // A nearby announcement would name a hidden creature to everyone around it.
+                    SendMessageToPC(creature, BuildApplicationMessage(creature));
+                    if (sourceIsOther && GetIsPC(source))
+                        SendMessageToPC(source, BuildApplicationMessage(source));
+                }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Application and worn-off messages go to every nearby player only while neither the bearer
+        /// nor the applying creature is hidden; otherwise they would reveal who is there.
+        /// </summary>
+        public static bool ShouldAnnounceNearby(bool bearerHidden, bool sourceHidden)
+        {
+            return !bearerHidden && !sourceHidden;
         }
 
         /// <summary>
@@ -1540,9 +1563,8 @@ namespace SWLOR.Game.Server.Service
             StatusEffectCleanseType cleanseType,
             bool sendsWornOffMessage = true)
         {
-            var effects = GetCreatureStatusEffects(creature)
-                .GetAllEffects()
-                .Where(effect => HasCleanseType(effect, cleanseType))
+            var effects = StatusEffectSelectors
+                .WithCleanseType(GetCreatureStatusEffects(creature).GetAllEffects(), cleanseType)
                 .ToList();
 
             foreach (var effect in effects)
@@ -1556,9 +1578,9 @@ namespace SWLOR.Game.Server.Service
             StatusEffectCleanseType cleanseType,
             bool sendsWornOffMessage = true)
         {
-            var effect = GetCreatureStatusEffects(creature)
-                .GetAllEffects()
-                .FirstOrDefault(effect => HasCleanseType(effect, cleanseType));
+            var effect = StatusEffectSelectors
+                .WithCleanseType(GetCreatureStatusEffects(creature).GetAllEffects(), cleanseType)
+                .FirstOrDefault();
 
             if (effect == null)
                 return false;
@@ -1595,9 +1617,9 @@ namespace SWLOR.Game.Server.Service
             StatusEffectCategory category,
             bool sendsWornOffMessage = true)
         {
-            var effect = GetCreatureStatusEffects(creature)
-                .GetAllEffects()
-                .FirstOrDefault(effect => (effect.Categories & category) == category);
+            var effect = StatusEffectSelectors
+                .WithCategory(GetCreatureStatusEffects(creature).GetAllEffects(), category)
+                .FirstOrDefault();
 
             if (effect == null)
                 return false;
@@ -1610,9 +1632,9 @@ namespace SWLOR.Game.Server.Service
             uint creature,
             bool sendsWornOffMessage = true)
         {
-            var effect = GetCreatureStatusEffects(creature)
-                .GetAllEffects()
-                .FirstOrDefault(IsBeneficialCombatStatusEffect);
+            var effect = StatusEffectSelectors
+                .BeneficialInCombat(GetCreatureStatusEffects(creature).GetAllEffects())
+                .FirstOrDefault();
 
             if (effect == null)
                 return false;
@@ -1638,9 +1660,8 @@ namespace SWLOR.Game.Server.Service
             StatType statType,
             bool sendsWornOffMessage = true)
         {
-            var effects = GetCreatureStatusEffects(creature)
-                .GetAllEffects()
-                .Where(effect => effect.StatGroup.Stats.TryGetValue(statType, out var value) && value != 0)
+            var effects = StatusEffectSelectors
+                .WithStat(GetCreatureStatusEffects(creature).GetAllEffects(), statType)
                 .ToList();
 
             foreach (var effect in effects)
@@ -1768,9 +1789,8 @@ namespace SWLOR.Game.Server.Service
             StatType statType,
             bool sendsWornOffMessage = true)
         {
-            var effects = GetCreatureStatusEffects(creature)
-                .GetAllEffects()
-                .Where(effect => effect.StatGroup.Stats.TryGetValue(statType, out var value) && value < 0)
+            var effects = StatusEffectSelectors
+                .WithNegativeStat(GetCreatureStatusEffects(creature).GetAllEffects(), statType)
                 .ToList();
 
             foreach (var effect in effects)
@@ -1791,23 +1811,6 @@ namespace SWLOR.Game.Server.Service
                 .FirstOrDefault();
 
             return effect?.Source ?? OBJECT_INVALID;
-        }
-
-        private static bool IsBeneficialCombatStatusEffect(IStatusEffect effect)
-        {
-            if ((effect.Categories & StatusEffectCategory.Buff) == StatusEffectCategory.Buff)
-                return true;
-
-            if (effect.PersistsOnLogout ||
-                effect.CleanseTypes != StatusEffectCleanseType.None ||
-                (effect.Categories & (StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.Bleeding)) != 0)
-            {
-                return false;
-            }
-
-            return effect.StatGroup.Abilities.Any(x => x.Value > 0) ||
-                   effect.StatGroup.Resists.Any(x => x.Value > 0) ||
-                   effect.StatGroup.Stats.Any(x => Stat.IsBeneficialStatAdjustment(x.Key, x.Value));
         }
 
         public static bool HasCleanseType(IStatusEffect effect, StatusEffectCleanseType cleanseType)
@@ -2055,8 +2058,12 @@ namespace SWLOR.Game.Server.Service
                 IsLastInstanceOfType(creatureEffects, statusEffect))
             {
                 var effectName = statusEffect.Name;
-                Messaging.SendMessageNearbyToPlayers(creature,
-                    receiver => $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.");
+                string BuildWornOffMessage(uint receiver) =>
+                    $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.";
+                if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), false))
+                    Messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage);
+                else
+                    SendMessageToPC(creature, BuildWornOffMessage(creature));
             }
 
             if (removeNativeEffect)
@@ -2271,12 +2278,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static void RemoveAllStatusEffects(uint creature)
+        /// <summary>
+        /// Removes every status effect from a creature. Crafting styles stay unless <paramref name="includeCraftingStyles"/> is true,
+        /// which only a full reset (a rebuild, entering space) passes.
+        /// </summary>
+        public static void RemoveAllStatusEffects(uint creature, bool includeCraftingStyles = false)
         {
             if (!_creatureEffects.ContainsKey(creature))
                 return;
 
-            var effects = _creatureEffects[creature].GetAllEffects();
+            var effects = StatusEffectSelectors.Removable(_creatureEffects[creature].GetAllEffects(), includeCraftingStyles).ToList();
             foreach (var effect in effects)
             {
                 RemoveStatusEffect(effect.GetType(), creature);

@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             StatGroup.Stats[StatType.ExperiencePercentAdjustment] = data.XPBonusPercent;
             StatGroup.Stats[StatType.OutOfCombatMovementSpeedPercentAdjustment] = data.OutOfCombatMovementSpeedPercent;
-            StatGroup.Stats[StatType.FishingCatchChancePercentAdjustment] = data.FishingCatchChancePercent;
+            StatGroup.Stats[StatType.AnglerTensionCap] = data.FishingTensionCapBonus;
             StatGroup.Abilities[AbilityType.Might] = data.Might;
             StatGroup.Abilities[AbilityType.Agility] = data.Agility;
             StatGroup.Abilities[AbilityType.Vitality] = data.Vitality;

@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         /// <summary>Control and Craftsmanship for every crafting skill (Steady Hands).</summary>
         public int CraftBonus { get; init; }
 
-        /// <summary>Percent-point fishing catch chance (Angler's Lullaby).</summary>
-        public int FishingCatchChancePercent { get; init; }
+        /// <summary>Fishing Line Tension cap (Angler's Lullaby).</summary>
+        public int FishingTensionCapBonus { get; init; }
 
         /// <summary>The holder's next death within this Inspired adds no XP debt.</summary>
         public bool Requiem { get; init; }

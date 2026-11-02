@@ -1,17 +1,21 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+using SWLOR.Game.Server.Service.ProspectingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
+    /// <summary>
+    /// The harvesters. Using one on a vein or a tree opens a Prospecting session (<see cref="ProspectingSessions"/>) instead of taking one
+    /// unit after a delay: the session's actions spend the harvester's charges, and its Quick Harvest takes the units the node has left, a
+    /// charge and a harvest delay for each, as every harvest did before.
+    /// </summary>
     public class HarvesterItemDefinition: IItemListDefinition
     {
         private readonly ItemBuilder _builder = new();
@@ -38,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             DestroyProp(resource);
         }
 
-        private static void DestroyProp(uint resource)
+        internal static void DestroyProp(uint resource)
         {
             var prop = GetLocalObject(resource, "RESOURCE_PROP_OBJ");
             if (GetIsObjectValid(prop))
@@ -51,18 +55,15 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void Harvester(string tag, int requiredLevel)
         {
             _builder.Create(tag)
-                .Delay(5f)
-                .PlaysAnimation(Animation.LoopingGetMid)
                 .UserFacesTarget()
                 .MaxDistance(3.0f)
-                .ReducesItemCharge()
+                // The session spends the charges itself, one for each unit of a Quick Harvest and the cost of each action in a session.
+                .ReducesItemCharge((user, item, target, location, itemPropertyIndex) => false)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var perkLevel = Perk.GetPerkLevel(user, PerkType.Harvesting);
-
-                    if (perkLevel < requiredLevel)
+                    if (CraftRankMilestones.GetHarvesterTier(user) < requiredLevel)
                     {
-                        return $"Your Harvesting perk level is too low to use this harvester. (Required: {requiredLevel})";
+                        return $"Your Gathering skill is too low to use this harvester. (Required rank: {CraftRankMilestones.RequiredRankForTier(requiredLevel)})";
                     }
 
                     var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");
@@ -84,6 +85,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return $"A level {resourceLevel} harvester or higher is required for this resource.";
                     }
 
+                    if (ProspectingSessions.IsInUseByAnother(target, user))
+                    {
+                        return ProspectingLifecycle.InUseMessage;
+                    }
+
                     return string.Empty;
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
@@ -94,65 +100,15 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return;
                     }
 
-                    var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");
-                    var lootTable = Loot.GetLootTableByName(lootTableName);
-                    var loot = lootTable.GetRandomItem();
-                    var resourceLevel = GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL");
-
-                    var resourceCount = GetLocalInt(target, "RESOURCE_COUNT");
-
-                    if (resourceCount <= 0)
-                    {
-                        resourceCount = Random.D4(1);
-                    }
-
-                    resourceCount--;
-
-                    var itemsGathered = 1; // Track number of items gathered
-                    CreateItemOnObject(loot.Resref, user);
-
-                    // Additional loot tables - these adhere to standard loot table rules.
-                    Loot.SpawnLoot(target, user, "LOOT_TABLE_");
-
-                    // Check against the user's Might; create a second item if they are
-                    // strong.  This is 'free' and does not count towards the limit in the resource point.
-                    if (d100() <= 5 * GetAbilityModifier(AbilityType.Might, user) * 5)
-                    {
-                        loot = lootTable.GetRandomItem();
-                        CreateItemOnObject(loot.Resref, user);
-                        itemsGathered++; // Increment for the second item
-                    }
-
-                    if (resourceCount <= 0)
-                    {
-                        // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
-                        // Use EffectDeath to ensure that we trigger death processing.
-                        SetPlotFlag(target, false);
-                        ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
-
-                        DestroyProp(target);
-                    }
-                    else
-                    {
-                        SetLocalInt(target, "RESOURCE_COUNT", resourceCount);
-                    }
-
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), GetLocation(target));
-
-                    if (GetIsPC(user) && !GetIsDM(user))
-                    {
-                        var playerId = GetObjectUUID(user);
-                        var dbPlayer = DB.Get<Player>(playerId);
-                        var dbSkill = dbPlayer.Skills[SkillType.Gathering];
-                        var veinLevel = 10 * (resourceLevel - 1) + 5;
-                        var delta = veinLevel - dbSkill.Rank;
-                        var deltaXP = Skill.GetDeltaXP(delta);
-
-                        // Give XP for each item gathered
-                        Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP * itemsGathered, false, false);
-                    }
-
-                    ExecuteScript(ScriptName.OnHarvesterUsed, user);
+                    ProspectingSessions.Begin(new ProspectingRequest(
+                        user,
+                        item,
+                        target,
+                        GetLocalString(target, "HARVESTING_LOOT_TABLE"),
+                        Math.Clamp(GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL"), 1, CraftRankMilestones.MaxTier),
+                        Skill.GetCreatureSkillRank(user, SkillType.Gathering),
+                        GetPosition(user),
+                        ProspectingEffects.FromStats(stat => Stat.GetStatAdjustment(user, stat))));
                 });
         }
     }

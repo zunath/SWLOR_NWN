@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SteadyHands()
         {
-            _builder.Create(PerkCategoryType.PerformanceInstruments, PerkType.SteadyHands)
+            _builder.Create(PerkCategoryType.PerformanceInstruments, PerkType.PerformanceSteadyHands)
                 .Name("Steady Hands")
 
                 .AddPerkLevel()
@@ -342,8 +342,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AnglersLullabyTrait)
-                .Description("Unlocks the Angler's Lullaby set. Inspired from your music also grants +10% fishing catch chance.")
-                .IncreasesStat(StatType.PerformanceAnglersLullabyBonus, 10)
+                .Description("Unlocks the Angler's Lullaby set. Inspired from your music also grants +2 Tension cap while fishing.")
+                .IncreasesStat(StatType.PerformanceAnglersLullabyBonus, 2)
                 .Price(3)
                 .RequirementSkill(SkillType.Performance, 22);
         }

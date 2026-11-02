@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .Component("fiberp_ruined", 3)
                 .Component("lth_ruined", 1)
-                .Component("ref_veldite", 1);
+                .Component("ref_veldite", 1)
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 32, coolingRate: 1, startingThermal: 66, shapeShare: 50);
 
             // Pattern Loom Heddle
             _builder.Create(RecipeType.PatternLoomHeddle, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .Component("ref_scordspar", 2)
                 .Component("fiberp_flawed", 2)
-                .Component("lth_flawed", 1);
+                .Component("lth_flawed", 1)
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 52, coolingRate: 1, startingThermal: 77, shapeShare: 49);
 
             // Pattern Template Plates
             _builder.Create(RecipeType.PatternTemplatePlates, SkillType.Smithery)
@@ -49,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .Component("ref_plagionite", 2)
                 .Component("lth_good", 2)
-                .Component("fiberp_good", 1);
+                .Component("fiberp_good", 1)
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 23, coolingRate: 5, startingThermal: 66, shapeShare: 50);
 
             // Loom Tension Weights
             _builder.Create(RecipeType.LoomTensionWeights, SkillType.Smithery)
@@ -59,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .Component("ref_keromber", 2)
                 .Component("fiberp_imperfect", 2)
-                .Component("lth_imperfect", 1);
+                .Component("lth_imperfect", 1)
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 23, coolingRate: 4, startingThermal: 65, shapeShare: 50);
 
             // Pattern Index Tags
             _builder.Create(RecipeType.PatternIndexTags, SkillType.Smithery)
@@ -69,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .Component("ref_jasioclase", 2)
                 .Component("fiberp_high", 2)
-                .Component("lth_high", 1);
+                .Component("lth_high", 1)
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 24, coolingRate: 4, startingThermal: 68, shapeShare: 50);
         }
     }
 }

@@ -554,6 +554,10 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(activator))
                 PlayerPlugin.PlaySound(activator, soundResref, activator);
 
+            // A hidden activator hears its own ability; nobody nearby does.
+            if (Stealth.IsConcealed(activator))
+                return;
+
             var nth = 1;
             var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
             while (GetIsObjectValid(nearby) && GetDistanceBetween(activator, nearby) <= HearingRange)
@@ -752,8 +756,9 @@ namespace SWLOR.Game.Server.Feature
 
                 PlayAbilitySound(activator, ability.ActivationSound);
 
-                // Display a casting visual effect if one has been specified.
-                if (ability.ActivationVisualEffect != VisualEffect.None)
+                // Display a casting visual effect if one has been specified. A hidden activator's
+                // casting effect would mark its position, so it is skipped while hidden.
+                if (ability.ActivationVisualEffect != VisualEffect.None && !Stealth.IsConcealed(activator))
                 {
                     var vfx = TagEffect(EffectVisualEffect(ability.ActivationVisualEffect), "ACTIVATION_VFX");
                     ApplyEffectToObject(DurationType.Temporary, vfx, activator, delay + 0.2f);

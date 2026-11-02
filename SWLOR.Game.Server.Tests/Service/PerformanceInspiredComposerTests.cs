@@ -85,10 +85,10 @@ public class PerformanceInspiredComposerTests
     public void Compose_SteadyHandsAndAnglersLullabyUseTheMusiciansOwnStats()
     {
         var steady = Musician(1, set: PerformanceSetType.SteadyHands, steadyHandsBonus: 4);
-        var angler = Musician(2, set: PerformanceSetType.AnglersLullaby, anglersLullabyBonus: 10);
+        var angler = Musician(2, set: PerformanceSetType.AnglersLullaby, anglersLullabyBonus: 2);
 
         PerformanceInspiredComposer.Compose(null, steady, 0).CraftBonus.Should().Be(4);
-        PerformanceInspiredComposer.Compose(null, angler, 0).FishingCatchChancePercent.Should().Be(10);
+        PerformanceInspiredComposer.Compose(null, angler, 0).FishingTensionCapBonus.Should().Be(2);
     }
 
     [Test]

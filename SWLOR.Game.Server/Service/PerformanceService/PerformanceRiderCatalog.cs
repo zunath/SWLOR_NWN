@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         {
             return set switch
             {
-                PerformanceSetType.SteadyHands => PerkType.SteadyHands,
+                PerformanceSetType.SteadyHands => PerkType.PerformanceSteadyHands,
                 PerformanceSetType.KeenEar => PerkType.KeenEar,
                 PerformanceSetType.AnglersLullaby => PerkType.AnglersLullaby,
                 PerformanceSetType.StillWaters => PerkType.StillWaters,

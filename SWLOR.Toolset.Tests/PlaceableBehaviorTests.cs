@@ -110,9 +110,9 @@ namespace SWLOR.Toolset.Tests
             integrity.DefaultIntValue.Should().Be(100);
             integrity.Description.Should().Contain("Failed slicing attempts");
 
-            Field("harvest_node", "RESOURCE_COUNT").Label.Should().Be("Charges");
+            PlaceableBehaviorCatalog.FindById("harvest_node")!.Fields
+                .Select(field => field.VariableName).Should().NotContain("RESOURCE_COUNT", "the server rolls a harvest node's pool itself");
             Field("resource_node", "RESOURCE_SPAWN_COUNT").Label.Should().Be("Charges");
-            Field("harvest_node", "RESOURCE_COUNT").DefaultIntValue.Should().Be(4);
             Field("resource_node", "RESOURCE_SPAWN_COUNT").DefaultIntValue.Should().Be(4);
 
             var resourceProp = Field("resource_node", "RESOURCE_PROP");

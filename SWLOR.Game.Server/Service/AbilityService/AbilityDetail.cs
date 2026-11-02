@@ -89,6 +89,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool AllowsSelfQuickCast { get; set; }
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
+        /// <summary>
+        /// Treats a non-Force skill ability as a Force power for Force Disruption and FP-spend
+        /// triggers. Its skill, XP and combat points stay with <see cref="SkillType"/>.
+        /// </summary>
+        public bool IsForcePower { get; set; }
         public AbilityType CombatImpactDamageAbility { get; set; }
         public bool IsAreaAbility { get; set; }
         public bool IsSingleTargetAbility { get; set; }

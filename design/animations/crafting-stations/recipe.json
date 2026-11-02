@@ -1,0 +1,3268 @@
+{
+  "workbook": "",
+  "model": "a_ba",
+  "readyShield": {
+    "root": [
+      0,
+      0,
+      1.14
+    ],
+    "chest": [
+      3,
+      0,
+      0
+    ],
+    "hips": [
+      0,
+      0,
+      0
+    ],
+    "leftHand": [
+      -0.06,
+      0.34,
+      1.25
+    ],
+    "rightHand": [
+      0.18,
+      0.36,
+      1.3
+    ],
+    "blade": [
+      0,
+      0.9,
+      0.44
+    ],
+    "leftFoot": [
+      -0.18,
+      0.08,
+      0.14
+    ],
+    "rightFoot": [
+      0.18,
+      -0.08,
+      0.14
+    ],
+    "shield": [
+      0,
+      0,
+      0
+    ]
+  },
+  "readyBlade": {
+    "root": [
+      0,
+      0,
+      1.14
+    ],
+    "chest": [
+      3,
+      0,
+      0
+    ],
+    "hips": [
+      0,
+      0,
+      0
+    ],
+    "leftHand": [
+      -0.06,
+      0.34,
+      1.25
+    ],
+    "rightHand": [
+      0.18,
+      0.36,
+      1.3
+    ],
+    "blade": [
+      0,
+      0.9,
+      0.44
+    ],
+    "leftFoot": [
+      -0.18,
+      0.08,
+      0.14
+    ],
+    "rightFoot": [
+      0.18,
+      -0.08,
+      0.14
+    ],
+    "shield": [
+      0,
+      0,
+      0
+    ]
+  },
+  "motions": [
+    {
+      "id": "ForgeWork",
+      "name": "Plasma forge work",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A smith works a plasma forge: dials in the heat, hauls a hydraulic press lever, then hones the piece.",
+      "interpretation": "A looping standing work cycle at a console. Weight stays planted while the hands twist a heat dial, pull a press lever down with a lean, and stroke a hone across the piece. Used for every Smithery craft and quick craft.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Hands on the controls",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.4,
+              1.08
+            ],
+            "rightHand": [
+              0.14,
+              0.42,
+              1.1
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              -0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.4,
+          "label": "Reach for the heat dial",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              8.0,
+              -6.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.4,
+              1.08
+            ],
+            "rightHand": [
+              0.2,
+              0.38,
+              1.32
+            ],
+            "blade": [
+              0.3,
+              0.7,
+              0.2
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.8,
+          "label": "Turn the dial",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              8.0,
+              -6.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.4,
+              1.08
+            ],
+            "rightHand": [
+              0.22,
+              0.38,
+              1.34
+            ],
+            "blade": [
+              0.55,
+              0.6,
+              0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.1,
+          "label": "Grip the press lever",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.46,
+              1.34
+            ],
+            "rightHand": [
+              0.1,
+              0.46,
+              1.38
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              0.2
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.7,
+          "label": "Haul the lever down",
+          "pose": {
+            "root": [
+              0.0,
+              0.06,
+              1.04
+            ],
+            "chest": [
+              20.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.36,
+              0.98
+            ],
+            "rightHand": [
+              0.1,
+              0.36,
+              1.0
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.2
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.95,
+          "label": "Hold the press",
+          "pose": {
+            "root": [
+              0.0,
+              0.06,
+              1.04
+            ],
+            "chest": [
+              20.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.36,
+              0.98
+            ],
+            "rightHand": [
+              0.1,
+              0.36,
+              1.0
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.2
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.35,
+          "label": "Release the lever",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              12.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.12,
+              0.42,
+              1.18
+            ],
+            "rightHand": [
+              0.12,
+              0.44,
+              1.22
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              0.1
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.6,
+          "label": "Hone the piece",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              12.0,
+              -5.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.4,
+              1.08
+            ],
+            "rightHand": [
+              0.27,
+              0.42,
+              1.04
+            ],
+            "blade": [
+              0.2,
+              0.8,
+              -0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.85,
+          "label": "Hone back",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              12.0,
+              -3.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.4,
+              1.08
+            ],
+            "rightHand": [
+              0.1,
+              0.42,
+              1.04
+            ],
+            "blade": [
+              -0.1,
+              0.8,
+              -0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.1,
+          "label": "Hone out",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              11.0,
+              -4.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.4,
+              1.08
+            ],
+            "rightHand": [
+              0.24,
+              0.44,
+              1.06
+            ],
+            "blade": [
+              0.1,
+              0.8,
+              -0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.4,
+          "label": "Hands on the controls",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.4,
+              1.08
+            ],
+            "rightHand": [
+              0.14,
+              0.42,
+              1.1
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              -0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.06,
+              0.14
+            ]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Crafting",
+      "loop": true
+    },
+    {
+      "id": "Circuitry",
+      "name": "Circuit bench work",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "An engineer leans over a circuit board and works it with a probe.",
+      "interpretation": "A looping close-work cycle. The chest tips forward over the bench, the left hand steadies the board and the right hand taps test points, then drags a solder line. Used for every Engineering craft and quick craft.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Probe over the board",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              14.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.3,
+              1.36
+            ],
+            "rightHand": [
+              0.12,
+              0.32,
+              1.42
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.35,
+          "label": "Touch a test point",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              18.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.3,
+              1.36
+            ],
+            "rightHand": [
+              0.12,
+              0.35,
+              1.28
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Lift",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              14.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.3,
+              1.36
+            ],
+            "rightHand": [
+              0.12,
+              0.32,
+              1.42
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.85,
+          "label": "Touch the next point",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              18.0,
+              -3.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.3,
+              1.36
+            ],
+            "rightHand": [
+              0.19,
+              0.35,
+              1.29
+            ],
+            "blade": [
+              0.1,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.1,
+          "label": "Lift",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              14.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.3,
+              1.36
+            ],
+            "rightHand": [
+              0.12,
+              0.32,
+              1.42
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.45,
+          "label": "Adjust the board",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              20.0,
+              -6.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.04,
+              0.35,
+              1.42
+            ],
+            "rightHand": [
+              0.16,
+              0.3,
+              1.46
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.85,
+          "label": "Lay the solder line",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              20.0,
+              -4.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.07,
+              0.33,
+              1.38
+            ],
+            "rightHand": [
+              0.06,
+              0.36,
+              1.31
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.15,
+          "label": "Drag the line",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              20.0,
+              -2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.07,
+              0.33,
+              1.38
+            ],
+            "rightHand": [
+              0.24,
+              0.36,
+              1.31
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.5,
+          "label": "Lift",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              14.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.3,
+              1.36
+            ],
+            "rightHand": [
+              0.12,
+              0.32,
+              1.42
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.9,
+          "label": "Probe over the board",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              14.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.3,
+              1.36
+            ],
+            "rightHand": [
+              0.12,
+              0.32,
+              1.42
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Crafting",
+      "loop": true
+    },
+    {
+      "id": "Fabricate",
+      "name": "Fabricator console work",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "An operator runs a three-head fabricator from its control panel.",
+      "interpretation": "A looping console cycle. The torso turns to each tool head in turn, a hand presses its key, and both hands push the feed sliders forward at the centre. Used for every Fabrication craft and quick craft.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Centre panel",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.16,
+              0.38,
+              1.12
+            ],
+            "rightHand": [
+              0.16,
+              0.38,
+              1.14
+            ],
+            "blade": [
+              0.0,
+              0.7,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.4,
+          "label": "Turn to the cutter",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              -14.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.0633,
+              0.4074,
+              1.12
+            ],
+            "rightHand": [
+              0.4267,
+              0.3059,
+              1.22
+            ],
+            "blade": [
+              0.1693,
+              0.6792,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.7,
+          "label": "Press the cutter key",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              -14.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.0633,
+              0.4074,
+              1.12
+            ],
+            "rightHand": [
+              0.4315,
+              0.3253,
+              1.15
+            ],
+            "blade": [
+              0.1693,
+              0.6792,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.0,
+          "label": "Release",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              -14.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.0633,
+              0.4074,
+              1.12
+            ],
+            "rightHand": [
+              0.4267,
+              0.3059,
+              1.22
+            ],
+            "blade": [
+              0.1693,
+              0.6792,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.35,
+          "label": "Centre sliders",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.12,
+              0.4,
+              1.18
+            ],
+            "rightHand": [
+              0.12,
+              0.4,
+              1.18
+            ],
+            "blade": [
+              0.0,
+              0.7,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.75,
+          "label": "Push the feed sliders",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              11.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.12,
+              0.5,
+              1.18
+            ],
+            "rightHand": [
+              0.12,
+              0.5,
+              1.18
+            ],
+            "blade": [
+              0.0,
+              0.7,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.15,
+          "label": "Turn to the bonder",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              14.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.4267,
+              0.3059,
+              1.22
+            ],
+            "rightHand": [
+              0.0633,
+              0.4074,
+              1.14
+            ],
+            "blade": [
+              -0.1693,
+              0.6792,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.45,
+          "label": "Press the bonder key",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              14.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.4315,
+              0.3253,
+              1.15
+            ],
+            "rightHand": [
+              0.0633,
+              0.4074,
+              1.14
+            ],
+            "blade": [
+              -0.1693,
+              0.6792,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.75,
+          "label": "Release",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              14.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.4267,
+              0.3059,
+              1.22
+            ],
+            "rightHand": [
+              0.0633,
+              0.4074,
+              1.14
+            ],
+            "blade": [
+              -0.1693,
+              0.6792,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.2,
+          "label": "Centre panel",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.38,
+              1.14
+            ],
+            "rightHand": [
+              0.14,
+              0.38,
+              1.14
+            ],
+            "blade": [
+              0.0,
+              0.7,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.6,
+          "label": "Centre panel",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.12
+            ],
+            "chest": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.16,
+              0.38,
+              1.12
+            ],
+            "rightHand": [
+              0.16,
+              0.38,
+              1.14
+            ],
+            "blade": [
+              0.0,
+              0.7,
+              -0.5
+            ],
+            "leftFoot": [
+              -0.2,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.04,
+              0.14
+            ]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Crafting",
+      "loop": true
+    },
+    {
+      "id": "Cooking",
+      "name": "Kitchen work",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A cook stirs a pot and seasons it with a pinch.",
+      "interpretation": "A looping galley cycle. The right hand stirs a steady circle at waist height while the left hand holds the pot, lifts for a pinch of seasoning and flicks it over the pot. Used for every cooking craft and quick craft.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0.0,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.15,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              -0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.1,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.1354,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.2,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.1,
+              0.41,
+              1.06
+            ],
+            "blade": [
+              -0.0,
+              0.25,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.3,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.0646,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.4,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.05,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.5,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.0646,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.6,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.1,
+              0.31,
+              1.06
+            ],
+            "blade": [
+              0.0,
+              0.95,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.7,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.1354,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.8,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.15,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              -0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.9,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.1354,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.0,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.1,
+              0.41,
+              1.06
+            ],
+            "blade": [
+              -0.0,
+              0.25,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.1,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.13,
+              0.355,
+              1.095
+            ],
+            "rightHand": [
+              0.0646,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.2,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.12,
+              0.35,
+              1.15
+            ],
+            "rightHand": [
+              0.05,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.3,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.11,
+              0.345,
+              1.205
+            ],
+            "rightHand": [
+              0.0646,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.4,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.34,
+              1.26
+            ],
+            "rightHand": [
+              0.1,
+              0.31,
+              1.06
+            ],
+            "blade": [
+              0.0,
+              0.95,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.5,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.34,
+              1.2667
+            ],
+            "rightHand": [
+              0.1354,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.6,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.34,
+              1.2733
+            ],
+            "rightHand": [
+              0.15,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              -0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.7,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.34,
+              1.28
+            ],
+            "rightHand": [
+              0.1354,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.8,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.35,
+              1.25
+            ],
+            "rightHand": [
+              0.1,
+              0.41,
+              1.06
+            ],
+            "blade": [
+              -0.0,
+              0.25,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.9,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.36,
+              1.22
+            ],
+            "rightHand": [
+              0.0646,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.0,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.35,
+              1.245
+            ],
+            "rightHand": [
+              0.05,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.1,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.1,
+              0.34,
+              1.27
+            ],
+            "rightHand": [
+              0.0646,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.2,
+          "label": "Season while stirring",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.1133,
+              0.3467,
+              1.2
+            ],
+            "rightHand": [
+              0.1,
+              0.31,
+              1.06
+            ],
+            "blade": [
+              -0.0,
+              0.95,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.3,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.1267,
+              0.3533,
+              1.13
+            ],
+            "rightHand": [
+              0.1354,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.4,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.06
+            ],
+            "rightHand": [
+              0.15,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              -0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.5,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.0575
+            ],
+            "rightHand": [
+              0.1354,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.6,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.055
+            ],
+            "rightHand": [
+              0.1,
+              0.41,
+              1.06
+            ],
+            "blade": [
+              -0.0,
+              0.25,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.7,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.0525
+            ],
+            "rightHand": [
+              0.0646,
+              0.3954,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.3525,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.8,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.05
+            ],
+            "rightHand": [
+              0.05,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.9,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.0475
+            ],
+            "rightHand": [
+              0.0646,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.0,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -2.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.045
+            ],
+            "rightHand": [
+              0.1,
+              0.31,
+              1.06
+            ],
+            "blade": [
+              0.0,
+              0.95,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.1,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -1.4142,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.0425
+            ],
+            "rightHand": [
+              0.1354,
+              0.3246,
+              1.06
+            ],
+            "blade": [
+              -0.2475,
+              0.8475,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.2,
+          "label": "Stir",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.1
+            ],
+            "chest": [
+              13.0,
+              -0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.14,
+              0.36,
+              1.04
+            ],
+            "rightHand": [
+              0.15,
+              0.36,
+              1.06
+            ],
+            "blade": [
+              -0.35,
+              0.6,
+              -0.8
+            ],
+            "leftFoot": [
+              -0.19,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.19,
+              -0.06,
+              0.14
+            ]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Crafting",
+      "loop": true
+    },
+    {
+      "id": "Compound",
+      "name": "Reaction bench work",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A saboteur drips a reagent into a vial and holds it up to read the reaction.",
+      "interpretation": "A looping bench cycle. The right hand drips from a dropper into a vial held in the left, the vial lifts to eye level to check the colour, then returns for another drop. Used for every Espionage craft and quick craft.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Dropper over the vial",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.06,
+              0.34,
+              1.3
+            ],
+            "rightHand": [
+              0.0,
+              0.34,
+              1.46
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.4,
+          "label": "Squeeze a drop",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.06,
+              0.34,
+              1.3
+            ],
+            "rightHand": [
+              0.0,
+              0.34,
+              1.4
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.7,
+          "label": "Lift the dropper",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.06,
+              0.34,
+              1.3
+            ],
+            "rightHand": [
+              0.03,
+              0.33,
+              1.5
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.05,
+          "label": "Squeeze a drop",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.06,
+              0.34,
+              1.3
+            ],
+            "rightHand": [
+              0.0,
+              0.34,
+              1.39
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.35,
+          "label": "Lift the dropper",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.06,
+              0.34,
+              1.3
+            ],
+            "rightHand": [
+              0.08,
+              0.32,
+              1.44
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.8,
+          "label": "Raise the vial",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              6.0,
+              -5.0,
+              3.0
+            ],
+            "leftHand": [
+              -0.04,
+              0.28,
+              1.52
+            ],
+            "rightHand": [
+              0.16,
+              0.3,
+              1.36
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.2
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.4,
+          "label": "Read the colour",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              6.0,
+              -5.0,
+              3.0
+            ],
+            "leftHand": [
+              -0.05,
+              0.27,
+              1.54
+            ],
+            "rightHand": [
+              0.16,
+              0.3,
+              1.36
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.2
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.85,
+          "label": "Lower the vial",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.06,
+              0.34,
+              1.3
+            ],
+            "rightHand": [
+              0.08,
+              0.34,
+              1.46
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 3.3,
+          "label": "Dropper over the vial",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "leftHand": [
+              -0.06,
+              0.34,
+              1.3
+            ],
+            "rightHand": [
+              0.0,
+              0.34,
+              1.46
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.16,
+              0.06,
+              0.14
+            ],
+            "rightFoot": [
+              0.16,
+              -0.04,
+              0.14
+            ]
+          }
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Crafting",
+      "loop": true
+    }
+  ]
+}

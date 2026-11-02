@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             AddAttribute(items, data.Social, "SOC");
             if (data.CraftBonus > 0)
                 items.Add($"+{data.CraftBonus} Control, +{data.CraftBonus} Craftsmanship");
-            if (data.FishingCatchChancePercent > 0)
-                items.Add($"+{data.FishingCatchChancePercent}% fishing catch chance");
+            if (data.FishingTensionCapBonus > 0)
+                items.Add($"+{data.FishingTensionCapBonus} fishing Tension cap");
             if (data.Requiem)
                 items.Add("Requiem");
             if (data.StandingOvation)

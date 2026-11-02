@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 Willpower = willpower,
                 Social = social,
                 CraftBonus = craft,
-                FishingCatchChancePercent = fishing,
+                FishingTensionCapBonus = fishing,
                 Requiem = musician != null && musician.HasRequiem,
                 StandingOvation = dancer != null && dancer.HasStandingOvation
             };

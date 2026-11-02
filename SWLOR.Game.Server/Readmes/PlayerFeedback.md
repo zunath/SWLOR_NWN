@@ -17,7 +17,7 @@ settings are cached at startup. Gameplay and server audit logs are unaffected.
 | --- | --- |
 | `Space`, all ship modules | Ship and direct-hull damage amounts, hit/miss results, hull/shield/capacitor restoration, repair fields, and E-War activation. |
 | `ResolveAttackRoll`, `Ability`, `Combat` | Attack and ability outcomes, critical hits/immunity, Guard and Critical Ward mitigation, deflection/reflection, temporary-HP damage, resource drains, and readiness/stack/recharge information. |
-| `StatusEffect`, `GuardedStatusEffect` | Status application, expiry, resistance, duration changes, application failures, and guarding relationships. Existing per-effect message opt-outs remain respected. |
+| `StatusEffect`, `GuardedStatusEffect` | Status application, expiry, resistance, duration changes, application failures, and guarding relationships. Existing per-effect message opt-outs remain respected. While the bearer or the applying creature is in stealth or invisible, application and worn-off messages go only to them, so they never name a hidden creature to nearby players. |
 | `PvpCombat` | Private combat-log lines when a player enters PvP combat, at each healing-reduction and damage-increase step, and when it ends. At most 12 per fight: one at the start, five healing steps, five damage steps and one at the end. |
 | `UsePerkFeat` | Queue, ready, interruption, and expiry/cancellation notices. Nearby delivery includes the actor once. Stale timers and silent cleanup do not produce Production notices. |
 | `Skill`, `BeastMastery`, `Guild`, `Faction`, `RoleplayXP` | XP and point gains/losses, debt repayment, standings, level/rank changes, and unlocks. |
@@ -25,6 +25,16 @@ settings are cached at startup. Gameplay and server audit logs are unaffected.
 | `Mimicry` | Analyzer observations, rank requirements, failed decoding/retry instructions, and successful learning. Existing witness tracking prevents duplicate observations of the same technique from one NPC. |
 | Fishing, scavenging, weather | Casts, catches/failures, bait remaining, skill-check results and rolls, authored weather text, and hazards. |
 | Other player surfaces | Validation, transactions, travel, crafting/research results, chat/dialogue, commands, GUI responses, staff tools, and operational warnings retain their existing delivery. |
+
+## Hidden creatures
+
+A creature in stealth or invisible (`Stealth.IsConcealed`) must not be announced to nearby players while it stays hidden. Signals go only to the hidden player instead:
+
+- `Messaging.SendMessageNearbyToPlayers` delivers only to the sender (and the hidden actor a message names, such as the activator in an ability's combat-log line) while either is hidden. This covers ability "readies", "queues", interruption and expiry lines, status application and worn-off lines, and paralysis warnings.
+- Ability sounds (`UsePerkFeat.PlayAbilitySound`) play only for a hidden activator; casting effects are skipped; success bursts on a hidden recipient are shown only to that player (`Ability.ShowVisualEffectToPlayer`).
+- Abilities that hide the caster (Ghost Protocol, Shared Presence) send no "readies" line, because it would announce a stealth entry, and show their smoke and bursts only to the players they hide. Cloud Mind from a hidden caster shows its target puff only to the caster, and Clouded Mind sends no application or worn-off line.
+- A held lightsaber's hum is silenced while its owner is in stealth and returns when they leave stealth (invisibility does not silence it); igniting or shutting off a saber while hidden plays only for the owner. The HoloCom buzz over a hidden receiver is not floated to others.
+- Anything that reveals the creature (an attack, a stealth-breaking ability, detection) shows normally once it is revealed.
 
 ## Optional messages enabled only in Testing/Development
 

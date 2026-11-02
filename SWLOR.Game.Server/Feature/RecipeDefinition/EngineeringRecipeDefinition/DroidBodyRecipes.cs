@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 61);
 
             // Droid Body MV I
             _builder.Create(RecipeType.DroidBodyMV1, SkillType.Engineering)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 63);
 
             // Droid Body MW I
             _builder.Create(RecipeType.DroidBodyMW1, SkillType.Engineering)
@@ -49,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 58);
 
             // Droid Body MA I
             _builder.Create(RecipeType.DroidBodyMA1, SkillType.Engineering)
@@ -59,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 61);
 
             // Droid Body MS I
             _builder.Create(RecipeType.DroidBodyMS1, SkillType.Engineering)
@@ -69,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // Droid Body PV I
             _builder.Create(RecipeType.DroidBodyPV1, SkillType.Engineering)
@@ -79,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 62);
 
             // Droid Body PW I
             _builder.Create(RecipeType.DroidBodyPW1, SkillType.Engineering)
@@ -89,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 61);
 
             // Droid Body PA I
             _builder.Create(RecipeType.DroidBodyPA1, SkillType.Engineering)
@@ -99,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 62);
 
             // Droid Body PS I
             _builder.Create(RecipeType.DroidBodyPS1, SkillType.Engineering)
@@ -109,7 +117,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 56);
 
             // Droid Body VW I
             _builder.Create(RecipeType.DroidBodyVW1, SkillType.Engineering)
@@ -119,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Droid Body VA I
             _builder.Create(RecipeType.DroidBodyVA1, SkillType.Engineering)
@@ -129,7 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // Droid Body VS I
             _builder.Create(RecipeType.DroidBodyVS1, SkillType.Engineering)
@@ -139,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 59);
 
             // Droid Body WA I
             _builder.Create(RecipeType.DroidBodyWA1, SkillType.Engineering)
@@ -149,7 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 61);
 
             // Droid Body WS I
             _builder.Create(RecipeType.DroidBodyWS1, SkillType.Engineering)
@@ -159,7 +172,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 63);
 
             // Droid Body AS I
             _builder.Create(RecipeType.DroidBodyAS1, SkillType.Engineering)
@@ -169,7 +183,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit1", 1)
                 .Component("dp_supply1", 1)
-                .Component("d_chassis1", 1);
+                .Component("d_chassis1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 59);
 
 
         }
@@ -184,7 +199,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 63);
 
             // Droid Body MV II
             _builder.Create(RecipeType.DroidBodyMV2, SkillType.Engineering)
@@ -194,7 +210,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 62);
 
             // Droid Body MW II
             _builder.Create(RecipeType.DroidBodyMW2, SkillType.Engineering)
@@ -204,7 +221,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 57);
 
             // Droid Body MA II
             _builder.Create(RecipeType.DroidBodyMA2, SkillType.Engineering)
@@ -214,7 +232,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Droid Body MS II
             _builder.Create(RecipeType.DroidBodyMS2, SkillType.Engineering)
@@ -224,7 +243,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 65);
 
             // Droid Body PV II
             _builder.Create(RecipeType.DroidBodyPV2, SkillType.Engineering)
@@ -234,7 +254,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 64);
 
             // Droid Body PW II
             _builder.Create(RecipeType.DroidBodyPW2, SkillType.Engineering)
@@ -244,7 +265,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 62);
 
             // Droid Body PA II
             _builder.Create(RecipeType.DroidBodyPA2, SkillType.Engineering)
@@ -254,7 +276,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 59);
 
             // Droid Body PS II
             _builder.Create(RecipeType.DroidBodyPS2, SkillType.Engineering)
@@ -264,7 +287,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Body VW II
             _builder.Create(RecipeType.DroidBodyVW2, SkillType.Engineering)
@@ -274,7 +298,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 62);
 
             // Droid Body VA II
             _builder.Create(RecipeType.DroidBodyVA2, SkillType.Engineering)
@@ -284,7 +309,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 64);
 
             // Droid Body VS II
             _builder.Create(RecipeType.DroidBodyVS2, SkillType.Engineering)
@@ -294,7 +320,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 57);
 
             // Droid Body WA II
             _builder.Create(RecipeType.DroidBodyWA2, SkillType.Engineering)
@@ -304,7 +331,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 57);
 
             // Droid Body WS II
             _builder.Create(RecipeType.DroidBodyWS2, SkillType.Engineering)
@@ -314,7 +342,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 61);
 
             // Droid Body AS II
             _builder.Create(RecipeType.DroidBodyAS2, SkillType.Engineering)
@@ -324,7 +353,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("diag_circuit2", 1)
                 .Component("dp_supply2", 1)
-                .Component("d_chassis2", 1);
+                .Component("d_chassis2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 55);
 
 
         }
@@ -339,7 +369,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 64);
 
             // Droid Body MV III
             _builder.Create(RecipeType.DroidBodyMV3, SkillType.Engineering)
@@ -350,7 +381,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 58);
 
             // Droid Body MW III
             _builder.Create(RecipeType.DroidBodyMW3, SkillType.Engineering)
@@ -361,7 +393,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Droid Body MA III
             _builder.Create(RecipeType.DroidBodyMA3, SkillType.Engineering)
@@ -372,7 +405,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Droid Body MS III
             _builder.Create(RecipeType.DroidBodyMS3, SkillType.Engineering)
@@ -383,7 +417,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 60);
 
             // Droid Body PV III
             _builder.Create(RecipeType.DroidBodyPV3, SkillType.Engineering)
@@ -394,7 +429,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 61);
 
             // Droid Body PW III
             _builder.Create(RecipeType.DroidBodyPW3, SkillType.Engineering)
@@ -405,7 +441,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 56);
 
             // Droid Body PA III
             _builder.Create(RecipeType.DroidBodyPA3, SkillType.Engineering)
@@ -416,7 +453,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 63);
 
             // Droid Body PS III
             _builder.Create(RecipeType.DroidBodyPS3, SkillType.Engineering)
@@ -427,7 +465,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 64);
 
             // Droid Body VW III
             _builder.Create(RecipeType.DroidBodyVW3, SkillType.Engineering)
@@ -438,7 +477,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Droid Body VA III
             _builder.Create(RecipeType.DroidBodyVA3, SkillType.Engineering)
@@ -449,7 +489,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Droid Body VS III
             _builder.Create(RecipeType.DroidBodyVS3, SkillType.Engineering)
@@ -460,7 +501,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 62);
 
             // Droid Body WA III
             _builder.Create(RecipeType.DroidBodyWA3, SkillType.Engineering)
@@ -471,7 +513,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 61);
 
             // Droid Body WS III
             _builder.Create(RecipeType.DroidBodyWS3, SkillType.Engineering)
@@ -482,7 +525,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 62);
 
             // Droid Body AS III
             _builder.Create(RecipeType.DroidBodyAS3, SkillType.Engineering)
@@ -493,7 +537,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit3", 1)
                 .Component("dp_supply3", 1)
-                .Component("d_chassis3", 1);
+                .Component("d_chassis3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 59);
 
 
         }
@@ -508,7 +553,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Droid Body MV IV
             _builder.Create(RecipeType.DroidBodyMV4, SkillType.Engineering)
@@ -519,7 +565,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Droid Body MW IV
             _builder.Create(RecipeType.DroidBodyMW4, SkillType.Engineering)
@@ -530,7 +577,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 61);
 
             // Droid Body MA IV
             _builder.Create(RecipeType.DroidBodyMA4, SkillType.Engineering)
@@ -541,7 +589,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 57);
 
             // Droid Body MS IV
             _builder.Create(RecipeType.DroidBodyMS4, SkillType.Engineering)
@@ -552,7 +601,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Droid Body PV IV
             _builder.Create(RecipeType.DroidBodyPV4, SkillType.Engineering)
@@ -563,7 +613,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 64);
 
             // Droid Body PW IV
             _builder.Create(RecipeType.DroidBodyPW4, SkillType.Engineering)
@@ -574,7 +625,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 63);
 
             // Droid Body PA IV
             _builder.Create(RecipeType.DroidBodyPA4, SkillType.Engineering)
@@ -585,7 +637,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 65);
 
             // Droid Body PS IV
             _builder.Create(RecipeType.DroidBodyPS4, SkillType.Engineering)
@@ -596,7 +649,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 65);
 
             // Droid Body VW IV
             _builder.Create(RecipeType.DroidBodyVW4, SkillType.Engineering)
@@ -607,7 +661,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 65);
 
             // Droid Body VA IV
             _builder.Create(RecipeType.DroidBodyVA4, SkillType.Engineering)
@@ -618,7 +673,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 65);
 
             // Droid Body VS IV
             _builder.Create(RecipeType.DroidBodyVS4, SkillType.Engineering)
@@ -629,7 +685,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 57);
 
             // Droid Body WA IV
             _builder.Create(RecipeType.DroidBodyWA4, SkillType.Engineering)
@@ -640,7 +697,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 61);
 
             // Droid Body WS IV
             _builder.Create(RecipeType.DroidBodyWS4, SkillType.Engineering)
@@ -651,7 +709,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 63);
 
             // Droid Body AS IV
             _builder.Create(RecipeType.DroidBodyAS4, SkillType.Engineering)
@@ -662,7 +721,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit4", 1)
                 .Component("dp_supply4", 1)
-                .Component("d_chassis4", 1);
+                .Component("d_chassis4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 64);
 
 
         }
@@ -677,7 +737,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 64);
 
             // Droid Body MV V
             _builder.Create(RecipeType.DroidBodyMV5, SkillType.Engineering)
@@ -688,7 +749,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 58);
 
             // Droid Body MW V
             _builder.Create(RecipeType.DroidBodyMW5, SkillType.Engineering)
@@ -699,7 +761,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 64);
 
             // Droid Body MA V
             _builder.Create(RecipeType.DroidBodyMA5, SkillType.Engineering)
@@ -710,7 +773,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 64);
 
             // Droid Body MS V
             _builder.Create(RecipeType.DroidBodyMS5, SkillType.Engineering)
@@ -721,7 +785,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 59);
 
             // Droid Body PV V
             _builder.Create(RecipeType.DroidBodyPV5, SkillType.Engineering)
@@ -732,7 +797,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Droid Body PW V
             _builder.Create(RecipeType.DroidBodyPW5, SkillType.Engineering)
@@ -743,7 +809,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 63);
 
             // Droid Body PA V
             _builder.Create(RecipeType.DroidBodyPA5, SkillType.Engineering)
@@ -754,7 +821,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Droid Body PS V
             _builder.Create(RecipeType.DroidBodyPS5, SkillType.Engineering)
@@ -765,7 +833,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 64);
 
             // Droid Body VW V
             _builder.Create(RecipeType.DroidBodyVW5, SkillType.Engineering)
@@ -776,7 +845,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Droid Body VA V
             _builder.Create(RecipeType.DroidBodyVA5, SkillType.Engineering)
@@ -787,7 +857,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 59);
 
             // Droid Body VS V
             _builder.Create(RecipeType.DroidBodyVS5, SkillType.Engineering)
@@ -798,7 +869,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 65);
 
             // Droid Body WA V
             _builder.Create(RecipeType.DroidBodyWA5, SkillType.Engineering)
@@ -809,7 +881,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Body WS V
             _builder.Create(RecipeType.DroidBodyWS5, SkillType.Engineering)
@@ -820,7 +893,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Droid Body AS V
             _builder.Create(RecipeType.DroidBodyAS5, SkillType.Engineering)
@@ -831,7 +905,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("diag_circuit5", 1)
                 .Component("dp_supply5", 1)
-                .Component("d_chassis5", 1);
+                .Component("d_chassis5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 64);
 
 
         }

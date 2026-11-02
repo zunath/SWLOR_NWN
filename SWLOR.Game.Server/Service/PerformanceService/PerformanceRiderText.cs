@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             {
                 PerformanceSetType.SteadyHands => $"+{craft} Control, +{craft} Craftsmanship",
                 PerformanceSetType.KeenEar => $"+{attribute} PER",
-                PerformanceSetType.AnglersLullaby => $"+{Math.Max(0, anglersLullabyBonus)}% fishing",
+                PerformanceSetType.AnglersLullaby => $"+{Math.Max(0, anglersLullabyBonus)} Tension cap",
                 PerformanceSetType.StillWaters => $"+{attribute} WIL",
                 PerformanceSetType.SilverTongue => $"+{attribute} SOC",
                 _ => "XP and debt only"

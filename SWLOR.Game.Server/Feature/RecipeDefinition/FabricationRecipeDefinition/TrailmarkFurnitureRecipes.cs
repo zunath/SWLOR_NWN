@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 60, shellSizePercent: 25, frameQualityPercent: 55, shellQualityPercent: 29, wearRate: 5);
 
             // Trailmark Signal Lamp
             _builder.Create(RecipeType.TrailmarkSignalLamp, SkillType.Fabrication)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 3)
                 .Component("ref_scordspar", 1)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 30, frameQualityPercent: 16, shellQualityPercent: 40, wearRate: 5);
 
             // Trailmark Trophy Stand
             _builder.Create(RecipeType.TrailmarkTrophyStand, SkillType.Fabrication)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 23, frameQualityPercent: 27, shellQualityPercent: 28, wearRate: 5);
 
             // Trailmark Low Table
             _builder.Create(RecipeType.TrailmarkLowTable, SkillType.Fabrication)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 45, frameQualityPercent: 41, shellQualityPercent: 44, wearRate: 5);
 
             // Trailmark Wall Banner
             _builder.Create(RecipeType.TrailmarkWallBanner, SkillType.Fabrication)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_flawed", 3)
                 .Component("lth_flawed", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 47, frameQualityPercent: 26, shellQualityPercent: 58, wearRate: 5);
 
             // Trailmark Supply Locker
             _builder.Create(RecipeType.TrailmarkSupplyLocker, SkillType.Fabrication)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 33, shellSizePercent: 33, frameQualityPercent: 33, shellQualityPercent: 28, wearRate: 5);
 
             // Trailmark Floor Mat
             _builder.Create(RecipeType.TrailmarkFloorMat, SkillType.Fabrication)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 21, shellSizePercent: 62, frameQualityPercent: 26, shellQualityPercent: 56, wearRate: 3);
 
             // Trailmark Data Console
             _builder.Create(RecipeType.TrailmarkDataConsole, SkillType.Fabrication)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("elec_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 26, frameQualityPercent: 15, shellQualityPercent: 26, wearRate: 5);
 
             // Trailmark Waystone
             _builder.Create(RecipeType.TrailmarkWaystone, SkillType.Fabrication)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_scordspar", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 25, shellSizePercent: 55, frameQualityPercent: 25, shellQualityPercent: 60, wearRate: 5);
 
             // Trailmark Work Stool
             _builder.Create(RecipeType.TrailmarkWorkStool, SkillType.Fabrication)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("lth_flawed", 2)
-                .Component("tk_badge", 1);
+                .Component("tk_badge", 1)
+                .FabricatorParameters(frameSizePercent: 41, shellSizePercent: 41, frameQualityPercent: 43, shellQualityPercent: 39, wearRate: 4);
         }
     }
 }

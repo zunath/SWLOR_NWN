@@ -16,9 +16,13 @@ public class AidEspionageAnimationTests
         entries.Should().HaveCount(13);
         foreach (var entry in entries)
         {
-            var type = typeof(IAbilityListDefinition).Assembly.GetTypes()
-                .Single(type => type.Name == entry.Id + "AbilityDefinition");
-            var abilities = ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities();
+            // An entry can bind ranks from several definitions (Ghost Protocol's clip also plays for
+            // Shared Presence), so build every definition and keep the entry's ranks.
+            var abilities = typeof(IAbilityListDefinition).Assembly.GetTypes()
+                .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
+                .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities())
+                .Where(pair => entry.Feats.Contains(pair.Key))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
             var native = abilities.ToDictionary(pair => pair.Key, pair => pair.Value.AnimationType);
             var expectedCast = entry.Id switch
             {

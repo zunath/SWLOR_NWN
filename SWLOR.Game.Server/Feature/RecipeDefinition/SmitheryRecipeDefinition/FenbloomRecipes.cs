@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 34, coolingRate: 1, startingThermal: 33, shapeShare: 70);
 
             // Fenbloom Wraps
             _builder.Create(RecipeType.FenbloomWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 36, coolingRate: 7, startingThermal: 43, shapeShare: 62);
 
             // Fenbloom Treads
             _builder.Create(RecipeType.FenbloomTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 40, coolingRate: 1, startingThermal: 39, shapeShare: 62);
 
             // Fenbloom Sash
             _builder.Create(RecipeType.FenbloomSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 34, coolingRate: 5, startingThermal: 42, shapeShare: 54);
 
             // Fenbloom Mantle
             _builder.Create(RecipeType.FenbloomMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 41, coolingRate: 3, startingThermal: 36, shapeShare: 54);
 
             // Fenbloom Gorget
             _builder.Create(RecipeType.FenbloomGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 34, coolingRate: 2, startingThermal: 23, shapeShare: 38);
 
             // Fenbloom Band
             _builder.Create(RecipeType.FenbloomBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 3, startingThermal: 32, shapeShare: 38);
 
             // Fenbloom Guard
             _builder.Create(RecipeType.FenbloomGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 34, coolingRate: 4, startingThermal: 35, shapeShare: 62);
 
             // Fenbloom Visor
             _builder.Create(RecipeType.FenbloomVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 42, coolingRate: 6, startingThermal: 41, shapeShare: 62);
 
             // Fenbloom Charm
             _builder.Create(RecipeType.FenbloomCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("mv_core", 1);
+                .Component("mv_core", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 7, startingThermal: 37, shapeShare: 38);
         }
     }
 }

@@ -112,13 +112,16 @@ public class AuthoredCombatAnimationTests
         runtime.Token.Should().BeEmpty();
     }
 
-    /// <summary>Checks that the preview catalog retains installed ability, ordinary attack, travel, fishing, and performance clips.</summary>
+    /// <summary>Checks that the preview catalog retains installed ability, ordinary attack, travel, fishing, station, gathering and performance clips.</summary>
     [Test]
     public void PreviewIncludesAllCatalogMovesWithCurrentAbilities()
     {
         AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(
             ActiveAbilityAnimationCatalog.Entries.Select(entry => entry.Id)
                 .Concat(new[] { "TwinPistolCycle", "BlasterSlideTravel", "PistolRushTravel", "GrappleShotTravel", "Fishing6", "Fishing7", "Fishing8" })
+                .Concat(new[] { "Reel", "GiveLine", "HoldRod", "LandFish" })
+                .Concat(new[] { "ForgeWork", "Circuitry", "Fabricate", "Cooking", "Compound" })
+                .Concat(new[] { "Survey", "Strike", "HvyStrike", "Extract", "Search", "Dig" })
                 .Concat(AnimationPlanningTests.PerformanceActivityClips.Keys));
     }
 

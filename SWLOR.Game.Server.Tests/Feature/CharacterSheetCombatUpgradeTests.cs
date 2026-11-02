@@ -99,7 +99,8 @@ public class CharacterSheetCombatUpgradeTests
         viewModel.Should().Contain("public int ForceAccuracy");
         viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
         viewModel.Should().Contain("public string OffHandAccuracy");
-        viewModel.Should().Contain("var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))");
+        viewModel.Should().Contain("return GetIsObjectValid(weapon) && Item.IsAttackWeaponType(GetBaseItemType(weapon)) ? weapon : OBJECT_INVALID;");
+        viewModel.Should().Contain("var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon);");
         viewModel.Should().Contain("OffHandAccuracy = hasOffhandAttack ? offhandAccuracy.ToString() : \"-\";", "an empty off-hand, inactive companion or shield must display a dash");
         viewModel.Should().Contain("ignoreWeaponAccuracyStatOverride: true");
         definition.Should().Contain("\"TYPE\", 90f, \"Resistance family.\"");
@@ -128,6 +129,41 @@ public class CharacterSheetCombatUpgradeTests
         refresh.Should().NotContain("Consume");
         ExtractMethod(source, "private static AbilityType GetEquipmentDamageAbility(")
             .Should().Contain("ItemPropertyType.DamageStat");
+    }
+
+    [Test]
+    public void OffHandWeapon_ShowsItsOwnAttackAndCriticalRateNextToTheMainHand()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
+        var definition = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "CharacterSheetDefinition.cs"));
+
+        var refresh = ExtractMethod(source, "private void RefreshEquipmentStats()");
+        refresh.Should().Contain("var offhandAttackWeapon = GetOffhandAttackWeapon();");
+        refresh.Should().Contain("Stat.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),");
+        refresh.Should().Contain("Skill.GetWeaponSkill(_target, offhandAttackWeapon)).ToString()");
+        ExtractMethod(source, "private uint GetOffhandAttackWeapon()")
+            .Should().Contain("TwinPistolEquipment.GetCompanionWeapon(_target)")
+            .And.Contain("EquipmentPredicates.GetOffhandAttackWeapon(_target)");
+        var stats = ExtractMethod(source, "private void RefreshCharacterStatsList()");
+        stats.Should().Contain("if (GetIsObjectValid(offhandWeapon))", "the row only appears with an off-hand weapon");
+        stats.Should().Contain("AddStat(\"Off-hand Critical Rate\", FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon)))");
+        ExtractMethod(source, "private (string Value, string Tooltip) GetAttackDelayInfo()")
+            .Should().Contain("if (mainHandDelay > 0 && offHandDelay > 0)");
+
+        var attack = definition.IndexOf("\"Attack\", model => model.Attack", StringComparison.Ordinal);
+        var offHandAttack = definition.IndexOf("\"Off-hand Attack\", model => model.OffHandAttack", StringComparison.Ordinal);
+        attack.Should().BeGreaterThan(0);
+        offHandAttack.Should().BeGreaterThan(attack, "the off-hand Attack sits under the main-hand Attack");
+    }
+
+    [TestCase(220, 220, 0, 3833, "\nMain hand: Delay 220\nOff hand: Delay 220\nEach cycle attacks once with each hand: about 1.92s per attack.")]
+    [TestCase(230, 220, 30, 3258, "\nMain hand: Delay 230\nOff hand: Delay 220 (-30% Off-Hand Haste)\nEach cycle attacks once with each hand: about 1.63s per attack.")]
+    public void PairedDelayTooltip_ShowsEachHandAndTheTimePerAttack(int main, int off, int haste, int effective, string expected)
+    {
+        CharacterSheetViewModel.FormatPairedDelay(main, off, haste, effective).Should().Be(expected);
     }
 
     [Test]

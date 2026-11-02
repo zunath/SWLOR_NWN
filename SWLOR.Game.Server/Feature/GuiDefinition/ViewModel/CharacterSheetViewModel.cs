@@ -347,6 +347,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string OffHandAttack
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public int ForceAccuracy
         {
             get => Get<int>();
@@ -844,10 +850,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 MainHandTooltip = "Est. Damage: N/A";
             }
 
-            var offhandAttackWeapon = TwinPistolEquipment.IsActivePair(_target)
-                ? TwinPistolEquipment.GetCompanionWeapon(_target)
-                : EquipmentPredicates.GetOffhandAttackWeapon(_target);
-            var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon));
+            var offhandAttackWeapon = GetOffhandAttackWeapon();
+            var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon);
             if (hasOffhandAttack)
             {
                 var dmgInfo = GetCombatInfo(offhandAttackWeapon);
@@ -884,6 +888,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHandSkill = Skill.GetWeaponSkill(_target, mainHand);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
+            OffHandAttack = hasOffhandAttack
+                ? Stat.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),
+                    Skill.GetWeaponSkill(_target, offhandAttackWeapon)).ToString()
+                : "-";
             ForceAttack = Stat.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
             PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
@@ -907,6 +915,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshResistances();
             RefreshCraftingStats();
             RefreshCharacterStatsList();
+        }
+
+        /// <summary>
+        /// The weapon that makes the off-hand attack: a separate left-hand weapon, the second end of a double
+        /// weapon, the owned glove of a Power Glove pair, or an active Twin Pistol companion.
+        /// </summary>
+        private uint GetOffhandAttackWeapon()
+        {
+            var weapon = TwinPistolEquipment.IsActivePair(_target)
+                ? TwinPistolEquipment.GetCompanionWeapon(_target)
+                : EquipmentPredicates.GetOffhandAttackWeapon(_target);
+            return GetIsObjectValid(weapon) && Item.IsAttackWeaponType(GetBaseItemType(weapon)) ? weapon : OBJECT_INVALID;
+        }
+
+        /// <summary>
+        /// Explains a dual-wield cycle: the delay covers one attack with each hand, so the time per attack is half
+        /// of it. Off-Hand Haste shortens only the off hand's share.
+        /// </summary>
+        public static string FormatPairedDelay(int mainHandDelay, int offHandDelay, int offHandHastePercent,
+            int effectiveDelayMilliseconds)
+        {
+            var offHandHaste = offHandHastePercent > 0 ? $" (-{offHandHastePercent}% Off-Hand Haste)" : string.Empty;
+            return $"\nMain hand: Delay {mainHandDelay}" +
+                   $"\nOff hand: Delay {offHandDelay}{offHandHaste}" +
+                   $"\nEach cycle attacks once with each hand: about {effectiveDelayMilliseconds / 2000f:0.##}s per attack.";
         }
 
         private static uint SelectForceAccuracyWeapon(uint mainHand, uint offHand, bool isMainHandValid)
@@ -951,6 +984,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({attackerDelaySeconds:0.##}s attacker - {baseDelaySeconds:0.##}s default)";
 
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
+            var offHand = GetOffhandAttackWeapon();
+            var mainHandDelay = Combat.GetWeaponDelay(mainHand);
+            var offHandDelay = Combat.GetWeaponDelay(offHand);
+            if (mainHandDelay > 0 && offHandDelay > 0)
+                tooltip += FormatPairedDelay(mainHandDelay, offHandDelay,
+                    Combat.CalculateOffhandAttackDelayReduction(_target), effectiveDelayMilliseconds);
+
             return (
                 $"{effectiveDelaySeconds:0.##}s",
                 tooltip
@@ -986,6 +1027,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "General bonus or penalty applied to Attack, including Force Attack.");
             AddStat("Force Attack %", FormatPercent(Stat.GetAttackPercentAdjustment(_target, SkillType.Force)), "Combined general and Force-specific Attack bonus or penalty. Already included in Force Attack on the Attributes tab.");
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
+            var offhandWeapon = BeastMastery.IsPlayerBeast(_target) ? OBJECT_INVALID : GetOffhandAttackWeapon();
+            if (GetIsObjectValid(offhandWeapon))
+                AddStat("Off-hand Critical Rate", FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon))),
+                    "Critical Rate of the off-hand attack, which uses the off-hand weapon's skill. Actual chance varies by target Vitality.");
             AddStat("Next Ability Crit", FormatPercent(Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)), "Conditional Critical Rate reserved for the next matching ability. It does not affect ordinary auto-attacks and is consumed only when the ability critically hits.");
             AddStat("Assault Gadget Crit", FormatPercent(GetAssaultGadgetCriticalRate()), "Current Assault Gadget ability critical chance before target-specific bonuses. Includes the 5% baseline, Gadget Harness, Tactical Uplink, and other Devices ability bonuses; capped at 50%.");
             AddStat("Gadget DMG", DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(_target).ToString(), "DMG added to every Assault Gadget ability, the way weapon DMG is added to weapon abilities; Overload Barrage adds it only to its single-target strike. Rises with Devices rank: 6 below rank 10, then 10, 15, 19, 24, and 28 at ranks 10, 20, 30, 40, and 50. Droids use their level in place of Devices rank.");

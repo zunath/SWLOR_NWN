@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -1085,26 +1086,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var incubationSeconds = CalculateIncubationSeconds();
             var now = DateTime.UtcNow;
 
+            // Breeders' Charter: a tenth of what each purity stat's enzymes added, after the stage cap and before the 100% cap.
+            // Mutation chance and the XP penalty never get it.
+            var breedersCharter = EdictEffects.HasBreedersCharter(DB.Get<Player>(GetObjectUUID(Player)), Property.GetCityIdForArea(GetArea(Player)));
+            int BreedersBonus(int stageGain) => breedersCharter ? EdictBonusRules.GetBreedersCharterBonus(stageGain, MaxStageIncrease) : 0;
+
             var erraticGeniusBonus = (job.CurrentStage <= 0 && IsErraticGeniusChecked ? GetErraticGeniusBonus() : 0) * 10;
             var mutationChance = _mutationChance + (_stageMutationChance > MaxStageIncrease ? MaxStageIncrease : _stageMutationChance) + erraticGeniusBonus;
 
-            var attackPurity = _attack + (_stageAttack > MaxStageIncrease ? MaxStageIncrease : _stageAttack);
-            var accuracyPurity = _accuracy + (_stageAccuracy > MaxStageIncrease ? MaxStageIncrease : _stageAccuracy);
-            var evasionPurity = _evasion + (_stageEvasion > MaxStageIncrease ? MaxStageIncrease : _stageEvasion);
-            var learningPurity = _learning + (_stageLearning > MaxStageIncrease ? MaxStageIncrease : _stageLearning);
+            var attackPurity = _attack + (_stageAttack > MaxStageIncrease ? MaxStageIncrease : _stageAttack) + BreedersBonus(_stageAttack);
+            var accuracyPurity = _accuracy + (_stageAccuracy > MaxStageIncrease ? MaxStageIncrease : _stageAccuracy) + BreedersBonus(_stageAccuracy);
+            var evasionPurity = _evasion + (_stageEvasion > MaxStageIncrease ? MaxStageIncrease : _stageEvasion) + BreedersBonus(_stageEvasion);
+            var learningPurity = _learning + (_stageLearning > MaxStageIncrease ? MaxStageIncrease : _stageLearning) + BreedersBonus(_stageLearning);
             var xpPenalty = _xpPenalty + (_stageXPPenalty > MaxStageIncrease ? MaxStageIncrease : _stageXPPenalty);
 
-            var physicalDefense = _physicalDefense + (_stagePhysicalDefense > MaxStageIncrease ? MaxStageIncrease : _stagePhysicalDefense);
-            var forceDefense = _forceDefense + (_stageForceDefense > MaxStageIncrease ? MaxStageIncrease : _stageForceDefense);
-            var iceResistance = _iceResistance + (_stageIceResistance > MaxStageIncrease ? MaxStageIncrease : _stageIceResistance);
-            var fireResistance = _fireResistance + (_stageFireResistance > MaxStageIncrease ? MaxStageIncrease : _stageFireResistance);
-            var poisonResistance = _poisonResistance + (_stagePoisonResistance > MaxStageIncrease ? MaxStageIncrease : _stagePoisonResistance);
-            var electricalResistance = _electricalResistance + (_stageElectricalResistance > MaxStageIncrease ? MaxStageIncrease : _stageElectricalResistance);
+            var physicalDefense = _physicalDefense + (_stagePhysicalDefense > MaxStageIncrease ? MaxStageIncrease : _stagePhysicalDefense) + BreedersBonus(_stagePhysicalDefense);
+            var forceDefense = _forceDefense + (_stageForceDefense > MaxStageIncrease ? MaxStageIncrease : _stageForceDefense) + BreedersBonus(_stageForceDefense);
+            var iceResistance = _iceResistance + (_stageIceResistance > MaxStageIncrease ? MaxStageIncrease : _stageIceResistance) + BreedersBonus(_stageIceResistance);
+            var fireResistance = _fireResistance + (_stageFireResistance > MaxStageIncrease ? MaxStageIncrease : _stageFireResistance) + BreedersBonus(_stageFireResistance);
+            var poisonResistance = _poisonResistance + (_stagePoisonResistance > MaxStageIncrease ? MaxStageIncrease : _stagePoisonResistance) + BreedersBonus(_stagePoisonResistance);
+            var electricalResistance = _electricalResistance + (_stageElectricalResistance > MaxStageIncrease ? MaxStageIncrease : _stageElectricalResistance) + BreedersBonus(_stageElectricalResistance);
 
-            var mindResistance = _mindResistance + (_stageMindResistance > MaxStageIncrease ? MaxStageIncrease : _stageMindResistance);
-            var mobilityResistance = _mobilityResistance + (_stageMobilityResistance > MaxStageIncrease ? MaxStageIncrease : _stageMobilityResistance);
-            var traumaResistance = _traumaResistance + (_stageTraumaResistance > MaxStageIncrease ? MaxStageIncrease : _stageTraumaResistance);
-            var disruptionResistance = _disruptionResistance + (_stageDisruptionResistance > MaxStageIncrease ? MaxStageIncrease : _stageDisruptionResistance);
+            var mindResistance = _mindResistance + (_stageMindResistance > MaxStageIncrease ? MaxStageIncrease : _stageMindResistance) + BreedersBonus(_stageMindResistance);
+            var mobilityResistance = _mobilityResistance + (_stageMobilityResistance > MaxStageIncrease ? MaxStageIncrease : _stageMobilityResistance) + BreedersBonus(_stageMobilityResistance);
+            var traumaResistance = _traumaResistance + (_stageTraumaResistance > MaxStageIncrease ? MaxStageIncrease : _stageTraumaResistance) + BreedersBonus(_stageTraumaResistance);
+            var disruptionResistance = _disruptionResistance + (_stageDisruptionResistance > MaxStageIncrease ? MaxStageIncrease : _stageDisruptionResistance) + BreedersBonus(_stageDisruptionResistance);
 
             var validationError = ValidateCreateJob();
             if (string.IsNullOrWhiteSpace(validationError))

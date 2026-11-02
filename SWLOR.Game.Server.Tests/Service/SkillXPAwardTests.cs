@@ -112,6 +112,13 @@ public class SkillXPAwardTests
                     return GiveSkillXP(1, skill, xp, ignoreBonuses: true,
                         applyHenchmanPenalty: false, xpMessageSource: source);
                 }
+                public static int AwardWithBonuses(Player player, SkillType skill, int xp, int extraBonusPoints, bool ignoreBonuses)
+                {
+                    Saved = player;
+                    Messages.Clear(); Warnings.Clear(); WarningKeys.Clear(); QueuedXP.Clear(); Refreshes = 0; Saves = 0;
+                    return GiveSkillXP(1, skill, xp, ignoreBonuses: ignoreBonuses,
+                        applyHenchmanPenalty: false, extraBonusPoints: extraBonusPoints);
+                }
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
@@ -192,6 +199,20 @@ public class SkillXPAwardTests
         player.Skills[SkillType.Mimicry].Rank.Should().Be(50);
         player.Skills[SkillType.Mimicry].XP.Should().Be(0);
         player.Skills.Values.Sum(skill => skill.Rank).Should().Be(400);
+    }
+
+    [TestCase(100, 0, false, 100)]
+    [TestCase(100, 10, false, 110)]
+    [TestCase(200, 10, false, 220)]
+    [TestCase(100, 10, true, 100)]
+    public void ExtraBonusPoints_AddToTheSkillXpBonus_ForThatAwardOnly(int xp, int points, bool ignoreBonuses, int expected)
+    {
+        var player = CreatePlayer(10, 100, true);
+
+        var used = (int)_harness.GetMethod("AwardWithBonuses")!.Invoke(null, new object[] { player, SkillType.Mimicry, xp, points, ignoreBonuses })!;
+
+        used.Should().Be(expected, "Hunting Grounds adds its points to the bonus Social, status effects, and DM bonuses make");
+        player.Skills[SkillType.Mimicry].XP.Should().Be(expected);
     }
 
     private static Player CreatePlayer(int mimicryRank, int totalRanks, bool locked)

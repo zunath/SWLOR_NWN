@@ -3107,6 +3107,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.City)]
         DuelingRing = 5101,
 
+        // City structures for stores
+        [Structure("Market Stall",
+            "swd_mstnd01",
+            "A stall for a city market, tended by a vendor who sells the stock the mayor picks: general goods, crafting supplies or decor. A city may place one for each city level.",
+            true,
+            0,
+            PropertyType.City)]
+        MarketStall = 5102,
+
         // Player City Revamp: livestock. A city-only structure on open ground that counts against the city's structure limit.
         [Structure("Corral",
             "swlor_0094",
@@ -3115,6 +3124,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             PropertyType.City)]
         Corral = 5104,
+
+        // Player City Revamp: enzyme cultures. Inside a house, since a vat is farm equipment for a farmer's own home.
+        [Structure("Fermentation Vat",
+            "fermentation_vat",
+            "A vat that cultures enzymes for breeders. Place it inside a house in a city. Give it 2 crops, 1 manure and Distilled Water, and 2 days later it makes one enzyme of the type and color you pick. It copies a color only after you have shown it one hunted enzyme of that color.",
+            true,
+            0,
+            PropertyType.House)]
+        FermentationVat = 5105,
     }
 
     public class StructureAttribute : Attribute

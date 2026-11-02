@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedTabId = CityTabId;
             InitializeEdictsTab();
             InitializeSuccessionTab();
+            InitializeStreetLife();
         }
 
         private void SelectTab(int tabId)
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TransportationTax = TransportationTax;
             CitizenshipTax = CitizenshipTax;
             ExchangeTariff = ExchangeTariff;
+            SalesTax = SalesTax;
             ShipyardFee = ShipyardFee;
         }
     }

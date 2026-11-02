@@ -4228,5 +4228,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         GardenPlot = 8010,
         DuelingRing = 8011,
         Corral = 8012,
+
+        // Player City Revamp: the Fermentation Vat (slice 5d). The City Revamp reserves 8000-8199; this slice takes 8040-8079.
+        FermentationVat = 8040,
     }
 }

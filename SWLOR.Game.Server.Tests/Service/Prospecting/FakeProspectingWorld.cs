@@ -112,6 +112,11 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public int GetGatheringRank(uint player) => GatheringRank;
 
+    /// <summary>The chances the player's city gives a finished harvest of 1 more item; a test sets them.</summary>
+    public HarvestBonusChances BonusChances { get; set; } = HarvestBonusChances.None;
+
+    public HarvestBonusChances GetHarvestBonusChances(uint player) => BonusChances;
+
     public void GiveGatheringXp(uint player, int xp)
     {
         Order.Add("xp");

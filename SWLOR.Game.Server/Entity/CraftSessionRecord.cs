@@ -39,6 +39,12 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>The station property whose treasury takes <see cref="StationFee"/>.</summary>
         public string StationFeePropertyId { get; set; }
 
+        /// <summary>
+        /// The city the craft's station stands in (Player City Revamp), or empty when it is not in a city. Recorded when the craft starts,
+        /// so Artisans' Charter reads the place the craft was made at when its XP is settled, even after a logout or a restart.
+        /// </summary>
+        public string CityId { get; set; }
+
         /// <summary>One serialized item per committed component stack.</summary>
         public List<string> Components { get; set; } = new();
 

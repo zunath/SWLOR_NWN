@@ -179,7 +179,7 @@ public class LivestockDefinitionTests
     [Test]
     public void TheCorralCountsAgainstTheStructureLimitAndKeepsTheBuildingLimitForBuildings()
     {
-        LivestockRules.CountsAsStructure(StructureType.Corral).Should().BeTrue();
+        CityBuildingRules.CountsAsBuilding(StructureType.Corral).Should().BeFalse();
         Corral.LayoutType.Should().Be(PropertyLayoutType.Invalid, "a structure with an interior is a building");
     }
 

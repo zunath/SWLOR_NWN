@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityGazetteService;
+using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.CityTreasuryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
@@ -100,6 +101,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string ExchangeTariff
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>The Sales tax percent added to every price in the city's stores.</summary>
+        public string SalesTax
         {
             get => Get<string>();
             set => Set(value);
@@ -241,6 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.TransportationTax);
             WatchOnClient(model => model.CitizenshipTax);
             WatchOnClient(model => model.ExchangeTariff);
+            WatchOnClient(model => model.SalesTax);
             WatchOnClient(model => model.ShipyardFee);
             WatchOnClient(model => model.TabToggleValue);
 
@@ -381,6 +390,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CitizenshipTax = $"{dbCity.Taxes[PropertyTaxType.Citizenship]}";
             TransportationTax = $"{dbCity.Taxes[PropertyTaxType.Transportation]}";
             ExchangeTariff = $"{GetStoredExchangeTariff(dbCity)}";
+            SalesTax = $"{CityStores.GetSalesTax(dbCity)}";
             ShipyardFee = $"{StationBuildings.GetShipyardFee(dbCity)}";
         }
 
@@ -388,6 +398,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static int GetStoredExchangeTariff(WorldProperty dbCity)
         {
             return dbCity.Taxes.TryGetValue(PropertyTaxType.Exchange, out var tariff) ? TradeTariffRules.ClampPercent(tariff) : 0;
+        }
+
+        /// <summary>
+        /// Parses and clamps the entered Sales tax. Without the Edit Taxes permission, or when the text is not a number,
+        /// the stored rate is kept.
+        /// </summary>
+        public static int ResolveSalesTax(bool canEditTaxes, string salesTaxText, int currentSalesTax)
+        {
+            if (!canEditTaxes || !int.TryParse(salesTaxText, out var salesTax))
+                return SalesTaxRules.ClampPercent(currentSalesTax);
+
+            return SalesTaxRules.ClampPercent(salesTax);
         }
 
         private string GetMedicalCenterUpgrade(int level)
@@ -718,6 +740,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var citizenshipTaxBefore = dbCity.Taxes[PropertyTaxType.Citizenship];
             var transportationTaxBefore = dbCity.Taxes[PropertyTaxType.Transportation];
             var exchangeTariffBefore = GetStoredExchangeTariff(dbCity);
+            var salesTaxBefore = CityStores.GetSalesTax(dbCity);
             var shipyardFeeBefore = Station.IsStation(dbCity) ? StationBuildings.GetShipyardFee(dbCity) : 0;
 
             ResolveTaxes(
@@ -753,6 +776,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     tariffRefused = true;
             }
 
+            // The Sales tax (0 to 10) is set the same way, with the Edit Taxes permission.
+            if (!int.TryParse(SalesTax, out var salesTax))
+                salesTax = salesTaxBefore;
+            salesTax = SalesTaxRules.ClampPercent(salesTax);
+            if (salesTax != salesTaxBefore)
+            {
+                if (CanEditTaxes)
+                    dbCity.Taxes[PropertyTaxType.Sales] = salesTax;
+                else
+                    tariffRefused = true;
+            }
+
             // A station's Shipyard fee (0 to the cap) is set the same way, with the Edit Taxes permission.
             if (Station.IsStation(dbCity))
             {
@@ -769,13 +804,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbCity);
-            PostTaxChangesToGazette(dbCity, citizenshipTaxBefore, transportationTaxBefore, exchangeTariffBefore, shipyardFeeBefore);
+            PostTaxChangesToGazette(dbCity, citizenshipTaxBefore, transportationTaxBefore, exchangeTariffBefore, salesTaxBefore, shipyardFeeBefore);
 
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
 
             Instructions = tariffRefused
-                ? "City details saved. You need the Edit Taxes permission to change the exchange tariff or the Shipyard fee."
+                ? "City details saved. You need the Edit Taxes permission to change the exchange tariff, the Sales tax or the Shipyard fee."
                 : "City details saved successfully.";
             InstructionsColor = tariffRefused ? GuiColor.Red : GuiColor.Green;
 
@@ -787,13 +822,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             int citizenshipTaxBefore,
             int transportationTaxBefore,
             int exchangeTariffBefore,
+            int salesTaxBefore,
             int shipyardFeeBefore)
         {
             var changes = new List<(string Name, string Before, string After)>
             {
                 ("Citizenship tax", $"{citizenshipTaxBefore} cr per week", $"{dbCity.Taxes[PropertyTaxType.Citizenship]} cr per week"),
                 ("Transportation tax", $"{transportationTaxBefore}%", $"{dbCity.Taxes[PropertyTaxType.Transportation]}%"),
-                ("Trade Exchange tariff", $"{exchangeTariffBefore}%", $"{GetStoredExchangeTariff(dbCity)}%")
+                ("Trade Exchange tariff", $"{exchangeTariffBefore}%", $"{GetStoredExchangeTariff(dbCity)}%"),
+                ("Sales tax", $"{salesTaxBefore}%", $"{CityStores.GetSalesTax(dbCity)}%")
             };
 
             if (Station.IsStation(dbCity))

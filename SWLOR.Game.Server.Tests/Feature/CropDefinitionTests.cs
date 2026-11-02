@@ -35,7 +35,8 @@ public class CropDefinitionTests
     [Test]
     public void TheListDefinesEveryCropTypeOnce_TwentySixInAll()
     {
-        var types = Enum.GetValues<CropType>().Where(type => type != CropType.Invalid).ToList();
+        // The five woodlot saplings (27 to 31) have a list of their own, so the 26 crops animals eat stay the 26.
+        var types = Enum.GetValues<CropType>().Where(type => type != CropType.Invalid && !WoodlotRules.IsSapling(type)).ToList();
 
         types.Should().HaveCount(26);
         Crops.Keys.Should().BeEquivalentTo(types);

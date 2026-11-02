@@ -922,6 +922,11 @@ namespace SWLOR.Game.Server.Service.PerkService
         SurveyProtocol = 1058,
         ProspectingProtocol = 1059,
 
-        // IDs 650, 860-863, 882-883, 902-903, 919-923, 938-999, 1045-1055 and 1060+ are free.
+        // The Farmer line of Agriculture (Player City Revamp). The City Revamp reserves 1100-1149.
+        CropManagement = 1100,
+        BountifulHarvest = 1101,
+        SeedSaver = 1102,
+
+        // IDs 650, 860-863, 882-883, 902-903, 919-923, 938-999, 1045-1055, 1060-1099 and 1103+ are free.
     }
 }

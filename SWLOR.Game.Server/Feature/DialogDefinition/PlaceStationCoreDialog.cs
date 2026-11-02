@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StationService;
 
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           $"Building Limit: {StationTuning.BuildingLimit}\n" +
                           $"Shuttle and Trade Exchange: {Planet.GetPlanetByType(anchor.HomePlanet).Name}\n\n" +
                           "The Core builds the station deck with the Station Core, which serves as its City Hall, and its first Starport. Dock at the station through its docking point to go aboard.\n\n" +
-                          "WARNING: Founding this station will make you its mayor. Every three weeks (real world time) an election will be held to vote for the new mayor. You will be required to participate or you will lose your position as Mayor.\n\n" +
+                          $"WARNING: Founding this station will make you its mayor. About every four weeks (real world time) an election will be held: {ElectionRules.RegistrationDays} days for candidates to register, then {ElectionRules.VotingDays} days for citizens to vote, then {ElectionRules.QuietDays} quiet days. If another citizen wins the vote, they become mayor and you lose your position. If nobody else runs, you stay mayor.\n\n" +
                           "Additionally, you will be required to pay upkeep on all structures placed. Failure to do so will result in decay of the structures. Failing to pay upkeep for four weeks (real world time) will result in the loss of the station.\n\n" +
                           $"A minimum of {Property.GetCitizensRequiredForNextCityLevel(1)} citizens must be registered in your station within {StationTuning.GraceHours} hours or it will be removed upon the next reset. If you ever fall below this amount you will have {StationTuning.GraceHours} hours from the time of the next server reset to rectify it. Failure to do so will result in the loss of your station, structures, items, etc.\n\n" +
                           "Credits paid cannot be refunded. Are you sure you want to found a station here?";

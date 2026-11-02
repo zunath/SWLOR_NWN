@@ -90,18 +90,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Election has started and we're in the registration process.
             else if (dbElection.Stage == ElectionStageType.Registration)
             {
-                var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays);
                 cityDetails.Add($"Election registrations are currently OPEN to citizens until:");
-                cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
+                cityDetails.Add($"    {dbElection.RegistrationClosesUtc:yyyy-MM-dd hh:mm:ss}");
             }
             // Election has started and we're in the voting process.
             else if (dbElection.Stage == ElectionStageType.Voting)
             {
-                var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays + Property.ElectionVotingDays);
                 cityDetails.Add($"Election voting is currently OPEN to citizens until:");
-                cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
+                cityDetails.Add($"    {dbElection.VotingClosesUtc:yyyy-MM-dd hh:mm:ss}");
             }
 
 
@@ -157,23 +153,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         // Remove the player's citizenship property Id.
                         dbPlayer = DB.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = string.Empty;
+                        dbPlayer.CitizenSinceUtc = null;
                         dbPlayer.PropertyOwedTaxes = 0;
                         DB.Set(dbPlayer);
 
                         // If there's an active election going, remove this player from the running.
+                        // Votes for them are dropped, so those voters can vote again. This player's own vote
+                        // is dropped at the count, because they are no longer a citizen.
                         if (!string.IsNullOrWhiteSpace(_electionId))
                         {
-                            var dbElection = DB.Get<Election>(_electionId);
-                            dbElection.CandidatePlayerIds.Remove(playerId);
-
-                            var toRemove = dbElection.VoterSelections.Where(x => x.Value.CandidatePlayerId == playerId);
-                            foreach (var vote in toRemove)
-                            {
-                                dbElection.VoterSelections.Remove(vote.Key);
-                                Log.Write(LogGroup.Property, $"Removed vote from player '{vote.Key}' because chosen candidate '{playerId}' has dropped out of the race.");
-                            }
-
-                            DB.Set(dbElection);
+                            ElectionBallot.RemoveDepartedCandidate(_cityPropertyId, playerId);
                         }
 
                         // Retrieve all structure Ids
@@ -239,6 +228,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
+                        // Joining again resets the citizen-since time, which decides who may vote in an election.
+                        dbPlayer.CitizenSinceUtc = DateTime.UtcNow;
                         // Clear any stale debt left by a previously deleted city.
                         dbPlayer.PropertyOwedTaxes = 0;
 

@@ -1065,7 +1065,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Revoking Citizenship",
                             "Revoking removes public-facility access, city permissions, and election candidacy. A sitting mayor cannot revoke citizenship. Review the warning before confirming."),
                         new ArticleBlock("Elections",
-                            "City elections have a 14-day candidate-registration period followed by 7 days of voting. Citizens can run for mayor. Each account has one vote in that city's election, and the selection can be changed or cleared while voting remains open.")
+                            "City elections have a 7-day candidate-registration period followed by 7 days of voting, then 14 quiet days before the next one. Citizens can run for mayor and write a statement of up to 600 characters. A lone candidate faces a Yes or No vote; several candidates are voted on directly. Each account has one vote in that city's election, and the selection can be changed or cleared while voting remains open. Only characters who were citizens before registration opened can vote. Casting a vote earns 10 RP points, once every 28 days across all cities. Citizens see a notice at login while an election is open and once after its result posts.")
                     },
                     new[]
                     {
@@ -1073,7 +1073,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What do Guild Points do?", "They raise your guild rank and unlock rank-store access."),
                         new QuestionAnswer("What does citizenship require?", "5,000 credits, a character at least 30 days old, and at least 100 acquired skill ranks."),
                         new QuestionAnswer("Where do I pay city taxes?", "Open the Citizenship window at the city's citizenship terminal."),
-                        new QuestionAnswer("How long is an election?", "Fourteen days of registration followed by seven days of voting.")
+                        new QuestionAnswer("How long is an election?", "Seven days of registration followed by seven days of voting, then 14 quiet days before the next election opens.")
                     },
                     new[] { "Quests & Key Items", "Training Store", "Housing & Markets", "Ships & Space", "Skills" }),
 

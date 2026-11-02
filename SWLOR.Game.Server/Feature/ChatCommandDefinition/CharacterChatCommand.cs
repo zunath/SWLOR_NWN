@@ -361,6 +361,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         entity.IsDeleted = true;
                         DB.Set(entity);
 
+                        // A candidate who is deleted during an election leaves the ballot, and the votes for them are dropped.
+                        ElectionBallot.RemoveDepartedCandidate(entity.CitizenPropertyId, playerId);
+
                         var playerName = GetPCPlayerName(user);
                         var characterName = GetName(user);
                         AdministrationPlugin.DeletePlayerCharacter(user, true, "Your character has been deleted.");

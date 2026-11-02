@@ -163,6 +163,57 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Guard Counter III counts as a Control ability only after a guarded hit", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task GuardCounterGuardedDazeCountsAsControl(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var unguardedTarget = ctx.SpawnCreature("nw_rat001", 2f);
+            var guardedTarget = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            foreach (var target in new[] { unguardedTarget, guardedTarget })
+                Prepare(ctx, target);
+
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.GuardTraining, 1);
+            ctx.AssertEqual((int)StatusEffectCategory.Control,
+                Stat.GetStatAdjustment(caster, StatType.StatusAppliedRequiredCategory),
+                "Guard Training declares the Control rider category");
+
+            var guardCounter = Ability.GetAbilityDetail(FeatType.GuardCounter3);
+            async Task ApplyGuardCounter(uint target)
+            {
+                ctx.MakeHostile(target);
+                Ability.BeginAbilityImpact(caster, guardCounter);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => guardCounter.ImpactAction(caster, target, 3, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+                ChangeToStandardFaction(target, StandardFaction.Defender);
+            }
+
+            var defense = Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment);
+            ctx.Assert(!Combat.HasRecentGuardedHit(caster, 30f), "the caster starts without a guarded hit");
+            await ApplyGuardCounter(unguardedTarget);
+            ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(unguardedTarget),
+                "without a guarded hit Guard Counter III inflicts no Daze");
+            ctx.AssertEqual(defense, Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment),
+                "without its Daze Guard Counter III is not a Control ability for Guard Training");
+
+            Combat.TrackGuardedHit(caster);
+            await ApplyGuardCounter(guardedTarget);
+            ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(guardedTarget),
+                "after a guarded hit Guard Counter III inflicts Daze");
+            ctx.AssertEqual(defense + 10, Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment),
+                "the guarded Daze makes Guard Counter III a Control ability for Guard Training");
+        }
+
         [EngineTest("Beast areas select a single enemy and self-centered impacts select the beast", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
         public static async Task BeastAreaTargets(EngineTestContext ctx)
         {

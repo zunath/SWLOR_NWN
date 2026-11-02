@@ -126,6 +126,43 @@ public class CityProjectWiringTests
         ExtractMethod(model, "public Action OnOpenHouseSpecialization()").Should().Contain("GuiWindowType.HouseSpecialization");
     }
 
+    [Test]
+    public void TheKeeper_IsReadFromThePermissionRecordOnTheHouse_NeverFromTheOwnerOfRecord()
+    {
+        var service = ReadServerSource("Service", "HouseSpecializations.cs");
+        var keeper = ExtractMethod(service, "public static bool IsKeeper(string houseId, string playerId)");
+
+        keeper.Should().Contain("WorldPropertyPermission").And.Contain("HouseSpecializationRules.IsKeeper(record)");
+        service.Should().NotContain("OwnerPlayerId", "a house in a city is owned by the mayor at the time, whoever placed it");
+        ReadServerSource("Feature", "GuiDefinition", "ViewModel", "HouseSpecializationViewModel.cs").Should().NotContain("OwnerPlayerId");
+        ExtractMethod(service, "public static HouseSpecializationRefusal CheckChange(").Should().Contain("IsKeeper(house.Id, playerId)");
+    }
+
+    [Test]
+    public void ThePlacerOfAHouse_IsGivenEveryHousePermissionAndTheRightToGrantIt_WhileTheMayorIsTheOwner()
+    {
+        var property = ReadServerSource("Service", "Property.cs");
+
+        // The premise of the keeper rule, pinned: if either changes, the rule should be looked at again.
+        var create = ExtractMethod(property, "private static WorldProperty CreateProperty(");
+        create.Should().Contain("creatorPermissions.Permissions[permission] = true;");
+        create.Should().Contain("creatorPermissions.GrantPermissions[permission] = true;");
+        create.Should().Contain("ownerPermissions.GrantPermissions[permission] = true;");
+
+        ExtractMethod(property, "public static void CreateBuilding(").Should().Contain("city.OwnerPlayerId");
+        property.Should().Contain("_permissionsByPropertyType[PropertyType.House] = new List<PropertyPermissionType>");
+        var houseList = property.Substring(property.IndexOf("_permissionsByPropertyType[PropertyType.House]", StringComparison.Ordinal), 500);
+        houseList.Should().Contain("PropertyPermissionType.EditStructures");
+    }
+
+    [Test]
+    public void OnlyTheOwnerOfRecord_CanGiveSomeoneTheRightToGrantAHousePermission()
+    {
+        var window = ReadServerSource("Feature", "GuiDefinition", "ViewModel", "PropertyPermissionsViewModel.cs");
+
+        ExtractMethod(window, "private bool CanAdjustGrantPermission(").Should().Contain("playerId == ownerPlayerId");
+    }
+
     #endregion
 
     #region City Projects

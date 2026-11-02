@@ -491,20 +491,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="propertyId">The property id.</param>
         public static string GetCityIdForProperty(string propertyId)
         {
-            // An interior's parent is its building, and the building's parent is the city.
-            for (var depth = 0; depth < 4 && !string.IsNullOrWhiteSpace(propertyId); depth++)
-            {
-                var property = DB.Get<WorldProperty>(propertyId);
-                if (property == null)
-                    return string.Empty;
-
-                if (property.PropertyType == PropertyType.City)
-                    return property.Id;
-
-                propertyId = property.ParentPropertyId;
-            }
-
-            return string.Empty;
+            return PropertyHierarchyRules.FindCityId(propertyId, DB.Get<WorldProperty>);
         }
 
         /// <summary>

@@ -169,12 +169,13 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Whether pests plague the city the plot stands in (the Pests in the Gardens situation was ignored in the last 72 hours),
-        /// which takes 1 from every harvest there. A plot in a house counts for the house's city.
+        /// which takes 1 from every harvest there. A plot in a house counts for the house's city, which is two steps up: the house's
+        /// interior is held by its building structure, and that by the city.
         /// </summary>
         public static bool HasPests(WorldProperty plot)
         {
-            var parent = plot == null ? null : DB.Get<WorldProperty>(plot.ParentPropertyId);
-            var city = parent is { PropertyType: PropertyType.House } ? DB.Get<WorldProperty>(parent.ParentPropertyId) : parent;
+            var cityId = plot == null ? string.Empty : Property.GetCityIdForProperty(plot.ParentPropertyId);
+            var city = string.IsNullOrWhiteSpace(cityId) ? null : DB.Get<WorldProperty>(cityId);
             return city is { PropertyType: PropertyType.City } && CityAffairs.IsModifierActive(city, CityModifierType.CropPests);
         }
 

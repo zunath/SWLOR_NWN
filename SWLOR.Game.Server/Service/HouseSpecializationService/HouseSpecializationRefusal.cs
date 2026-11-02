@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Service.HouseSpecializationService
         /// <summary>The house does not stand in a city or station.</summary>
         NotInCity = 2,
 
-        /// <summary>Only the house's owner changes its specialization.</summary>
-        NotTheOwner = 3,
+        /// <summary>Only the house's keeper changes its specialization: the player who can place structures in it and grant that permission.</summary>
+        NotTheKeeper = 3,
 
         /// <summary>The specialization changed less than 30 days ago.</summary>
         TooSoon = 4,

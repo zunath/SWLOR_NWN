@@ -63,7 +63,7 @@ public class HomeGroundTests
         var property = ReadSource("Service", "Property.cs");
 
         // plot -> house interior -> building structure -> city
-        ExtractBody(property, "public static string GetCityIdForProperty(string propertyId)").Should().Contain("property.ParentPropertyId");
+        ExtractBody(property, "public static string GetCityIdForProperty(string propertyId)").Should().Contain("PropertyHierarchyRules.FindCityId(propertyId");
         ExtractBody(ReadSource("Service", "Farming.cs"), "public static bool HasHomeGround(WorldProperty plot)")
             .Should().Contain("Property.GetCityIdForProperty(plot.ParentPropertyId)");
     }

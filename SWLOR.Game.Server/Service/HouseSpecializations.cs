@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     /// <summary>
     /// House specializations (Player City Revamp, "House specializations"): reads the type, chosen skill and last change from the
-    /// house's property record, changes them for its owner, and answers the Workshop bonus a craft carries. The rules are
-    /// <see cref="HouseSpecializationRules"/>. The record belongs to the house, so a change of owner keeps the type and the timer.
+    /// house's property record, changes them for its keeper, and answers the Workshop bonus a craft carries. The rules are
+    /// <see cref="HouseSpecializationRules"/>. The record belongs to the house, so a change of keeper keeps the type and the timer.
     /// </summary>
     public static class HouseSpecializations
     {
@@ -28,6 +28,22 @@ namespace SWLOR.Game.Server.Service
             return house != null && !string.IsNullOrWhiteSpace(Property.GetCityIdForProperty(house.Id));
         }
 
+        /// <summary>
+        /// Whether the player is the house's keeper (<see cref="HouseSpecializationRules.IsKeeper"/>): their permission record on the house lets
+        /// them place structures in it and grant that permission. Staff are not keepers; they change a house with the DM tools.
+        /// </summary>
+        public static bool IsKeeper(string houseId, string playerId)
+        {
+            if (string.IsNullOrWhiteSpace(houseId) || string.IsNullOrWhiteSpace(playerId))
+                return false;
+
+            var record = DB.Search(new DBQuery<WorldPropertyPermission>()
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), houseId, false)
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
+                .FirstOrDefault();
+            return HouseSpecializationRules.IsKeeper(record);
+        }
+
         /// <summary>Why the player cannot give the house this specialization right now, or <see cref="HouseSpecializationRefusal.None"/>.</summary>
         public static HouseSpecializationRefusal CheckChange(
             WorldProperty house,
@@ -36,7 +52,13 @@ namespace SWLOR.Game.Server.Service
             SkillType workshopSkill,
             DateTime? nowUtc = null)
         {
-            return HouseSpecializationRules.CheckChange(house, IsInCity(house), playerId, newType, workshopSkill, nowUtc ?? DateTime.UtcNow);
+            return HouseSpecializationRules.CheckChange(
+                house,
+                IsInCity(house),
+                house != null && IsKeeper(house.Id, playerId),
+                newType,
+                workshopSkill,
+                nowUtc ?? DateTime.UtcNow);
         }
 
         /// <summary>

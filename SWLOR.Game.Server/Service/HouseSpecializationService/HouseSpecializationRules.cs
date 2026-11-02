@@ -47,20 +47,36 @@ namespace SWLOR.Game.Server.Service.HouseSpecializationService
         }
 
         /// <summary>
+        /// Whether the permission record makes its player the house's keeper, the one who holds the house: they may place and edit its
+        /// structures (<see cref="PropertyPermissionType.EditStructures"/>) and may grant that permission to others. This is what the
+        /// player who places a house is given, and what the mayor of record is given with it; a resident or guest they invite holds
+        /// only the permissions handed to them, and grant rights on a house can only be given by the mayor of record. The house's
+        /// <see cref="WorldProperty.OwnerPlayerId"/> is not the check: a house in a city is created with the mayor at that time as its
+        /// owner, whoever placed it.
+        /// </summary>
+        /// <param name="record">The player's permission record on the house, or null when they have none.</param>
+        public static bool IsKeeper(WorldPropertyPermission record)
+        {
+            return record != null &&
+                   record.Permissions.GetValueOrDefault(PropertyPermissionType.EditStructures) &&
+                   record.GrantPermissions.GetValueOrDefault(PropertyPermissionType.EditStructures);
+        }
+
+        /// <summary>
         /// Why the player cannot give the house this specialization, or <see cref="HouseSpecializationRefusal.None"/>. Checked in this
-        /// order. Only the owner changes it, the first choice is free, and then it waits 30 days from the last change, whoever owned
-        /// the house when that was.
+        /// order. Only the house's keeper changes it (<see cref="IsKeeper"/>), the first choice is free, and then it waits 30 days from
+        /// the last change, whoever held the house when that was.
         /// </summary>
         /// <param name="house">The house.</param>
         /// <param name="isInCity">Whether the house stands in a city or station.</param>
-        /// <param name="playerId">The player asking.</param>
+        /// <param name="isKeeper">Whether the player asking is the house's keeper.</param>
         /// <param name="newType">The specialization asked for.</param>
         /// <param name="workshopSkill">The crafting skill a Workshop is asked for.</param>
         /// <param name="nowUtc">The time now.</param>
         public static HouseSpecializationRefusal CheckChange(
             WorldProperty house,
             bool isInCity,
-            string playerId,
+            bool isKeeper,
             HouseSpecializationType newType,
             SkillType workshopSkill,
             DateTime nowUtc)
@@ -69,8 +85,8 @@ namespace SWLOR.Game.Server.Service.HouseSpecializationService
                 return HouseSpecializationRefusal.NotAHouse;
             if (!isInCity)
                 return HouseSpecializationRefusal.NotInCity;
-            if (string.IsNullOrWhiteSpace(playerId) || house.OwnerPlayerId != playerId)
-                return HouseSpecializationRefusal.NotTheOwner;
+            if (!isKeeper)
+                return HouseSpecializationRefusal.NotTheKeeper;
             if (newType is not (HouseSpecializationType.Workshop or HouseSpecializationType.Storehouse or HouseSpecializationType.Greenhouse))
                 return HouseSpecializationRefusal.NotASpecialization;
             if (newType == HouseSpecializationType.Workshop && !IsCraftingSkill(workshopSkill))
@@ -242,8 +258,8 @@ namespace SWLOR.Game.Server.Service.HouseSpecializationService
                     return "Only houses can have a specialization.";
                 case HouseSpecializationRefusal.NotInCity:
                     return "Only a house in a city can have a specialization.";
-                case HouseSpecializationRefusal.NotTheOwner:
-                    return "Only the owner of this house can change its specialization.";
+                case HouseSpecializationRefusal.NotTheKeeper:
+                    return "Only the house's keeper, who can place structures in it and give others access, can change its specialization.";
                 case HouseSpecializationRefusal.NotASpecialization:
                     return "Choose a Workshop, a Storehouse or a Greenhouse.";
                 case HouseSpecializationRefusal.NeedsCraftingSkill:

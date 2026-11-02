@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(Player);
-            var isOwner = house.OwnerPlayerId == playerId;
+            var isKeeper = HouseSpecializations.IsKeeper(house.Id, playerId);
 
             HeaderText = $"{house.CustomName} - Specialization";
             CurrentText = $"Current: {HouseSpecializationRules.Describe(house.HouseSpecialization, house.WorkshopSkill)}";
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             EffectText = $"Workshop: {HouseSpecializationRules.DescribeEffect(HouseSpecializationType.Workshop)}\n" +
                          $"Storehouse: {HouseSpecializationRules.DescribeEffect(HouseSpecializationType.Storehouse)}\n" +
                          $"Greenhouse: {HouseSpecializationRules.DescribeEffect(HouseSpecializationType.Greenhouse)}";
-            SkillHeaderText = isOwner ? "Workshop skill (pick one for a Workshop):" : "Only the owner can change the specialization.";
+            SkillHeaderText = isKeeper ? "Workshop skill (pick one for a Workshop):" : "Only the house's keeper can change the specialization.";
 
             var skill = _selectedSkillIndex >= 0 && _selectedSkillIndex < _skills.Count ? _skills[_selectedSkillIndex] : SkillType.Invalid;
             SetChoice(house, playerId, HouseSpecializationType.Workshop, skill, enabled => CanSetWorkshop = enabled, tip => WorkshopTooltip = tip);

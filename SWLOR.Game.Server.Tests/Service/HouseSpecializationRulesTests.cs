@@ -31,12 +31,49 @@ public class HouseSpecializationRulesTests
         WorldProperty house,
         HouseSpecializationType type,
         SkillType skill = SkillType.Invalid,
-        string playerId = "owner",
+        bool keeper = true,
         DateTime? now = null,
         bool inCity = true)
     {
-        return HouseSpecializationRules.CheckChange(house, inCity, playerId, type, skill, now ?? Start);
+        return HouseSpecializationRules.CheckChange(house, inCity, keeper, type, skill, now ?? Start);
     }
+
+    /// <summary>The record <c>Property.CreateProperty</c> writes for the player who places a house: every House permission, and the right to grant it.</summary>
+    private static WorldPropertyPermission PlacerRecord(string playerId = "placer")
+    {
+        var record = new WorldPropertyPermission { PropertyId = "house", PlayerId = playerId };
+        foreach (var permission in HousePermissions)
+        {
+            record.Permissions[permission] = true;
+            record.GrantPermissions[permission] = true;
+        }
+
+        return record;
+    }
+
+    /// <summary>What a resident or guest holds: some of the House permissions, handed to them, with no right to grant any.</summary>
+    private static WorldPropertyPermission GuestRecord(params PropertyPermissionType[] granted)
+    {
+        var record = new WorldPropertyPermission { PropertyId = "house", PlayerId = "guest" };
+        foreach (var permission in HousePermissions)
+        {
+            record.Permissions[permission] = granted.Contains(permission);
+            record.GrantPermissions[permission] = false;
+        }
+
+        return record;
+    }
+
+    private static readonly PropertyPermissionType[] HousePermissions =
+    {
+        PropertyPermissionType.EditStructures,
+        PropertyPermissionType.RetrieveStructures,
+        PropertyPermissionType.RenameProperty,
+        PropertyPermissionType.ChangeDescription,
+        PropertyPermissionType.EnterProperty,
+        PropertyPermissionType.EditCategories,
+        PropertyPermissionType.TendGardens
+    };
 
     #region Who and when
 
@@ -47,12 +84,68 @@ public class HouseSpecializationRulesTests
     }
 
     [Test]
-    public void OnlyTheOwnerChangesIt()
+    public void OnlyTheHousesKeeperChangesIt()
     {
         var house = House();
 
-        Check(house, HouseSpecializationType.Greenhouse, playerId: "guest").Should().Be(HouseSpecializationRefusal.NotTheOwner);
-        Check(house, HouseSpecializationType.Greenhouse, playerId: "").Should().Be(HouseSpecializationRefusal.NotTheOwner);
+        Check(house, HouseSpecializationType.Greenhouse, keeper: false).Should().Be(HouseSpecializationRefusal.NotTheKeeper);
+        Check(house, HouseSpecializationType.Greenhouse, keeper: true).Should().Be(HouseSpecializationRefusal.None);
+    }
+
+    [Test]
+    public void ThePlayerWhoPlacedTheHouse_IsItsKeeper_AndSoIsTheMayorOfRecord()
+    {
+        // CreateBuilding makes the mayor the owner and gives the placer the same full record.
+        HouseSpecializationRules.IsKeeper(PlacerRecord("citizen")).Should().BeTrue();
+        HouseSpecializationRules.IsKeeper(PlacerRecord("mayor")).Should().BeTrue();
+    }
+
+    [Test]
+    public void AnInvitedResidentOrGuest_IsNotAKeeper_HoweverMuchTheyWereGiven()
+    {
+        HouseSpecializationRules.IsKeeper(GuestRecord()).Should().BeFalse();
+        HouseSpecializationRules.IsKeeper(GuestRecord(PropertyPermissionType.EnterProperty, PropertyPermissionType.TendGardens)).Should().BeFalse();
+        HouseSpecializationRules.IsKeeper(GuestRecord(HousePermissions)).Should().BeFalse("every permission without the right to grant any is a guest who decorates, not the keeper");
+    }
+
+    [Test]
+    public void TheEditStructuresPermission_IsNeededAsWellAsTheRightToGrantIt()
+    {
+        var grantOnly = GuestRecord();
+        grantOnly.GrantPermissions[PropertyPermissionType.EditStructures] = true;
+        HouseSpecializationRules.IsKeeper(grantOnly).Should().BeFalse("a right to grant a permission the player does not hold");
+
+        var otherGrants = PlacerRecord();
+        otherGrants.GrantPermissions[PropertyPermissionType.EditStructures] = false;
+        HouseSpecializationRules.IsKeeper(otherGrants).Should().BeFalse("granting everything but the permission to run the house");
+    }
+
+    [Test]
+    public void APlayerWithNoRecordOnTheHouse_IsNotAKeeper()
+    {
+        HouseSpecializationRules.IsKeeper(null).Should().BeFalse();
+        HouseSpecializationRules.IsKeeper(new WorldPropertyPermission()).Should().BeFalse("a record with no permissions in it");
+    }
+
+    [Test]
+    public void TheOwnerOfRecord_IsNotTheCheck_ForAHouseCitizensPlaced()
+    {
+        // The mayor at placement is the house's OwnerPlayerId; the citizen who placed it holds the record that counts.
+        var house = House(owner: "mayor");
+        var citizensRecord = PlacerRecord("citizen");
+
+        Check(house, HouseSpecializationType.Storehouse, keeper: HouseSpecializationRules.IsKeeper(citizensRecord)).Should().Be(HouseSpecializationRefusal.None);
+        Check(house, HouseSpecializationType.Storehouse, keeper: HouseSpecializationRules.IsKeeper(GuestRecord())).Should().Be(HouseSpecializationRefusal.NotTheKeeper);
+    }
+
+    [Test]
+    public void ARefusalForANonKeeper_ComesAfterTheHouseAndCityChecks_AndBeforeTheTimer()
+    {
+        var house = House();
+        HouseSpecializationRules.Apply(house, HouseSpecializationType.Greenhouse, SkillType.Invalid, 60, Start);
+
+        Check(house, HouseSpecializationType.Storehouse, keeper: false, now: Start.AddDays(1)).Should().Be(HouseSpecializationRefusal.NotTheKeeper);
+        Check(house, HouseSpecializationType.Storehouse, keeper: false, inCity: false).Should().Be(HouseSpecializationRefusal.NotInCity);
     }
 
     [Test]
@@ -86,14 +179,17 @@ public class HouseSpecializationRulesTests
     [Test]
     public void TheTimerStaysWithTheHouseWhenItChangesHands()
     {
-        var house = House(owner: "first");
+        // A house changes hands when the mayor of record gives a new keeper the full record and the old keeper's is removed.
+        var house = House(owner: "mayor");
+        var first = PlacerRecord("first");
         HouseSpecializationRules.Apply(house, HouseSpecializationType.Greenhouse, SkillType.Invalid, 60, Start);
 
-        house.OwnerPlayerId = "second";
+        var second = PlacerRecord("second");
+        first = null;
 
-        Check(house, HouseSpecializationType.Storehouse, playerId: "second", now: Start.AddDays(10)).Should().Be(HouseSpecializationRefusal.TooSoon);
-        Check(house, HouseSpecializationType.Storehouse, playerId: "first", now: Start.AddDays(40)).Should().Be(HouseSpecializationRefusal.NotTheOwner);
-        Check(house, HouseSpecializationType.Storehouse, playerId: "second", now: Start.AddDays(31)).Should().Be(HouseSpecializationRefusal.None);
+        Check(house, HouseSpecializationType.Storehouse, keeper: HouseSpecializationRules.IsKeeper(second), now: Start.AddDays(10)).Should().Be(HouseSpecializationRefusal.TooSoon);
+        Check(house, HouseSpecializationType.Storehouse, keeper: HouseSpecializationRules.IsKeeper(first), now: Start.AddDays(40)).Should().Be(HouseSpecializationRefusal.NotTheKeeper);
+        Check(house, HouseSpecializationType.Storehouse, keeper: HouseSpecializationRules.IsKeeper(second), now: Start.AddDays(31)).Should().Be(HouseSpecializationRefusal.None);
         house.HouseSpecialization.Should().Be(HouseSpecializationType.Greenhouse, "the type stays with the house");
     }
 

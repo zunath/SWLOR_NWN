@@ -6,16 +6,19 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     /// <summary>
     /// A Dueling Ring's terminal: a player standing in the ring picks another player in it to challenge. The target
-    /// answers in <see cref="DuelChallengeDialog"/>. <see cref="Duels"/> holds the challenge and the duel.
+    /// answers in <see cref="DuelChallengeDialog"/>. <see cref="Duels"/> holds the challenge and the duel. The ring also
+    /// posts, runs and takes sign-ups for the city's tournament (DuelingRingDialog.Tournaments.cs).
     /// </summary>
-    public class DuelingRingDialog : ConversationMenuDefinition
+    public partial class DuelingRingDialog : ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()
         {
             var builder = new ConversationMenuBuilder()
+                .WithDataModel(new TournamentDraft())
                 .AddPage(MainPageId, MainPageInit);
+            AddTournamentPages(builder);
 
             return builder.Build();
         }
@@ -30,6 +33,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           "subdues you instead, whoever lands it. Leaving the ring or logging out forfeits. " +
                           "If someone else joins the fight, the duel is void, and you both stay protected for " +
                           $"{DuelRules.ProtectionSeconds:0} seconds.\n\n";
+
+            AddTournamentEntry(page);
 
             if (Duels.GetDuel(player) != null)
             {

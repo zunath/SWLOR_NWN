@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TournamentService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -164,6 +165,7 @@ namespace SWLOR.Game.Server.Service
                 CreditPaymentKind.HullRefit or CreditPaymentKind.CustomsFine or CreditPaymentKind.ShipRepair
                     => DB.Get<PlayerShip>(mark.RecordId)?.LastPaymentId,
                 CreditPaymentKind.ShuttleTicket => DB.Get<ShuttleRide>(mark.RecordId)?.PaymentId,
+                CreditPaymentKind.TournamentEntry => TournamentRules.FindEntryPaymentId(DB.Get<CityTournament>(mark.RecordId), mark.Id),
                 _ => null
             };
         }

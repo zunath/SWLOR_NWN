@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CityGazetteService;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.DuelService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.TournamentService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -16,7 +17,8 @@ namespace SWLOR.Game.Server.Service
     /// duel lasts, a blow that would kill a duelist subdues them instead, whoever lands it. A third party's blow voids the
     /// duel but leaves both duelists protected for a few seconds, so that blow still only subdues. Leaving the ring or
     /// logging out forfeits, and a finished duel is posted to the city's Gazette. Duels live in memory, so a restart
-    /// voids them. The rules live in <see cref="DuelRules"/>.
+    /// voids them. A tournament runs its matches as duels here and takes their results (<see cref="Tournaments"/>). The
+    /// rules live in <see cref="DuelRules"/>.
     /// </summary>
     public static class Duels
     {
@@ -72,6 +74,12 @@ namespace SWLOR.Game.Server.Service
             if (!PvpCombat.IsPlayer(player))
                 return;
 
+            if (Tournaments.IsBarred(OBJECT_SELF, GetObjectUUID(player)))
+            {
+                SendMessageToPC(player, ColorToken.Red("You are barred from the Dueling Ring until the tournament ends."));
+                return;
+            }
+
             ConversationMenu.Start(player, OBJECT_SELF, nameof(DuelingRingDialog));
         }
 
@@ -120,6 +128,10 @@ namespace SWLOR.Game.Server.Service
                 return "A fallen player cannot duel.";
             if (!IsInsideRing(ring, challenger))
                 return "You must stand inside the ring to challenge someone.";
+            if (Tournaments.IsRunningAt(ring))
+                return "A tournament is running at this ring.";
+            if (Tournaments.IsBarred(ring, GetObjectUUID(challenger)))
+                return "You are barred from this ring until the tournament ends.";
 
             var name = PlayerName.GetDisplayName(challenger, target);
             if (!IsInsideRing(ring, target))
@@ -237,6 +249,19 @@ namespace SWLOR.Game.Server.Service
             return record;
         }
 
+        /// <summary>
+        /// Begins the duel of a tournament match, with the match's first duelist as the challenger. The tournament takes
+        /// the result, so the duel posts no Gazette line of its own. The caller has checked that neither duelist is in a duel.
+        /// </summary>
+        public static DuelRecord StartTournamentDuel(uint challenger, uint target, uint ring, string tournamentId)
+        {
+            var record = StartDuel(challenger, target, ring);
+            record.TournamentId = tournamentId ?? string.Empty;
+            record.ChallengerPlayerId = GetObjectUUID(challenger);
+            record.TargetPlayerId = GetObjectUUID(target);
+            return record;
+        }
+
         /// <summary>The duel a player is in, or null. A voided duel whose protection ran out is dropped here.</summary>
         public static DuelRecord GetDuel(uint player)
         {
@@ -267,8 +292,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var source = ResolveSource(attacker);
-            if (DuelRules.ClassifyBlow(record, GetIsObjectValid(source), source) == DuelBlowType.Interference)
-                DuelRules.Interrupt(record, DateTime.UtcNow);
+            if (DuelRules.ClassifyBlow(record, GetIsObjectValid(source), source) == DuelBlowType.Interference &&
+                DuelRules.Interrupt(record, DateTime.UtcNow))
+            {
+                Tournaments.OnDuelInterrupted(record, source);
+            }
         }
 
         /// <summary>
@@ -296,7 +324,14 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    DuelRules.Interrupt(record, now);
+                    if (DuelRules.Interrupt(record, now))
+                    {
+                        var interrupter = DuelRules.ClassifyBlow(record, GetIsObjectValid(source), source) == DuelBlowType.Interference
+                            ? source
+                            : OBJECT_INVALID;
+                        Tournaments.OnDuelInterrupted(record, interrupter);
+                    }
+
                     TellInterruption(record);
                 }
             }
@@ -387,8 +422,8 @@ namespace SWLOR.Game.Server.Service
         // Endings
 
         /// <summary>
-        /// Ends a duel that has a result: tells the duelists and posts it to the Gazette. A duel nobody lost, or that
-        /// is already over, ends without one. A duel a third party voided never has a result; it stays only for the
+        /// Ends a duel that has a result: tells the duelists and posts it to the Gazette, or hands it to its tournament,
+        /// which posts its own line. A duel nobody lost, or that is already over, ends without one. A duel a third party voided never has a result; it stays only for the
         /// protection it gave, until that lapses.
         /// </summary>
         private static void Finish(DuelRecord record)
@@ -402,6 +437,12 @@ namespace SWLOR.Game.Server.Service
 
             RefreshLabels(record);
             TellOutcome(record, outcome.Value);
+            if (!string.IsNullOrEmpty(record.TournamentId))
+            {
+                Tournaments.OnDuelFinished(record, outcome.Value);
+                return;
+            }
+
             CityGazette.Post(
                 record.CityId,
                 CityGazetteEntryType.Notice,
@@ -465,7 +506,8 @@ namespace SWLOR.Game.Server.Service
             return DuelRules.TraceSource(attacker, GetIsObjectValid, PvpCombat.GetControllingPlayer, GetMaster);
         }
 
-        private static string GetRingCityId(uint ring)
+        /// <summary>The property id of the city or station that owns a ring, or empty when it has none.</summary>
+        public static string GetRingCityId(uint ring)
         {
             var propertyId = Property.GetPropertyId(ring);
             var structure = string.IsNullOrWhiteSpace(propertyId) ? null : DB.Get<WorldProperty>(propertyId);

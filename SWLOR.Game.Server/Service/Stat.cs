@@ -704,8 +704,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Sets a player's stored equipment Defense (per type), Evasion, maximum FP, maximum STM, and crafting Control,
-        /// Craftsmanship and CP Bonus to what the worn gear grants. Like max HP, these records are kept by adding and removing each equipment change, so one missed,
+        /// Sets every player record summed from worn gear (see <see cref="EquipmentRecordStats"/>) to what the worn gear
+        /// grants. Like max HP, these records are kept by adding and removing each equipment change, so one missed,
         /// failed or repeated change leaves them off for good.
         /// </summary>
         /// <param name="player">The player to reconcile</param>
@@ -748,11 +748,12 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(item) || GetBaseItemType(item) == BaseItem.CompanionPistol)
                     continue;
 
-                var copies = PowerGloveEquipment.GetEquipmentStatCopies(GetBaseItemType(item));
+                var baseItem = GetBaseItemType(item);
+                var copies = PowerGloveEquipment.GetEquipmentStatCopies(baseItem);
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
                     for (var copy = 0; copy < copies; copy++)
-                        totals.Add(GetItemPropertyType(ip), GetItemPropertySubType(ip), GetItemPropertyCostTableValue(ip));
+                        totals.Add(GetItemPropertyType(ip), GetItemPropertySubType(ip), GetItemPropertyCostTableValue(ip), baseItem);
                 }
             }
 
@@ -760,8 +761,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Writes the gear totals into the selected records: Defense for every defense type, Evasion, maximum FP
-        /// and STM above their bases, and Control, Craftsmanship and CP Bonus for every crafting skill. Pools are left alone.
+        /// Writes the gear totals into the selected records: Defense and Resistance for every type, maximum FP and STM
+        /// above their bases, Control, Craftsmanship and CP Bonus for every crafting skill, and each summed number
+        /// such as Evasion, Attack or Stealth. Pools are left alone.
         /// </summary>
         /// <returns>The records that changed</returns>
         public static EquipmentRecordStats ApplyEquipmentStatTotals(Player entity, EquipmentStatTotals totals, EquipmentRecordStats stats)
@@ -822,8 +824,50 @@ namespace SWLOR.Game.Server.Service
                     corrected |= EquipmentRecordStats.CPBonus;
             }
 
+            if (stats.HasFlag(EquipmentRecordStats.Resistance))
+            {
+                entity.Resistances ??= new Dictionary<ResistanceType, int>();
+                foreach (var type in Resistance.GetAllResistanceTypes())
+                {
+                    var amount = totals.GetResistance(type);
+                    if ((entity.Resistances.TryGetValue(type, out var current) ? current : 0) == amount)
+                        continue;
+
+                    entity.Resistances[type] = amount;
+                    corrected |= EquipmentRecordStats.Resistance;
+                }
+            }
+
+            foreach (var (record, get, set) in SummedEquipmentRecords)
+            {
+                var amount = totals.GetTotal(record);
+                if (!stats.HasFlag(record) || get(entity) == amount)
+                    continue;
+
+                set(entity, amount);
+                corrected |= record;
+            }
+
             return corrected;
         }
+
+        /// <summary>
+        /// The records that hold one number summed from worn gear, with how to read and write each.
+        /// </summary>
+        private static readonly (EquipmentRecordStats Record, Func<Player, int> Get, Action<Player, int> Set)[] SummedEquipmentRecords =
+        {
+            (EquipmentRecordStats.FPRegen, entity => entity.FPRegen, (entity, amount) => entity.FPRegen = amount),
+            (EquipmentRecordStats.STMRegen, entity => entity.STMRegen, (entity, amount) => entity.STMRegen = amount),
+            (EquipmentRecordStats.Attack, entity => entity.Attack, (entity, amount) => entity.Attack = amount),
+            (EquipmentRecordStats.Accuracy, entity => entity.Accuracy, (entity, amount) => entity.Accuracy = amount),
+            (EquipmentRecordStats.ForceAttack, entity => entity.ForceAttack, (entity, amount) => entity.ForceAttack = amount),
+            (EquipmentRecordStats.Stealth, entity => entity.Stealth, (entity, amount) => entity.Stealth = amount),
+            (EquipmentRecordStats.Detection, entity => entity.Detection, (entity, amount) => entity.Detection = amount),
+            (EquipmentRecordStats.TrapBonus, entity => entity.TrapBonus, (entity, amount) => entity.TrapBonus = amount),
+            (EquipmentRecordStats.TrapDisarm, entity => entity.TrapDisarm, (entity, amount) => entity.TrapDisarm = amount),
+            (EquipmentRecordStats.PoisonBonus, entity => entity.PoisonBonus, (entity, amount) => entity.PoisonBonus = amount),
+            (EquipmentRecordStats.Lockpicking, entity => entity.Lockpicking, (entity, amount) => entity.Lockpicking = amount),
+        };
 
         /// <summary>
         /// Sets each crafting skill's record to what the gear grants. A missing entry already reads as zero.

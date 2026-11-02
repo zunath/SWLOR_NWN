@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -72,11 +73,12 @@ public class EquipmentRecordReconciliationTests
 
         var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All);
 
-        corrected.Should().Be(EquipmentRecordStats.Defense | EquipmentRecordStats.FP);
+        corrected.Should().Be(EquipmentRecordStats.Defense | EquipmentRecordStats.FP | EquipmentRecordStats.Attack);
         record.Defenses[CombatDamageType.Physical].Should().Be(86);
         record.Defenses[CombatDamageType.Force].Should().Be(100);
         record.MaxFP.Should().Be(Stat.BaseFP + 18);
         record.MaxStamina.Should().Be(Stat.BaseSTM + 16);
+        record.Attack.Should().Be(5);
     }
 
     [Test]
@@ -86,6 +88,18 @@ public class EquipmentRecordReconciliationTests
         record.Control[SkillType.Smithery] = -21;
         record.Craftsmanship[SkillType.Smithery] = -6;
         record.CPBonus[SkillType.Smithery] = -5;
+        record.Resistances[ResistanceType.Fire] = -10;
+        record.FPRegen = 2;
+        record.STMRegen = -3;
+        record.Attack = -20;
+        record.Accuracy = 4;
+        record.ForceAttack = -1;
+        record.Stealth = 3;
+        record.Detection = -2;
+        record.TrapBonus = 1;
+        record.TrapDisarm = -1;
+        record.PoisonBonus = 2;
+        record.Lockpicking = -4;
 
         var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(), EquipmentRecordStats.All);
 
@@ -98,6 +112,115 @@ public class EquipmentRecordReconciliationTests
         record.Control[SkillType.Smithery].Should().Be(0, "Control comes only from gear");
         record.Craftsmanship[SkillType.Smithery].Should().Be(0, "Craftsmanship comes only from gear");
         record.CPBonus[SkillType.Smithery].Should().Be(0, "CP Bonus comes only from gear");
+        record.Resistances[ResistanceType.Fire].Should().Be(0, "Resistance comes only from gear");
+        new[]
+        {
+            record.FPRegen, record.STMRegen, record.Attack, record.Accuracy, record.ForceAttack, record.Stealth,
+            record.Detection, record.TrapBonus, record.TrapDisarm, record.PoisonBonus, record.Lockpicking,
+        }.Should().OnlyContain(amount => amount == 0, "each summed record comes only from gear");
+    }
+
+    // One item of each kind: a ring and an amulet with every summed stat, and a blade and creature item whose Accuracy
+    // belongs to the weapon itself.
+    private static EquipmentStatTotals SummedGearTotals()
+    {
+        var totals = new EquipmentStatTotals();
+        void Add(BaseItem baseItem, ItemPropertyType type, int subtype, int amount) => totals.Add(type, subtype, amount, baseItem);
+        Add(BaseItem.Ring, ItemPropertyType.FPRegen, -1, 2);
+        Add(BaseItem.Ring, ItemPropertyType.STMRegen, -1, 3);
+        Add(BaseItem.Ring, ItemPropertyType.Attack, -1, 5);
+        Add(BaseItem.Amulet, ItemPropertyType.Attack, -1, 4);
+        Add(BaseItem.Ring, ItemPropertyType.Accuracy, -1, 6);
+        Add(BaseItem.Longsword, ItemPropertyType.Accuracy, -1, 9);
+        Add(BaseItem.CreatureItem, ItemPropertyType.Accuracy, -1, 7);
+        Add(BaseItem.Amulet, ItemPropertyType.ForceAttack, -1, 7);
+        Add(BaseItem.Amulet, ItemPropertyType.Stealth, -1, 8);
+        Add(BaseItem.Amulet, ItemPropertyType.Detection, -1, 1);
+        Add(BaseItem.Amulet, ItemPropertyType.TrapBonus, -1, 2);
+        Add(BaseItem.Amulet, ItemPropertyType.Disarm, -1, 3);
+        Add(BaseItem.Amulet, ItemPropertyType.PoisonBonus, -1, 4);
+        Add(BaseItem.Amulet, ItemPropertyType.Lockpicking, -1, 5);
+        Add(BaseItem.Ring, ItemPropertyType.Resistance, (int)ResistanceType.Fire, Resistance.EncodeItemPropertyCostTableValue(10));
+        Add(BaseItem.Amulet, ItemPropertyType.Resistance, (int)ResistanceType.Fire, Resistance.EncodeItemPropertyCostTableValue(5));
+        Add(BaseItem.Amulet, ItemPropertyType.Resistance, (int)ResistanceType.Ice, Resistance.EncodeItemPropertyCostTableValue(-5));
+        return totals;
+    }
+
+    [Test]
+    public void Totals_CountSummedRecordsResistancesAndOnlyNonWeaponAccuracy()
+    {
+        var totals = SummedGearTotals();
+
+        totals.GetTotal(EquipmentRecordStats.FPRegen).Should().Be(2);
+        totals.GetTotal(EquipmentRecordStats.STMRegen).Should().Be(3);
+        totals.GetTotal(EquipmentRecordStats.Attack).Should().Be(9);
+        totals.GetTotal(EquipmentRecordStats.Accuracy).Should().Be(6, "a weapon's or creature item's Accuracy belongs to that weapon");
+        totals.GetTotal(EquipmentRecordStats.ForceAttack).Should().Be(7);
+        totals.GetTotal(EquipmentRecordStats.Stealth).Should().Be(8);
+        totals.GetTotal(EquipmentRecordStats.Detection).Should().Be(1);
+        totals.GetTotal(EquipmentRecordStats.TrapBonus).Should().Be(2);
+        totals.GetTotal(EquipmentRecordStats.TrapDisarm).Should().Be(3);
+        totals.GetTotal(EquipmentRecordStats.PoisonBonus).Should().Be(4);
+        totals.GetTotal(EquipmentRecordStats.Lockpicking).Should().Be(5);
+        totals.GetResistance(ResistanceType.Fire).Should().Be(15);
+        totals.GetResistance(ResistanceType.Ice).Should().Be(-5, "a vulnerability decodes to a negative resistance");
+        totals.GetResistance(ResistanceType.Poison).Should().Be(0);
+    }
+
+    [Test]
+    public void DriftedSummedRecords_AreRebuiltFromTheWornGear()
+    {
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        record.Attack = -11;
+        record.Accuracy = 15;
+        record.Stealth = -8;
+        record.Resistances[ResistanceType.Fire] = 30;
+
+        var corrected = Stat.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.All);
+
+        corrected.Should().Be(EquipmentRecordStats.FPRegen | EquipmentRecordStats.STMRegen | EquipmentRecordStats.Attack |
+                              EquipmentRecordStats.Accuracy | EquipmentRecordStats.ForceAttack | EquipmentRecordStats.Resistance |
+                              EquipmentRecordStats.Stealth | EquipmentRecordStats.Detection | EquipmentRecordStats.TrapBonus |
+                              EquipmentRecordStats.TrapDisarm | EquipmentRecordStats.PoisonBonus | EquipmentRecordStats.Lockpicking);
+        record.FPRegen.Should().Be(2);
+        record.STMRegen.Should().Be(3);
+        record.Attack.Should().Be(9);
+        record.Accuracy.Should().Be(6);
+        record.ForceAttack.Should().Be(7);
+        record.Stealth.Should().Be(8);
+        record.Detection.Should().Be(1);
+        record.TrapBonus.Should().Be(2);
+        record.TrapDisarm.Should().Be(3);
+        record.PoisonBonus.Should().Be(4);
+        record.Lockpicking.Should().Be(5);
+        record.Resistances[ResistanceType.Fire].Should().Be(15);
+        record.Resistances[ResistanceType.Ice].Should().Be(-5);
+
+        Stat.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.All)
+            .Should().Be(EquipmentRecordStats.None, "a rebuilt record matches the gear");
+    }
+
+    [Test]
+    public void LegacyRecordWithoutAResistanceMap_IsRebuiltInsteadOfThrowing()
+    {
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        record.Resistances = null!;
+
+        Stat.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.Resistance)
+            .Should().Be(EquipmentRecordStats.Resistance);
+        record.Resistances[ResistanceType.Fire].Should().Be(15);
+    }
+
+    [Test]
+    public void EveryRecordAnEquipHandlerKeeps_IsRebuilt()
+    {
+        // HP Bonus has its own rebuild (RefreshPlayerMaxHP) and Combat Readiness its own refresh; every other
+        // property an equip handler adds to a player record must feed a rebuilt record.
+        EquipmentStats.RegisterStatActions();
+        EquipmentStats.HandledPropertyTypes.Should().Contain(ItemPropertyType.Lockpicking);
+        var withOwnRebuild = new[] { ItemPropertyType.HPBonus, ItemPropertyType.CombatReadiness };
+        foreach (var type in EquipmentStats.HandledPropertyTypes.Except(withOwnRebuild))
+            EquipmentStatTotals.GetRecordStat(type).Should().NotBe(EquipmentRecordStats.None, $"{type} feeds a player record");
     }
 
     // Smithery gear with a Fabrication piece, as iprp_crafttype.2da subtypes: 1 Smithery, 3 Fabrication.
@@ -204,6 +327,7 @@ public class EquipmentRecordReconciliationTests
     public void MatchingRecord_IsNotCorrected()
     {
         var record = Record(physical: 86, force: 100, evasion: 0, maxFP: Stat.BaseFP + 18, maxStamina: Stat.BaseSTM + 16);
+        record.Attack = 5;
 
         Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All)
             .Should().Be(EquipmentRecordStats.None);
@@ -248,8 +372,20 @@ public class EquipmentRecordReconciliationTests
     [TestCase(ItemPropertyType.Control, EquipmentRecordStats.Control)]
     [TestCase(ItemPropertyType.Craftsmanship, EquipmentRecordStats.Craftsmanship)]
     [TestCase(ItemPropertyType.CPBonus, EquipmentRecordStats.CPBonus)]
+    [TestCase(ItemPropertyType.Resistance, EquipmentRecordStats.Resistance)]
+    [TestCase(ItemPropertyType.FPRegen, EquipmentRecordStats.FPRegen)]
+    [TestCase(ItemPropertyType.STMRegen, EquipmentRecordStats.STMRegen)]
+    [TestCase(ItemPropertyType.Accuracy, EquipmentRecordStats.Accuracy)]
+    [TestCase(ItemPropertyType.ForceAttack, EquipmentRecordStats.ForceAttack)]
+    [TestCase(ItemPropertyType.Stealth, EquipmentRecordStats.Stealth)]
+    [TestCase(ItemPropertyType.Detection, EquipmentRecordStats.Detection)]
+    [TestCase(ItemPropertyType.TrapBonus, EquipmentRecordStats.TrapBonus)]
+    [TestCase(ItemPropertyType.Disarm, EquipmentRecordStats.TrapDisarm)]
+    [TestCase(ItemPropertyType.PoisonBonus, EquipmentRecordStats.PoisonBonus)]
+    [TestCase(ItemPropertyType.Lockpicking, EquipmentRecordStats.Lockpicking)]
     [TestCase(ItemPropertyType.HPBonus, EquipmentRecordStats.None)]
-    [TestCase(ItemPropertyType.Attack, EquipmentRecordStats.None)]
+    [TestCase(ItemPropertyType.Attack, EquipmentRecordStats.Attack)]
+    [TestCase(ItemPropertyType.CombatReadiness, EquipmentRecordStats.None)]
     public void ItemProperties_SelectTheRecordsTheyFeed(ItemPropertyType type, EquipmentRecordStats expected)
     {
         EquipmentStatTotals.GetRecordStat(type).Should().Be(expected);

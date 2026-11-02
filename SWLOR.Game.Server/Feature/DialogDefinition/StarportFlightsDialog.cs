@@ -106,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         /// <summary>
         /// Renders the list of destinations a passenger can book a ticket to. A player station's terminal flies only to
-        /// its home port; a planet's terminal also lists the stations it serves (plan section 25).
+        /// its home port; a planet's terminal also lists the stations it serves (plan section 25), and the Home Port
+        /// of a citizen or ally: their city's Starport, at the terminal's own fare.
         /// </summary>
         private void BuildTicketPurchasePage(ConversationMenuPage page, Model model, uint player, ShuttleStop origin)
         {
@@ -116,16 +117,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           "within 15 meters of this terminal or you will miss your flight. " +
                           "Please select one of our available destinations below.";
 
-            void AddDestination(ShuttleStop destination)
+            void AddDestination(ShuttleStop destination, string label = null)
             {
                 var route = new ShuttleRoute(origin, destination);
                 var fare = ShuttleRouteRules.GetFare(route);
                 var tax = (int)(model.Tax * fare);
                 var price = fare + tax;
                 var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route) - DateTime.UtcNow, false);
-                var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(ShuttleRouteRules.GetTransitSeconds(route)), false);
+                var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(HomePorts.GetTransitSeconds(route)), false);
 
-                var optionText = $"{Station.GetStopName(destination)} [{price} cr] - departs in {countdown}, flight time {transit}";
+                var optionText = $"{label ?? Station.GetStopName(destination)} [{price} cr] - departs in {countdown}, flight time {transit}";
                 page.AddResponse(optionText, () =>
                 {
                     model.Destination = destination;
@@ -159,6 +160,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 AddDestination(station);
             }
+
+            foreach (var homePort in HomePorts.GetDestinations(player, origin))
+            {
+                AddDestination(homePort, $"Home Port: {Station.GetStopName(homePort)}");
+            }
         }
 
         /// <summary>
@@ -170,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var origin = route.Origin;
             var destinationName = Station.GetStopName(route.Destination);
             var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route, ride.PlayerId) - DateTime.UtcNow, false);
-            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(ShuttleRouteRules.GetTransitSeconds(route)), false);
+            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(HomePorts.GetTransitSeconds(route)), false);
 
             page.Header = "Ticketed Flight: " + destinationName + "\n" +
                           "Departs in: " + countdown + "\n" +
@@ -203,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var tax = (int)(model.Tax * fare);
             var price = fare + tax;
             var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route) - DateTime.UtcNow, false);
-            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(ShuttleRouteRules.GetTransitSeconds(route)), false);
+            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(HomePorts.GetTransitSeconds(route)), false);
 
             page.Header = "Selected Destination: " + destinationName + "\n" +
                           "Fare: " + fare + " cr\n" +
@@ -214,6 +220,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           "You may only hold one ticket at a time. You must be within 15 meters of this terminal " +
                           "when boarding is called or your ticket will roll over to the next shuttle. " +
                           "Tickets are refundable (fare only) before boarding.";
+
+            if (route.IsHomePort)
+            {
+                page.Header += "\n\nThis is a Home Port flight. You will land inside the Starport, and its Starport upgrades shorten the flight. " +
+                               "You can use its flights terminal for 7 days after you land.";
+            }
 
             if (GetGold(player) < price)
             {

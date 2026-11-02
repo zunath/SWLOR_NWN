@@ -41,7 +41,7 @@ Every bonus a citizen, official, or visitor can get, in one place. Who qualifies
 | Farming perk | Seed Saver I-III | 10%, 20%, or 30% chance a harvest returns its seed | The farmer | 1, 2, and 2 SP |
 | Farming | Tending and fertilizer | +1 item each per harvest | The farmer | Tend once per crop; Fertilizer I-V recipes |
 | Civic Exchange | Long buff | About as strong as a top-tier food buff; does not stack with food | Citizens | Available XP |
-| Civic Exchange | Crates, research time, cosmetics | Random crafting materials, time off a Lab research job, container and weapon appearances | Citizens | Available XP |
+| Civic Exchange | Crates and cosmetics | Random crafting materials, container and weapon appearances | Citizens | Available XP |
 | Travel | Home Port | Fly to the city's Starport from any shuttle terminal | Citizens and allied citizens | Ticket price |
 | City Affairs | Situation outcomes | Bonuses or penalties lasting 72 hours, such as +5% RP XP after a funded festival | Citizens | Decided by the mayor and officers |
 | Office | Leadership XP | XP for each City Affairs decision | Mayor and officers | None |
@@ -96,7 +96,7 @@ Nearly every suggestion is in the plan. Four were changed or dropped: the crafti
 | Settlements in the style of No Man's Sky | Seraph | Adopted as City Projects. Its settler requests are City Affairs, and its settlers are the townsfolk | Big upgrades become group efforts that anyone can supply. |
 | Force an election when the mayor ignores events, and remove the city if nobody votes | Seraph | Adopted with a second chance: a recall election, then removal only after two empty recalls in a row and when almost no citizens still log in | Unused cities free up land, and one quiet week never costs a city. |
 | Fly to the city from any shuttle terminal, with faster flights as an upgrade | Varle | Adopted as Home Port; Starport levels shorten flights | Living in a city stops costing extra travel. |
-| A facility where citizens spend RP XP on benefits | Varle | Adopted as the Civic Exchange: material crates, research time, cosmetics, and a long buff. Faster training not adopted | Roleplay pays off inside the city. RP XP can already go straight into skills. |
+| A facility where citizens spend RP XP on benefits | Varle | Adopted as the Civic Exchange: material crates, cosmetics, and a long buff. Faster training not adopted | Roleplay pays off inside the city. RP XP can already go straight into skills. |
 | Invite a planet's mayors to planet-wide story events | Varle | Adopted as Planetary Councils, with a DM tool to summon them | Mayors get a seat in the wider story. |
 | Farming and garden plots in settlements | pastius | Adopted as Garden Plots, city only | Agriculture lists farming but has none today, and gardens give daily reasons to visit. |
 | Law Edicts are redundant because RP enforces laws | pastius | Agreed. The PvP Edicts are cut | PvP is rare, and law is better left to roleplay. |
@@ -428,7 +428,7 @@ Cities fill with staff, stalls, and travelers whose stores sell items found nowh
 **Civic Exchange**
 
 - A store in the Cantina where citizens spend Available XP, the RP XP currency the Training Store uses, so roleplay pays off inside the city.
-- Stock: crates of random crafting materials, time off a research job running in the city's Labs, cosmetic unlocks such as container and weapon appearances, and a long buff about as strong as a top-tier food buff that does not stack with food. Crates are limited to 3 a week per CD key, each worth under 20 minutes of harvesting at its tier.
+- Stock: crates of random crafting materials, cosmetic unlocks such as container and weapon appearances, and a long buff about as strong as a top-tier food buff that does not stack with food. Crates are limited to 3 a week per CD key, each worth under 20 minutes of harvesting at its tier.
 - Higher Cantina levels unlock more of the stock.
 - Not included: spending RP XP to train a skill faster, because Available XP can already go straight into skills.
 
@@ -865,6 +865,16 @@ Every open question now has a decision for the player review. The rules behind t
   - Craft XP: `CraftMinigameXp` (base XP and scaling) and the `CraftSessionLifecycle` settlement. Artisans' Charter adds its points there, so every craft path gets them.
   - Craftsmanship and Control: `Stat.CalculateCraftsmanship` and `Stat.CalculateControl`, which each minigame view model calls when it builds its setup at session open. The Workshop bonus is read there, so it is captured at open.
   - Agriculture: crafting owns the Chef (904-912) and Angler (913-918) perks. New cooking ingredients (crops, meat, milk) need `KitchenComponentTable` flavor rows. New cooking recipes need Kitchen parameters from `tools/SWLOR.RecipeParameters`, then `tools/UpdateRecipeParameterBible.py`.
+- Findings from the hook audit (2026-11-02, against space d690216 and crafting 563e035):
+  - Harvesting: the extra items go into `HarvestDelivery`, through `NwnProspectingWorld.ReservePayout` (Prospecting board and Quick Harvest, from `ProspectingLifecycle`). Gathering XP is `delivery.Items x XpPerItem`, so the extra items must be left out of XP. Re-run the CraftSim gathering gates.
+  - Artisans' Charter: craft XP is stored as an integer per skill (`Player.PendingCraftXp`) and paid later with no city attached. Record the city on the session at start (`CraftSessionRecord`, from `Property.GetCityIdForArea`) and scale the XP at settlement (`CraftSessionLifecycle.PacedBaseXp`/`CraftOutcomeRules.CalculateXp`). The Workshop bonus also needs a field on `CraftSessionRecord`, because sessions persist across logout.
+  - Farming line: the Bible's Agriculture tab already has Farming rows 9-13 (Crop Management I-V), the Chef line from row 16 and the Angler line from row 29. `tools/UpdateAgriculturePerkBible.py` hard-codes those rows, and `AgriculturePerkBibleTests` pins line totals {9, 25, 25}. The crafting plan reserves a third Agriculture line at 25 SP; settle Farming's SP against that parity in workstream 5.
+  - New Agriculture recipes (Fertilizer, cultures, dishes) use the Kitchen parameter profile, and Garden Plot uses Fabricator's. Each needs generated parameters and coverage (`KitchenParameterCoverageTests`).
+  - Civic Exchange: the crafting plan allows only the experiment's capped Analyze cut to shorten research, so the Civic Exchange sells no research time.
+  - Home Port: `ShuttleStop` treats a stop with a station id as a station, and `ShuttleRouteRules` rejects same-planet and station-to-station routes. Planet-city Starports need a new stop kind.
+  - Treasury: `Treasury +=` is written directly at Shuttle (transport tax), `TradeCity.PayTariff`, `StationBuildings` (Shipyard fee) and `ManageCitizenshipViewModel`. Route each through the restricted-funds and escrow rules.
+  - Industrial Charter: `HoldingRules.Advance(holding, detail, now, random)` has no owner or city input, and the setback roll uses the `HoldingTuning.SetbackChance` constant. Adding the halving needs a parameter there, agreed with Space.
+  - Stations run the same election and upkeep code, so Edicts reach stations unless the code branches on `Station.IsStation`.
 - Space revamp interactions:
   - Farmhands reuse `StationDroidReceipt` and `SettleDroidMoves`.
   - City deletion and Starport pickup go through `StarshipDockReturn.ReturnToSafeDock` (#3058).
@@ -974,7 +984,7 @@ Each piece reuses an existing system where one exists. Garden plots are the only
 
 - **Neglect and recall:** `NeglectCount` resets on any decision; at 5, open a Recall election unless one is open. An empty recall (no candidates, no votes, or every candidate gone) sets `RecallStage` and opens the second. An empty second recall sets `IsQueuedForDeletion`, the same path as failed upkeep, when fewer than 5 citizens logged in during its last 14 days; otherwise it clears the Abandoned mark and sets `NeglectSinceUtc`, which pauses every Edict and stops situation drawing until an election with a candidate and a vote ends.
 - **Home Port:** add city Starports as shuttle destinations. `StarportFlightsDialog` and `Shuttle.TryPurchaseTicket` route between `PlanetType` values today. The space revamp's station work adds `ShuttleStop`, `ShuttleRoute`, and `ShuttleRide.DestinationStationId`; extend those to planet-city Starports instead of building new routing. Fare and tax are the terminal's existing ones to that planet; eligibility needs the CZ-220 pass and no taxes owed. Flight time comes from `GalaxyMap` (300 s interplanetary) minus 30 s per effective Starport level, once per trip on the interplanetary leg.
-- **Civic Exchange:** a city mode of `TrainingStoreViewModel`, paid from `UnallocatedXP`. Research time comes off the job's `DateCompleted` (set in `ResearchViewModel`). The buff is a status effect that replaces food buffs and is replaced by them.
+- **Civic Exchange:** a city mode of `TrainingStoreViewModel`, paid from `UnallocatedXP`. The buff is a status effect that replaces food buffs and is replaced by them.
 - **House specializations:** the type, chosen skill, last change date, and applied Storehouse bonus live on the house's `WorldProperty`, so the timer survives a change of owner. Storehouse multiplies only the layout's base capacity: switching to it adds 0.5 x the layout's `ItemStorageLimit` to `ItemStorageCount` and records that amount, and leaving it subtracts the recorded amount. Furniture contributions, which placement adds and retrieval subtracts today (`Property.cs:2705`), are never touched, so they survive switches, placement, retrieval, and reload. Deposits are refused while over the limit. Greenhouse allows 10 plots; leaving it lets planted crops finish and refuses new plantings above 5. Workshop: `CraftViewModel` captures the house's Workshop bonus when the craft session opens and adds that captured value each time it recalculates Craftsmanship and Control (`CraftViewModel.cs:1359`, `1374`), so a mid-craft type change doesn't affect it.
 - **Garden plots:** see Farming below.
 - **City Projects:** a `CityProject` entity (city, project type, credit cost held in `Escrow` with its restricted and unrestricted portions, required and donated materials, donors, completion date). Manage City's upgrade buttons start a project instead of upgrading at once, donations are taken only up to the remaining need, and completion applies at server start. Cancelling returns each credit portion to its balance and sends donated materials to each donor's overflow store.

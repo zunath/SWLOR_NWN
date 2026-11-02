@@ -33,6 +33,7 @@ public class PlayerGuideContentTests
         "Rebuilds",
         "Death & Recovery",
         "Combat Basics",
+        "Stat Caps",
         "Control & Harmful Effects",
         "Espionage",
         "Disguises",
@@ -288,6 +289,26 @@ public class PlayerGuideContentTests
 
         text.Should().Contain("activated ability damage, healing, and temporary HP");
         text.Should().Contain("does not reduce cooldowns");
+    }
+
+    [Test]
+    public void StatCapsTopic_PublishesTheCurrentCaps()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Stat Caps");
+        var text = string.Join("\n", GetAllText(topic));
+
+        text.Where(character => character > 127).Should().BeEmpty("guide text must use ASCII punctuation");
+        text.Should().Contain($"between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent");
+        text.Should().Contain($"at most {Combat.MaximumCriticalRate} percent");
+        text.Should().Contain($"+{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit");
+        text.Should().Contain($"at most +{Combat.MaximumDamageBonusPercent} percent");
+        text.Should().Contain($"stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined");
+        text.Should().Contain($"at most {Combat.MaximumGuardDamageReductionPercent} percent");
+        text.Should().Contain($"up to {Stat.MaximumDeflectionChanceCap} percent");
+        text.Should().Contain($"Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent");
+        text.Should().Contain($"stop at {Resistance.MaximumResistance - 1} percent for players");
+        text.Should().Contain("Movement speed stops at 150 percent of normal");
+        text.Should().Contain($"lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds");
     }
 
     [Test]

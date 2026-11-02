@@ -21,6 +21,7 @@ public class CityBuildingRulesTests
     [TestCase(StructureType.DuelingRing)]
     [TestCase(StructureType.MarketStall)]
     [TestCase(StructureType.Corral)]
+    [TestCase(StructureType.TravelersLodge)]
     [TestCase(StructureType.GardenPlot)]
     public void OpenGroundCityStructures_CountAgainstTheStructureLimit(StructureType structureType)
     {

@@ -33,6 +33,9 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
 
         public StructureType Structure { get; private init; }
 
+        /// <summary>The name of a traveler (a <c>TravelerType</c> member) the city must host this week.</summary>
+        public string TravelerName { get; private init; } = string.Empty;
+
         public static SituationRequirement CityLevel(int level)
         {
             return new SituationRequirement(SituationRequirementType.CityLevel) { Level = level };
@@ -63,6 +66,12 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         public static SituationRequirement WithStructure(StructureType structure)
         {
             return new SituationRequirement(SituationRequirementType.Structure) { Structure = structure };
+        }
+
+        /// <summary>The traveler is in the city this week. The name is a <c>TravelerType</c> member, such as "BeastTrader".</summary>
+        public static SituationRequirement TravelerHost(string travelerName)
+        {
+            return new SituationRequirement(SituationRequirementType.TravelerHost) { TravelerName = travelerName ?? string.Empty };
         }
 
         public static SituationRequirement SkillRank(SkillType skill, int rank)

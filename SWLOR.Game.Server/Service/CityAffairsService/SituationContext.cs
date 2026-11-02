@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         /// <summary>The types of structure the city has, including the garden plots inside its houses.</summary>
         public IReadOnlyCollection<StructureType> StructureTypes { get; init; } = new List<StructureType>();
 
+        /// <summary>The names of the travelers (<c>TravelerType</c> members) the city hosts this week.</summary>
+        public IReadOnlyCollection<string> HostedTravelers { get; init; } = new List<string>();
+
         /// <summary>The names of the Edicts in force.</summary>
         public IReadOnlyCollection<string> ActiveEdicts { get; init; } = new List<string>();
 

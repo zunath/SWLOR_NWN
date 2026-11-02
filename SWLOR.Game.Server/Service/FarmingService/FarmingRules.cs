@@ -97,7 +97,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
             if (now >= plot.RipeUtc)
                 return GardenPlotStage.Ripe;
 
-            return !plot.Tended && now >= plot.TendReadyUtc
+            // A sapling's harvest is flat, so there is nothing to tend.
+            return !plot.Tended && now >= plot.TendReadyUtc && !WoodlotRules.IsSapling(plot.Crop)
                 ? GardenPlotStage.ReadyToTend
                 : GardenPlotStage.Growing;
         }
@@ -167,6 +168,10 @@ namespace SWLOR.Game.Server.Service.FarmingService
         /// <param name="cropManagementRank">The planter's Crop Management rank (0 to 5).</param>
         /// <param name="cropTier">The tier of the crop the seed grows.</param>
         /// <param name="growingCrops">The crops the planter's CD key already has growing.</param>
+        /// <param name="siteRefusal">
+        /// What the plot's site rules say about this seed (<see cref="WoodlotRules.GetSiteRefusal"/>): a sapling needs an outdoor
+        /// city plot. Checked after the permission.
+        /// </param>
         public static FarmingRefusal CheckPlant(
             bool isPlayer,
             bool plotExists,
@@ -176,7 +181,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
             int cropManagementRank,
             int cropTier,
             int growingCrops,
-            bool hasSeed)
+            bool hasSeed,
+            FarmingRefusal siteRefusal = FarmingRefusal.None)
         {
             if (!isPlayer)
                 return FarmingRefusal.NotAPlayer;
@@ -186,6 +192,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 return FarmingRefusal.PlotOccupied;
             if (!hasPermission)
                 return FarmingRefusal.NoPermission;
+            if (siteRefusal != FarmingRefusal.None)
+                return siteRefusal;
             if (!CanPlantTier(cropManagementRank, cropTier))
                 return FarmingRefusal.TierLocked;
             if (!HasRoomForCrop(growingCrops))
@@ -209,6 +217,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 return FarmingRefusal.PlotEmpty;
             if (stage == GardenPlotStage.Withered)
                 return FarmingRefusal.Withered;
+            if (WoodlotRules.IsSapling(plot.Crop))
+                return FarmingRefusal.NeedsNoTending;
             if (!isPlanter && !hasPermission)
                 return FarmingRefusal.NoPermission;
             if (plot.Tended)
@@ -268,6 +278,9 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 FarmingRefusal.NotThePlanter => "Only the planter can do that.",
                 FarmingRefusal.Withered => "The crop has withered and its seed is lost.",
                 FarmingRefusal.UnknownCrop => "That is not a crop.",
+                FarmingRefusal.NeedsNoTending => "A sapling needs no tending.",
+                FarmingRefusal.OutdoorPlotOnly => "A sapling needs an outdoor garden plot in a city, not one inside a house.",
+                FarmingRefusal.NoOpenGroundOnStation => "A station deck has no open ground for a sapling.",
                 _ => string.Empty
             };
         }

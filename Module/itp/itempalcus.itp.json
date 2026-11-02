@@ -56353,6 +56353,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fine Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_fine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ancient Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_ancient"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aracia Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_aracia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hyphae Wood Tree Sapling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sapling_hyphae"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wood Baton Frame"
                     },
                     "RESREF": {

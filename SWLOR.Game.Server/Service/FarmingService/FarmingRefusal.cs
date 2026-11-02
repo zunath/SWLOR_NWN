@@ -46,5 +46,14 @@ namespace SWLOR.Game.Server.Service.FarmingService
 
         /// <summary>The crop is not one the farm can grow.</summary>
         UnknownCrop = 14,
+
+        /// <summary>A sapling needs no tending: its harvest is flat.</summary>
+        NeedsNoTending = 15,
+
+        /// <summary>A sapling grows only in an outdoor plot of a city, not in a house.</summary>
+        OutdoorPlotOnly = 16,
+
+        /// <summary>A station deck has no open ground for a sapling.</summary>
+        NoOpenGroundOnStation = 17,
     }
 }

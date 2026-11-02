@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -105,7 +106,8 @@ public sealed class CraftSessionLifecycle
             Components = components,
             Enhancements = enhancements,
             StationFee = stationFee?.Fee ?? 0,
-            StationFeePropertyId = stationFee?.PropertyId
+            StationFeePropertyId = stationFee?.PropertyId,
+            CityId = _world.GetStationCityId(player)
         };
         _world.SaveRecord(dbPlayer);
         _world.PersistCharacter(player);
@@ -141,7 +143,7 @@ public sealed class CraftSessionLifecycle
         var outcome = CraftOutcomeRules.CalculateSuccess(
             quality,
             recipe.Level,
-            PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken),
+            PacedBaseXp(dbPlayer, record, recipe, GetRank(dbPlayer, recipe), actionsTaken),
             firstTime,
             blueprintLevel,
             recipe.Category == RecipeCategoryType.Food,
@@ -238,7 +240,7 @@ public sealed class CraftSessionLifecycle
             _random,
             enhancements.Count,
             record.Components.Count,
-            PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken ?? record.ActionsTaken),
+            PacedBaseXp(dbPlayer, record, recipe, GetRank(dbPlayer, recipe), actionsTaken ?? record.ActionsTaken),
             record.BlueprintLevel);
 
         var kept = new List<string>();
@@ -550,14 +552,16 @@ public sealed class CraftSessionLifecycle
 
     /// <summary>
     /// The recipe's base XP held to the modeled pace: scaled by the share the craft's actions earned in the time since it began
-    /// (<see cref="CraftMinigameXp.PaceShare"/>), by the world's clock.
+    /// (<see cref="CraftMinigameXp.PaceShare"/>), by the world's clock, and then by the points the player's city adds for a craft made at
+    /// a station in it (Artisans' Charter), judged now and for the city the craft recorded when it started.
     /// </summary>
-    private int PacedBaseXp(CraftSessionRecord record, RecipeDetail recipe, int rank, int actionsTaken)
+    private int PacedBaseXp(Player dbPlayer, CraftSessionRecord record, RecipeDetail recipe, int rank, int actionsTaken)
     {
         var elapsedSeconds = (_world.UtcNow - record.StartedUtc).TotalSeconds;
-        return CraftMinigameXp.ScaleBaseXp(
+        var paced = CraftMinigameXp.ScaleBaseXp(
             CraftMinigameXp.BaseXp(recipe, rank),
             CraftMinigameXp.PaceShare(elapsedSeconds, actionsTaken));
+        return EdictBonusRules.ScaleCraftXp(paced, _world.GetCraftXpBonusPoints(dbPlayer, record.CityId));
     }
 
     private static void AddPendingXp(Player dbPlayer, SkillType skill, int xp)

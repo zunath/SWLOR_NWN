@@ -926,7 +926,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ship.Status.MaxHull - ship.Status.Hull,
                 sizeMultiplier,
                 starportLevel,
-                GetAbilityScore(Player, AbilityType.Social));
+                GetAbilityScore(Player, AbilityType.Social),
+                EdictEffects.GetDrydockSubsidyDiscount(dbPlayer));
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)

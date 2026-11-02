@@ -34,7 +34,7 @@ public class SpaceTransferCrashSafetyTests
             "ride.PaymentId = mark.Id;",
             "DB.Set(ride);",
             "CreditPayments.Retire(player);",
-            "dbCity.Treasury += tax;");
+            "dbCity.Treasury += income;");
         InOrder(Method(shuttle, "private static bool CanPurchaseTicket("),
             "if (GetRide(GetObjectUUID(player)) != null)", "if (GetGold(player) < fare + tax)");
 

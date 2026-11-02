@@ -390,6 +390,11 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public bool CanReceiveXp(uint player) => !GetIsDead(player) && GetCurrentHitPoints(player) > 0;
 
+    public string GetStationCityId(uint player) => Property.GetCityIdForArea(GetArea(player));
+
+    public int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId) =>
+        EdictEffects.GetArtisansCharterPoints(dbPlayer, craftCityId);
+
     public void SaveRecord(Player dbPlayer) => DB.Set(dbPlayer);
 
     public string SerializeItem(uint item) => ObjectPlugin.Serialize(item);

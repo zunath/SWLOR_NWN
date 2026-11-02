@@ -468,6 +468,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The id of the city an area belongs to: the city's own land (a planet area or a station deck), or the interior of a building
+        /// or house in it. Walks the instance, building, and city chain. An area outside any city, such as an apartment or a ship,
+        /// gives an empty string.
+        /// </summary>
+        /// <param name="area">The area to look up.</param>
+        public static string GetCityIdForArea(uint area)
+        {
+            if (!GetIsObjectValid(area))
+                return string.Empty;
+
+            // An interior's parent is its building, and the building's parent is the city.
+            var propertyId = GetPropertyId(area);
+            for (var depth = 0; depth < 4 && !string.IsNullOrWhiteSpace(propertyId); depth++)
+            {
+                var property = DB.Get<WorldProperty>(propertyId);
+                if (property == null)
+                    return string.Empty;
+
+                if (property.PropertyType == PropertyType.City)
+                    return property.Id;
+
+                propertyId = property.ParentPropertyId;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Registers an area instance to a given property Id.
         /// </summary>
         /// <param name="propertyId">The property Id</param>
@@ -1444,6 +1472,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
                 }
+
+                // A ship whose owner lost the right to use its Starport, and whose 7-day departure pass ran out, leaves it.
+                StarportDeparture.ReturnStrandedShip(property);
 
                 ReturnStarshipToSafeDock(property);
 

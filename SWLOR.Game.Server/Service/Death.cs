@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
@@ -273,7 +274,10 @@ namespace SWLOR.Game.Server.Service
             var social = GetAbilityScore(player, AbilityType.Social);
             var newDebt = dbPlayer.TotalSPAcquired * multiplier;
             var reductionBonus = 0f;
-            reductionBonus += Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel) * 0.05f; // -5% per Medical Center level
+            // -5% per Medical Center level, halved while a situation has the Center rationing
+            reductionBonus += EdictBonusRules.GetMedicalCenterReduction(
+                Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel),
+                EdictEffects.IsMedicalCenterHalved(dbPlayer));
 
             if (social > 10)
             {

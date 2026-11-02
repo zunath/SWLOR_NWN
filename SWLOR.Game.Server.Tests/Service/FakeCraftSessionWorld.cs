@@ -261,6 +261,20 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>True stops the server at the moment the lifecycle asks whether XP can be given: the record is saved, the award never runs.</summary>
     public bool StopBeforeXpGrant { get; set; }
 
+    /// <summary>The city the player's station stands in, which a craft records when it starts.</summary>
+    public string StationCityId { get; set; } = string.Empty;
+
+    /// <summary>The points Artisans' Charter adds at settlement, for a craft made in <see cref="CharterCityId"/>.</summary>
+    public int CharterPoints { get; set; }
+
+    /// <summary>The city whose citizens the charter pays; a craft made anywhere else gets nothing.</summary>
+    public string CharterCityId { get; set; } = string.Empty;
+
+    public string GetStationCityId(uint player) => StationCityId;
+
+    public int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId) =>
+        !string.IsNullOrEmpty(craftCityId) && craftCityId == CharterCityId ? CharterPoints : 0;
+
     public bool CanReceiveXp(uint player)
     {
         if (StopBeforeXpGrant)

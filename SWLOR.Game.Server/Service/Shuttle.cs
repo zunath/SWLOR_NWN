@@ -3,7 +3,9 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.ShuttleService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -825,9 +827,13 @@ namespace SWLOR.Game.Server.Service
                 var dbCity = DB.Get<WorldProperty>(cityPropertyId);
                 if (dbCity != null)
                 {
-                    dbCity.Treasury += tax;
+                    // A dock workers' strike halves the city's income from the tax; the passenger pays the same.
+                    var income = EdictBonusRules.GetTransportationIncome(
+                        tax,
+                        CityAffairs.IsModifierActive(dbCity, CityModifierType.TransportationIncomeHalved));
+                    dbCity.Treasury += income;
                     DB.Set(dbCity);
-                    Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {Station.GetStopName(route.Destination)}.");
+                    Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {Station.GetStopName(route.Destination)}; {income} reached the treasury.");
                 }
             }
         }

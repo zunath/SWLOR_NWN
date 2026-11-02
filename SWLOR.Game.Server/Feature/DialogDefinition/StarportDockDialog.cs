@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -180,6 +181,24 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             return;
                         }
 
+                        // Docking follows the Starport's access order (Embargo, citizens, allies, Open Gates). A departure pass is
+                        // a way out for ships already docked, never a way to dock another.
+                        var starportCity = Station.GetCityOfInterior(dockPoint.PropertyId);
+                        if (starportCity != null)
+                        {
+                            var dockerRecord = DB.Get<Player>(playerId);
+                            var access = EdictEffects.GetFacilityAccess(dockerRecord, starportCity);
+                            if (!FacilityAccessRules.CanDock(access))
+                            {
+                                SendMessageToPC(player, ColorToken.Red(FacilityAccessRules.DescribeRefusal(
+                                    access,
+                                    dockerRecord?.PropertyOwedTaxes ?? 0,
+                                    dockerRecord?.CitizenPropertyId == starportCity.Id,
+                                    FacilityAccessRules.StarportDockingNotWelcomeMessage)));
+                                return;
+                            }
+                        }
+
                         var starportLoadState = Property.GetPropertyLoadState(dockPoint.PropertyId);
                         if (starportLoadState != PropertyLoadState.Loaded)
                         {
@@ -324,6 +343,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     };
 
                     DB.Set(dbProperty);
+
+                    // A ship docked at a player Starport starts its pilot's and owner's departure pass there, when they may use it.
+                    if (!dockPoint.IsNPC)
+                        StarportDeparture.OnArrived(playerId, dbProperty.OwnerPlayerId, dbStarport.Id);
 
                     Close();
                     Space.WarpPlayerInsideShip(player);

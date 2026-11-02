@@ -4781,6 +4781,34 @@
         "__struct_id": 5,
         "Comment": {
           "type": "cexostring",
+          "value": "Spa south water"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Spa south deck"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Spa north water"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Spa north deck"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
           "value": "Local /stuck recovery at the area entrance or medical terminal"
         }
       }

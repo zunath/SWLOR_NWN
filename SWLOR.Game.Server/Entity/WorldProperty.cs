@@ -150,5 +150,23 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The credits <see cref="PendingPaymentId"/> takes.</summary>
         public int PendingPaymentCredits { get; set; }
+
+        /// <summary>
+        /// City-wide condition: when citizens voted No on the sitting mayor. Set when a confidence vote fails and cleared
+        /// by the next election that ends in an outright win. Null when clear. Edicts pause while it is set.
+        /// </summary>
+        public DateTime? NoConfidenceSinceUtc { get; set; }
+
+        /// <summary>
+        /// City-wide condition: when the city's politics were found neglected (an empty second recall). Cleared by the
+        /// next election that ends with at least one candidate and one vote. Null when clear. Set by the recall path.
+        /// </summary>
+        public DateTime? NeglectSinceUtc { get; set; }
+
+        /// <summary>
+        /// The result of the city's latest election, for the notice citizens read at their next login. Older records
+        /// load with none.
+        /// </summary>
+        public ElectionResultRecord LastElectionResult { get; set; }
     }
 }

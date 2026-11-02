@@ -126,12 +126,14 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance), typeof(_31_ConvertSpaceItems) },
-            "each unreleased release (30 next, 31 the space revamp) receives one combined stored-item pass");
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance), typeof(_31_ConvertSpaceItems), typeof(_32_PlayerCityRevamp) },
+            "each unreleased release (30 next, 31 the space revamp, 32 the city revamp) receives one combined pass");
         new _30_ConsolidatePelvisAppearance().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _30_ConsolidatePelvisAppearance().Version.Should().Be(ReleasedServerVersion + 1);
         new _31_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _31_ConvertSpaceItems().Version.Should().Be(ReleasedServerVersion + 2);
+        new _32_PlayerCityRevamp().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
+        new _32_PlayerCityRevamp().Version.Should().Be(ReleasedServerVersion + 3);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

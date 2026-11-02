@@ -229,6 +229,16 @@ namespace SWLOR.Game.Server.Entity
         public int MarketListingLimit { get; set; }
         [Indexed]
         public string CitizenPropertyId { get; set; }
+
+        /// <summary>
+        /// When the character became a citizen of <see cref="CitizenPropertyId"/>, reset each time it joins a city. A
+        /// character may vote in an election only if this is at or before the time registration opened. Null when the
+        /// character is not a citizen.
+        /// </summary>
+        public DateTime? CitizenSinceUtc { get; set; }
+
+        /// <summary>The id of the latest city election result this character has read at login.</summary>
+        public string SeenElectionResultId { get; set; }
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int Accuracy { get; set; }

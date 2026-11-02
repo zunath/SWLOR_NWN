@@ -232,6 +232,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnOpenCitizenship = "open_citizenship";
         public const string OnOpenCityManage = "open_city_manage";
         public const string OnOpenPropertyBank = "open_prop_bank";
+        public const string OnDuelingRingUsed = "duel_ring_used";
 
         // Quest events
         public const string OnQuestCollectOpen = "qst_collect_open";

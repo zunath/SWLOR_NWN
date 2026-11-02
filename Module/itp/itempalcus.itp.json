@@ -23554,6 +23554,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Dueling Ring"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5101"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Ladder, Dark"
               },
               "RESREF": {

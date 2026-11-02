@@ -55,24 +55,18 @@ namespace SWLOR.Game.Server.Service
 
             StatusEffect.ClearStatusEffectsOnDeath(player);
 
-            if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
+            // A duel, and the protection after a third party voids one, turns a fall into a subdual whoever landed the
+            // blow and whatever either player's settings are.
+            if (Duels.TakeFall(player, hostile))
+            {
+                ApplySubdual(player, PvpCombat.GetControllingPlayer(hostile));
+            }
+            else if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
             {
                 var hostilePlayerId = GetObjectUUID(hostile);
                 var dbHostilePlayer = DB.Get<Player>(hostilePlayerId);
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
-                {
-                    if (CombatRecorder.IsRecording)
-                        CombatRecorder.RecordSubdual(player, hostile);
-                    SendMessageToPC(player, "You have been subdued.");
-                    Messaging.SendMessageNearbyToPlayers(
-                        player,
-                        receiver => $"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.");
-                    ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
-                    Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(player);
-                    DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
-                    StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
-                    StatusEffect.ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
-                }
+                    ApplySubdual(player, hostile);
             }
             else
             {
@@ -81,6 +75,29 @@ namespace SWLOR.Game.Server.Service
 
                 WriteAudit(player);
             }
+        }
+
+        /// <summary>
+        /// Stands a fallen player back up as subdued: knocked down and penalized, but alive.
+        /// </summary>
+        /// <param name="player">The player who fell.</param>
+        /// <param name="subduer">The player credited with the blow, or OBJECT_INVALID when no player is.</param>
+        private static void ApplySubdual(uint player, uint subduer)
+        {
+            var hasSubduer = GetIsObjectValid(subduer);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordSubdual(player, subduer);
+            SendMessageToPC(player, "You have been subdued.");
+            Messaging.SendMessageNearbyToPlayers(
+                player,
+                receiver => hasSubduer
+                    ? $"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, subduer)}."
+                    : $"{PlayerName.GetDisplayName(receiver, player)} has been subdued.");
+            ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+            Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(player);
+            DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
+            StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
+            StatusEffect.ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
         }
 
         /// <summary>

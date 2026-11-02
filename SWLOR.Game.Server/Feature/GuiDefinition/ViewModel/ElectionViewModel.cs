@@ -452,7 +452,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CastVoteAndReport(_candidatePlayerIds[_selectedCandidateIndex], false);
         };
 
-
         public Action VoteYes() => () => CastConfidenceVote(false);
 
         public Action VoteNo() => () => CastConfidenceVote(true);

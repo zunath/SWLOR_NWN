@@ -1947,28 +1947,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 467,
+    "Line": 466,
     "Member": "CastConfidenceVote",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"This election has ended.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 482,
+    "Line": 481,
     "Member": "CastVoteAndReport",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 494,
+    "Line": 493,
     "Member": "CastVoteAndReport",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs",
-    "Line": 501,
+    "Line": 500,
     "Member": "ClearVoteAndReport",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, string.IsNullOrEmpty(error) ? \"You have abstained from voting for this election.\" : error)"

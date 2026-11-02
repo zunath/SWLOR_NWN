@@ -30,6 +30,14 @@ namespace SWLOR.Game.Server.Service.FarmingService
             return this;
         }
 
+        /// <summary>Marks the crop as a woodlot sapling, which grows for <see cref="WoodlotRules.GrowHours"/> whatever its tier.</summary>
+        public CropBuilder Sapling()
+        {
+            _active.IsSapling = true;
+            _active.GrowHours = WoodlotRules.GrowHours;
+            return this;
+        }
+
         public CropBuilder Seed(string resref)
         {
             _active.SeedResref = resref;

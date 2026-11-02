@@ -143,6 +143,7 @@ namespace SWLOR.Game.Server.Core
         // Farming events
         public const string OnGardenPlotUsed = "garden_plot_used";
         public const string OnCorralUsed = "corral_used";
+        public const string OnFermentationVatUsed = "ferment_vat_used";
 
         // Aura events
         public const string OnAuraEnter = "aura_enter";

@@ -165,6 +165,8 @@ public class ForceSensitiveEspionageTests
         source.Should().Contain("Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);");
         source.Should().Contain("StatusEffect.RemoveStatusEffectsWithNegativeStat(activator, StatType.MovementSpeedPercentAdjustment);");
         source.Should().Contain("!MindTrickAbilityDefinition.IsNonMechanical(enemy)", "droids are never decoyed");
+        source.Should().Contain("for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())",
+            "players attacking the caster keep no enmity table but are still decoyed");
         source.IndexOf("GetOrganicEnemiesTargeting(activator).ToList();", StringComparison.Ordinal)
             .Should().BeLessThan(source.IndexOf("Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);", StringComparison.Ordinal),
                 "attackers are read before the enmity drop sends them elsewhere");
@@ -224,8 +226,12 @@ public class ForceSensitiveEspionageTests
         var stealth = ReadSource("Service", "Stealth.cs");
         var rollStart = stealth.IndexOf("private static bool GetOrRollVerdict", StringComparison.Ordinal);
         var rollBody = stealth[rollStart..stealth.IndexOf("public static bool IsDetectionRollSuccessful", StringComparison.Ordinal)];
-        rollBody.Should().Contain("IsObserverClouded(observer)");
+        rollBody.Should().Contain("IsStealthDetectionBlocked(observer)");
         rollBody.Should().Contain("IsCloudedDetectionRollSuccessful(detectionDie, playerObserver)");
+
+        stealth.Should().Contain("return Stat.GetStatAdjustment(observer, StatType.StealthDetectionBlocked) > 0;");
+        stealth.Should().NotContain("CloudedMindStatusEffect", "shared detection reads the stat, never the perk's status class");
+        new CloudedMindStatusEffect().StatGroup.Stats[StatType.StealthDetectionBlocked].Should().Be(1);
 
         var status = ReadSource("Feature", "StatusEffectDefinition", "CloudedMindStatusEffect.cs");
         status.Should().Contain("Stealth.ClearVerdictsForObserver(creature);", "cached verdicts must not outlive a change in sight");
@@ -250,10 +256,16 @@ public class ForceSensitiveEspionageTests
         var source = ReadSource("Service", "EspionageInfiltration.cs");
         var start = source[source.IndexOf("private static bool CanStartAttempt", StringComparison.Ordinal)..];
         start[..start.IndexOf("var master = GetMaster(npc);", StringComparison.Ordinal)]
-            .Should().Contain("!IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsObserverClouded(npc))");
+            .Should().Contain("!IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc))");
+        var record = source[source.IndexOf("public static void RecordDetection", StringComparison.Ordinal)..];
+        record = record[..record.IndexOf("if (!AI.IsInAggroRange(observer, target))", StringComparison.Ordinal)];
+        record.Should().Contain("if (Stealth.IsStealthDetectionBlocked(observer))",
+            "an attempt a clouded observer let through never pays, even after the cloud lifts");
+        record.Should().Contain("TryMarkResolved(target, observer);");
+        source.Should().NotContain("CloudedMindStatusEffect");
         var grant = source[source.IndexOf("private static void GrantXp", StringComparison.Ordinal)..];
         grant[..grant.IndexOf("Skill.GiveSkillXP", StringComparison.Ordinal)]
-            .Should().Contain("IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsObserverClouded(npc))");
+            .Should().Contain("IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc))");
     }
 
     [TestCase(true, false, false, false, true)]
@@ -299,6 +311,9 @@ public class ForceSensitiveEspionageTests
             "a grant whose entry never happened still expires with its window");
         stealth.Should().Contain("var generation = ScheduleTimedExit(creature, durationSeconds);");
 
+        stealth.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ClearGrantedStealthOnEnter()",
+            "a grant saved with the character must not survive a reconnect");
+        stealth.Should().Contain("[NWNEventHandler(ScriptName.OnModuleExit)]\n        public static void ClearGrantedStealthOnExit()");
         var exitStart = stealth.IndexOf("public static void OnStealthExited()", StringComparison.Ordinal);
         stealth[exitStart..stealth.IndexOf("public static void ResolveSpotDetection()", StringComparison.Ordinal)]
             .Should().Contain("ClearGrantedStealth(creature);");

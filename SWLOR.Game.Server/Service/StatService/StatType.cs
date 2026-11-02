@@ -6413,6 +6413,13 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         BlastDamagePercentAdjustment = 1170,
 
+        /// <summary>
+        /// Non-zero prevents the creature from spotting anyone in stealth. A player observer still
+        /// spots on a natural 20.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        StealthDetectionBlocked = 1322,
+
 
     }
 

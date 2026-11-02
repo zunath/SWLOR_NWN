@@ -91,12 +91,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         }
 
         /// <summary>
-        /// Living, organic enemies holding the caster on their enmity table whose current or
-        /// queued attack target is the caster. Droids still lose enmity but are never decoyed.
+        /// Living, organic enemies whose current or queued attack target is the caster: NPCs that
+        /// hold the caster on their enmity table, and players attacking the caster (players keep no
+        /// enmity table). Droids still lose enmity but are never decoyed.
         /// </summary>
         public static IEnumerable<uint> GetOrganicEnemiesTargeting(uint activator)
         {
-            foreach (var enemy in Enmity.GetEnmityTowardsAllEnemies(activator).Keys)
+            var candidates = new HashSet<uint>(Enmity.GetEnmityTowardsAllEnemies(activator).Keys);
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (player != activator &&
+                    !GetIsDM(player) &&
+                    GetArea(player) == GetArea(activator) &&
+                    GetIsReactionTypeHostile(activator, player))
+                    candidates.Add(player);
+            }
+
+            foreach (var enemy in candidates)
             {
                 if (!GetIsObjectValid(enemy) ||
                     GetIsDead(enemy) ||

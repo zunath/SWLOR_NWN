@@ -71,6 +71,15 @@ namespace SWLOR.Game.Server.Service
                     return;
             }
 
+            if (Stealth.IsStealthDetectionBlocked(observer))
+            {
+                // A blinded observer supplied this traversal, so it pays no bypass XP even if the
+                // cloud lifts before the player leaves.
+                _activeAttempts.Remove(key);
+                TryMarkResolved(target, observer);
+                return;
+            }
+
             if (!AI.IsInAggroRange(observer, target))
                 return;
 
@@ -273,7 +282,7 @@ namespace SWLOR.Game.Server.Service
                 GetCurrentHitPoints(npc) <= 0 ||
                 !GetActionMode(player, ActionMode.Stealth) ||
                 GetLocalInt(player, Stealth.CombatEntryWindowVariable) != 0 ||
-                !IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsObserverClouded(npc)) ||
+                !IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc)) ||
                 Enmity.HasNonProximityEnmityForCreature(player) ||
                 !AI.IsCreatureAIEnabled(npc) ||
                 CreaturePlugin.GetFaction(npc) != HostileFactionId ||
@@ -367,7 +376,7 @@ namespace SWLOR.Game.Server.Service
         private static void GrantXp(uint player, uint npc, bool wasDetected)
         {
             // Cloud Mind can land after the attempt started; the bypass still pays nothing.
-            if (!IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsObserverClouded(npc)))
+            if (!IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc)))
                 return;
 
             var playerId = GetObjectUUID(player);

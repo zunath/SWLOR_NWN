@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,6 +18,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
         public override bool PersistsOnLogout => false;
+
+        public CloudedMindStatusEffect()
+        {
+            StatGroup.Stats[StatType.StealthDetectionBlocked] = 1;
+        }
 
         protected override void Apply(uint creature, int durationTicks)
         {

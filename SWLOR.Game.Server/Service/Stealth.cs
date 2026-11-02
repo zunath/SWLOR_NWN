@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using NWNXLib = NWN.Native.API.NWNXLib;
@@ -320,6 +321,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Local variables are saved with the character, but the window's timer belongs to the old
+        /// creature object, so a grant never outlives the session that received it.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ClearGrantedStealthOnEnter()
+        {
+            ClearGrantedStealth(GetEnteringObject());
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ClearGrantedStealthOnExit()
+        {
+            ClearGrantedStealth(GetExitingObject());
+        }
+
+        /// <summary>
         /// A granted window ends with the player's death so a quick respawn cannot reuse it.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleDeath)]
@@ -487,7 +504,7 @@ namespace SWLOR.Game.Server.Service
                 return verdict.Detected;
 
             var detectionDie = Random.D20(1);
-            var detected = IsObserverClouded(observer)
+            var detected = IsStealthDetectionBlocked(observer)
                 ? IsCloudedDetectionRollSuccessful(detectionDie, playerObserver)
                 : IsDetectionRollSuccessful(
                     detectionDie,
@@ -529,9 +546,12 @@ namespace SWLOR.Game.Server.Service
             return playerObserver && detectionDie >= 20;
         }
 
-        public static bool IsObserverClouded(uint observer)
+        /// <summary>
+        /// Returns whether the observer cannot spot stealth (for example under Cloud Mind).
+        /// </summary>
+        public static bool IsStealthDetectionBlocked(uint observer)
         {
-            return StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(observer);
+            return Stat.GetStatAdjustment(observer, StatType.StealthDetectionBlocked) > 0;
         }
 
         public static int GetCloseRangeDetectionBonus(bool closeRange)

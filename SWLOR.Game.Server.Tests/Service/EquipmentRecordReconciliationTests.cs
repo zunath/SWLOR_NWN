@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -82,6 +83,9 @@ public class EquipmentRecordReconciliationTests
     public void NakedRecord_ReturnsToZeroAndTheBases()
     {
         var record = Record(physical: -32, force: -47, evasion: 7, maxFP: Stat.BaseFP - 18, maxStamina: Stat.BaseSTM + 3);
+        record.Control[SkillType.Smithery] = -21;
+        record.Craftsmanship[SkillType.Smithery] = -6;
+        record.CPBonus[SkillType.Smithery] = -5;
 
         var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(), EquipmentRecordStats.All);
 
@@ -91,6 +95,96 @@ public class EquipmentRecordReconciliationTests
         record.Evasion.Should().Be(0);
         record.MaxFP.Should().Be(Stat.BaseFP);
         record.MaxStamina.Should().Be(Stat.BaseSTM);
+        record.Control[SkillType.Smithery].Should().Be(0, "Control comes only from gear");
+        record.Craftsmanship[SkillType.Smithery].Should().Be(0, "Craftsmanship comes only from gear");
+        record.CPBonus[SkillType.Smithery].Should().Be(0, "CP Bonus comes only from gear");
+    }
+
+    // Smithery gear with a Fabrication piece, as iprp_crafttype.2da subtypes: 1 Smithery, 3 Fabrication.
+    private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] CraftingGear =
+    {
+        (ItemPropertyType.Control, 1, 4), (ItemPropertyType.Craftsmanship, 1, 2), (ItemPropertyType.CPBonus, 1, 5),
+        (ItemPropertyType.Control, 1, 3), (ItemPropertyType.Craftsmanship, 1, 1), (ItemPropertyType.CPBonus, 1, 1),
+        (ItemPropertyType.Control, 3, 5),
+        // An unknown craft subtype feeds no skill, as equipping skips it.
+        (ItemPropertyType.Craftsmanship, 0, 9),
+    };
+
+    [Test]
+    public void Totals_CountControlCraftsmanshipAndCPBonusPerCraftSkill()
+    {
+        var totals = Totals(CraftingGear);
+
+        totals.GetControl(SkillType.Smithery).Should().Be(7);
+        totals.GetCraftsmanship(SkillType.Smithery).Should().Be(3);
+        totals.GetCPBonus(SkillType.Smithery).Should().Be(6);
+        totals.GetControl(SkillType.Fabrication).Should().Be(5);
+        totals.GetCraftsmanship(SkillType.Fabrication).Should().Be(0);
+        totals.GetControl(SkillType.Engineering).Should().Be(0);
+        totals.GetControl(SkillType.Agriculture).Should().Be(0);
+    }
+
+    [TestCase(1, SkillType.Smithery)]
+    [TestCase(2, SkillType.Engineering)]
+    [TestCase(3, SkillType.Fabrication)]
+    [TestCase(4, SkillType.Agriculture)]
+    [TestCase(0, SkillType.Invalid)]
+    [TestCase(5, SkillType.Invalid)]
+    [TestCase(-1, SkillType.Invalid)]
+    public void CraftSubtypes_MapToTheCraftTypeTable(int subtype, SkillType expected)
+    {
+        EquipmentStatTotals.GetCraftSkill(subtype).Should().Be(expected);
+    }
+
+    [Test]
+    public void NegativeCraftingRecords_AreRebuiltFromTheWornGear()
+    {
+        // The reported state: one helmet's Smithery Control, Craftsmanship and CP Bonus subtracted without being added.
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        record.Control[SkillType.Smithery] = -21;
+        record.Craftsmanship[SkillType.Smithery] = -6;
+        record.CPBonus[SkillType.Smithery] = -5;
+        record.Control[SkillType.Engineering] = 4;
+
+        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All);
+
+        corrected.Should().Be(EquipmentRecordStats.Control | EquipmentRecordStats.Craftsmanship | EquipmentRecordStats.CPBonus);
+        record.Control[SkillType.Smithery].Should().Be(7);
+        record.Craftsmanship[SkillType.Smithery].Should().Be(3);
+        record.CPBonus[SkillType.Smithery].Should().Be(6);
+        record.Control[SkillType.Fabrication].Should().Be(5);
+        record.Control[SkillType.Engineering].Should().Be(0, "no worn gear grants Engineering Control");
+        record.Craftsmanship.Should().NotContainKey(SkillType.Invalid);
+
+        Stat.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All)
+            .Should().Be(EquipmentRecordStats.None, "a rebuilt record matches the gear");
+    }
+
+    [Test]
+    public void MissingCraftingEntries_ReadAsZeroAndAreNotCorrected()
+    {
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+
+        Stat.ApplyEquipmentStatTotals(record, Totals(),
+                EquipmentRecordStats.Control | EquipmentRecordStats.Craftsmanship | EquipmentRecordStats.CPBonus)
+            .Should().Be(EquipmentRecordStats.None);
+        record.Control.Should().BeEmpty();
+    }
+
+    [Test]
+    public void LegacyRecordWithoutCraftingMaps_IsRebuiltInsteadOfThrowing()
+    {
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        record.Control = null!;
+        record.Craftsmanship = null!;
+        record.CPBonus = null!;
+
+        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All);
+
+        corrected.Should().Be(EquipmentRecordStats.Control | EquipmentRecordStats.Craftsmanship | EquipmentRecordStats.CPBonus);
+        record.Control[SkillType.Smithery].Should().Be(7);
+        record.Craftsmanship[SkillType.Smithery].Should().Be(3);
+        record.CPBonus[SkillType.Smithery].Should().Be(6);
     }
 
     [Test]
@@ -151,6 +245,9 @@ public class EquipmentRecordReconciliationTests
     [TestCase(ItemPropertyType.Evasion, EquipmentRecordStats.Evasion)]
     [TestCase(ItemPropertyType.FP, EquipmentRecordStats.FP)]
     [TestCase(ItemPropertyType.Stamina, EquipmentRecordStats.Stamina)]
+    [TestCase(ItemPropertyType.Control, EquipmentRecordStats.Control)]
+    [TestCase(ItemPropertyType.Craftsmanship, EquipmentRecordStats.Craftsmanship)]
+    [TestCase(ItemPropertyType.CPBonus, EquipmentRecordStats.CPBonus)]
     [TestCase(ItemPropertyType.HPBonus, EquipmentRecordStats.None)]
     [TestCase(ItemPropertyType.Attack, EquipmentRecordStats.None)]
     public void ItemProperties_SelectTheRecordsTheyFeed(ItemPropertyType type, EquipmentRecordStats expected)

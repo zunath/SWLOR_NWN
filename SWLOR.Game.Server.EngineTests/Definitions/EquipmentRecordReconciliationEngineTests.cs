@@ -12,13 +12,16 @@ using Player = SWLOR.Game.Server.Entity.Player;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// Stored equipment Defense, Evasion, max FP and max STM follow the gear actually worn.
+    /// Stored equipment Defense, Evasion, max FP, max STM, Control, Craftsmanship and CP Bonus follow the gear actually worn.
     /// </summary>
     public static class EquipmentRecordReconciliationEngineTests
     {
         private const string Category = "EquipmentRecordReconciliation";
         private const int DriftedPhysical = -32;
         private const int DriftedForce = -47;
+        private const int DriftedSmitheryControl = -21;
+        private const int DriftedSmitheryCraftsmanship = -6;
+        private const int DriftedSmitheryCPBonus = -5;
 
         private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] BeltProperties =
         {
@@ -270,6 +273,88 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(attack, Record(player).Attack, "unequipping returns Attack to its base");
         }
 
+        private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] SmitheryRingProperties =
+        {
+            // iprp_crafttype.2da subtype 1 is Smithery.
+            (ItemPropertyType.Control, 1, 4),
+            (ItemPropertyType.Craftsmanship, 1, 2),
+            (ItemPropertyType.CPBonus, 1, 3),
+        };
+
+        // The Eternal Helmet's crafting stats, whose second removal produced the reported -21/-6 (and -5 CP).
+        private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] EternalHelmetProperties =
+        {
+            (ItemPropertyType.Control, 1, 21),
+            (ItemPropertyType.Craftsmanship, 1, 6),
+            (ItemPropertyType.CPBonus, 1, 5),
+        };
+
+        [EngineTest("Two queued unequips of a worn Smithery helmet subtract its crafting stats once", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task RepeatedHelmetUnequipSubtractsCraftingOnce(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            var worn = GetItemInSlot(InventorySlot.Head, player);
+            if (GetIsObjectValid(worn)) await UnequipAsync(ctx, player, worn);
+            var helmet = await CreateItemAsync(ctx, player, "eternal_helmet", EternalHelmetProperties);
+            await EquipAsync(ctx, player, helmet, InventorySlot.Head);
+            AssertCrafting(ctx, player, control: 21, craftsmanship: 6, cpBonus: 5, "equipping the helmet adds its stats");
+
+            // Before the unequip handler skipped unworn items, the second unequip subtracted the helmet's stats again.
+            await ctx.ExecuteInCreatureContextAsync(player, () =>
+            {
+                ActionUnequipItem(helmet);
+                ActionUnequipItem(helmet);
+            });
+            for (var frame = 0; frame < 60; frame++)
+                await ctx.WaitFrameAsync();
+            ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.Head, player), "the helmet is unequipped");
+            AssertCrafting(ctx, player, control: 0, craftsmanship: 0, cpBonus: 0,
+                "the helmet's stats are subtracted exactly once, leaving no negative values");
+        }
+
+        [EngineTest("Equip changes and login rebuild negative Smithery Control, Craftsmanship and CP Bonus", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task NegativeCraftingRecordsAreRepaired(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            var ring = await CreateItemAsync(ctx, player, "absdef_l6", SmitheryRingProperties);
+            Drift(fixture);
+            AssertCrafting(ctx, player, control: DriftedSmitheryControl, craftsmanship: DriftedSmitheryCraftsmanship,
+                cpBonus: DriftedSmitheryCPBonus, "the drifted record shows the reported negative values");
+
+            await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
+            AssertCrafting(ctx, player, control: 4, craftsmanship: 2, cpBonus: 3, "equipping the ring rebuilds the records from it");
+
+            await UnequipAsync(ctx, player, ring);
+            AssertCrafting(ctx, player, control: 0, craftsmanship: 0, cpBonus: 0, "unequipping returns the records to zero");
+
+            // Saved equipment emits no equip events at login, so only the login rebuild can repair it.
+            await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
+            Drift(fixture);
+            var corrected = EquipmentRecordStats.None;
+            const EquipmentRecordStats craftingRecords =
+                EquipmentRecordStats.Control | EquipmentRecordStats.Craftsmanship | EquipmentRecordStats.CPBonus;
+            await ctx.ExecuteInCreatureContextAsync(player, () => corrected = Stat.RefreshPlayerEquipmentStats(player, craftingRecords));
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(craftingRecords, corrected, "every crafting record is reported corrected");
+            AssertCrafting(ctx, player, control: 4, craftsmanship: 2, cpBonus: 3, "the login rebuild matches the worn ring");
+        }
+
+        private static void AssertCrafting(EngineTestContext ctx, uint player, int control, int craftsmanship, int cpBonus, string because)
+        {
+            var record = Record(player);
+            ctx.AssertEqual(cpBonus, record.CPBonus.TryGetValue(SkillType.Smithery, out var cp) ? cp : 0, $"Smithery CP Bonus record: {because}");
+            ctx.AssertEqual(control, record.Control.TryGetValue(SkillType.Smithery, out var c) ? c : 0, $"Smithery Control record: {because}");
+            ctx.AssertEqual(craftsmanship, record.Craftsmanship.TryGetValue(SkillType.Smithery, out var m) ? m : 0,
+                $"Smithery Craftsmanship record: {because}");
+            // The character sheet shows the record plus any food bonus; the fixture eats nothing.
+            ctx.AssertEqual(control, Stat.CalculateControl(player, SkillType.Smithery), $"shown Smithery Control: {because}");
+            ctx.AssertEqual(craftsmanship, Stat.CalculateCraftsmanship(player, SkillType.Smithery), $"shown Smithery Craftsmanship: {because}");
+        }
+
         private static Player Record(uint player) => DB.Get<Player>(GetObjectUUID(player));
 
         private static void Drift(PlayerAbilityFixture fixture) => fixture.Update(record =>
@@ -280,6 +365,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             record.MaxFP = Stat.BaseFP - 18;
             record.FP = 0;
             record.MaxStamina = Stat.BaseSTM;
+            record.Control[SkillType.Smithery] = DriftedSmitheryControl;
+            record.Craftsmanship[SkillType.Smithery] = DriftedSmitheryCraftsmanship;
+            record.CPBonus[SkillType.Smithery] = DriftedSmitheryCPBonus;
         });
 
         private static int ForceGap(uint player) =>

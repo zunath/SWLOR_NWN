@@ -13,6 +13,9 @@ namespace SWLOR.Game.Server.Service.StatService
         Evasion = 2,
         FP = 4,
         Stamina = 8,
-        All = Defense | Evasion | FP | Stamina
+        Control = 16,
+        Craftsmanship = 32,
+        CPBonus = 64,
+        All = Defense | Evasion | FP | Stamina | Control | Craftsmanship | CPBonus
     }
 }

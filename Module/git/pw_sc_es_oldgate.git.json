@@ -1972,6 +1972,7 @@
         }
       },
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 4
@@ -2138,6 +2139,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -2408,7 +2410,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -3025,7 +3026,6 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
           "value": 71.0
@@ -3048,6 +3048,7 @@
         }
       },
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 3
@@ -3214,6 +3215,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -3484,7 +3486,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -4101,7 +4102,6 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
           "value": 71.0
@@ -4124,6 +4124,7 @@
         }
       },
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 5
@@ -4290,6 +4291,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -4560,7 +4562,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -5177,7 +5178,6 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
           "value": 71.0
@@ -5200,6 +5200,7 @@
         }
       },
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 1
@@ -5366,6 +5367,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -5636,7 +5638,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -6253,7 +6254,6 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
           "value": 67.0
@@ -227680,15 +227680,15 @@
         },
         "X": {
           "type": "float",
-          "value": 16.77917671203613
+          "value": 9.632053375244141
         },
         "Y": {
           "type": "float",
-          "value": 55.71113204956055
+          "value": 59.96958923339844
         },
         "Z": {
           "type": "float",
-          "value": 0.01099133491516113
+          "value": 3.814697265625e-006
         }
       },
       {
@@ -313733,6 +313733,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 1
@@ -313771,7 +313772,6 @@
           "type": "resref",
           "value": "wp_stuck"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 71.97164916992188

@@ -841,6 +841,76 @@
           "type": "cexostring",
           "value": "Local /stuck recovery at the area entrance or medical terminal"
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Veylan forage - fixed spawn on walkable ground"
+        }
       }
     ]
   }

@@ -47,6 +47,7 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 1
@@ -213,6 +214,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -479,7 +481,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -1066,14 +1067,13 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
-          "value": 95.15
+          "value": 95.19068145751953
         },
         "YPosition": {
           "type": "float",
-          "value": 30.75
+          "value": 33.92111968994141
         },
         "ZPosition": {
           "type": "float",
@@ -1081,14 +1081,15 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.0
+          "value": 0.1693770736455917
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -0.9855513572692871
         }
       },
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 3
@@ -1255,6 +1256,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -1521,7 +1523,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -2123,7 +2124,6 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
           "value": 101.5
@@ -2146,6 +2146,7 @@
         }
       },
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 4
@@ -2312,6 +2313,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -2578,7 +2580,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -3180,7 +3181,6 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
           "value": 25.0
@@ -3203,6 +3203,7 @@
         }
       },
       {
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 5
@@ -3369,6 +3370,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -3635,7 +3637,6 @@
                   }
                 ]
               },
-              "__struct_id": 2,
               "Dropable": {
                 "type": "byte",
                 "value": 0
@@ -4237,7 +4238,6 @@
           "type": "list",
           "value": []
         },
-        "__struct_id": 4,
         "XPosition": {
           "type": "float",
           "value": 61.0
@@ -151912,7 +151912,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.02454369142651558
+          "value": 1.421013474464417
         },
         "BodyBag": {
           "type": "byte",
@@ -156475,6 +156475,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 1
@@ -156513,7 +156514,6 @@
           "type": "resref",
           "value": "wp_stuck"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 81.58688354492188

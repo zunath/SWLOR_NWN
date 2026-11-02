@@ -779,7 +779,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         TwinPistolFollowThrough = 841,
         TwinPistolSecondWind = 842,
         FinalSalvo = 843,
+        ForceDecoy = 844,
+        CloudMind = 845,
+        SharedPresence = 846,
 
-        // IDs 650 and 844+ are free.
+        // IDs 650 and 847+ are free.
     }
 }

@@ -730,6 +730,21 @@ namespace SWLOR.Game.Server.Service
         private static string _lastActivationDenial = string.Empty;
 
         /// <summary>
+        /// Returns whether the ability counts as a Force power: a Force skill ability, or an ability
+        /// of another skill flagged <see cref="AbilityDetail.IsForcePower"/> (Force Sensitive
+        /// Espionage powers).
+        /// </summary>
+        public static bool IsForcePower(uint activator, AbilityDetail ability)
+        {
+            return IsForcePower(ability.IsForcePower, Combat.GetAbilitySkillType(activator, ability));
+        }
+
+        public static bool IsForcePower(bool flaggedForcePower, SkillType abilitySkillType)
+        {
+            return flaggedForcePower || abilitySkillType == SkillType.Force;
+        }
+
+        /// <summary>
         /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
         /// goes through SendMessageToPC, which is invisible for NPC activators - the in-engine
         /// test harness reads this to report WHY an activation was rejected. Cleared at the
@@ -826,7 +841,7 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrEmpty(equipmentError)) return Deny(equipmentError);
             }
 
-            if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
+            if (IsForcePower(activator, ability) &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {
                 return Deny("You cannot use Force abilities right now.");

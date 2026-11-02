@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Service
         public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
 
         private const string TimedExitActiveVariable = "STEALTH_TIMED_EXIT_ACTIVE";
+        private const string GrantedStealthVariable = "STEALTH_GRANTED_WINDOW";
+        private const string GrantedStealthBonusVariable = "STEALTH_GRANTED_BONUS";
         private const float DetectionCheckIntervalSeconds = 30f;
         private const float CloseRangeDetectionCheckIntervalSeconds = 6f;
         private const float CloseRangeDetectionDistance = 5f;
@@ -46,7 +48,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
-            if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
+            if (!CanUseStealth(creature))
             {
                 EventsPlugin.SkipEvent();
                 SendMessageToPC(creature, ColorToken.Red("You have not learned to move unseen. The Stealth perk is required."));
@@ -71,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             // NWNX always fires the AFTER event even when the BEFORE event rejected the engine
             // transition. Do not create a status icon or start stamina drain unless stealth really
             // became active and the player owns the perk.
-            var ownsStealth = Perk.GetPerkLevel(creature, PerkType.Stealth) > 0;
+            var ownsStealth = CanUseStealth(creature);
             var enteredDuringCombatWithoutWindow =
                 GetIsInCombat(creature) &&
                 GetLocalInt(creature, CombatEntryWindowVariable) == 0;
@@ -88,6 +90,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 DeleteLocalInt(creature, TimedExitActiveVariable);
+                ClearGrantedStealth(creature);
                 StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
                 return;
             }
@@ -135,7 +138,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetActionMode(creature, ActionMode.Stealth))
                 return;
 
-            if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
+            if (!CanUseStealth(creature))
             {
                 Log.WriteStructured(
                     LogGroup.AI,
@@ -222,14 +225,21 @@ namespace SWLOR.Game.Server.Service
         /// Ends the stealth an ability grants after <paramref name="durationSeconds"/>. Leaving
         /// stealth first releases the window, so a later stealth entry is never ended by this timer.
         /// </summary>
-        public static void ScheduleTimedExit(uint creature, float durationSeconds)
+        public static int ScheduleTimedExit(uint creature, float durationSeconds)
         {
             var generation = ++_lastTimedExitGeneration;
             SetLocalInt(creature, TimedExitActiveVariable, generation);
 
             DelayCommand(durationSeconds, () =>
             {
-                if (!GetIsObjectValid(creature) || GetLocalInt(creature, TimedExitActiveVariable) != generation)
+                if (!GetIsObjectValid(creature))
+                    return;
+
+                // A grant whose entry never happened must not outlive its window either.
+                if (GetLocalInt(creature, GrantedStealthVariable) == generation)
+                    ClearGrantedStealth(creature);
+
+                if (GetLocalInt(creature, TimedExitActiveVariable) != generation)
                     return;
 
                 DeleteLocalInt(creature, TimedExitActiveVariable);
@@ -241,6 +251,81 @@ namespace SWLOR.Game.Server.Service
                     SetActionMode(creature, ActionMode.Stealth, false);
                 });
             });
+
+            return generation;
+        }
+
+        /// <summary>
+        /// Lets a player without the Stealth perk enter stealth for <paramref name="durationSeconds"/>
+        /// (Shared Presence). The granted stealth uses <paramref name="stealthBonus"/> in place of the
+        /// player's own perk bonus, drains no stamina, earns no bypass XP, and ends on the timer, on
+        /// detection or hostile action, or when the player leaves stealth. Returns false when the
+        /// player cannot be hidden now (not a player, dead, in combat, or already in stealth).
+        /// </summary>
+        public static bool TryGrantStealth(uint creature, int stealthBonus, float durationSeconds)
+        {
+            if (!CanReceiveGrantedStealth(
+                    GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature),
+                    GetIsDead(creature) || GetCurrentHitPoints(creature) <= 0,
+                    GetIsInCombat(creature),
+                    GetActionMode(creature, ActionMode.Stealth)))
+                return false;
+
+            // The timer runs on the member so it survives the caster logging out or leaving.
+            AssignCommand(creature, () =>
+            {
+                var generation = ScheduleTimedExit(creature, durationSeconds);
+                SetLocalInt(creature, GrantedStealthVariable, generation);
+                SetLocalInt(creature, GrantedStealthBonusVariable, Math.Max(0, stealthBonus));
+                SetActionMode(creature, ActionMode.Stealth, true);
+            });
+
+            return true;
+        }
+
+        /// <summary>
+        /// Only a living player out of combat who is not already hidden can be granted stealth.
+        /// A player already in stealth keeps their own stealth and its rules.
+        /// </summary>
+        public static bool CanReceiveGrantedStealth(bool isPlayer, bool isDead, bool isInCombat, bool isInStealth)
+        {
+            return isPlayer && !isDead && !isInCombat && !isInStealth;
+        }
+
+        /// <summary>
+        /// Returns whether the creature's current stealth window was granted by another player.
+        /// </summary>
+        public static bool HasGrantedStealth(uint creature)
+        {
+            return GetLocalInt(creature, GrantedStealthVariable) != 0;
+        }
+
+        /// <summary>
+        /// The granting caster's Stealth perk bonus, used in place of the member's own.
+        /// </summary>
+        public static int GetGrantedStealthBonus(uint creature)
+        {
+            return GetLocalInt(creature, GrantedStealthBonusVariable);
+        }
+
+        private static void ClearGrantedStealth(uint creature)
+        {
+            DeleteLocalInt(creature, GrantedStealthVariable);
+            DeleteLocalInt(creature, GrantedStealthBonusVariable);
+        }
+
+        private static bool CanUseStealth(uint creature)
+        {
+            return Perk.GetPerkLevel(creature, PerkType.Stealth) > 0 || HasGrantedStealth(creature);
+        }
+
+        /// <summary>
+        /// A granted window ends with the player's death so a quick respawn cannot reuse it.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        public static void ClearGrantedStealthOnDeath()
+        {
+            ClearGrantedStealth(GetLastPlayerDied());
         }
 
         [NWNEventHandler(ScriptName.OnStealthExitAfter)]
@@ -249,6 +334,7 @@ namespace SWLOR.Game.Server.Service
             var creature = OBJECT_SELF;
 
             DeleteLocalInt(creature, TimedExitActiveVariable);
+            ClearGrantedStealth(creature);
             EspionageInfiltration.CancelPlayer(creature);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
             ClearVerdictsForTarget(creature);
@@ -400,12 +486,15 @@ namespace SWLOR.Game.Server.Service
                 verdict.RolledAt.AddSeconds(GetDetectionCheckIntervalSeconds(closeRange)) > now)
                 return verdict.Detected;
 
-            var detected = IsDetectionRollSuccessful(
-                Random.D20(1),
-                Stat.GetDetection(observer) + GetCloseRangeDetectionBonus(closeRange),
-                Random.D20(1),
-                Stat.GetStealth(target),
-                playerObserver);
+            var detectionDie = Random.D20(1);
+            var detected = IsObserverClouded(observer)
+                ? IsCloudedDetectionRollSuccessful(detectionDie, playerObserver)
+                : IsDetectionRollSuccessful(
+                    detectionDie,
+                    Stat.GetDetection(observer) + GetCloseRangeDetectionBonus(closeRange),
+                    Random.D20(1),
+                    Stat.GetStealth(target),
+                    playerObserver);
 
             if (_verdicts.Count >= CachePruneThreshold)
                 PruneExpired(now);
@@ -429,6 +518,20 @@ namespace SWLOR.Game.Server.Service
         {
             return (naturalTwentyDetects && detectionDie >= 20) ||
                    detectionDie + detection > stealthDie + stealth;
+        }
+
+        /// <summary>
+        /// A clouded observer (Cloud Mind) cannot spot anyone in stealth. A clouded player still
+        /// spots on a natural 20, so stealth is never absolute against a player.
+        /// </summary>
+        public static bool IsCloudedDetectionRollSuccessful(int detectionDie, bool playerObserver)
+        {
+            return playerObserver && detectionDie >= 20;
+        }
+
+        public static bool IsObserverClouded(uint observer)
+        {
+            return StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(observer);
         }
 
         public static int GetCloseRangeDetectionBonus(bool closeRange)
@@ -532,6 +635,35 @@ namespace SWLOR.Game.Server.Service
             {
                 _verdicts.Remove(key);
             }
+        }
+
+        /// <summary>
+        /// Drops every cached verdict the observer rolled, so a change to how the observer sees
+        /// (Cloud Mind starting or ending) applies on its next check instead of after the cache expires.
+        /// </summary>
+        public static void ClearVerdictsForObserver(uint observer)
+        {
+            var stale = _verdicts.Keys.Where(k => k.Observer == observer).ToList();
+            foreach (var key in stale)
+            {
+                _verdicts.Remove(key);
+            }
+        }
+
+        /// <summary>
+        /// An NPC observer that just lost sight of stealthed targets stops attacking them now
+        /// instead of on its next combat round. Deferred out of the status application.
+        /// </summary>
+        public static void ReevaluateHiddenTargetsForObserver(uint observer)
+        {
+            if (GetIsPC(observer))
+                return;
+
+            DelayCommand(0f, () =>
+            {
+                if (GetIsObjectValid(observer) && Enmity.GetEnmityTable(observer).Count > 0)
+                    Enmity.AttackHighestEnmityTarget(observer);
+            });
         }
 
         private static void PruneExpired(DateTime now)

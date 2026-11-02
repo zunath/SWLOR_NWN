@@ -47,6 +47,11 @@ Each includes `inc_hd_tint`; the wrappers select lighting features while MTR
 parameters select cutoffs, hair filtering, eye limits, lip coverage and glow.
 `fs_head_plain` still receives lighting; it omits mapped textures and environment
 reflection. The three equipment shaders retain their existing behavior.
+Head materials that contain Metal 1 or Metal 2 use a profile with
+`ENVIRONMENT_MAP 1` (normally `fs_head_full`), so the engine receives the native
+palette's reflectance coverage. Removing specular-map bindings alone is not
+sufficient on an environment-disabled profile. `HeadTintAssets.py --check`
+validates both the metadata profile and the declared fragment shader.
 
 `tools/HeadTintAssets.json` owns the head MTR declarations, texture policies,
 compiled-model checksums and model/material/channel rows. Committed textures
@@ -85,6 +90,15 @@ also requires LOD 1 at 10,000 and LOD 2 at 3,000 for every head above 10,000.
 The restored heads remain work in progress until those levels preserve native
 palette and RGB overrides in the client; a passing LOD 0 audit alone does not
 satisfy that requirement.
+
+When resizing packed head shades, use `HeadTintResampling.resize_shades` before
+encoding BC5. Lanczos on a floating-point plane can produce negative values and
+values above 255; encoding those values directly wraps endpoints and creates
+bright or dark patches. Round and clamp to uint8 first. For a shade-only repair,
+`replace_shades` preserves the existing compressed categorical plane byte for
+byte, keeping eye, lip and accessory channel ownership unchanged. The regression
+test reproduces the unsafe conversion and checks the repaired DDS with a separate
+decoder.
 
 Run `python -B tools/HeadTintAssets.py --check` and
 `python -B tools/GenerateTintMapAssets.py --check` from the HAK checkout.

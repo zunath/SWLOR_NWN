@@ -154,6 +154,11 @@ def main(argv=None):
         if state['frames']:
             finish('capture_cleanup_failure',state['frames'].close)
         finish('evidence_failure',lambda: (output/'client.log').write_text(profile.log_text(owned),encoding='utf8'))
+        # Shader and texture failures are written to the engine log, not the
+        # NWScript marker log. Preserve it before removing the isolated profile.
+        for engine_log in sorted((owned/'logs').glob('nwengineLog*.txt')):
+            finish('engine_log_copy_failure',lambda path=engine_log:
+                   profile.copy_input(path,output/path.name))
         if (owned/'isolation.json').exists():
             finish('isolation_copy_failure',lambda: profile.copy_input(owned/'isolation.json',output/'isolation.json'))
         finish('shutdown_retry_failure',offline_client.retry_cleanup_before_exit)

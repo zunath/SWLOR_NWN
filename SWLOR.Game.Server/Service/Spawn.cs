@@ -42,6 +42,12 @@ namespace SWLOR.Game.Server.Service
             /// Set by the QUEST_CRITICAL local int on the spawn source object.
             /// </summary>
             public bool IsQuestCritical { get; set; }
+
+            /// <summary>
+            /// Which player city exclusion rules a hand-placed creature follows, read from the creature when the area
+            /// loads. Spawn table spawns are classified from the object they create.
+            /// </summary>
+            public SpawnExclusionClass ExclusionClass { get; set; }
         }
 
         private class ActiveSpawn
@@ -204,7 +210,8 @@ namespace SWLOR.Game.Server.Service
                             Area = area,
                             RespawnDelayMinutes = 5,
                             RespawnDelayMaximumMinutes = 5,
-                            IsQuestCritical = GetLocalInt(obj, QuestCriticalVariable) != 0
+                            IsQuestCritical = GetLocalInt(obj, QuestCriticalVariable) != 0,
+                            ExclusionClass = SpawnExclusion.Classify(obj)
                         });
 
                         // Add this entry to the spawns by area cache.
@@ -851,20 +858,23 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Chooses where a spawn is created. A fixed spawn uses its stored point and a random one draws from the area's
-        /// walkable locations. In a player city both keep clear of the buffer around its buildings and the Settled zone
-        /// around City Hall (see <see cref="SpawnExclusion"/>); elsewhere nothing is excluded.
+        /// walkable locations. In a player city, hostile creatures keep clear of the buffer around its buildings and
+        /// the Settled zone around City Hall, and harvest or scavenge nodes keep clear of the buffer; every other
+        /// spawn, and every spawn outside a city, is left as it is (see <see cref="SpawnExclusion"/>).
         /// </summary>
         /// <param name="detail">The details of the spawn.</param>
+        /// <param name="spawnClass">Which exclusion rules the spawn follows.</param>
         /// <param name="isPlaceable">True for a placeable (resource node, terminal). Random placeables keep their
         /// distance from each other so that several of them cannot block a narrow path together.</param>
         /// <param name="position">Where to create the spawn when this returns true.</param>
         /// <returns>False when the spawn is skipped until its next respawn.</returns>
-        private static bool TryGetSpawnPosition(SpawnDetail detail, bool isPlaceable, out Vector3 position)
+        private static bool TryGetSpawnPosition(SpawnDetail detail, SpawnExclusionClass spawnClass, bool isPlaceable, out Vector3 position)
         {
             if (!detail.UseRandomSpawnLocation)
             {
                 return SpawnExclusion.TryResolveFixedPosition(
                     detail.Area,
+                    spawnClass,
                     new Vector3(detail.X, detail.Y, detail.Z),
                     detail.IsQuestCritical,
                     out position);
@@ -872,6 +882,7 @@ namespace SWLOR.Game.Server.Service
 
             return SpawnExclusion.TryPickLegalPosition(
                 detail.Area,
+                spawnClass,
                 () => GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)),
                 SpawnSpacing.MaximumAttempts,
                 out position,
@@ -939,8 +950,9 @@ namespace SWLOR.Game.Server.Service
             // Deserialize and add it to the area.
             if (!string.IsNullOrWhiteSpace(detail.SerializedObject))
             {
-                // A player city's buildings may leave no legal spot. Nothing is created until the next respawn.
-                if (!TryGetSpawnPosition(detail, false, out var position))
+                // A hostile creature may have no legal spot in a player city. Nothing is created until the next respawn.
+                // The creature was classified when the area loaded, so nothing needs deserializing to skip it.
+                if (!TryGetSpawnPosition(detail, detail.ExclusionClass, false, out var position))
                     return new SpawnResult { SpawnObject = OBJECT_INVALID, WasExcluded = true };
 
                 var deserialized = ObjectPlugin.Deserialize(detail.SerializedObject);
@@ -970,14 +982,38 @@ namespace SWLOR.Game.Server.Service
                     return new SpawnResult { SpawnObject = OBJECT_INVALID };
                 }
 
+                // Only hostile creatures and harvest or scavenge nodes are excluded in a player city, and a blueprint
+                // shows which it is only once an object exists. The first spawn of a blueprint in a city is created
+                // as if unrestricted and then classified; every later one knows its class before it is placed.
+                var isPlaceable = spawnObject.Type == ObjectType.Placeable;
+                var spawnClass = SpawnExclusionClass.Other;
+                var classKnown = !SpawnExclusion.HasZone(detail.Area) ||
+                                 SpawnExclusion.TryGetClass(spawnObject.Type, spawnObject.Resref, out spawnClass);
+
                 // A player city's buildings may leave no legal spot. Nothing is created until the next respawn.
-                if (!TryGetSpawnPosition(detail, spawnObject.Type == ObjectType.Placeable, out var position))
+                if (!TryGetSpawnPosition(detail, spawnClass, isPlaceable, out var position))
                     return new SpawnResult { SpawnObject = OBJECT_INVALID, WasExcluded = true };
 
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
-                var location = Location(detail.Area, position, facing);
+                var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, Location(detail.Area, position, facing));
 
-                var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
+                if (!classKnown)
+                {
+                    spawnClass = SpawnExclusion.Remember(spawnObject.Type, spawnObject.Resref, spawn);
+
+                    // It stands where it is excluded. A placeable cannot be moved once created, so it is removed and
+                    // created again at a legal spot, or not at all.
+                    if (!SpawnExclusion.IsLegal(detail.Area, spawnClass, position))
+                    {
+                        DestroySpawnObject(spawn);
+
+                        if (!TryGetSpawnPosition(detail, spawnClass, isPlaceable, out position))
+                            return new SpawnResult { SpawnObject = OBJECT_INVALID, WasExcluded = true };
+
+                        spawn = CreateObject(spawnObject.Type, spawnObject.Resref, Location(detail.Area, position, facing));
+                    }
+                }
+
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
                 AI.SetAIFlag(spawn, spawnObject.AIFlags);

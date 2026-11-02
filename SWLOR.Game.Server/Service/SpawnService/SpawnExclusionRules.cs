@@ -6,12 +6,19 @@ using Vector3 = System.Numerics.Vector3;
 namespace SWLOR.Game.Server.Service.SpawnService
 {
     /// <summary>
-    /// Where new spawns may and may not appear inside a player city. Spawns keep 15 m from buildings, houses and other
-    /// working structures, and stay out of the Settled zone around City Hall. Pure rules with no NWN calls;
+    /// Where new spawns may and may not appear inside a player city. Hostile creatures keep 15 m from buildings, houses
+    /// and other working structures and stay out of the Settled zone around City Hall. Harvest and scavenge nodes keep
+    /// the 15 m but may stand in the Settled zone. Every other spawn is never excluded. Pure rules with no NWN calls;
     /// <see cref="SpawnExclusion"/> feeds them the city's data.
     /// </summary>
     public static class SpawnExclusionRules
     {
+        /// <summary>
+        /// The Hostile faction in Module/fac/repute.fac.json, numbered as <c>CreaturePlugin.GetFaction</c> reports it.
+        /// It is the only faction that dislikes the player faction (reputation 0, where the rest sit at 50).
+        /// </summary>
+        public const int HostileFactionId = 1;
+
         /// <summary>
         /// How far spawns keep, horizontally in meters, from every qualifying structure.
         /// </summary>
@@ -104,16 +111,47 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
-        /// Returns true when a spawn may appear at the position: it is at least 15 m from every qualifying structure
-        /// and outside the Settled zone. A position exactly on the edge of either is legal. Height is ignored.
+        /// The class of a creature spawn: Hostile when it belongs to the Hostile faction, otherwise Other.
+        /// </summary>
+        /// <param name="factionId">The creature's faction, as <c>CreaturePlugin.GetFaction</c> reports it.</param>
+        public static SpawnExclusionClass GetCreatureClass(int factionId)
+        {
+            return factionId == HostileFactionId ? SpawnExclusionClass.Hostile : SpawnExclusionClass.Other;
+        }
+
+        /// <summary>
+        /// The class of a placeable spawn: ResourceNode when it carries a harvesting or scavenging loot table (the
+        /// <c>HARVESTING_LOOT_TABLE</c> and <c>SCAVENGE_POINT_LOOT_TABLE_NAME</c> locals), otherwise Other.
+        /// Fishing points, terminals and the like are not resource nodes.
+        /// </summary>
+        /// <param name="carriesHarvestingLootTable">True when the placeable has a harvesting loot table.</param>
+        /// <param name="carriesScavengeLootTable">True when the placeable has a scavenging loot table.</param>
+        public static SpawnExclusionClass GetPlaceableClass(bool carriesHarvestingLootTable, bool carriesScavengeLootTable)
+        {
+            return carriesHarvestingLootTable || carriesScavengeLootTable
+                ? SpawnExclusionClass.ResourceNode
+                : SpawnExclusionClass.Other;
+        }
+
+        /// <summary>
+        /// Returns true when a spawn of this class may appear at the position. A position exactly on the edge of a
+        /// zone is legal. Height is ignored.
+        /// Hostile: at least 15 m from every qualifying structure and outside the Settled zone.
+        /// ResourceNode: at least 15 m from every qualifying structure; the Settled zone does not apply.
+        /// Other: always legal.
         /// </summary>
         /// <param name="zone">The city's zone.</param>
+        /// <param name="spawnClass">The spawn's class.</param>
         /// <param name="position">The position to test.</param>
-        public static bool IsLegal(SpawnExclusionZone zone, Vector3 position)
+        public static bool IsLegal(SpawnExclusionZone zone, SpawnExclusionClass spawnClass, Vector3 position)
         {
+            if (spawnClass == SpawnExclusionClass.Other)
+                return true;
+
             var point = new Vector2(position.X, position.Y);
 
-            if (zone.SettledCenter.HasValue &&
+            if (spawnClass == SpawnExclusionClass.Hostile &&
+                zone.SettledCenter.HasValue &&
                 Vector2.DistanceSquared(point, zone.SettledCenter.Value) < zone.SettledRadius * zone.SettledRadius)
             {
                 return false;
@@ -130,18 +168,21 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
-        /// Draws candidates and returns the first legal one. When <paramref name="occupiedPositions"/> is given (random
-        /// placeables), the existing <see cref="SpawnSpacing"/> applies among the legal candidates: the first with room
-        /// wins, and when none has room the most open legal candidate is used. Returns false when no candidate within
-        /// <paramref name="attempts"/> is legal, so the caller skips the spawn.
+        /// Draws candidates and returns the first legal one for the spawn's class. When
+        /// <paramref name="occupiedPositions"/> is given (random placeables), the existing <see cref="SpawnSpacing"/>
+        /// applies among the legal candidates: the first with room wins, and when none has room the most open legal
+        /// candidate is used. Returns false when no candidate within <paramref name="attempts"/> is legal, so the
+        /// caller skips the spawn.
         /// </summary>
         /// <param name="zone">The city's zone.</param>
+        /// <param name="spawnClass">The spawn's class.</param>
         /// <param name="nextCandidate">Supplies a new random candidate position on each call.</param>
         /// <param name="attempts">Maximum number of candidates to draw.</param>
         /// <param name="position">The chosen position when this returns true.</param>
         /// <param name="occupiedPositions">Positions of placeable spawns already in the area, or null for creatures.</param>
         public static bool TryPickLegalPosition(
             SpawnExclusionZone zone,
+            SpawnExclusionClass spawnClass,
             Func<Vector3> nextCandidate,
             int attempts,
             out Vector3 position,
@@ -152,7 +193,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
             for (var attempt = 0; attempt < Math.Max(1, attempts); attempt++)
             {
                 var candidate = nextCandidate();
-                if (!IsLegal(zone, candidate))
+                if (!IsLegal(zone, spawnClass, candidate))
                     continue;
 
                 if (occupiedPositions == null || SpawnSpacing.HasRoom(candidate, occupiedPositions))
@@ -176,21 +217,53 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
-        /// Where a quest-critical spawn stands. A spawn whose point is outside the zone stays there. One inside moves
-        /// to the nearest walkable point that is legal and within <paramref name="maximumDistance"/> (horizontal), or
-        /// keeps its original point when there is none, so the quest never breaks.
+        /// Decides where a spawn with a fixed point stands. A spawn that is legal at its point keeps it. Otherwise
+        /// it is skipped (false), unless a quest depends on it: then it moves as <see cref="GetQuestCriticalPosition"/>
+        /// says and the result is true.
         /// </summary>
         /// <param name="zone">The city's zone.</param>
+        /// <param name="spawnClass">The spawn's class.</param>
+        /// <param name="original">The spawn's own point.</param>
+        /// <param name="isQuestCritical">True when a quest depends on this spawn.</param>
+        /// <param name="walkablePoints">Supplies the walkable points in the area. Only called when a quest-critical spawn must move.</param>
+        /// <param name="position">Where to spawn when this returns true.</param>
+        public static bool TryResolveFixedPosition(
+            SpawnExclusionZone zone,
+            SpawnExclusionClass spawnClass,
+            Vector3 original,
+            bool isQuestCritical,
+            Func<IEnumerable<Vector3>> walkablePoints,
+            out Vector3 position)
+        {
+            position = original;
+            if (IsLegal(zone, spawnClass, original))
+                return true;
+
+            if (!isQuestCritical)
+                return false;
+
+            position = GetQuestCriticalPosition(zone, spawnClass, original, walkablePoints());
+            return true;
+        }
+
+        /// <summary>
+        /// Where a quest-critical spawn stands. A spawn whose point is legal stays there. One that is not moves to the
+        /// nearest walkable point that is legal for its class and within <paramref name="maximumDistance"/>
+        /// (horizontal), or keeps its original point when there is none, so the quest never breaks.
+        /// </summary>
+        /// <param name="zone">The city's zone.</param>
+        /// <param name="spawnClass">The spawn's class.</param>
         /// <param name="original">The spawn's own point.</param>
         /// <param name="walkablePoints">Walkable points in the area, the same baked points random spawns use.</param>
         /// <param name="maximumDistance">How far the spawn may move.</param>
         public static Vector3 GetQuestCriticalPosition(
             SpawnExclusionZone zone,
+            SpawnExclusionClass spawnClass,
             Vector3 original,
             IEnumerable<Vector3> walkablePoints,
             float maximumDistance = QuestCriticalSearchMeters)
         {
-            if (IsLegal(zone, original))
+            if (IsLegal(zone, spawnClass, original))
                 return original;
 
             var origin = new Vector2(original.X, original.Y);
@@ -207,7 +280,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
                 if (found && distanceSquared >= nearestDistanceSquared)
                     continue;
 
-                if (!IsLegal(zone, point))
+                if (!IsLegal(zone, spawnClass, point))
                     continue;
 
                 nearest = point;

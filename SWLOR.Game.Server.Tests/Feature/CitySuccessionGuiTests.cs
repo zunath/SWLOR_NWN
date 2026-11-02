@@ -211,7 +211,7 @@ public class CitySuccessionGuiTests
     {
         var property = ReadServer("Service", "Property.cs");
 
-        Between(property, "private static string GetElectionIncumbentId(", "internal static Election OpenElection(")
+        Between(property, "internal static string GetElectionIncumbentId(", "internal static Election OpenElection(")
             .Should().Contain("CitySuccession.GetIncumbentId(city, election.Kind)");
     }
 
@@ -220,7 +220,7 @@ public class CitySuccessionGuiTests
     {
         var ballot = ReadServer("Service", "ElectionBallot.cs");
 
-        Between(ballot, "public static string RegisterCandidate(", "public static string UpdateStatement(")
+        Between(ballot, "public static string RegisterCandidate(", "public static string UpdatePlatform(")
             .Should().Contain("CheckCanRun(election, playerId)");
         Between(ballot, "private static string CheckCanRun(", "private static string CheckRegistrationChange(")
             .Should().Contain("StepDownRules.CheckCandidate(");

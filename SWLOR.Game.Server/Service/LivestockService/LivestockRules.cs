@@ -110,12 +110,6 @@ namespace SWLOR.Game.Server.Service.LivestockService
         }
 
         /// <summary>
-        /// Whether a structure is counted against a city's limit for ordinary structures. A Corral is restricted to cities
-        /// like a building, but it is an open-air structure with no interior, so it takes the structure limit.
-        /// </summary>
-        public static bool CountsAsStructure(StructureType structureType) => structureType == StructureType.Corral;
-
-        /// <summary>
         /// The reason a character cannot pick a corral up, or an empty string. A corral that holds another player's animals
         /// stays until they crate them; the character's own animals are crated and sent to their overflow store when it goes.
         /// </summary>

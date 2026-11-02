@@ -952,6 +952,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Green(city.CouncilSummons.Text))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
+    "Line": 53,
+    "Member": "OpenBank",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, failure)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
     "Line": 96,
     "Member": "PlacePageInit",
@@ -1057,6 +1064,13 @@
     "Call": "FloatingTextStringOnCreature(\"Notify a DM that this market is improperly configured.\", player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/MarketStallDialog.cs",
+    "Line": 82,
+    "Member": "ThemePageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, failure)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/MedicalRegistrationDialog.cs",
     "Line": 46,
     "Member": "MainPageInit",
@@ -1135,28 +1149,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 130,
+    "Line": 134,
     "Member": "AddTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 232,
+    "Line": 236,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport no longer has a Trade Exchange.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 238,
+    "Line": 242,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                        $\"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 246,
+    "Line": 250,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
@@ -3550,42 +3564,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/BankLayoutDefinition.cs",
-    "Line": 36,
+    "Line": 37,
     "Member": "OpenPropertyBank",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, failure)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 27,
+    "Line": 28,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players can access starport facilities.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 35,
+    "Line": 36,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This terminal is unavailable. Please notify an administrator.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 45,
+    "Line": 46,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This terminal is unavailable. Please notify an administrator.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 52,
+    "Line": 53,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This terminal is unavailable. Please notify an administrator.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PropertyLayoutDefinition/StarportLayoutDefinition.cs",
-    "Line": 68,
+    "Line": 69,
     "Member": "CanAccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, FacilityAccessRules.DescribeRefusal(\n                access,\n                dbPlayer.PropertyOwedTaxes,\n                dbPlayer.CitizenPropertyId == cityId,\n                FacilityAccessRules.StarportNotWelcomeMessage))"
@@ -4401,6 +4415,48 @@
     "Member": "RefuseStalePortraitTell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red(\"Tell not sent: the chat portrait you clicked may belong to a player who has logged out. \" +\n                \"Use Send Tell in the Player List instead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 204,
+    "Member": "Open",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This store is closed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 212,
+    "Member": "Open",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"{city.CustomName} has an embargo against your city. Its stores will not serve you.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 226,
+    "Member": "Open",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, SalesTaxRules.Describe(percent))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 238,
+    "Member": "OpenNearest",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This store is not stocked yet.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 281,
+    "Member": "OnBuyBefore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(buyer, ColorToken.Red(\"That item is sold out here until the weekly restock.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityStores.cs",
+    "Line": 344,
+    "Member": "OnSellBefore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(seller, ColorToken.Red(\"City stores only sell. They do not buy from players.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -6140,182 +6196,189 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 776,
+    "Line": 777,
     "Member": "NotifyPropertyLoadWaiters",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 810,
+    "Line": 811,
     "Member": "NotifyPropertyLoadWaitersWithoutClearing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 816,
+    "Line": 817,
     "Member": "SendPropertyLoadingMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property is still loading. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 821,
+    "Line": 822,
     "Member": "SendPropertyLoadFailedMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property could not be loaded. Please notify staff.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 2976,
+    "Line": 2990,
     "Member": "CreateStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your station stands at the anchor site in {anchor.SystemName}. Use its docking point to dock at its Starport and go aboard.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3389,
+    "Line": 3403,
     "Member": "EnterProperty",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3478,
+    "Line": 3492,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3508,
+    "Line": 3522,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3572,
+    "Line": 3586,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3589,
+    "Line": 3603,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3602,
+    "Line": 3616,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3609,
+    "Line": 3623,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is listed for sale. Its furniture cannot change until the listing ends.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3663,
+    "Line": 3676,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3671,
+    "Line": 3684,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3678,
+    "Line": 3691,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3688,
+    "Line": 3703,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(stallError, player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Property.cs",
+    "Line": 3714,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This property holds at most {plotLimit} garden plots.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3701,
+    "Line": 3727,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(corralError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3712,
+    "Line": 3738,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(stationBuildingError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3726,
+    "Line": 3752,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationDeckRules.DescribeRefusal(placement), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3753,
+    "Line": 3779,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3894,
+    "Line": 3920,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3901,
+    "Line": 3927,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3934,
+    "Line": 3960,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3969,
+    "Line": 3998,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3988,
+    "Line": 4017,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4021,
+    "Line": 4050,
     "Member": "OpenCityManagementMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"

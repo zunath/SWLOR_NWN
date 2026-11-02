@@ -483,7 +483,8 @@ public class StationBuildingTests
     {
         var property = ReadServer("Service", "Property.cs");
         property.Should().Contain("StationBuildingRules.GetPlacementError(");
-        property.Should().Contain("StationBuildingRules.IsStationBuilding(x.StructureType)");
+        property.Should().Contain("CityBuildingRules.CountsAsBuilding(x.StructureType)");
+        ReadServer("Service", "PropertyService", "CityBuildingRules.cs").Should().Contain("StationBuildingRules.IsStationBuilding(structureType)");
 
         var changed = ReadServer("Service", "PropertyService", "StructureChangedAction.cs");
         foreach (var building in Buildings)

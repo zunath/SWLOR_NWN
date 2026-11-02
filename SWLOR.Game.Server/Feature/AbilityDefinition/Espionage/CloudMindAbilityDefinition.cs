@@ -62,6 +62,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .PreservesStealthDuringActivation()
+                // The nearby "readies" broadcast would reveal a hidden caster to other players.
+                .HideActivationMessage()
                 .RequirementFP(fp);
         }
 

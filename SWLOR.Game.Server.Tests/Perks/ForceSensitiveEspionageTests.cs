@@ -199,6 +199,7 @@ public class ForceSensitiveEspionageTests
             ability.IsHostileAbility.Should().BeTrue("enemies only, with a hostile target cursor");
             ability.PreservesStealthDuringActivation.Should().BeTrue();
             ability.BreaksStealth.Should().BeFalse();
+            ability.DisplaysActivationMessage.Should().BeFalse("the nearby broadcast would reveal a hidden caster");
         }
 
         var source = ReadSource("Feature", "AbilityDefinition", "Espionage", "CloudMindAbilityDefinition.cs");
@@ -288,6 +289,7 @@ public class ForceSensitiveEspionageTests
         CapstoneAbility.RecastDelaySeconds.Should().Be(90f);
         ability.PreservesStealthDuringActivation.Should().BeTrue();
         ability.BreaksStealth.Should().BeFalse();
+        ability.DisplaysActivationMessage.Should().BeFalse("the nearby broadcast would reveal a hidden caster");
         ability.IsHostileAbility.Should().BeFalse();
         SharedPresenceAbilityDefinition.Radius.Should().Be(5f);
         SharedPresenceAbilityDefinition.StealthWindowSeconds.Should().Be(30f);

@@ -41,6 +41,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .HasImpactAction((activator, _, _, _) => ApplySharedPresence(activator))
                 .IsCastedAbility()
                 .PreservesStealthDuringActivation()
+                // The nearby "readies" broadcast would reveal a hidden caster to other players.
+                .HideActivationMessage()
                 .RequirementFP(CapstoneAbility.ForceCost);
 
             return builder.Build();

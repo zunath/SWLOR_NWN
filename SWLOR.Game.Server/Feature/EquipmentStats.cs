@@ -20,6 +20,11 @@ namespace SWLOR.Game.Server.Feature
         private static readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
 
         /// <summary>
+        /// The item property types equipping adds to the wearer.
+        /// </summary>
+        public static IReadOnlyCollection<ItemPropertyType> HandledPropertyTypes => _statChangeActions.Keys;
+
+        /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -214,7 +219,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void RefreshEquipmentRecordsAfterEquipmentChange()
         {
-            // Defense, Evasion, FP, STM, Control, Craftsmanship and CP Bonus are also added and removed before the change completes.
+            // Every record summed from gear is added and removed before the change completes.
             // Rebuild the ones this item, and any item it displaced, feed from the slots.
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var stats = GetRecordStats(item) | (EquipmentRecordStats)GetLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);

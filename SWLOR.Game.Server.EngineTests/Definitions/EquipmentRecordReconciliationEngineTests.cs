@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.CombatService;
@@ -12,7 +14,7 @@ using Player = SWLOR.Game.Server.Entity.Player;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// Stored equipment Defense, Evasion, max FP, max STM, Control, Craftsmanship and CP Bonus follow the gear actually worn.
+    /// Every player record summed from equipment (see <see cref="EquipmentRecordStats"/>) follows the gear actually worn.
     /// </summary>
     public static class EquipmentRecordReconciliationEngineTests
     {
@@ -202,7 +204,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             (ItemPropertyType.Defense, (int)CombatDamageType.Physical, 10),
             (ItemPropertyType.FP, -1, 8),
-            // Attack has no rebuild, so it shows every unmatched subtraction.
             (ItemPropertyType.Attack, -1, 20),
         };
 
@@ -343,6 +344,82 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             AssertCrafting(ctx, player, control: 4, craftsmanship: 2, cpBonus: 3, "the login rebuild matches the worn ring");
         }
 
+        // One ring granting every record that holds a single number summed from gear, plus a Fire Resistance.
+        private static readonly (ItemPropertyType Type, int Subtype, int Amount, EquipmentRecordStats Record)[] SummedRingProperties =
+        {
+            (ItemPropertyType.FPRegen, -1, 2, EquipmentRecordStats.FPRegen),
+            (ItemPropertyType.STMRegen, -1, 1, EquipmentRecordStats.STMRegen),
+            (ItemPropertyType.Attack, -1, 6, EquipmentRecordStats.Attack),
+            (ItemPropertyType.Accuracy, -1, 4, EquipmentRecordStats.Accuracy),
+            (ItemPropertyType.ForceAttack, -1, 3, EquipmentRecordStats.ForceAttack),
+            (ItemPropertyType.Stealth, -1, 5, EquipmentRecordStats.Stealth),
+            (ItemPropertyType.Detection, -1, 2, EquipmentRecordStats.Detection),
+            (ItemPropertyType.TrapBonus, -1, 1, EquipmentRecordStats.TrapBonus),
+            (ItemPropertyType.Disarm, -1, 1, EquipmentRecordStats.TrapDisarm),
+            (ItemPropertyType.PoisonBonus, -1, 2, EquipmentRecordStats.PoisonBonus),
+            (ItemPropertyType.Lockpicking, -1, 3, EquipmentRecordStats.Lockpicking),
+        };
+
+        private const int RingFireResistance = 10;
+
+        private const EquipmentRecordStats SummedRecords =
+            EquipmentRecordStats.FPRegen | EquipmentRecordStats.STMRegen | EquipmentRecordStats.Attack |
+            EquipmentRecordStats.Accuracy | EquipmentRecordStats.ForceAttack | EquipmentRecordStats.Resistance |
+            EquipmentRecordStats.Stealth | EquipmentRecordStats.Detection | EquipmentRecordStats.TrapBonus |
+            EquipmentRecordStats.TrapDisarm | EquipmentRecordStats.PoisonBonus | EquipmentRecordStats.Lockpicking;
+
+        [EngineTest("Equip changes and login rebuild drifted Attack, Accuracy, Resistance, Stealth and the other summed records", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task DriftedSummedRecordsAreRepaired(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            var properties = SummedRingProperties.Select(p => (p.Type, p.Subtype, p.Amount)).Append(
+                (ItemPropertyType.Resistance, (int)ResistanceType.Fire, Resistance.EncodeItemPropertyCostTableValue(RingFireResistance)));
+            var ring = await CreateItemAsync(ctx, player, "absdef_l6", properties.ToArray());
+            // What the fixture's own worn gear grants, which the records hold beside the ring.
+            var gear = Stat.GetEquippedStatTotals(player);
+            Drift(fixture);
+
+            await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
+            AssertSummed(ctx, player, gear, withRing: true, "equipping the ring rebuilds every summed record");
+
+            await UnequipAsync(ctx, player, ring);
+            AssertSummed(ctx, player, gear, withRing: false, "unequipping the ring returns every summed record to the other gear");
+
+            // Saved equipment emits no equip events at login, so only the login rebuild can repair it.
+            await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
+            Drift(fixture);
+            var corrected = EquipmentRecordStats.None;
+            await ctx.ExecuteInCreatureContextAsync(player, () => corrected = Stat.RefreshPlayerEquipmentStats(player, SummedRecords));
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(SummedRecords, corrected, "every drifted summed record is reported corrected");
+            AssertSummed(ctx, player, gear, withRing: true, "the login rebuild matches the worn gear");
+        }
+
+        private static void AssertSummed(EngineTestContext ctx, uint player, EquipmentStatTotals gear, bool withRing, string because)
+        {
+            var record = Record(player);
+            var values = new Dictionary<EquipmentRecordStats, int>
+            {
+                [EquipmentRecordStats.FPRegen] = record.FPRegen,
+                [EquipmentRecordStats.STMRegen] = record.STMRegen,
+                [EquipmentRecordStats.Attack] = record.Attack,
+                [EquipmentRecordStats.Accuracy] = record.Accuracy,
+                [EquipmentRecordStats.ForceAttack] = record.ForceAttack,
+                [EquipmentRecordStats.Stealth] = record.Stealth,
+                [EquipmentRecordStats.Detection] = record.Detection,
+                [EquipmentRecordStats.TrapBonus] = record.TrapBonus,
+                [EquipmentRecordStats.TrapDisarm] = record.TrapDisarm,
+                [EquipmentRecordStats.PoisonBonus] = record.PoisonBonus,
+                [EquipmentRecordStats.Lockpicking] = record.Lockpicking,
+            };
+            foreach (var (_, _, amount, stat) in SummedRingProperties)
+                ctx.AssertEqual(gear.GetTotal(stat) + (withRing ? amount : 0), values[stat], $"{stat}: {because}");
+            ctx.AssertEqual(gear.GetResistance(ResistanceType.Fire) + (withRing ? RingFireResistance : 0),
+                record.Resistances[ResistanceType.Fire], $"Fire Resistance: {because}");
+        }
+
         private static void AssertCrafting(EngineTestContext ctx, uint player, int control, int craftsmanship, int cpBonus, string because)
         {
             var record = Record(player);
@@ -368,6 +445,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             record.Control[SkillType.Smithery] = DriftedSmitheryControl;
             record.Craftsmanship[SkillType.Smithery] = DriftedSmitheryCraftsmanship;
             record.CPBonus[SkillType.Smithery] = DriftedSmitheryCPBonus;
+            // Values no gear grants, so every summed record must be rebuilt.
+            record.Resistances[ResistanceType.Fire] = -37;
+            record.FPRegen = -37;
+            record.STMRegen = -37;
+            record.Attack = -37;
+            record.Accuracy = -37;
+            record.ForceAttack = -37;
+            record.Stealth = -37;
+            record.Detection = -37;
+            record.TrapBonus = -37;
+            record.TrapDisarm = -37;
+            record.PoisonBonus = -37;
+            record.Lockpicking = -37;
         });
 
         private static int ForceGap(uint player) =>

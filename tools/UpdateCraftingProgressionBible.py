@@ -1,7 +1,9 @@
 """Record the crafting rank milestones, the retired perks and the Treasure Hunter / Creditfinder move in the Design Bible.
 
 Edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level and copies every other
-workbook entry byte-for-byte. Safe to rerun: each run writes the same cells.
+workbook entry byte-for-byte. Safe to rerun, also after the perk-line tools (UpdateEngineeringPerkBible.py,
+UpdateFabricationPerkBible.py, UpdateGatheringPerkBible.py, UpdateAgriculturePerkBible.py) have added their lines: those
+tools then own the tab's Total SP, total rows and description tail, so this tool leaves them alone.
 
   python tools/UpdateCraftingProgressionBible.py [--workbook PATH]
 
@@ -70,6 +72,13 @@ ENGINEERING_RETIRED = {
 }
 
 GATHERING_LAST_PERK_ROW = 45
+# Column A labels the perk-line tools write. Once a tab has them, that tool owns the tab's Total SP (D4).
+LINE_LABELS = {
+    "Engineering": {"Overclocker", "Technician"},
+    "Fabrication": {"Builder", "Researcher"},
+    "Gathering": {"Prospector", "Treasure Seeker"},
+    "Agriculture": {"Chef", "Angler"},
+}
 GATHERING_DESCRIPTION = (
     " Harvester, ore, scavenge-site and Hard Look tiers unlock for every character at Gathering 0/10/20/30/40, and power cores"
     " refine one more item at Gathering 0/10/20/30/40/45, so the Harvesting, Refining, Refinery Management, Scavenging and Hard Look"
@@ -242,9 +251,18 @@ def mark_rows(sheet: Sheet, spec: dict, status: str, status_col: str, notes_col:
     return marked
 
 
+def has_lines(sheet: Sheet) -> bool:
+    """True once a perk-line tool has written its lines to this tab."""
+    labels = LINE_LABELS.get(sheet.name, set())
+    return any(sheet.text_of(sheet.row_cells(number).get("A", "")).strip() in labels
+               for number in range(9, sheet.last_data_row() + 1))
+
+
 def set_description(sheet: Sheet, suffix: str) -> None:
     cell = sheet.row_cells(3)["B"]
     text = sheet.text_of(cell)
+    if suffix in text:
+        return  # already current; cutting at the marker would drop the text a perk-line tool appended after it
     marker = suffix.split(".")[0].strip()
     if marker in text:
         text = text[:text.index(marker)].rstrip()
@@ -265,7 +283,8 @@ def update_gathering(sheet: Sheet) -> None:
     mark_rows(sheet, GATHERING_RETIRED, "Retired", status, notes)
     mark_rows(sheet, GATHERING_MOVED, "Moved", status, notes, moved=True)
     last = GATHERING_LAST_PERK_ROW
-    set_formula(sheet, "D4", f'SUMIFS(B9:B{last},{status}9:{status}{last},"<>Retired",{status}9:{status}{last},"<>Moved")', 0)
+    if not has_lines(sheet):  # UpdateGatheringPerkBible.py widens this total to its line rows
+        set_formula(sheet, "D4", f'SUMIFS(B9:B{last},{status}9:{status}{last},"<>Retired",{status}9:{status}{last},"<>Moved")', 0)
     set_description(sheet, GATHERING_DESCRIPTION)
 
 
@@ -275,18 +294,28 @@ def update_fabrication_like(sheet: Sheet, spec: dict, description: str, total_ro
     status, notes = cols["Dev Status"], cols["Notes"]
     mark_rows(sheet, spec, "Retired", status, notes)
     first, last = 9, total_row - 1
-    set_formula(sheet, f"B{total_row}", f'SUMIFS(B{first}:B{last},{status}{first}:{status}{last},"<>Retired")', total_cached)
-    set_formula(sheet, "D4", f"SUM(B{total_row})", total_cached)
+    # The Engineering line tool writes its first perk over the old total row and moves the total below its lines.
+    if sheet.text_of(sheet.row_cells(total_row).get("A", "")).strip() == "Total":
+        set_formula(sheet, f"B{total_row}", f'SUMIFS(B{first}:B{last},{status}{first}:{status}{last},"<>Retired")', total_cached)
+    if not has_lines(sheet):  # the line tools add their line totals to Total SP
+        set_formula(sheet, "D4", f"SUM(B{total_row})", total_cached)
     set_description(sheet, description)
 
 
 def update_agriculture(sheet: Sheet) -> None:
     numeric_sp_cells(sheet, 9)
+
+    # UpdateAgriculturePerkBible.py replaces the Farming rows with the Farmer line, moves the Chef and Angler lines down, and
+    # writes every total and Total SP. Rows 9-14 are then Farmer purchases, so the Farming totals below would overwrite them.
+    if sheet.text_of(sheet.row_cells(9).get("A", "")).strip() != "Farming":
+        return
+
     total = 0
     for number in range(9, 14):
         total += int(sheet.text_of(sheet.row_cells(number)["B"]).split(".")[0])
     set_formula(sheet, "B14", "SUM(B9:B13)", total)
-    set_formula(sheet, "D4", "SUM(B14)", total)
+    if not has_lines(sheet):  # the Chef and Angler totals join Total SP once their lines exist
+        set_formula(sheet, "D4", "SUM(B14)", total)
 
 
 def update_general(sheet: Sheet) -> None:

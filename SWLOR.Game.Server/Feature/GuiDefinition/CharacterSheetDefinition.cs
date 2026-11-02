@@ -175,8 +175,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundValueRow(combatCol, "Main Hand", model => model.MainHandDMG, "Estimated main-hand weapon damage.", model => model.MainHandTooltip, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Off Hand", model => model.OffHandDMG, "Estimated off-hand weapon damage.", model => model.OffHandTooltip, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, CombatLabelWidth);
-                            AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical attack rating used to scale weapon and physical ability damage.", null, CombatLabelWidth);
-                            AddBoundValueRow(combatCol, "Off-hand Attack", model => model.OffHandAttack, "Physical attack rating of the off-hand weapon, which uses its own skill and damage attribute.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Attack", model => model.Attack, CharacterSheetViewModel.AttackDescription, model => model.AttackTooltip, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force attack rating used to scale Force ability damage.", null, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Main-hand Acc.", model => model.WeaponAccuracy, "Main-hand attack accuracy. Weapon bonuses do not combine.", null, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Off-hand Acc.", model => model.OffHandAccuracy, "Off-hand attack accuracy, including double weapons. Weapon bonuses do not combine.", null, CombatLabelWidth);

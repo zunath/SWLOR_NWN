@@ -132,7 +132,7 @@ public class CharacterSheetCombatUpgradeTests
     }
 
     [Test]
-    public void OffHandWeapon_ShowsItsOwnAttackAndCriticalRateNextToTheMainHand()
+    public void OffHandWeapon_AddsItsValuesToTheExistingAttackDelayAndCriticalRateFields()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
@@ -142,21 +142,40 @@ public class CharacterSheetCombatUpgradeTests
 
         var refresh = ExtractMethod(source, "private void RefreshEquipmentStats()");
         refresh.Should().Contain("var offhandAttackWeapon = GetOffhandAttackWeapon();");
+        refresh.Should().Contain("AttackTooltip = FormatOffHandTooltip(AttackDescription, hasOffhandAttack");
         refresh.Should().Contain("Stat.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),");
         refresh.Should().Contain("Skill.GetWeaponSkill(_target, offhandAttackWeapon)).ToString()");
         ExtractMethod(source, "private uint GetOffhandAttackWeapon()")
             .Should().Contain("TwinPistolEquipment.GetCompanionWeapon(_target)")
             .And.Contain("EquipmentPredicates.GetOffhandAttackWeapon(_target)");
         var stats = ExtractMethod(source, "private void RefreshCharacterStatsList()");
-        stats.Should().Contain("if (GetIsObjectValid(offhandWeapon))", "the row only appears with an off-hand weapon");
-        stats.Should().Contain("AddStat(\"Off-hand Critical Rate\", FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon)))");
+        stats.Should().Contain("AddStat(\"Critical Rate\", FormatPercent(GetCriticalRate(combatProfile.Skill)), FormatOffHandTooltip(");
+        stats.Should().Contain("GetIsObjectValid(offhandWeapon) ? FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon))) : null");
+        stats.Should().NotContain("AddStat(\"Off-hand", "off-hand values join the existing rows instead of adding rows");
         ExtractMethod(source, "private (string Value, string Tooltip) GetAttackDelayInfo()")
             .Should().Contain("if (mainHandDelay > 0 && offHandDelay > 0)");
 
-        var attack = definition.IndexOf("\"Attack\", model => model.Attack", StringComparison.Ordinal);
-        var offHandAttack = definition.IndexOf("\"Off-hand Attack\", model => model.OffHandAttack", StringComparison.Ordinal);
-        attack.Should().BeGreaterThan(0);
-        offHandAttack.Should().BeGreaterThan(attack, "the off-hand Attack sits under the main-hand Attack");
+        definition.Should().Contain("\"Attack\", model => model.Attack, CharacterSheetViewModel.AttackDescription, model => model.AttackTooltip");
+    }
+
+    [Test]
+    public void CombatPanel_KeepsItsExistingRowsInOrder()
+    {
+        var definition = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "CharacterSheetDefinition.cs"));
+        var labels = System.Text.RegularExpressions.Regex.Matches(definition, "AddBoundValueRow\\(combatCol, \"([^\"]+)\"")
+            .Select(match => match.Groups[1].Value);
+
+        labels.Should().Equal("Main Hand", "Off Hand", "Atk Delay", "Attack", "Force Attack", "Main-hand Acc.",
+            "Off-hand Acc.", "Force Acc.", "Evasion", "Physical DEF", "Force DEF");
+    }
+
+    [TestCase("Increases crits.", "7%", "Increases crits. Off hand: 7%.")]
+    [TestCase("Increases crits.", null, "Increases crits.")]
+    [TestCase("Increases crits.", "", "Increases crits.")]
+    public void OffHandTooltip_AppendsTheOffHandValueOnlyWhenThereIsOne(string description, string offHand, string expected)
+    {
+        CharacterSheetViewModel.FormatOffHandTooltip(description, offHand).Should().Be(expected);
     }
 
     [TestCase(220, 220, 0, 3833, " | 2 attacks per cycle, about 1.92s each (Delay 220 main + 220 off)")]

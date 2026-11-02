@@ -27,6 +27,12 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         VisitorsComplain = 10,
 
         /// <summary>Follows a smuggler's bribe and exposes it.</summary>
-        Scandal = 11
+        Scandal = 11,
+
+        /// <summary>Needs a garden plot in the city.</summary>
+        PestsInTheGardens = 12,
+
+        /// <summary>Needs a corral in the city.</summary>
+        PredatorsAtTheCorrals = 13
     }
 }

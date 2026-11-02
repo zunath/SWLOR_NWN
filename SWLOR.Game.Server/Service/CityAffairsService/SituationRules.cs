@@ -133,6 +133,8 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
                     return context.ActiveEdicts.Contains(requirement.EdictName);
                 case SituationRequirementType.SkillRank:
                     return context.SkillRanks.TryGetValue(requirement.Skill, out var rank) && rank >= requirement.Level;
+                case SituationRequirementType.Structure:
+                    return context.StructureTypes.Contains(requirement.Structure);
                 default:
                     return false;
             }
@@ -168,6 +170,8 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
                     return $"{SplitWords(requirement.EdictName)} in force";
                 case SituationRequirementType.SkillRank:
                     return $"{requirement.Skill} {requirement.Level}";
+                case SituationRequirementType.Structure:
+                    return $"A {SplitWords(requirement.Structure.ToString())} in the city";
                 default:
                     return string.Empty;
             }
@@ -393,6 +397,7 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
                 case CityModifierType.TransportationIncomeHalved: return "transportation tax income is halved";
                 case CityModifierType.MedicalCenterBonusHalved: return "the Medical Center bonus is halved";
                 case CityModifierType.OpenGatesSuspended: return "Open Gates is suspended";
+                case CityModifierType.CropPests: return "crops harvested in the city yield 1 less";
                 default: return string.Empty;
             }
         }
@@ -457,6 +462,12 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
                         break;
                     case SituationEffectType.FollowUp:
                         parts.Add(effect.FollowUpOneIn > 1 ? "It may come back to haunt the city." : "A follow-up situation will arrive.");
+                        break;
+                    case SituationEffectType.StartHunt:
+                        parts.Add("Predators attack the corrals for 30 minutes. If they are not driven off, the city's animals give no products for 72 hours.");
+                        break;
+                    case SituationEffectType.LivestockNoProducts:
+                        parts.Add("The city's animals give no products for 72 hours.");
                         break;
                 }
             }

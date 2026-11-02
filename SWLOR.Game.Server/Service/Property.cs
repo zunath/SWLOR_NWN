@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LivestockService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -3555,7 +3556,8 @@ namespace SWLOR.Game.Server.Service
             // They use the BuildingLimit value for buildings and StructureLimit for everything else.
             // Buildings are determined by structures whose restrictions are solely to "City" property types.
             if (property.PropertyType == PropertyType.City &&
-                structureDetail.RestrictedPropertyTypes == PropertyType.City)
+                structureDetail.RestrictedPropertyTypes == PropertyType.City &&
+                !LivestockRules.CountsAsStructure(structureType))
             {
                 structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid ||
                                                        StationBuildingRules.IsStationBuilding(x.StructureType));
@@ -3616,6 +3618,18 @@ namespace SWLOR.Game.Server.Service
                     FloatingTextStringOnCreature($"This property holds at most {plotLimit} garden plots.", player, false);
                     return;
                 }
+            }
+
+            // A Corral stands in a planet city's open ground, never on a station deck, and a city has 2 per city level.
+            var corralError = LivestockRules.GetPlacementError(
+                structureType,
+                Station.IsStation(property),
+                structures.Count(x => x.StructureType == StructureType.Corral),
+                CityOfficers.GetCityLevel(property));
+            if (!string.IsNullOrWhiteSpace(corralError))
+            {
+                FloatingTextStringOnCreature(corralError, player, false);
+                return;
             }
 
             // The Shipyard, Asteroid Drill and Jump Beacon stand only on a station deck, and no beacon reaches Wild Space.

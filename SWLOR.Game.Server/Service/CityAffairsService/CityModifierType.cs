@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         MedicalCenterBonusHalved = 3,
 
         /// <summary>The Open Gates Edict is suspended.</summary>
-        OpenGatesSuspended = 4
+        OpenGatesSuspended = 4,
+
+        /// <summary>Crops harvested in the city yield 1 less, never below 1.</summary>
+        CropPests = 5
     }
 }

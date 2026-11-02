@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         public const string PlotName = "Garden Plot";
 
         private static readonly Dictionary<CropType, CropDefinition> _crops = new();
+        private static readonly Dictionary<CropType, CropDefinition> _saplings = new();
         private static readonly Dictionary<string, CropDefinition> _cropsBySeed = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>When the module loads, reads the crop definitions.</summary>
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheCrops()
         {
             _crops.Clear();
+            _saplings.Clear();
             _cropsBySeed.Clear();
 
             var definitions = typeof(ICropListDefinition).Assembly
@@ -48,17 +50,22 @@ namespace SWLOR.Game.Server.Service
                 var list = (ICropListDefinition)Activator.CreateInstance(type);
                 foreach (var (cropType, crop) in list.BuildCrops())
                 {
-                    _crops[cropType] = crop;
+                    (crop.IsSapling ? _saplings : _crops)[cropType] = crop;
                     _cropsBySeed[crop.SeedResref] = crop;
                 }
             }
 
-            Console.WriteLine($"Loaded {_crops.Count} crops.");
+            Console.WriteLine($"Loaded {_crops.Count} crops and {_saplings.Count} saplings.");
         }
 
-        public static CropDefinition GetCrop(CropType type) => _crops.GetValueOrDefault(type);
+        /// <summary>The crop or woodlot sapling of the type, or null.</summary>
+        public static CropDefinition GetCrop(CropType type) => _crops.GetValueOrDefault(type) ?? _saplings.GetValueOrDefault(type);
 
+        /// <summary>The 26 crops animals eat and cooks use. The woodlot saplings are not in it (<see cref="GetAllSaplings"/>).</summary>
         public static IReadOnlyCollection<CropDefinition> GetAllCrops() => _crops.Values;
+
+        /// <summary>The five woodlot saplings.</summary>
+        public static IReadOnlyCollection<CropDefinition> GetAllSaplings() => _saplings.Values;
 
         public static CropDefinition GetCropBySeed(string seedResref) =>
             string.IsNullOrWhiteSpace(seedResref) ? null : _cropsBySeed.GetValueOrDefault(seedResref);
@@ -161,10 +168,30 @@ namespace SWLOR.Game.Server.Service
             return city is { PropertyType: PropertyType.City } && CityAffairs.IsModifierActive(city, CityModifierType.CropPests);
         }
 
+        /// <summary>
+        /// What the plot's site says about planting the crop (<see cref="WoodlotRules.GetSiteRefusal"/>): a sapling goes only in an
+        /// outdoor plot of a planet city. Anything else is allowed wherever a plot stands.
+        /// </summary>
+        public static FarmingRefusal GetSiteRefusal(WorldProperty plot, CropDefinition crop)
+        {
+            if (crop is not { IsSapling: true } || plot == null)
+                return FarmingRefusal.None;
+
+            var parent = DB.Get<WorldProperty>(plot.ParentPropertyId);
+            return WoodlotRules.GetSiteRefusal(true, parent?.PropertyType ?? PropertyType.Invalid, parent != null && Station.IsStation(parent));
+        }
+
         // Actions
 
-        /// <summary>Plants the seed in the plot, using the seed up. The character needs garden permission and the crop's tier.</summary>
-        public static FarmingResult Plant(uint player, string plotId, string seedResref)
+        /// <summary>
+        /// Plants the seed in the plot, using the seed up. The character needs garden permission and the crop's tier.
+        /// </summary>
+        /// <param name="fertilizerResref">
+        /// The fertilizer the planter offers, or empty for none. A sapling refuses it (<see cref="WoodlotRules.GetFertilizerRefusal"/>)
+        /// before the seed or the fertilizer is used. A crop takes fertilizer with the fertilizer items, which add it to the plot's
+        /// record; until then a crop ignores what is offered.
+        /// </param>
+        public static FarmingResult Plant(uint player, string plotId, string seedResref, string fertilizerResref = "")
         {
             Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
@@ -189,7 +216,9 @@ namespace SWLOR.Game.Server.Service
                 isPlayer ? Perk.GetPlayerEffectivePerkLevel(player, PerkType.CropManagement) : 0,
                 crop.Tier,
                 isPlayer ? CountGrowingCrops(cdKey, playerId, now) : 0,
-                GetIsObjectValid(seed));
+                GetIsObjectValid(seed),
+                GetSiteRefusal(structure, crop),
+                WoodlotRules.GetFertilizerRefusal(crop.IsSapling, !string.IsNullOrWhiteSpace(fertilizerResref)));
             if (refusal != FarmingRefusal.None)
                 return FarmingResult.Refused(refusal);
 
@@ -271,13 +300,13 @@ namespace SWLOR.Game.Server.Service
             if (crop == null)
                 return FarmingResult.Refused(FarmingRefusal.UnknownCrop);
 
-            var yield = FarmingRules.GetYield(
-                record.Tended,
-                record.Fertilized,
-                Perk.GetPlayerEffectivePerkLevel(player, PerkType.BountifulHarvest),
-                IsGreenhouse(DB.Get<WorldProperty>(structure.ParentPropertyId)),
-                HasHomeGround(structure),
-                HasPests(structure));
+            var bountifulHarvest = Perk.GetPlayerEffectivePerkLevel(player, PerkType.BountifulHarvest);
+            var greenhouse = IsGreenhouse(DB.Get<WorldProperty>(structure.ParentPropertyId));
+            var homeGround = HasHomeGround(structure);
+            var pests = HasPests(structure);
+            var yield = crop.IsSapling
+                ? WoodlotRules.GetYield(record.Tended, record.Fertilized, bountifulHarvest, greenhouse, homeGround, pests)
+                : FarmingRules.GetYield(record.Tended, record.Fertilized, bountifulHarvest, greenhouse, homeGround, pests);
             var seedPercent = FarmingRules.GetSeedSaverPercent(Perk.GetPlayerEffectivePerkLevel(player, PerkType.SeedSaver));
             var seedReturned = FarmingRules.ReturnsSeed(seedPercent, Random.D100(1));
             var rank = Skill.GetCreatureSkillRank(player, SkillType.Agriculture);

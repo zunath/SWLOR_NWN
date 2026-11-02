@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.MarketStall, StructureChangeType.PositionChanged, MarketStalls.OnStallPlaced);
             Assign(StructureType.GardenPlot, StructureChangeType.PositionChanged, Farming.OnPlotSpawned);
             Assign(StructureType.Corral, StructureChangeType.PositionChanged, Corrals.OnCorralSpawned);
+            Assign(StructureType.FermentationVat, StructureChangeType.PositionChanged, FermentationVats.OnVatSpawned);
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());

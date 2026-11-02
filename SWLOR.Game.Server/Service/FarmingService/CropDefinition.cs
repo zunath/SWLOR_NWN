@@ -21,5 +21,14 @@ namespace SWLOR.Game.Server.Service.FarmingService
 
         /// <summary>The item a harvest yields.</summary>
         public string HarvestResref { get; set; }
+
+        /// <summary>
+        /// True for a woodlot sapling: it grows only in an outdoor city plot, takes no tending, and yields a flat
+        /// <see cref="WoodlotRules.LogsPerHarvest"/> logs whatever perks, fertilizer or bonuses apply to crops.
+        /// </summary>
+        public bool IsSapling { get; set; }
+
+        /// <summary>What the planting list calls the item that plants this crop: "Orange seed", or "Wood Tree sapling".</summary>
+        public string GetSeedLabel() => IsSapling ? $"{Name} sapling" : $"{Name} seed";
     }
 }

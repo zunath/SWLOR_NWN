@@ -883,6 +883,13 @@ Every open question now has a decision for the player review. The rules behind t
 - Space revamp interactions:
   - Farmhands reuse `StationDroidReceipt` and `SettleDroidMoves`.
   - City deletion and Starport pickup go through `StarshipDockReturn.ReturnToSafeDock` (#3058).
+  - `CreditPaymentKind.TournamentEntry = 6` is the city's; space starts any new kind at 7 (agreed 2026-11-02).
+  - Industrial Charter is built on the city branch (agreed with space 2026-11-02): an optional `HoldingModifiers` input on `HoldingRules.Advance` with a setback chance scale and a repair units scale. Only the setback band shrinks; boom, raid, and customs keep their absolute chances and the freed share becomes no event. A setback rolled under the Edict stores the reduced repair need, in `RepairUnitsNeeded` and the log text. The city settles a holding with the old modifiers up to the change, then switches.
+  - Home Port (agreed with space 2026-11-02): a city Starport stop gets its own `IsCityStarport` flag, its own `ShuttleSchedule` stop key, and city ids on `ShuttleRide`, so it is never read as a station or as the planet's NPC port, and a ride rebuilds its stop after a restart.
+- Decisions made while building (2026-11-02), open to the owner's review:
+  - Tournaments: a completed tournament's entry fees go to the ordinary treasury. Posting uses preset prizes, fees, and start delays, since a conversation can't take typed numbers. A drawn match is replayed. If both duelists miss the call, neither advances, and a final with no winner cancels with refunds. With fewer than 2 entrants the official cancels; nothing cancels on its own. Ordinary challenges are refused at a ring while its tournament runs. Credits owed to offline players (prizes, refunds) are paid at their next login through `PendingCredits`.
+  - Election platforms: the cost preview uses the sitting mayor's upkeep (with their Upkeep perk), and weekly tax income is the citizenship tax times citizens.
+  - Acting Mayor: no step-down while an election is open; the mayor can withdraw a pending step-down and the named player can decline; an outright election win ends an Acting Mayor's term; facility upgrades count as the projects power until City Projects exist; paying upkeep needs the upkeep power; a departed mayor keeps structure place and retrieve rights, which sit outside the Permissions table.
 
 Hook points, data, and tests for the Player City Revamp. The Plan tab holds the player-facing rules.
 

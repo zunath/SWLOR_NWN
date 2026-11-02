@@ -103,7 +103,7 @@ public class CreditPaymentTests
         click.Should().Contain("AssignCommand(player, () => CompleteRefit(player, shipId, appearance, fee, designName));");
 
         InOrder(Method(viewModel, "private void CompleteRefit("),
-            "var dbShip = DB.Get<PlayerShip>(shipId);", "if (GetGold(player) < fee)",
+            "var dbShip = GetShipToRefit(shipId);", "if (GetGold(player) < fee)",
             "CreditPayments.Take(player, mark);", "dbShip.LastPaymentId = mark.Id;", "DB.Set(dbShip);", "CreditPayments.Retire(player);");
     }
 

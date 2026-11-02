@@ -158,6 +158,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Collect the ore", () =>
                 {
+                    // The permission may have been revoked since the page was built.
+                    if (!Property.HasPropertyPermission(player, station.Id, PropertyPermissionType.AccessTreasury))
+                    {
+                        SendMessageToPC(player, ColorToken.Red("You no longer have permission to collect the ore."));
+                        return;
+                    }
+
                     StationBuildings.CollectDrill(player, station, state.BuildingId);
                 });
             }
@@ -188,7 +195,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 if (state.DroidOwnerPlayerId == GetObjectUUID(player) || CanManageStructures(station))
                 {
-                    page.AddResponse($"Recall {state.DroidName}", () => StationBuildings.RecallDroid(player, building));
+                    page.AddResponse($"Recall {state.DroidName}", () =>
+                    {
+                        // The droid there now, and the player's permission, may not be what the page showed.
+                        var current = StationBuildings.GetState(building);
+                        if (current.DroidOwnerPlayerId != GetObjectUUID(player) && !CanManageStructures(station))
+                        {
+                            SendMessageToPC(player, ColorToken.Red("You may no longer recall the droid assigned here."));
+                            return;
+                        }
+
+                        StationBuildings.RecallDroid(player, building);
+                    });
                 }
 
                 return;
@@ -217,6 +235,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var chosen = controller;
                 page.AddResponse($"{Droid.GetDroidName(controller)} (Industry {StationBuildings.GetDroidIndustry(controller).Industry})", () =>
                 {
+                    if (!CanManageStructures(station))
+                    {
+                        SendMessageToPC(player, ColorToken.Red("You no longer have permission to assign droids here."));
+                        return;
+                    }
+
                     if (StationBuildings.AssignDroid(player, building, chosen))
                         GoToPage(DroidPageId, false);
                 });
@@ -340,9 +364,20 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var fuel = StationBuildingRules.GetJumpFuel(request);
             page.Header = $"Jump {ship.CustomName} to {destination.CustomName}? The jump burns {fuel} Station Fuel from its cargo bay, " +
                           "docks the ship at that station's Starport and takes you there with it.";
+            var stationId = station.Id;
+            var destinationId = destination.Id;
             page.AddResponse("CONFIRM JUMP", () =>
             {
-                if (StationBuildings.Jump(player, station, destination, ship.Id))
+                // Both stations are read again: either may have been removed, or its beacon changed, since the page.
+                var origin = DB.Get<WorldProperty>(stationId);
+                var target = DB.Get<WorldProperty>(destinationId);
+                if (origin == null || origin.IsQueuedForDeletion || target == null || target.IsQueuedForDeletion)
+                {
+                    SendMessageToPC(player, ColorToken.Red("That station is no longer available."));
+                    return;
+                }
+
+                if (StationBuildings.Jump(player, origin, target, ship.Id))
                     Close();
             });
         }

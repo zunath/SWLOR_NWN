@@ -114,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = Player;
             var playerId = GetObjectUUID(player);
+            var dock = Owner;
             var model = Data<Model>();
             var dockPoints = !string.IsNullOrWhiteSpace(model.StationId)
                 ? Station.GetDockPoints(model.StationId)
@@ -136,6 +137,22 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     if (Enmity.HasEnmity(player))
                     {
                         SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
+                        return;
+                    }
+
+                    // A hold that started while the menu was open still stops the docking, before anything is saved.
+                    if (Space.RefuseWhileInterdicted(player))
+                    {
+                        Close();
+                        return;
+                    }
+
+                    // So does a blockade that took this dock while the menu was open.
+                    var blockade = Space.GetIncursionDockRefusal(dock);
+                    if (!string.IsNullOrEmpty(blockade))
+                    {
+                        SendMessageToPC(player, ColorToken.Red(blockade));
+                        Close();
                         return;
                     }
 
@@ -307,13 +324,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     };
 
                     DB.Set(dbProperty);
-
-                    // A hold that started while the menu was open still stops the docking.
-                    if (Space.RefuseWhileInterdicted(player))
-                    {
-                        Close();
-                        return;
-                    }
 
                     Close();
                     Space.WarpPlayerInsideShip(player);

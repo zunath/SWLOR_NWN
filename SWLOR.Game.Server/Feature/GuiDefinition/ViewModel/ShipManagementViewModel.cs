@@ -1622,7 +1622,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         private void CompleteRefit(uint player, string shipId, AppearanceType appearance, int fee, string designName)
         {
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            // The ship may have flown, or the Refit Ship permission been revoked, while the fee was confirmed.
+            var dbShip = GetShipToRefit(shipId);
             if (dbShip == null)
                 return;
 
@@ -1698,6 +1699,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             return area;
+        }
+
+        /// <summary>
+        /// The ship as saved now, when it is still docked where the player stands. The window's buttons reflect when it
+        /// loaded the ship, which may since have flown, been unregistered or moved.
+        /// </summary>
+        private PlayerShip GetShipDockedHere(string shipId)
+        {
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
+            if (dbProperty != null && GetShipLocation(dbShip, dbProperty, out _) == GetArea(Player))
+                return dbShip;
+
+            FloatingTextStringOnCreature("That ship is no longer docked here.", Player, false);
+            RefreshShipIfOpen(dbShip);
+            return null;
+        }
+
+        /// <summary>The ship as saved now, when the player may still refit it here (its modules and its design).</summary>
+        private PlayerShip GetShipToRefit(string shipId)
+        {
+            var dbShip = GetShipDockedHere(shipId);
+            if (dbShip == null)
+                return null;
+
+            var access = GetShipPermission(dbShip.PropertyId);
+            if (access != null && access.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip))
+                return dbShip;
+
+            FloatingTextStringOnCreature("You no longer have permission to refit that ship.", Player, false);
+            RefreshShipIfOpen(dbShip);
+            return null;
+        }
+
+        private void RefreshShipIfOpen(PlayerShip dbShip)
+        {
+            if (dbShip != null && Gui.IsWindowOpen(Player, GuiWindowType.ShipManagement))
+                LoadShip();
         }
 
         private void ToggleRegisterButtons()
@@ -1844,8 +1883,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var playerId = GetObjectUUID(Player);
                     var shipId = _shipIds[SelectedShipIndex];
                     var dbPlayer = DB.Get<Player>(playerId);
-                    var dbShip = DB.Get<PlayerShip>(shipId);
+
+                    // The ship may have been sold, transferred or flown away since the window loaded it.
+                    var dbShip = GetShipDockedHere(shipId);
+                    if (dbShip == null)
+                        return;
+
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                    if (dbProperty.OwnerPlayerId != playerId)
+                    {
+                        FloatingTextStringOnCreature("You no longer own this ship.", Player, false);
+                        LoadShip();
+                        return;
+                    }
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
                         dbShip.Status.MidPowerModules.Count > 0 ||
@@ -1947,6 +1997,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ShowModal("Cancel this ship's market listing?", () =>
                 {
+                    // The ship may have sold (and been listed again by its new owner) while the prompt was open.
+                    if (DB.Get<PlayerShip>(shipId)?.OwnerPlayerId != GetObjectUUID(Player))
+                    {
+                        FloatingTextStringOnCreature("You no longer own this ship.", Player, false);
+                        return;
+                    }
+
                     ShipTransfer.RemoveListings(shipId);
                     FloatingTextStringOnCreature("Listing cancelled.", Player, false);
                     LoadShip();
@@ -2115,8 +2172,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, $"Please click on a ship {rowName}-powered module within your inventory.",
                     item =>
                 {
-                    dbShip = DB.Get<PlayerShip>(shipId);
+                    dbShip = GetShipToRefit(shipId);
+                    if (dbShip == null)
+                        return;
+
                     modules = GetPowerModules(dbShip.Status, row);
+                    if (modules.ContainsKey(slot))
+                    {
+                        SendMessageToPC(Player, "That slot already holds a module.");
+                        LoadShip();
+                        return;
+                    }
+
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
@@ -2163,16 +2230,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to {rowName} slot #{slot}. Would you like to uninstall it?", () =>
                 {
+                    // The ship and the slot are read again: the module may already be out, or the ship changed since.
+                    var current = GetShipToRefit(shipId);
+                    if (current == null)
+                        return;
+
+                    var currentModules = GetPowerModules(current.Status, row);
+                    if (!currentModules.TryGetValue(slot, out var fitted) || fitted.SerializedItem != module.SerializedItem)
+                    {
+                        SendMessageToPC(Player, "That module is no longer in this slot.");
+                        LoadShip();
+                        return;
+                    }
+
                     // A Cargo Expander stays while the cargo bay would overflow without it.
-                    var hullCargo = Space.FindShipDetail(dbShip.Status.ItemTag)?.Hull?.Cargo ?? 0;
-                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(dbShip.Status).ToList(),
-                            module.ItemTag, Trade.GetUsedVolume(dbShip)))
+                    var hullCargo = Space.FindShipDetail(current.Status.ItemTag)?.Hull?.Cargo ?? 0;
+                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(current.Status).ToList(),
+                            fitted.ItemTag, Trade.GetUsedVolume(current)))
                     {
                         SendMessageToPC(Player, "Unload the cargo bay first: its cargo would not fit without this Cargo Expander.");
                         return;
                     }
 
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    var item = ObjectPlugin.Deserialize(fitted.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
@@ -2180,10 +2260,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    modules.Remove(slot);
-                    Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
-                    DB.Set(dbShip);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(current.Status, moduleBonus);
+                    currentModules.Remove(slot);
+                    Space.RecalculateShipStats(current.Status, GetAbilityScore(Player, AbilityType.Willpower));
+                    DB.Set(current);
                     LoadShip();
                 });
             }
@@ -2204,7 +2284,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
                     item =>
                     {
-                        dbShip = DB.Get<PlayerShip>(shipId);
+                        dbShip = GetShipToRefit(shipId);
+                        if (dbShip == null)
+                            return;
+
+                        if (dbShip.Status.ConfigurationModules.ContainsKey(slot))
+                        {
+                            SendMessageToPC(Player, "That slot already holds a module.");
+                            LoadShip();
+                            return;
+                        }
+
                         var itemTag = GetTag(item);
                         if (!Space.IsRegisteredShipModule(itemTag))
                         {
@@ -2248,7 +2338,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to ship configuration slot #{slot}. Would you like to uninstall it?", () =>
                 {
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    // The ship and the slot are read again: the module may already be out, or the ship changed since.
+                    var current = GetShipToRefit(shipId);
+                    if (current == null)
+                        return;
+
+                    if (!current.Status.ConfigurationModules.TryGetValue(slot, out var fitted) || fitted.SerializedItem != module.SerializedItem)
+                    {
+                        SendMessageToPC(Player, "That module is no longer in this slot.");
+                        LoadShip();
+                        return;
+                    }
+
+                    var item = ObjectPlugin.Deserialize(fitted.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
@@ -2256,9 +2358,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.ConfigurationModules.Remove(slot);
-                    DB.Set(dbShip);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(current.Status, moduleBonus);
+                    current.Status.ConfigurationModules.Remove(slot);
+                    DB.Set(current);
                     LoadShip();
                 });
             }
@@ -2421,8 +2523,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            // The ship may have launched since it was selected: it is boarded only where it is docked.
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = GetShipDockedHere(shipId);
+            if (dbShip == null)
+                return;
 
             // Access can be revoked after the ship was selected.
             if (!CanBoardShip(dbShip.PropertyId))
@@ -2543,6 +2648,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>
             {
+                // The ship is read again: saving the copy shown in the prompt would undo cargo, crew or location
+                // changes made since, and its damage (so the bill) may have changed.
+                dbShip = GetShipDockedHere(shipId);
+                if (dbShip == null)
+                    return;
+
+                if (CalculateRepairBill(dbShip) != price)
+                {
+                    FloatingTextStringOnCreature("The repair bill has changed. Please check it again.", Player, false);
+                    LoadShip();
+                    return;
+                }
+
                 var gold = GetGold(Player);
 
                 if (gold < price)

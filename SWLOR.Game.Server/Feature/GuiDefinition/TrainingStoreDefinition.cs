@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
-                .SetTitle("Training Store")
+                .BindTitle(model => model.WindowTitle)
 
                 .AddColumn(col =>
                 {
@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             template.AddCell(cell =>
                             {
                                 cell.AddLabel()
-                                    .BindText(model => model.Names);
+                                    .BindText(model => model.Names)
+                                    .BindTooltip(model => model.Tooltips);
                             });
                             template.AddCell(cell =>
                             {

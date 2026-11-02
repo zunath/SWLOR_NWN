@@ -217,9 +217,12 @@ namespace SWLOR.Game.Server.Service
             return anchor == null ? default : ShuttleStop.ForStation(station.Id, anchor.HomePlanet, anchor.IsWildSpace);
         }
 
-        /// <summary>The name of a shuttle stop: the planet's, or the station's.</summary>
+        /// <summary>The name of a shuttle stop: the planet's, the station's, or "(city) Starport" for a city's own Starport.</summary>
         public static string GetStopName(ShuttleStop stop)
         {
+            if (stop.IsCityStarport)
+                return $"{DB.Get<WorldProperty>(stop.CityId)?.CustomName ?? "City"} Starport";
+
             if (!stop.IsStation)
                 return Planet.GetPlanetByType(stop.Planet).Name;
 

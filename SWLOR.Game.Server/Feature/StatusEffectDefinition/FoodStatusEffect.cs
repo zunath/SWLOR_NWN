@@ -53,6 +53,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             AddCraftBonus(CraftSkillBonusType.Control, food.Control);
             AddCraftBonus(CraftSkillBonusType.Craftsmanship, food.Craftsmanship);
+
+            // Eating replaces the Civic Exchange's long buff, which does not stack with food (it replaces food in return).
+            LessPowerfulEffectTypes.Add(typeof(CivicProvisionsStatusEffect));
         }
 
         public override IStatusEffect Clone()

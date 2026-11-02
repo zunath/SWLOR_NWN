@@ -10,6 +10,20 @@ namespace SWLOR.Game.Server.Service.StationService
     /// </summary>
     public static class StationDroidRules
     {
+        /// <summary>
+        /// Whether a controller still marked as being assigned was taken by its building, so the login removes it: the
+        /// building still holds that assignment, or the assignment's receipt shows the building took it (it may have
+        /// been sent to the owner's overflow store, or the building deleted, before the owner logged in).
+        /// </summary>
+        public static bool WasAssigned(bool buildingHoldsAssignment, bool receiptExists) => buildingHoldsAssignment || receiptExists;
+
+        /// <summary>
+        /// Whether a recalled controller the character file holds has a copy in the owner's overflow store, made when a
+        /// manager recalled the droid or the building was deleted before the recall was saved: the copy goes.
+        /// </summary>
+        public static bool RecalledCopyInOverflow(bool buildingHoldsAssignment, bool overflowCopyExists) =>
+            !buildingHoldsAssignment && overflowCopyExists;
+
         /// <summary>The deck slots whose building takes a droid.</summary>
         public static bool TakesDroid(StationDeckSlotType slot) =>
             slot is StationDeckSlotType.Shipyard or StationDeckSlotType.AsteroidDrill;

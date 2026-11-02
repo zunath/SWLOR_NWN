@@ -499,6 +499,58 @@ public class StationBuildingTests
     // Files
 
     [Test]
+    public void AnAssignedDroidsController_IsNeverKeptBesideTheBuildingsCopy()
+    {
+        // Login, for a controller the character file still marks as being assigned:
+        StationDroidRules.WasAssigned(false, false).Should().BeFalse("a restart came before the building saved the droid: the owner keeps it");
+        StationDroidRules.WasAssigned(true, false).Should().BeTrue("the building saved the droid, and the receipt was not written yet");
+        StationDroidRules.WasAssigned(true, true).Should().BeTrue();
+        StationDroidRules.WasAssigned(false, true).Should().BeTrue(
+            "a manager recalled the droid to the overflow store, or the building was deleted, before the owner logged in");
+
+        // Login, for a controller the character file holds as recalled by its owner:
+        StationDroidRules.RecalledCopyInOverflow(false, true).Should().BeTrue("a manager or a deletion also sent it to overflow: that copy goes");
+        StationDroidRules.RecalledCopyInOverflow(false, false).Should().BeFalse();
+        StationDroidRules.RecalledCopyInOverflow(true, false).Should().BeFalse("the building still holds it and is cleared instead");
+
+        new StationDroidReceipt().OwnerPlayerId.Should().BeEmpty();
+        typeof(StationDroidReceipt).GetProperty(nameof(StationDroidReceipt.OwnerPlayerId))!
+            .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty("a login finds its owner's receipts");
+
+        var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        InOrder(Section(service, "public static bool AssignDroid(", "public static void RecallDroid("),
+            "ExportSingleCharacter(player);", "DB.Set(state);", "SaveDroidReceipt(state);", "DestroyObject(controller);");
+        InOrder(Section(service, "private static void ReturnDroidToOverflow(", "private static string OverflowDroidId("),
+            "SaveDroidReceipt(state);", "DB.Set(new OverflowItem", "ClearDroid(state);");
+
+        var settle = Section(service, "public static void SettleDroidMoves()", "private static bool HoldsAssignment(");
+        settle.Should().Contain("StationDroidRules.WasAssigned(HoldsAssignment(state, assignmentId), DB.Get<StationDroidReceipt>(assignmentId) != null)");
+        InOrder(settle, "StationDroidRules.RecalledCopyInOverflow(holds, DB.Get<OverflowItem>(OverflowDroidId(assignmentId)) != null)",
+            "DB.Delete<OverflowItem>(OverflowDroidId(assignmentId));");
+        InOrder(settle, "DelayCommand(1f, () =>", "ExportSingleCharacter(player);", "DB.Delete<StationDroidReceipt>(receiptId);");
+    }
+
+    private static string Section(string source, string start, string end)
+    {
+        var from = source.IndexOf(start, StringComparison.Ordinal);
+        from.Should().BeGreaterThanOrEqualTo(0, start);
+        var to = source.IndexOf(end, from, StringComparison.Ordinal);
+        to.Should().BeGreaterThan(from, end);
+        return source.Substring(from, to - from);
+    }
+
+    private static void InOrder(string source, params string[] parts)
+    {
+        var at = -1;
+        foreach (var part in parts)
+        {
+            var next = source.IndexOf(part, at + 1, StringComparison.Ordinal);
+            next.Should().BeGreaterThan(at, $"'{part}' comes next");
+            at = next;
+        }
+    }
+
+    [Test]
     public void BuildingMenus_ChangeTheCurrentStateNotThePagesCopy()
     {
         var dialog = ReadServer("Feature", "DialogDefinition", "StationBuildingDialog.cs").Replace("\r\n", "\n");

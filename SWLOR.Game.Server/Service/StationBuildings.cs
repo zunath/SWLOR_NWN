@@ -408,6 +408,9 @@ namespace SWLOR.Game.Server.Service
             state.SerializedDroid = serialized;
             state.DroidAssignmentId = assignmentId;
             DB.Set(state);
+            // The receipt follows the building's save (a restart between the two still finds the building holding the
+            // assignment), and outlives any later recall or deletion until the owner's login settles the controller.
+            SaveDroidReceipt(state);
             DestroyObject(controller);
 
             SendMessageToPC(player, ColorToken.Green($"{state.DroidName} now works the {detail.Name}."));
@@ -464,29 +467,79 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            var settled = false;
             foreach (var controller in Droid.GetControllers(player))
             {
                 if (TryReadMark(controller, AssigningVariable, out var state, out var assignmentId))
                 {
+                    settled = true;
                     DeleteLocalString(controller, AssigningVariable);
-                    if (state != null && state.DroidAssignmentId == assignmentId && !string.IsNullOrWhiteSpace(state.SerializedDroid))
+                    if (StationDroidRules.WasAssigned(HoldsAssignment(state, assignmentId), DB.Get<StationDroidReceipt>(assignmentId) != null))
                     {
                         DestroyObject(controller);
-                        Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - removed droid controller already assigned to building {state.BuildingId} after a restart.");
+                        Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - removed droid controller already taken by a station building (assignment {assignmentId}) after a restart.");
                     }
                 }
 
                 if (TryReadMark(controller, RecalledVariable, out state, out assignmentId))
                 {
+                    settled = true;
                     DeleteLocalString(controller, RecalledVariable);
-                    if (state != null && state.DroidAssignmentId == assignmentId && !string.IsNullOrWhiteSpace(state.SerializedDroid))
+                    var holds = HoldsAssignment(state, assignmentId);
+                    if (holds)
                     {
                         ClearDroid(state);
                         DB.Set(state);
                         Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - cleared recalled droid from building {state.BuildingId} after a restart.");
                     }
+                    else if (StationDroidRules.RecalledCopyInOverflow(holds, DB.Get<OverflowItem>(OverflowDroidId(assignmentId)) != null))
+                    {
+                        // A manager recalled the droid, or the building was deleted, before the owner's recall was saved:
+                        // only the owner can take from their overflow store, so the copy is still there to remove.
+                        DB.Delete<OverflowItem>(OverflowDroidId(assignmentId));
+                        Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - removed the overflow copy of recalled droid (assignment {assignmentId}) after a restart.");
+                    }
                 }
             }
+
+            // The receipts go only once the character file is saved without the controllers settled above (a destroyed
+            // controller is gone only after this script), so a restart before that save settles them again.
+            var receiptQuery = new DBQuery<StationDroidReceipt>()
+                .AddFieldSearch(nameof(StationDroidReceipt.OwnerPlayerId), GetObjectUUID(player), false);
+            var receiptCount = (int)DB.SearchCount(receiptQuery);
+            var receiptIds = receiptCount <= 0
+                ? new List<string>()
+                : DB.Search(receiptQuery.AddPaging(receiptCount, 0)).Select(x => x.Id).ToList();
+            if (!settled && receiptIds.Count == 0)
+                return;
+
+            DelayCommand(1f, () =>
+            {
+                if (!GetIsObjectValid(player))
+                    return;
+
+                ExportSingleCharacter(player);
+                foreach (var receiptId in receiptIds)
+                    DB.Delete<StationDroidReceipt>(receiptId);
+            });
+        }
+
+        private static bool HoldsAssignment(StationBuildingState state, string assignmentId) =>
+            state != null && !string.IsNullOrEmpty(assignmentId) && state.DroidAssignmentId == assignmentId &&
+            !string.IsNullOrWhiteSpace(state.SerializedDroid);
+
+        /// <summary>Records that the building took the droid of its assignment (<see cref="StationDroidReceipt"/>).</summary>
+        private static void SaveDroidReceipt(StationBuildingState state)
+        {
+            if (string.IsNullOrEmpty(state.DroidAssignmentId) || string.IsNullOrEmpty(state.DroidOwnerPlayerId))
+                return;
+
+            DB.Set(new StationDroidReceipt
+            {
+                Id = state.DroidAssignmentId,
+                OwnerPlayerId = state.DroidOwnerPlayerId,
+                BuildingId = state.BuildingId ?? string.Empty
+            });
         }
 
         private static bool TryReadMark(uint controller, string variable, out StationBuildingState state, out string assignmentId)
@@ -515,6 +568,9 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(state);
             }
 
+            // The receipt is written again before the building lets the droid go, so a controller still marked as being
+            // assigned in the owner's character file is removed at their login rather than kept beside the copy.
+            SaveDroidReceipt(state);
             DB.Set(new OverflowItem
             {
                 Id = OverflowDroidId(state.DroidAssignmentId),

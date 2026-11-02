@@ -214,6 +214,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "the guarded Daze makes Guard Counter III a Control ability for Guard Training");
         }
 
+        [EngineTest("Scrapper Control accuracy reaches queued Guard Counter III only after a guarded hit", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task ScrapperControlAccuracyReachesQueuedGuardCounter(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.ScrapperControl, 1);
+
+            // Queued abilities roll with the weapon attack, so the category accuracy must be added there.
+            int QueuedHitChance(FeatType feat) => Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+                caster, SkillType.Katar, Ability.GetAbilityDetail(feat));
+            var baseline = QueuedHitChance(FeatType.GuardCounter1);
+            ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter3),
+                "without a guarded hit Guard Counter III is not a control ability for Scrapper Control");
+
+            Combat.TrackGuardedHit(caster);
+            ctx.AssertEqual(baseline + 3, QueuedHitChance(FeatType.GuardCounter3),
+                "after a guarded hit Scrapper Control adds +3% Ability Accuracy to Guard Counter III's queued roll");
+            ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter1),
+                "Guard Counter I never applies a control status");
+        }
+
         [EngineTest("A conditional Control status counts for Control riders when it lands", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
         public static async Task ConditionalControlStatusTriggersControlRiders(EngineTestContext ctx)
         {

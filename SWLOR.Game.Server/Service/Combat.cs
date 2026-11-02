@@ -9934,9 +9934,13 @@ namespace SWLOR.Game.Server.Service
                 StatType.WeaponAbilityActivationIdleSnapshot);
         }
 
+        /// <param name="ability">The queued ability. Its status categories add category accuracy
+        /// (Scrapper Control: "your control abilities gain Ability Accuracy"), which ability rolls get
+        /// in ApplyCombatImpact but the native weapon roll would otherwise miss.</param>
         public static int GetQueuedWeaponAbilityActivationHitChanceAdjustment(
             uint creature,
-            SkillType skillType)
+            SkillType skillType,
+            AbilityDetail ability = null)
         {
             var activationSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
@@ -9949,8 +9953,14 @@ namespace SWLOR.Game.Server.Service
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
                 : 0;
 
+            var statusCategoryHitChanceAdjustment = GetAbilityStatusCategoryHitChancePercentAdjustment(
+                creature,
+                skillType,
+                ability?.ResolveImpactStatusCategories?.Invoke(creature) ?? StatusEffectCategory.None);
+
             // Queued abilities use the native weapon roll instead of TryResolveAbilityHit.
-            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment;
+            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment +
+                   statusCategoryHitChanceAdjustment;
         }
 
         public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)

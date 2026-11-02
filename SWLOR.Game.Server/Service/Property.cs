@@ -209,6 +209,7 @@ namespace SWLOR.Game.Server.Service
         {
             RefreshPermissions();
             ProcessCities();
+            CityProjects.ProcessAtServerStart();
             CleanUpData();
             LoadProperties();
         }
@@ -478,8 +479,18 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(area))
                 return string.Empty;
 
+            return GetCityIdForProperty(GetPropertyId(area));
+        }
+
+        /// <summary>
+        /// The id of the city a property belongs to: the city itself, a building or structure standing on its land, or the interior of a
+        /// building or house in it. Walks the interior, building, and city chain. A property outside any city, such as an apartment or a
+        /// ship, gives an empty string.
+        /// </summary>
+        /// <param name="propertyId">The property id.</param>
+        public static string GetCityIdForProperty(string propertyId)
+        {
             // An interior's parent is its building, and the building's parent is the city.
-            var propertyId = GetPropertyId(area);
             for (var depth = 0; depth < 4 && !string.IsNullOrWhiteSpace(propertyId); depth++)
             {
                 var property = DB.Get<WorldProperty>(propertyId);
@@ -2387,6 +2398,7 @@ namespace SWLOR.Game.Server.Service
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
                 Tournaments.OnCityDeleted(property);
+                CityProjects.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
             }
 

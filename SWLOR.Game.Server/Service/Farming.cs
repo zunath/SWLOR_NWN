@@ -144,11 +144,21 @@ namespace SWLOR.Game.Server.Service
 
         // Bonuses that later parts of the revamp supply
 
-        /// <summary>Whether the property holds twice the garden plots and adds 1 to a crop's harvest. The Greenhouse specialization supplies it.</summary>
-        public static bool IsGreenhouse(WorldProperty property) => false;
+        /// <summary>Whether the property holds twice the garden plots and adds 1 to a crop's harvest: a house with the Greenhouse specialization.</summary>
+        public static bool IsGreenhouse(WorldProperty property) => HouseSpecializations.IsGreenhouse(property);
 
-        /// <summary>Whether the plot's city has completed its Home Ground project, which adds 1 to a harvest. The Home Ground project supplies it.</summary>
-        public static bool HasHomeGround(WorldProperty plot) => false;
+        /// <summary>
+        /// Whether the plot's city has completed its Home Ground project, which adds 1 to a harvest. A plot in a house counts for the
+        /// house's city, and every plot on a station deck counts for the station.
+        /// </summary>
+        public static bool HasHomeGround(WorldProperty plot)
+        {
+            if (plot == null)
+                return false;
+
+            var cityId = Property.GetCityIdForProperty(plot.ParentPropertyId);
+            return !string.IsNullOrWhiteSpace(cityId) && CityProjects.HasHomeGround(DB.Get<WorldProperty>(cityId));
+        }
 
         /// <summary>
         /// Whether pests plague the city the plot stands in (the Pests in the Gardens situation was ignored in the last 72 hours),
@@ -189,7 +199,8 @@ namespace SWLOR.Game.Server.Service
                 isPlayer ? Perk.GetPlayerEffectivePerkLevel(player, PerkType.CropManagement) : 0,
                 crop.Tier,
                 isPlayer ? CountGrowingCrops(cdKey, playerId, now) : 0,
-                GetIsObjectValid(seed));
+                GetIsObjectValid(seed),
+                structure != null && HouseSpecializations.IsPlotAboveLimit(structure));
             if (refusal != FarmingRefusal.None)
                 return FarmingResult.Refused(refusal);
 

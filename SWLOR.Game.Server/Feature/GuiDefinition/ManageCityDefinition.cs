@@ -171,6 +171,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         col.AddRow(row =>
                         {
                             row.AddLabel()
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                .SetHeight(25f)
+                                .BindText(model => model.HomeGroundLevel)
+                                .BindTooltip(model => model.HomeGroundTooltip);
+
+                            row.AddButton()
+                                .SetText("Build Home Ground")
+                                .SetHeight(35f)
+                                .BindOnClicked(model => model.StartHomeGround())
+                                .BindIsEnabled(model => model.CanStartHomeGround)
+                                .BindTooltip(model => model.HomeGroundTooltip);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer();
+
+                            row.AddButton()
+                                .SetText("City Projects")
+                                .SetHeight(35f)
+                                .BindOnClicked(model => model.OpenCityProjects());
+
+                            row.AddSpacer();
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddLabel()
                                 .SetText("Taxes & Fees")
                                 .SetHeight(25f)
                                 .SetHorizontalAlign(NuiHorizontalAlign.Center)

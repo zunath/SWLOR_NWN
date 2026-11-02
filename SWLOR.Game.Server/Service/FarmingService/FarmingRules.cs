@@ -167,6 +167,7 @@ namespace SWLOR.Game.Server.Service.FarmingService
         /// <param name="cropManagementRank">The planter's Crop Management rank (0 to 5).</param>
         /// <param name="cropTier">The tier of the crop the seed grows.</param>
         /// <param name="growingCrops">The crops the planter's CD key already has growing.</param>
+        /// <param name="plotAboveLimit">Whether the plot is one of a house's plots past the first 5 after the house lost its Greenhouse.</param>
         public static FarmingRefusal CheckPlant(
             bool isPlayer,
             bool plotExists,
@@ -176,7 +177,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
             int cropManagementRank,
             int cropTier,
             int growingCrops,
-            bool hasSeed)
+            bool hasSeed,
+            bool plotAboveLimit = false)
         {
             if (!isPlayer)
                 return FarmingRefusal.NotAPlayer;
@@ -184,6 +186,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 return FarmingRefusal.NoPlot;
             if (GetStage(plot, now) != GardenPlotStage.Empty)
                 return FarmingRefusal.PlotOccupied;
+            if (plotAboveLimit)
+                return FarmingRefusal.PlotAboveLimit;
             if (!hasPermission)
                 return FarmingRefusal.NoPermission;
             if (!CanPlantTier(cropManagementRank, cropTier))
@@ -268,6 +272,7 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 FarmingRefusal.NotThePlanter => "Only the planter can do that.",
                 FarmingRefusal.Withered => "The crop has withered and its seed is lost.",
                 FarmingRefusal.UnknownCrop => "That is not a crop.",
+                FarmingRefusal.PlotAboveLimit => $"This house is no longer a Greenhouse, so it plants only its first {HousePlotLimit} plots. This one can be harvested, not replanted.",
                 _ => string.Empty
             };
         }

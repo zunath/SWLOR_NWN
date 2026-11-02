@@ -46,5 +46,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
 
         /// <summary>The crop is not one the farm can grow.</summary>
         UnknownCrop = 14,
+
+        /// <summary>The house lost its Greenhouse and this plot is past the first 5, so it cannot be planted again.</summary>
+        PlotAboveLimit = 15,
     }
 }

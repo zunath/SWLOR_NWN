@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityGazetteService;
+using SWLOR.Game.Server.Service.CityProjectService;
 using SWLOR.Game.Server.Service.CityTreasuryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
@@ -272,6 +273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CanUpgradeStarports = false;
                 CanUpgradeCantinas = false;
                 CanUpgradeJumpBeacons = false;
+                CanStartHomeGround = false;
                 return false;
             }
 
@@ -282,15 +284,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanManageEdicts = access.Can(CityPower.EnactEdicts);
             CanRepealEdicts = access.Can(CityPower.RepealEdicts);
 
-            // Upgrades
+            // Upgrades are City Projects, one of each kind at a time.
             var canStartProjects = access.Can(CityPower.StartProjects);
+            var openProjects = GetOpenProjectTypes();
             CanUpgradeMedicalCenters = canStartProjects &&
+                              !openProjects.Contains(CityProjectType.MedicalCenterUpgrade) &&
                               dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] + 1;
             CanUpgradeStarports = canStartProjects &&
+                              !openProjects.Contains(CityProjectType.StarportUpgrade) &&
                               dbCity.Upgrades[PropertyUpgradeType.StarportLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.StarportLevel] + 1;
             CanUpgradeCantinas = canStartProjects &&
+                              !openProjects.Contains(CityProjectType.CantinaUpgrade) &&
                               dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1;
 
@@ -298,32 +304,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var beaconLevel = GetJumpBeaconLevel(dbCity);
             CanUpgradeJumpBeacons = IsStation &&
                               canStartProjects &&
+                              !openProjects.Contains(CityProjectType.JumpBeaconUpgrade) &&
                               beaconLevel < StationTuning.BeaconMaxLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= beaconLevel + 1;
 
+            CanStartHomeGround = canStartProjects &&
+                                 !openProjects.Contains(CityProjectType.HomeGround) &&
+                                 !CityProjects.HasHomeGround(dbCity);
             return true;
-        }
-
-        private bool HasManageUpgradesPermission()
-        {
-            // Facility upgrades are the City Projects the Acting Mayor may start, as well as what Manage Upgrades grants.
-            return CityPowers.Can(DB.Get<WorldProperty>(_cityId), GetObjectUUID(Player), CityPower.StartProjects);
         }
 
         /// <summary>A station's Jump Beacon upgrade level; stations founded before beacons existed start at 1.</summary>
         private static int GetJumpBeaconLevel(WorldProperty dbCity) =>
             dbCity.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1);
 
-        private static int GetMaxUpgradeLevel(PropertyUpgradeType upgradeType) =>
-            upgradeType == PropertyUpgradeType.JumpBeaconLevel ? StationTuning.BeaconMaxLevel : MaxUpgradeLevel;
-
         private void RefreshUpgradeLevels()
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
 
-            MedicalCenterLevel = $"Medical Center: Lvl {dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]}";
-            StarportLevel = $"Starport: Lvl {dbCity.Upgrades[PropertyUpgradeType.StarportLevel]}";
-            CantinaLevel = $"Cantina: Lvl {dbCity.Upgrades[PropertyUpgradeType.CantinaLevel]}";
+            RefreshHomeGroundText(dbCity);
+            var projects = CityProjects.GetProjects(_cityId);
+            string Building(CityProjectType type) =>
+                projects.FirstOrDefault(project => project.ProjectType == type) is { } project ? $" (Lvl {project.TargetLevel} being built)" : string.Empty;
+
+            MedicalCenterLevel = $"Medical Center: Lvl {dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]}{Building(CityProjectType.MedicalCenterUpgrade)}";
+            StarportLevel = $"Starport: Lvl {dbCity.Upgrades[PropertyUpgradeType.StarportLevel]}{Building(CityProjectType.StarportUpgrade)}";
+            CantinaLevel = $"Cantina: Lvl {dbCity.Upgrades[PropertyUpgradeType.CantinaLevel]}{Building(CityProjectType.CantinaUpgrade)}";
 
             MedicalCenterCurrentUpgrade = GetMedicalCenterUpgrade(dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]);
             MedicalCenterNextUpgrade = GetMedicalCenterUpgrade(dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] + 1);
@@ -333,7 +339,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CantinaNextUpgrade = GetCantinaUpgrade(dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1);
 
             var beaconLevel = GetJumpBeaconLevel(dbCity);
-            JumpBeaconLevel = $"Jump Beacon: Lvl {beaconLevel}";
+            JumpBeaconLevel = $"Jump Beacon: Lvl {beaconLevel}{Building(CityProjectType.JumpBeaconUpgrade)}";
             JumpBeaconCurrentUpgrade = GetJumpBeaconUpgrade(beaconLevel);
             JumpBeaconNextUpgrade = GetJumpBeaconUpgrade(beaconLevel + 1);
         }
@@ -465,131 +471,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload, TetherObject);
         };
 
-        private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)
-        {
-            // The window's upgrade buttons reflect when it loaded: the permission may have been revoked since.
-            if (!HasManageUpgradesPermission())
-            {
-                RefreshPermissions();
-                Instructions = "Insufficient permissions.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            var dbCity = DB.Get<WorldProperty>(_cityId);
-            var mayor = DB.Get<Player>(dbCity.OwnerPlayerId);
-            var currentLevel = dbCity.Upgrades.GetValueOrDefault(upgradeType, 1);
-            var mayorPerkLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
-                ? mayor.Perks[PerkType.CityManagement]
-                : 0;
-
-            if (currentLevel >= GetMaxUpgradeLevel(upgradeType))
-            {
-                Instructions = "Cannot upgrade further.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            if (dbCity.Upgrades[PropertyUpgradeType.CityLevel] <= currentLevel)
-            {
-                Instructions = "Increase city level to upgrade.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            if (mayorPerkLevel + 1 <= currentLevel)
-            {
-                Instructions = "Mayor city management perk too low.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            if (dbCity.Treasury < price)
-            {
-                Instructions = $"Treasury needs at least {price} cr to upgrade.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            return true;
-        }
-
-        private void HandleUpgrade(PropertyUpgradeType upgradeType, PropertyType propertyType)
-        {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
-            var currentLevel = dbCity.Upgrades.GetValueOrDefault(upgradeType, 1);
-            var initialPrice = 50000 * (currentLevel + 1);
-
-            if (!ValidateUpgrade(upgradeType, initialPrice))
-                return;
-
-            ShowModal($"Upgrading this structure type will cost an upfront amount of {initialPrice} credits and increase your weekly maintenance bill by an additional 10000 credits. Upgrades cannot be undone. Are you sure you want to upgrade this structure type?",
-                () =>
-                {
-                    // Refresh entity in case another player is editing this city.
-                    dbCity = DB.Get<WorldProperty>(_cityId);
-                    currentLevel = dbCity.Upgrades.GetValueOrDefault(upgradeType, 1);
-                    initialPrice = 50000 * (currentLevel + 1);
-
-                    if (!ValidateUpgrade(upgradeType, initialPrice))
-                        return;
-
-                    dbCity.Treasury -= initialPrice;
-                    dbCity.Upgrades[upgradeType] = currentLevel + 1;
-
-                    DB.Set(dbCity);
-
-                    RefreshPropertyDetails();
-                    RefreshPermissions();
-                    RefreshUpgradeLevels();
-
-                    Instructions = "Upgrade purchased successfully!";
-                    InstructionsColor = GuiColor.Green;
-
-                    Log.Write(LogGroup.Property, $"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
-
-                    var structureTypes = Property.GetStructuresByInteriorPropertyType(propertyType);
-                    var structureTypeIds = structureTypes.Select(s => (int)s).ToList();
-
-                    if (structureTypeIds.Count > 0)
-                    {
-                        // Retrieve all interior property Ids in this city of the given type of property.
-                        // I.E: All banks, all medical centers, etc.
-                        var instancePropertyIds = DB.Search(new DBQuery<WorldProperty>()
-                            .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), _cityId, false)
-                            .AddFieldSearch(nameof(WorldProperty.StructureType), structureTypeIds))
-                            .SelectMany(s => s.ChildPropertyIds[PropertyChildType.Interior]);
-
-                        foreach (var propertyId in instancePropertyIds)
-                        {
-                            if (!Property.TryGetLoadedInstance(propertyId, out var instance))
-                                continue;
-
-                            var layout = Property.GetLayoutByType(instance.LayoutType);
-
-                            if (layout.OnCityUpgradeAction != null)
-                            {
-                                layout.OnCityUpgradeAction(instance.Area, upgradeType, dbCity.Upgrades[upgradeType]-1);
-                            }
-                        }
-                    }
-                });
-        }
-
-
+        // The upgrade buttons start City Projects: the treasury holds the credits and anyone donates the materials at City Hall.
         public Action UpgradeMedicalCenterLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.MedicalCenterLevel, PropertyType.MedicalCenter);
+            StartProject(CityProjectType.MedicalCenterUpgrade);
         };
 
         public Action UpgradeStarportLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.StarportLevel, PropertyType.Starport);
+            StartProject(CityProjectType.StarportUpgrade);
         };
 
         public Action UpgradeCantinaLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.CantinaLevel, PropertyType.Cantina);
+            StartProject(CityProjectType.CantinaUpgrade);
         };
 
         public Action UpgradeJumpBeaconLevel() => () =>
@@ -597,7 +492,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!Station.IsStation(DB.Get<WorldProperty>(_cityId)))
                 return;
 
-            HandleUpgrade(PropertyUpgradeType.JumpBeaconLevel, PropertyType.Invalid);
+            StartProject(CityProjectType.JumpBeaconUpgrade);
         };
 
         public Action OpenCityAffairs() => () =>

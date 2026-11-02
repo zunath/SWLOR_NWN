@@ -106,6 +106,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         CityAffairs = 111,
         GardenPlot = 112,
         DMCities = 113,
+        HouseSpecialization = 117,
+        CityProjects = 118,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

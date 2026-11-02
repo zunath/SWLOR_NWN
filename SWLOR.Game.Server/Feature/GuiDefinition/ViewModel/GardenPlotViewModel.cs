@@ -141,7 +141,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _cropManagementRank,
                 _seeds[_selectedSeedIndex].Tier,
                 _growingCrops,
-                true);
+                true,
+                structure != null && HouseSpecializations.IsPlotAboveLimit(structure));
             CanPlant = refusal == FarmingRefusal.None;
             PlantTooltip = FarmingRules.Describe(refusal);
         }

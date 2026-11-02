@@ -54,12 +54,12 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Whether the city has built Home Ground. The City Projects that build it arrive with the Homes, farming and projects work, so
-        /// until then no city has it; that work replaces this one body.
+        /// Whether the city has built Home Ground: its City Project has completed (<see cref="WorldProperty.HomeGroundCompletedUtc"/>). The
+        /// garden harvest bonus reads the same time, so there is one source of truth.
         /// </summary>
         public static bool HasHomeGround(WorldProperty city)
         {
-            return false;
+            return CityProjects.HasHomeGround(city);
         }
 
         #endregion

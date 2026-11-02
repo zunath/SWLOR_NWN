@@ -19,6 +19,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.StationService;
+using SWLOR.Game.Server.Service.TravelerService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -1608,6 +1609,9 @@ namespace SWLOR.Game.Server.Service
             var cities = DB.Search(cityQuery.AddPaging(queryCount, 0));
             var now = DateTime.UtcNow;
 
+            // The travelers move to their hosts for the week first, so a situation drawn below sees who is where.
+            Travelers.Rotate(now);
+
             foreach (var city in cities)
             {
                 ProcessCityCitizenRequirement(now, city);
@@ -2302,6 +2306,10 @@ namespace SWLOR.Game.Server.Service
             if (property.PropertyType == PropertyType.Structure && property.StructureType == StructureType.DuelingRing)
                 Tournaments.OnRingDeleted(property);
 
+            // A traveler hosted by a city that loses its Lodge waits at the hub until next week.
+            if (property.PropertyType == PropertyType.Structure && property.StructureType == StructureType.TravelersLodge)
+                Travelers.OnLodgeDeleted(property);
+
             // Recursively clear any children properties tied to this property.
             // Children are also found by their parent Id because loading spawns structures that way,
             // so a stale child list can't leave orphaned buildings or interiors behind.
@@ -2395,6 +2403,7 @@ namespace SWLOR.Game.Server.Service
                 CityProjects.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
                 Townsfolk.OnCityDeleted(property.Id);
+                Travelers.OnCityDeleted(property.Id);
                 CityStockAllowances.DeleteAll(property.Id);
             }
 
@@ -3713,6 +3722,16 @@ namespace SWLOR.Game.Server.Service
                     FloatingTextStringOnCreature($"This property holds at most {plotLimit} garden plots.", player, false);
                     return;
                 }
+            }
+
+            // A city has one Traveler's Lodge.
+            var lodgeError = TravelerRules.GetLodgePlacementError(
+                structureType,
+                structures.Count(x => x.StructureType == StructureType.TravelersLodge && !x.IsQueuedForDeletion));
+            if (!string.IsNullOrWhiteSpace(lodgeError))
+            {
+                FloatingTextStringOnCreature(lodgeError, player, false);
+                return;
             }
 
             // A Corral stands in a planet city's open ground, never on a station deck, and a city has 2 per city level.

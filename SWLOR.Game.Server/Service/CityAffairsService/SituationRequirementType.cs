@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         SkillRank = 6,
 
         /// <summary>The city has a structure of the type, such as a corral or a garden plot.</summary>
-        Structure = 7
+        Structure = 7,
+
+        /// <summary>A traveler is hosted by the city this week.</summary>
+        TravelerHost = 8
     }
 }

@@ -106,6 +106,7 @@ namespace SWLOR.Game.Server.Service
                 Planet = Station.GetCityPlanet(city),
                 FacilityLevels = facilities,
                 StructureTypes = GetStructureTypes(city),
+                HostedTravelers = Travelers.GetHostedBy(city.Id).Select(type => type.ToString()).ToList(),
                 ActiveEdicts = GetActiveEdictNames(city),
                 SkillRanks = skillRanks ?? new Dictionary<SkillType, int>()
             };

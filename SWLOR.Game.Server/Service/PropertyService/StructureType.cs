@@ -3116,6 +3116,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.City)]
         MarketStall = 5102,
 
+        // Player City Revamp: travelers. A city-only structure on open ground that counts against the city's structure limit.
+        [Structure("Traveler's Lodge",
+            "swlor_1259",
+            "A large tent where the traveling merchants who visit the city set up. A city may place one. Each week the travelers move to a different city with a lodge, and the city collects its sales tax on what they sell.",
+            true,
+            0,
+            PropertyType.City)]
+        TravelersLodge = 5103,
+
         // Player City Revamp: livestock. A city-only structure on open ground that counts against the city's structure limit.
         [Structure("Corral",
             "swlor_0094",

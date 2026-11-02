@@ -34,14 +34,19 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsKeeper(string houseId, string playerId)
         {
-            if (string.IsNullOrWhiteSpace(houseId) || string.IsNullOrWhiteSpace(playerId))
-                return false;
+            return HouseSpecializationRules.IsKeeper(GetPermissionRecord(houseId, playerId));
+        }
 
-            var record = DB.Search(new DBQuery<WorldPropertyPermission>()
+        /// <summary>The player's permission record on the house, or null when they have none.</summary>
+        public static WorldPropertyPermission GetPermissionRecord(string houseId, string playerId)
+        {
+            if (string.IsNullOrWhiteSpace(houseId) || string.IsNullOrWhiteSpace(playerId))
+                return null;
+
+            return DB.Search(new DBQuery<WorldPropertyPermission>()
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), houseId, false)
                     .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
                 .FirstOrDefault();
-            return HouseSpecializationRules.IsKeeper(record);
         }
 
         /// <summary>Why the player cannot give the house this specialization right now, or <see cref="HouseSpecializationRefusal.None"/>.</summary>

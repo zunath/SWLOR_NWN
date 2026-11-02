@@ -2034,8 +2034,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             // After a mayor stepped down, "the incumbent stays" means the interim holder takes the seat.
-            if (outcome.Kind == ElectionKind.SnapStepDown && ElectionRules.IsStatusQuo(outcome.Type))
-                summary = "The snap mayoral election after the mayor stepped down has concluded without a winner, so the interim holder is now mayor.";
+            if (outcome.Kind == ElectionKind.SnapStepDown)
+            {
+                var stepDownSummary = ElectionNoticeText.BuildStepDownSummary(outcome.Type);
+                if (!string.IsNullOrEmpty(stepDownSummary))
+                    summary = stepDownSummary;
+            }
 
             var details = $"{summary}\n" +
                           $"**Candidates**: {outcome.CandidateCount:N0}\n" +

@@ -703,6 +703,11 @@ The default for anything unclear: Edicts keep running while upkeep is paid, and 
 
 - **Mayor returns early:** they end the Acting Mayor term from Manage City at any time.
 - **Mayor steps down with no officers or Acting Mayor:** they must name an Acting Mayor first, who accepts before the snap election opens.
+- **Step-down while an election is open:** not allowed, since a snap election would run beside it. The named player cannot accept while one is open, and the step-down is cancelled if the 7 days run out first.
+- **Withdrawing a step-down:** until the named player accepts, the mayor keeps every power and may withdraw it, and the named player may decline.
+- **Acting Mayor and an election:** an election that seats a mayor ends the term, whether it picks a new mayor or confirms the sitting one. An election that ends with a tie, no votes, or no candidates leaves the term running. A step-down never leaves two stand-ins: accepting ends any running Acting Mayor term, and the interim holder holds the powers.
+- **Interim holder leaves the city during the snap election:** the mayor of record stays the incumbent, so a result that leaves things as they were keeps them, and their powers return when the election ends. They still cannot run in it.
+- **Mayor's other permissions:** the departed mayor loses the powers in the Permissions table and the Manage City window. Building permissions on their record, such as placing structures, are not part of the table and stay until the election ends.
 
 **Livestock**
 
@@ -754,8 +759,9 @@ Every number in this plan is a proposal until approved. Edict effects and costs 
 | City Project build time | 2 days after the last material arrives | Facility upgrades are instant today |
 | Home Ground | A separate 5% chance of 1 more item per harvest on the city's planet; city crops yield 1 more item per harvest | New |
 | Shadowport | Contraband near black-market price, small bust chance per sale; normal goods 15% lower. Lawful city ports: low contraband price, high bust chance | Space revamp: contraband at 150-200% of normal earnings; scan odds and fines still to draft |
-| Acting Mayor | Up to 30 days at a time | New |
+| Acting Mayor | Up to 30 days at a time; Manage City offers 3, 7, 14, 21, and 30 days | New |
 | DM story requests | 1 open per city, up to 600 characters | HoloNet message limit |
+| Planetary council summons | The DM adds up to 300 characters; the notice shows at login for 14 days | New |
 | Livestock | 3 per corral and 2 corrals per city level; 6 per CD key; 2 crops to feed every 20 hours; adult 72 hours after placement and 3 feedings; wanders off after 72 hours unfed; butcher yields 4 meat and 1 second product | New |
 | Passive output cap | Everything one CD key gets passively, averaged over a week, under one measured harvest hour a day at the same tier; 10 crops, 6 animals, 1 vat, and 3 crates a week per CD key | Agriculture feedback thread (Valo, Zunath) |
 | Woodlots | 3 days to grow, 4 logs; counts toward the 10-crop cap | Harvesting trees, 5 tiers |
@@ -1034,7 +1040,7 @@ Follow `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`, and the GUI
 - **Citizenship window:** active Edicts, the mayor's record, officers, and a Gazette link.
 - **Market stall:** a stock theme picker for the mayor.
 - Story request: a text field at City Hall for the mayor and officers, beside City Affairs.
-- DM city window: every city's mayor, officers, recent activity, and open story request, with Take and Done buttons, filterable by planet for council summons.
+- DM city window: every city's mayor, officers, recent activity, and open story request, with Take and Done buttons, filterable by planet for council summons. DMs open it with `/cities`; the DM toolbar has no room for another button.
 
 ### Permissions, migration, and deploy
 

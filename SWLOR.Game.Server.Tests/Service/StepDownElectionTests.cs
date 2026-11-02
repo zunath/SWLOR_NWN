@@ -192,6 +192,32 @@ public class StepDownElectionTests
 
     #region Notices
 
+    [TestCase(ElectionOutcomeType.NoCandidates)]
+    [TestCase(ElectionOutcomeType.NoVotes)]
+    [TestCase(ElectionOutcomeType.ChallengerRejected)]
+    [TestCase(ElectionOutcomeType.ConfidenceTie)]
+    [TestCase(ElectionOutcomeType.Tie)]
+    public void TheBroadcastSaysTheInterimHolderIsNowMayor_WhenNobodyWonOutright(ElectionOutcomeType type)
+    {
+        var summary = ElectionNoticeText.BuildStepDownSummary(type);
+
+        summary.Should().Contain("interim holder is now mayor").And.Contain("without a winner");
+        summary.Should().MatchRegex("^[\x20-\x7E]+$");
+    }
+
+    [Test]
+    public void TheBroadcastForAnInterimHolderWhoWinsOrLosesAConfidenceVoteSaysSo()
+    {
+        ElectionNoticeText.BuildStepDownSummary(ElectionOutcomeType.IncumbentConfirmed).Should().Contain("interim holder won");
+        ElectionNoticeText.BuildStepDownSummary(ElectionOutcomeType.NoConfidence).Should().Contain("No on the interim holder").And.Contain("Edicts paused");
+    }
+
+    [Test]
+    public void ANewMayorFromTheSnapElectionReadsLikeAnyOtherNewMayor()
+    {
+        ElectionNoticeText.BuildStepDownSummary(ElectionOutcomeType.NewMayor).Should().BeEmpty();
+    }
+
     [Test]
     public void TheResultNoticeSaysTheInterimHolderBecomesMayor_NotThatTheyStay()
     {

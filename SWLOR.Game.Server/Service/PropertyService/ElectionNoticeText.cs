@@ -125,6 +125,29 @@ namespace SWLOR.Game.Server.Service.PropertyService
             return text.ToString();
         }
 
+        /// <summary>
+        /// The Discord and Gazette summary of a step-down snap election's result. The incumbent is the interim holder, who
+        /// takes the seat in every result except a challenger's outright win. Empty for that win, which reads like any other
+        /// new mayor.
+        /// </summary>
+        public static string BuildStepDownSummary(ElectionOutcomeType type)
+        {
+            const string Opening = "The snap mayoral election after the mayor stepped down has concluded";
+
+            if (ElectionRules.IsStatusQuo(type))
+                return $"{Opening} without a winner, so the interim holder is now mayor.";
+
+            switch (type)
+            {
+                case ElectionOutcomeType.IncumbentConfirmed:
+                    return $"{Opening}. The interim holder won and is now mayor.";
+                case ElectionOutcomeType.NoConfidence:
+                    return $"{Opening}. Citizens voted No on the interim holder, who is now mayor with Edicts paused until the next regular election.";
+                default:
+                    return string.Empty;
+            }
+        }
+
         private static string DescribeKind(ElectionKind kind)
         {
             switch (kind)

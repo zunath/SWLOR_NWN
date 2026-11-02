@@ -225,6 +225,15 @@ public class StepDownRulesTests
     }
 
     [Test]
+    public void IfTheHolderLeftAndTheirNameWasTaken_TheMayorOfRecordStaysTheIncumbent()
+    {
+        var stepDown = Accepted(string.Empty);
+
+        StepDownRules.GetIncumbentId(Mayor, stepDown, true).Should().Be(Mayor);
+        StepDownRules.GetIncumbentId(Mayor, stepDown, false).Should().Be(Mayor);
+    }
+
+    [Test]
     public void TheMayorWhoSteppedDownCannotRunInTheSnapElection()
     {
         StepDownRules.CheckCandidate(ElectionKind.SnapStepDown, Mayor, Mayor).Should().Contain("stepped down");
@@ -265,6 +274,7 @@ public class StepDownRulesTests
     public void TheTextsUseAsciiPunctuation()
     {
         StepDownRules.BuildSteppedDownText().Should().MatchRegex("^[\\x20-\\x7E]+$");
+        StepDownRules.BuildInterimLeftText().Should().Contain("left the city").And.Contain("Acting Mayor");
         StepDownRules.BuildCancelledText("the mayor withdrew it").Should().MatchRegex("^[\\x20-\\x7E]+$").And.Contain("withdrew");
         StepDownRules.BuildStatusText(Pending(), "Bria", Now.AddDays(1)).Should().Contain("Bria").And.Contain("6 days left");
         StepDownRules.BuildStatusText(Accepted(), "Bria", Now).Should().Contain("stepped down").And.Contain("Bria");

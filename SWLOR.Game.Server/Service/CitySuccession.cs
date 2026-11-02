@@ -295,6 +295,10 @@ namespace SWLOR.Game.Server.Service
                 changed = true;
             }
 
+            // An interim holder who leaves takes the Acting Mayor's powers with them. The mayor of record stays without powers.
+            var interimLeft = ClearInterimHolderIfGone(city, playerId);
+            changed |= interimLeft;
+
             if (!changed)
                 return false;
 
@@ -304,6 +308,9 @@ namespace SWLOR.Game.Server.Service
 
             if (cancelsStepDown)
                 CityGazette.Post(city.Id, CityGazetteEntryType.Notice, StepDownRules.BuildCancelledText("the named player left the city"));
+
+            if (interimLeft)
+                CityGazette.Post(city.Id, CityGazetteEntryType.Notice, StepDownRules.BuildInterimLeftText());
 
             return true;
         }
@@ -347,9 +354,34 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (StepDownRules.IsExpired(city.StepDown, now))
+            {
                 Cancel(city, "the named player did not accept in time");
+            }
             else if (StepDownRules.IsPending(city.StepDown) && !IsCitizen(city, city.StepDown.InterimHolderPlayerId))
+            {
                 Cancel(city, "the named player left the city");
+            }
+            else if (StepDownRules.HasSteppedDown(city.StepDown) && !IsCitizen(city, city.StepDown.InterimHolderPlayerId) &&
+                     ClearInterimHolderIfGone(city, city.StepDown.InterimHolderPlayerId))
+            {
+                DB.Set(city);
+                CityGazette.Post(city.Id, CityGazetteEntryType.Notice, StepDownRules.BuildInterimLeftText());
+            }
+        }
+
+        /// <summary>
+        /// Takes the interim holder's name off an accepted step-down when it is the player who left, so they hold no powers and
+        /// the mayor of record is the incumbent in the snap election. Changes only the record in memory. Returns true if it changed.
+        /// </summary>
+        private static bool ClearInterimHolderIfGone(WorldProperty city, string playerId)
+        {
+            if (!StepDownRules.HasSteppedDown(city.StepDown) ||
+                string.IsNullOrWhiteSpace(playerId) ||
+                city.StepDown.InterimHolderPlayerId != playerId)
+                return false;
+
+            city.StepDown.InterimHolderPlayerId = string.Empty;
+            return true;
         }
 
         #endregion

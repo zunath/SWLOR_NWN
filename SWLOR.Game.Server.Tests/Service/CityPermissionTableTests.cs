@@ -233,6 +233,18 @@ public class CityPermissionTableTests
     }
 
     [Test]
+    public void AnInterimHolderWhoLeftTheCityHoldsNoPowers_AndNobodyTakesTheirPlace()
+    {
+        var city = City();
+        city.StepDown = AcceptedStepDown();
+        city.StepDown.InterimHolderPlayerId = string.Empty;
+
+        CityPowerRules.GetRole(city, Mayor, Now).Should().Be(CityRole.DepartedMayor);
+        CityPowerRules.GetRole(city, Interim, Now).Should().Be(CityRole.None);
+        CityPowerRules.GetRole(city, string.Empty, Now).Should().Be(CityRole.None);
+    }
+
+    [Test]
     public void TheInterimHolderCanDoWhatAnActingMayorCanAndNoMore()
     {
         var city = City();

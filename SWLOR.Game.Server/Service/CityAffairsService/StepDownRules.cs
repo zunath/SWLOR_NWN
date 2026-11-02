@@ -190,6 +190,13 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
                    "and the mayor has none.";
         }
 
+        /// <summary>The Gazette text for an interim holder who left the city during the snap election.</summary>
+        public static string BuildInterimLeftText()
+        {
+            return "The interim holder left the city, so nobody has the Acting Mayor's powers until the snap election ends. " +
+                   "The mayor who stepped down stays mayor of record without powers.";
+        }
+
         /// <summary>The Gazette text for a step-down that did not happen.</summary>
         public static string BuildCancelledText(string reason)
         {

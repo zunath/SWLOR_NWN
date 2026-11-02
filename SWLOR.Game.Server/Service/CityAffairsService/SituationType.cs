@@ -33,6 +33,9 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         PestsInTheGardens = 12,
 
         /// <summary>Needs a corral in the city.</summary>
-        PredatorsAtTheCorrals = 13
+        PredatorsAtTheCorrals = 13,
+
+        /// <summary>Needs the exotic beast trader to be hosted by the city this week.</summary>
+        BeastTraderPens = 14
     }
 }

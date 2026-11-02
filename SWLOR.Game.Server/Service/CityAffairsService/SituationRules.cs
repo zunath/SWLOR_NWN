@@ -135,6 +135,8 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
                     return context.SkillRanks.TryGetValue(requirement.Skill, out var rank) && rank >= requirement.Level;
                 case SituationRequirementType.Structure:
                     return context.StructureTypes.Contains(requirement.Structure);
+                case SituationRequirementType.TravelerHost:
+                    return context.HostedTravelers.Contains(requirement.TravelerName);
                 default:
                     return false;
             }
@@ -172,6 +174,8 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
                     return $"{requirement.Skill} {requirement.Level}";
                 case SituationRequirementType.Structure:
                     return $"A {SplitWords(requirement.Structure.ToString())} in the city";
+                case SituationRequirementType.TravelerHost:
+                    return $"The {SplitWords(requirement.TravelerName).ToLowerInvariant()} visiting";
                 default:
                     return string.Empty;
             }

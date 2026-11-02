@@ -115,6 +115,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "City Traveler's Wares"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "cs_traveler"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "City Hall Supplies (Level 1)"
               },
               "RESREF": {

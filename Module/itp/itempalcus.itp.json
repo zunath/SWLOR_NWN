@@ -23609,6 +23609,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Traveler's Lodge"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5103"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Ladder, Dark"
               },
               "RESREF": {

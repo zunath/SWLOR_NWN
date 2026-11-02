@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.TravelerService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -67,6 +68,15 @@ namespace SWLOR.Game.Server.Service
         {
             var record = DB.Get<TravelerStockAllowance>(TravelerStockAllowance.BuildId(travelerKey, resref));
             return StockAllowanceRules.GetRemaining(weeklyLimit, record, CityWeek.GetWeekStart(nowUtc));
+        }
+
+        /// <summary>What a traveler puts on its shelf right now: this week's stock, for what is left of each allowance.</summary>
+        public static IReadOnlyList<CityStoreShelfEntry> PlanTravelerShelf(TravelerDetail traveler, DateTime nowUtc)
+        {
+            return TravelerRules.PlanShelf(
+                traveler,
+                nowUtc,
+                resref => DB.Get<TravelerStockAllowance>(TravelerStockAllowance.BuildId(traveler.Key, resref)));
         }
 
         /// <summary>Records a sale of a limited item against the traveler's allowance.</summary>

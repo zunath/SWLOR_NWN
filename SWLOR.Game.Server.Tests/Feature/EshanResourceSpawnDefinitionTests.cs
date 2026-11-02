@@ -62,7 +62,7 @@ public class EshanResourceSpawnDefinitionTests
     }
 
     [Test]
-    public void VeylanGroves_UsesSixFixedScavengeSpawnsWithNativeRespawn()
+    public void VeylanGroves_UsesEighteenFixedScavengeSpawnsWithNativeRespawn()
     {
         var root = FindRepositoryRoot().FullName;
         using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "sc_eswildlandn.git.json")));
@@ -71,15 +71,15 @@ public class EshanResourceSpawnDefinitionTests
         var waypoints = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
         var forage = waypoints.Where(point => Text(point, "Tag").StartsWith("ESHAN_VEYLAN_", StringComparison.Ordinal)).ToArray();
 
-        forage.Should().HaveCount(6);
+        forage.Should().HaveCount(18);
         forage.Select(point => (Number(point, "XPosition"), Number(point, "YPosition"))).Should().OnlyHaveUniqueItems();
         git.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray().Should().NotContain(variable =>
-            Text(variable, "Name") == "RESOURCE_SPAWN_TABLE_ID", "the six authored locations must not be supplemented by random area spawns");
+            Text(variable, "Name") == "RESOURCE_SPAWN_TABLE_ID", "the eighteen authored locations must not be supplemented by random area spawns");
         gic.RootElement.GetProperty("WaypointList").GetProperty("value").GetArrayLength().Should().Be(waypoints.Length);
 
         foreach (var tableId in new[] { "ESHAN_VEYLAN_GREENS", "ESHAN_VEYLAN_SEEDS", "ESHAN_VEYLAN_FIBER" })
         {
-            forage.Count(point => Text(point, "Tag") == tableId).Should().Be(2);
+            forage.Count(point => Text(point, "Tag") == tableId).Should().Be(6);
             var table = tables[tableId];
             table.Spawns.Should().ContainSingle().Which.Type.Should().Be(ObjectType.Placeable);
             table.RespawnDelayMinutes.Should().Be(15);

@@ -66,6 +66,49 @@ public class EshanModuleWiringTests
         Assert.That(new SpaceResourceSpawnDefinition().BuildSpawnTables()["SPACE_RESOURCES_ESHAN_ORBIT"].Spawns, Is.Not.Empty);
     }
 
+    [Test]
+    public void EveryEshanArea_HasLocalStuckRecoveryAndMatchingEditorMetadata()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !Directory.Exists(Path.Combine(root.FullName, "Module")))
+            root = root.Parent;
+        var areas = Directory.GetFiles(Path.Combine(root!.FullName, "Module", "are"), "*.are.json")
+            .Where(path =>
+            {
+                using var area = JsonDocument.Parse(File.ReadAllBytes(path));
+                return Value(area.RootElement, "Name").TryGetProperty("0", out var name) &&
+                       name.GetString()!.StartsWith("Eshan - ", StringComparison.Ordinal);
+            }).ToArray();
+        Assert.That(areas, Is.Not.Empty);
+        foreach (var path in areas)
+        {
+            var area = Path.GetFileName(path).Replace(".are.json", "");
+            using var git = Read($"Module/git/{area}.git.json");
+            using var gic = Read($"Module/gic/{area}.gic.json");
+            var waypoints = Value(git.RootElement, "WaypointList").EnumerateArray().ToArray();
+            Assert.That(waypoints.Count(point => Value(point, "Tag").GetString() == "STUCK_WAYPOINT"),
+                Is.EqualTo(1), area + " must recover locally rather than falling back to CZ-220");
+            Assert.That(Value(gic.RootElement, "WaypointList").GetArrayLength(), Is.EqualTo(waypoints.Length), area);
+        }
+    }
+
+    [Test]
+    public void RaaloKes_WearsSmugglerArmorInBothBlueprintAndPlacedInstance()
+    {
+        using var blueprint = Read("Module/utc/esh_smug_raalo.utc.json");
+        using var scraplands = Read("Module/git/sc_esscraplands.git.json");
+        var raalo = Value(scraplands.RootElement, "Creature List").EnumerateArray()
+            .Single(creature => Value(creature, "TemplateResRef").GetString() == "esh_smug_raalo");
+        foreach (var creature in new[] { blueprint.RootElement, raalo })
+        {
+            var chest = Value(creature, "Equip_ItemList").EnumerateArray()
+                .Single(item => item.GetProperty("__struct_id").GetInt32() == 2);
+            Assert.That(Value(chest, "EquippedRes").GetString(), Is.EqualTo("pirate_armor"));
+        }
+        using var armor = Read("Module/uti/pirate_armor.uti.json");
+        Assert.That(Value(armor.RootElement, "BaseItem").GetInt32(), Is.EqualTo(16));
+    }
+
     private static void AssertTeleport(JsonElement area, string destination)
     {
         var matches = Value(area, "Placeable List").EnumerateArray().Where(item =>

@@ -81856,6 +81856,67 @@
           "type": "float",
           "value": 4.999994277954102
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - Eshan - The Grand Proving Grounds"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 146.8644104003906
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 74.82075500488281
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 7.500007629394531
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -4.371138828673793e-08
+        }
       }
     ]
   }

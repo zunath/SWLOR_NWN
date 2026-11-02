@@ -140156,6 +140156,67 @@
           "type": "float",
           "value": -5.222045729169622e-006
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - Eshan - Hearth Ward"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 2.043251037597656
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 54.68534088134766
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-06
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 3.139164732601785e-07
+        }
       }
     ]
   }

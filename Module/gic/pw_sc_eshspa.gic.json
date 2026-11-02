@@ -4776,6 +4776,13 @@
           "type": "cexostring",
           "value": "Eshan spa civilian patrol: es_spa_soren, node 4."
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Local /stuck recovery at the area entrance or medical terminal"
+        }
       }
     ]
   }

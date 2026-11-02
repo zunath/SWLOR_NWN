@@ -211,17 +211,24 @@
           "value": 0
         },
         "Equip_ItemList": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 4096,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "blaster_bullets"
-        }
-      }
-    ]
-  },
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "pirate_armor"
+              }
+            },
+            {
+              "__struct_id": 4096,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "blaster_bullets"
+              }
+            }
+          ]
+        },
         "FactionID": {
           "type": "word",
           "value": 2
@@ -19632,6 +19639,67 @@
         "ZPosition": {
           "type": "float",
           "value": 12.17436981201172
+        }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - Eshan - Scraplands"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 14.9921989440918
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 47.81373596191406
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 10.00381851196289
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         }
       }
     ]

@@ -54532,6 +54532,67 @@
           "type": "float",
           "value": 50.05465698242188
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - Eshan - Keshan Peaks"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 193.1100006103516
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 109.2600021362305
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 18.1299991607666
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -4.371138828673793e-08
+        }
       }
     ]
   }

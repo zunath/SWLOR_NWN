@@ -94,6 +94,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>Whether the property is a house in a city, which has a specialization anyone inside can read and its owner can change.</summary>
+        public bool IsHouseSpecializationVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsRetrieveStructureEnabled
         {
             get => Get<bool>();
@@ -229,6 +236,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
                 : "Permissions";
+            IsHouseSpecializationVisible = property.PropertyType == PropertyType.House && HouseSpecializations.IsInCity(property);
             StructureName = string.Empty;
             SelectedPageIndex = 0;
             LoadPropertyPermissions(property);
@@ -326,6 +334,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearStructureHighlight();
             Search();
             _skipPaginationSearch = false;
+        };
+
+        public Action OnOpenHouseSpecialization() => () =>
+        {
+            var propertyId = Property.GetPropertyId(GetArea(Player));
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return;
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.HouseSpecialization, new HouseSpecializationPayload(propertyId));
         };
 
         public Action OnManageProperty() => () =>

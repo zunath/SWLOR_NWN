@@ -45,6 +45,13 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         public string CityId { get; set; }
 
+        /// <summary>
+        /// The Craftsmanship and Control a house Workshop added when the craft opened, or null for a craft saved before Workshops
+        /// existed (which had none). Recorded with the session so a type change in the house, a logout or a restart mid-craft never
+        /// changes it, and read by <c>Stat.CalculateCraftsmanship</c> and <c>Stat.CalculateControl</c> for as long as the session lasts.
+        /// </summary>
+        public int? WorkshopBonus { get; set; }
+
         /// <summary>One serialized item per committed component stack.</summary>
         public List<string> Components { get; set; } = new();
 

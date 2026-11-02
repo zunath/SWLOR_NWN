@@ -114,28 +114,23 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// The types of structure the city has: those standing on its land, and the garden plots inside its houses, so a city whose
-        /// farmers only garden indoors still counts as having gardens.
+        /// farmers only garden indoors still counts as having gardens. A house is the interior of one of the city's building structures
+        /// (<see cref="PropertyHierarchyRules.GetStructureTypes"/>).
         /// </summary>
         private static IReadOnlyCollection<StructureType> GetStructureTypes(WorldProperty city)
         {
-            var types = new HashSet<StructureType>();
-            var childQuery = new DBQuery<WorldProperty>().AddFieldSearch(nameof(WorldProperty.ParentPropertyId), city.Id, false);
-            var count = (int)DB.SearchCount(childQuery);
-            var children = count <= 0 ? new List<WorldProperty>() : DB.Search(childQuery.AddPaging(count, 0)).ToList();
-            foreach (var child in children.Where(child => child.PropertyType == PropertyType.Structure))
-                types.Add(child.StructureType);
+            return PropertyHierarchyRules.GetStructureTypes(GetChildren(new[] { city.Id }), GetChildren);
+        }
 
-            var houseIds = children.Where(child => child.PropertyType == PropertyType.House).Select(child => child.Id).ToList();
-            if (houseIds.Count > 0 && !types.Contains(StructureType.GardenPlot))
-            {
-                var plotQuery = new DBQuery<WorldProperty>()
-                    .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), houseIds)
-                    .AddFieldSearch(nameof(WorldProperty.StructureType), (int)StructureType.GardenPlot);
-                if (DB.SearchCount(plotQuery) > 0)
-                    types.Add(StructureType.GardenPlot);
-            }
+        /// <summary>The properties whose parent is any of the ids.</summary>
+        private static List<WorldProperty> GetChildren(IReadOnlyCollection<string> parentIds)
+        {
+            if (parentIds.Count == 0)
+                return new List<WorldProperty>();
 
-            return types;
+            var query = new DBQuery<WorldProperty>().AddFieldSearch(nameof(WorldProperty.ParentPropertyId), parentIds.ToList());
+            var count = (int)DB.SearchCount(query);
+            return count <= 0 ? new List<WorldProperty>() : DB.Search(query.AddPaging(count, 0)).ToList();
         }
 
         /// <summary>The skill ranks of a character, for the requirements of a choice.</summary>

@@ -70,27 +70,39 @@ namespace SWLOR.Game.Server.Service.StationService
         // The Asteroid Drill
 
         /// <summary>
-        /// Ore units a day with the assigned droid's output percent (<see cref="StationDroidRules.DrillOutputPercent"/>; 0
-        /// without a droid).
+        /// The extra Asteroid Drill output a Wild Space station gets from Home Ground, in percent (City Revamp, "Stations"). It
+        /// replaces the planet harvesting bonus, which Wild Space has no ground for, and speeds the drill up without growing what it stores.
         /// </summary>
-        public static double DrillUnitsPerDay(int droidPercent) =>
-            StationTuning.DrillUnitsPerDay * (1 + Math.Max(0, droidPercent) / 100.0);
+        public const int HomeGroundDrillPercent = 5;
 
-        /// <summary>The most ore the drill stores before it stops.</summary>
+        /// <summary>
+        /// Ore units a day with the assigned droid's output percent (<see cref="StationDroidRules.DrillOutputPercent"/>; 0
+        /// without a droid), and Home Ground's <see cref="HomeGroundDrillPercent"/> on top where the station has it.
+        /// </summary>
+        public static double DrillUnitsPerDay(int droidPercent, bool homeGround = false) =>
+            StationTuning.DrillUnitsPerDay * (1 + Math.Max(0, droidPercent) / 100.0) * (homeGround ? 1 + HomeGroundDrillPercent / 100.0 : 1);
+
+        /// <summary>Whether a station's drill runs at the Home Ground rate at <paramref name="now"/>: a Wild Space station whose Home Ground has completed.</summary>
+        public static bool GetsDrillHomeGround(bool isWildSpace, DateTime? homeGroundCompletedUtc, DateTime now) =>
+            isWildSpace && homeGroundCompletedUtc.HasValue && homeGroundCompletedUtc.Value <= now;
+
+        /// <summary>The most ore the drill stores before it stops. Home Ground does not change it: the drill fills faster, not deeper.</summary>
         public static int DrillCapacity(int droidPercent) =>
             (int)Math.Floor(DrillUnitsPerDay(droidPercent) * StationTuning.DrillStorageDays);
 
         /// <summary>
         /// The whole ore units mined since <paramref name="lastAccrual"/> and the time the next unit counts from. A drill that
-        /// has never run starts now; a full drill mines nothing and counts from now, so it does not catch up once emptied.
+        /// has never run starts now; a full drill mines nothing and counts from now, so it does not catch up once emptied. The Home
+        /// Ground rate applies to the whole span, so a station settles the drill up to the moment Home Ground completes before the
+        /// bonus starts counting.
         /// </summary>
-        public static (int Units, DateTime NextAccrual) AccrueDrill(int storedUnits, DateTime lastAccrual, DateTime now, int droidPercent)
+        public static (int Units, DateTime NextAccrual) AccrueDrill(int storedUnits, DateTime lastAccrual, DateTime now, int droidPercent, bool homeGround = false)
         {
             var capacity = DrillCapacity(droidPercent);
             if (lastAccrual == default || lastAccrual > now || storedUnits >= capacity)
                 return (0, now);
 
-            var hoursPerUnit = 24.0 / DrillUnitsPerDay(droidPercent);
+            var hoursPerUnit = 24.0 / DrillUnitsPerDay(droidPercent, homeGround);
             var units = (int)Math.Floor((now - lastAccrual).TotalHours / hoursPerUnit);
             if (units <= 0)
                 return (0, lastAccrual);

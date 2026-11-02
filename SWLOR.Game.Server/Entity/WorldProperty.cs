@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.EdictService;
+using SWLOR.Game.Server.Service.HouseSpecializationService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -245,6 +247,33 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The planetary council a DM last called for the city's planet, or null. Cities only.</summary>
         public CityCouncilSummons CouncilSummons { get; set; }
+
+        /// <summary>
+        /// The job the owner gave this house (Player City Revamp, "House specializations"). Houses only; older records load as
+        /// <see cref="HouseSpecializationType.None"/>. It belongs to the house, so it survives a change of owner.
+        /// </summary>
+        public HouseSpecializationType HouseSpecialization { get; set; }
+
+        /// <summary>The crafting skill a <see cref="HouseSpecializationType.Workshop"/> boosts, or Invalid for any other type.</summary>
+        public SkillType WorkshopSkill { get; set; }
+
+        /// <summary>
+        /// When the specialization was last set, or null if it never was. The next change is allowed 30 days later. Like the
+        /// type, it stays with the house when the owner changes.
+        /// </summary>
+        public DateTime? HouseSpecializationChangedUtc { get; set; }
+
+        /// <summary>
+        /// The storage a <see cref="HouseSpecializationType.Storehouse"/> added to <see cref="ItemStorageCount"/>, or 0. Leaving the
+        /// type subtracts exactly this, so the storage furniture adds is never touched.
+        /// </summary>
+        public int StorehouseBonus { get; set; }
+
+        /// <summary>
+        /// When the city's Home Ground City Project completed, or null if it has not. Cities and stations only. Read by every
+        /// Home Ground bonus, so there is one source of truth.
+        /// </summary>
+        public DateTime? HomeGroundCompletedUtc { get; set; }
 
         /// <summary>
         /// True when the mayor switched the city's wandering townsfolk and guards off in Manage City. They leave at once and

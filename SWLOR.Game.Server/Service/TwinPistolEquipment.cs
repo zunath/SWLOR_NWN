@@ -86,22 +86,25 @@ public static class TwinPistolEquipment
             SetPlotFlag(spare, true);
             SetDroppableFlag(spare, false);
             SetPickpocketableFlag(spare, false);
-            ItemPlugin.SetWeight(spare, 0);
             for (var ip = GetFirstItemProperty(main); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(main))
                 if (IsMirroredProperty(GetItemPropertyType(ip))) AddItemProperty(DurationType.Permanent, ip, spare);
             CopyAppearance(main, spare);
 
             Pairs[creature] = (main, spare);
             SetLocalObject(main, CompanionVariable, spare);
-            if (!MoveSpareIntoOwnedStorage(creature, spare, creature) || GetItemPossessor(spare) != creature ||
-                !CreaturePlugin.RunEquip(creature, spare, InventorySlot.LeftHand) ||
+            if (!MoveSpareIntoOwnedStorage(creature, spare, creature) || GetItemPossessor(spare) != creature)
+                throw new InvalidOperationException("Make room in your inventory before equipping Twin Pistols.");
+            // The engine adds an item's weight when it is equipped and subtracts its weight at removal,
+            // and property and storage changes restore the base item's weight. Zero it last, before equipping,
+            // and never change it while equipped, so both sides of the wearer's weight total match.
+            ItemPlugin.SetWeight(spare, 0);
+            if (!CreaturePlugin.RunEquip(creature, spare, InventorySlot.LeftHand) ||
                 GetItemInSlot(InventorySlot.LeftHand, creature) != spare)
                 throw new InvalidOperationException("Make room in your inventory before equipping Twin Pistols.");
             // Native PC acquisition/equip normalizes loot flags, so apply the temporary flags afterward.
             SetDroppableFlag(spare, false);
             SetPickpocketableFlag(spare, false);
             SetPlotFlag(spare, true);
-            ItemPlugin.SetWeight(spare, 0);
         }
         catch (InvalidOperationException ex)
         {

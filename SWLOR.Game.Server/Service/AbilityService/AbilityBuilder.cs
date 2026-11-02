@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -769,6 +770,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder IsForcePower()
         {
             _activeAbility.IsForcePower = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares which status categories the ability's impact applies for an activator, so next-ability
+        /// bonuses that require a category (such as Control) know whether this ability qualifies.
+        /// </summary>
+        public AbilityBuilder ResolvesImpactStatusCategories(Func<uint, StatusEffectCategory> resolve)
+        {
+            _activeAbility.ResolveImpactStatusCategories = resolve;
 
             return this;
         }

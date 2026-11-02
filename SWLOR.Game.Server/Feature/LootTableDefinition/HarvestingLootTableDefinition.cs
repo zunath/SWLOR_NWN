@@ -43,31 +43,41 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("raw_arkoxit", 50);
         }
 
+        /// <summary>
+        /// Each tree's table also holds its woodlot sapling as a rare drop, weight 1 against 50 for the tier's wood
+        /// (<c>WoodlotRules.SaplingDropWeight</c>, which a test keeps equal). Prospecting treats it as neither ore nor a gem
+        /// (<c>ProspectingGems</c>). Names and weights stay literals: the space balance tools read this file as text.
+        /// </summary>
         private void Trees()
         {
             _builder.Create("HARVESTING_TREE")
                 .AddItem("wood", 50)
                 .AddItem("fine_wood", 5)
-                .AddItem("jade", 5);
+                .AddItem("jade", 5)
+                .AddItem("sapling_wood", 1);
             _builder.Create("HARVESTING_OAK_TREE")
                 .AddItem("fine_wood", 50)
                 .AddItem("wood", 10)
-                .AddItem("agate", 4);
+                .AddItem("agate", 4)
+                .AddItem("sapling_fine", 1);
             _builder.Create("HARVESTING_ANCIENT_TREE")
                 .AddItem("ancient_wood", 50)
                 .AddItem("fine_wood", 20)
                 .AddItem("wood", 2)
-                .AddItem("citrine", 3);
+                .AddItem("citrine", 3)
+                .AddItem("sapling_ancient", 1);
             _builder.Create("HARVESTING_ARACIA_TREE")
                 .AddItem("aracia_wood", 50)
                 .AddItem("ancient_wood", 20)
                 .AddItem("fine_wood", 2)
-                .AddItem("ruby", 2);
+                .AddItem("ruby", 2)
+                .AddItem("sapling_aracia", 1);
             _builder.Create("HARVESTING_HYPHAE_TREE")
                 .AddItem("hyphae_wood", 50)
                 .AddItem("aracia_wood", 20)
                 .AddItem("ancient_wood", 2)
-                .AddItem("emerald", 1);
+                .AddItem("emerald", 1)
+                .AddItem("sapling_hyphae", 1);
         }
 
         private void Bushes()

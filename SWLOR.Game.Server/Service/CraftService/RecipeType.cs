@@ -4213,5 +4213,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         StarMapPedestal = 7797,
         HoloStarGlobe = 7798,
         // END space decor
+
+        // Player City Revamp: the Fermentation Vat (slice 5d). The City Revamp reserves 8000-8199; this slice takes 8040-8079.
+        FermentationVat = 8040,
     }
 }

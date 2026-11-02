@@ -12,13 +12,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float ContentPanelWidth = 520f;
         private const float LabelHeight = 20f;
-        private const float InstructionsHeight = 100f;
+        private const float InstructionsHeight = 130f;
         private const float CandidateListHeight = 110f;
         private const float CandidateRowHeight = 28f;
         private const float CandidateDetailsHeight = 200f;
         private const float StatementEditorHeight = 100f;
         private const float ButtonHeight = 35f;
-        private const float PlatformInstructionsHeight = 76f;
+        private const float PlatformInstructionsHeight = 92f;
         private const float PlatformEdictRowHeight = 28f;
         private const float PlatformEdictListHeight = 140f;
         private const float FocusedEdictHeight = 56f;

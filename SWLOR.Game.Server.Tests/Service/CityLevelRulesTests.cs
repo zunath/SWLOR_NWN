@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
@@ -6,7 +8,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// The city level a mayor and the citizen count support, shared by the weekly upkeep check and the election window's
+/// The city level a mayor and the citizen count support, as the weekly upkeep check applies it and the election window's
 /// City Management warning.
 /// </summary>
 public class CityLevelRulesTests
@@ -87,5 +89,26 @@ public class CityLevelRulesTests
     public void TheCheckNeverRaisesTheLevel()
     {
         CityLevelRules.GetLevelAfterDrop(2, 5, 5).Should().Be(2);
+    }
+
+    [Test]
+    public void PropertyKeepsTheCitizenRequirementsTheseRulesAreTestedWith()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server", "Service", "Property.cs")))
+        {
+            directory = directory.Parent;
+        }
+
+        directory.Should().NotBeNull();
+        var source = File.ReadAllText(Path.Combine(directory.FullName, "SWLOR.Game.Server", "Service", "Property.cs"));
+        var start = source.IndexOf("_citizensRequired = new()", StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0);
+        var table = source.Substring(start, source.IndexOf("};", start, StringComparison.Ordinal) - start);
+
+        foreach (var (level, citizens) in Required)
+        {
+            table.Should().Contain($"{{ {level}, {citizens} }}");
+        }
     }
 }

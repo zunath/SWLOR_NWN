@@ -37,8 +37,10 @@ namespace SWLOR.Game.Server.Service
                 city.Upgrades.GetValueOrDefault(PropertyUpgradeType.CantinaLevel, 1),
                 city.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1));
 
-            var citizensRequired = Property.GetCitizensRequiredByLevel();
-            var candidateMayorLevel = CityLevelRules.GetMayorLevel(Property.GetCityManagementRank(candidate));
+            var citizensRequired = Enumerable.Range(1, CityLevelRules.MaxLevel)
+                .ToDictionary(x => x, Property.GetCitizensRequiredForNextCityLevel);
+            var candidateMayorLevel = CityLevelRules.GetMayorLevel(
+                candidate != null && candidate.Perks.TryGetValue(PerkType.CityManagement, out var managementRank) ? managementRank : null);
             var candidateSupported = CityLevelRules.GetLevelAfterDrop(
                 level,
                 candidateMayorLevel,

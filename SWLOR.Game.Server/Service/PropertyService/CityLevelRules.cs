@@ -4,8 +4,9 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.Service.PropertyService
 {
     /// <summary>
-    /// What city level a mayor and a citizen count can support, as the weekly upkeep check applies it. Pure, so the
-    /// check (<c>Property.ProcessCityLevel</c>) and the election window's City Management warning share one calculation.
+    /// What city level a mayor and a citizen count can support, as the weekly upkeep check applies it, so the election
+    /// window can warn a candidate whose City Management rank would lower the city. Pure. It mirrors the calculation in
+    /// <c>Property.ProcessCityLevel</c>, which <c>LeadershipCivicPerkRegressionTests</c> pins: change them together.
     /// </summary>
     public static class CityLevelRules
     {

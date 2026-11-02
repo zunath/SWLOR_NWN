@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly Dictionary<EdictType, string> _draftEdicts = new();
         private ElectionPlatformContext _platformContext;
         private string _platformCityId = string.Empty;
+        private List<WorldProperty> _nameableCities;
         private EdictType _focusedEdict;
         private bool _isPlatformStepOpen;
 
@@ -192,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 election.Platforms?.TryGetValue(playerId, out saved);
 
             _platformCityId = city.Id;
+            _nameableCities = null;
             _platformContext = ElectionPlatforms.GetContext(city, DB.Get<Entity.Player>(playerId));
             _draftEdicts.Clear();
             foreach (var edict in saved?.Edicts ?? new List<ElectionPlatformEdict>())
@@ -426,7 +428,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (show)
             {
                 var chosenId = _draftEdicts[focused.Type];
-                foreach (var other in ElectionPlatforms.GetNameableCities(_platformCityId))
+                _nameableCities ??= ElectionPlatforms.GetNameableCities(_platformCityId);
+                foreach (var other in _nameableCities)
                 {
                     _platformTargetCityIds.Add(other.Id);
                     names.Add(other.CustomName);
@@ -435,7 +438,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             IsPlatformTargetPickerVisible = show;
-            PlatformTargetPrompt = show ? $"City for the {focused.Name} Edict" : string.Empty;
+            PlatformTargetPrompt = !show
+                ? string.Empty
+                : names.Count == 0
+                    ? $"No other city exists for the {focused.Name} Edict to name."
+                    : $"City for the {focused.Name} Edict";
             PlatformTargetNames = names;
             PlatformTargetToggles = toggles;
         }

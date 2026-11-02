@@ -2048,7 +2048,9 @@ namespace SWLOR.Game.Server.Service
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
                 .AddFieldSearch(nameof(Player.IsDeleted), false));
             var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
-            var mayorLevel = CityLevelRules.GetMayorLevel(GetCityManagementRank(mayor));
+            var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
+                ? mayor.Perks[PerkType.CityManagement] + 1
+                : 1;
 
             // Mayor's perk level has fallen below the city level.
             if (mayorLevel < currentLevel)
@@ -2057,9 +2059,23 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
             }
 
-            // The highest level the mayor and the citizen count both support.
-            var maxLevelThisCycle = CityLevelRules.GetMaxSupportedLevel(mayorLevel, citizenCount, _citizensRequired);
-            Log.Write(LogGroup.Property, $"The mayor and {citizenCount} citizens support city level {maxLevelThisCycle} at most.");
+            var maxLevelThisCycle = 1;
+            for (var level = 1; level <= 5; level++)
+            {
+                // Mayor can't support a higher city level.
+                if (level > mayorLevel)
+                {
+                    Log.Write(LogGroup.Property, $"Mayor cannot support city level {level} or higher.");
+                    break;
+                }
+
+                // The citizen count requirements are met
+                if (citizenCount >= _citizensRequired[level])
+                {
+                    maxLevelThisCycle = level;
+                    Log.Write(LogGroup.Property, $"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
+                }
+            }
 
             // Current level is higher than max level this cycle. Drop it down that value.
             if (currentLevel > maxLevelThisCycle)
@@ -3951,23 +3967,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             return string.Empty;
-        }
-
-        /// <summary>
-        /// The rank a character has trained in the City Management perk, which caps the level of the city they run, or null
-        /// when they have not trained it.
-        /// </summary>
-        public static int? GetCityManagementRank(Player dbPlayer)
-        {
-            return dbPlayer != null && dbPlayer.Perks.TryGetValue(PerkType.CityManagement, out var rank) ? rank : null;
-        }
-
-        /// <summary>
-        /// The citizens each city level needs, by level, as the weekly check reads them.
-        /// </summary>
-        internal static IReadOnlyDictionary<int, int> GetCitizensRequiredByLevel()
-        {
-            return _citizensRequired;
         }
 
         /// <summary>

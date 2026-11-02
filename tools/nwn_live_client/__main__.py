@@ -56,8 +56,8 @@ def parser() -> argparse.ArgumentParser:
 
     ui = commands.add_parser('ui', parents=[run_dir],
                              help='Send input on the private display: move X Y, click X Y, rightclick X Y, '
-                                  'doubleclick X Y, drag X1 Y1 X2 Y2, key KEYSYM, type TEXT.')
-    ui.add_argument('action', choices=('move', 'click', 'rightclick', 'doubleclick', 'drag', 'key', 'type'))
+                                  'doubleclick X Y, drag X1 Y1 X2 Y2, scroll up|down COUNT, key KEYSYM, type TEXT.')
+    ui.add_argument('action', choices=('move', 'click', 'rightclick', 'doubleclick', 'drag', 'scroll', 'key', 'type'))
     ui.add_argument('arguments', nargs='*')
 
     shot = commands.add_parser('capture', parents=[run_dir], help='Save <run>/evidence/<label>.png.')

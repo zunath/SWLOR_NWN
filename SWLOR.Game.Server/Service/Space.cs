@@ -1006,6 +1006,7 @@ namespace SWLOR.Game.Server.Service
             SetObjectVisualTransform(player, ObjectVisualTransform.Scale, scale);
             var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
             HelmetModelRenderer.SetHeadScale(player, headScale);
+            Feature.AppearanceDefinition.HeadPosition.ApplySaved(player, dbPlayer);
 
             // Reapply material colors after the client rebuilds the character model.
             TintMapService.QueueRefresh(player);

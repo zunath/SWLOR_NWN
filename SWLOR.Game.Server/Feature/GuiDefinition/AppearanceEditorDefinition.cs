@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using System.Linq.Expressions;
+using System.Collections.Generic;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -34,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public const float PreviewColumnWidth = 150f;
         /// <summary>Holds three item swatches and their row number, or two body swatches.</summary>
         private const float SwatchesColumnWidth = 196f;
+        private const float BodySwatchesWidth = 208f;
         private const float PreviewArrowWidth = 30f;
         private const float PreviewViewButtonWidth = 56f;
         private const float SlotSize = 52f;
@@ -188,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.BindIsVisible(model => model.HasItemEquipped);
                     row.AddGroup(map => BuildBodyMap(map, equipment: false)).SetWidth(MapWidth);
-                    row.AddGroup(colours => BuildColours(colours, BuildBodySwatches));
+                    row.AddGroup(colours => BuildColours(colours, BuildBodySwatches, swatchesWidth: BodySwatchesWidth));
                 });
             });
         }
@@ -420,7 +423,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// </summary>
         /// <param name="swatchesHeight">Height of the swatches and picture row; 0 lets the picture set it.</param>
         private void BuildColours(GuiGroup<AppearanceEditorViewModel> group,
-            System.Action<GuiColumn<AppearanceEditorViewModel>> buildSwatches, float swatchesHeight = 0f)
+            System.Action<GuiColumn<AppearanceEditorViewModel>> buildSwatches, float swatchesHeight = 0f,
+            float swatchesWidth = SwatchesColumnWidth)
         {
             // A window narrower than the swatches and palette scrolls them sideways instead of cutting them off.
             group.SetShowBorder(true).SetScrollbars(NuiScrollbars.Auto);
@@ -433,7 +437,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         buildSwatches(swatches);
                         swatches.AddRow(fill => fill.AddSpacer());
-                    }).SetWidth(SwatchesColumnWidth);
+                    }).SetWidth(swatchesWidth);
                     row.AddColumn(AddPartPreview).SetWidth(PreviewColumnWidth);
                     row.AddSpacer();
                     // NUI does not grow the row to a column taller than the picture beside it.
@@ -603,43 +607,64 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        /// <summary>Skin and hair, then the two tattoo colours, each under its name.</summary>
+        /// <summary>Two labelled swatches per row; only channels used by the current head are listed.</summary>
         private void BuildBodySwatches(GuiColumn<AppearanceEditorViewModel> col)
         {
-            var swatches = new[]
+            col.AddRow(row =>
             {
-                ("Skin", "Skin", "gui_pal_skin"), ("Hair", "Hair", "gui_pal_hair01"),
-                ("Tattoo 1", "Tattoo1", "gui_pal_tattoo"), ("Tattoo 2", "Tattoo2", "gui_pal_tattoo")
-            };
-            for (var first = 0; first < swatches.Length; first += 2)
-            {
-                var pair = new[] { first, first + 1 };
-                col.AddRow(row =>
+                var buttons = new List<(GuiButton<AppearanceEditorViewModel> Button, string Visible)>();
+                row.AddList(template =>
                 {
-                    foreach (var index in pair)
+                    foreach (var side in new[] { "Left", "Right" })
                     {
-                        row.AddLabel().SetText(swatches[index].Item1).SetWidth(BodySwatchColumnWidth).SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        var copy = side == "Left" ? 0 : 1;
+                        var name = "HeadSwatch" + side;
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(96f);
+                            var selected = Bind<GuiBindingList<bool>>(name + "Selected");
+                            var button = cell.AddButton()
+                                .SetId("ae_body_swatch_" + side.ToLowerInvariant())
+                                .SetText("")
+                                .SetWidth(94f).SetHeight(24f).SetMargin(0f)
+                                .BindIsVisible(Bind<GuiBindingList<bool>>(name + "Visible"))
+                                .BindIsEncouraged(selected)
+                                .BindOnClicked(model => model.OnClickHeadColorSwatch(copy))
+                                .AddDrawList(list =>
+                                {
+                                    list.AddText(label => label
+                                        .BindText(Bind<GuiBindingList<string>>(name + "Label"))
+                                        .SetBounds(4f, 3f, 64f, 18f)
+                                        .SetColor(255, 255, 255));
+                                    list.AddImage(image => image
+                                        .BindResref(Bind<GuiBindingList<string>>(name + "Texture"))
+                                        .SetPosition(70f, 4f, 20f, 16f)
+                                        .SetAspect(NuiAspect.Stretch)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .BindDrawTextureRegion(Bind<GuiBindingList<GuiRectangle>>(name + "Region")));
+                                    list.AddPolyLine(fill => fill
+                                        .BindIsEnabled(Bind<GuiBindingList<bool>>(name + "Custom"))
+                                        .BindColor(Bind<GuiBindingList<GuiColor>>(name + "Tint"))
+                                        .SetIsFilled(true)
+                                        .AddPoint(70f, 4f).AddPoint(90f, 4f)
+                                        .AddPoint(90f, 20f).AddPoint(70f, 20f));
+                                    AddOutlineItems(list, 94f, 24f, selected, 2f);
+                                });
+                            buttons.Add((button, name + "Visible"));
+                        });
                     }
-                    row.AddSpacer();
-                });
-                col.AddRow(row =>
-                {
-                    foreach (var index in pair)
-                    {
-                        var (_, name, texture) = swatches[index];
-                        var copy = index;
-                        // Centre the swatch (and its 2 px margins) under its name.
-                        var gap = (BodySwatchColumnWidth - SwatchWidth - 4f) / 2f;
-                        row.AddSpacer().SetWidth(gap);
-                        AddSwatch(row, texture, "Body" + name)
-                            .SetId($"ae_body_swatch_{name}")
-                            .BindOnClicked(model => model.OnClickBodySwatch(copy));
-                        row.AddSpacer().SetWidth(gap);
-                    }
-                    row.AddSpacer();
-                });
-            }
+                })
+                    .SetId("ae_head_color_swatches")
+                    .BindRowCount(model => model.HeadSwatchLeftLabel)
+                    .SetShowBorders(false).SetScrollbars(NuiScrollbars.None)
+                    .SetRowHeight(24f).SetHeight(150f).SetMargin(0f);
+                // BindRowCount installs a shared visibility override on each cell root.
+                // Each column needs its own vector so an odd final right cell disappears.
+                foreach (var (button, visible) in buttons)
+                    button.VisibilityOverrideBindName = visible;
+            });
         }
 
         /// <summary>
@@ -842,8 +867,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return widget;
         }
 
-        private static void AddOutlineItems(GuiDrawList<AppearanceEditorViewModel> list, float width, float height,
-            Expression<System.Func<AppearanceEditorViewModel, bool>> selected, float thickness)
+        private static void AddOutlineItems<TProperty>(GuiDrawList<AppearanceEditorViewModel> list, float width, float height,
+            Expression<System.Func<AppearanceEditorViewModel, TProperty>> selected, float thickness)
         {
             var inset = thickness / 2f;
             list.AddPolyLine(outline => AddRectangle(outline, width, height, inset)
@@ -1067,21 +1092,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                 });
 
+                col.AddRow(row => row.AddLabel().SetText("Head").SetHeight(28f));
+                AddHeadSettingRow(col, "Size", "ae_head",
+                    model => model.HeadSizeText,
+                    model => model.OnDecreaseHeadScale(), model => model.OnIncreaseHeadScale());
+                AddHeadSettingRow(col, "Position X", "ae_head_x",
+                    model => model.HeadPositionXText,
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateX, false),
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateX, true));
+                AddHeadSettingRow(col, "Position Y", "ae_head_y",
+                    model => model.HeadPositionYText,
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateY, false),
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateY, true));
+                AddHeadSettingRow(col, "Position Z", "ae_head_z",
+                    model => model.HeadPositionZText,
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateZ, false),
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateZ, true));
+
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
                     row.AddButton()
-                        .SetId("ae_head_increase")
-                        .SetText("Increase Head")
-                        .SetHeight(32f)
+                        .SetId("ae_head_reset")
+                        .SetText("Reset Head")
                         .SetWidth(128f)
-                        .BindOnClicked(model => model.OnIncreaseHeadScale());
-                    row.AddButton()
-                        .SetId("ae_head_decrease")
-                        .SetText("Decrease Head")
                         .SetHeight(32f)
-                        .SetWidth(128f)
-                        .BindOnClicked(model => model.OnDecreaseHeadScale());
+                        .BindOnClicked(model => model.OnResetHead());
                     row.AddSpacer();
                 });
 
@@ -1096,6 +1132,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                     row.BindIsVisible(model => model.IsPlayerSettingsVisible);
                 });
+            });
+        }
+
+        private static void AddHeadSettingRow(GuiColumn<AppearanceEditorViewModel> column,
+            string label, string id, Expression<Func<AppearanceEditorViewModel, string>> value,
+            Expression<Func<AppearanceEditorViewModel, Action>> decrease,
+            Expression<Func<AppearanceEditorViewModel, Action>> increase)
+        {
+            column.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddLabel().SetText(label).SetWidth(72f).SetHeight(32f);
+                row.AddButton().SetId(id + "_decrease").SetText("-").SetWidth(32f).SetHeight(32f)
+                    .BindOnClicked(decrease);
+                row.AddButton().SetId(id + "_increase").SetText("+").SetWidth(32f).SetHeight(32f)
+                    .BindOnClicked(increase);
+                row.AddLabel().SetId(id + "_value").BindText(value).SetWidth(44f).SetHeight(32f);
+                row.AddSpacer();
             });
         }
     }

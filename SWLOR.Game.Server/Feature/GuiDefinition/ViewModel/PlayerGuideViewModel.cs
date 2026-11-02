@@ -754,7 +754,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Stat Caps",
                     "Combat",
-                    "The highest and lowest values character and combat stats can reach, so you know when more of a stat stops helping.",
+                    "Where character and combat stats stop, so you know when more of a stat no longer helps.",
                     "Where stats stop",
                     new[]
                     {

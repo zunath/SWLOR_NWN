@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
+using SWLOR.Game.Server.Service.FarmingService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -302,6 +303,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.TendGardens,
                 PropertyPermissionType.EditTaxes,
                 PropertyPermissionType.AccessTreasury,
                 PropertyPermissionType.ManageUpgrades,
@@ -356,6 +358,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.EditCategories,
+                PropertyPermissionType.TendGardens,
             };
 
             _permissionsByPropertyType[PropertyType.Lab] = new List<PropertyPermissionType>
@@ -3602,6 +3605,17 @@ namespace SWLOR.Game.Server.Service
             {
                 FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
                 return;
+            }
+
+            // A house holds a limited number of garden plots. A city's plots count against its structure limit alone.
+            if (structureType == StructureType.GardenPlot)
+            {
+                var plotLimit = FarmingRules.GetPlotLimit(property.PropertyType, Farming.IsGreenhouse(property));
+                if (structures.Count(x => x.StructureType == StructureType.GardenPlot) >= plotLimit)
+                {
+                    FloatingTextStringOnCreature($"This property holds at most {plotLimit} garden plots.", player, false);
+                    return;
+                }
             }
 
             // The Shipyard, Asteroid Drill and Jump Beacon stand only on a station deck, and no beacon reaches Wild Space.

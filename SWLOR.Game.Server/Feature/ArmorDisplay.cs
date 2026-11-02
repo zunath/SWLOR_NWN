@@ -112,5 +112,40 @@ namespace SWLOR.Game.Server.Feature
             Apply(creature, showHelmet, showCloak);
             return saved;
         }
+
+        /// <summary>
+        /// Flips whether a creature shows its helmet or cloak and remembers the choice for items equipped later.
+        /// </summary>
+        /// <param name="creature">A player character, DM avatar or the creature a DM possesses.</param>
+        /// <param name="helmet">true to flip the helmet, false to flip the cloak.</param>
+        /// <param name="shown">Whether the item is now shown.</param>
+        /// <returns>false when the choice could not be saved.</returns>
+        public static bool Toggle(uint creature, bool helmet, out bool shown)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+            {
+                var (showHelmet, showCloak) = GetDMArmorDisplay(creature);
+                if (helmet) showHelmet = !showHelmet;
+                else showCloak = !showCloak;
+
+                shown = helmet ? showHelmet : showCloak;
+                return SetDMArmorDisplay(creature, showHelmet, showCloak);
+            }
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
+            if (dbPlayer == null)
+            {
+                shown = false;
+                return false;
+            }
+
+            if (helmet) dbPlayer.Settings.ShowHelmet = !dbPlayer.Settings.ShowHelmet;
+            else dbPlayer.Settings.ShowCloak = !dbPlayer.Settings.ShowCloak;
+            DB.Set(dbPlayer);
+
+            shown = helmet ? dbPlayer.Settings.ShowHelmet : dbPlayer.Settings.ShowCloak;
+            Apply(creature, dbPlayer.Settings.ShowHelmet, dbPlayer.Settings.ShowCloak);
+            return true;
+        }
     }
 }

@@ -280,7 +280,8 @@ namespace SWLOR.Game.Server.Native
                     Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
                     (queuedAbility == null ? 0 : Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                         attacker.m_idSelf,
-                        abilitySkillType)) +
+                        abilitySkillType,
+                        queuedAbility)) +
                     Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
                         attacker.m_idSelf,
                         defender.m_idSelf,

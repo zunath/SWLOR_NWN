@@ -8,6 +8,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
 {
     public static class StructureChangedAction
     {
+        /// <summary>Local object on a building's placeable naming the entrance door placeable spawned for it.</summary>
+        public const string DoorVariable = "PROPERTY_DOOR";
+
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
 
         /// <summary>
@@ -106,7 +109,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         {
             DestroyDoor(building);
             var door = CreateObject(ObjectType.Placeable, "building_ent1", location);
-            SetLocalObject(building, "PROPERTY_DOOR", door);
+            SetLocalObject(building, DoorVariable, door);
 
             Property.AssignPropertyId(door, Property.GetPropertyId(building));
             SetName(door, name);
@@ -131,7 +134,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         private static void DestroyDoor(uint building)
         {
-            var door = GetLocalObject(building, "PROPERTY_DOOR");
+            var door = GetLocalObject(building, DoorVariable);
             if (GetIsObjectValid(door))
                 DestroyObject(door);
         }

@@ -244,5 +244,17 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The planetary council a DM last called for the city's planet, or null. Cities only.</summary>
         public CityCouncilSummons CouncilSummons { get; set; }
+
+        /// <summary>
+        /// True when the mayor switched the city's wandering townsfolk and guards off in Manage City. They leave at once and
+        /// stay away until switched back on. Cities only; older records load false, so no migration is needed.
+        /// </summary>
+        public bool TownsfolkHidden { get; set; }
+
+        /// <summary>
+        /// True when the mayor switched the city's street critters off in Manage City. Cities only; older records load false,
+        /// so no migration is needed.
+        /// </summary>
+        public bool CrittersHidden { get; set; }
     }
 }

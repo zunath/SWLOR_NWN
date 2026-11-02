@@ -765,9 +765,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Critical Hits",
                             $"Critical chance is at least {Combat.MinimumCriticalRate} percent and at most {Combat.MaximumCriticalRate} percent. Critical Damage bonuses add at most +{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit."),
                         new ArticleBlock("Damage Dealt",
-                            $"Percentage damage bonuses can raise a hit by at most +{Combat.MaximumDamageBonusPercent} percent, double its base damage. Flat damage bonuses are added on top of that cap."),
+                            $"Percentage damage bonuses together can raise a hit by at most +{Combat.MaximumDamageBonusPercent} percent, double its base damage. Flat damage bonuses are added on top of that cap, and stance changes to ordinary weapon auto-attack damage apply after it."),
                         new ArticleBlock("Damage Taken",
-                            $"Percentage damage-taken reductions on you stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined, so a hit always deals at least some damage. Guard and elemental resistance are applied separately."),
+                            $"Percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined. Reductions from Leadership abilities, Guard, and elemental resistance are applied separately on top of that, and damage immunity effects stop a hit entirely."),
                         new ArticleBlock("Guard",
                             $"Guard chance can reach {Stat.MaximumGuardChance} percent. A guarded hit loses {Combat.BaseGuardDamageReductionPercent} percent of its physical damage, and bonuses can raise that to at most {Combat.MaximumGuardDamageReductionPercent} percent."),
                         new ArticleBlock("Deflection",
@@ -787,7 +787,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         new QuestionAnswer("Why does my hit chance never reach 100?", $"Final hit chance stops at {Combat.MaximumHitRate} percent, so more Accuracy past that point does not help."),
                         new QuestionAnswer("What is the highest critical chance?", $"{Combat.MaximumCriticalRate} percent."),
-                        new QuestionAnswer("Can I become immune to damage?", $"No. Percentage damage-taken reductions stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined, and resistances stop at {Resistance.MaximumResistance - 1} percent outside temporary immunity effects."),
+                        new QuestionAnswer("Can I become immune to damage?", $"Only through damage immunity effects. Otherwise percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined, and resistances stop at {Resistance.MaximumResistance - 1} percent outside temporary immunity effects."),
                         new QuestionAnswer("How high can attributes go?", "AP upgrades stop at 26. A racial bonus can raise one attribute to 27.")
                     },
                     new[] { "Combat Basics", "Attributes", "Skills", "Force Affinity", StatusEffectGuideTopics.TopicName, "PvP Combat" }),

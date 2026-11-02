@@ -303,6 +303,8 @@ public class PlayerGuideContentTests
         text.Should().Contain($"+{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit");
         text.Should().Contain($"at most +{Combat.MaximumDamageBonusPercent} percent");
         text.Should().Contain($"stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined");
+        text.Should().Contain("stance changes to ordinary weapon auto-attack damage apply after it");
+        text.Should().Contain("Reductions from Leadership abilities, Guard, and elemental resistance are applied separately");
         text.Should().Contain($"at most {Combat.MaximumGuardDamageReductionPercent} percent");
         text.Should().Contain($"up to {Stat.MaximumDeflectionChanceCap} percent");
         text.Should().Contain($"Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent");

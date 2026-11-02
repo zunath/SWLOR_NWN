@@ -452,6 +452,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
+
+                // A Fermentation Vat takes the colors it has copied with it, on the item, and gives them back when it is placed again.
+                if (structure.StructureType == StructureType.FermentationVat)
+                    FermentationVats.WriteStarters(structure.Id, item);
+
                 if (!Item.TryAcquireItem(Player, item))
                 {
                     Instructions = Item.InventoryFullShortMessage;

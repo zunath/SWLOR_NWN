@@ -305,7 +305,7 @@ public class HouseSpecializationRulesTests
     [Test]
     public void ARefusedPlanting_ExplainsWhy()
     {
-        var refusal = FarmingRules.CheckPlant(true, true, null, Start, true, 5, 1, 0, true, plotAboveLimit: true);
+        var refusal = FarmingRules.CheckPlant(true, true, null, Start, true, 5, 1, 0, true, siteRefusal: FarmingRefusal.PlotAboveLimit);
 
         refusal.Should().Be(FarmingRefusal.PlotAboveLimit);
         FarmingRules.Describe(refusal).Should().Contain("Greenhouse");
@@ -322,7 +322,7 @@ public class HouseSpecializationRulesTests
             WitherUtc = Start.AddHours(84)
         };
 
-        FarmingRules.CheckPlant(true, true, plot, Start.AddHours(1), true, 5, 1, 0, true, plotAboveLimit: true)
+        FarmingRules.CheckPlant(true, true, plot, Start.AddHours(1), true, 5, 1, 0, true, siteRefusal: FarmingRefusal.PlotAboveLimit)
             .Should().Be(FarmingRefusal.PlotOccupied);
         FarmingRules.CheckHarvest(true, plot, Start.AddHours(13), true).Should().Be(FarmingRefusal.None, "crops finish and can be harvested");
     }

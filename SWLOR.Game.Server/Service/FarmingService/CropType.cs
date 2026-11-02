@@ -2,7 +2,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
 {
     /// <summary>
     /// The crops a garden plot grows (Player City Revamp, "Farming"): 26 in five tiers. Each is a plant item that harvesting
-    /// nodes already give, or the fiberplast a scavenging bush gives at the same tier. The values are stored on garden plots,
+    /// nodes already give, or the fiberplast a scavenging bush gives at the same tier. The five woodlot saplings (27 to 31) are
+    /// planted in the same plots and yield logs instead (<see cref="WoodlotRules"/>). The values are stored on garden plots,
     /// so a crop keeps its number.
     /// </summary>
     public enum CropType
@@ -44,5 +45,12 @@ namespace SWLOR.Game.Server.Service.FarmingService
         Tomato = 24,
         DathomirOregano = 25,
         FiberShrubHigh = 26,
+
+        // Woodlots: one sapling for each of the five harvesting tree tiers (wood, fine wood, ancient wood, aracia wood, hyphae wood)
+        WoodSapling = 27,
+        FineWoodSapling = 28,
+        AncientWoodSapling = 29,
+        AraciaWoodSapling = 30,
+        HyphaeWoodSapling = 31,
     }
 }

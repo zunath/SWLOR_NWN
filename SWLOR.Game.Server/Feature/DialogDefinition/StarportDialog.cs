@@ -87,8 +87,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("View Shop", () =>
             {
-                var store = GetNearestObjectByTag("dockhand_store", Owner);
-                OpenStore(store, player);
+                // A city's dockmaster sells its own store, with the city's Sales tax. An NPC dock sells the dockhand store.
+                var store = CityStores.FindNearest(Owner);
+                if (!GetIsObjectValid(store))
+                    store = GetNearestObjectByTag("dockhand_store", Owner);
+
+                CityStores.Open(player, store);
                 Close();
             });
         }

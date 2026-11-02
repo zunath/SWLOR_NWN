@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.CityStoreService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.FarmingService;
@@ -2173,6 +2174,12 @@ namespace SWLOR.Game.Server.Service
             DB.Set(city);
             SpawnExclusion.InvalidateCity(city.Id);
 
+            // The street life follows the current level: townsfolk, guards, and critters are added or removed to match.
+            Townsfolk.OnCityChanged(city.Id);
+
+            // A smaller city closes its newest market stalls above the new limit, and a larger one reopens them.
+            MarketStalls.Refresh(city.Id);
+
             Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
 
@@ -2400,6 +2407,8 @@ namespace SWLOR.Game.Server.Service
                 Tournaments.OnCityDeleted(property);
                 CityProjects.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
+                Townsfolk.OnCityDeleted(property.Id);
+                CityStockAllowances.DeleteAll(property.Id);
             }
 
             _propertyInstances.Remove(property.Id);
@@ -2419,6 +2428,10 @@ namespace SWLOR.Game.Server.Service
 
             // A deleted city, or a structure removed from one, changes where spawns may appear.
             SpawnExclusion.InvalidateCity(property.PropertyType == PropertyType.City ? property.Id : property.ParentPropertyId);
+
+            // A building removed from a city changes where its street life walks.
+            if (property.PropertyType == PropertyType.Structure)
+                Townsfolk.OnStructureChanged(property);
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
@@ -2916,6 +2929,7 @@ namespace SWLOR.Game.Server.Service
             property.Taxes[PropertyTaxType.Citizenship] = 0;
             property.Taxes[PropertyTaxType.Transportation] = 0;
             property.Taxes[PropertyTaxType.Exchange] = 0;
+            property.Taxes[PropertyTaxType.Sales] = 0;
 
             // Upgrades
             property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
@@ -3636,13 +3650,12 @@ namespace SWLOR.Game.Server.Service
 
             // Special Case: Cities differentiate between structures and buildings.
             // They use the BuildingLimit value for buildings and StructureLimit for everything else.
-            // Buildings are determined by structures whose restrictions are solely to "City" property types.
+            // A building is a city-only structure with an interior, or a station building; open-ground city
+            // structures (Dueling Ring, Market Stall, Corral, Traveler's Lodge) count as structures.
             if (property.PropertyType == PropertyType.City &&
-                structureDetail.RestrictedPropertyTypes == PropertyType.City &&
-                !LivestockRules.CountsAsStructure(structureType))
+                CityBuildingRules.CountsAsBuilding(structureType))
             {
-                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid ||
-                                                       StationBuildingRules.IsStationBuilding(x.StructureType));
+                structureCount = structures.Count(x => CityBuildingRules.CountsAsBuilding(x.StructureType));
                 structureLimit = layout.BuildingLimit;
                 fixtureName = "Building";
             }
@@ -3689,6 +3702,19 @@ namespace SWLOR.Game.Server.Service
             {
                 FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
                 return;
+            }
+
+            // A city may place one market stall for each city level.
+            if (structureType == StructureType.MarketStall)
+            {
+                var stallError = MarketStallRules.GetPlacementError(
+                    property.Upgrades.GetValueOrDefault(PropertyUpgradeType.CityLevel, 1),
+                    structures.Count(x => x.StructureType == StructureType.MarketStall && !x.IsQueuedForDeletion));
+                if (!string.IsNullOrEmpty(stallError))
+                {
+                    FloatingTextStringOnCreature(stallError, player, false);
+                    return;
+                }
             }
 
             // A house holds a limited number of garden plots. A city's plots count against its structure limit alone.
@@ -3959,6 +3985,9 @@ namespace SWLOR.Game.Server.Service
         {
             // A placed, moved or retrieved structure changes where spawns may appear in its city.
             SpawnExclusion.InvalidateCity(property?.ParentPropertyId);
+
+            // A building changes where the city's street life walks.
+            Townsfolk.OnStructureChanged(property);
 
             if (!_structureChangedActions.ContainsKey(structureType))
                 return;

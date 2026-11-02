@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 foreach (var (crop, count) in Farming.GetSeedsCarried(Player))
                 {
                     _seeds.Add(crop);
-                    names.Add($"{crop.Name} seed (tier {crop.Tier}) x{count}");
+                    names.Add($"{crop.GetSeedLabel()} (tier {crop.Tier}) x{count}");
                     toggles.Add(false);
                 }
             }
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _seeds[_selectedSeedIndex].Tier,
                 _growingCrops,
                 true,
-                structure != null && HouseSpecializations.IsPlotAboveLimit(structure));
+                Farming.GetSiteRefusal(structure, _seeds[_selectedSeedIndex]));
             CanPlant = refusal == FarmingRefusal.None;
             PlantTooltip = FarmingRules.Describe(refusal);
         }

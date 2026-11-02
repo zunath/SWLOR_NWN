@@ -102,8 +102,9 @@ public class CityProjectWiringTests
         var farming = ReadServerSource("Service", "Farming.cs");
 
         farming.Should().Contain("public static bool IsGreenhouse(WorldProperty property) => HouseSpecializations.IsGreenhouse(property);");
-        ExtractMethod(farming, "public static FarmingResult Plant(").Should().Contain("HouseSpecializations.IsPlotAboveLimit(structure)");
-        ReadServerSource("Feature", "GuiDefinition", "ViewModel", "GardenPlotViewModel.cs").Should().Contain("HouseSpecializations.IsPlotAboveLimit(structure)");
+        ExtractMethod(farming, "public static FarmingRefusal GetSiteRefusal(WorldProperty plot, CropDefinition crop)").Should().Contain("HouseSpecializations.IsPlotAboveLimit(plot)");
+        ExtractMethod(farming, "public static FarmingResult Plant(").Should().Contain("GetSiteRefusal(structure, crop)");
+        ReadServerSource("Feature", "GuiDefinition", "ViewModel", "GardenPlotViewModel.cs").Should().Contain("Farming.GetSiteRefusal(structure,");
         ReadServerSource("Service", "Property.cs").Should().Contain("FarmingRules.GetPlotLimit(property.PropertyType, Farming.IsGreenhouse(property))");
     }
 

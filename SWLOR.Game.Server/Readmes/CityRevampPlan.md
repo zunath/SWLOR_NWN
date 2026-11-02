@@ -76,17 +76,9 @@ A player can have characters in different cities. Each character gets only its o
 
 **Harvesting bonuses**
 
-Harvesting already gives a second item on a d100 roll of up to 25 per Might modifier, so it is certain from Might 18 (modifier +4). Adding points to that roll would do nothing for established gatherers. Prospectors' Charter and Home Ground are separate rolls instead: a 10% and a 5% chance of 1 more item from the same node, without using up the node. The Might roll is unchanged.
+The crafting revamp, which ships before this plan, replaces today's harvesting with Prospecting sessions and Quick Harvest, and drops the Might roll that used to give a second item. Prospectors' Charter and Home Ground each add their own chance of 1 more item when a Prospecting session or Quick Harvest on the city's planet finishes: 10% and 5%.
 
-| Might modifier | Items per harvest today | With Prospectors' Charter | With the Charter and Home Ground |
-| --- | --- | --- | --- |
-| 0 | 1.00 | 1.10 (+10%) | 1.15 (+15%) |
-| +1 | 1.25 | 1.35 (+8%) | 1.40 (+12%) |
-| +2 | 1.50 | 1.60 (+7%) | 1.65 (+10%) |
-| +3 | 1.75 | 1.85 (+6%) | 1.90 (+9%) |
-| +4 or more | 2.00 | 2.10 (+5%) | 2.15 (+8%) |
-
-The two rolls are independent, so a harvest can give up to 2 more items. On average they add 0.15 items per harvest, so a fully skilled gatherer gets about 8% more.
+The two rolls are independent, so a harvest can give up to 2 more items. On average they add 0.15 items to every harvest, whatever the gatherer's attributes.
 
 ## What players and staff asked for
 
@@ -770,7 +762,7 @@ Every number in this plan is a proposal until approved. Edict effects and costs 
 | Woodlots | 3 days to grow, 4 logs; counts toward the 10-crop cap | Harvesting trees, 5 tiers |
 | Enzyme cultures | 2 days per enzyme, one vat per CD key; lowest brackets only, up to 3% primary and 2% secondary; a hunted starter per color; Agriculture recipe level 20 | Hunted enzymes roll up to 10% primary and 5% secondary |
 | Home Ground (Wild Space station) | +5% Asteroid Drill output; crops yield 1 more item per harvest | Space revamp drill: 150 ore a day, +50% to +70% with a droid |
-| Harvesting chance | Prospectors' Charter 10% and Home Ground 5%, each a separate roll for 1 more item | Might roll: 25 per modifier on a d100, certain at +4 |
+| Harvesting chance | Prospectors' Charter 10% and Home Ground 5%, each a separate roll for 1 more item | Crafting revamp: Prospecting and Quick Harvest yields, with no Might roll |
 | Breeders' Charter | A tenth of each stage's purity gain per raised stat, rounded down to 0.1%, after the stage cap | Stage cap 10% per stat; total cap 100% |
 | Civic Exchange crates | 3 a week per CD key, each worth under 20 minutes of harvesting | New |
 | Step-down acceptance and departure pass | 7 days each | New |
@@ -843,7 +835,7 @@ Every open question now has a decision for the player review. The rules behind t
 | Woodlots | Grow the five harvesting wood tiers on a 3-day cycle. |
 | Breeding and crop bonuses | Breeders' Charter adds a tenth of each stage's purity gain, and Greenhouse and Home Ground add crop yield. None of them shortens a timer that most players only check once a day. |
 | Ambient NPCs | Townsfolk and critters each have their own mayor switch. |
-| Harvesting bonuses | Separate rolls for 1 more item, since the Might roll is already certain for skilled gatherers. The Might roll is unchanged. |
+| Harvesting bonuses | Separate rolls for 1 more item at the end of a Prospecting session or Quick Harvest, since the crafting revamp removes the Might roll. |
 | Who gets Edict bonuses | Citizens in good standing get every citizen Edict, Breeders' Charter included. Access Edicts follow the order under Edict catalog. |
 | City Affairs consequences | Nothing permanent. Gains are capped at 20,000 a week and can't be withdrawn. |
 | Spawn zones | Only buildings and working structures count, and the Settled zone stays under about a fifth of any area. A city is not a safe zone. |
@@ -906,7 +898,7 @@ Every Edict except Industrial Charter changes one calculation that exists today.
 | Festival Season | `RoleplayXP` award: adds `BaseXP` x 0.10 beside the Cantina's `BaseXP` x 0.05 per level |
 | Alliance, Embargo, Open Gates | One `CanUseCityFacility(player, city)` helper applying the Plan's access order, called from `Bank` and `StarportLayoutDefinition` entry, plus a 7-day departure pass for a docked ship or a Home Port arrival; transportation tax in `StarportFlightsDialog` and `Shuttle` |
 | Guild Charter | `Guild.CalculateGPReward` and the guild reward in `Quest` |
-| Prospectors' Charter | Two independent rolls after the Might roll in `HarvesterItemDefinition`: d100 <= 10 for Prospectors' Charter, then a separate d100 <= 5 for Home Ground. Each success creates 1 more item from the node's loot table without using up the node, so a harvest gains 0, 1, or 2. The Might roll (d100 <= 25 x Might modifier, line 119) is unchanged. Planet from `Planet.GetPlanetType` |
+| Prospectors' Charter | Two independent rolls when a Prospecting session (`ProspectingLifecycle`) or Quick Harvest (`ProspectingQuickHarvest`) finishes: d100 <= 10 for Prospectors' Charter, then a separate d100 <= 5 for Home Ground. Each success adds 1 more item of the node's yield, so a harvest gains 0, 1, or 2. Planet from `Planet.GetPlanetType` |
 | Drydock Subsidy | `ShipManagementViewModel.CalculateRepairBill`, inside the 90% cap |
 | Hunting Grounds | `CombatPoint` XP awards only: +10 added to the `bonusPercentage` that `Skill.GiveSkillXP` already sums (Social, status, DM bonus), passed for that award. Planet from `Planet.GetPlanetType` |
 | Artisans' Charter | `CraftViewModel` crafting XP: +10 to the same `bonusPercentage`; city from the crafting device's area |

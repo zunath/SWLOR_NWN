@@ -8,16 +8,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string TabContentElement = "managecity_content";
         public const string CityTabPartial = "MANAGECITY_CITY";
         public const string EdictsTabPartial = "MANAGECITY_EDICTS";
+        public const string SuccessionTabPartial = "MANAGECITY_SUCCESSION";
 
         private const int CityTabId = 0;
         private const int EdictsTabId = 1;
+        private const int SuccessionTabId = 2;
 
         private static readonly GuiTabGroup<ManageCityViewModel, GuiPayloadBase> Tabs =
             new GuiTabGroup<ManageCityViewModel, GuiPayloadBase>()
                 .AddTab(CityTabId, CityTabPartial)
-                .AddTab(EdictsTabId, EdictsTabPartial, model => model.RefreshEdictsTab());
+                .AddTab(EdictsTabId, EdictsTabPartial, model => model.RefreshEdictsTab())
+                .AddTab(SuccessionTabId, SuccessionTabPartial, model => model.RefreshSuccessionTab());
 
-        private static readonly GuiToggleGroupSync TabToggles = new(CityTabId, EdictsTabId);
+        private static readonly GuiToggleGroupSync TabToggles = new(CityTabId, EdictsTabId, SuccessionTabId);
 
         public int SelectedTabId
         {
@@ -41,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TabToggleValue = CityTabId;
             SelectedTabId = CityTabId;
             InitializeEdictsTab();
+            InitializeSuccessionTab();
         }
 
         private void SelectTab(int tabId)

@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// records, and officers, modifiers, and neglect counts started empty.</item>
 /// <item>Gardens (<see cref="GardenPermissionMigration"/>): the Tend Gardens permission on every House and City permission
 /// record, true for the owner or mayor.</item>
+/// <item>Acting Mayor (<see cref="ActingMayorMigration"/>): the Acting Mayor and step-down started empty.</item>
 /// </list>
 /// </summary>
 public sealed class _32_PlayerCityRevamp : IServerMigration
@@ -25,5 +26,6 @@ public sealed class _32_PlayerCityRevamp : IServerMigration
         EdictMigration.Run(Version);
         CityAffairsMigration.Run(Version);
         GardenPermissionMigration.Run(Version);
+        ActingMayorMigration.Run(Version);
     }
 }

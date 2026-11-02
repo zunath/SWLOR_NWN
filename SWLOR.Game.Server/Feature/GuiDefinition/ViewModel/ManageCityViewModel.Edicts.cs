@@ -20,7 +20,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private EdictType _selectedOfferedType;
         private string _selectedTargetCityId = string.Empty;
 
+        /// <summary>Whether the player may enact Edicts into empty slots: the mayor, an Acting Mayor, or a Manage Edicts holder.</summary>
         public bool CanManageEdicts
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        /// <summary>Whether the player may repeal Edicts: the mayor or a Manage Edicts holder. An Acting Mayor may not.</summary>
+        public bool CanRepealEdicts
         {
             get => Get<bool>();
             set => Set(value);
@@ -173,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var targetName = string.IsNullOrWhiteSpace(edict.TargetCityId)
                     ? null
                     : DB.Get<WorldProperty>(edict.TargetCityId)?.CustomName;
-                var canRepeal = CanManageEdicts && EdictRules.CanRepeal(edict, now);
+                var canRepeal = CanRepealEdicts && EdictRules.CanRepeal(edict, now);
 
                 _heldEdictTypes.Add(type);
                 texts.Add(EdictRules.BuildHeldText(
@@ -192,8 +200,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string GetRepealTooltip(CityEdict edict, DateTime now)
         {
-            if (!CanManageEdicts)
-                return "You need the Manage Edicts permission.";
+            if (!CanRepealEdicts)
+                return "Only the mayor, or a delegate with the Manage Edicts permission, can repeal Edicts.";
             if (!EdictRules.CanRepeal(edict, now))
                 return $"Locked for {EdictRules.FormatRemaining(edict.LockEndsUtc.Value - now)} more.";
 
@@ -373,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var type = _heldEdictTypes[index];
-            if (!RefreshPermissions() || !CanManageEdicts)
+            if (!RefreshPermissions() || !CanRepealEdicts)
             {
                 ShowEdictError("Insufficient permissions.");
                 return;
@@ -402,7 +410,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ConfirmRepeal(EdictType type)
         {
-            if (!RefreshPermissions() || !CanManageEdicts)
+            if (!RefreshPermissions() || !CanRepealEdicts)
             {
                 ShowEdictError("Insufficient permissions.");
                 return;

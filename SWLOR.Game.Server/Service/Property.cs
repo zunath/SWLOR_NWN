@@ -1593,6 +1593,9 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
+                // An Acting Mayor's term that ran out, and a step-down nobody accepted, end here.
+                CitySuccession.Process(now, city);
+
                 CityAffairs.Process(now, city);
 
                 if (now < city.Dates[PropertyDateType.Upkeep])
@@ -1743,6 +1746,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A restart can leave a step-down's snap election open with the step-down still pending.
+            CitySuccession.RepairAfterRestart(city, election);
+
             AdvanceElection(now, city, election, TransferPermissions);
         }
 
@@ -1799,12 +1805,12 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Who counts as the incumbent in this election's result. For now it is always the sitting mayor; in a step-down
-        /// snap election it is the interim holder.
+        /// Who counts as the incumbent in this election's result: the sitting mayor, or in a step-down snap election the
+        /// interim holder, who becomes mayor wherever the incumbent would stay.
         /// </summary>
         internal static string GetElectionIncumbentId(WorldProperty city, Election election)
         {
-            return city.OwnerPlayerId;
+            return CitySuccession.GetIncumbentId(city, election.Kind);
         }
 
         /// <summary>
@@ -1833,9 +1839,11 @@ namespace SWLOR.Game.Server.Service
 
             var opening = kind == ElectionKind.SnapConfidence
                 ? "A snap mayoral election has opened for candidate registration after citizens voted No on the mayor."
-                : kind == ElectionKind.Recall
-                    ? "A recall election has opened for candidate registration."
-                    : "A new mayoral election has opened for candidate registration.";
+                : kind == ElectionKind.SnapStepDown
+                    ? "A snap mayoral election has opened for candidate registration because the mayor stepped down."
+                    : kind == ElectionKind.Recall
+                        ? "A recall election has opened for candidate registration."
+                        : "A new mayoral election has opened for candidate registration.";
             BroadcastPropertyEvent(
                 city,
                 "City Election Open",
@@ -1924,7 +1932,8 @@ namespace SWLOR.Game.Server.Service
                 ? null
                 : ElectionRules.GetNextRegularElectionUtc(endedUtc);
 
-            // Someone new takes the seat.
+            // Someone new takes the seat. This is also where a step-down snap election that ended with the status quo
+            // seats the interim holder, so the new mayor path runs for them too.
             var seatChanged = !string.IsNullOrWhiteSpace(outcome.WinnerPlayerId) && outcome.WinnerPlayerId != city.OwnerPlayerId;
             if (seatChanged)
             {
@@ -1932,6 +1941,9 @@ namespace SWLOR.Game.Server.Service
                 city.OwnerPlayerId = outcome.WinnerPlayerId;
                 Log.Write(LogGroup.Property, $"New mayor of {city.CustomName} is '{outcome.WinnerPlayerId}'");
             }
+
+            // An election that seats a mayor ends the Acting Mayor's term, and the end of a step-down election ends the step-down.
+            var successionChange = CitySuccession.ApplyElectionEnd(city, election.Kind, outcome.HasMandate, seatChanged);
 
             // Only an outright win ends a No confidence pause; ties, No results and empty elections leave things as they were.
             if (outcome.SetsNoConfidence && !city.NoConfidenceSinceUtc.HasValue)
@@ -1975,6 +1987,7 @@ namespace SWLOR.Game.Server.Service
 
             // The result is saved first, so a restart before the election record is removed cannot count it twice.
             DB.Set(city);
+            CitySuccession.AnnounceElectionEnd(city.Id, successionChange);
 
             if (opensSnapElection)
                 OpenElection(now, city, ElectionKind.SnapConfidence, GetSnapElectionId(election.Id));
@@ -2031,6 +2044,14 @@ namespace SWLOR.Game.Server.Service
                     title = "City Election Concluded";
                     summary = "The mayoral election has concluded in a tie. The incumbent mayor remains in office.";
                     break;
+            }
+
+            // After a mayor stepped down, "the incumbent stays" means the interim holder takes the seat.
+            if (outcome.Kind == ElectionKind.SnapStepDown)
+            {
+                var stepDownSummary = ElectionNoticeText.BuildStepDownSummary(outcome.Type);
+                if (!string.IsNullOrEmpty(stepDownSummary))
+                    summary = stepDownSummary;
             }
 
             var details = $"{summary}\n" +
@@ -3942,18 +3963,11 @@ namespace SWLOR.Game.Server.Service
             var dbProperty = DB.Get<WorldProperty>(propertyId);
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
 
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), dbBuilding.ParentPropertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
-                .SingleOrDefault();
+            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
 
-            // Player has at least one permission. Display the window.
-            if (permission != null && (permission.Permissions[PropertyPermissionType.RenameProperty] ||
-                                       permission.Permissions[PropertyPermissionType.EditTaxes] ||
-                                       permission.Permissions[PropertyPermissionType.AccessTreasury] ||
-                                       permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
-                                       permission.Permissions[PropertyPermissionType.ManageUpkeep] ||
-                                       permission.Permissions.GetValueOrDefault(PropertyPermissionType.ManageEdicts)))
+            // The player holds a permission the window uses, is an Acting Mayor, or must answer a step-down. A mayor who
+            // stepped down has no powers, whatever their permission record says.
+            if (CityPowers.CanOpenManageCity(dbCity, playerId))
             {
                 Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }

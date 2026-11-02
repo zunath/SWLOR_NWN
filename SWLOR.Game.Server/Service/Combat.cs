@@ -12915,7 +12915,8 @@ namespace SWLOR.Game.Server.Service
                 MaximumAttackDelayAdjustmentPercent);
         }
 
-        private static int GetWeaponDelay(uint item)
+        /// <summary>The weapon's Delay item property total (the value shown on examine), or 0 for no weapon.</summary>
+        public static int GetWeaponDelay(uint item)
         {
             if (!GetIsObjectValid(item))
                 return 0;

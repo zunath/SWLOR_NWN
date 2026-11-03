@@ -24,6 +24,7 @@ Service/AbilityCooldownVisual.cs
 Service/Enmity.cs
 Service/MeleeTechnique.cs
 Service/AIService/**
+Domain/Creatures/AIService.cs
 Native/WeaponAttackAnimation.cs
 Feature/GuiDefinition/ViewModel/CraftViewModel.cs
 Entity/EntityBase.cs

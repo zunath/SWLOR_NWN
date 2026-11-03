@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
@@ -84,14 +83,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             ctx.SetNPCResources(caster, 50, 50);
 
-            var action = NPCAI.Profiles[AIProfileType.Generic].Actions
+            var action = AIInternals.Profiles[AIProfileType.Generic].Actions
                 .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == FeatType.UnnervingRoar);
             Enmity.ModifyEnmity(target, caster, 10);
             var context = new AIContext(caster, AITriggerType.Heartbeat, target,
                 new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
             // The AI's own resolution, which falls back to the default selector when the action has none.
-            var resolveTarget = typeof(NPCAI).GetMethod("ResolveTarget", BindingFlags.NonPublic | BindingFlags.Static)!;
-            uint ResolveTarget(AIContext aiContext) => (uint)resolveTarget.Invoke(null, new object[] { aiContext, action })!;
+            uint ResolveTarget(AIContext aiContext) => (uint)AIInternals.Invoke("ResolveTarget", aiContext, action);
             var selected = ResolveTarget(context);
             ctx.AssertEqual(caster, selected, "Unnerving Roar is centered on the caster with one enemy in range");
             context.SetEvaluatedTarget(selected);

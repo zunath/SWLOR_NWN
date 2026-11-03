@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(15, Stat.GetNPCStats(droid).Resistances[ResistanceType.Fire], "Resistance reaches combat skin");
                 ctx.Assert(GetHasFeat(FeatType.MedKit1, droid), "Active instruction grants AI feat");
                 ctx.AssertEqual(1, Perk.GetPerkLevel(droid, PerkType.MedKit), "Instruction rank reaches ability execution");
-                ctx.AssertEqual(AIProfileType.DroidCompanion, NPCAI.GetProfileType(droid), "Droid companion AI is installed");
+                ctx.AssertEqual(AIProfileType.DroidCompanion, AI.GetAIProfile(droid), "Droid companion AI is installed");
                 await ctx.ExecuteInCreatureContextAsync(owner, () => DestroyObject(droid));
                 await ctx.WaitFrameAsync();
             }

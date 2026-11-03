@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
-using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.AIService
 {
@@ -8,17 +7,6 @@ namespace SWLOR.Game.Server.Service.AIService
     {
         // NPC area abilities are part of their kit against a lone player too, not only against groups.
         private const int DefaultAreaAbilityMinimumTargets = 1;
-        private static readonly Dictionary<FeatType, AITargetSelector> _defaultOverrides = new();
-
-        public static void RegisterDefault(FeatType feat, AITargetSelector selector)
-        {
-            _defaultOverrides[feat] = selector;
-        }
-
-        public static bool TryGetDefaultOverride(FeatType feat, out AITargetSelector selector)
-        {
-            return _defaultOverrides.TryGetValue(feat, out selector);
-        }
 
         public static AITargetSelector Self()
         {

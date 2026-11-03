@@ -23,7 +23,7 @@ Feature/AbilityDefinition -> Skill | 29
 Feature/AbilityDefinition -> Stat | 80
 Feature/AbilityDefinition -> StatusEffect | 209
 Mimicry -> Perk | 6
-Mimicry -> Skill | 9
+Mimicry -> Skill | 8
 Mimicry -> Stat | 8
 Mimicry -> StatusEffect | 1
 
@@ -230,7 +230,7 @@ Combat -> Activity | 1
 Combat -> Feature/StatusEffectDefinition | 99
 Combat -> Perk | 26
 Combat -> PlayerName | 10
-Combat -> Skill | 209
+Combat -> Skill | 207
 Combat -> Stat | 348
 Combat -> StatusEffect | 148
 CombatPoint -> Skill | 13
@@ -242,7 +242,7 @@ Death -> Feature/StatusEffectDefinition | 1
 Death -> PlayerName | 2
 Death -> StatusEffect | 1
 Enmity -> Activity | 2
-Enmity -> Skill | 2
+Enmity -> Skill | 1
 Enmity -> Stat | 3
 Enmity -> StatusEffect | 2
 MeleeTechnique -> Skill | 32
@@ -326,8 +326,8 @@ BeastMastery -> Feature/AbilityDefinition | 1
 
 # Companions -> Character (12 edges)
 BeastMastery -> Feature/StatusEffectDefinition | 1
-BeastMastery -> Perk | 4
-BeastMastery -> Stat | 9
+BeastMastery -> Perk | 3
+BeastMastery -> Stat | 11
 BeastMastery -> StatusEffect | 1
 Droid -> Feature/AppearanceDefinition | 3
 Droid -> Feature/StatusEffectDefinition | 1
@@ -339,7 +339,7 @@ Droid -> StatusEffect | 1
 DroidEquipmentDiagnostics -> Activity | 1
 
 # Companions -> Combat (9 edges)
-BeastMastery -> Combat | 32
+BeastMastery -> Combat | 30
 BeastMastery -> CombatRecorder | 1
 BeastMastery -> Resistance | 9
 Droid -> Combat | 10
@@ -351,7 +351,7 @@ Droid -> TwinPistolEquipment | 1
 
 # Companions -> Creatures (4 edges)
 BeastMastery -> AI | 1
-BeastMastery -> CompanionControl | 9
+BeastMastery -> CompanionControl | 6
 Droid -> AI | 1
 Droid -> CompanionControl | 10
 
@@ -360,15 +360,15 @@ BeastMastery -> Item | 1
 BeastMastery -> KeyItem | 3
 Droid -> Item | 2
 DroidEquipmentDiagnostics -> Item | 3
-IncubationFieldNote -> KeyItem | 6
+IncubationFieldNote -> KeyItem | 9
 
 # Companions -> UI (3 edges)
-BeastMastery -> Feature/GuiDefinition | 3
-BeastMastery -> Gui | 4
+BeastMastery -> Feature/GuiDefinition | 2
+BeastMastery -> Gui | 2
 Droid -> Gui | 3
 
 # Companions -> World (1 edge)
-BeastMastery -> Property | 1
+BeastMastery -> Property | 3
 
 # Core -> Abilities (4 edges)
 Animation -> Ability | 12
@@ -403,7 +403,7 @@ PlayerFeedback -> PlayerName | 1
 
 # Core -> Combat (8 edges)
 Feature/DialogDefinition -> Enmity | 2
-Feature/MigrationDefinition -> Combat | 41
+Feature/MigrationDefinition -> Combat | 40
 Feature/MigrationDefinition -> Resistance | 8
 Feature/MigrationDefinition -> WeaponDelay | 3
 Feature/SnippetDefinition -> Enmity | 1
@@ -485,7 +485,7 @@ Slicing -> Skill | 1
 Slicing -> Stat | 1
 
 # Crafting -> Combat (2 edges)
-Craft -> Combat | 10
+Craft -> Combat | 9
 Craft -> Resistance | 1
 
 # Crafting -> Creatures (1 edge)
@@ -505,12 +505,12 @@ Slicing -> Gui | 1
 Craft -> Property | 1
 
 # Creatures -> Abilities (3 edges)
-AI -> Ability | 12
+AI -> Ability | 14
 CompanionControl -> Ability | 8
 Feature/AIDefinition -> Ability | 5
 
 # Creatures -> Administration (1 edge)
-AI -> DMPresence | 1
+AI -> DMPresence | 3
 
 # Creatures -> Character (12 edges)
 AI -> Activity | 2
@@ -527,22 +527,22 @@ CompanionControl -> StatusEffect | 1
 Spawn -> Stat | 1
 
 # Creatures -> Combat (3 edges)
-AI -> Enmity | 23
+AI -> Enmity | 17
 AI -> Stealth | 3
 CompanionControl -> Combat | 3
 
 # Creatures -> Companions (4 edges)
-AI -> BeastMastery | 1
+AI -> BeastMastery | 3
 AI -> Droid | 1
 CompanionControl -> BeastMastery | 1
 CompanionControl -> Droid | 1
 
 # Creatures -> Gameplay (2 edges)
-AI -> Feature.UsePerkFeat | 2
+AI -> Feature.UsePerkFeat | 1
 CompanionControl -> Feature.UsePerkFeat | 3
 
 # Creatures -> Social (1 edge)
-AI -> Party | 1
+AI -> Party | 3
 
 # Creatures -> World (1 edge)
 Feature/SpawnDefinition -> Fishing | 2
@@ -717,7 +717,9 @@ Feature.PlayerRest -> Party | 1
 # Gameplay -> Space (1 edge)
 Feature.PlayerStatusWindow -> Space | 1
 
-# Gameplay -> UI (15 edges)
+# Gameplay -> UI (17 edges)
+Feature.ArmorDisplay -> Feature/GuiDefinition | 1
+Feature.ArmorDisplay -> Gui | 1
 Feature.CivilianPatrol -> Gui | 1
 Feature.DMActions -> Feature/GuiDefinition | 1
 Feature.DMActions -> Gui | 1
@@ -751,7 +753,7 @@ Item -> Ability | 5
 
 # Items -> Administration (2 edges)
 Feature/ItemDefinition -> DMPresence | 1
-ItemTrash -> DMPresence | 1
+ItemTrash -> DMPresence | 3
 
 # Items -> Character (13 edges)
 Feature/ItemDefinition -> Feature/StatusEffectDefinition | 11
@@ -760,8 +762,8 @@ Feature/ItemDefinition -> Skill | 6
 Feature/ItemDefinition -> Stat | 5
 Feature/ItemDefinition -> StatusEffect | 11
 Item -> Activity | 1
-Item -> Perk | 1
-Item -> Skill | 3
+Item -> Perk | 3
+Item -> Skill | 7
 ItemTrash -> Disguise | 1
 ItemTrash -> PlayerName | 1
 Loot -> Perk | 1
@@ -781,11 +783,11 @@ Item -> TwinPistolEquipment | 3
 Feature/ItemDefinition -> BeastMastery | 4
 Feature/ItemDefinition -> Droid | 1
 Feature/LootTableDefinition -> BeastMastery | 7
-Item -> BeastMastery | 1
+Item -> BeastMastery | 3
 Item -> Droid | 2
 KeyItem -> BeastMastery | 1
 KeyItem -> IncubationFieldNote | 1
-Loot -> BeastMastery | 1
+Loot -> BeastMastery | 2
 
 # Items -> Crafting (2 edges)
 Feature/ItemDefinition -> Craft | 1
@@ -793,7 +795,7 @@ Feature/ItemDefinition -> Slicing | 1
 
 # Items -> Economy (2 edges)
 Feature/ItemDefinition -> Currency | 4
-LightsaberWorkbench -> Currency | 1
+LightsaberWorkbench -> Currency | 3
 
 # Items -> Space (1 edge)
 Feature/ItemDefinition -> Space | 1
@@ -801,7 +803,7 @@ Feature/ItemDefinition -> Space | 1
 # Items -> UI (6 edges)
 Feature/ItemDefinition -> Feature/GuiDefinition | 4
 Feature/ItemDefinition -> Gui | 4
-Item -> Gui | 2
+Item -> Gui | 4
 KeyItem -> Feature/GuiDefinition | 1
 KeyItem -> Gui | 1
 LightsaberWorkbench -> Gui | 1
@@ -827,7 +829,7 @@ Platform/Entity -> Skill | 17
 Platform/Native -> Feature/AppearanceDefinition | 1
 Platform/Native -> Feature/StatusEffectDefinition | 1
 Platform/Native -> Perk | 3
-Platform/Native -> PlayerName | 2
+Platform/Native -> PlayerName | 3
 Platform/Native -> Skill | 15
 Platform/Native -> Stat | 11
 Platform/Native -> StatusEffect | 10
@@ -898,7 +900,7 @@ Feature/QuestDefinition -> Ability | 1
 Quest -> Ability | 3
 
 # Quests -> Administration (1 edge)
-Quest -> DMPresence | 1
+Quest -> DMPresence | 3
 
 # Quests -> Character (6 edges)
 Feature/QuestDefinition -> Achievement | 46
@@ -918,7 +920,7 @@ CapstoneProof -> BeastMastery | 1
 # Quests -> Creatures (4 edges)
 Feature/QuestDefinition -> NPC | 1
 Feature/QuestDefinition -> NPCGroup | 1
-Quest -> NPC | 22
+Quest -> NPC | 26
 Quest -> NPCGroup | 2
 
 # Quests -> Economy (1 edge)
@@ -1078,7 +1080,7 @@ Feature/GuiDefinition -> PlayerDescriptor | 1
 Feature/GuiDefinition -> PlayerIntroduction | 8
 Feature/GuiDefinition -> PlayerName | 19
 Feature/GuiDefinition -> Race | 2
-Feature/GuiDefinition -> Skill | 78
+Feature/GuiDefinition -> Skill | 77
 Feature/GuiDefinition -> Stat | 25
 Feature/GuiDefinition -> StatusEffect | 4
 
@@ -1117,13 +1119,14 @@ Feature/GuiDefinition -> Currency | 13
 Feature/GuiDefinition -> Guild | 2
 Feature/GuiDefinition -> PlayerMarket | 16
 
-# UI -> Gameplay (6 edges)
+# UI -> Gameplay (7 edges)
 ExtraHotbars -> Feature.UsePerkFeat | 1
 Feature/GuiDefinition -> Feature.ArmorDisplay | 5
 Feature/GuiDefinition -> Feature.EquipmentRestrictions | 1
 Feature/GuiDefinition -> Feature.PlayerInitialization | 1
 Feature/GuiDefinition -> Feature.PlayerStatusWindow | 1
 Feature/GuiDefinition -> Feature.PlayerTemporaryEffects | 1
+Feature/GuiDefinition -> Feature.PowerGlovePairLifecycle | 1
 
 # UI -> Items (5 edges)
 ExtraHotbars -> Item | 2
@@ -1199,4 +1202,4 @@ Property -> Space | 1
 
 # World -> UI (2 edges)
 Notes -> Gui | 9
-Property -> Gui | 4
+Property -> Gui | 2

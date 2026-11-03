@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var resref = _materialResrefs[_selectedMaterialIndex];
-            var taken = CityProjects.Donate(Player, _selectedProjectId, resref, CityProjects.CountCarried(Player, resref));
+            var taken = CityProjectDonations.Donate(Player, _selectedProjectId, resref, CityProjects.CountCarried(Player, resref));
             MessageText = taken > 0
                 ? $"You donated {taken} {CityProjects.GetItemName(resref)}. Thank you."
                 : "Nothing was donated. The project may already have all of that material.";
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var gifts = new List<string>();
             foreach (var resref in project.RequiredMaterials.Keys.OrderBy(key => key, StringComparer.Ordinal))
             {
-                var taken = CityProjects.Donate(Player, _selectedProjectId, resref, CityProjects.CountCarried(Player, resref));
+                var taken = CityProjectDonations.Donate(Player, _selectedProjectId, resref, CityProjects.CountCarried(Player, resref));
                 if (taken > 0)
                     gifts.Add($"{taken} {CityProjects.GetItemName(resref)}");
             }

@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Entity
             DonatedMaterials = new Dictionary<string, int>();
             DonorMaterials = new Dictionary<string, Dictionary<string, int>>();
             DonorLabels = new Dictionary<string, string>();
+            AppliedDonationIds = new List<string>();
         }
 
         /// <summary>The property id of the city or station that is building it.</summary>
@@ -49,6 +50,12 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>Donor's player id to the name strangers know them by, as it stood when they gave, for the Gazette.</summary>
         public Dictionary<string, string> DonorLabels { get; set; }
+
+        /// <summary>
+        /// The ids of the <see cref="CityProjectDonation"/> records this project has taken. Saved with the donation itself, so it is the
+        /// receipt that tells a restarted login the donation already counts. Never more than one entry for an id.
+        /// </summary>
+        public List<string> AppliedDonationIds { get; set; }
 
         public string StartedByPlayerId { get; set; }
 

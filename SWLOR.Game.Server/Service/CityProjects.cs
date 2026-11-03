@@ -27,6 +27,12 @@ namespace SWLOR.Game.Server.Service
     /// then the escrow returns to its balances, then the project is deleted. A completed project is applied at server start, so one
     /// that came due while the server was down is applied at the next start.
     /// </para>
+    /// <para>
+    /// A donation is not the project's until it is applied (<see cref="CityProjectDonations"/>): only applied donations are in the
+    /// project's donor materials, so a cancelled project refunds only those. A donation record that a restart left behind outlives its
+    /// project, and its donor's next login returns the materials. The records of donations the project already holds are deleted
+    /// before the project is.
+    /// </para>
     /// </summary>
     public static class CityProjects
     {
@@ -171,56 +177,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        /// <summary>
-        /// Donates up to <paramref name="count"/> of a material from the player's inventory. The project takes only what it still needs,
-        /// so a player offering more keeps the rest. The donation is recorded first and the items are taken after, so a restart never
-        /// loses the credit for items that were taken. Anyone may donate, visitors included.
-        /// </summary>
-        /// <returns>How many items were taken.</returns>
-        public static int Donate(uint player, string projectId, string resref, int count)
-        {
-            var project = GetProject(projectId);
-            if (project == null || !GetIsPC(player) || GetIsDM(player))
-                return 0;
-
-            var offered = Math.Min(Math.Max(0, count), CountCarried(player, resref));
-            var accepted = CityProjectRules.Accept(project, GetObjectUUID(player), Disguise.GetDisplayDescriptor(player), resref, offered, DateTime.UtcNow);
-            if (accepted <= 0)
-                return 0;
-
-            DB.Set(project);
-            TakeItems(player, resref, accepted);
-
-            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} donated {accepted} x {resref} to city project '{CityProjectRules.GetName(project)}' ({project.Id}) of city {project.CityId}.");
-            if (project.SuppliedUtc.HasValue)
-            {
-                Log.Write(LogGroup.Property, $"City project '{CityProjectRules.GetName(project)}' ({project.Id}) is fully supplied and completes at {project.CompletesUtc:u}.");
-            }
-
-            return accepted;
-        }
-
-        private static void TakeItems(uint player, string resref, int count)
-        {
-            var remaining = count;
-            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item) && remaining > 0; item = GetNextItemInInventory(player))
-            {
-                if (GetResRef(item) != resref)
-                    continue;
-
-                var size = GetItemStackSize(item);
-                if (size <= remaining)
-                {
-                    remaining -= size;
-                    DestroyObject(item);
-                }
-                else
-                {
-                    SetItemStackSize(item, size - remaining);
-                    remaining = 0;
-                }
-            }
-        }
+        // Donating is in CityProjectDonations: the donation is journaled, so a restart cannot lose the materials or keep them twice.
 
         #endregion
 
@@ -260,7 +217,7 @@ namespace SWLOR.Game.Server.Service
             if (city != null && !city.IsQueuedForDeletion)
                 CityTreasury.RefundEscrow(city, project.Id);
 
-            DB.Delete<CityProject>(project.Id);
+            DeleteProject(project);
         }
 
         /// <summary>
@@ -271,31 +228,64 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var refund in CityProjectRules.GetRefunds(project))
             {
-                var remaining = refund.Count;
-                for (var chunk = 0; remaining > 0; chunk++)
-                {
-                    var item = CreateObject(ObjectType.Item, refund.Resref, GetStartingLocation());
-                    if (!GetIsObjectValid(item))
-                    {
-                        Log.Write(LogGroup.Error, $"City project {project.Id}: item '{refund.Resref}' could not be created, so {remaining} owed to player {refund.DonorId} are lost.");
-                        break;
-                    }
+                WriteOverflow(
+                    refund.DonorId,
+                    refund.Resref,
+                    refund.Count,
+                    chunk => CityProjectRules.GetOverflowRecordId(project.Id, refund.DonorId, refund.Resref, chunk),
+                    $"City project {project.Id}");
+            }
+        }
 
-                    SetItemStackSize(item, remaining);
-                    var size = Math.Max(1, GetItemStackSize(item));
-                    DB.Set(new OverflowItem
-                    {
-                        Id = CityProjectRules.GetOverflowRecordId(project.Id, refund.DonorId, refund.Resref, chunk),
-                        PlayerId = refund.DonorId,
-                        Name = GetName(item),
-                        Resref = refund.Resref,
-                        Tag = GetTag(item),
-                        Quantity = size,
-                        Data = ObjectPlugin.Serialize(item)
-                    });
-                    DestroyObject(item);
-                    remaining -= size;
+        /// <summary>
+        /// Writes <paramref name="count"/> of an item to the player's overflow store, in stacks, under the record ids the caller names.
+        /// The ids never change, so writing them again after a restart replaces the records instead of adding a second set.
+        /// </summary>
+        internal static void WriteOverflow(string playerId, string resref, int count, Func<int, string> recordIdOf, string context)
+        {
+            var remaining = count;
+            for (var chunk = 0; remaining > 0; chunk++)
+            {
+                var item = CreateObject(ObjectType.Item, resref, GetStartingLocation());
+                if (!GetIsObjectValid(item))
+                {
+                    Log.Write(LogGroup.Error, $"{context}: item '{resref}' could not be created, so {remaining} owed to player {playerId} are lost.");
+                    break;
                 }
+
+                SetItemStackSize(item, remaining);
+                var size = Math.Max(1, GetItemStackSize(item));
+                DB.Set(new OverflowItem
+                {
+                    Id = recordIdOf(chunk),
+                    PlayerId = playerId,
+                    Name = GetName(item),
+                    Resref = resref,
+                    Tag = GetTag(item),
+                    Quantity = size,
+                    Data = ObjectPlugin.Serialize(item)
+                });
+                DestroyObject(item);
+                remaining -= size;
+            }
+        }
+
+        /// <summary>
+        /// Deletes the project. The records of donations it already holds go first: a record whose project is gone reads as materials
+        /// still owed to the donor, who would get them again at their next login.
+        /// </summary>
+        private static void DeleteProject(CityProject project)
+        {
+            SettleAppliedDonations(project);
+            DB.Delete<CityProject>(project.Id);
+        }
+
+        /// <summary>Deletes the records of donations the project already holds, which a restart left between the project's save and the record's deletion.</summary>
+        private static void SettleAppliedDonations(CityProject project)
+        {
+            foreach (var id in CityProjectDonationRules.GetAppliedRecordIds(project, CityProjectDonations.LoadForProject(project.Id)))
+            {
+                DB.Delete<CityProjectDonation>(id);
             }
         }
 
@@ -311,7 +301,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var project in GetProjects(city.Id))
             {
                 ReturnMaterials(project);
-                DB.Delete<CityProject>(project.Id);
+                DeleteProject(project);
                 Log.Write(LogGroup.Property, $"City project '{CityProjectRules.GetName(project)}' ({project.Id}) ended because city '{city.CustomName}' ({city.Id}) was removed; donated materials went to overflow.");
             }
         }
@@ -346,7 +336,7 @@ namespace SWLOR.Game.Server.Service
             if (city == null)
             {
                 ReturnMaterials(project);
-                DB.Delete<CityProject>(project.Id);
+                DeleteProject(project);
                 Log.Write(LogGroup.Property, $"City project {project.Id} belonged to a city that no longer exists; its donated materials went to overflow.");
                 return;
             }
@@ -354,6 +344,9 @@ namespace SWLOR.Game.Server.Service
             // A city being removed cancels its projects when it is deleted.
             if (city.IsQueuedForDeletion)
                 return;
+
+            // A restart between a donation's save in the project and the deletion of its record is finished here.
+            SettleAppliedDonations(project);
 
             switch (project.State)
             {
@@ -400,7 +393,7 @@ namespace SWLOR.Game.Server.Service
             if (release.Found)
                 CityGazette.Post(city.Id, CityGazetteEntryType.Project, CityProjectRules.BuildCompletedText(project));
 
-            DB.Delete<CityProject>(project.Id);
+            DeleteProject(project);
         }
 
         #endregion

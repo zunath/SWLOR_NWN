@@ -1,5 +1,7 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -202,13 +204,74 @@ public class CityProjectWiringTests
     }
 
     [Test]
-    public void ADonation_IsRecordedBeforeTheItemsAreTaken_AndOnlyUpToTheNeed()
+    public void ADonation_IsPlannedOnlyUpToTheNeed_AndRunsThroughTheJournal()
     {
-        var donate = ExtractMethod(ReadServerSource("Service", "CityProjects.cs"), "public static int Donate(");
+        var donate = ExtractMethod(ReadServerSource("Service", "CityProjectDonations.cs"), "public static int Donate(");
 
-        donate.Should().Contain("CityProjectRules.Accept(");
-        ShouldComeBefore(donate, "DB.Set(project)", "TakeItems(player, resref, accepted)");
+        donate.Should().Contain("CityProjectDonationRules.Plan(", "a donation is never more than the project still needs");
+        ShouldComeBefore(donate, "CityProjectDonationRules.Plan(", "CityProjectDonationProcess.Run(");
         donate.Should().NotContain("CityPowers", "anyone, visitors included, can donate");
+        donate.Should().NotContain("DB.Set(project)", "the project is saved when the donation is applied, never before the materials are marked");
+        ReadServerSource("Service", "CityProjects.cs").Should().NotContain("public static int Donate(", "there is one way to donate");
+        ReadServerSource("Feature", "GuiDefinition", "ViewModel", "CityProjectsViewModel.cs")
+            .Should().Contain("CityProjectDonations.Donate(").And.NotContain("CityProjects.Donate(");
+    }
+
+    [Test]
+    public void TheMaterialsAreTaken_ThenMarkedAndSavedWithTheCharacter_BeforeTheProjectIsTouched()
+    {
+        var service = ReadServerSource("Service", "CityProjectDonations.cs");
+
+        var take = ExtractMethod(service, "public void TakeAndMark(CityProjectDonation donation)");
+        ShouldComeBefore(take, "TakeItems(_player, donation.Resref, donation.Count)", "ObjectPlugin.SetString(_player, MarkVariable");
+        ShouldComeBefore(take, "ObjectPlugin.SetString(_player, MarkVariable", "ExportSingleCharacter(_player)");
+        take.Should().Contain("donation.Id), true)", "the mark is saved in the character file");
+        take.Should().NotContain("DB.Set", "the project and the record are not this step's");
+
+        var clear = ExtractMethod(service, "public void ClearMark(string donationId)");
+        clear.Should().Contain("ExportSingleCharacter(_player)", "the cleared mark is saved too");
+        ShouldComeBefore(clear, "CityProjectDonationRules.RemoveMark(", "ExportSingleCharacter(_player)");
+
+        var apply = ExtractMethod(service, "public void ApplyToProject(CityProjectDonation donation)");
+        ShouldComeBefore(apply, "CityProjectDonationRules.Apply(project, donation", "DB.Set(project)");
+        apply.Split("DB.Set(").Length.Should().Be(2, "the donation and its receipt are saved together in one write of the project");
+    }
+
+    [Test]
+    public void TheJournalSteps_AreOrderedByTheProcess_AndTheLoginSettlesWhatARestartLeft()
+    {
+        var process = ReadServerSource("Service", "CityProjectService", "CityProjectDonationProcess.cs");
+        var run = ExtractMethod(process, "public static CityProjectDonationSettlement Run(");
+
+        ShouldComeBefore(run, "store.SavePending(donation)", "store.TakeAndMark(donation)");
+        ShouldComeBefore(run, "store.TakeAndMark(donation)", "Settle(store, donation, marked: true)");
+
+        var service = ReadServerSource("Service", "CityProjectDonations.cs");
+        service.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]");
+        var login = ExtractMethod(service, "public static void SettleOnLogin()");
+        login.Should().Contain("CityProjectDonationProcess.SettleAtLogin(");
+        login.Should().Contain("ObjectPlugin.GetString(player, MarkVariable)");
+        login.Should().Contain("GetIsDM(player)", "a DM holds no donation");
+    }
+
+    [Test]
+    public void TheDonationRecord_IsAnIndexedEntity_AndTheProjectCarriesTheReceipts()
+    {
+        typeof(CityProjectDonation).BaseType.Should().Be(typeof(EntityBase));
+        typeof(CityProjectDonation).GetProperty(nameof(CityProjectDonation.PlayerId))!.GetCustomAttribute<IndexedAttribute>().Should().NotBeNull();
+        typeof(CityProjectDonation).GetProperty(nameof(CityProjectDonation.ProjectId))!.GetCustomAttribute<IndexedAttribute>().Should().NotBeNull();
+        new CityProject().AppliedDonationIds.Should().BeEmpty();
+
+        foreach (var path in new[]
+                 {
+                     new[] { "Service", "CityProjectDonations.cs" },
+                     new[] { "Service", "CityProjectService", "CityProjectDonationRules.cs" },
+                     new[] { "Service", "CityProjectService", "CityProjectDonationProcess.cs" },
+                     new[] { "Entity", "CityProjectDonation.cs" }
+                 })
+        {
+            ReadServerSource(path).Where(c => c > 0x7E).Should().BeEmpty("player-facing punctuation is ASCII");
+        }
     }
 
     [Test]
@@ -221,10 +284,26 @@ public class CityProjectWiringTests
 
         var finish = ExtractMethod(projects, "private static void FinishCancel(CityProject project, WorldProperty city)");
         ShouldComeBefore(finish, "ReturnMaterials(project)", "CityTreasury.RefundEscrow(city, project.Id)");
-        ShouldComeBefore(finish, "CityTreasury.RefundEscrow(city, project.Id)", "DB.Delete<CityProject>(project.Id)");
+        ShouldComeBefore(finish, "CityTreasury.RefundEscrow(city, project.Id)", "DeleteProject(project)");
 
         var materials = ExtractMethod(projects, "private static void ReturnMaterials(CityProject project)");
-        materials.Should().Contain("CityProjectRules.GetOverflowRecordId(").And.Contain("new OverflowItem");
+        materials.Should().Contain("CityProjectRules.GetRefunds(project)", "only the donations the project holds are refunded");
+        materials.Should().Contain("CityProjectRules.GetOverflowRecordId(").And.Contain("WriteOverflow(");
+        ExtractMethod(projects, "internal static void WriteOverflow(").Should().Contain("new OverflowItem");
+    }
+
+    [Test]
+    public void AProjectIsDeletedOnlyAfterTheRecordsOfTheDonationsItHoldsAre()
+    {
+        var projects = ReadServerSource("Service", "CityProjects.cs");
+
+        var delete = ExtractMethod(projects, "private static void DeleteProject(CityProject project)");
+        ShouldComeBefore(delete, "SettleAppliedDonations(project)", "DB.Delete<CityProject>(project.Id)");
+        ExtractMethod(projects, "private static void SettleAppliedDonations(CityProject project)")
+            .Should().Contain("CityProjectDonationRules.GetAppliedRecordIds(").And.Contain("DB.Delete<CityProjectDonation>(id)");
+
+        projects.Split("DB.Delete<CityProject>(").Length.Should().Be(4, "only the two projects that never held a donation, and DeleteProject, delete one: no other path skips the settling");
+        projects.Split("DeleteProject(project)").Length.Should().Be(5, "cancel, complete, a removed city and a project of a city that is gone");
     }
 
     [Test]
@@ -234,7 +313,7 @@ public class CityProjectWiringTests
 
         ShouldComeBefore(finish, "CityTreasuryRules.PayOutEscrow(city, project.Id)", "CityProjectRules.ApplyCompletion(city, project)");
         ShouldComeBefore(finish, "CityProjectRules.ApplyCompletion(city, project)", "DB.Set(city)");
-        ShouldComeBefore(finish, "DB.Set(city)", "DB.Delete<CityProject>(project.Id)");
+        ShouldComeBefore(finish, "DB.Set(city)", "DeleteProject(project)");
         finish.Split("DB.Set(city)").Length.Should().Be(2);
     }
 
@@ -248,6 +327,7 @@ public class CityProjectWiringTests
         process.Should().Contain("case CityProjectState.Completing:").And.Contain("FinishComplete(project, city)");
         process.Should().Contain("CityProjectRules.IsDue(project, now)");
         process.Should().Contain("city.IsQueuedForDeletion", "a city being removed cancels its projects when it is deleted");
+        ShouldComeBefore(process, "SettleAppliedDonations(project)", "switch (project.State)");
     }
 
     [Test]

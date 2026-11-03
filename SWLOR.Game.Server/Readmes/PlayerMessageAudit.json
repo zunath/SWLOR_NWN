@@ -4487,6 +4487,20 @@
     "Call": "SendMessageToPC(target, ColorToken.Red(BountyText.BuildTargetNotice(city.CustomName, bounty.Reward, bounty.ExpiresUtc)))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/CityProjectDonations.cs",
+    "Line": 57,
+    "Member": "Donate",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(CityProjectDonationRules.BuildReturnedText(donation, CityProjectRules.GetName(project), CityProjects.GetItemName(resref))))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CityProjectDonations.cs",
+    "Line": 102,
+    "Member": "Tell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/CityStores.cs",
     "Line": 279,
     "Member": "Open",

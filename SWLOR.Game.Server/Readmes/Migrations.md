@@ -16,7 +16,7 @@ Sections: How migrations run · One migration per release · One pass per data s
 
 A release is a production deployment. Each release gets at most one server migration version and one player migration version.
 
-1. Find the newest server or player migration of the kind you need.
+1. Find the newest server or player migration of the kind you need. `MigrationDataTests` records the released versions (`ReleasedPlayerVersion`, `ReleasedServerVersion`) and the next ones; the cleanup after each release updates them. Feature branches may already claim a next version, so check open branches and ask the user which ships first.
 2. Ask the user whether it has shipped to production, unless they already said so in this task. Nothing in the repository proves deployment: GitHub release tags do not (the `2026-10-16` release contains server migration 27 and player migration 22, which were still unreleased afterwards).
 3. If it has not shipped, add your change to it (same version, same pass) instead of adding a version. If it has, add the next version; later changes before the next release go into that one.
 4. Folding into a migration that already shipped means production never runs the change, so never guess.
@@ -36,7 +36,7 @@ Prefer server migrations for database records. Use a player migration only for d
 
 ## Saved-data item sweeps
 
-The stored-item sweep (`StoredItemSweep`) edits saved GFF directly instead of loading each stored item into the engine. `ParallelStoredItemPass` converts each batch of records on worker threads and saves the changed records from the main thread, so a production sweep takes about a minute at boot. The release selects its saved-data converter in the shared record traversal: `_30_ConsolidatePelvisAppearance` calls `StoredItemSweep.MigratePelvis(Version)` with the rules in `StoredObjectData.Pelvis.cs`, including overflow storage. The older combined item rules remain in `StoredObjectData.ItemSweep.cs` for character upgrades and native parity checks. Engine tests invoke the older combined sweep through `StoredItemSweepRunner`.
+The stored-item sweep (`StoredItemSweep`) edits saved GFF directly instead of loading each stored item into the engine. `ParallelStoredItemPass` converts each batch of records on worker threads and saves the changed records from the main thread, so a production sweep takes about a minute at boot. A release's server migration calls `StoredItemSweep.Migrate(Version)` with its saved-data converter. The sweep does not cover overflow storage (`OverflowItem`); add it when the release changes items players may have stowed there. The combined item rules in `StoredObjectData.ItemSweep.cs` and the pelvis rules in `StoredObjectData.Pelvis.cs` also serve character upgrades and native parity checks. Engine tests invoke the combined sweep through `StoredItemSweepRunner`.
 
 - Conversion runs off the main thread: no NWScript, NWNX, engine or `DB` calls. The pass does the loading and saving.
 - Each saved-data rule mirrors the engine rule for live items (`HeadgearSlotMigration`, `EquipmentTypeMigration`, `ItemIconMigration`, `ItemAppearanceCatalogMigration`, `LootStatRevisionMigration`, `DroidWeaponSkillMigration`). A change to either changes the other in the same commit and adds the legacy kind to the `SavedDataItemSweepMatchesEngine` engine test (filter `SavedDataItemSweep`), which runs both on the same saved data and compares what the engine loads.
@@ -60,7 +60,7 @@ The stored-item sweep (`StoredItemSweep`) edits saved GFF directly instead of lo
 Renaming an enum member (required by `CodingStandards.md`, "Renames") always comes with migration code that moves old data to the new member.
 
 - Map each old name to its new member in a rename table, and rewrite raw records before they deserialize, in a server migration over raw Player JSON (`DB.SearchRawJson`).
-- Also add a read-time fallback on each affected property so records that skip the migration (restored from a backup or imported after the version was recorded) still load. The reference is `RenamedRecipesJsonConverter`, attached in `Player.cs` with `[JsonConverter]`; test that a legacy record deserializes without the migration. Remove the table and fallbacks once the migration is retired and no backup that predates it will be restored.
+- Also add a read-time fallback on each affected property so records that skip the migration (restored from a backup or imported after the version was recorded) still load. Write it as a `JsonConverter` that maps the old names before deserializing, attached to the property in `Player.cs` with `[JsonConverter]` (the retired `RenamedRecipesJsonConverter` in git history is an example); test that a legacy record deserializes without the migration. Remove the table and fallbacks when the migration is retired: a database older than `RetiredServerMigrationVersion` cannot boot.
 - Cover every place the old name can live: dictionaries keyed by the enum on `Player` and other entities, item and character locals, serialized item or object data, and stored strings such as search fields.
 - Add the rewrite to the release's existing migration and pass ("One migration per release", "One pass per data set").
 - Test from a legacy record that still uses the old name, and assert the entry survives under the new one.

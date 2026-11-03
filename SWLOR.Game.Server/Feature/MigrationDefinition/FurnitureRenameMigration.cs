@@ -1,56 +1,35 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
-/// Renames each furniture set's former Display Plinth after the placeable it now shows. Players store recipe
-/// knowledge in dictionaries keyed by enum name, so stale recipe names are mapped when a Player deserializes
-/// (<see cref="RenamedRecipesJsonConverter"/>); server migration 29 rewrote the saved records.
-/// Crafted structures and their blueprints keep the old name in saved item data, listings and placed structures.
+/// Renames each furniture set's former Display Plinth after the placeable it now shows. Character migrations rename
+/// carried copies in saved character files; the stored-item sweep renames saved item data, listings and placed structures.
 /// </summary>
 public static class FurnitureRenameMigration
 {
-    private sealed record Rename(string OldRecipe, RecipeType Recipe, StructureType Structure,
-        string StructureResref, string BlueprintResref, string OldName, string NewName);
+    private sealed record Rename(StructureType Structure, string StructureResref, string BlueprintResref, string OldName, string NewName);
 
     private static readonly Rename[] Renames =
     {
-        new("AshmarkDisplayPlinth", RecipeType.AshmarkAltar, StructureType.AshmarkAltar,
-            "structure_0339", "bpstructure0339", "Ashmark Display Plinth", "Ashmark Altar"),
-        new("GuttermarkDisplayPlinth", RecipeType.GuttermarkEasel, StructureType.GuttermarkEasel,
-            "structure_0349", "bpstructure0349", "Guttermark Display Plinth", "Guttermark Easel"),
-        new("TrailmarkDisplayPlinth", RecipeType.TrailmarkWaystone, StructureType.TrailmarkWaystone,
-            "structure_0359", "bpstructure0359", "Trailmark Display Plinth", "Trailmark Waystone"),
-        new("StonewakeDisplayPlinth", RecipeType.StonewakeStoneAltar, StructureType.StonewakeStoneAltar,
-            "structure_0369", "bpstructure0369", "Stonewake Display Plinth", "Stonewake Stone Altar"),
-        new("AegislineDisplayPlinth", RecipeType.AegislineSwordPedestal, StructureType.AegislineSwordPedestal,
-            "structure_0379", "bpstructure0379", "Aegisline Display Plinth", "Aegisline Sword Pedestal"),
-        new("VeilcarvedDisplayPlinth", RecipeType.VeilcarvedRunePillar, StructureType.VeilcarvedRunePillar,
-            "structure_0389", "bpstructure0389", "Veilcarved Display Plinth", "Veilcarved Rune Pillar"),
-        new("SurgewakeDisplayPlinth", RecipeType.SurgewakeHoloProjector, StructureType.SurgewakeHoloProjector,
-            "structure_0399", "bpstructure0399", "Surgewake Display Plinth", "Surgewake Holo Projector"),
-        new("ResonantDisplayPlinth", RecipeType.ResonantCrystal, StructureType.ResonantCrystal,
-            "structure_0409", "bpstructure0409", "Resonant Display Plinth", "Resonant Crystal"),
-        new("FieldlineDisplayPlinth", RecipeType.FieldlineDisplayCase, StructureType.FieldlineDisplayCase,
-            "structure_0419", "bpstructure0419", "Fieldline Display Plinth", "Fieldline Display Case"),
-        new("CommandlineDisplayPlinth", RecipeType.CommandlineBust, StructureType.CommandlineBust,
-            "structure_0429", "bpstructure0429", "Commandline Display Plinth", "Commandline Bust"),
+        new(StructureType.AshmarkAltar, "structure_0339", "bpstructure0339", "Ashmark Display Plinth", "Ashmark Altar"),
+        new(StructureType.GuttermarkEasel, "structure_0349", "bpstructure0349", "Guttermark Display Plinth", "Guttermark Easel"),
+        new(StructureType.TrailmarkWaystone, "structure_0359", "bpstructure0359", "Trailmark Display Plinth", "Trailmark Waystone"),
+        new(StructureType.StonewakeStoneAltar, "structure_0369", "bpstructure0369", "Stonewake Display Plinth", "Stonewake Stone Altar"),
+        new(StructureType.AegislineSwordPedestal, "structure_0379", "bpstructure0379", "Aegisline Display Plinth", "Aegisline Sword Pedestal"),
+        new(StructureType.VeilcarvedRunePillar, "structure_0389", "bpstructure0389", "Veilcarved Display Plinth", "Veilcarved Rune Pillar"),
+        new(StructureType.SurgewakeHoloProjector, "structure_0399", "bpstructure0399", "Surgewake Display Plinth", "Surgewake Holo Projector"),
+        new(StructureType.ResonantCrystal, "structure_0409", "bpstructure0409", "Resonant Display Plinth", "Resonant Crystal"),
+        new(StructureType.FieldlineDisplayCase, "structure_0419", "bpstructure0419", "Fieldline Display Plinth", "Fieldline Display Case"),
+        new(StructureType.CommandlineBust, "structure_0429", "bpstructure0429", "Commandline Display Plinth", "Commandline Bust"),
     };
-
-    public static readonly IReadOnlyDictionary<string, RecipeType> RecipeRenames =
-        Renames.ToDictionary(x => x.OldRecipe, x => x.Recipe);
 
     private static readonly IReadOnlyDictionary<StructureType, Rename> ByStructure =
         Renames.ToDictionary(x => x.Structure);
@@ -58,23 +37,6 @@ public static class FurnitureRenameMigration
     private static readonly IReadOnlyDictionary<string, Rename> ByItemResref =
         Renames.SelectMany(x => new[] { (x.StructureResref, x), (x.BlueprintResref, x) })
             .ToDictionary(x => x.Item1, x => x.x);
-
-    /// <summary>Moves entries saved under a former recipe name to the renamed member, keeping an existing entry.</summary>
-    public static bool RenameRecipes(JObject recipes)
-    {
-        if (recipes == null) return false;
-        var changed = false;
-        foreach (var entry in recipes.Properties().ToArray())
-        {
-            if (!RecipeRenames.TryGetValue(entry.Name, out var replacement)) continue;
-            var name = replacement.ToString();
-            if (recipes.Property(name) == null && recipes.Property(((int)replacement).ToString()) == null)
-                recipes[name] = entry.Value.DeepClone();
-            entry.Remove();
-            changed = true;
-        }
-        return changed;
-    }
 
     /// <summary>The default texts the former blueprints gave a structure or blueprint item, and their renamed texts.</summary>
     private static IEnumerable<(string Old, string New)> DefaultTexts(Rename rename)
@@ -108,64 +70,6 @@ public static class FurnitureRenameMigration
             return false;
         property.CustomName = rename.NewName;
         return true;
-    }
-
-    /// <summary>
-    /// Saves bank and market listings restored or imported after the release migration under their renamed names, so
-    /// name searches find them. Loading a listing already renames it (its OnDeserialized callback).
-    /// </summary>
-    [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
-    public static void SaveRestoredListings()
-    {
-        SaveRestoredListings<InventoryItem>(nameof(InventoryItem.Name), item => item.Name);
-        SaveRestoredListings<MarketItem>(nameof(MarketItem.Name), item => item.Name);
-    }
-
-    private const string FormerTitle = "Display Plinth";
-
-    private static void SaveRestoredListings<T>(string nameField, Func<T, string> getName)
-        where T : EntityBase
-    {
-        var count = (int)DB.SearchCount(new DBQuery<T>().AddFieldSearch(nameField, FormerTitle, true));
-        if (count <= 0)
-            return;
-        foreach (var listing in DB.Search(new DBQuery<T>().AddFieldSearch(nameField, FormerTitle, true).AddPaging(count, 0)))
-        {
-            if (!getName(listing).Contains(FormerTitle, StringComparison.Ordinal))
-                DB.Set(listing);
-        }
-    }
-
-    /// <summary>
-    /// Renames a player's equipped and carried copies at login, including characters whose saved file the release's
-    /// player migration already passed (such as a character file restored afterwards).
-    /// </summary>
-    [NWNEventHandler(ScriptName.OnModuleEnter)]
-    public static void OnEnter()
-    {
-        var player = GetEnteringObject();
-        if (GetIsPC(player) && !GetIsDM(player))
-            RenameInventory(player);
-    }
-
-    /// <summary>Renames an item, or every item a creature or container holds.</summary>
-    public static bool RenameInventory(uint obj)
-    {
-        var visited = new HashSet<uint>();
-        bool Visit(uint current)
-        {
-            if (!GetIsObjectValid(current) || !visited.Add(current)) return false;
-            var changed = false;
-            if (GetObjectType(current) == ObjectType.Item) changed |= RenameItem(current);
-            if (GetObjectType(current) == ObjectType.Creature)
-                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-                    changed |= Visit(GetItemInSlot((InventorySlot)slot, current));
-            if (GetHasInventory(current))
-                for (var item = GetFirstItemInInventory(current); GetIsObjectValid(item); item = GetNextItemInInventory(current))
-                    changed |= Visit(item);
-            return changed;
-        }
-        return Visit(obj);
     }
 
     /// <summary>

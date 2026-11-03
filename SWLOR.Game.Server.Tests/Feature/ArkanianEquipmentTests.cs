@@ -23,6 +23,8 @@ public class ArkanianEquipmentTests
         using var blueprint = ReadItem(book);
         var item = blueprint.RootElement;
         item.GetProperty("Tag").GetProperty("value").GetString().Should().Be("RECIPE");
+        item.GetProperty("DescIdentified").GetProperty("value").GetProperty("0").GetString().Should()
+            .Contain("Great Arkanian Dragon", "players examining the dropped blueprint need to know what it unlocks");
         var locals = item.GetProperty("VarTable").GetProperty("value").EnumerateArray()
             .ToDictionary(v => v.GetProperty("Name").GetProperty("value").GetString()!,
                 v => v.GetProperty("Value").GetProperty("value"));
@@ -73,6 +75,23 @@ public class ArkanianEquipmentTests
                 item.GetProperty(color.Name).GetProperty("value").GetInt32().Should()
                     .Be(color.Value.GetProperty("value").GetInt32(), "the helm shares the armor's palette");
         }
+    }
+
+    [Test]
+    public void DragonArmor_RequiresArmor50WithIceProtection()
+    {
+        using var armor = ReadItem("ark_armor");
+        var item = armor.RootElement;
+        item.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(16, "the breastplate is body armor");
+        Properties(item).Should().BeEquivalentTo(new[]
+        {
+            (133, 4, 54, 30),
+            (94, 1, 35, 32),
+            (94, 2, 35, 25),
+            (90, 0, 37, 110),
+            (120, 0, 45, 3),
+            (131, 6, 48, 50),
+        }, "the breastplate's stats, ice Resistance and Armor-50 requirement must not drift unnoticed");
     }
 
     private static IEnumerable<(int Kind, int Subtype, int Table, int Value)> Properties(JsonElement item) =>

@@ -246,11 +246,8 @@ public static partial class MigrationEngineTests
         ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
     }
 
-    /// <summary>
-    /// A former plinth that no release migration reached (a character file or record restored afterwards) is renamed
-    /// when its owner logs in or acquires it; a DM's custom name is kept.
-    /// </summary>
-    [EngineTest("Former Display Plinths missed by the release migrations are renamed live", Category = SavedDataSweepCategory)]
+    /// <summary>The engine-side item rename the native parity checks use renames a former plinth; a DM's custom name is kept.</summary>
+    [EngineTest("The engine-side rename renames former Display Plinths and keeps custom names", Category = SavedDataSweepCategory)]
     public static async Task FormerDisplayPlinthsAreRenamedLive(EngineTestContext ctx)
     {
         var owner = ctx.SpawnCreature("civilian");
@@ -264,11 +261,11 @@ public static partial class MigrationEngineTests
             try
             {
                 ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Display Plinth", $"legacy fixture name '{GetName(legacy)}'");
-                ctx.Assert(FurnitureRenameMigration.RenameInventory(legacy), "the legacy blueprint is renamed");
+                ctx.Assert(FurnitureRenameMigration.RenameItem(legacy), "the legacy blueprint is renamed");
                 ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Rune Pillar", $"renamed to '{GetName(legacy)}'");
                 ctx.Assert(GetDescription(legacy) == "A rare schematic for crafting Veilcarved Rune Pillar.", $"description '{GetDescription(legacy)}'");
-                ctx.Assert(!FurnitureRenameMigration.RenameInventory(legacy), "the live rename is idempotent");
-                ctx.Assert(!FurnitureRenameMigration.RenameInventory(custom), "a custom name is kept");
+                ctx.Assert(!FurnitureRenameMigration.RenameItem(legacy), "the rename is idempotent");
+                ctx.Assert(!FurnitureRenameMigration.RenameItem(custom), "a custom name is kept");
                 ctx.Assert(GetName(custom) == "Veilcarved Display Plinth Replica", $"custom name '{GetName(custom)}'");
             }
             finally
@@ -278,43 +275,6 @@ public static partial class MigrationEngineTests
                 DestroyObject(custom);
             }
         });
-    }
-
-    /// <summary>A bank listing restored after the release migration is saved under its new name, so name searches find it.</summary>
-    [EngineTest("Restored bank listings of former Display Plinths are found by their new name", Category = SavedDataSweepCategory)]
-    public static async Task RestoredFormerPlinthListingsAreSearchable(EngineTestContext ctx)
-    {
-        var storageId = "furniture-rename-" + Guid.NewGuid().ToString("N");
-        var listing = new SWLOR.Game.Server.Entity.InventoryItem
-        {
-            StorageId = storageId,
-            PlayerId = storageId,
-            Name = "Veilcarved Display Plinth",
-            Tag = "structure_0389",
-            Resref = "structure_0389",
-            Quantity = 1,
-            Data = string.Empty,
-            IconResref = string.Empty,
-        };
-        DB.Set(listing);
-        try
-        {
-            SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem> ByName(string name) =>
-                new SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem>()
-                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.StorageId), storageId, false)
-                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.Name), name, true);
-            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 0, "the restored listing is still indexed under its old name");
-
-            FurnitureRenameMigration.SaveRestoredListings();
-            await ctx.WaitFrameAsync();
-
-            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 1, "the listing is found by its new name");
-            ctx.Assert(DB.Get<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id).Name == "Veilcarved Rune Pillar", "the listing loads renamed");
-        }
-        finally
-        {
-            DB.Delete<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id);
-        }
     }
 
     private static readonly (string Resref, string NewName, string OldName)[] FormerDisplayPlinths =

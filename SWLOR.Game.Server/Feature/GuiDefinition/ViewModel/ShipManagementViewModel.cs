@@ -1644,7 +1644,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var mark = CreditPayments.NewMark(CreditPaymentKind.HullRefit, dbShip.Id, fee);
             CreditPayments.Take(player, mark);
             dbShip.HullDesignAppearance = appearance == shipDetail.Appearance ? 0 : (int)appearance;
-            dbShip.LastPaymentId = mark.Id;
+            CreditPayments.RecordOn(dbShip, player, mark);
             DB.Set(dbShip);
             CreditPayments.Retire(player);
 
@@ -2694,7 +2694,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CreditPayments.Take(player, mark);
             dbShip.Status.Shield = dbShip.Status.MaxShield;
             dbShip.Status.Hull = dbShip.Status.MaxHull;
-            dbShip.LastPaymentId = mark.Id;
+            CreditPayments.RecordOn(dbShip, player, mark);
             DB.Set(dbShip);
             CreditPayments.Retire(player);
 

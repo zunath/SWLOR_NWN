@@ -62,7 +62,7 @@ public class CreditPaymentTests
         CreditPaymentMark.PaysPendingFounding(new CreditPaymentMark { Id = "s1", Kind = CreditPaymentKind.HullRefit }, "s1").Should().BeFalse();
 
         new WorldProperty().PendingPaymentId.Should().BeEmpty("older properties wait on no payment");
-        new PlayerShip().LastPaymentId.Should().BeEmpty();
+        new PlayerShip().PaymentIds.Should().BeEmpty();
         new Player().LastAgentPurchaseId.Should().BeEmpty();
     }
 
@@ -89,7 +89,7 @@ public class CreditPaymentTests
         InOrder(Method(payments, "private static void SettlePendingFoundings("),
             "CreditPaymentMark.PaysPendingFounding(mark, station.PendingPaymentId)", "UndoStationFounding(station, OBJECT_INVALID);");
         var settle = Method(payments, "public static void SettleInterruptedPayment(");
-        InOrder(settle, "SettlePendingFoundings(player, mark);", "if (!mark.KeepsPayment(GetRecordPaymentId(mark)))",
+        InOrder(settle, "SettlePendingFoundings(player, mark);", "if (!mark.KeepsPayment(GetRecordPaymentId(player, mark)))",
             "GiveGoldToCreature(player, mark.Credits);", "Retire(player);");
         payments.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
     }
@@ -104,7 +104,20 @@ public class CreditPaymentTests
 
         InOrder(Method(viewModel, "private void CompleteRefit("),
             "var dbShip = GetShipToRefit(shipId);", "if (GetGold(player) < fee)",
-            "CreditPayments.Take(player, mark);", "dbShip.LastPaymentId = mark.Id;", "DB.Set(dbShip);", "CreditPayments.Retire(player);");
+            "CreditPayments.Take(player, mark);", "CreditPayments.RecordOn(dbShip, player, mark);", "DB.Set(dbShip);", "CreditPayments.Retire(player);");
+    }
+
+    [Test]
+    public void ShipPayments_AreRecordedPerPayer_SoAnotherPlayersLaterPaymentKeepsThem()
+    {
+        var payments = Source("Service", "CreditPayments.cs");
+        Method(payments, "public static void RecordOn(").Should().Contain("ship.PaymentIds[GetObjectUUID(player)] = mark.Id;",
+            "a second payer's refit must not replace the first payer's record before the first login settles it");
+        Method(payments, "private static string GetRecordPaymentId(")
+            .Should().Contain("DB.Get<PlayerShip>(mark.RecordId)?.PaymentIds?.GetValueOrDefault(GetObjectUUID(player))");
+        var sources = string.Join("\n", Source("Service", "TradeCustoms.cs"),
+            Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs"));
+        sources.Should().NotContain("PaymentIds[", "ships record payments only through CreditPayments.RecordOn");
     }
 
     [Test]
@@ -118,7 +131,7 @@ public class CreditPaymentTests
             "fine = Math.Max(0, Math.Min(fine, GetGold(player)));",
             "CreditPayments.Take(player, mark);",
             "CustomsRules.Confiscate(ship.Cargo, authority)",
-            "ship.LastPaymentId = mark.Id;",
+            "CreditPayments.RecordOn(ship, player, mark);",
             "DB.Set(ship);",
             "CreditPayments.Retire(player);");
     }

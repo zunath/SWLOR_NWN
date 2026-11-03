@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
@@ -34,6 +35,13 @@ namespace SWLOR.Game.Server.Service
             TakeGoldFromCreature(mark.Credits, player, true);
             ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);
             ExportSingleCharacter(player);
+        }
+
+        /// <summary>Records the payment on the ship it changed, to be saved with the change (<see cref="PlayerShip.PaymentIds"/>).</summary>
+        public static void RecordOn(PlayerShip ship, uint player, CreditPaymentMark mark)
+        {
+            ship.PaymentIds ??= new Dictionary<string, string>();
+            ship.PaymentIds[GetObjectUUID(player)] = mark.Id;
         }
 
         /// <summary>The change the payment bought is saved: the mark goes and is saved too.</summary>
@@ -141,7 +149,7 @@ namespace SWLOR.Game.Server.Service
             if (mark == null)
                 return;
 
-            if (!mark.KeepsPayment(GetRecordPaymentId(mark)))
+            if (!mark.KeepsPayment(GetRecordPaymentId(player, mark)))
             {
                 GiveGoldToCreature(player, mark.Credits);
                 var credits = mark.Credits;
@@ -153,8 +161,8 @@ namespace SWLOR.Game.Server.Service
             Retire(player);
         }
 
-        /// <summary>The payment id saved with the mark's change on its record, or null when the record is gone.</summary>
-        private static string GetRecordPaymentId(CreditPaymentMark mark)
+        /// <summary>The player's payment id saved with the mark's change on its record, or null when the record is gone.</summary>
+        private static string GetRecordPaymentId(uint player, CreditPaymentMark mark)
         {
             if (string.IsNullOrWhiteSpace(mark.RecordId))
                 return null;
@@ -162,7 +170,7 @@ namespace SWLOR.Game.Server.Service
             return mark.Kind switch
             {
                 CreditPaymentKind.HullRefit or CreditPaymentKind.CustomsFine or CreditPaymentKind.ShipRepair
-                    => DB.Get<PlayerShip>(mark.RecordId)?.LastPaymentId,
+                    => DB.Get<PlayerShip>(mark.RecordId)?.PaymentIds?.GetValueOrDefault(GetObjectUUID(player)),
                 CreditPaymentKind.ShuttleTicket => DB.Get<ShuttleRide>(mark.RecordId)?.PaymentId,
                 _ => null
             };

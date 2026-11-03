@@ -6,9 +6,10 @@ using System.Linq;
 namespace SWLOR.Game.Server.Service.StationService
 {
     /// <summary>
-    /// The ore a player collected from an Asteroid Drill, saved in the character file with the ore before the drill saves
-    /// its stock. A restart between the two leaves a mark whose units the next login takes from the stock once: the drill
-    /// records the last collection applied for each player (<c>StationBuildingState.LastDrillCollectionIds</c>).
+    /// The ore a player collected from an Asteroid Drill. The drill saves its stock without the ore and the collection as
+    /// pending (<c>StationBuildingState.PendingDrillCollections</c>) before the character file is saved with the ore and
+    /// this mark, so no one else can collect the same ore. A login after a restart in between keeps a pending collection
+    /// whose mark the character file holds and returns the ore of any other to the stock.
     /// </summary>
     public sealed class DrillCollection
     {
@@ -46,18 +47,9 @@ namespace SWLOR.Game.Server.Service.StationService
             return true;
         }
 
-        /// <summary>
-        /// Takes the collected units from a stock that has not had this collection yet, and records it as the player's
-        /// last. True when the stock changed; false when the collection is already applied.
-        /// </summary>
-        public bool ApplyTo(Dictionary<string, int> storage, Dictionary<string, string> lastCollectionIds, string playerId)
+        /// <summary>Takes the collected units out of the stock. A resref collected out is removed.</summary>
+        public void TakeFrom(Dictionary<string, int> storage)
         {
-            if (storage == null || lastCollectionIds == null ||
-                string.Equals(lastCollectionIds.GetValueOrDefault(playerId), Id, StringComparison.Ordinal))
-            {
-                return false;
-            }
-
             foreach (var (resref, units) in Units)
             {
                 var left = storage.GetValueOrDefault(resref) - units;
@@ -66,9 +58,17 @@ namespace SWLOR.Game.Server.Service.StationService
                 else
                     storage.Remove(resref);
             }
-
-            lastCollectionIds[playerId] = Id;
-            return true;
         }
+
+        /// <summary>Puts the collected units back in the stock, for a collection whose ore never reached the character file.</summary>
+        public void ReturnTo(Dictionary<string, int> storage)
+        {
+            foreach (var (resref, units) in Units)
+                storage[resref] = storage.GetValueOrDefault(resref) + units;
+        }
+
+        /// <summary>Whether the character file's mark (<see cref="Serialize"/>) names the collection <paramref name="collectionId"/>.</summary>
+        public static bool IsMarked(string mark, string collectionId) =>
+            TryParse(mark, out var marked) && string.Equals(marked.Id, collectionId, StringComparison.Ordinal);
     }
 }

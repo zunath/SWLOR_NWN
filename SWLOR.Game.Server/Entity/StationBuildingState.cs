@@ -47,8 +47,11 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>The Asteroid Drill's stored ore: item resref to units.</summary>
         public Dictionary<string, int> DrillStorage { get; set; }
 
-        /// <summary>The last ore collection applied to the stock, per player (<see cref="DrillCollection"/>). Older records load empty.</summary>
-        public Dictionary<string, string> LastDrillCollectionIds { get; set; } = new();
+        /// <summary>
+        /// Ore collections already taken out of <see cref="DrillStorage"/> whose collector's character file may not hold
+        /// them yet: collection id to <see cref="DrillCollection.Serialize"/>. Each has a <see cref="DrillCollectionReservation"/>.
+        /// </summary>
+        public Dictionary<string, string> PendingDrillCollections { get; set; } = new();
 
         /// <summary>When the drill's next unit of ore counts from.</summary>
         public DateTime DrillLastAccrual { get; set; }

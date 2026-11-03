@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             if (ship != null)
             {
                 if (mark != null)
-                    ship.LastPaymentId = mark.Id;
+                    CreditPayments.RecordOn(ship, player, mark);
                 DB.Set(ship);
             }
 

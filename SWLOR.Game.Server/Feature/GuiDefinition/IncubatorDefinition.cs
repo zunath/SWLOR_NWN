@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -6,430 +7,295 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class IncubatorDefinition : IGuiWindowDefinition
     {
+        private const float ContentPanelWidth = 560f;
+        private const float MutationRailWidth = 300f;
+        private const float StageBoxHeight = 64f;
+
         private readonly GuiWindowBuilder<IncubatorViewModel> _builder = new();
+
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.Incubator)
+            var window = _builder.CreateWindow(GuiWindowType.Incubator)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 1000f, 600f)
+                .SetInitialGeometry(0, 0, 920f, 640f)
                 .SetTitle("Incubator")
                 .BindOnClosed(model => model.OnWindowClosed())
+                .DefinePartialView(IncubatorViewModel.NewJobPartial, host => AddBody(host, BuildNewJobSections))
+                .DefinePartialView(IncubatorViewModel.InProgressJobPartial, host => AddBody(host, BuildInProgressSections))
+                .DefinePartialView(IncubatorViewModel.StageCompleteJobPartial, host => AddBody(host, BuildStageCompleteSections))
+                .DefinePartialView(IncubatorViewModel.CompleteJobPartial, host => AddBody(host, BuildCompleteSections));
 
-                .DefinePartialView(IncubatorViewModel.NewJobPartial, partial =>
-                {
-                    partial.AddColumn(col =>
-                    {
-                        BuildDNAItemSelectionSection(col);
-                        BuildEnzymeSection(col);
-                        BuildPuritiesSection(col);
-                        BuildStartNewJobSection(col);
-                    });
-                })
-
-                .DefinePartialView(IncubatorViewModel.InProgressJobPartial, partial =>
-                {
-                    partial.AddColumn(col =>
-                    {
-                        BuildExistingJobDetailsSection(col);
-                        BuildPuritiesSection(col);
-                        BuildCancelJobSection(col);
-                    });
-                })
-
-                .DefinePartialView(IncubatorViewModel.StageCompleteJobPartial, partial =>
-                {
-                    partial.AddColumn(col =>
-                    {
-                        BuildExistingJobDetailsSection(col);
-                        BuildEnzymeSection(col);
-                        BuildPuritiesSection(col);
-                        BuildContinueJobSection(col);
-                    });
-                })
-
-                .DefinePartialView(IncubatorViewModel.CompleteJobPartial, partial =>
-                {
-                    partial.AddColumn(col =>
-                    {
-                        BuildExistingJobDetailsSection(col);
-                        BuildPuritiesSection(col);
-                        BuildCompleteJobSection(col);
-                    });
-                })
-
-                .AddColumn(col =>
-                {
-                    col.AddRow(row =>
-                    {
-                        row.AddPartialView(IncubatorViewModel.PartialElement);
-                    });
-                });
-
-
+            window.AddStandardLayout(layout =>
+            {
+                layout.SetContentPartialElement(IncubatorViewModel.PartialElement);
+                layout.AddSideColumn(BuildMutationRail, MutationRailWidth);
+            });
 
             return _builder.Build();
         }
 
-        private void BuildDNAItemSelectionSection(GuiColumn<IncubatorViewModel> col)
+        private static void AddBody(GuiGroup<IncubatorViewModel> host, System.Action<GuiColumn<IncubatorViewModel>> buildSections)
+        {
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(panel =>
+                    {
+                        panel.SetShowBorder(false);
+                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.AddColumn(content =>
+                        {
+                            BuildHeader(content);
+                            BuildStageTracker(content);
+                            buildSections(content);
+                        });
+                    }).SetWidth(ContentPanelWidth);
+                });
+            });
+        }
+
+        private static void BuildNewJobSections(GuiColumn<IncubatorViewModel> col)
+        {
+            BuildEnzymeSlots(col);
+            BuildPurities(col);
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.EstimatedTimeToCompletion)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.AddButton()
+                    .SetText("Start stage 1")
+                    .SetWidth(150f)
+                    .BindOnClicked(model => model.OnClickStartJob())
+                    .BindIsEnabled(model => model.IsStartJobEnabled)
+                    .SetDisabledTooltip("Add DNA and all three enzymes first.");
+            });
+        }
+
+        private static void BuildStageCompleteSections(GuiColumn<IncubatorViewModel> col)
+        {
+            BuildEnzymeSlots(col);
+            BuildPurities(col);
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.EstimatedTimeToCompletion)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.AddButton()
+                    .SetText("Cancel job")
+                    .SetWidth(120f)
+                    .BindOnClicked(model => model.OnClickCancelJob());
+                row.AddButton()
+                    .BindText(model => model.ContinueButtonText)
+                    .SetWidth(150f)
+                    .BindOnClicked(model => model.OnClickContinueJob())
+                    .BindIsEnabled(model => model.IsContinueJobEnabled)
+                    .SetDisabledTooltip("Add all three enzymes first.");
+            });
+        }
+
+        private static void BuildInProgressSections(GuiColumn<IncubatorViewModel> col)
+        {
+            BuildJobProgress(col);
+            BuildPurities(col);
+            col.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddButton()
+                    .SetText("Cancel job")
+                    .SetWidth(120f)
+                    .BindOnClicked(model => model.OnClickCancelJob());
+            });
+        }
+
+        private static void BuildCompleteSections(GuiColumn<IncubatorViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddSpacer();
-
                 row.AddLabel()
-                    .BindText(model => model.DNALabel)
-                    .SetHeight(20f);
-
-                row.AddSpacer();
+                    .BindText(model => model.OutcomeHeader)
+                    .SetHeight(22f)
+                    .SetColor(GuiColor.Cyan)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
-
             col.AddRow(row =>
             {
-                row.AddSpacer();
+                row.AddList(template =>
+                    {
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.OutcomeNames)
+                                .BindColor(model => model.OutcomeColors)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.AddLabel()
+                                .BindText(model => model.OutcomeChances)
+                                .BindColor(model => model.OutcomeColors)
+                                .SetWidth(80f)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                        });
+                    })
+                    .BindRowCount(model => model.OutcomeNames)
+                    .SetRowHeight(24f)
+                    .SetHeight(110f);
+            });
+            BuildPurities(col);
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Completing gives you the egg.")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.AddButton()
+                    .SetText("Complete job")
+                    .SetWidth(150f)
+                    .BindOnClicked(model => model.OnClickCompleteJob())
+                    .BindIsEnabled(model => model.IsCompleteJobEnabled);
+            });
+        }
 
+        private static void BuildHeader(GuiColumn<IncubatorViewModel> col)
+        {
+            col.AddRow(row =>
+            {
                 row.AddButtonImage()
                     .BindImageResref(model => model.DNAItemResref)
                     .BindOnClicked(model => model.OnClickDNA())
-                    .SetTooltip("Select DNA")
-                    .SetHeight(32f)
-                    .SetWidth(32f);
+                    .BindIsEnabled(model => model.IsDNASlotEnabled)
+                    .BindTooltip(model => model.DNASlotTooltip)
+                    .SetHeight(40f)
+                    .SetWidth(40f);
 
-                row.AddSpacer();
+                row.AddColumn(text =>
+                {
+                    text.AddRow(r => r.AddLabel()
+                        .BindText(model => model.BeastName)
+                        .SetHeight(22f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left));
+                    text.AddRow(r => r.AddLabel()
+                        .BindText(model => model.BeastSubtitle)
+                        .SetColor(GuiColor.Grey)
+                        .SetHeight(20f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left));
+                });
+
+                row.AddLabel()
+                    .BindText(model => model.ServerDayText)
+                    .SetColor(GuiColor.Grey)
+                    .SetWidth(170f)
+                    .SetHeight(40f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Right);
             });
-
         }
 
-        private void BuildEnzymeSection(GuiColumn<IncubatorViewModel> col)
+        private static void BuildStageTracker(GuiColumn<IncubatorViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddSpacer();
-                row.AddLabel()
-                    .SetText("Hydrolase");
-
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .SetText("Lyase");
-
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .SetText("Isomerase");
-
-                row.AddSpacer();
+                AddStageBox(row, model => model.Stage1Title, model => model.Stage1Color, model => model.Stage1Detail);
+                AddStageBox(row, model => model.Stage2Title, model => model.Stage2Color, model => model.Stage2Detail);
+                AddStageBox(row, model => model.Stage3Title, model => model.Stage3Color, model => model.Stage3Detail);
             });
 
             col.AddRow(row =>
             {
-                row.AddSpacer();
-
-                row.AddButtonImage()
-                    .BindImageResref(model => model.HydrolaseItemResref)
-                    .BindOnClicked(model => model.OnClickHydrolase())
-                    .SetTooltip("Select Hydrolase")
-                    .SetHeight(32f)
-                    .SetWidth(32f);
-
-                row.AddSpacer();
-
-                row.AddButtonImage()
-                    .BindImageResref(model => model.LyaseItemResref)
-                    .BindOnClicked(model => model.OnClickLyase())
-                    .SetTooltip("Select Lyase")
-                    .SetHeight(32f)
-                    .SetWidth(32f);
-
-                row.AddSpacer();
-
-                row.AddButtonImage()
-                    .BindImageResref(model => model.IsomeraseItemResref)
-                    .BindOnClicked(model => model.OnClickIsomerase())
-                    .SetTooltip("Select Isomerase")
-                    .SetHeight(32f)
-                    .SetWidth(32f);
-
-                row.AddSpacer();
+                row.AddLabel()
+                    .BindText(model => model.EnzymeTotalsText)
+                    .SetColor(GuiColor.Grey)
+                    .SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
         }
 
-        private void BuildPuritiesSection(GuiColumn<IncubatorViewModel> col)
+        private static void AddStageBox(
+            GuiRow<IncubatorViewModel> row,
+            System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, string>> title,
+            System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, GuiColor>> color,
+            System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, string>> detail)
         {
-            col.AddRow(row =>
+            row.AddGroup(group =>
             {
-                row.AddSpacer();
-                row.AddLabel()
-                    .SetText("Purities");
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .SetText("Mutation")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip(
-                        "Indicates the percent chance this beast will mutate into a different type of creature than its DNA.");
-
-                row.AddLabel()
-                    .SetText("Attack")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's attack rating.");
-
-                row.AddLabel()
-                    .SetText("Accuracy")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's accuracy.");
-
-                row.AddLabel()
-                    .SetText("Evasion")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's evasion.");
-
-                row.AddLabel()
-                    .SetText("Learning")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Increases the XP earned by the beast after defeating enemies.");
-
-                row.AddSpacer();
-            });
-
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .BindText(model => model.MutationChance);
-
-                row.AddLabel()
-                    .BindText(model => model.AttackPurity);
-
-                row.AddLabel()
-                    .BindText(model => model.AccuracyPurity);
-
-                row.AddLabel()
-                    .BindText(model => model.EvasionPurity);
-
-                row.AddLabel()
-                    .BindText(model => model.LearningPurity);
-
-                row.AddSpacer();
-            });
-
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .SetText("Phys. Def")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's physical defense.");
-
-                row.AddLabel()
-                    .SetText("Force Def")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's force defense.");
-
-                row.AddLabel()
-                    .SetText("Fire Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's fire resistance.");
-
-                row.AddLabel()
-                    .SetText("Pois. Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's poison resistance.");
-
-                row.AddLabel()
-                    .SetText("Elec. Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's electrical resistance.");
-
-                row.AddSpacer();
-            });
-
-
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .BindText(model => model.PhysicalDefensePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.ForceDefensePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.FireResistancePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.PoisonResistancePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.ElectricalResistancePurity);
-
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .SetText("Ice Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's ice resistance.");
-
-                row.AddLabel()
-                    .SetText("Mind Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's mind resistance.");
-
-                row.AddLabel()
-                    .SetText("Mob. Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's mobility resistance.");
-
-                row.AddLabel()
-                    .SetText("Trauma Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's trauma resistance.");
-
-                row.AddLabel()
-                    .SetText("Disr. Res")
-                    .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's disruption resistance.");
-
-                row.AddLabel()
-                    .SetText("XP Penalty")
-                    .SetColor(255, 0, 0)
-                    .SetTooltip("Increases the amount of XP the beast needs to level up.");
-
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .BindText(model => model.IceResistancePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.MindResistancePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.MobilityResistancePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.TraumaResistancePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.DisruptionResistancePurity);
-
-                row.AddLabel()
-                    .BindText(model => model.XPPenalty);
-
-                row.AddSpacer();
-            });
+                group.SetShowBorder(true);
+                group.SetScrollbars(NuiScrollbars.None);
+                group.AddColumn(box =>
+                {
+                    box.AddRow(r => r.AddLabel()
+                        .BindText(title)
+                        .BindColor(color)
+                        .SetHeight(20f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left));
+                    box.AddRow(r => r.AddLabel()
+                        .BindText(detail)
+                        .SetColor(GuiColor.Grey)
+                        .SetHeight(20f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left));
+                });
+            }).SetHeight(StageBoxHeight);
         }
 
-        private void BuildStartNewJobSection(GuiColumn<IncubatorViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .BindText(model => model.EstimatedTimeToCompletion);
-
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddCheckBox()
-                    .SetText(" Use Erratic Genius")
-                    .BindIsChecked(model => model.IsErraticGeniusChecked)
-                    .BindIsEnabled(model => model.IsErraticGeniusEnabled)
-                    .BindTooltip(model => model.ErraticGeniusTooltip)
-                    .BindOnMouseUp(model => model.OnClickErraticGeniusToggled());
-
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddButton()
-                    .SetText("Start Job")
-                    .BindOnClicked(model => model.OnClickStartJob())
-                    .BindIsEnabled(model => model.IsStartJobEnabled);
-
-                row.AddSpacer();
-            });
-        }
-
-        private void BuildContinueJobSection(GuiColumn<IncubatorViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddLabel()
-                    .BindText(model => model.EstimatedTimeToCompletion);
-
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddButton()
-                    .SetText("Continue Job")
-                    .BindOnClicked(model => model.OnClickContinueJob())
-                    .BindIsEnabled(model => model.IsContinueJobEnabled);
-
-                row.AddButton()
-                    .SetText("Cancel Job")
-                    .BindOnClicked(model => model.OnClickCancelJob());
-
-                row.AddSpacer();
-            });
-        }
-
-        private void BuildCancelJobSection(GuiColumn<IncubatorViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddButton()
-                    .SetText("Cancel Job")
-                    .BindOnClicked(model => model.OnClickCancelJob());
-
-                row.AddSpacer();
-            });
-        }
-
-        private void BuildExistingJobDetailsSection(GuiColumn<IncubatorViewModel> col)
+        private static void BuildEnzymeSlots(GuiColumn<IncubatorViewModel> col)
         {
             col.AddRow(row =>
             {
                 row.AddLabel()
-                    .BindText(model => model.DNALabel);
+                    .BindText(model => model.EnzymeSectionTitle)
+                    .SetColor(GuiColor.Cyan)
+                    .SetHeight(22f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
 
+            col.AddRow(row =>
+            {
+                AddEnzymeSlot(row, "Hydrolase",
+                    model => model.HydrolaseItemResref,
+                    model => model.OnClickHydrolase(),
+                    model => model.HydrolaseDetail);
+                AddEnzymeSlot(row, "Lyase",
+                    model => model.LyaseItemResref,
+                    model => model.OnClickLyase(),
+                    model => model.LyaseDetail);
+                AddEnzymeSlot(row, "Isomerase",
+                    model => model.IsomeraseItemResref,
+                    model => model.OnClickIsomerase(),
+                    model => model.IsomeraseDetail);
+            });
+        }
+
+        private static void AddEnzymeSlot(
+            GuiRow<IncubatorViewModel> row,
+            string name,
+            System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, string>> icon,
+            System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, System.Action>> onClick,
+            System.Linq.Expressions.Expression<System.Func<IncubatorViewModel, string>> detail)
+        {
+            row.AddButtonImage()
+                .BindImageResref(icon)
+                .BindOnClicked(onClick)
+                .SetTooltip($"Add or remove a {name} enzyme")
+                .SetHeight(40f)
+                .SetWidth(40f);
+
+            row.AddColumn(text =>
+            {
+                text.AddRow(r => r.AddLabel()
+                    .SetText(name)
+                    .SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left));
+                text.AddRow(r => r.AddLabel()
+                    .BindText(detail)
+                    .SetColor(GuiColor.Grey)
+                    .SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left));
+            });
+        }
+
+        private static void BuildJobProgress(GuiColumn<IncubatorViewModel> col)
+        {
             col.AddRow(row =>
             {
                 row.AddProgressBar()
@@ -447,18 +313,127 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void BuildCompleteJobSection(GuiColumn<IncubatorViewModel> col)
+        private static void BuildPurities(GuiColumn<IncubatorViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddSpacer();
-
+                row.AddLabel()
+                    .BindText(model => model.PurityHeader)
+                    .SetColor(GuiColor.Cyan)
+                    .SetHeight(22f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
                 row.AddButton()
-                    .SetText("Complete Job")
-                    .BindOnClicked(model => model.OnClickCompleteJob())
-                    .BindIsEnabled(model => model.IsCompleteJobEnabled);
+                    .BindText(model => model.ResistanceToggleText)
+                    .BindOnClicked(model => model.OnClickToggleResistances())
+                    .SetWidth(150f);
+            });
 
-                row.AddSpacer();
+            col.AddRow(row =>
+            {
+                row.AddList(template =>
+                    {
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.AddLabel()
+                                .BindText(model => model.PurityNames)
+                                .BindColor(model => model.PurityNameColors)
+                                .BindTooltip(model => model.PurityTooltips)
+                                .SetWidth(110f)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.AddProgressBar()
+                                .BindValue(model => model.PurityValues);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.AddLabel()
+                                .BindText(model => model.PurityTexts)
+                                .BindColor(model => model.PurityNameColors)
+                                .SetWidth(110f)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                        });
+                    })
+                    .BindRowCount(model => model.PurityNames)
+                    .SetRowHeight(26f);
+            });
+        }
+
+        private static void BuildMutationRail(GuiColumn<IncubatorViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Mutation")
+                    .SetColor(GuiColor.Cyan)
+                    .SetHeight(22f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.MutationChanceText)
+                    .BindColor(model => model.MutationChanceColor)
+                    .SetHeight(22f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddCheckBox()
+                    .SetText(" Allow mutation")
+                    .BindIsChecked(model => model.IsMutationAllowed)
+                    .SetTooltip("When unchecked, this job keeps its DNA's beast type and only improves purities.")
+                    .BindOnMouseUp(model => model.OnClickAllowMutationToggled());
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddCheckBox()
+                    .SetText(" Use Erratic Genius")
+                    .BindIsChecked(model => model.IsErraticGeniusChecked)
+                    .BindIsEnabled(model => model.IsErraticGeniusEnabled)
+                    .BindTooltip(model => model.ErraticGeniusTooltip)
+                    .BindOnMouseUp(model => model.OnClickErraticGeniusToggled());
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.RecipeHeader)
+                    .SetColor(GuiColor.Cyan)
+                    .SetHeight(22f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddList(template =>
+                    {
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.RecipeLines)
+                                .BindColor(model => model.RecipeLineColors)
+                                .BindTooltip(model => model.RecipeLines)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                    })
+                    .BindRowCount(model => model.RecipeLines)
+                    .SetRowHeight(22f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.UnknownRecipesText)
+                    .SetColor(GuiColor.Grey)
+                    .SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
         }
     }

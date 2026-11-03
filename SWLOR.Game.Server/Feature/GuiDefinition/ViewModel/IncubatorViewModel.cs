@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -7,6 +8,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
@@ -26,10 +28,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string CompleteJobPartial = "COMPLETE_JOB_PARTIAL";
 
         private const int BaseSecondsBetweenStages = 129600; // 129600 = 36 hours
-        private const int NumberOfStages = 3;
+        private const int NumberOfStages = IncubationProjection.NumberOfStages;
+        private const int MaxStageIncrease = 100; // 10.0%
+        private const int MaxStat = 1000; // 100.0%
 
         private const string _blank = "Blank";
         private const string HeldElsewhereMessage = "Your inventory is full. Items you left in another incubator are still there; make room first.";
+
+        private static readonly GuiColor DoneColor = new(110, 200, 110);
+        private static readonly GuiColor NextColor = new(120, 180, 250);
+        private static readonly GuiColor RunningColor = new(230, 180, 70);
+        private static readonly GuiColor PendingColor = GuiColor.Grey;
+        private static readonly GuiColor MetColor = new(110, 200, 110);
+        private static readonly GuiColor UnmetColor = new(225, 100, 100);
+        private static readonly GuiColor HintColor = new(230, 180, 70);
+        private static readonly GuiColor PenaltyColor = new(225, 100, 100);
 
         private string _dnaItem;
         private string _hydrolaseItem;
@@ -42,272 +55,105 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private BeastType _dnaType;
         private string _incubatorPropertyId;
+        private bool _showResistances;
 
-        private int _attack;
-        private int _accuracy;
-        private int _evasion;
-        private int _learning;
-        private int _physicalDefense;
-        private int _forceDefense;
-        private int _fireResistance;
-        private int _poisonResistance;
-        private int _electricalResistance;
-        private int _iceResistance;
-        private int _mindResistance;
-        private int _mobilityResistance;
-        private int _traumaResistance;
-        private int _disruptionResistance;
-        private int _xpPenalty;
-        private int _mutationChance;
+        private readonly Dictionary<IncubationStatType, int> _baseStats = new();
+        private readonly Dictionary<IncubationStatType, int> _stageStats = new();
 
-        private int _stageAttack;
-        private int _stageAccuracy;
-        private int _stageEvasion;
-        private int _stageLearning;
-        private int _stagePhysicalDefense;
-        private int _stageForceDefense;
-        private int _stageFireResistance;
-        private int _stagePoisonResistance;
-        private int _stageElectricalResistance;
-        private int _stageIceResistance;
-        private int _stageMindResistance;
-        private int _stageMobilityResistance;
-        private int _stageTraumaResistance;
-        private int _stageDisruptionResistance;
-        private int _stageXPPenalty;
-        private int _stageMutationChance;
+        public string DNAItemResref { get => Get<string>(); set => Set(value); }
+        public string HydrolaseItemResref { get => Get<string>(); set => Set(value); }
+        public string IsomeraseItemResref { get => Get<string>(); set => Set(value); }
+        public string LyaseItemResref { get => Get<string>(); set => Set(value); }
 
-        public string DNAItemResref
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string HydrolaseItemResref
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string IsomeraseItemResref
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string LyaseItemResref
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
+        public bool IsDNASlotEnabled { get => Get<bool>(); set => Set(value); }
+        public string DNASlotTooltip { get => Get<string>(); set => Set(value); }
+        public string BeastName { get => Get<string>(); set => Set(value); }
+        public string BeastSubtitle { get => Get<string>(); set => Set(value); }
+        public string ServerDayText { get => Get<string>(); set => Set(value); }
 
-        public bool IsStartJobEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
+        public string Stage1Title { get => Get<string>(); set => Set(value); }
+        public string Stage2Title { get => Get<string>(); set => Set(value); }
+        public string Stage3Title { get => Get<string>(); set => Set(value); }
+        public string Stage1Detail { get => Get<string>(); set => Set(value); }
+        public string Stage2Detail { get => Get<string>(); set => Set(value); }
+        public string Stage3Detail { get => Get<string>(); set => Set(value); }
+        public GuiColor Stage1Color { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor Stage2Color { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor Stage3Color { get => Get<GuiColor>(); set => Set(value); }
+        public string EnzymeTotalsText { get => Get<string>(); set => Set(value); }
 
-        public bool IsContinueJobEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
+        public string EnzymeSectionTitle { get => Get<string>(); set => Set(value); }
+        public string HydrolaseDetail { get => Get<string>(); set => Set(value); }
+        public string LyaseDetail { get => Get<string>(); set => Set(value); }
+        public string IsomeraseDetail { get => Get<string>(); set => Set(value); }
 
-        public bool IsCompleteJobEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
+        public string PurityHeader { get => Get<string>(); set => Set(value); }
+        public string ResistanceToggleText { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<string> PurityNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<GuiColor> PurityNameColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
+        public GuiBindingList<string> PurityTooltips { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<float> PurityValues { get => Get<GuiBindingList<float>>(); set => Set(value); }
+        public GuiBindingList<string> PurityTexts { get => Get<GuiBindingList<string>>(); set => Set(value); }
 
-        public bool IsErraticGeniusEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
+        public string MutationChanceText { get => Get<string>(); set => Set(value); }
+        public GuiColor MutationChanceColor { get => Get<GuiColor>(); set => Set(value); }
+        public bool IsMutationAllowed { get => Get<bool>(); set => Set(value); }
+        public bool IsErraticGeniusEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsErraticGeniusChecked { get => Get<bool>(); set => Set(value); }
+        public string ErraticGeniusTooltip { get => Get<string>(); set => Set(value); }
+        public string RecipeHeader { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<string> RecipeLines { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<GuiColor> RecipeLineColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
+        public string UnknownRecipesText { get => Get<string>(); set => Set(value); }
 
-        public string CurrentExperimentationStage
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
+        public string OutcomeHeader { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<string> OutcomeNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> OutcomeChances { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<GuiColor> OutcomeColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
 
-        public string EstimatedTimeToCompletion
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public bool IsErraticGeniusChecked
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public string MutationChance
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string DNALabel
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string AttackPurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string AccuracyPurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string EvasionPurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string LearningPurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string PhysicalDefensePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string ForceDefensePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string FireResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string PoisonResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string ElectricalResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string IceResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string MindResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string MobilityResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string TraumaResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-        public string DisruptionResistancePurity
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string XPPenalty
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string ErraticGeniusTooltip
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public float JobProgress
-        {
-            get => Get<float>();
-            set => Set(value);
-        }
-
-        public string JobProgressTime
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
+        public bool IsStartJobEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsContinueJobEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsCompleteJobEnabled { get => Get<bool>(); set => Set(value); }
+        public string ContinueButtonText { get => Get<string>(); set => Set(value); }
+        public string EstimatedTimeToCompletion { get => Get<string>(); set => Set(value); }
+        public float JobProgress { get => Get<float>(); set => Set(value); }
+        public string JobProgressTime { get => Get<string>(); set => Set(value); }
 
         private void SwitchViews()
         {
             var dbJob = GetJob();
-            IsCompleteJobEnabled = IsJobComplete(dbJob, DateTime.UtcNow);
+            var now = DateTime.UtcNow;
+            IsCompleteJobEnabled = IsJobComplete(dbJob, now);
             if (dbJob == null)
             {
                 ChangePartialView(PartialElement, NewJobPartial);
             }
             else
             {
-                var now = DateTime.UtcNow;
                 var delta = dbJob.DateCompleted - dbJob.DateStarted;
                 var currentDelta = now - dbJob.DateStarted;
-                var progressPercentage = (float)currentDelta.Ticks / (float)delta.Ticks;
+                var progressPercentage = delta.Ticks <= 0 ? 1f : (float)currentDelta.Ticks / delta.Ticks;
                 JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
 
                 _dnaType = dbJob.BeastDNAType;
-
-                _mutationChance = dbJob.MutationChance;
-                _attack = dbJob.AttackPurity;
-                _accuracy = dbJob.AccuracyPurity;
-                _evasion = dbJob.EvasionPurity;
-                _learning = dbJob.LearningPurity;
-                _xpPenalty = dbJob.XPPenalty;
-
-                _physicalDefense = dbJob.DefensePurities[CombatDamageType.Physical];
-                _forceDefense = dbJob.DefensePurities[CombatDamageType.Force];
-                _iceResistance = dbJob.ResistancePurities[ResistanceType.Ice];
-                _fireResistance = dbJob.ResistancePurities[ResistanceType.Fire];
-                _poisonResistance = dbJob.ResistancePurities[ResistanceType.Poison];
-                _electricalResistance = dbJob.ResistancePurities[ResistanceType.Electrical];
-
-                _mindResistance = dbJob.ResistancePurities[ResistanceType.Mind];
-                _mobilityResistance = dbJob.ResistancePurities[ResistanceType.Mobility];
-                _traumaResistance = dbJob.ResistancePurities[ResistanceType.Trauma];
-                _disruptionResistance = dbJob.ResistancePurities[ResistanceType.Disruption];
+                LoadJobStats(dbJob);
 
                 if (now >= dbJob.DateCompleted)
                 {
-                    JobProgressTime = $"STAGE {dbJob.CurrentStage} COMPLETE";
-                    IsStartJobEnabled = true;
-
-                    if (dbJob.CurrentStage >= NumberOfStages)
-                    {
-                        ChangePartialView(PartialElement, CompleteJobPartial);
-                    }
-                    else
-                    {
-                        ChangePartialView(PartialElement, StageCompleteJobPartial);
-                    }
+                    JobProgressTime = $"Stage {dbJob.CurrentStage} complete";
+                    ChangePartialView(PartialElement, dbJob.CurrentStage >= NumberOfStages
+                        ? CompleteJobPartial
+                        : StageCompleteJobPartial);
                 }
                 else
                 {
                     var deltaTime = dbJob.DateCompleted - now;
-                    JobProgressTime = $"Stage {dbJob.CurrentStage} Remaining: {Time.GetTimeShortIntervals(deltaTime, false)}";
-                    IsStartJobEnabled = false;
+                    JobProgressTime = $"Stage {dbJob.CurrentStage} - {Time.GetTimeShortIntervals(deltaTime, false)} left";
                     ChangePartialView(PartialElement, InProgressJobPartial);
                 }
-
             }
+
+            RefreshAllStats();
         }
 
         protected override void Initialize(IncubatorPayload initialPayload)
@@ -322,24 +168,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             _incubatorPropertyId = initialPayload.PropertyId;
-
-            ClearStats();
-            SwitchViews();
+            _showResistances = false;
 
             DNAItemResref = _blank;
             HydrolaseItemResref = _blank;
             IsomeraseItemResref = _blank;
             LyaseItemResref = _blank;
-            RestoreHeldItems();
-
-            LoadPlayerStats();
-            RefreshAllStats();
-            ToggleStartJob();
-            ToggleContinueJob();
             IsErraticGeniusChecked = false;
-            RefreshIncubationTime();
+            JobProgress = 0f;
+            JobProgressTime = string.Empty;
+
+            var job = GetJob();
+            IsMutationAllowed = job == null || !job.IsMutationSuppressed;
+
+            ClearStats();
+            RestoreHeldItems();
+            LoadPlayerStats();
+            SwitchViews();
 
             WatchOnClient(model => model.IsErraticGeniusChecked);
+            WatchOnClient(model => model.IsMutationAllowed);
         }
 
         /// <summary>A job can be completed once its last stage has run its full time.</summary>
@@ -354,113 +202,359 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), _incubatorPropertyId, false);
-            var dbJob = DB.Search(dbQuery)
-                .FirstOrDefault();
-
-            return dbJob;
-        }
-
-        private string FormatStat(int baseStat, int bonusStat, int additionalBonus)
-        {
-            var bonusPercentage = BeastMastery.GetIncubationPercentageById(bonusStat);
-            if (bonusPercentage > 10f)
-                bonusPercentage = 10f;
-
-            bonusPercentage += additionalBonus;
-
-            var baseStatText = BeastMastery.GetIncubationPercentageById(baseStat);
-
-            return $"{baseStatText}% [+{bonusPercentage:0.0###}%]";
+            return DB.Search(dbQuery).FirstOrDefault();
         }
 
         private int GetErraticGeniusBonus()
         {
-            var erraticGenius = Perk.GetPerkLevel(Player, PerkType.ErraticGenius);
-            var mutationBonus = 0;
-            switch (erraticGenius)
+            return Perk.GetPerkLevel(Player, PerkType.ErraticGenius) switch
             {
-                case 1:
-                    mutationBonus = 2;
-                    break;
-                case 2:
-                    mutationBonus = 4;
-                    break;
-                case 3:
-                    mutationBonus = 8;
-                    break;
-            }
-
-            return mutationBonus;
+                1 => 2,
+                2 => 4,
+                3 => 8,
+                _ => 0
+            };
         }
 
         private void LoadPlayerStats()
         {
             var mutationBonus = GetErraticGeniusBonus();
-            ErraticGeniusTooltip = $"Increases mutation chance by {mutationBonus}% if checked.";
-            IsErraticGeniusEnabled = mutationBonus > 0;
+            var job = GetJob();
+            IsErraticGeniusEnabled = mutationBonus > 0 && job == null;
+            ErraticGeniusTooltip = mutationBonus <= 0
+                ? "Requires the Erratic Genius perk."
+                : job == null
+                    ? $"Adds {mutationBonus}% mutation chance when this job starts."
+                    : "Erratic Genius only applies when a job starts.";
 
             if (!IsErraticGeniusEnabled)
                 IsErraticGeniusChecked = false;
+
+            RefreshIncubationTime();
         }
 
-        private void ToggleStartJob()
+        private void RefreshButtons(IncubationJob job)
         {
-            var job = GetJob();
-            if (job != null)
-            {
-                IsStartJobEnabled = false;
-                return;
-            }
+            var enzymesReady = !string.IsNullOrWhiteSpace(_hydrolaseItem) &&
+                               !string.IsNullOrWhiteSpace(_lyaseItem) &&
+                               !string.IsNullOrWhiteSpace(_isomeraseItem);
 
-            IsStartJobEnabled = !string.IsNullOrWhiteSpace(_hydrolaseItem) &&
-                                !string.IsNullOrWhiteSpace(_lyaseItem) &&
-                                !string.IsNullOrWhiteSpace(_isomeraseItem) &&
-                                !string.IsNullOrWhiteSpace(_dnaItem);
-        }
-
-        private void ToggleContinueJob()
-        {
-            var job = GetJob();
-            if (job == null)
-            {
-                IsContinueJobEnabled = false;
-                return;
-            }
-
-            IsContinueJobEnabled = !string.IsNullOrWhiteSpace(_hydrolaseItem) &&
-                                   !string.IsNullOrWhiteSpace(_lyaseItem) &&
-                                   !string.IsNullOrWhiteSpace(_isomeraseItem);
+            IsStartJobEnabled = job == null && enzymesReady && !string.IsNullOrWhiteSpace(_dnaItem);
+            IsContinueJobEnabled = job != null && enzymesReady;
+            ContinueButtonText = job == null ? "Start stage 1" : $"Start stage {job.CurrentStage + 1}";
         }
 
         private void RefreshAllStats()
         {
-            var mutationBonus = 0;
+            var job = GetJob();
+            var now = DateTime.UtcNow;
+            var hasPendingStage = job == null || (now >= job.DateCompleted && job.CurrentStage < NumberOfStages);
 
-            if (IsErraticGeniusChecked)
+            RefreshButtons(job);
+            RefreshHeader(job, now);
+            RefreshStageTracker(job, now);
+            RefreshEnzymeTotals(job);
+            RefreshPurities(hasPendingStage);
+            RefreshMutation(job, hasPendingStage);
+            RefreshRecipes(job, now, hasPendingStage);
+            RefreshOutcomes(job, now);
+        }
+
+        private void RefreshHeader(IncubationJob job, DateTime now)
+        {
+            ServerDayText = $"Server day: {now.DayOfWeek} (UTC)";
+            IsDNASlotEnabled = job == null;
+            DNASlotTooltip = job == null
+                ? (string.IsNullOrWhiteSpace(_dnaItem) ? "Add DNA" : "Remove DNA")
+                : "The DNA is locked in this job.";
+            if (job != null)
+                DNAItemResref = string.IsNullOrWhiteSpace(job.DNAIconResref) ? _blank : job.DNAIconResref;
+
+            if (_dnaType == BeastType.Invalid)
             {
-                mutationBonus = GetErraticGeniusBonus();
+                BeastName = "No DNA added";
+                BeastSubtitle = "Click the slot and pick a DNA sample from your inventory.";
+                return;
             }
 
-            DNALabel = _dnaType == BeastType.Invalid
-                ? "DNA [N/A]"
-                : $"DNA [{BeastMastery.GetBeastDetail(_dnaType).Name}]";
+            var beast = BeastMastery.GetBeastDetail(_dnaType);
+            BeastName = $"{beast.Name} DNA";
+            BeastSubtitle = $"{beast.Role} role";
+        }
 
-            AttackPurity = FormatStat(_attack, _stageAttack, 0);
-            AccuracyPurity = FormatStat(_accuracy, _stageAccuracy, 0);
-            EvasionPurity = FormatStat(_evasion, _stageEvasion, 0);
-            LearningPurity = FormatStat(_learning, _stageLearning, 0);
-            PhysicalDefensePurity = FormatStat(_physicalDefense, _stagePhysicalDefense, 0);
-            ForceDefensePurity = FormatStat(_forceDefense, _stageForceDefense, 0);
-            FireResistancePurity = FormatStat(_fireResistance, _stageFireResistance, 0);
-            PoisonResistancePurity = FormatStat(_poisonResistance, _stagePoisonResistance, 0);
-            ElectricalResistancePurity = FormatStat(_electricalResistance, _stageElectricalResistance, 0);
-            IceResistancePurity = FormatStat(_iceResistance, _stageIceResistance, 0);
-            MindResistancePurity = FormatStat(_mindResistance, _stageMindResistance, 0);
-            MobilityResistancePurity = FormatStat(_mobilityResistance, _stageMobilityResistance, 0);
-            TraumaResistancePurity = FormatStat(_traumaResistance, _stageTraumaResistance, 0);
-            DisruptionResistancePurity = FormatStat(_disruptionResistance, _stageDisruptionResistance, 0);
-            XPPenalty = FormatStat(_xpPenalty, _stageXPPenalty, 0);
-            MutationChance = FormatStat(_mutationChance, _stageMutationChance, mutationBonus);
+        private void RefreshStageTracker(IncubationJob job, DateTime now)
+        {
+            var titles = new string[NumberOfStages];
+            var details = new string[NumberOfStages];
+            var colors = new GuiColor[NumberOfStages];
+            var stageTime = Time.GetTimeShortIntervals(TimeSpan.FromSeconds(CalculateIncubationSeconds()), false);
+
+            for (var index = 0; index < NumberOfStages; index++)
+            {
+                var stage = index + 1;
+                var started = job?.CurrentStage ?? 0;
+                var finished = job != null && now >= job.DateCompleted;
+
+                if (stage < started || (stage == started && finished))
+                {
+                    titles[index] = $"Stage {stage} - done";
+                    details[index] = "Enzymes added";
+                    colors[index] = DoneColor;
+                }
+                else if (stage == started)
+                {
+                    titles[index] = $"Stage {stage} - running";
+                    details[index] = $"{Time.GetTimeShortIntervals(job.DateCompleted - now, false)} left";
+                    colors[index] = RunningColor;
+                }
+                else if (stage == started + 1 && (job == null || finished))
+                {
+                    titles[index] = $"Stage {stage} - next";
+                    details[index] = $"Add enzymes ({stageTime})";
+                    colors[index] = NextColor;
+                }
+                else
+                {
+                    titles[index] = $"Stage {stage}";
+                    details[index] = "Waiting";
+                    colors[index] = PendingColor;
+                }
+            }
+
+            Stage1Title = titles[0];
+            Stage2Title = titles[1];
+            Stage3Title = titles[2];
+            Stage1Detail = details[0];
+            Stage2Detail = details[1];
+            Stage3Detail = details[2];
+            Stage1Color = colors[0];
+            Stage2Color = colors[1];
+            Stage3Color = colors[2];
+
+            var nextStage = (job?.CurrentStage ?? 0) + 1;
+            EnzymeSectionTitle = nextStage <= NumberOfStages
+                ? $"Enzymes for stage {nextStage}"
+                : "Enzymes";
+        }
+
+        private void RefreshEnzymeTotals(IncubationJob job)
+        {
+            if (job == null)
+            {
+                EnzymeTotalsText = "Enzymes added so far: none";
+                return;
+            }
+
+            var parts = new List<string>
+            {
+                DescribeColorCounts("Lyase", job.LyaseColors),
+                DescribeColorCounts("Isomerase", job.IsomeraseColors),
+                DescribeColorCounts("Hydrolase", job.HydrolaseColors)
+            };
+            EnzymeTotalsText = "So far - " + string.Join(" | ", parts);
+        }
+
+        private static string DescribeColorCounts(string type, Dictionary<EnzymeColorType, int> counts)
+        {
+            var used = counts
+                .Where(x => x.Value > 0)
+                .Select(x => $"{x.Value} {x.Key.ToString().ToLower()}")
+                .ToList();
+            return $"{type}: {(used.Count == 0 ? "none" : string.Join(", ", used))}";
+        }
+
+        private void RefreshPurities(bool hasPendingStage)
+        {
+            var names = new GuiBindingList<string>();
+            var colors = new GuiBindingList<GuiColor>();
+            var tooltips = new GuiBindingList<string>();
+            var values = new GuiBindingList<float>();
+            var texts = new GuiBindingList<string>();
+
+            void AddRow(string name, string tooltip, float percent, float gain, GuiColor color)
+            {
+                names.Add(name);
+                tooltips.Add(tooltip);
+                colors.Add(color);
+                values.Add(Math.Clamp(percent / 100f, 0f, 1f));
+                texts.Add(gain > 0f ? $"{percent:0.0}% (+{gain:0.0})" : $"{percent:0.0}%");
+            }
+
+            foreach (var stat in IncubationProjection.MainPurityStats)
+            {
+                var (percent, gain) = GetProjectedPercent(stat, hasPendingStage);
+                var color = stat == IncubationStatType.XPPenalty ? PenaltyColor : GuiColor.White;
+                AddRow(IncubationProjection.GetStatName(stat), IncubationProjection.GetStatTooltip(stat), percent, gain, color);
+            }
+
+            if (_showResistances)
+            {
+                foreach (var stat in IncubationProjection.ResistancePurityStats)
+                {
+                    var (percent, gain) = GetProjectedPercent(stat, hasPendingStage);
+                    AddRow(IncubationProjection.GetStatName(stat), IncubationProjection.GetStatTooltip(stat), percent, gain, GuiColor.White);
+                }
+            }
+            else
+            {
+                var projected = IncubationProjection.ResistancePurityStats
+                    .Select(stat => GetProjectedPercent(stat, hasPendingStage))
+                    .ToList();
+                AddRow($"Resistances ({projected.Count})",
+                    "Average of the eight resistance purities. Use Show resistances to see each one.",
+                    projected.Average(x => x.Percent),
+                    projected.Average(x => x.Gain),
+                    GuiColor.Grey);
+            }
+
+            PurityHeader = hasPendingStage
+                ? "Purities (gain in brackets is this stage, max +10% per stat)"
+                : "Purities";
+            ResistanceToggleText = _showResistances ? "Hide resistances" : "Show resistances";
+
+            PurityNames = names;
+            PurityNameColors = colors;
+            PurityTooltips = tooltips;
+            PurityValues = values;
+            PurityTexts = texts;
+        }
+
+        private (float Percent, float Gain) GetProjectedPercent(IncubationStatType stat, bool hasPendingStage)
+        {
+            _baseStats.TryGetValue(stat, out var baseValue);
+            _stageStats.TryGetValue(stat, out var stageValue);
+            var gain = hasPendingStage ? Math.Clamp(stageValue, 0, MaxStageIncrease) : 0;
+            var total = Math.Min(baseValue + gain, MaxStat);
+            return (total / 10f, (total - Math.Min(baseValue, MaxStat)) / 10f);
+        }
+
+        private int GetProjectedMutationChance(IncubationJob job, bool hasPendingStage)
+        {
+            _baseStats.TryGetValue(IncubationStatType.MutationChance, out var baseValue);
+            _stageStats.TryGetValue(IncubationStatType.MutationChance, out var stageValue);
+            var gain = hasPendingStage ? Math.Clamp(stageValue, 0, MaxStageIncrease) : 0;
+            var erraticGenius = job == null && IsErraticGeniusChecked ? GetErraticGeniusBonus() * 10 : 0;
+            return Math.Min(baseValue + gain + erraticGenius, MaxStat);
+        }
+
+        private void RefreshMutation(IncubationJob job, bool hasPendingStage)
+        {
+            var chance = GetProjectedMutationChance(job, hasPendingStage);
+            _baseStats.TryGetValue(IncubationStatType.MutationChance, out var baseValue);
+            var gain = (chance - baseValue) / 10f;
+
+            if (!IsMutationAllowed)
+            {
+                MutationChanceText = "Mutation off - beast type is kept";
+                MutationChanceColor = GuiColor.Grey;
+                return;
+            }
+
+            MutationChanceText = gain > 0f
+                ? $"Chance: {chance / 10f:0.0}% (+{gain:0.0} this stage)"
+                : $"Chance: {chance / 10f:0.0}%";
+            MutationChanceColor = GuiColor.White;
+        }
+
+        private void RefreshRecipes(IncubationJob job, DateTime now, bool hasPendingStage)
+        {
+            var lines = new GuiBindingList<string>();
+            var colors = new GuiBindingList<GuiColor>();
+
+            if (_dnaType == BeastType.Invalid)
+            {
+                RecipeHeader = "Known recipes";
+                RecipeLines = lines;
+                RecipeLineColors = colors;
+                UnknownRecipesText = "Add DNA to see its mutation recipes.";
+                return;
+            }
+
+            var beast = BeastMastery.GetBeastDetail(_dnaType);
+            var projection = IncubationProjection.Create(
+                job,
+                hasPendingStage ? _lyaseColor : EnzymeColorType.Invalid,
+                hasPendingStage ? _isomeraseColor : EnzymeColorType.Invalid,
+                hasPendingStage ? _hydrolaseColor : EnzymeColorType.Invalid,
+                GetProjectedMutationChance(job, hasPendingStage),
+                hasPendingStage);
+
+            var unknown = 0;
+            foreach (var mutation in beast.PossibleMutations)
+            {
+                if (!IncubationFieldNote.TryGetNoteForTarget(mutation.Type, out var note) ||
+                    !KeyItem.HasKeyItem(Player, note.Note))
+                {
+                    unknown++;
+                    continue;
+                }
+
+                var report = projection.Evaluate(mutation, now);
+                lines.Add(BeastMastery.GetBeastDetail(mutation.Type).Name);
+                colors.Add(GuiColor.White);
+
+                foreach (var requirement in report.Lines)
+                {
+                    lines.Add($"  {(requirement.IsMet ? "[ok]" : "[ ]")} {requirement.Text}");
+                    colors.Add(requirement.IsMet ? MetColor : requirement.IsWaitable ? HintColor : UnmetColor);
+                }
+
+                lines.Add($"  {report.Summary}");
+                colors.Add(HintColor);
+            }
+
+            RecipeHeader = $"Known recipes for {beast.Name}";
+            if (lines.Count == 0)
+            {
+                lines.Add(beast.PossibleMutations.Count == 0
+                    ? "This beast cannot mutate."
+                    : "You have no field notes for this beast.");
+                colors.Add(GuiColor.Grey);
+            }
+
+            RecipeLines = lines;
+            RecipeLineColors = colors;
+            UnknownRecipesText = unknown == 0
+                ? string.Empty
+                : $"{unknown} unknown recipe{(unknown == 1 ? string.Empty : "s")} - find the field note{(unknown == 1 ? string.Empty : "s")}";
+        }
+
+        private void RefreshOutcomes(IncubationJob job, DateTime now)
+        {
+            var names = new GuiBindingList<string>();
+            var chances = new GuiBindingList<string>();
+            var colors = new GuiBindingList<GuiColor>();
+
+            if (job != null && IsJobComplete(job, now))
+            {
+                var beast = BeastMastery.GetBeastDetail(job.BeastDNAType);
+                var outcomes = IncubationProjection.GetOutcomes(beast, job, IsMutationAllowed);
+                foreach (var outcome in outcomes)
+                {
+                    var known = outcome.Type == job.BeastDNAType ||
+                                (IncubationFieldNote.TryGetNoteForTarget(outcome.Type, out var note) &&
+                                 KeyItem.HasKeyItem(Player, note.Note));
+                    var name = outcome.Type == job.BeastDNAType
+                        ? $"{beast.Name} (no mutation)"
+                        : known
+                            ? BeastMastery.GetBeastDetail(outcome.Type).Name
+                            : "Unknown mutation (no field note)";
+
+                    names.Add(name);
+                    chances.Add($"{outcome.Percent:0.0}%");
+                    colors.Add(outcome.Type == job.BeastDNAType ? GuiColor.White : MetColor);
+                }
+
+                OutcomeHeader = $"Possible outcomes if you complete now ({now.DayOfWeek}, UTC)";
+            }
+            else
+            {
+                OutcomeHeader = "Possible outcomes";
+            }
+
+            OutcomeNames = names;
+            OutcomeChances = chances;
+            OutcomeColors = colors;
         }
 
         private int CalculateIncubationSeconds()
@@ -471,16 +565,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 socialBonus = 10;
 
             var timeReductionPercentage = 0.01f * (Perk.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10 + socialBonus);
-            var seconds = BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * timeReductionPercentage);
-
-            return seconds;
+            return BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * timeReductionPercentage);
         }
 
         private void RefreshIncubationTime()
         {
-            var seconds = CalculateIncubationSeconds();
-            var timespan = TimeSpan.FromSeconds(seconds);
-            EstimatedTimeToCompletion = $"Time Required: {Time.GetTimeShortIntervals(timespan, false)}";
+            var timespan = TimeSpan.FromSeconds(CalculateIncubationSeconds());
+            EstimatedTimeToCompletion = $"Each stage takes {Time.GetTimeShortIntervals(timespan, false)}";
         }
 
         /// <summary>
@@ -498,6 +589,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _hydrolaseItem = string.Empty;
                 _hydrolaseColor = EnzymeColorType.Invalid;
                 HydrolaseItemResref = _blank;
+                HydrolaseDetail = "Empty";
             }
             if (!string.IsNullOrWhiteSpace(_lyaseItem) &&
                 Item.TryAcquireItem(Player, item = ObjectPlugin.Deserialize(_lyaseItem)))
@@ -506,6 +598,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _lyaseItem = string.Empty;
                 _lyaseColor = EnzymeColorType.Invalid;
                 LyaseItemResref = _blank;
+                LyaseDetail = "Empty";
             }
             if (!string.IsNullOrWhiteSpace(_isomeraseItem) &&
                 Item.TryAcquireItem(Player, item = ObjectPlugin.Deserialize(_isomeraseItem)))
@@ -514,6 +607,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _isomeraseItem = string.Empty;
                 _isomeraseColor = EnzymeColorType.Invalid;
                 IsomeraseItemResref = _blank;
+                IsomeraseDetail = "Empty";
             }
 
             var enzymesReturned = string.IsNullOrWhiteSpace(_hydrolaseItem) &&
@@ -529,16 +623,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var allReturned = enzymesReturned && string.IsNullOrWhiteSpace(_dnaItem);
             if (allReturned)
             {
-                IsStartJobEnabled = false;
                 IsErraticGeniusChecked = false;
-                IsErraticGeniusEnabled = false;
-
                 ClearStats();
             }
 
-            RefreshAllStats();
-            ToggleStartJob();
-            ToggleContinueJob();
             return allReturned;
         }
 
@@ -570,6 +658,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>Shows the items that stayed in the incubator when its window last closed.</summary>
         private void RestoreHeldItems()
         {
+            HydrolaseDetail = "Empty";
+            LyaseDetail = "Empty";
+            IsomeraseDetail = "Empty";
+
             if (!string.IsNullOrWhiteSpace(_dnaItem))
             {
                 var item = ObjectPlugin.Deserialize(_dnaItem);
@@ -582,6 +674,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(_hydrolaseItem);
                 _hydrolaseColor = AddItemStats(item);
                 HydrolaseItemResref = Item.GetIconResref(item);
+                HydrolaseDetail = DescribeEnzyme(item);
                 DestroyObject(item);
             }
             if (!string.IsNullOrWhiteSpace(_lyaseItem))
@@ -589,6 +682,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(_lyaseItem);
                 _lyaseColor = AddItemStats(item);
                 LyaseItemResref = Item.GetIconResref(item);
+                LyaseDetail = DescribeEnzyme(item);
                 DestroyObject(item);
             }
             if (!string.IsNullOrWhiteSpace(_isomeraseItem))
@@ -596,6 +690,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(_isomeraseItem);
                 _isomeraseColor = AddItemStats(item);
                 IsomeraseItemResref = Item.GetIconResref(item);
+                IsomeraseDetail = DescribeEnzyme(item);
                 DestroyObject(item);
             }
         }
@@ -603,44 +698,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ClearStats()
         {
             _dnaType = BeastType.Invalid;
+            _baseStats.Clear();
+            _stageStats.Clear();
+        }
 
-            _mutationChance = 0;
-            _attack = 0;
-            _accuracy = 0;
-            _evasion = 0;
-            _learning = 0;
-            _physicalDefense = 0;
-            _forceDefense = 0;
-            _fireResistance = 0;
-            _poisonResistance = 0;
-            _electricalResistance = 0;
-            _iceResistance = 0;
-            _mindResistance = 0;
-            _mobilityResistance = 0;
-            _traumaResistance = 0;
-            _disruptionResistance = 0;
-            _xpPenalty = 0;
-
-            _stageMutationChance = 0;
-            _stageAttack = 0;
-            _stageAccuracy = 0;
-            _stageEvasion = 0;
-            _stageLearning = 0;
-            _stagePhysicalDefense = 0;
-            _stageForceDefense = 0;
-            _stageFireResistance = 0;
-            _stagePoisonResistance = 0;
-            _stageElectricalResistance = 0;
-            _stageIceResistance = 0;
-            _stageMindResistance = 0;
-            _stageMobilityResistance = 0;
-            _stageTraumaResistance = 0;
-            _stageDisruptionResistance = 0;
-            _stageXPPenalty = 0;
+        private void LoadJobStats(IncubationJob job)
+        {
+            _baseStats[IncubationStatType.MutationChance] = job.MutationChance;
+            _baseStats[IncubationStatType.AttackPurity] = job.AttackPurity;
+            _baseStats[IncubationStatType.AccuracyPurity] = job.AccuracyPurity;
+            _baseStats[IncubationStatType.EvasionPurity] = job.EvasionPurity;
+            _baseStats[IncubationStatType.LearningPurity] = job.LearningPurity;
+            _baseStats[IncubationStatType.XPPenalty] = job.XPPenalty;
+            _baseStats[IncubationStatType.PhysicalDefensePurity] = job.DefensePurities[CombatDamageType.Physical];
+            _baseStats[IncubationStatType.ForceDefensePurity] = job.DefensePurities[CombatDamageType.Force];
+            foreach (var stat in IncubationProjection.ResistancePurityStats)
+            {
+                var resistance = IncubationProjection.GetResistanceType(stat);
+                _baseStats[stat] = job.ResistancePurities.TryGetValue(resistance, out var value) ? value : 0;
+            }
         }
 
         public Action OnClickDNA() => () =>
         {
+            if (GetJob() != null)
+                return;
+
             if (!string.IsNullOrWhiteSpace(_dnaItem))
             {
                 ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", () =>
@@ -674,11 +757,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     DestroyObject(item);
 
                     RefreshAllStats();
-                    ToggleStartJob();
-                    ToggleContinueJob();
                 });
             }
-
         };
 
         private void LoadDNAStats(uint item)
@@ -690,132 +770,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     _dnaType = (BeastType)GetItemPropertySubType(ip);
                 }
-                else if(type == ItemPropertyType.Incubation)
+                else if (type == ItemPropertyType.Incubation)
                 {
                     var subType = (IncubationStatType)GetItemPropertySubType(ip);
-                    var costId = GetItemPropertyCostTableValue(ip);
+                    if (!IncubationProjection.IsKnownStat(subType))
+                        throw new ArgumentOutOfRangeException(nameof(subType), subType, "Unknown incubation stat on DNA.");
 
-                    switch (subType)
-                    {
-                        case IncubationStatType.MutationChance:
-                            _mutationChance = costId;
-                            break;
-                        case IncubationStatType.AttackPurity:
-                            _attack = costId;
-                            break;
-                        case IncubationStatType.AccuracyPurity:
-                            _accuracy = costId;
-                            break;
-                        case IncubationStatType.EvasionPurity:
-                            _evasion = costId;
-                            break;
-                        case IncubationStatType.LearningPurity:
-                            _learning = costId;
-                            break;
-                        case IncubationStatType.PhysicalDefensePurity:
-                            _physicalDefense = costId;
-                            break;
-                        case IncubationStatType.ForceDefensePurity:
-                        _forceDefense = costId;
-                        break;
-                    case IncubationStatType.FireResistancePurity:
-                        _fireResistance = costId;
-                        break;
-                    case IncubationStatType.PoisonResistancePurity:
-                        _poisonResistance = costId;
-                        break;
-                    case IncubationStatType.ElectricalResistancePurity:
-                        _electricalResistance = costId;
-                        break;
-                    case IncubationStatType.IceResistancePurity:
-                        _iceResistance = costId;
-                        break;
-                        case IncubationStatType.TraumaResistancePurity:
-                            _traumaResistance = costId;
-                            break;
-                        case IncubationStatType.MobilityResistancePurity:
-                            _mobilityResistance = costId;
-                            break;
-                        case IncubationStatType.MindResistancePurity:
-                            _mindResistance = costId;
-                            break;
-                        case IncubationStatType.DisruptionResistancePurity:
-                            _disruptionResistance = costId;
-                            break;
-                        case IncubationStatType.XPPenalty:
-                            _xpPenalty = costId;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    _baseStats[subType] = GetItemPropertyCostTableValue(ip);
                 }
             }
         }
 
         private EnzymeColorType AddItemStats(uint item)
         {
-            EnzymeColorType colorType = EnzymeColorType.Invalid;
+            return ApplyItemStats(item, 1);
+        }
+
+        private void SubtractItemStats(uint item)
+        {
+            ApplyItemStats(item, -1);
+        }
+
+        /// <summary>
+        /// Adds (sign 1) or removes (sign -1) an enzyme's incubation stats from this stage's totals.
+        /// Only Incubation properties count; the enzyme color property is read, never applied as a stat.
+        /// </summary>
+        private EnzymeColorType ApplyItemStats(uint item, int sign)
+        {
+            var colorType = EnzymeColorType.Invalid;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var ipType = GetItemPropertyType(ip);
                 if (ipType == ItemPropertyType.Incubation)
                 {
                     var type = (IncubationStatType)GetItemPropertySubType(ip);
-                    var costId = GetItemPropertyCostTableValue(ip);
+                    if (!IncubationProjection.IsKnownStat(type))
+                        throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown incubation stat on enzyme.");
 
-                    switch (type)
-                    {
-                        case IncubationStatType.MutationChance:
-                            _stageMutationChance += costId;
-                            break;
-                        case IncubationStatType.AttackPurity:
-                            _stageAttack += costId;
-                            break;
-                        case IncubationStatType.AccuracyPurity:
-                            _stageAccuracy += costId;
-                            break;
-                        case IncubationStatType.EvasionPurity:
-                            _stageEvasion += costId;
-                            break;
-                        case IncubationStatType.LearningPurity:
-                            _stageLearning += costId;
-                            break;
-                        case IncubationStatType.PhysicalDefensePurity:
-                            _stagePhysicalDefense += costId;
-                            break;
-                        case IncubationStatType.ForceDefensePurity:
-                            _stageForceDefense += costId;
-                            break;
-                        case IncubationStatType.FireResistancePurity:
-                            _stageFireResistance += costId;
-                            break;
-                        case IncubationStatType.PoisonResistancePurity:
-                            _stagePoisonResistance += costId;
-                            break;
-                        case IncubationStatType.ElectricalResistancePurity:
-                            _stageElectricalResistance += costId;
-                            break;
-                        case IncubationStatType.IceResistancePurity:
-                            _stageIceResistance += costId;
-                            break;
-                        case IncubationStatType.TraumaResistancePurity:
-                            _stageTraumaResistance += costId;
-                            break;
-                        case IncubationStatType.MobilityResistancePurity:
-                            _stageMobilityResistance += costId;
-                            break;
-                        case IncubationStatType.MindResistancePurity:
-                            _stageMindResistance += costId;
-                            break;
-                        case IncubationStatType.DisruptionResistancePurity:
-                            _stageDisruptionResistance += costId;
-                            break;
-                        case IncubationStatType.XPPenalty:
-                            _stageXPPenalty += costId;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    _stageStats.TryGetValue(type, out var current);
+                    _stageStats[type] = current + sign * GetItemPropertyCostTableValue(ip);
                 }
                 else if (ipType == ItemPropertyType.EnzymeColor)
                 {
@@ -823,83 +816,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            RefreshAllStats();
-
             return colorType;
         }
 
-        private void SubtractItemStats(uint item)
+        private static string DescribeEnzyme(uint item)
         {
+            var color = EnzymeColorType.Invalid;
+            var stats = new List<string>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                var type = (IncubationStatType)GetItemPropertySubType(ip);
-                var costId = GetItemPropertyCostTableValue(ip);
-
-                switch (type)
+                var ipType = GetItemPropertyType(ip);
+                if (ipType == ItemPropertyType.EnzymeColor)
                 {
-                    case IncubationStatType.MutationChance:
-                        _stageMutationChance -= costId;
-                        break;
-                    case IncubationStatType.AttackPurity:
-                        _stageAttack -= costId;
-                        break;
-                    case IncubationStatType.AccuracyPurity:
-                        _stageAccuracy -= costId;
-                        break;
-                    case IncubationStatType.EvasionPurity:
-                        _stageEvasion -= costId;
-                        break;
-                    case IncubationStatType.LearningPurity:
-                        _stageLearning -= costId;
-                        break;
-                    case IncubationStatType.PhysicalDefensePurity:
-                        _stagePhysicalDefense -= costId;
-                        break;
-                    case IncubationStatType.ForceDefensePurity:
-                        _stageForceDefense -= costId;
-                        break;
-                    case IncubationStatType.FireResistancePurity:
-                        _stageFireResistance -= costId;
-                        break;
-                    case IncubationStatType.PoisonResistancePurity:
-                        _stagePoisonResistance -= costId;
-                        break;
-                    case IncubationStatType.ElectricalResistancePurity:
-                        _stageElectricalResistance -= costId;
-                        break;
-                    case IncubationStatType.IceResistancePurity:
-                        _stageIceResistance -= costId;
-                        break;
-                    case IncubationStatType.TraumaResistancePurity:
-                        _stageTraumaResistance -= costId;
-                        break;
-                    case IncubationStatType.MobilityResistancePurity:
-                        _stageMobilityResistance -= costId;
-                        break;
-                    case IncubationStatType.MindResistancePurity:
-                        _stageMindResistance -= costId;
-                        break;
-                    case IncubationStatType.DisruptionResistancePurity:
-                        _stageDisruptionResistance -= costId;
-                        break;
-                    case IncubationStatType.XPPenalty:
-                        _stageXPPenalty -= costId;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    color = (EnzymeColorType)GetItemPropertySubType(ip);
+                }
+                else if (ipType == ItemPropertyType.Incubation)
+                {
+                    var stat = (IncubationStatType)GetItemPropertySubType(ip);
+                    var value = GetItemPropertyCostTableValue(ip) / 10f;
+                    stats.Add($"{IncubationProjection.GetShortStatName(stat)} +{value:0.0}%");
                 }
             }
 
-            RefreshAllStats();
+            var colorText = color == EnzymeColorType.Invalid ? "Unknown" : color.ToString();
+            return stats.Count == 0 ? colorText : $"{colorText}: {string.Join(", ", stats)}";
         }
 
-        public Action OnClickHydrolase() => () =>
+        private delegate void EnzymeSlotSetter(string serialized, EnzymeColorType color, string icon, string detail);
+
+        private Action OnClickEnzyme(
+            string name,
+            string resrefPrefix,
+            Func<string> getSerialized,
+            EnzymeSlotSetter setSlot) => () =>
         {
-            if (!string.IsNullOrWhiteSpace(_hydrolaseItem))
+            var job = GetJob();
+            if (job != null && DateTime.UtcNow < job.DateCompleted)
+                return;
+            if (job != null && job.CurrentStage >= NumberOfStages)
+                return;
+
+            var serialized = getSerialized();
+            if (!string.IsNullOrWhiteSpace(serialized))
             {
-                ShowModal("Will you remove the Hydrolase enzyme?", () =>
+                ShowModal($"Will you remove the {name} enzyme?", () =>
                 {
-                    var item = ObjectPlugin.Deserialize(_hydrolaseItem);
+                    var item = ObjectPlugin.Deserialize(serialized);
                     if (!Item.TryAcquireItem(Player, item))
                     {
                         FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
@@ -907,25 +869,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    HydrolaseItemResref = _blank;
-                    _hydrolaseItem = string.Empty;
-                    _hydrolaseColor = EnzymeColorType.Invalid;
-
                     SubtractItemStats(item);
-                    ToggleStartJob();
-                    ToggleContinueJob();
-
+                    setSlot(string.Empty, EnzymeColorType.Invalid, _blank, "Empty");
                     SwitchViews();
                 }, SwitchViews);
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Hydrolase item from your inventory.",
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, $"Select a {name} item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(BeastMastery.HydrolaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(resrefPrefix))
                     {
-                        FloatingTextStringOnCreature("Only Hydrolase items may be selected.", Player, false);
+                        FloatingTextStringOnCreature($"Only {name} items may be selected.", Player, false);
                         return;
                     }
 
@@ -936,123 +892,67 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    HydrolaseItemResref = Item.GetIconResref(item);
-                    _hydrolaseItem = ObjectPlugin.Serialize(item);
-                    _hydrolaseColor = AddItemStats(item);
+                    var icon = Item.GetIconResref(item);
+                    var detail = DescribeEnzyme(item);
+                    var color = AddItemStats(item);
+                    setSlot(ObjectPlugin.Serialize(item), color, icon, detail);
                     DestroyObject(item);
-                    ToggleStartJob();
-                    ToggleContinueJob();
+                    RefreshAllStats();
                 });
             }
         };
 
-        public Action OnClickLyase() => () =>
-        {
-            if (!string.IsNullOrWhiteSpace(_lyaseItem))
+        public Action OnClickHydrolase() => OnClickEnzyme("Hydrolase", BeastMastery.HydrolaseResrefPrefix,
+            () => _hydrolaseItem,
+            (serialized, color, icon, detail) =>
             {
-                ShowModal("Will you remove the Lyase Enzyme?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(_lyaseItem);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
-                        SwitchViews();
-                        return;
-                    }
+                _hydrolaseItem = serialized;
+                _hydrolaseColor = color;
+                HydrolaseItemResref = icon;
+                HydrolaseDetail = detail;
+            });
 
-                    LyaseItemResref = _blank;
-                    _lyaseItem = string.Empty;
-                    _lyaseColor = EnzymeColorType.Invalid;
-
-                    SubtractItemStats(item);
-                    ToggleStartJob();
-                    ToggleContinueJob();
-                    SwitchViews();
-                }, SwitchViews);
-            }
-            else
+        public Action OnClickLyase() => OnClickEnzyme("Lyase", BeastMastery.LyaseResrefPrefix,
+            () => _lyaseItem,
+            (serialized, color, icon, detail) =>
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Lyase item from your inventory.",
-                item =>
-                {
-                    if (!GetResRef(item).StartsWith(BeastMastery.LyaseResrefPrefix))
-                    {
-                        FloatingTextStringOnCreature("Only Lyase items may be selected.", Player, false);
-                        return;
-                    }
+                _lyaseItem = serialized;
+                _lyaseColor = color;
+                LyaseItemResref = icon;
+                LyaseDetail = detail;
+            });
 
-                    var error = Item.CanBePersistentlyStored(Player, item);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        FloatingTextStringOnCreature(error, Player, false);
-                        return;
-                    }
-
-                    LyaseItemResref = Item.GetIconResref(item);
-                    _lyaseItem = ObjectPlugin.Serialize(item);
-                    _lyaseColor = AddItemStats(item);
-                    DestroyObject(item);
-                    ToggleStartJob();
-                    ToggleContinueJob();
-                });
-            }
-        };
-
-        public Action OnClickIsomerase() => () =>
-        {
-            if (!string.IsNullOrWhiteSpace(_isomeraseItem))
+        public Action OnClickIsomerase() => OnClickEnzyme("Isomerase", BeastMastery.IsomeraseResrefPrefix,
+            () => _isomeraseItem,
+            (serialized, color, icon, detail) =>
             {
-                ShowModal("Will you remove the Isomerase Enzyme?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(_isomeraseItem);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
-                        SwitchViews();
-                        return;
-                    }
-
-                    IsomeraseItemResref = _blank;
-                    _isomeraseItem = string.Empty;
-                    _isomeraseColor = EnzymeColorType.Invalid;
-
-                    SubtractItemStats(item);
-                    ToggleStartJob();
-                    ToggleContinueJob();
-                    SwitchViews();
-                }, SwitchViews);
-            }
-            else
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select an Isomerase item from your inventory.",
-                item =>
-                {
-                    if (!GetResRef(item).StartsWith(BeastMastery.IsomeraseResrefPrefix))
-                    {
-                        FloatingTextStringOnCreature("Only Isomerase items may be selected.", Player, false);
-                        return;
-                    }
-
-                    var error = Item.CanBePersistentlyStored(Player, item);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        FloatingTextStringOnCreature(error, Player, false);
-                        return;
-                    }
-
-                    IsomeraseItemResref = Item.GetIconResref(item);
-                    _isomeraseItem = ObjectPlugin.Serialize(item);
-                    _isomeraseColor = AddItemStats(item);
-                    DestroyObject(item);
-                    ToggleStartJob();
-                    ToggleContinueJob();
-                });
-            }
-        };
+                _isomeraseItem = serialized;
+                _isomeraseColor = color;
+                IsomeraseItemResref = icon;
+                IsomeraseDetail = detail;
+            });
 
         public Action OnClickErraticGeniusToggled() => () =>
         {
             LoadPlayerStats();
+            RefreshAllStats();
+        };
+
+        public Action OnClickAllowMutationToggled() => () =>
+        {
+            var job = GetJob();
+            if (job != null)
+            {
+                job.IsMutationSuppressed = !IsMutationAllowed;
+                DB.Set(job);
+            }
+
+            RefreshAllStats();
+        };
+
+        public Action OnClickToggleResistances() => () =>
+        {
+            _showResistances = !_showResistances;
             RefreshAllStats();
         };
 
@@ -1074,73 +974,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (job == null)
                 return string.Empty;
 
-            if (job.CurrentStage > NumberOfStages)
+            if (job.CurrentStage >= NumberOfStages)
                 return "Max stage reached.";
+
+            if (DateTime.UtcNow < job.DateCompleted)
+                return "The current stage is still running.";
 
             if (IsErraticGeniusChecked && Perk.GetPerkLevel(Player, PerkType.ErraticGenius) <= 0)
             {
                 return "You do not have the Erratic Genius perk purchased and cannot start this job.";
             }
 
-
             return string.Empty;
+        }
+
+        private int GetStageTotal(IncubationStatType stat)
+        {
+            _baseStats.TryGetValue(stat, out var baseValue);
+            _stageStats.TryGetValue(stat, out var stageValue);
+            return Math.Min(baseValue + Math.Clamp(stageValue, 0, MaxStageIncrease), MaxStat);
         }
 
         private void StartJob(IncubationJob job)
         {
-            const int MaxStageIncrease = 100; // 10.0%
-            const int MaxStat = 1000; // 100.0%
             var incubationSeconds = CalculateIncubationSeconds();
             var now = DateTime.UtcNow;
-
-            var erraticGeniusBonus = (job.CurrentStage <= 0 && IsErraticGeniusChecked ? GetErraticGeniusBonus() : 0) * 10;
-            var mutationChance = _mutationChance + (_stageMutationChance > MaxStageIncrease ? MaxStageIncrease : _stageMutationChance) + erraticGeniusBonus;
-
-            var attackPurity = _attack + (_stageAttack > MaxStageIncrease ? MaxStageIncrease : _stageAttack);
-            var accuracyPurity = _accuracy + (_stageAccuracy > MaxStageIncrease ? MaxStageIncrease : _stageAccuracy);
-            var evasionPurity = _evasion + (_stageEvasion > MaxStageIncrease ? MaxStageIncrease : _stageEvasion);
-            var learningPurity = _learning + (_stageLearning > MaxStageIncrease ? MaxStageIncrease : _stageLearning);
-            var xpPenalty = _xpPenalty + (_stageXPPenalty > MaxStageIncrease ? MaxStageIncrease : _stageXPPenalty);
-
-            var physicalDefense = _physicalDefense + (_stagePhysicalDefense > MaxStageIncrease ? MaxStageIncrease : _stagePhysicalDefense);
-            var forceDefense = _forceDefense + (_stageForceDefense > MaxStageIncrease ? MaxStageIncrease : _stageForceDefense);
-            var iceResistance = _iceResistance + (_stageIceResistance > MaxStageIncrease ? MaxStageIncrease : _stageIceResistance);
-            var fireResistance = _fireResistance + (_stageFireResistance > MaxStageIncrease ? MaxStageIncrease : _stageFireResistance);
-            var poisonResistance = _poisonResistance + (_stagePoisonResistance > MaxStageIncrease ? MaxStageIncrease : _stagePoisonResistance);
-            var electricalResistance = _electricalResistance + (_stageElectricalResistance > MaxStageIncrease ? MaxStageIncrease : _stageElectricalResistance);
-
-            var mindResistance = _mindResistance + (_stageMindResistance > MaxStageIncrease ? MaxStageIncrease : _stageMindResistance);
-            var mobilityResistance = _mobilityResistance + (_stageMobilityResistance > MaxStageIncrease ? MaxStageIncrease : _stageMobilityResistance);
-            var traumaResistance = _traumaResistance + (_stageTraumaResistance > MaxStageIncrease ? MaxStageIncrease : _stageTraumaResistance);
-            var disruptionResistance = _disruptionResistance + (_stageDisruptionResistance > MaxStageIncrease ? MaxStageIncrease : _stageDisruptionResistance);
+            var hasPendingStage = true;
 
             var validationError = ValidateCreateJob();
             if (string.IsNullOrWhiteSpace(validationError))
             {
+                job.MutationChance = GetProjectedMutationChance(job.CurrentStage <= 0 ? null : job, hasPendingStage);
+                if (job.CurrentStage <= 0)
+                    job.DNAIconResref = DNAItemResref;
                 job.CurrentStage++;
+                job.IsMutationSuppressed = !IsMutationAllowed;
 
-                job.MutationChance = mutationChance > MaxStat ? MaxStat : mutationChance;
-                job.AttackPurity = attackPurity > MaxStat ? MaxStat : attackPurity;
-                job.AccuracyPurity = accuracyPurity > MaxStat ? MaxStat : accuracyPurity;
-                job.EvasionPurity = evasionPurity > MaxStat ? MaxStat : evasionPurity;
-                job.LearningPurity = learningPurity > MaxStat ? MaxStat : learningPurity;
-                job.XPPenalty = xpPenalty > MaxStat ? MaxStat : xpPenalty;
+                job.AttackPurity = GetStageTotal(IncubationStatType.AttackPurity);
+                job.AccuracyPurity = GetStageTotal(IncubationStatType.AccuracyPurity);
+                job.EvasionPurity = GetStageTotal(IncubationStatType.EvasionPurity);
+                job.LearningPurity = GetStageTotal(IncubationStatType.LearningPurity);
+                job.XPPenalty = GetStageTotal(IncubationStatType.XPPenalty);
 
-                job.DefensePurities[CombatDamageType.Physical] = physicalDefense > MaxStat ? MaxStat : physicalDefense;
-                job.DefensePurities[CombatDamageType.Force] = forceDefense > MaxStat ? MaxStat : forceDefense;
+                job.DefensePurities[CombatDamageType.Physical] = GetStageTotal(IncubationStatType.PhysicalDefensePurity);
+                job.DefensePurities[CombatDamageType.Force] = GetStageTotal(IncubationStatType.ForceDefensePurity);
 
-                job.ResistancePurities[ResistanceType.Ice] = iceResistance > MaxStat ? MaxStat : iceResistance;
-                job.ResistancePurities[ResistanceType.Fire] = fireResistance > MaxStat ? MaxStat : fireResistance;
-                job.ResistancePurities[ResistanceType.Poison] = poisonResistance > MaxStat ? MaxStat : poisonResistance;
-                job.ResistancePurities[ResistanceType.Electrical] = electricalResistance > MaxStat ? MaxStat : electricalResistance;
-                job.ResistancePurities[ResistanceType.Mind] = mindResistance > MaxStat ? MaxStat : mindResistance;
-                job.ResistancePurities[ResistanceType.Mobility] = mobilityResistance > MaxStat ? MaxStat : mobilityResistance;
-                job.ResistancePurities[ResistanceType.Trauma] = traumaResistance > MaxStat ? MaxStat : traumaResistance;
-                job.ResistancePurities[ResistanceType.Disruption] = disruptionResistance > MaxStat ? MaxStat : disruptionResistance;
+                foreach (var stat in IncubationProjection.ResistancePurityStats)
+                {
+                    job.ResistancePurities[IncubationProjection.GetResistanceType(stat)] = GetStageTotal(stat);
+                }
 
                 job.ResistancePurities = BeastResistanceCalculator.CreateResistancePurities(job.ResistancePurities);
 
-                if(_lyaseColor != EnzymeColorType.Invalid)
+                if (_lyaseColor != EnzymeColorType.Invalid)
                     job.LyaseColors[_lyaseColor]++;
                 if (_hydrolaseColor != EnzymeColorType.Invalid)
                     job.HydrolaseColors[_hydrolaseColor]++;
@@ -1157,7 +1043,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _isomeraseItem = string.Empty;
                 _lyaseItem = string.Empty;
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
-                FloatingTextStringOnCreature($"Incubation job started!", Player, false);
+                FloatingTextStringOnCreature($"Incubation stage {job.CurrentStage} started!", Player, false);
             }
             else
             {
@@ -1168,7 +1054,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickStartJob() => () =>
         {
-            ShowModal($"Are you sure you want to start this job?", () =>
+            ShowModal("Start stage 1 of this job? The DNA and enzymes go into the incubator.", () =>
             {
                 var job = new IncubationJob
                 {
@@ -1188,7 +1074,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (job == null)
                 return;
 
-            ShowModal($"Are you sure you want to start this job?", () =>
+            ShowModal($"Start stage {job.CurrentStage + 1}? These enzymes go into the incubator.", () =>
             {
                 StartJob(job);
                 SwitchViews();
@@ -1197,7 +1083,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCancelJob() => () =>
         {
-            ShowModal($"Are you sure you want to cancel this job? All DNA and enzyme items will be permanently lost!",
+            ShowModal("Are you sure you want to cancel this job? All DNA and enzyme items will be permanently lost!",
             () =>
             {
                 var dbJob = GetJob();
@@ -1207,7 +1093,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Delete<IncubationJob>(dbJob.Id);
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 Log.Write(LogGroup.Incubation, $"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
-                FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);
+                FloatingTextStringOnCreature("Incubation job cancelled!", Player, false);
 
                 SwitchViews();
             }, SwitchViews);
@@ -1215,16 +1101,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCompleteJob() => () =>
         {
-            ShowModal("Are you sure you want to complete this job?", () =>
+            var job = GetJob();
+            if (job == null)
+                return;
+
+            var outcomes = IncubationProjection.GetOutcomes(BeastMastery.GetBeastDetail(job.BeastDNAType), job, !job.IsMutationSuppressed);
+            var mutationOdds = outcomes
+                .Where(x => x.Type != job.BeastDNAType)
+                .Sum(x => x.Percent);
+            var prompt = mutationOdds > 0f
+                ? $"Complete this job? It has a {mutationOdds:0.0}% chance to mutate into another beast."
+                : "Complete this job? The egg keeps its DNA's beast type.";
+
+            ShowModal(prompt, () =>
             {
-                var job = GetJob();
-                if (!IsJobComplete(job, DateTime.UtcNow))
+                var current = GetJob();
+                if (!IsJobComplete(current, DateTime.UtcNow))
                 {
                     SwitchViews();
                     return;
                 }
 
-                BeastMastery.CreateBeastEgg(job, Player);
+                BeastMastery.CreateBeastEgg(current, Player);
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
 
                 SwitchViews();
@@ -1242,14 +1140,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             LoadPlayerStats();
             RefreshAllStats();
-            RefreshIncubationTime();
         }
 
         public void Refresh(PerkRefundedRefreshEvent payload)
         {
             LoadPlayerStats();
             RefreshAllStats();
-            RefreshIncubationTime();
         }
     }
 }

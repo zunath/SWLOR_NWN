@@ -333,31 +333,42 @@ class GameClient:
             time.sleep(2)
         return bright_pixels(self.snapshot(), title_box) < 40
 
-    def move_item(self, source: tuple[int, int], target: tuple[int, int], attempts: int = 3) -> bool:
+    def move_item(self, source: tuple[int, int], target: tuple[int, int], attempts: int = 3, polls: int = 6) -> bool:
         """Drag an inventory or equipment icon to another place until the source shows the change.
 
         The server does not tell a dropped drag from a done one, so the screen is compared: an icon
         that moved makes both its source and its target look different. Use it only in a quiet scene,
-        where nothing else changes behind the inventory panel.
+        where nothing else changes behind the inventory panel. The server answers a move late on a
+        busy machine, so the screen is checked every 2 seconds, up to polls times, before the drag is
+        taken as dropped: a second drag after a slow success would move something else.
         """
         for _ in range(attempts):
             before = self.snapshot()
             self.drag(*source, *target)
             # Park the pointer away so no tooltip is left over either end, then compare both ends.
             self.move(*NEUTRAL_POINT)
-            time.sleep(2)
-            after = self.snapshot()
-            if (region_changed(before, after, source, threshold=25, minimum=40)
-                    and region_changed(before, after, target, threshold=25, minimum=40)):
-                return True
+            for _ in range(polls):
+                time.sleep(2)
+                after = self.snapshot()
+                if (region_changed(before, after, source, threshold=25, minimum=40)
+                        and region_changed(before, after, target, threshold=25, minimum=40)):
+                    return True
         return False
 
-    def locate_new_item(self, create) -> tuple[int, int] | None:
-        """Run create() (which adds an item) and return where the new icon appeared in the grid."""
+    def locate_new_item(self, create, polls: int = 8) -> tuple[int, int] | None:
+        """Run create() (which adds an item) and return where the new icon appeared in the grid.
+
+        The screen is checked every 2 seconds, up to polls times, because the server can be slow to
+        add the item on a busy machine.
+        """
         before = self.snapshot()
         create()
-        time.sleep(2)
-        return new_item_center(before, self.snapshot())
+        for _ in range(polls):
+            time.sleep(2)
+            found = new_item_center(before, self.snapshot())
+            if found is not None:
+                return found
+        return None
 
     def is_dead(self) -> bool:
         """True when the "You Are Dead" dialog is on screen."""
@@ -398,8 +409,11 @@ class GameClient:
             time.sleep(1)
         return False
 
-    def wait_loaded(self, timeout: float = 120, settle: float = 4) -> bool:
-        """Wait until the loading-screen frame is gone, then a short settle."""
+    def wait_loaded(self, timeout: float = 600, settle: float = 4) -> bool:
+        """Wait until the loading-screen frame is gone, then a short settle.
+
+        An area can take minutes to load on a busy machine; the wait ends as soon as the frame is gone.
+        """
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             if not live.showing_loading_screen(self.stack):

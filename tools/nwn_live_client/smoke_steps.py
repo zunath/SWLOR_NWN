@@ -85,7 +85,7 @@ def teleport(client: GameClient, tag: str) -> bool:
     client.say(f'/tpwp {tag}')
     if client.wait_for('Invalid waypoint tag', mark, 3, 1):
         return False
-    if client.wait_area_change(tips, timeout=14):
+    if client.wait_area_change(tips, timeout=30):
         return client.wait_loaded()
     time.sleep(4)
     return True

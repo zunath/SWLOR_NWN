@@ -434,7 +434,7 @@ class SmokeRun:
         services = ['redis', 'swlor-server']
         if not self.server_only:
             stack.ensure_owner()
-            live.start_client(stack, Path(stack.state['cdkey_source']))
+            live.start_client(stack, Path(stack.state['cdkey_source']), self.options.client_timeout)
             live.record_image_ids(stack, ('client',))
             step.check('client connects to the server', stack.joined_players() > 0)
             services.append('client')
@@ -463,7 +463,8 @@ class SmokeRun:
     def step_login(self, step: StepResult) -> None:
         assert self.stack is not None
         stack = self.stack
-        live.play(stack, self.options.settle)
+        # The character gets twice the time the client gets to connect (600 s by default).
+        live.play(stack, self.options.settle, timeout=2 * self.options.client_timeout)
         step.check('character entered the module', live.module_entries(stack) > 0)
         uuid = stack.state['character']['uuid']
         record = json.loads(self.redis('JSON.GET', f'Player:{uuid}', '.'))
@@ -636,6 +637,9 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument('--client-install', help='NWN:EE install containing the Linux client.')
     run.add_argument('--server-timeout', type=float, default=900, help='Seconds to wait for the module to load.')
     run.add_argument('--max-minutes', type=float, default=120, help='Lifetime limit of the server and client.')
+    run.add_argument('--client-timeout', type=float, default=300,
+                     help='Seconds the client gets to connect after its window is up (the character gets twice '
+                          'that to enter); raise on a busy machine.')
     run.add_argument('--settle', type=float, default=45, help='Seconds without an area transition before the '
                                                               'character counts as settled.')
 
@@ -717,7 +721,7 @@ def attach_command(options: argparse.Namespace) -> int:
     require_pillow()
     stack = Stack(options.run_dir)
     stack.ensure_owner()
-    values = dict(server_only=False, settle=45.0, character=None)
+    values = dict(server_only=False, settle=45.0, character=None, client_timeout=300.0)
     results_dir = options.results_dir or stack.run_dir / 'attach'
     run = SmokeRun(argparse.Namespace(**values), f'{stack.project}-attach', results_dir)
     results = run.attach(stack, names)

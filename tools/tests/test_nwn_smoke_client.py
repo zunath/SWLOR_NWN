@@ -226,7 +226,7 @@ class ClientActionTests(unittest.TestCase):
         # Attempt 1: nothing happened (same screen twice). Attempt 2: the icon moved.
         screens = iter([before_icon, before_icon, before_icon, after_icon])
         with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
-            self.assertTrue(client.move_item((136, 350), (30, 120)))
+            self.assertTrue(client.move_item((136, 350), (30, 120), polls=1))
         self.assertEqual(2, len([call for call in calls if call[0] == 'drag-slow']))
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
@@ -235,7 +235,7 @@ class ClientActionTests(unittest.TestCase):
         before_icon, vanished = blank(), blank()
         ImageDraw.Draw(before_icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
         with patch.object(client, 'snapshot', side_effect=[before_icon, vanished] * 2),                 patch.object(smoke_client.time, 'sleep'):
-            self.assertFalse(client.move_item((136, 350), (30, 120), attempts=2))
+            self.assertFalse(client.move_item((136, 350), (30, 120), attempts=2, polls=1))
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
     def test_a_drag_that_never_lands_is_reported(self):
@@ -243,8 +243,32 @@ class ClientActionTests(unittest.TestCase):
         icon = blank()
         ImageDraw.Draw(icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
         with patch.object(client, 'snapshot', return_value=icon), patch.object(smoke_client.time, 'sleep'):
-            self.assertFalse(client.move_item((136, 350), (30, 120), attempts=2))
+            self.assertFalse(client.move_item((136, 350), (30, 120), attempts=2, polls=3))
         self.assertEqual(2, len([call for call in calls if call[0] == 'drag-slow']))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_a_slow_server_is_waited_for_instead_of_dragging_again(self):
+        client, calls = self.client()
+        before_icon, after_icon = blank(), blank()
+        ImageDraw.Draw(before_icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
+        ImageDraw.Draw(after_icon).rectangle((16, 106, 44, 134), fill=(200, 200, 200))
+        # The first two looks after the drag still show the old screen; the third shows the move.
+        screens = iter([before_icon, before_icon, before_icon, after_icon])
+        with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
+            self.assertTrue(client.move_item((136, 350), (30, 120), polls=3))
+        self.assertEqual(1, len([call for call in calls if call[0] == 'drag-slow']), 'one drag, however slow')
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_a_new_item_icon_that_appears_late_is_still_found(self):
+        client, _ = self.client()
+        before, late = blank(), blank()
+        ImageDraw.Draw(late).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
+        screens = iter([before, before, before, late])
+        with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
+            found = client.locate_new_item(lambda: None, polls=3)
+        self.assertIsNotNone(found)
+        with patch.object(client, 'snapshot', return_value=before), patch.object(smoke_client.time, 'sleep'):
+            self.assertIsNone(client.locate_new_item(lambda: None, polls=2), 'nothing ever appeared')
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
     def test_a_windows_left_edge_comes_from_its_copper_frame(self):

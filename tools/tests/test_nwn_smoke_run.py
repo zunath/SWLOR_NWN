@@ -18,7 +18,8 @@ def options(**overrides):
     values = dict(
         name='smoke-test', results_root=None, repeat=1, server_only=True, character='agantarn.bic',
         public_cdkey=None, cdkey=None, dotnet=None, configuration='Release', module=None, hak_dir=None,
-        tlk_dir=None, client_install=None, server_timeout=900.0, max_minutes=120.0, settle=45.0)
+        tlk_dir=None, client_install=None, server_timeout=900.0, max_minutes=120.0, settle=45.0,
+        client_timeout=300.0)
     values.update(overrides)
     return smoke.argparse.Namespace(**values)
 

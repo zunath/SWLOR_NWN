@@ -24,6 +24,9 @@ namespace SWLOR.Game.Server.Native
         private const int ReadBufferSizeOffset = 0x40;
         private const int ReadBufferPositionOffset = 0x44;
 
+        // No UBJSON value starts with a zero byte, so the engine's reader rejects data that does.
+        private const byte UnreadableMarker = 0;
+
         // nlohmann::json (libstdc++): a type byte, then an 8-byte value at offset 8. Objects point at a std::map,
         // arrays at a std::vector of json, strings at a std::string (data pointer, then length).
         private const byte JsonObject = 1;
@@ -97,7 +100,9 @@ namespace SWLOR.Game.Server.Native
 
         /// <summary>
         /// Repairs the UBJSON that ReadJSON is about to decode: a 4-byte length, then that many bytes, at the read
-        /// offset (after a type byte when the engine runs without multiplayer).
+        /// offset (after a type byte when the engine runs without multiplayer). Data the walk cannot read to the end
+        /// is made unreadable instead: its first marker becomes an invalid one, so the engine discards the whole
+        /// value rather than decode strings the walk never reached. The length is kept, so the message stays aligned.
         /// </summary>
         private static int RepairPendingUbjson(byte* message)
         {
@@ -117,7 +122,11 @@ namespace SWLOR.Game.Server.Native
             if (length == 0 || length > size - start || length > int.MaxValue)
                 return 0;
 
-            return UbjsonTextRepair.RepairStrings(new Span<byte>(buffer + start, (int)length));
+            var ubjson = new Span<byte>(buffer + start, (int)length);
+            var replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete);
+            if (!complete)
+                ubjson[0] = UnreadableMarker;
+            return replaced;
         }
 
         /// <summary>

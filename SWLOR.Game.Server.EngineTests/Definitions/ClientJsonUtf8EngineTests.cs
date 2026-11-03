@@ -74,6 +74,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(before + 4, ClientJsonUtf8Guard.ReplacedByteCount, "invalid key bytes replaced");
         }
 
+        [EngineTest("An invalid object key nested 3,000 arrays deep is repaired before decoding", Category = "ClientJsonUtf8", TimeoutSeconds = 60f)]
+        public static async Task DeeplyNestedKeyIsRepaired(EngineTestContext ctx)
+        {
+            const int depth = 3000;
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var before = ClientJsonUtf8Guard.ReplacedByteCount;
+            var payload = Concat(
+                Enumerable.Repeat((byte)'[', depth).ToArray(),
+                Bytes('{'), UbjsonKey(new byte[] { 0x80 }), Bytes('Z'), Bytes('}'),
+                Enumerable.Repeat((byte)']', depth).ToArray());
+
+            await ctx.ExecuteInCreatureContextAsync(fixture.Creature, () =>
+                SendNuiMessage(fixture.Creature, NuiEventMinor, BuildEventMessage(payload)));
+
+            ctx.AssertEqual(before + 1, ClientJsonUtf8Guard.ReplacedByteCount, "invalid key bytes replaced");
+        }
+
         [EngineTest("A NUI event with valid UTF-8 text is passed through unchanged", Category = "ClientJsonUtf8", TimeoutSeconds = 60f)]
         public static async Task ValidNuiEventIsUntouched(EngineTestContext ctx)
         {

@@ -1,33 +1,106 @@
+using System.Collections.Generic;
+
 namespace SWLOR.Game.Server.Native
 {
     /// <summary>
     /// Repairs invalid UTF-8 in every string value and object key of encoded UBJSON, in place and without
     /// changing any length, before the engine decodes it. The walk follows the engine's nlohmann UBJSON reader
     /// marker for marker, so it visits exactly the bytes that reader turns into strings. Number bytes are never
-    /// touched. Malformed data ends the walk; the engine's reader rejects the same data.
+    /// touched. The walk keeps its own stack, so nesting depth does not limit it.
     /// </summary>
     public static class UbjsonTextRepair
     {
         private const int EndOfData = -1;
 
-        // Deeper nesting stops the walk instead of exhausting the stack.
-        private const int MaxDepth = 2048;
+        // Container state kept on the walk's stack.
+        private const int IsObject = 1;
+        private const int IsUnsized = 2;
+        private const int ChildStarted = 4;
+        private const int TypeShift = 8;
 
         /// <summary>
         /// Repairs the strings of one encoded UBJSON value.
         /// </summary>
         /// <param name="ubjson">The encoded value, repaired in place.</param>
+        /// <param name="complete">
+        /// Whether the whole value was read. False means the data is malformed; the engine's reader rejects it too.
+        /// </param>
         /// <returns>The number of bytes replaced.</returns>
-        public static int RepairStrings(Span<byte> ubjson)
+        public static int RepairStrings(Span<byte> ubjson, out bool complete)
         {
             var position = 0;
             var current = EndOfData;
             var replaced = 0;
-            ReadValue(ubjson, ref position, ref current, GetIgnoringNoOp(ubjson, ref position, ref current), 0, ref replaced);
+            var remaining = new List<long>();
+            var states = new List<int>();
+
+            complete = StartValue(ubjson, ref position, ref current, GetIgnoringNoOp(ubjson, ref position, ref current),
+                remaining, states, ref replaced);
+            while (complete && remaining.Count > 0)
+            {
+                var top = remaining.Count - 1;
+                var state = states[top];
+                var isObject = (state & IsObject) != 0;
+                var type = state >> TypeShift;
+
+                // An unsized container reads past the value it just finished before checking for its end.
+                if ((state & ChildStarted) != 0)
+                {
+                    state &= ~ChildStarted;
+                    states[top] = state;
+                    if ((state & IsUnsized) != 0)
+                        GetIgnoringNoOp(ubjson, ref position, ref current);
+                }
+
+                int marker;
+                if ((state & IsUnsized) != 0)
+                {
+                    if (current == (isObject ? '}' : ']'))
+                    {
+                        Pop(remaining, states);
+                        continue;
+                    }
+
+                    // An unsized object's key reuses the marker already read.
+                    if (isObject && !ReadString(ubjson, ref position, ref current, false, ref replaced))
+                    {
+                        complete = false;
+                        break;
+                    }
+
+                    marker = isObject ? GetIgnoringNoOp(ubjson, ref position, ref current) : current;
+                }
+                else
+                {
+                    // Typed arrays of values that hold no bytes (including the 'N' type) need no walk.
+                    if (remaining[top] == 0 || (!isObject && type != 0 && !HoldsBytes(type)))
+                    {
+                        Pop(remaining, states);
+                        continue;
+                    }
+
+                    remaining[top]--;
+                    if (isObject && !ReadString(ubjson, ref position, ref current, true, ref replaced))
+                    {
+                        complete = false;
+                        break;
+                    }
+
+                    marker = type != 0 ? type : GetIgnoringNoOp(ubjson, ref position, ref current);
+                }
+
+                states[top] = state | ChildStarted;
+                complete = StartValue(ubjson, ref position, ref current, marker, remaining, states, ref replaced);
+            }
+
             return replaced;
         }
 
-        private static bool ReadValue(Span<byte> data, ref int position, ref int current, int marker, int depth, ref int replaced)
+        /// <summary>
+        /// Reads a scalar value whole, or opens a container by pushing it onto the walk's stack.
+        /// </summary>
+        private static bool StartValue(Span<byte> data, ref int position, ref int current, int marker,
+            List<long> remaining, List<int> states, ref int replaced)
         {
             switch (marker)
             {
@@ -54,84 +127,21 @@ namespace SWLOR.Game.Server.Native
                 case 'S':
                     return ReadString(data, ref position, ref current, true, ref replaced);
                 case '[':
-                    return depth < MaxDepth && ReadArray(data, ref position, ref current, depth + 1, ref replaced);
                 case '{':
-                    return depth < MaxDepth && ReadObject(data, ref position, ref current, depth + 1, ref replaced);
+                    if (!ReadSizeAndType(data, ref position, ref current, out var count, out var type))
+                        return false;
+                    remaining.Add(count);
+                    states.Add((marker == '{' ? IsObject : 0) | (count < 0 ? IsUnsized : 0) | (type << TypeShift));
+                    return true;
                 default:
                     return false;
             }
         }
 
-        private static bool ReadArray(Span<byte> data, ref int position, ref int current, int depth, ref int replaced)
+        private static void Pop(List<long> remaining, List<int> states)
         {
-            if (!ReadSizeAndType(data, ref position, ref current, out var count, out var type))
-                return false;
-
-            if (count >= 0)
-            {
-                if (type != 0)
-                {
-                    // Values that hold no bytes (including the 'N' type) need no walk.
-                    if (!HoldsBytes(type))
-                        return true;
-
-                    for (long index = 0; index < count; index++)
-                    {
-                        if (!ReadValue(data, ref position, ref current, type, depth, ref replaced))
-                            return false;
-                    }
-
-                    return true;
-                }
-
-                for (long index = 0; index < count; index++)
-                {
-                    if (!ReadValue(data, ref position, ref current, GetIgnoringNoOp(data, ref position, ref current), depth, ref replaced))
-                        return false;
-                }
-
-                return true;
-            }
-
-            while (current != ']')
-            {
-                if (!ReadValue(data, ref position, ref current, current, depth, ref replaced))
-                    return false;
-                GetIgnoringNoOp(data, ref position, ref current);
-            }
-
-            return true;
-        }
-
-        private static bool ReadObject(Span<byte> data, ref int position, ref int current, int depth, ref int replaced)
-        {
-            if (!ReadSizeAndType(data, ref position, ref current, out var count, out var type))
-                return false;
-
-            if (count >= 0)
-            {
-                for (long index = 0; index < count; index++)
-                {
-                    if (!ReadString(data, ref position, ref current, true, ref replaced))
-                        return false;
-
-                    var marker = type != 0 ? type : GetIgnoringNoOp(data, ref position, ref current);
-                    if (!ReadValue(data, ref position, ref current, marker, depth, ref replaced))
-                        return false;
-                }
-
-                return true;
-            }
-
-            while (current != '}')
-            {
-                if (!ReadString(data, ref position, ref current, false, ref replaced) ||
-                    !ReadValue(data, ref position, ref current, GetIgnoringNoOp(data, ref position, ref current), depth, ref replaced))
-                    return false;
-                GetIgnoringNoOp(data, ref position, ref current);
-            }
-
-            return true;
+            remaining.RemoveAt(remaining.Count - 1);
+            states.RemoveAt(states.Count - 1);
         }
 
         // An optional "$type" (which requires "#") and an optional "#count". A count of -1 means unsized; the

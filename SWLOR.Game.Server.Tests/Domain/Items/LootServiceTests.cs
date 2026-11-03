@@ -113,7 +113,7 @@ public class LootServiceTests
     /// <summary>The registry with the search for loot table definitions and the calls into services that need a server answered by the test.</summary>
     private sealed class TestLootService : LootService
     {
-        public IEnumerable<Type>? Definitions { get; set; }
+        public IEnumerable<Type> Definitions { get; set; } = null!;
         public Dictionary<(uint Creature, PerkType Perk), int> PerkLevels { get; } = new();
         public Dictionary<(uint Creature, StatType Stat), int> StatAdjustments { get; } = new();
         public Dictionary<BeastType, BeastDetail> Beasts { get; } = new();

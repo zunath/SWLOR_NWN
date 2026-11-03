@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.MessagingService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -2284,7 +2285,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Notifies players near the attacker, plus a targeted pilot who is outside that radius, of ship damage.
         /// </summary>
-        private static void NotifyShipDamage(uint attacker, uint target, Messaging.BuildMessageDelegate buildMessage)
+        private static void NotifyShipDamage(uint attacker, uint target, BuildMessageDelegate buildMessage)
         {
             Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange);
 

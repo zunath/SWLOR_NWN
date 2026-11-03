@@ -17,10 +17,6 @@ namespace SWLOR.Game.Server.Tests.Feature;
 [NonParallelizable]
 public sealed partial class QuestConversationTests
 {
-    private object _originalItemNames = null!;
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
-
     // The guild service is an instance behind the static Guild class: the fixture loads it once into a container of its
     // own and installs that container for every test, as the server's boot does for the facades.
     private FacadeContainer _facades = null!;
@@ -49,14 +45,12 @@ public sealed partial class QuestConversationTests
         var names = Directory.EnumerateFiles(Path.Combine(directory!.FullName, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
                 JObject.Parse(File.ReadAllText(path))["LocalizedName"]?["value"]?["0"]?.Value<string>() ?? string.Empty);
-        _originalItemNames = ItemNameCache.GetValue(null)!;
-        ItemNameCache.SetValue(null, names);
+        CacheItemNames.Seed(_facades, names);
     }
 
     [OneTimeTearDown]
     public void RestoreItemNames()
     {
-        ItemNameCache.SetValue(null, _originalItemNames);
         _facades.Dispose();
     }
 

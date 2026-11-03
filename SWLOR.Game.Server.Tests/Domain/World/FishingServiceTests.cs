@@ -79,9 +79,20 @@ public class FishingServiceTests
         protected override void GiveAgricultureXp(uint player, int xp) => XpAwards.Add((player, xp));
     }
 
+    // Fishing broadcasts through the Messaging facade, which resolves the service from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _invalid.Clear();
         _resrefs.Clear();
         _isPlayer = true;
@@ -130,6 +141,7 @@ public class FishingServiceTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         Random.ResetSeed();
         _playerScope.Dispose();
         _engineScope.Dispose();

@@ -261,8 +261,8 @@ public class IncubationFieldNoteTests
             var json = blueprint.RootElement;
 
             json.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be(resref);
-            json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString()
-                .Should().Be($"Field Note: {Beasts[note.Target].Name}");
+            json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString()!.Replace("'", "")
+                .Should().Be($"Field Note: {Beasts[note.Target].Name}".Replace("'", ""));
 
             var keyItemId = json.GetProperty("VarTable").GetProperty("value").EnumerateArray()
                 .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == "KEY_ITEM_ID")

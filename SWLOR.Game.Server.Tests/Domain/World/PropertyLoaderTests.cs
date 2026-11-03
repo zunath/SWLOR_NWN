@@ -946,6 +946,25 @@ public class PropertyLoaderTests
     }
 
     [Test]
+    public void A_structure_that_still_shows_a_former_default_name_is_renamed_and_saved_when_it_spawns()
+    {
+        var structure = StoreStructure("parent", StructureType.VeilcarvedRunePillar);
+        structure.CustomName = "Veilcarved Display Plinth";
+        var custom = StoreStructure("parent", StructureType.VeilcarvedRunePillar);
+        custom.CustomName = "Trophy of the Hunt";
+        var area = _world.NewObject();
+
+        Loader.SpawnIntoWorld(custom, area);
+        Db.Store.Saved.Should().BeEmpty("a custom name is kept and nothing is written");
+
+        Loader.SpawnIntoWorld(structure, area);
+
+        structure.CustomName.Should().Be("Veilcarved Rune Pillar");
+        custom.CustomName.Should().Be("Trophy of the Hunt");
+        Db.Store.Saved.Should().Equal(structure);
+    }
+
+    [Test]
     public void Spawning_a_structure_that_already_has_a_placeable_only_replays_its_event()
     {
         var structure = StoreStructure("parent");

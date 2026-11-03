@@ -507,6 +507,12 @@ public sealed class PropertyWorld : IDisposable
 
         public PlanetAttribute GetPlanetByType(PlanetType type) => _real.Value.GetPlanetByType(type);
 
+        public bool TryGetClosedMessage(PlanetType type, out string message)
+        {
+            message = string.Empty;
+            return false;
+        }
+
         public Dictionary<PlanetType, PlanetAttribute> GetAllPlanets() => _real.Value.GetAllPlanets();
     }
 }

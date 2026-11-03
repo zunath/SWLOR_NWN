@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
@@ -1109,6 +1110,10 @@ namespace SWLOR.Game.Server.Domain.World
                 }
 
                 var furniture = _catalog.GetStructureByType(property.StructureType);
+
+                // A structure the release migration did not reach (such as a record restored afterwards).
+                if (FurnitureRenameMigration.RenameStructure(property))
+                    _db.Set(property);
 
                 var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
                 var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);

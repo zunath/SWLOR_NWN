@@ -20,7 +20,7 @@ public class RecordingProxy : DispatchProxy
     /// <summary>
     /// Creates a proxy that implements <paramref name="contract"/>. A call returns nothing for <c>void</c>, a distinct
     /// object for a reference type (so a test can see that the facade passes the result through), a value that is not
-    /// the default for <c>bool</c>, <c>int</c>, <c>long</c>, <c>float</c> and enums (and nullable enums), and the
+    /// the default for <c>bool</c>, <c>int</c>, <c>long</c>, <c>float</c>, <c>DateTime</c> and enums (and nullable enums), and the
     /// default for any other value type.
     /// </summary>
     public static object Create(Type contract, out RecordingProxy proxy)
@@ -71,6 +71,8 @@ public class RecordingProxy : DispatchProxy
             return 4242L;
         if (returnType == typeof(float))
             return 4.5f;
+        if (returnType == typeof(DateTime))
+            return new DateTime(2026, 11, 3, 12, 0, 0, DateTimeKind.Utc);
         var enumType = Nullable.GetUnderlyingType(returnType) ?? returnType;
         if (enumType.IsEnum)
         {

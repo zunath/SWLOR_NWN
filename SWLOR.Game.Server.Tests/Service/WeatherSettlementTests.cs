@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Tests.Domain.World;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -14,6 +15,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public sealed class WeatherSettlementTests
 {
+    // The weather instance asks the static Property facade for the property of an area, which resolves from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacadeContainer() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacadeContainer() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
+
     private const uint Settlement = 100;
     private const uint Player = 5001;
 

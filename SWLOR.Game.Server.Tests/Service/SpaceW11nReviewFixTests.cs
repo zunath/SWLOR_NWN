@@ -504,6 +504,11 @@ public class SpaceW11nReviewFixTests
         var login = Between(source, "public static void RegisterHeldMissions()", "// The board");
         login.Should().Contain("!x.Paid && dbPlayer.Quests.TryGetValue(x.Id, out var quest) && quest.DateLastCompleted != null");
         Index(login, "PayMission(player, missionId);").Should().BeLessThan(Index(login, "OnMissionCompleted(player, missionId);"));
+
+        // A mission whose credits could not be saved is not paid: completing it keeps it, with its completed quest record,
+        // so this login recovery pays it next time instead of the restart losing the credits.
+        var completed = Between(source, "public static void OnMissionCompleted(", "public static void PayMission(");
+        Index(completed, "is { Paid: false })").Should().BeLessThan(Index(completed, "dbPlayer.AgentMissions.RemoveAll(x => x.Id == missionId);"));
     }
 
     [Test]

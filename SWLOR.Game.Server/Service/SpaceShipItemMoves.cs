@@ -46,13 +46,30 @@ namespace SWLOR.Game.Server.Service
                 () => DeleteLocalString(item, ModuleFittingVariable));
 
         /// <summary>
-        /// The ship saved the fitted module: its receipt follows, and outlives any later change to the ship until the
-        /// fitter's next login has settled their marked modules (<see cref="ShipModuleReceipt"/>).
+        /// Records the fitting on the ship, to be saved in the same write as the fitted module
+        /// (<see cref="PlayerShip.FittingAcknowledgements"/>), so a restart before the receipt is saved still leaves proof.
         /// </summary>
-        public static void SaveModuleReceipt(uint player, string instanceId, string shipId)
+        public static void AcknowledgeFitting(PlayerShip ship, uint player, string instanceId)
         {
-            DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = GetObjectUUID(player), ShipId = shipId });
+            ship.FittingAcknowledgements ??= new Dictionary<string, string>();
+            ship.FittingAcknowledgements[instanceId] = GetObjectUUID(player);
         }
+
+        /// <summary>
+        /// The ship saved the fitted module: its receipt follows, and outlives any later change to the ship until the
+        /// fitter's next login has settled their marked modules (<see cref="ShipModuleReceipt"/>). The ship's acknowledgement
+        /// goes once the receipt holds the fitting.
+        /// </summary>
+        public static void SaveModuleReceipt(uint player, PlayerShip ship, string instanceId)
+        {
+            DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = GetObjectUUID(player), ShipId = ship.Id });
+            if (ship.FittingAcknowledgements?.Remove(instanceId) == true)
+                DB.Set(ship);
+        }
+
+        /// <summary>Whether the ship saved this module as fitted at some point: it still has it, or it acknowledged the fitting.</summary>
+        private static bool WasFitted(PlayerShip ship, string instanceId) =>
+            FindFittedModule(ship, instanceId) != null || ship?.FittingAcknowledgements?.ContainsKey(instanceId) == true;
 
         /// <summary>
         /// Saves the removal record of a module just taken into the remover's inventory and marks the item, before the ship
@@ -162,13 +179,17 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var settled = false;
             var removedHeld = new HashSet<string>();
+            var acknowledged = new List<(string ShipId, string InstanceId)>();
             foreach (var item in GetAllItems(player))
             {
                 if (TryReadShipMark(item, ModuleFittingVariable, out var shipId, out var instanceId))
                 {
                     settled = true;
                     DeleteLocalString(item, ModuleFittingVariable);
-                    if (DB.Get<ShipModuleReceipt>(instanceId) != null || FindFittedModule(DB.Get<PlayerShip>(shipId), instanceId) != null)
+                    var fittedShip = DB.Get<PlayerShip>(shipId);
+                    if (fittedShip?.FittingAcknowledgements?.ContainsKey(instanceId) == true)
+                        acknowledged.Add((shipId, instanceId));
+                    if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))
                     {
                         DestroyObject(item);
                         Log.Write(LogGroup.Space, $"{PlayerName.GetAuditName(player)} - removed module {instanceId} already fitted to ship {shipId} after a restart.");
@@ -228,7 +249,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(player))
                     return;
 
-                // A save that fails keeps the receipts and records for the next login.
+                // A save that fails keeps the receipts, records and acknowledgements for the next login.
                 if (!CharacterCheckpoint.Save(player))
                     return;
 
@@ -236,6 +257,12 @@ namespace SWLOR.Game.Server.Service
                     DB.Delete<ShipModuleReceipt>(receiptId);
                 foreach (var removalId in givenAgain)
                     DB.Delete<ShipModuleRemoval>(removalId);
+                foreach (var (ackShipId, ackInstanceId) in acknowledged)
+                {
+                    var ackShip = DB.Get<PlayerShip>(ackShipId);
+                    if (ackShip?.FittingAcknowledgements?.Remove(ackInstanceId) == true)
+                        DB.Set(ackShip);
+                }
             });
         }
 

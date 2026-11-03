@@ -247,12 +247,18 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Space, $"AGENT ABANDON - {PlayerName.GetAuditName(player)} - {mission.Id} {mission.Type}");
         }
 
-        /// <summary>The mission's quest completed (and paid): it leaves the player's record and quest log.</summary>
+        /// <summary>
+        /// The mission's quest completed (and paid): it leaves the player's record and quest log. A mission not fully paid (its
+        /// credits could not be saved) stays, with its completed quest record, so the next login pays it (RegisterHeldMissions).
+        /// </summary>
         public static void OnMissionCompleted(uint player, string missionId)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer == null)
+                return;
+
+            if (dbPlayer.AgentMissions.FirstOrDefault(x => x.Id == missionId) is { Paid: false })
                 return;
 
             // What the mission set up is cleared before the mission goes, so a restart in between leaves a mission the
@@ -308,7 +314,10 @@ namespace SWLOR.Game.Server.Service
                 // The credits and their mark reach the character file before the mission is saved as paid. A save that fails
                 // leaves the mission unpaid: the mark keeps the credits from being given twice when it is paid again.
                 if (!CharacterCheckpoint.Save(player))
+                {
+                    SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so this mission's credits are paid at your next login."));
                     return;
+                }
 
                 MarkPaid(player, missionId, x => x.PaidCredits = true);
             }

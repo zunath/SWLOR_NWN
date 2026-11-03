@@ -305,17 +305,40 @@ public class SpaceTransferCrashSafetyTests
     // Ship modules and deeds
 
     [Test]
+    public void AFittingAcknowledgement_IsSavedWithTheFittedModule_AndOutlivesItsRemoval()
+    {
+        var moves = Source("Service", "SpaceShipItemMoves.cs");
+        Method(moves, "public static void AcknowledgeFitting(").Should().Contain("ship.FittingAcknowledgements[instanceId] = GetObjectUUID(player);");
+        InOrder(Method(moves, "public static void SaveModuleReceipt("),
+            "DB.Set(new ShipModuleReceipt", "ship.FittingAcknowledgements?.Remove(instanceId) == true", "DB.Set(ship);");
+
+        // A crew member removed the module after the fitter's ship save, before the receipt: the acknowledgement still says it
+        // was fitted, so the fitter's login drops the marked copy instead of keeping a second module.
+        var settle = Method(moves, "public static void SettleShipItemMoves(");
+        InOrder(settle, "var fittedShip = DB.Get<PlayerShip>(shipId);",
+            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))", "DestroyObject(item);");
+        moves.Should().Contain("FindFittedModule(ship, instanceId) != null || ship?.FittingAcknowledgements?.ContainsKey(instanceId) == true");
+        InOrder(settle, "if (!CharacterCheckpoint.Save(player))", "ackShip?.FittingAcknowledgements?.Remove(ackInstanceId) == true", "DB.Set(ackShip);");
+
+        var removal = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        removal.Should().NotContain("FittingAcknowledgements", "only the fitting and the fitter's login change the acknowledgements");
+        new PlayerShip().FittingAcknowledgements.Should().BeEmpty();
+    }
+
+    [Test]
     public void ModulesAndDeeds_AreMarkedAndSavedWithTheCharacterBeforeTheShipChanges()
     {
         var viewModel = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
         var power = Method(viewModel, "private void ProcessPower(");
-        InOrder(power, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;", "DB.Set(dbShip);",
-            "Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);", "DestroyObject(item);");
+        InOrder(power, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
+            "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "DestroyObject(item);");
         InOrder(power, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
             "currentModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
         var config = Method(viewModel, "private void ProcessConfiguration(");
-        InOrder(config, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;", "DB.Set(dbShip);",
-            "Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);", "DestroyObject(item);");
+        InOrder(config, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
+            "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "DestroyObject(item);");
         InOrder(config, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
             "current.Status.ConfigurationModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
 
@@ -346,7 +369,7 @@ public class SpaceTransferCrashSafetyTests
         moves.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleShipItemMoves()");
         var settle = Method(moves, "public static void SettleShipItemMoves(");
         InOrder(settle, "TryReadShipMark(item, ModuleFittingVariable, out var shipId, out var instanceId)",
-            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || FindFittedModule(DB.Get<PlayerShip>(shipId), instanceId) != null)",
+            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))",
             "DestroyObject(item);");
         InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipModuleReceipt>(receiptId);");
         new ShipModuleReceipt().OwnerPlayerId.Should().BeEmpty();

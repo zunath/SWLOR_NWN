@@ -6,6 +6,8 @@
     { "name": "Area", "domain": "World" },
     { "name": "Bank", "domain": "Economy" },
     { "name": "BeastMastery", "domain": "Companions" },
+    { "name": "CapstoneProof", "domain": "Quests" },
+    { "name": "CasinoSlot", "domain": "Economy" },
     { "name": "ChatCommand", "domain": "Social" },
     { "name": "ChatPortraitTells", "domain": "Social" },
     { "name": "Communication", "domain": "Core" },
@@ -45,6 +47,7 @@
     { "name": "Spawn", "domain": "Creatures" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Traps", "domain": "World" },
+    { "name": "Wardrobe", "domain": "Items" },
     { "name": "Weather", "domain": "World" }
   ]
 }

@@ -1,5 +1,7 @@
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -21,7 +23,8 @@ public class CasinoSlotPresentationTests
     [Test]
     public void EveryPossiblePayoutHasACompleteVisualResult()
     {
-        foreach (var payout in Enumerable.Range(0, 10000).Select(CasinoSlot.GetPayout).Distinct())
+        var slot = new CasinoSlotService(new InMemoryDBService());
+        foreach (var payout in Enumerable.Range(0, 10000).Select(slot.GetPayout).Distinct())
         {
             Assert.That(CasinoSlotPresentation.GetReels(payout), Has.Length.EqualTo(3));
             Assert.That(CasinoSlotPresentation.GetHeadline(payout), Is.Not.Empty);

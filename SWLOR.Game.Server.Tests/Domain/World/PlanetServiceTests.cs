@@ -243,7 +243,8 @@ public class PlanetServiceTests
     [Test]
     public void GetPlanetType_ignores_a_stored_id_that_names_no_registered_planet()
     {
-        TheAreaIs("Korriban - Tomb", "tomb", storedPlanetId: 1024);
+        // 2048 is the first id no planet uses (Eshan took 1024).
+        TheAreaIs("Korriban - Tomb", "tomb", storedPlanetId: 2048);
 
         _service.GetPlanetType(SomeArea).Should().Be(PlanetType.Korriban);
     }

@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Entity
             HarvestAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             StarportDeparturePasses = new Dictionary<string, DateTime>();
+            CityDepartures = new Dictionary<string, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
             CharacterType = CharacterType.Invalid;
@@ -250,6 +251,13 @@ namespace SWLOR.Game.Server.Entity
         /// Starport's flights terminal to leave, whatever happened to their access since.
         /// </summary>
         public Dictionary<string, DateTime> StarportDeparturePasses { get; set; }
+
+        /// <summary>
+        /// When the character stopped being a citizen of a city, by city id (Player City Revamp, "Livestock"): the 7 days after which the
+        /// mayor can send the animals they left in that city's corrals away start here. An entry ends when the character rejoins the
+        /// city. Older records load empty.
+        /// </summary>
+        public Dictionary<string, DateTime> CityDepartures { get; set; }
 
         /// <summary>The id of the latest city election result this character has read at login.</summary>
         public string SeenElectionResultId { get; set; }

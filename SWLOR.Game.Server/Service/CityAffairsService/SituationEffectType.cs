@@ -12,6 +12,12 @@ namespace SWLOR.Game.Server.Service.CityAffairsService
         StartHunt = 4,
 
         /// <summary>Every animal in the city gives no products for 72 hours.</summary>
-        LivestockNoProducts = 5
+        LivestockNoProducts = 5,
+
+        /// <summary>The city drives the raiders off the holding the situation is about.</summary>
+        HoldingHelp = 6,
+
+        /// <summary>The treasury pays the customs fine of the holding the situation is about, up to the cost limit.</summary>
+        HoldingFine = 7
     }
 }

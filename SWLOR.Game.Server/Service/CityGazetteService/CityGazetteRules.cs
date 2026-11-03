@@ -173,6 +173,7 @@ namespace SWLOR.Game.Server.Service.CityGazetteService
                 case CityGazetteEntryType.Tax: return "City Gazette: Taxes";
                 case CityGazetteEntryType.Decision: return "City Gazette: Decision";
                 case CityGazetteEntryType.Edict: return "City Gazette: Edict";
+                case CityGazetteEntryType.Project: return "City Gazette: Project";
                 default: return "City Gazette";
             }
         }

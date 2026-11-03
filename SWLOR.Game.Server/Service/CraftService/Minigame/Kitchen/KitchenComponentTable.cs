@@ -106,6 +106,12 @@ public static class KitchenComponentTable
             ["lamp_marimo"] = Flavor(8, 1, 1),
             ["lungfish"] = Flavor(11, 1, 2),
             ["mackerel"] = Flavor(11, 1, 2),
+            // Manure, the filler of the Fertilizer recipes: the Unlisted vector, like the fiberplast above.
+            ["manure_t1"] = Flavor(6, 0, 2),
+            ["manure_t2"] = Flavor(6, 0, 2),
+            ["manure_t3"] = Flavor(6, 0, 2),
+            ["manure_t4"] = Flavor(6, 0, 2),
+            ["manure_t5"] = Flavor(6, 0, 2),
             ["mb_shell"] = Flavor(10, 0, 2),
             ["melon"] = Flavor(0, 12, 0),
             ["mercanbaligi"] = Flavor(11, 1, 2),

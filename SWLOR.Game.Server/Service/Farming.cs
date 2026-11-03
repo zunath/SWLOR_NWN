@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.ClerkRecoveryService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.FarmingService;
@@ -90,6 +91,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static CropType RemoveWitheredCrop(string plotId, DateTime now)
         {
+            // A harvest the City Hall clerk was finishing is finished first, whatever the crop's stage now.
+            if (ClerkRecovery.RecoverPlot(plotId))
+                return CropType.Invalid;
+
             var record = GetPlot(plotId);
             if (record == null || FarmingRules.GetStage(record, now) != GardenPlotStage.Withered)
                 return CropType.Invalid;
@@ -151,29 +156,44 @@ namespace SWLOR.Game.Server.Service
 
         // Bonuses that later parts of the revamp supply
 
-        /// <summary>Whether the property holds twice the garden plots and adds 1 to a crop's harvest. The Greenhouse specialization supplies it.</summary>
-        public static bool IsGreenhouse(WorldProperty property) => false;
+        /// <summary>Whether the property holds twice the garden plots and adds 1 to a crop's harvest: a house with the Greenhouse specialization.</summary>
+        public static bool IsGreenhouse(WorldProperty property) => HouseSpecializations.IsGreenhouse(property);
 
-        /// <summary>Whether the plot's city has completed its Home Ground project, which adds 1 to a harvest. The Home Ground project supplies it.</summary>
-        public static bool HasHomeGround(WorldProperty plot) => false;
+        /// <summary>
+        /// Whether the plot's city has completed its Home Ground project, which adds 1 to a harvest. A plot in a house counts for the
+        /// house's city, and every plot on a station deck counts for the station.
+        /// </summary>
+        public static bool HasHomeGround(WorldProperty plot)
+        {
+            if (plot == null)
+                return false;
+
+            var cityId = Property.GetCityIdForProperty(plot.ParentPropertyId);
+            return !string.IsNullOrWhiteSpace(cityId) && CityProjects.HasHomeGround(DB.Get<WorldProperty>(cityId));
+        }
 
         /// <summary>
         /// Whether pests plague the city the plot stands in (the Pests in the Gardens situation was ignored in the last 72 hours),
-        /// which takes 1 from every harvest there. A plot in a house counts for the house's city.
+        /// which takes 1 from every harvest there. A plot in a house counts for the house's city, which is two steps up: the house's
+        /// interior is held by its building structure, and that by the city.
         /// </summary>
         public static bool HasPests(WorldProperty plot)
         {
-            var parent = plot == null ? null : DB.Get<WorldProperty>(plot.ParentPropertyId);
-            var city = parent is { PropertyType: PropertyType.House } ? DB.Get<WorldProperty>(parent.ParentPropertyId) : parent;
+            var cityId = plot == null ? string.Empty : Property.GetCityIdForProperty(plot.ParentPropertyId);
+            var city = string.IsNullOrWhiteSpace(cityId) ? null : DB.Get<WorldProperty>(cityId);
             return city is { PropertyType: PropertyType.City } && CityAffairs.IsModifierActive(city, CityModifierType.CropPests);
         }
 
         /// <summary>
-        /// What the plot's site says about planting the crop (<see cref="WoodlotRules.GetSiteRefusal"/>): a sapling goes only in an
-        /// outdoor plot of a planet city. Anything else is allowed wherever a plot stands.
+        /// What the plot's site says about planting the crop. A plot past a house's first 5, once the house is no longer a Greenhouse, is
+        /// not planted again (<see cref="FarmingRefusal.PlotAboveLimit"/>); a crop already growing there finishes. A sapling goes only in
+        /// an outdoor plot of a planet city (<see cref="WoodlotRules.GetSiteRefusal"/>). Anything else is allowed wherever a plot stands.
         /// </summary>
         public static FarmingRefusal GetSiteRefusal(WorldProperty plot, CropDefinition crop)
         {
+            if (plot != null && HouseSpecializations.IsPlotAboveLimit(plot))
+                return FarmingRefusal.PlotAboveLimit;
+
             if (crop is not { IsSapling: true } || plot == null)
                 return FarmingRefusal.None;
 
@@ -188,8 +208,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="fertilizerResref">
         /// The fertilizer the planter offers, or empty for none. A sapling refuses it (<see cref="WoodlotRules.GetFertilizerRefusal"/>)
-        /// before the seed or the fertilizer is used. A crop takes fertilizer with the fertilizer items, which add it to the plot's
-        /// record; until then a crop ignores what is offered.
+        /// before the seed or the fertilizer is used. A crop takes Fertilizer of its tier or higher: one is used up and the plot's
+        /// record is marked fertilized, which adds 1 to the harvest. A fertilizer that is not carried, not a fertilizer or too weak
+        /// is refused before anything is used up.
         /// </param>
         public static FarmingResult Plant(uint player, string plotId, string seedResref, string fertilizerResref = "")
         {
@@ -206,6 +227,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = isPlayer ? GetObjectUUID(player) : string.Empty;
             var cdKey = isPlayer ? GetPCPublicCDKey(player) : string.Empty;
             var seed = isPlayer ? FindItem(player, crop.SeedResref) : OBJECT_INVALID;
+            var fertilizer = isPlayer && !string.IsNullOrWhiteSpace(fertilizerResref) ? FindItem(player, fertilizerResref) : OBJECT_INVALID;
 
             var refusal = FarmingRules.CheckPlant(
                 isPlayer,
@@ -218,11 +240,15 @@ namespace SWLOR.Game.Server.Service
                 isPlayer ? CountGrowingCrops(cdKey, playerId, now) : 0,
                 GetIsObjectValid(seed),
                 GetSiteRefusal(structure, crop),
-                WoodlotRules.GetFertilizerRefusal(crop.IsSapling, !string.IsNullOrWhiteSpace(fertilizerResref)));
+                WoodlotRules.GetFertilizerRefusal(crop.IsSapling, !string.IsNullOrWhiteSpace(fertilizerResref)),
+                FertilizerRules.GetRefusal(fertilizerResref, GetIsObjectValid(fertilizer), crop.Tier));
             if (refusal != FarmingRefusal.None)
                 return FarmingResult.Refused(refusal);
 
+            var fertilized = GetIsObjectValid(fertilizer);
             UseUpOne(seed);
+            if (fertilized)
+                UseUpOne(fertilizer);
             DB.Set(new GardenPlot
             {
                 Id = GardenPlot.KeyFor(plotId),
@@ -234,12 +260,13 @@ namespace SWLOR.Game.Server.Service
                 TendReadyUtc = FarmingRules.GetTendReadyUtc(now, crop.GrowHours),
                 RipeUtc = FarmingRules.GetRipeUtc(now, crop.GrowHours),
                 WitherUtc = FarmingRules.GetWitherUtc(FarmingRules.GetRipeUtc(now, crop.GrowHours)),
+                Fertilized = fertilized,
                 LastProcessedUtc = now
             });
 
             RefreshName(plotId);
-            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} planted {crop.Type} in garden plot {plotId}.");
-            return FarmingResult.Success(FarmingRules.DescribePlanted(crop.Name, crop.GrowHours));
+            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} planted {crop.Type} in garden plot {plotId}{(fertilized ? " with fertilizer" : string.Empty)}.");
+            return FarmingResult.Success(FarmingRules.DescribePlanted(crop.Name, crop.GrowHours, fertilized));
         }
 
         /// <summary>Tends the crop, once. The planter can, and so can anyone with garden permission, and the tender earns the tending XP.</summary>
@@ -280,7 +307,11 @@ namespace SWLOR.Game.Server.Service
         /// Harvests a ripe crop for its planter. The yield, the seed roll and the Agriculture XP use the perk and skill ranks the
         /// planter holds now. The items go to their inventory, and any that do not fit go to their overflow storage.
         /// </summary>
-        public static FarmingResult Harvest(uint player, string plotId)
+        /// <param name="toOverflow">
+        /// True when the City Hall clerk harvests for a planter who cannot reach the plot: everything goes to their overflow storage,
+        /// through a mark on the crop (<see cref="ClerkRecovery"/>) so a restart cannot lose the harvest or repeat it.
+        /// </param>
+        public static FarmingResult Harvest(uint player, string plotId, bool toOverflow = false)
         {
             Farmhands.CatchUpForPlot(plotId);
             var now = DateTime.UtcNow;
@@ -311,6 +342,18 @@ namespace SWLOR.Game.Server.Service
             var seedReturned = FarmingRules.ReturnsSeed(seedPercent, Random.D100(1));
             var rank = Skill.GetCreatureSkillRank(player, SkillType.Agriculture);
 
+            if (toOverflow)
+            {
+                // The mark carries the harvest and goes onto the crop first; the overflow records come before the crop is deleted.
+                ClerkRecovery.RunCrop(record, ClerkRecoveryRules.BuildHarvestMark(
+                    Guid.NewGuid().ToString(), playerId, now, crop.HarvestResref, yield, crop.SeedResref, seedReturned));
+                Skill.GiveSkillXP(player, SkillType.Agriculture, FarmingRules.GetHarvestXp(crop.Level, rank, yield), false, false);
+
+                RefreshName(plotId);
+                Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} had the clerk harvest {yield} from {crop.Type} in garden plot {plotId} (tended {record.Tended}, fertilized {record.Fertilized}, seed back {seedReturned}) into overflow storage.");
+                return FarmingResult.Success(ClerkRecoveryRules.DescribeRemoteHarvest(crop.Name, yield, seedReturned));
+            }
+
             // The record goes first, so a stop between the two steps can lose a harvest but never repeat it.
             DB.Delete<GardenPlot>(record.Id);
             var itemsInOverflow = GiveItems(player, playerId, crop.HarvestResref, yield);
@@ -331,6 +374,8 @@ namespace SWLOR.Game.Server.Service
             if (GetPlotStructure(plotId) == null)
                 return FarmingResult.Refused(FarmingRefusal.NoPlot);
 
+            // A harvest the City Hall clerk was finishing is finished first.
+            ClerkRecovery.RecoverPlot(plotId);
             var record = GetPlot(plotId);
             var refusal = FarmingRules.CheckClear(
                 isPlayer,
@@ -362,6 +407,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void OnPlotRetrieved(WorldProperty plot, uint placeable)
         {
+            // A harvest the City Hall clerk was finishing is finished first, so nothing it owes is lost with the crop.
+            ClerkRecovery.RecoverPlot(plot.Id);
             var record = GetPlot(plot.Id);
             if (record == null)
                 return;
@@ -390,6 +437,10 @@ namespace SWLOR.Game.Server.Service
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
             if (string.IsNullOrWhiteSpace(propertyId) || !DB.Exists<GardenPlot>(GardenPlot.KeyFor(propertyId)))
+                return;
+
+            // A harvest the City Hall clerk was finishing is finished first, so nothing it owes is lost with the crop.
+            if (ClerkRecovery.RecoverPlot(propertyId))
                 return;
 
             DB.Delete<GardenPlot>(GardenPlot.KeyFor(propertyId));
@@ -428,6 +479,13 @@ namespace SWLOR.Game.Server.Service
             var orphaned = 0;
             foreach (var record in DB.Search(new DBQuery<GardenPlot>().AddPaging(count, 0)).ToList())
             {
+                // A clerk harvest a restart interrupted is finished before anything else decides what happens to the crop.
+                if (record.Recovery != null)
+                {
+                    ClerkRecovery.RecoverPlot(record.PlotId);
+                    continue;
+                }
+
                 if (GetPlotStructure(record.PlotId) == null)
                 {
                     DB.Delete<GardenPlot>(record.Id);
@@ -465,6 +523,20 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
         }
 
+        /// <summary>The fertilizer the player carries, one entry per tier with how many, lowest tier first.</summary>
+        public static List<(int Tier, int Count)> GetFertilizerCarried(uint player)
+        {
+            var counts = new SortedDictionary<int, int>();
+            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            {
+                var tier = FertilizerRules.GetTier(GetResRef(item));
+                if (tier > 0)
+                    counts[tier] = counts.GetValueOrDefault(tier) + GetItemStackSize(item);
+            }
+
+            return counts.Select(pair => (pair.Key, pair.Value)).ToList();
+        }
+
         // Helpers
 
         private static bool IsFarmer(uint player) =>
@@ -490,7 +562,7 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(item);
         }
 
-        private static void RefreshName(string plotId)
+        internal static void RefreshName(string plotId)
         {
             var placeable = Property.GetPlaceableByPropertyId(plotId);
             if (GetIsObjectValid(placeable))

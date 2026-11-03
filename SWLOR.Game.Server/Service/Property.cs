@@ -211,6 +211,7 @@ namespace SWLOR.Game.Server.Service
         {
             RefreshPermissions();
             ProcessCities();
+            CityProjects.ProcessAtServerStart();
             CleanUpData();
             LoadProperties();
         }
@@ -480,21 +481,18 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(area))
                 return string.Empty;
 
-            // An interior's parent is its building, and the building's parent is the city.
-            var propertyId = GetPropertyId(area);
-            for (var depth = 0; depth < 4 && !string.IsNullOrWhiteSpace(propertyId); depth++)
-            {
-                var property = DB.Get<WorldProperty>(propertyId);
-                if (property == null)
-                    return string.Empty;
+            return GetCityIdForProperty(GetPropertyId(area));
+        }
 
-                if (property.PropertyType == PropertyType.City)
-                    return property.Id;
-
-                propertyId = property.ParentPropertyId;
-            }
-
-            return string.Empty;
+        /// <summary>
+        /// The id of the city a property belongs to: the city itself, a building or structure standing on its land, or the interior of a
+        /// building or house in it. Walks the interior, building, and city chain. A property outside any city, such as an apartment or a
+        /// ship, gives an empty string.
+        /// </summary>
+        /// <param name="propertyId">The property id.</param>
+        public static string GetCityIdForProperty(string propertyId)
+        {
+            return PropertyHierarchyRules.FindCityId(propertyId, DB.Get<WorldProperty>);
         }
 
         /// <summary>
@@ -1616,6 +1614,10 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var city in cities)
             {
+                // Everything below can change what the Industrial Charter does (an election, disrepair, a tax debt, a level), so the
+                // holdings of the city's citizens settle first, under the Charter as it stood.
+                IndustrialCharter.SettleCity(city);
+
                 ProcessCityCitizenRequirement(now, city);
                 if (city.IsQueuedForDeletion)
                 {
@@ -2381,6 +2383,10 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
             }
 
+            // The city's citizens lose the Industrial Charter with their citizenship, so their holdings settle first.
+            if (property.PropertyType == PropertyType.City)
+                IndustrialCharter.SettleCity(property);
+
             // Clear any citizenship assignments on players who may be citizens of this property.
             var citizenQuery = new DBQuery<Player>()
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), property.Id, false);
@@ -2402,6 +2408,7 @@ namespace SWLOR.Game.Server.Service
                 ElectionBallot.DeleteCityElections(property.Id);
                 Edict.OnCityDeleted(property);
                 Tournaments.OnCityDeleted(property);
+                CityProjects.OnCityDeleted(property);
                 CityAffairs.DeleteCityData(property.Id);
                 Townsfolk.OnCityDeleted(property.Id);
                 Travelers.OnCityDeleted(property.Id);

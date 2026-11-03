@@ -110,7 +110,7 @@ public class CitySuccessionGuiTests
     public void ManageCityReadsEveryPowerThroughTheCityPowers()
     {
         var viewModel = ReadServer("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.cs");
-        var refresh = Between(viewModel, "private bool RefreshPermissions()", "private bool HasManageUpgradesPermission()");
+        var refresh = Between(viewModel, "private bool RefreshPermissions()", "/// <summary>A station's Jump Beacon upgrade level");
 
         refresh.Should().Contain("CityPowers.Resolve(");
         refresh.Should().Contain("CanAccessTreasury = access.Can(CityPower.WithdrawTreasury);");
@@ -136,8 +136,10 @@ public class CitySuccessionGuiTests
     {
         var viewModel = ReadServer("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.cs");
 
-        Between(viewModel, "private bool HasManageUpgradesPermission()", "/// <summary>A station's Jump Beacon")
-            .Should().Contain("CityPower.StartProjects");
+        // The buttons show only to a holder of the power, and a click starts a City Project, which asks for the same power again.
+        Between(viewModel, "var canStartProjects = access.Can(CityPower.StartProjects);", "RefreshHomeGround")
+            .Should().Contain("CanUpgradeStarports = canStartProjects");
+        ReadServer("Service", "CityProjects.cs").Should().Contain("CityPowers.Can(city, playerId, CityPower.StartProjects)");
     }
 
     [Test]

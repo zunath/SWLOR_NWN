@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var enables = new GuiBindingList<bool>();
             _platformEdictTypes.Clear();
 
-            foreach (var detail in EdictRules.GetOfferedEdicts(context.IsWildSpaceStation))
+            foreach (var detail in EdictRules.GetOfferedEdicts(context.IsWildSpaceStation, context.IsOpenPort))
             {
                 var isChosen = _draftEdicts.TryGetValue(detail.Type, out var targetId);
                 var meetsLevel = EdictRules.MeetsMinimumLevel(detail.Type, level);

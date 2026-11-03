@@ -5,6 +5,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
     public class HarvestingLootTableDefinition : ILootTableDefinition
     {
+        /// <summary>The frequency of each tier 3 to 5 crop seed in its node's table: 1, the weight of the emerald in the jasioclase and hyphae tables.</summary>
+        private const int SeedFrequency = 1;
+
         private readonly LootTableBuilder _builder = new();
 
         public Dictionary<string, LootTable> BuildLootTables()
@@ -91,15 +94,18 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("SCAVENGING_BUSH_3")
                 .AddItem("fiberp_good", 50)
                 .AddItem("fiberp_flawed", 20)
-                .AddItem("fiberp_ruined", 5);
+                .AddItem("fiberp_ruined", 5)
+                .AddItem("seed_fiber_3", SeedFrequency);
             _builder.Create("SCAVENGING_BUSH_4")
                 .AddItem("fiberp_imperfect", 50)
                 .AddItem("fiberp_good", 20)
-                .AddItem("fiberp_flawed", 5);
+                .AddItem("fiberp_flawed", 5)
+                .AddItem("seed_fiber_4", SeedFrequency);
             _builder.Create("SCAVENGING_BUSH_5")
                 .AddItem("fiberp_high", 50)
                 .AddItem("fiberp_imperfect", 20)
-                .AddItem("fiberp_good", 5);
+                .AddItem("fiberp_good", 5)
+                .AddItem("seed_fiber_5", SeedFrequency);
         }
         private void Herbs()
         {
@@ -108,11 +114,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("HERBS_2")
                 .AddItem("herb_m", 50);
             _builder.Create("HERBS_3")
-                .AddItem("herb_c", 50);
+                .AddItem("herb_c", 50)
+                .AddItem("seed_seaweed", SeedFrequency);
             _builder.Create("HERBS_4")
-                .AddItem("herb_t", 50);
+                .AddItem("herb_t", 50)
+                .AddItem("seed_desert_sage", SeedFrequency);
             _builder.Create("HERBS_5")
-                .AddItem("herb_x", 50);
+                .AddItem("herb_x", 50)
+                .AddItem("seed_oregano", SeedFrequency);
         }
 
         private void SupplyCrates()
@@ -156,7 +165,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("herb_c", 5)
                 .AddItem("h_acorn", 20)
                 .AddItem("s_pineapple", 20)
-                .AddItem("veggie_clump", 20);
+                .AddItem("veggie_clump", 20)
+                .AddItem("seed_acorn", SeedFrequency)
+                .AddItem("seed_pineapple", SeedFrequency)
+                .AddItem("seed_veg_clump", SeedFrequency);
 
             _builder.Create("VEGETABLES_PATCH_4")
                 .AddItem("ginger", 10)
@@ -165,14 +177,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("plant_butter", 10)
                 .AddItem("walnut", 10)
                 .AddItem("cornucopia", 5)
-                .AddItem("herb_t", 5);
+                .AddItem("herb_t", 5)
+                .AddItem("seed_ginger", SeedFrequency)
+                .AddItem("seed_melon", SeedFrequency)
+                .AddItem("seed_mushroom", SeedFrequency)
+                .AddItem("seed_walnut", SeedFrequency)
+                .AddItem("seed_cornucopia", SeedFrequency);
 
             _builder.Create("VEGETABLES_PATCH_5")
                 .AddItem("herb_x", 5)
                 .AddItem("turnip", 20)
                 .AddItem("tofu", 20)
                 .AddItem("dried_bonito", 10)
-                .AddItem("tomato", 10);
+                .AddItem("tomato", 10)
+                .AddItem("seed_turnip", SeedFrequency)
+                .AddItem("seed_tomato", SeedFrequency);
         }
 
         private void AsteroidMining()

@@ -953,21 +953,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
-    "Line": 69,
+    "Line": 169,
+    "Member": "Report",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
+    "Line": 189,
     "Member": "AddCivicExchange",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, failure)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CityStaffDialog.cs",
-    "Line": 87,
+    "Line": 207,
     "Member": "OpenBank",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, failure)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
-    "Line": 96,
+    "Line": 111,
+    "Member": "SendAwayPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
+    "Line": 142,
     "Member": "PlacePageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
@@ -1275,28 +1289,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 164,
+    "Line": 165,
     "Member": "DrillPage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer have permission to collect the ore.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 204,
+    "Line": 205,
     "Member": "DroidPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You may no longer recall the droid assigned here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 240,
+    "Line": 241,
     "Member": "DroidPickPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer have permission to assign droids here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
-    "Line": 376,
+    "Line": 377,
     "Member": "ConfirmJumpPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That station is no longer available.\"))"
@@ -2402,49 +2416,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 157,
+    "Line": 158,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You are the mayor of this city and cannot revoke your citizenship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 208,
+    "Line": 214,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your citizenship has been revoked!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 221,
+    "Line": 227,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"5000 credits are needed to register as a citizen.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 228,
+    "Line": 234,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your character must be 30 days or older to become a citizen of a city.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 234,
+    "Line": 240,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You must have acquired a minimum of 100 skill ranks to become a citizen of a city.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 250,
+    "Line": 262,
     "Member": "RegisterRevoke",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You became a citizen of {dbCity.CustomName}!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCitizenshipViewModel.cs",
-    "Line": 269,
+    "Line": 280,
     "Member": "PayTaxes",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have any credits.\", Player, false)"
@@ -4803,70 +4817,70 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 634,
+    "Line": 719,
     "Member": "Notify",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 654,
+    "Line": 739,
     "Member": "DeliverNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(notice.Text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1040,
+    "Line": 1058,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1048,
+    "Line": 1066,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1071,
+    "Line": 1089,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job will complete in: {completionTime}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1075,
+    "Line": 1093,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 62,
+    "Line": 64,
     "Member": "ChargeBlueprint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 338,
+    "Line": 340,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 359,
+    "Line": 361,
     "Member": "ApplyShipBlueprintTraits",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {ShipTraitRules.Get(trait).Name}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 451,
+    "Line": 455,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5321,7 +5335,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Farming.cs",
-    "Line": 381,
+    "Line": 428,
     "Member": "OnPlotRetrieved",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(planter, inOverflow\n                    ? $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed is in your overflow storage; use /overflow to claim it.\"\n                    : $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed came back to you.\")"
@@ -5486,6 +5500,13 @@
     "Member": "GiveGuildPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoldingCityAffairs.cs",
+    "Line": 119,
+    "Member": "TellOwner",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
@@ -5873,239 +5894,253 @@
     "Call": "SendMessageToPC(online, ColorToken.Green(summons.Text))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/PlanetaryDepot.cs",
+    "Line": 51,
+    "Member": "MoveHere",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(PlanetaryDepotRules.GetRefusalMessage(\n                    refusal, PlanetaryDepotRules.GetDaysLeft(holding?.LastDepotMoveUtc ?? default, now))))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlanetaryDepot.cs",
+    "Line": 63,
+    "Member": "MoveHere",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Your {PlanetaryHoldings.GetHoldingName(holding)} now ships from {place}. It can move again in {PlanetaryDepotRules.CooldownDays} days.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 135,
+    "Line": 151,
     "Member": "Process",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{GetHoldingName(holding)}: {text}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 149,
+    "Line": 165,
     "Member": "Foreclose",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, ColorToken.Red(\n                    $\"Your {detail.Name} at {GetPlanetName(detail)} was foreclosed: {holding.UpkeepOwed} credits of upkeep went unpaid.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 169,
+    "Line": 185,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 177,
+    "Line": 193,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"You bought {WithArticle(detail.Name)} at {GetPlanetName(detail)} for {detail.PurchasePrice} credits. It makes \" +\n                $\"{HoldingRules.GetDailyUnits(holding, detail)} {TradeLookup.GetCommodity(detail.Output)?.Name} a day for your ship \" +\n                $\"to collect here, and owes {HoldingRules.GetDailyUpkeep(holding, detail)} credits of upkeep a day.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 204,
+    "Line": 220,
     "Member": "Abandon",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You gave up your {detail.Name} at {GetPlanetName(detail)} and received {refund} credits.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 261,
+    "Line": 277,
     "Member": "TakePayment",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You no longer have the credits, so the {name} was undone.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 305,
+    "Line": 321,
     "Member": "SettlePendingPayments",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    $\"A restart interrupted the {name} of your {holdingName} before its {credits} credits were paid, so it was undone.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 321,
+    "Line": 337,
     "Member": "PayUpkeep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NotEnoughCredits)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 328,
+    "Line": 344,
     "Member": "PayUpkeep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You paid {paid} credits of upkeep for your {GetHoldingName(holding)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 343,
+    "Line": 359,
     "Member": "PayFine",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 351,
+    "Line": 367,
     "Member": "PayFine",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You paid the {fine} credit customs fine. The inspectors leave your stock alone.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 378,
+    "Line": 394,
     "Member": "Collect",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 403,
+    "Line": 419,
     "Member": "Collect",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Loaded {loaded} from your {GetHoldingName(holding)}\" +\n                (upkeep > 0 ? $\", paying {upkeep} credits of upkeep\" : string.Empty) +\n                (left > 0 ? $\". {left} units stay in the warehouse.\" : \".\")))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 472,
+    "Line": 488,
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 486,
+    "Line": 502,
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Delivered {units} {TradeLookup.GetCommodity(commodity)?.Name} to your {GetHoldingName(holding)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 488,
+    "Line": 504,
     "Member": "Deliver",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{GetHoldingName(holding)}: {text}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 561,
+    "Line": 577,
     "Member": "Upgrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 570,
+    "Line": 586,
     "Member": "Upgrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Your {GetHoldingName(holding)} is now level {holding.Level} and makes {HoldingRules.GetDailyUnits(holding, detail)} units a day.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 585,
+    "Line": 601,
     "Member": "BuildPlant",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 593,
+    "Line": 609,
     "Member": "BuildPlant",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Your {GetHoldingName(holding)} has a Processing Plant. Deliver {TradeLookup.GetCommodity(detail.Chain.Input)?.Name} and it turns \" +\n                $\"its output into {TradeLookup.GetCommodity(detail.Chain.Refined)?.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 623,
+    "Line": 639,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.DroidAlreadyPosted)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 629,
+    "Line": 645,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer carry that droid, or it is busy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 647,
+    "Line": 663,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"{holding.DroidName} now works your {GetHoldingName(holding)}. With Industry {holding.DroidIndustry} it adds \" +\n                $\"{HoldingRules.GetDroidPercent(holding)}% to the output. It stays at its post until recalled.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 676,
+    "Line": 692,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NoDroid)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 684,
+    "Line": 700,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{name} leaves your {GetHoldingName(holding)} and is back with you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 720,
+    "Line": 736,
     "Member": "VisitSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(HoldingRules.GetRefusalMessage(HoldingRefusal.NotAtDock)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 728,
+    "Line": 744,
     "Member": "VisitSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The holding's site cannot be reached right now.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 779,
+    "Line": 795,
     "Member": "JoinSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(guest, ColorToken.Red(\"Only members of the owner's party can join a holding site, and only while the owner has it open at this dock.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 785,
+    "Line": 801,
     "Member": "JoinSite",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{GetName(guest)} joins you at your {GetHoldingName(holding)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 869,
+    "Line": 885,
     "Member": "CheckRaidRepelled",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(obj, ColorToken.Green($\"{GetHoldingName(holding)}: {result.Events.LastOrDefault()}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 895,
+    "Line": 911,
     "Member": "RehomeStrandedHoldings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your {GetHoldingName(holding)} lost its starport and now ships from this dock.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 1014,
+    "Line": 1030,
     "Member": "CheckHoldingsAtLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{Droid.GetDroidName(controller)} no longer works a holding and is back with you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 1020,
+    "Line": 1036,
     "Member": "CheckHoldingsAtLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your holdings have goods waiting: \" +\n                                        string.Join(\", \", waiting.Select(x => $\"{GetHoldingName(x)} {x.Warehouse.Values.Sum()} units\")) + \".\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlanetaryHoldings.cs",
-    "Line": 1056,
+    "Line": 1072,
     "Member": "EndStaffPostingOnControllerLoss",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{name} no longer works your {GetHoldingName(holding)}: its controller is gone.\")"
@@ -6238,164 +6273,157 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 778,
+    "Line": 776,
     "Member": "NotifyPropertyLoadWaiters",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 812,
+    "Line": 810,
     "Member": "NotifyPropertyLoadWaitersWithoutClearing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 818,
+    "Line": 816,
     "Member": "SendPropertyLoadingMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property is still loading. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 823,
+    "Line": 821,
     "Member": "SendPropertyLoadFailedMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This property could not be loaded. Please notify staff.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 2999,
+    "Line": 3006,
     "Member": "CreateStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your station stands at the anchor site in {anchor.SystemName}. Use its docking point to dock at its Starport and go aboard.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3412,
+    "Line": 3419,
     "Member": "EnterProperty",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3501,
+    "Line": 3508,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3531,
+    "Line": 3538,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3595,
+    "Line": 3602,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3612,
+    "Line": 3619,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3625,
+    "Line": 3632,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3632,
+    "Line": 3639,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is listed for sale. Its furniture cannot change until the listing ends.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3685,
+    "Line": 3692,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3693,
+    "Line": 3700,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3700,
+    "Line": 3707,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3712,
+    "Line": 3719,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(stallError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3723,
+    "Line": 3730,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This property holds at most {plotLimit} garden plots.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3734,
+    "Line": 3741,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(lodgeError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3746,
+    "Line": 3753,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(corralError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3757,
+    "Line": 3764,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(stationBuildingError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3771,
+    "Line": 3778,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationDeckRules.DescribeRefusal(placement), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3798,
+    "Line": 3805,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3939,
-    "Member": "EnterBuilding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
@@ -6406,28 +6434,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3979,
+    "Line": 3953,
+    "Member": "EnterBuilding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Property.cs",
+    "Line": 3986,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4017,
+    "Line": 4024,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4036,
+    "Line": 4043,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4069,
+    "Line": 4076,
     "Member": "OpenCityManagementMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"
@@ -8499,84 +8534,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 339,
+    "Line": 369,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The Asteroid Drill has no ore to collect.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 364,
+    "Line": 394,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The Asteroid Drill has no ore to collect.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 377,
+    "Line": 407,
     "Member": "CollectDrill",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Collected from the Asteroid Drill: {string.Join(\", \", collected)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 426,
+    "Line": 456,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A droid is already assigned here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 432,
+    "Line": 462,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You no longer carry that droid, or it is busy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 455,
+    "Line": 485,
     "Member": "AssignDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} now works the {detail.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 474,
+    "Line": 504,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{state.DroidName} was sent back to its owner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 481,
+    "Line": 511,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullShortMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 491,
+    "Line": 521,
     "Member": "RecallDroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{state.DroidName} returns to you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 812,
+    "Line": 842,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(StationBuildingRules.DescribeJumpRefusal(refusal, request)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 838,
+    "Line": 868,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 878,
+    "Line": 908,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{ship.CustomName} jumped to {destination.CustomName}, burning {fuel} Station Fuel.\"))"
@@ -8800,35 +8835,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 209,
+    "Line": 212,
     "Member": "Sell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 309,
+    "Line": 315,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 315,
+    "Line": 321,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 322,
+    "Line": 328,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 328,
+    "Line": 334,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"
@@ -9056,6 +9091,13 @@
     "Member": "RollPirateAmbush",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Pirate raiders drop out of hyperspace, hunting your cargo!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeShadowport.cs",
+    "Line": 74,
+    "Member": "TryBustContrabandSale",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(taken.Count > 0\n                    ? $\"{dock.CityName} customs bust the sale! You pay a {fine} credit fine and they confiscate {CustomsRules.Describe(taken)}.\"\n                    : $\"{dock.CityName} customs bust the sale! You pay a {fine} credit fine.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",

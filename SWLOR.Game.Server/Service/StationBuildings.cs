@@ -303,12 +303,22 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void AccrueDrill(WorldProperty station, StationBuildingState state)
         {
+            AccrueDrill(station, state, DateTime.UtcNow);
+        }
+
+        /// <summary>
+        /// Adds the ore the drill mined up to <paramref name="nowUtc"/> and saves it. A Wild Space station whose Home Ground has completed by
+        /// then mines 5% faster.
+        /// </summary>
+        public static void AccrueDrill(WorldProperty station, StationBuildingState state, DateTime nowUtc)
+        {
             var anchor = Station.GetAnchor(station);
             if (anchor == null)
                 return;
 
+            var homeGround = StationBuildingRules.GetsDrillHomeGround(anchor.IsWildSpace, station.HomeGroundCompletedUtc, nowUtc);
             var stored = state.DrillStorage.Values.Sum();
-            var (units, next) = StationBuildingRules.AccrueDrill(stored, state.DrillLastAccrual, DateTime.UtcNow, GetDroidPercent(state));
+            var (units, next) = StationBuildingRules.AccrueDrill(stored, state.DrillLastAccrual, nowUtc, GetDroidPercent(state), homeGround);
             state.DrillLastAccrual = next;
 
             var totalWeight = StationBuildingRules.GetDrillTotalWeight(anchor.AreaResref);
@@ -324,6 +334,26 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(state);
+        }
+
+        /// <summary>
+        /// Settles every Asteroid Drill on the station up to <paramref name="completedUtc"/>, at the rate it had until then. Run just before
+        /// Home Ground completes, so the days before it never earn the 5%. A drill already read past that moment is left as it is.
+        /// </summary>
+        public static void SettleDrills(WorldProperty station, DateTime completedUtc)
+        {
+            var query = new DBQuery<StationBuildingState>()
+                .AddFieldSearch(nameof(StationBuildingState.StationId), station.Id, false)
+                .AddFieldSearch(nameof(StationBuildingState.StructureType), (int)StructureType.AsteroidDrill);
+            var count = (int)DB.SearchCount(query);
+            if (count <= 0)
+                return;
+
+            foreach (var state in DB.Search(query.AddPaging(count, 0)).ToList())
+            {
+                if (state.DrillLastAccrual < completedUtc)
+                    AccrueDrill(station, state, completedUtc);
+            }
         }
 
         /// <summary>

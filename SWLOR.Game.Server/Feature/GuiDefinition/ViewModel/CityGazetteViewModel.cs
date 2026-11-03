@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string MainContentElement = "citygazette_content";
         public const string MainContentPartial = "CITYGAZETTE_MAIN";
 
+        private string _cityId = string.Empty;
+
         public string HeaderText { get => Get<string>(); set => Set(value); }
         public string EmptyText { get => Get<string>(); set => Set(value); }
         public bool IsEmpty { get => Get<bool>(); set => Set(value); }
@@ -21,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(CityGazettePayload initialPayload)
         {
             var cityId = initialPayload?.CityId ?? string.Empty;
+            _cityId = cityId;
             var city = string.IsNullOrWhiteSpace(cityId) ? null : DB.Get<WorldProperty>(cityId);
 
             // Secret entries stay out for every reader, the mayor included.
@@ -48,6 +51,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ChangePartialView(MainContentElement, MainContentPartial);
         }
+
+        /// <summary>Opens the city's City Projects, where anyone, visitors included, can donate materials.</summary>
+        public Action OpenCityProjects() => () =>
+        {
+            if (!string.IsNullOrWhiteSpace(_cityId))
+                Gui.TogglePlayerWindow(Player, GuiWindowType.CityProjects, new CityProjectsPayload(_cityId), TetherObject);
+        };
 
         private string DescribeOfficial(CityGazetteEntry entry, Dictionary<string, string> names)
         {

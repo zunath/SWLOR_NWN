@@ -143,13 +143,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var droidPercent = StationBuildings.GetDroidPercent(state);
             var stored = state.DrillStorage.Values.Sum();
             var capacity = StationBuildingRules.DrillCapacity(droidPercent);
+            var homeGround = StationBuildingRules.GetsDrillHomeGround(anchor?.IsWildSpace ?? false, station.HomeGroundCompletedUtc, DateTime.UtcNow);
             var ore = state.DrillStorage.Count == 0
                 ? "none"
                 : string.Join(", ", state.DrillStorage.OrderByDescending(x => x.Value).Select(x => $"{x.Value}x {Cache.GetItemNameByResref(x.Key)}"));
 
             page.Header = $"{station.CustomName} Asteroid Drill\n\n" +
                           $"The drill mines the asteroids of {anchor?.SystemName} around the clock.\n\n" +
-                          $"Output: {StationBuildingRules.DrillUnitsPerDay(droidPercent):0} ore a day\n" +
+                          $"Output: {StationBuildingRules.DrillUnitsPerDay(droidPercent, homeGround):0} ore a day{(homeGround ? $" (Home Ground +{StationBuildingRules.HomeGroundDrillPercent}%)" : string.Empty)}\n" +
                           $"Stored: {stored} / {capacity}{(stored >= capacity ? " (full: the drill has stopped)" : string.Empty)}\n" +
                           $"Ore: {ore}\n" +
                           DescribeDroid(state, $"output +{droidPercent}%");

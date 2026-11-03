@@ -120,6 +120,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             content.AddRow(row =>
             {
                 row.AddLabel()
+                    .BindText(model => model.PortText)
+                    .BindTooltip(model => model.PortText)
+                    .BindIsVisible(model => model.PortVisible)
+                    .SetColor(new GuiColor(255, 200, 0))
+                    .SetHeight(LabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddLabel()
                     .SetText("Ship")
                     .SetWidth(60f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);

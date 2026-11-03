@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Service.EdictService
         /// <summary>Whether it only means something on a planet, so it is hidden for Wild Space stations.</summary>
         public bool IsPlanetBased { get; set; }
 
+        /// <summary>Whether it only means something at a lawful port, so it is refused where the Starport exchange is an open port.</summary>
+        public bool RequiresLawfulPort { get; set; }
+
         /// <summary>Whether its benefit goes to citizens in good standing (every Edict except Alliance, Embargo, Open Gates and Shadowport).</summary>
         public bool BenefitsCitizens { get; set; } = true;
     }

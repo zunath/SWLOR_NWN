@@ -54,5 +54,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The last time the plot was brought up to date. Farmhands replay time from here.</summary>
         public DateTime LastProcessedUtc { get; set; }
+
+        /// <summary>
+        /// The City Hall clerk's harvest of this crop while it is being finished (<see cref="ClerkRecoveryMark"/>), or null. A restart
+        /// that leaves it finishes the harvest at the next processing. Older records load without one.
+        /// </summary>
+        public ClerkRecoveryMark Recovery { get; set; }
     }
 }

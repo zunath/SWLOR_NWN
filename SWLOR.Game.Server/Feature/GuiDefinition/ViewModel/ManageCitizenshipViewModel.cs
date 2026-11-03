@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ClerkRecoveryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -158,11 +159,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
+                        // The Industrial Charter ends with the citizenship, so the holdings settle under it first.
+                        IndustrialCharter.SettleOwner(playerId);
+
                         // Remove the player's citizenship property Id.
                         dbPlayer = DB.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = string.Empty;
                         dbPlayer.CitizenSinceUtc = null;
                         dbPlayer.PropertyOwedTaxes = 0;
+                        // The 7 days after which the mayor can send this player's animals away start now.
+                        dbPlayer.CityDepartures = ClerkRecoveryRules.RecordDeparture(dbPlayer.CityDepartures, _cityPropertyId, DateTime.UtcNow);
                         DB.Set(dbPlayer);
 
                         // If there's an active election going, remove this player from the running.
@@ -237,12 +243,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         AssignCommand(Player, () => TakeGoldFromCreature(5000, Player, true));
 
+                        // A new citizenship starts its 7 days without Edict benefits, so the holdings settle before it changes.
+                        IndustrialCharter.SettleOwner(playerId);
+
                         var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
+                        dbPlayer = DB.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
                         // Joining again resets the citizen-since time, which decides who may vote in an election.
                         dbPlayer.CitizenSinceUtc = DateTime.UtcNow;
                         // Clear any stale debt left by a previously deleted city.
                         dbPlayer.PropertyOwedTaxes = 0;
+                        // Back in the city, so the absence ends.
+                        dbPlayer.CityDepartures = ClerkRecoveryRules.ClearDeparture(dbPlayer.CityDepartures, _cityPropertyId);
 
                         DB.Set(dbPlayer);
 
@@ -261,7 +273,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"You owe {dbPlayer.PropertyOwedTaxes} credits. Will you pay this now?", () =>
             {
                 var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
-                dbPlayer = DB.Get<Player>(playerId);
                 var gold = GetGold(Player);
 
                 if (gold <= 0)
@@ -269,6 +280,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     FloatingTextStringOnCreature("You do not have any credits.", Player, false);
                     return;
                 }
+
+                // Clearing the debt returns the citizen to good standing, so the holdings settle under the debt first.
+                IndustrialCharter.SettleOwner(playerId);
+                dbPlayer = DB.Get<Player>(playerId);
 
                 // Not enough to cover everything, but take what they have.
                 if (gold < dbPlayer.PropertyOwedTaxes)

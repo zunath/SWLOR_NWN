@@ -123,6 +123,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 AddLabelRow(content, model => model.CargoText);
                 AddLabelRow(content, model => model.AwayText, model => model.AwayVisible, GuiColor.Red);
+
+                content.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("Move Here")
+                        .BindIsVisible(model => model.DepotVisible)
+                        .BindIsEnabled(model => model.CanMoveHere)
+                        .SetTooltip("Planetary Depot: moves where this holding's output waits, not how much it makes. A holding can move once every 7 days.")
+                        .BindOnClicked(model => model.OnClickMoveHere())
+                        .SetWidth(ButtonWidth)
+                        .SetHeight(ButtonHeight);
+                    row.AddLabel()
+                        .BindText(model => model.DepotText)
+                        .BindTooltip(model => model.DepotText)
+                        .BindIsVisible(model => model.DepotVisible)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                });
                 AddLabelRow(content, model => model.SummaryText, color: GuiColor.Cyan);
                 AddLabelRow(content, model => model.OutputText);
                 AddLabelRow(content, model => model.StockText);

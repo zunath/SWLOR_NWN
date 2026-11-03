@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CityGazetteService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.IndustryService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -65,10 +66,17 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The situations waiting for a decision, soonest to run out first.</summary>
         public static List<CitySituation> LoadOpenSituations(string cityId)
         {
+            var now = DateTime.UtcNow;
             return LoadSituations(cityId)
-                .Where(situation => situation.State == CitySituationState.Open)
+                .Where(situation => situation.State == CitySituationState.Open && !HoldingCityAffairs.CloseIfSettled(situation, now))
                 .OrderBy(situation => situation.ExpiresUtc)
                 .ToList();
+        }
+
+        /// <summary>The credits an event-driven situation's subject owes that a choice would pay, such as a holding's customs fine.</summary>
+        public static int GetSubjectCredits(CitySituation situation)
+        {
+            return HoldingCityAffairs.GetSubjectCredits(situation);
         }
 
         /// <summary>Whether a situation's modifier is in force in the city. Later systems read the modifiers through this.</summary>
@@ -114,28 +122,23 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// The types of structure the city has: those standing on its land, and the garden plots inside its houses, so a city whose
-        /// farmers only garden indoors still counts as having gardens.
+        /// farmers only garden indoors still counts as having gardens. A house is the interior of one of the city's building structures
+        /// (<see cref="PropertyHierarchyRules.GetStructureTypes"/>).
         /// </summary>
         private static IReadOnlyCollection<StructureType> GetStructureTypes(WorldProperty city)
         {
-            var types = new HashSet<StructureType>();
-            var childQuery = new DBQuery<WorldProperty>().AddFieldSearch(nameof(WorldProperty.ParentPropertyId), city.Id, false);
-            var count = (int)DB.SearchCount(childQuery);
-            var children = count <= 0 ? new List<WorldProperty>() : DB.Search(childQuery.AddPaging(count, 0)).ToList();
-            foreach (var child in children.Where(child => child.PropertyType == PropertyType.Structure))
-                types.Add(child.StructureType);
+            return PropertyHierarchyRules.GetStructureTypes(GetChildren(new[] { city.Id }), GetChildren);
+        }
 
-            var houseIds = children.Where(child => child.PropertyType == PropertyType.House).Select(child => child.Id).ToList();
-            if (houseIds.Count > 0 && !types.Contains(StructureType.GardenPlot))
-            {
-                var plotQuery = new DBQuery<WorldProperty>()
-                    .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), houseIds)
-                    .AddFieldSearch(nameof(WorldProperty.StructureType), (int)StructureType.GardenPlot);
-                if (DB.SearchCount(plotQuery) > 0)
-                    types.Add(StructureType.GardenPlot);
-            }
+        /// <summary>The properties whose parent is any of the ids.</summary>
+        private static List<WorldProperty> GetChildren(IReadOnlyCollection<string> parentIds)
+        {
+            if (parentIds.Count == 0)
+                return new List<WorldProperty>();
 
-            return types;
+            var query = new DBQuery<WorldProperty>().AddFieldSearch(nameof(WorldProperty.ParentPropertyId), parentIds.ToList());
+            var count = (int)DB.SearchCount(query);
+            return count <= 0 ? new List<WorldProperty>() : DB.Search(query.AddPaging(count, 0)).ToList();
         }
 
         /// <summary>The skill ranks of a character, for the requirements of a choice.</summary>
@@ -187,6 +190,12 @@ namespace SWLOR.Game.Server.Service
             {
                 DB.Delete<CitySituation>(old.Id);
                 situations.Remove(old);
+            }
+
+            // An event its owner settled while nobody looked closes quietly instead of counting as neglect.
+            foreach (var settled in situations.Where(situation => HoldingCityAffairs.CloseIfSettled(situation, now)).ToList())
+            {
+                Log.Write(LogGroup.Property, $"Situation '{settled.Type}' of city '{city.CustomName}' ({city.Id}) closed: its holding event was settled.");
             }
 
             foreach (var overdue in situations.Where(situation => SituationRules.IsOverdue(situation, now))
@@ -292,12 +301,51 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Situation '{chosen.Type}' was drawn for city '{city.CustomName}' ({city.Id}).");
         }
 
-        private static void Open(DateTime now, CitySituation situation)
+        private static void Open(DateTime now, CitySituation situation, DateTime? expiresUtc = null)
         {
             situation.State = CitySituationState.Open;
             situation.DrawnUtc = now;
-            situation.ExpiresUtc = SituationRules.GetExpiryUtc(now);
+            situation.ExpiresUtc = expiresUtc ?? SituationRules.GetExpiryUtc(now);
             DB.Set(situation);
+        }
+
+        /// <summary>
+        /// Raises an event-driven situation about a subject, such as a raid at a citizen's holding. It follows the same limits as a
+        /// drawn one (open situations, one new every 24 hours, disrepair and neglect, one of a type at a time) and is refused,
+        /// changing nothing, when the city cannot take it. It runs out at the subject's own deadline if that comes first.
+        /// </summary>
+        /// <returns>True when the situation is open.</returns>
+        public static bool RaiseEvent(string cityId, SituationType type, string subjectId, string subjectNote, DateTime subjectDeadlineUtc, DateTime now)
+        {
+            var city = Edict.GetLiveCity(cityId);
+            var detail = SituationCatalog.Get(type);
+            if (city == null || detail == null || !detail.IsEventDriven || subjectDeadlineUtc <= now)
+                return false;
+
+            var situations = LoadSituations(city.Id);
+            var isInDisrepair = SituationRules.IsInDisrepair(city.Upkeep, city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction));
+            if (!SituationRules.CanDrawNew(
+                    SituationRules.CountOpen(situations),
+                    SituationRules.GetLastDrawnUtc(situations),
+                    isInDisrepair,
+                    city.NeglectSinceUtc.HasValue,
+                    now) ||
+                SituationRules.GetOpenTypes(situations).Contains(type))
+            {
+                return false;
+            }
+
+            var situation = new CitySituation
+            {
+                CityId = city.Id,
+                Type = type,
+                SubjectId = subjectId ?? string.Empty,
+                SubjectNote = subjectNote ?? string.Empty
+            };
+            Open(now, situation, HoldingSituationRules.GetExpiryUtc(now, subjectDeadlineUtc));
+
+            Log.Write(LogGroup.Property, $"Situation '{type}' was raised for city '{city.CustomName}' ({city.Id}) by '{subjectId}'.");
+            return true;
         }
 
         #endregion
@@ -327,6 +375,9 @@ namespace SWLOR.Game.Server.Service
             if (situation.State != CitySituationState.Open)
                 return CityDecisionResult.Refused("Another official has already settled that situation.");
 
+            if (HoldingCityAffairs.CloseIfSettled(situation, now))
+                return CityDecisionResult.Refused("The citizen has already dealt with that.");
+
             if (!SituationRules.CanDecide(situation, now))
                 return CityDecisionResult.Refused("That situation ran out of time. It takes its ignored outcome at the next restart.");
 
@@ -339,8 +390,10 @@ namespace SWLOR.Game.Server.Service
             if (unmet.Count > 0)
                 return CityDecisionResult.Refused($"This choice needs: {string.Join(", ", unmet)}.");
 
-            if (!SituationRules.CanAfford(choice.Cost, SituationTreasury.GetSpendable(city)))
-                return CityDecisionResult.Refused($"The treasury cannot afford {SituationRules.FormatCredits(choice.Cost)}.");
+            var subjectCredits = GetSubjectCredits(situation);
+            var cost = choice.GetCost(subjectCredits);
+            if (!SituationRules.CanAfford(cost, SituationTreasury.GetSpendable(city)))
+                return CityDecisionResult.Refused($"The treasury cannot afford {SituationRules.FormatCredits(cost)}.");
 
             var situations = LoadSituations(city.Id);
             var title = CityOfficers.GetTitle(city, playerId);
@@ -357,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             situation.ChosenOption = choiceIndex;
             situation.DecidedByPlayerId = playerId;
             situation.ResolvedUtc = now;
-            var change = ApplyEffects(city, situation, choice.Effects, now, situations, entry?.Id ?? string.Empty);
+            var change = ApplyEffects(city, situation, choice.Effects, now, situations, entry?.Id ?? string.Empty, subjectCredits);
             city.NeglectCount = 0;
 
             // The situation is saved first, so a restart between the two writes never applies its effects twice.
@@ -405,10 +458,11 @@ namespace SWLOR.Game.Server.Service
             IReadOnlyCollection<SituationEffect> effects,
             DateTime now,
             List<CitySituation> situations,
-            string secretEntryId)
+            string secretEntryId,
+            int subjectCredits = 0)
         {
             var change = SituationRules.ResolveTreasuryChange(
-                SituationRules.GetRequestedChange(effects),
+                SituationRules.GetRequestedChange(effects, subjectCredits),
                 SituationTreasury.GetSpendable(city),
                 SituationRules.GetGainsInWindow(situations, now));
             if (change != 0)
@@ -419,7 +473,16 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var effect in effects)
             {
-                if (effect.Type == SituationEffectType.Modifier)
+                if (effect.Type == SituationEffectType.HoldingHelp)
+                {
+                    HoldingCityAffairs.SendHelp(city, situation, now);
+                }
+                else if (effect.Type == SituationEffectType.HoldingFine)
+                {
+                    // The treasury paid what the fine cost it, less any other charge in the choice, so a short treasury pays part.
+                    HoldingCityAffairs.PayFine(city, situation, Math.Min(subjectCredits, Math.Max(0, -change)), now);
+                }
+                else if (effect.Type == SituationEffectType.Modifier)
                 {
                     SituationRules.RefreshModifier(city.Modifiers, effect.Modifier, situation.Type, now);
                 }

@@ -394,6 +394,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public string GetStationCityId(uint player) => Property.GetCityIdForArea(GetArea(player));
 
+    public int GetWorkshopBonus(uint player, SkillType skill) => HouseSpecializations.GetLiveWorkshopBonus(player, skill);
+
     public int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId) =>
         EdictEffects.GetArtisansCharterPoints(dbPlayer, craftCityId);
 

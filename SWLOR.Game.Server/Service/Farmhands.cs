@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
             : target.StructureType == StructureType.Corral ? FarmhandTargetType.Corral
             : FarmhandTargetType.Invalid;
 
-        /// <summary>Whether the character may put a droid to work at the target: their own house, or a corral in their city.</summary>
+        /// <summary>Whether the character may put a droid to work at the target: a house they keep, or a corral in their city.</summary>
         public static bool HasAccess(uint player, WorldProperty target)
         {
             if (GetIsDM(player) || GetIsDMPossessed(player))
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             return target.PropertyType == PropertyType.House
-                ? target.OwnerPlayerId == GetObjectUUID(player)
+                ? FarmhandRules.HasHouseAccess(HouseSpecializations.GetPermissionRecord(target.Id, GetObjectUUID(player)))
                 : Corrals.HasAccess(player, target);
         }
 

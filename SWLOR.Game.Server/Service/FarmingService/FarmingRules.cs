@@ -176,6 +176,10 @@ namespace SWLOR.Game.Server.Service.FarmingService
         /// What the seed says about the fertilizer offered with it (<see cref="WoodlotRules.GetFertilizerRefusal"/>): a sapling
         /// refuses it. Checked right after the site, so the refusal comes before anything is used up.
         /// </param>
+        /// <param name="fertilizerItemRefusal">
+        /// What <see cref="FertilizerRules.GetRefusal"/> says about the fertilizer item offered: not a fertilizer, none carried, or a
+        /// lower tier than the crop. Checked right after the sapling refusal, before anything is used up.
+        /// </param>
         public static FarmingRefusal CheckPlant(
             bool isPlayer,
             bool plotExists,
@@ -187,7 +191,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
             int growingCrops,
             bool hasSeed,
             FarmingRefusal siteRefusal = FarmingRefusal.None,
-            FarmingRefusal fertilizerRefusal = FarmingRefusal.None)
+            FarmingRefusal fertilizerRefusal = FarmingRefusal.None,
+            FarmingRefusal fertilizerItemRefusal = FarmingRefusal.None)
         {
             if (!isPlayer)
                 return FarmingRefusal.NotAPlayer;
@@ -201,6 +206,8 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 return siteRefusal;
             if (fertilizerRefusal != FarmingRefusal.None)
                 return fertilizerRefusal;
+            if (fertilizerItemRefusal != FarmingRefusal.None)
+                return fertilizerItemRefusal;
             if (!CanPlantTier(cropManagementRank, cropTier))
                 return FarmingRefusal.TierLocked;
             if (!HasRoomForCrop(growingCrops))
@@ -289,12 +296,16 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 FarmingRefusal.OutdoorPlotOnly => "A sapling needs an outdoor garden plot in a city, not one inside a house.",
                 FarmingRefusal.NoOpenGroundOnStation => "A station deck has no open ground for a sapling.",
                 FarmingRefusal.NoFertilizerOnSaplings => "Fertilizer does nothing for a sapling, since its harvest is always 4 logs. Plant it without fertilizer; yours was not used.",
+                FarmingRefusal.PlotAboveLimit => $"This house is no longer a Greenhouse, so it plants only its first {HousePlotLimit} plots. This one can be harvested, not replanted.",
+                FarmingRefusal.NotFertilizer => "That is not a fertilizer.",
+                FarmingRefusal.NoFertilizer => "You do not carry that fertilizer.",
+                FarmingRefusal.FertilizerTooWeak => "That fertilizer is too weak for this crop. Use Fertilizer of the crop's tier or higher; yours was not used.",
                 _ => string.Empty
             };
         }
 
-        public static string DescribePlanted(string cropName, int growHours) =>
-            $"You planted {cropName}. It will be ripe in {FormatDuration(TimeSpan.FromHours(growHours))}.";
+        public static string DescribePlanted(string cropName, int growHours, bool fertilized = false) =>
+            $"You planted {cropName}{(fertilized ? " with fertilizer" : string.Empty)}. It will be ripe in {FormatDuration(TimeSpan.FromHours(growHours))}.";
 
         public static string DescribeTended(string cropName) =>
             $"You tended the {cropName}. Its harvest will yield 1 more item.";

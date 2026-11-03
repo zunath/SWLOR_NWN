@@ -36,17 +36,6 @@ internal static class StoredItemSweep
             $"{totals.ConfigurationModulesRefunded} configuration modules refunded for {totals.Credits} credits; {paid} owners paid or given designs.", true);
     }
 
-    internal static void MigratePelvis(int version)
-    {
-        var sections = CountSections().Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray();
-        var progress = new ServerMigrationProgress(version, sections);
-        var pass = new ParallelStoredItemPass(progress);
-        var converter = PelvisStoredItemConverter.Instance;
-        var changed = Sweep(pass, converter, null);
-        changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
-        Log.Write(LogGroup.Migration, $"Migration #{version}: Consolidated pelvis appearances in {changed} stored records.", true);
-    }
-
     private static (string Name, int Count)[] CountSections() => new[]
     {
         ServerMigrationProgress.CountRecords<InventoryItem>(),
@@ -66,12 +55,11 @@ internal static class StoredItemSweep
     /// Registered ships are converted by their own pass first (<see cref="PlayerShipConversion"/>).</param>
     private static int Sweep(ParallelStoredItemPass pass, IStoredItemConverter converter, LegacySpaceItemSweep space)
     {
-        var legacyMetadata = converter is not PelvisStoredItemConverter;
         var changed = 0;
         changed += pass.Process<InventoryItem>(item =>
         {
             var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
-                | (legacyMetadata && RenameListing(item.Resref, item.Name, value => item.Name = value));
+                | RenameListing(item.Resref, item.Name, value => item.Name = value);
             return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId, $"{nameof(InventoryItem)}:{item.Id}",
                 (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref) = (blueprint.Name, resref, resref, blueprint.IconResref),
                 credits => space.QueueRemoval<InventoryItem>(item.Id, item.PlayerId, credits)) ?? false);
@@ -79,7 +67,7 @@ internal static class StoredItemSweep
         changed += pass.Process<MarketItem>(item =>
         {
             var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
-                listing => item.Category = listing.Category) | (legacyMetadata && RenameListing(item.Resref, item.Name, value => item.Name = value));
+                listing => item.Category = listing.Category) | RenameListing(item.Resref, item.Name, value => item.Name = value);
             return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId, $"{nameof(MarketItem)}:{item.Id}",
                 (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref, item.Category) =
                     (blueprint.Name, resref, resref, blueprint.IconResref, blueprint.Category),
@@ -92,7 +80,7 @@ internal static class StoredItemSweep
                 foreach (var (key, item) in category.Items.ToList())
                 {
                     categoryChanged |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
-                        | (legacyMetadata && RenameListing(item.Resref, item.Name, value => item.Name = value));
+                        | RenameListing(item.Resref, item.Name, value => item.Name = value);
                     if (space == null)
                         continue;
                     var removed = false;
@@ -110,15 +98,14 @@ internal static class StoredItemSweep
             return categoryChanged;
         }, space == null ? null : space.Flush);
         changed += pass.Process<WorldProperty>(property => MigrateData(converter, property.SerializedItem, value => property.SerializedItem = value) |
-            (legacyMetadata && FurnitureRenameMigration.RenameStructure(property)) |
+            FurnitureRenameMigration.RenameStructure(property) |
             (space?.Migrate(property.SerializedItem, value => property.SerializedItem = value, null) ?? false));
         changed += pass.Process<ResearchJob>(job => MigrateData(converter, job.SerializedItem, value => job.SerializedItem = value) |
             (space?.Migrate(job.SerializedItem, value => job.SerializedItem = value, null) ?? false));
         // Cosmetic chest templates retain Armor so ApplyOutfit can still load them.
         changed += pass.Process<PlayerOutfit>(outfit =>
             MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false) |
-            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value) |
-            (!legacyMetadata && PelvisAppearanceMigration.MigrateOutfitListing(outfit)));
+            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value));
         changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value) |
             (space?.Migrate(creature.Data, value => creature.Data = value, null) ?? false));
         changed += pass.Process<PlayerShip>(ship =>
@@ -144,8 +131,6 @@ internal static class StoredItemSweep
             rootIcon = listing.IconResref;
             rootChanged?.Invoke(listing);
         });
-        if (converter is PelvisStoredItemConverter)
-            return changed;
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;
@@ -170,7 +155,7 @@ internal static class StoredItemSweep
             foreach (var item in items)
             {
                 changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
-                    | (converter is not PelvisStoredItemConverter && RenameListing(item.Resref, item.Name, value => item.Name = value));
+                    | RenameListing(item.Resref, item.Name, value => item.Name = value);
                 changed |= space?.Migrate(item.Data, value => item.Data = value, null, null,
                     (blueprint, resref) => (item.Name, item.Resref, item.IconResref) = (blueprint.Name, resref, blueprint.IconResref)) ?? false;
             }

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,12 +30,26 @@ namespace SWLOR.Game.Server.Service
             Credits = Math.Max(0, credits)
         };
 
-        /// <summary>Takes the credits and saves them in the character file with the mark. Runs on the payer's queue.</summary>
-        public static void Take(uint player, CreditPaymentMark mark)
+        /// <summary>
+        /// Takes the credits with the mark and saves the character file at once (<see cref="CharacterCheckpoint"/>), for a payment
+        /// whose record is saved right after. When the file cannot be saved the credits and the mark are put back and nothing is paid.
+        /// </summary>
+        /// <returns>True when the file holds the payment.</returns>
+        public static bool TryTakeSaved(uint player, CreditPaymentMark mark)
         {
-            TakeGoldFromCreature(mark.Credits, player, true);
-            ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);
-            ExportSingleCharacter(player);
+            return CheckpointedChange.Run(
+                () =>
+                {
+                    TakeGoldFromCreature(mark.Credits, player, true);
+                    ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    GiveGoldToCreature(player, mark.Credits);
+                    ObjectPlugin.DeleteString(player, MarkVariable);
+                });
         }
 
         /// <summary>Records the payment on the ship it changed, to be saved with the change (<see cref="PlayerShip.PaymentIds"/>).</summary>
@@ -70,7 +85,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Take(player, mark);
+            if (!TryTakeSaved(player, mark))
+            {
+                UndoStationFounding(station, player);
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the station was not founded."));
+                return;
+            }
+
             station.PendingPaymentId = string.Empty;
             station.PendingPaymentCredits = 0;
             DB.Set(station);

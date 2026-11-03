@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.FactionAgentService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -302,8 +303,12 @@ namespace SWLOR.Game.Server.Service
                 {
                     GiveGoldToCreature(player, mission.Credits);
                     ObjectPlugin.SetString(player, PaidCreditsVariable, missionId, true);
-                    ExportSingleCharacter(player);
                 }
+
+                // The credits and their mark reach the character file before the mission is saved as paid. A save that fails
+                // leaves the mission unpaid: the mark keeps the credits from being given twice when it is paid again.
+                if (!CharacterCheckpoint.Save(player))
+                    return;
 
                 MarkPaid(player, missionId, x => x.PaidCredits = true);
             }
@@ -428,8 +433,24 @@ namespace SWLOR.Game.Server.Service
             // purchase, then the tokens are taken with the purchase's id in one write. A restart in between takes them at
             // the next login (ChargeInterruptedAgentPurchase), once.
             var purchase = new AgentPurchaseMark { Id = Guid.NewGuid().ToString(), Currency = currency, Tokens = item.Tokens };
-            ObjectPlugin.SetString(player, AgentPurchaseVariable, purchase.Serialize(), true);
-            ExportSingleCharacter(player);
+            var saved = CheckpointedChange.Run(
+                () =>
+                {
+                    ObjectPlugin.SetString(player, AgentPurchaseVariable, purchase.Serialize(), true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    DestroyObject(created);
+                    ObjectPlugin.DeleteString(player, AgentPurchaseVariable);
+                });
+            if (!saved)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so nothing was bought."));
+                return;
+            }
+
             Currency.TakeCurrency(player, currency, item.Tokens, x => x.LastAgentPurchaseId = purchase.Id);
 
             var name = GetStoreItemName(item);

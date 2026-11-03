@@ -332,7 +332,7 @@ public class ShipTransferTests
                 "the restart recovery keeps the payment id saved with the intent and writes the receipt");
 
         AssertInOrder(ExtractMethod(source, "private static void RetirePayment("),
-            "ObjectPlugin.DeleteString(payer, PaymentVariable);", "ExportSingleCharacter(payer);", "DB.Delete<ShipTransferReceipt>(paymentId);");
+            "ObjectPlugin.DeleteString(payer, PaymentVariable);", "CharacterCheckpoint.Save(payer)", "DB.Delete<ShipTransferReceipt>(paymentId);");
         source.Should().NotContain("ClearPayment(", "every mark is retired together with its receipt");
 
         var receipt = typeof(ShipTransferReceipt);
@@ -350,16 +350,20 @@ public class ShipTransferTests
         ExtractMethod(source, "public static void Accept(").Should().Contain("AssignCommand(giver, () => CompleteGift(giver, recipient, offer));");
 
         var purchase = ExtractMethod(source, "private static void CompletePurchase(");
-        AssertInOrder(purchase, "if (GetGold(buyer) < price)", "TakeGoldFromCreature(price, buyer, true);", "SavePayment(buyer, payment);",
+        purchase.Should().NotContain("TakeGoldFromCreature(", "SavePayment takes the price inside the save, which puts it back when the file cannot be saved");
+        AssertInOrder(purchase, "if (GetGold(buyer) < price)", "if (!SavePayment(buyer, payment))", "return;",
             "ship.SaleId = payment.Id;", "Complete(ship, buyerId, \"was sold\", payment.Id);", "PaySaleProceeds(ship);", "RetirePayment(buyer, payment.Id);");
         purchase.Should().Contain("if (listing.Price != price)");
 
         var gift = ExtractMethod(source, "private static void CompleteGift(");
-        AssertInOrder(gift, "TakeGoldFromCreature(offer.Fee, giver, true);", "SavePayment(giver, payment);",
+        gift.Should().NotContain("TakeGoldFromCreature(");
+        AssertInOrder(gift, "if (!SavePayment(giver, payment))", "return;",
             "Complete(ship, offer.RecipientPlayerId, \"changed owner\", payment.Id);", "RetirePayment(giver, payment.Id);");
 
-        AssertInOrder(ExtractMethod(source, "private static void SavePayment("),
-            "ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);", "ExportSingleCharacter(payer);");
+        AssertInOrder(ExtractMethod(source, "private static bool SavePayment("),
+            "TakeGoldFromCreature(payment.Credits, payer, true);", "ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);",
+            "() => CharacterCheckpoint.Save(payer),", "GiveGoldToCreature(payer, payment.Credits);", "ObjectPlugin.DeleteString(payer, PaymentVariable);",
+            "if (!saved)", "return saved;");
 
         source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
         var settle = ExtractMethod(source, "public static void SettleInterruptedPayment(");

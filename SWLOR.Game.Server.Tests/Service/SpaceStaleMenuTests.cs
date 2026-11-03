@@ -68,7 +68,7 @@ public class SpaceStaleMenuTests
     public void ShipManagement_RefitRepairUnregisterAndBoard_RecheckTheShip()
     {
         var refit = Between(ShipManagement(), "private void CompleteRefit(", "private void SetMidSlot(");
-        Index(refit, "var dbShip = GetShipToRefit(shipId);").Should().BeLessThan(Index(refit, "CreditPayments.Take(player, mark);"));
+        Index(refit, "var dbShip = GetShipToRefit(shipId);").Should().BeLessThan(Index(refit, "CreditPayments.TryTakeSaved(player, mark)"));
 
         var repair = Between(ShipManagement(), "public Action OnClickRepair()", "private void CompleteRepair(");
         var modal = repair[Index(repair, "ShowModal(")..];

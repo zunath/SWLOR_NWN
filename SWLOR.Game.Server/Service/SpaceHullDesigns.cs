@@ -39,7 +39,10 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(user))
                     return;
 
-                ExportSingleCharacter(user);
+                // A save that fails leaves the mark: the next login learns the design once a later save holds it.
+                if (!CharacterCheckpoint.Save(user))
+                    return;
+
                 SaveLearnedDesign(user, resref);
             }));
         }

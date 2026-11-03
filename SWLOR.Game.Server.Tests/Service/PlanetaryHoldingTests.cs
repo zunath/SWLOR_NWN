@@ -839,8 +839,12 @@ public class PlanetaryHoldingTests
     public void HoldingPayments_AreTakenOnThePlayersQueueAndSavedBeforeTheyComplete()
     {
         var service = Source(Path.Combine("Service", "PlanetaryHoldings.cs")).Replace("\r\n", "\n");
-        service.Should().NotContain("AssignCommand(player, () => TakeGoldFromCreature",
-            "a debit left to the next export lets a restart keep both the credits and what they paid for");
+        // The one queued take-back is the undo of an abandoned holding's refund when its character save failed.
+        InOrder(Method(service, "public static void Abandon("),
+            "() => CharacterCheckpoint.Save(player),", "AssignCommand(player, () => TakeGoldFromCreature(refund, player, true));");
+        service.Replace("AssignCommand(player, () => TakeGoldFromCreature(refund, player, true));", string.Empty)
+            .Should().NotContain("AssignCommand(player, () => TakeGoldFromCreature",
+                "a debit left to the next export lets a restart keep both the credits and what they paid for");
 
         foreach (var (method, payment) in new[]
                  {
@@ -865,9 +869,14 @@ public class PlanetaryHoldingTests
         Method(service, "private static void TakePaymentOnQueue(").Should().Contain("AssignCommand(player, () => TakePayment(player, holdingId, paymentId));");
         InOrder(Method(service, "private static void TakePayment("),
             "holding.PendingPaymentId != paymentId",
-            "TakeGoldFromCreature(holding.PendingPaymentCredits, player, true);",
+            "var credits = holding.PendingPaymentCredits;",
+            "TakeGoldFromCreature(credits, player, true);",
             "ObjectPlugin.SetString(player, PaymentPaidVariable, paymentId, true);",
-            "ExportSingleCharacter(player);",
+            "() => CharacterCheckpoint.Save(player),",
+            "GiveGoldToCreature(player, credits);",
+            "if (!paid)",
+            "UndoPayment(holding);",
+            "return;",
             "HoldingPaymentRules.Complete(holding);",
             "DB.Set(holding);");
         InOrder(Method(service, "private static void SettlePendingPayments("),

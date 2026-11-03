@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -356,19 +357,21 @@ namespace SWLOR.Game.Server.Service
 
             // The stock gives the ore up before the character file is saved with it, so no one else can collect it: a
             // reservation names the collection, the stock saves without the ore and with the collection pending, the
-            // character file saves the ore with its mark, and the pending collection and reservation go. A login after a
-            // restart in between keeps the collection when the character file has its mark and otherwise returns the ore
-            // to the stock (SettleDrillCollections).
+            // character file saves the ore with its mark at once, and the pending collection and reservation go. A login
+            // after a restart in between keeps the collection when the character file has its mark and otherwise returns the
+            // ore to the stock (SettleDrillCollections). A save that fails leaves the collection pending for that login.
             DB.Set(new DrillCollectionReservation { Id = collection.Id, OwnerPlayerId = GetObjectUUID(player), BuildingId = buildingId });
             collection.TakeFrom(state.DrillStorage);
             state.PendingDrillCollections ??= new Dictionary<string, string>();
             state.PendingDrillCollections[collection.Id] = collection.Serialize();
             DB.Set(state);
             ObjectPlugin.SetString(player, DrillCollectionVariable, collection.Serialize(), true);
-            ExportSingleCharacter(player);
-            state.PendingDrillCollections.Remove(collection.Id);
-            DB.Set(state);
-            DB.Delete<DrillCollectionReservation>(collection.Id);
+            if (CharacterCheckpoint.Save(player))
+            {
+                state.PendingDrillCollections.Remove(collection.Id);
+                DB.Set(state);
+                DB.Delete<DrillCollectionReservation>(collection.Id);
+            }
 
             var collected = collection.Units.Select(x => $"{x.Value}x {Cache.GetItemNameByResref(x.Key)}");
             SendMessageToPC(player, ColorToken.Green($"Collected from the Asteroid Drill: {string.Join(", ", collected)}."));
@@ -449,8 +452,19 @@ namespace SWLOR.Game.Server.Service
             // if the building did.
             var serialized = ObjectPlugin.Serialize(controller);
             var assignmentId = Guid.NewGuid().ToString();
-            SetLocalString(controller, AssigningVariable, $"{building.Id}|{assignmentId}");
-            ExportSingleCharacter(player);
+            var marked = CheckpointedChange.Run(
+                () =>
+                {
+                    SetLocalString(controller, AssigningVariable, $"{building.Id}|{assignmentId}");
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => DeleteLocalString(controller, AssigningVariable));
+            if (!marked)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the droid stays with you."));
+                return false;
+            }
 
             state.DroidName = Droid.GetDroidName(controller);
             (state.DroidIndustry, state.DroidEfficiencyPercent) = GetDroidIndustry(controller);
@@ -495,9 +509,20 @@ namespace SWLOR.Game.Server.Service
 
             // The returned controller is marked and saved with the character before the building lets the droid go, so
             // a restart in between leaves a marked controller the next login settles by clearing the building.
-            if (!string.IsNullOrEmpty(state.DroidAssignmentId))
-                SetLocalString(item, RecalledVariable, $"{building.Id}|{state.DroidAssignmentId}");
-            ExportSingleCharacter(player);
+            var marked = CheckpointedChange.Run(
+                () =>
+                {
+                    if (!string.IsNullOrEmpty(state.DroidAssignmentId))
+                        SetLocalString(item, RecalledVariable, $"{building.Id}|{state.DroidAssignmentId}");
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => DestroyObject(item));
+            if (!marked)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the droid stays at its post."));
+                return;
+            }
 
             SendMessageToPC(player, ColorToken.Green($"{state.DroidName} returns to you."));
             ClearDroid(state);
@@ -568,7 +593,10 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(player))
                     return;
 
-                ExportSingleCharacter(player);
+                // A save that fails keeps the receipts for the next login.
+                if (!CharacterCheckpoint.Save(player))
+                    return;
+
                 foreach (var receiptId in receiptIds)
                     DB.Delete<StationDroidReceipt>(receiptId);
             });

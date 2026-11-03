@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -815,7 +816,12 @@ namespace SWLOR.Game.Server.Service
                 TaxPaid = tax
             };
             var mark = CreditPayments.NewMark(CreditPaymentKind.ShuttleTicket, ride.Id, fare + tax);
-            CreditPayments.Take(player, mark);
+            if (!CreditPayments.TryTakeSaved(player, mark))
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so no ticket was bought."));
+                return;
+            }
+
             ride.PaymentId = mark.Id;
             DB.Set(ride);
             CreditPayments.Retire(player);
@@ -875,9 +881,26 @@ namespace SWLOR.Game.Server.Service
 
             // The fare is saved in the character file with a mark naming the ticket before the ticket is deleted: a
             // restart in between deletes it at the next login (SettleRefundedTicket), never refunding twice.
-            GiveGoldToCreature(player, ride.FarePaid);
-            ObjectPlugin.SetString(player, RefundedRideVariable, ride.Id, true);
-            ExportSingleCharacter(player);
+            var fare = ride.FarePaid;
+            var refunded = CheckpointedChange.Run(
+                () =>
+                {
+                    GiveGoldToCreature(player, fare);
+                    ObjectPlugin.SetString(player, RefundedRideVariable, ride.Id, true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    AssignCommand(player, () => TakeGoldFromCreature(fare, player, true));
+                    ObjectPlugin.DeleteString(player, RefundedRideVariable);
+                });
+            if (!refunded)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so your ticket was not refunded."));
+                return false;
+            }
+
             DB.Delete<ShuttleRide>(ride.Id);
             _ticketHolders.Remove(playerId);
             _boardingNotBeforeUtc.Remove(playerId);

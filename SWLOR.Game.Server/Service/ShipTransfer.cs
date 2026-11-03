@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -404,7 +405,6 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var shipName = GetShipName(ship);
-            TakeGoldFromCreature(offer.Fee, giver, true);
             var payment = new ShipTransferPayment
             {
                 Id = Guid.NewGuid().ToString(),
@@ -412,7 +412,9 @@ namespace SWLOR.Game.Server.Service
                 NewOwnerPlayerId = offer.RecipientPlayerId,
                 Credits = offer.Fee
             };
-            SavePayment(giver, payment);
+            if (!SavePayment(giver, payment))
+                return;
+
             Complete(ship, offer.RecipientPlayerId, "changed owner", payment.Id);
             RetirePayment(giver, payment.Id);
 
@@ -640,9 +642,9 @@ namespace SWLOR.Game.Server.Service
             var buyerId = GetObjectUUID(buyer);
             var shipName = GetShipName(ship);
             var dockName = GetDockName(ship);
-            TakeGoldFromCreature(price, buyer, true);
             var payment = new ShipTransferPayment { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, NewOwnerPlayerId = buyerId, Credits = price };
-            SavePayment(buyer, payment);
+            if (!SavePayment(buyer, payment))
+                return;
 
             // The proceeds owed are saved with the transfer, before anything changes hands, then paid: a restart
             // part-way through finishes the transfer and the payout at the next module load.
@@ -715,11 +717,28 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The character-file local naming a ship transfer's payment until the transfer is saved (<see cref="ShipTransferPayment"/>).</summary>
         private const string PaymentVariable = "SHIP_TRANSFER_PAYMENT";
 
-        /// <summary>Saves a payment just taken in the payer's character file, with the mark naming the transfer it buys.</summary>
-        private static void SavePayment(uint payer, ShipTransferPayment payment)
+        /// <summary>
+        /// Takes a payment and saves it in the payer's character file at once, with the mark naming the transfer it buys. False,
+        /// with the credits and the mark put back, when the file could not be saved: the transfer must not happen.
+        /// </summary>
+        private static bool SavePayment(uint payer, ShipTransferPayment payment)
         {
-            ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);
-            ExportSingleCharacter(payer);
+            var saved = CheckpointedChange.Run(
+                () =>
+                {
+                    TakeGoldFromCreature(payment.Credits, payer, true);
+                    ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(payer),
+                () =>
+                {
+                    GiveGoldToCreature(payer, payment.Credits);
+                    ObjectPlugin.DeleteString(payer, PaymentVariable);
+                });
+            if (!saved)
+                FloatingTextStringOnCreature(ColorToken.Red("Your character could not be saved, so nothing was paid."), payer, false);
+            return saved;
         }
 
         /// <summary>
@@ -729,8 +748,8 @@ namespace SWLOR.Game.Server.Service
         private static void RetirePayment(uint payer, string paymentId)
         {
             ObjectPlugin.DeleteString(payer, PaymentVariable);
-            ExportSingleCharacter(payer);
-            if (!string.IsNullOrWhiteSpace(paymentId))
+            // A save that fails keeps the receipt, so a mark the saved file still holds finds it at the next login.
+            if (CharacterCheckpoint.Save(payer) && !string.IsNullOrWhiteSpace(paymentId))
                 DB.Delete<ShipTransferReceipt>(paymentId);
         }
 

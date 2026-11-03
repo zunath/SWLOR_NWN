@@ -150,8 +150,12 @@ namespace SWLOR.Game.Server.Service
             var ship = string.IsNullOrWhiteSpace(shipId) ? GetActiveShip(player) : DB.Get<PlayerShip>(shipId);
             fine = Math.Max(0, Math.Min(fine, GetGold(player)));
             var mark = fine > 0 ? CreditPayments.NewMark(CreditPaymentKind.CustomsFine, ship?.Id, fine) : null;
-            if (mark != null)
-                CreditPayments.Take(player, mark);
+            if (mark != null && !CreditPayments.TryTakeSaved(player, mark))
+            {
+                // Nothing is taken when the fine cannot reach the character file: the goods stay with the fine.
+                Log.Write(LogGroup.Space, $"CUSTOMS FINE NOT SAVED - {PlayerName.GetAuditName(player)} - {fine} credits; nothing was taken.");
+                return (0, new Dictionary<CommodityType, int>());
+            }
 
             var taken = ship == null || !confiscate
                 ? new Dictionary<CommodityType, int>()

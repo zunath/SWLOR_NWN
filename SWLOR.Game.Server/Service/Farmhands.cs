@@ -88,8 +88,10 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Replays the farmhand's work up to now and saves it. Does nothing where no droid works, and nothing new when the
-        /// farmhand was just processed. The animals and plots are saved first and the farmhand last, so a stop part way can give
-        /// an animal a free meal at worst, never lose an event the animal already shows.
+        /// farmhand was just processed. The replay's full new state of the farmhand, animals and plots is saved as one pending record
+        /// first, then each record is written whole, farmhand last, and the pending record goes (<see cref="FarmhandCatchUpProcess"/>),
+        /// so a stop part way can neither lose the products the farmhand collected nor collect them again: the next catch-up, or the
+        /// server start, writes the records of the pending one again.
         /// </summary>
         public static void CatchUp(string targetId)
         {
@@ -98,29 +100,12 @@ namespace SWLOR.Game.Server.Service
 
             try
             {
-                var farmhand = Get(targetId);
-                if (farmhand == null)
+                var result = FarmhandCatchUpProcess.CatchUp(CatchUpRecords, targetId, DateTime.UtcNow, Corrals.GetDefinition, Farming.GetCrop);
+                if (result == null)
                     return;
 
-                var now = DateTime.UtcNow;
-                var animals = farmhand.TargetType == FarmhandTargetType.Corral ? Corrals.GetAnimalsInCorral(targetId) : new List<Livestock>();
-                var plots = farmhand.TargetType == FarmhandTargetType.House ? GetPlots(targetId, farmhand.OwnerPlayerId) : new List<GardenPlot>();
-                var result = FarmhandRules.Replay(farmhand, animals, plots, Corrals.GetDefinition, Farming.GetCrop, now);
-                if (!result.Ran)
-                    return;
-
-                foreach (var animal in result.Animals)
-                    DB.Set(animal);
-                foreach (var plot in result.Plots)
-                    DB.Set(plot);
-                foreach (var animal in result.WanderedOff)
-                    Corrals.RemoveWanderedOff(animal);
-                foreach (var plot in result.Withered)
-                    Farming.RemoveWitheredCrop(plot.PlotId, now);
-
-                DB.Set(farmhand);
                 if (result.Events.Count > 0)
-                    Log.Write(LogGroup.Property, $"Farmhand {farmhand.DroidName} at {targetId} caught up: {string.Join(", ", result.Events.GroupBy(e => e.Type).Select(g => $"{g.Count()} {g.Key}"))}.");
+                    Log.Write(LogGroup.Property, $"Farmhand {Get(targetId)?.DroidName} at {targetId} caught up: {string.Join(", ", result.Events.GroupBy(e => e.Type).Select(g => $"{g.Count()} {g.Key}"))}.");
 
                 foreach (var animal in result.Animals)
                     Corrals.RefreshName(animal);
@@ -129,6 +114,74 @@ namespace SWLOR.Game.Server.Service
             {
                 _running.Remove(targetId);
             }
+        }
+
+        /// <summary>
+        /// Finishes the catch-up a server stop left half saved, for the house or corral. Called before anything else reads or removes the
+        /// farmhand's animals or crops, so the records it writes are not older than a change made since.
+        /// </summary>
+        private static void RecoverCatchUp(string targetId)
+        {
+            if (string.IsNullOrWhiteSpace(targetId) || !_running.Add(targetId))
+                return;
+
+            try
+            {
+                if (FarmhandCatchUpProcess.Recover(CatchUpRecords, targetId))
+                    Log.Write(LogGroup.Property, $"Finished the farmhand catch-up of {targetId} that a restart interrupted.");
+            }
+            finally
+            {
+                _running.Remove(targetId);
+            }
+        }
+
+        /// <summary>At server start, finishes every farmhand catch-up a stop left half saved, before clerk recoveries, removals and replays.</summary>
+        public static void RecoverCatchUps()
+        {
+            foreach (var pending in Search(new DBQuery<FarmhandCatchUp>()))
+            {
+                try
+                {
+                    RecoverCatchUp(pending.TargetId);
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(LogGroup.Error, $"The farmhand catch-up of {pending.TargetId} could not be finished at server start: {ex}");
+                }
+            }
+        }
+
+        /// <summary>The records a farmhand's catch-up reads and writes.</summary>
+        private static readonly IFarmhandCatchUpStore CatchUpRecords = new CatchUpStore();
+
+        private sealed class CatchUpStore : IFarmhandCatchUpStore
+        {
+            public FarmhandCatchUp GetPending(string targetId) => DB.Get<FarmhandCatchUp>(FarmhandCatchUp.KeyFor(targetId));
+
+            public void SavePending(FarmhandCatchUp pending) => DB.Set(pending);
+
+            public void DeletePending(string targetId) => DB.Delete<FarmhandCatchUp>(FarmhandCatchUp.KeyFor(targetId));
+
+            public Farmhand GetFarmhand(string targetId) => Get(targetId);
+
+            public List<Livestock> GetAnimals(string corralId) => Corrals.GetAnimalsInCorral(corralId);
+
+            public List<GardenPlot> GetPlots(string houseId, string planterId) => Farmhands.GetPlots(houseId, planterId);
+
+            public bool AnimalExists(string animalId) => DB.Get<Livestock>(animalId) != null;
+
+            public bool PlotExists(string plotRecordId) => DB.Get<GardenPlot>(plotRecordId) != null;
+
+            public void SetAnimal(Livestock animal) => DB.Set(animal);
+
+            public void SetPlot(GardenPlot plot) => DB.Set(plot);
+
+            public void RemoveWanderedOff(Livestock animal) => Corrals.RemoveWanderedOff(animal);
+
+            public void RemoveWithered(GardenPlot plot, DateTime untilUtc) => Farming.RemoveWitheredCrop(plot.PlotId, untilUtc);
+
+            public void SetFarmhand(Farmhand farmhand) => DB.Set(farmhand);
         }
 
         /// <summary>Brings up to date the farmhand of the house a garden plot stands in. Called before any action on a plot.</summary>
@@ -142,6 +195,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>At server start, brings every farmhand up to date and finishes any droid return a restart interrupted.</summary>
         public static void CatchUpAll()
         {
+            RecoverCatchUps();
             FinishDroidReturns();
 
             var farmhands = Search(new DBQuery<Farmhand>());
@@ -487,6 +541,9 @@ namespace SWLOR.Game.Server.Service
         public static void OnPropertyDeleted()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
+
+            // What a stop left of its last catch-up is written first, so the hoppers sent back hold what the droid collected.
+            RecoverCatchUp(propertyId);
             var farmhand = Get(propertyId);
             if (farmhand == null)
                 return;

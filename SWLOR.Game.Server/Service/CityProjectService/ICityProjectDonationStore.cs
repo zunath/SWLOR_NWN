@@ -16,9 +16,10 @@ namespace SWLOR.Game.Server.Service.CityProjectService
 
         /// <summary>
         /// Takes the donated materials out of the donor's inventory, adds the donation's id to the mark in their character file, and
-        /// saves the character file.
+        /// saves the character file. The materials are out of the inventory when the file is saved, not merely queued for destruction.
+        /// Returns false, having changed nothing, when the donor's inventory could not give them up.
         /// </summary>
-        void TakeAndMark(CityProjectDonation donation);
+        bool TakeAndMark(CityProjectDonation donation);
 
         /// <summary>Removes the donation's id from the mark in the donor's character file and saves the character file.</summary>
         void ClearMark(string donationId);

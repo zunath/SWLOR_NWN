@@ -30,6 +30,11 @@ namespace SWLOR.Game.Server.Service
     /// the write is harmless, <see cref="TakeAndSave"/> is enough: the items are taken and the character file is saved before the
     /// database is written, so a restart can lose them but never copy them.
     /// </para>
+    /// <para>
+    /// Items leave the inventory through <see cref="InventoryRemoval"/>, never <c>DestroyObject</c> alone: native destruction waits until
+    /// the script returns, so an item destroyed and then saved in the same script is still in the saved file. The removal is complete
+    /// before the character file is saved, and the parked items are destroyed once the save succeeded.
+    /// </para>
     /// </summary>
     public static class TransferJournal
     {
@@ -112,22 +117,32 @@ namespace SWLOR.Game.Server.Service
                     return false;
             }
 
-            foreach (var (resref, count) in needed)
+            var removal = new InventoryRemoval(player);
+            try
             {
-                FarmItems.Take(player, resref, count);
+                foreach (var (resref, count) in needed)
+                {
+                    if (removal.TryTake(resref, count))
+                        continue;
+
+                    removal.Restore();
+                    return false;
+                }
+
+                if (!CharacterCheckpoint.Save(player))
+                {
+                    removal.Restore();
+                    return false;
+                }
+            }
+            catch
+            {
+                removal.Restore();
+                throw;
             }
 
-            if (CharacterCheckpoint.Save(player))
-                return true;
-
-            var location = GetLocation(player);
-            var playerId = GetObjectUUID(player);
-            foreach (var (resref, count) in needed)
-            {
-                FarmItems.Give(player, playerId, resref, count, location);
-            }
-
-            return false;
+            removal.Destroy();
+            return true;
         }
 
         private static void Report(uint player, TransferEntry entry, TransferSettlement settlement)
@@ -257,24 +272,51 @@ namespace SWLOR.Game.Server.Service
                     held.Add(item);
                 }
 
+                // The items leave the inventory before the file is saved, not just get queued for destruction: native destruction waits
+                // for the end of this script, so a file saved now would still hold them.
+                var removal = new InventoryRemoval(_player);
+                var saved = false;
+                try
+                {
+                    if (TakeFromInventory(removal, entry, held))
+                    {
+                        ObjectPlugin.SetString(_player, MarkVariable, TransferJournalRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), entry.Id), true);
+                        saved = CharacterCheckpoint.Save(_player);
+                    }
+                }
+                catch
+                {
+                    Undo(removal, entry);
+                    throw;
+                }
+
+                if (saved)
+                {
+                    removal.Destroy();
+                    return true;
+                }
+
+                // The items could not all be taken or the file could not be saved: everything is put back and unmarked, so the action
+                // simply did not happen.
+                Undo(removal, entry);
+                return false;
+            }
+
+            private static bool TakeFromInventory(InventoryRemoval removal, TransferEntry entry, List<uint> held)
+            {
                 foreach (var item in entry.Items.Where(item => string.IsNullOrEmpty(item.Data)))
                 {
-                    FarmItems.Take(_player, item.Resref, item.Count);
+                    if (!removal.TryTake(item.Resref, item.Count))
+                        return false;
                 }
 
-                foreach (var item in held)
-                {
-                    UseUpOne(item);
-                }
+                return held.All(removal.TryUseUpOne);
+            }
 
-                ObjectPlugin.SetString(_player, MarkVariable, TransferJournalRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), entry.Id), true);
-                if (CharacterCheckpoint.Save(_player))
-                    return true;
-
-                // The file could not be saved: everything is put back and unmarked, so the action simply did not happen.
+            private void Undo(InventoryRemoval removal, TransferEntry entry)
+            {
                 SetMark(TransferJournalRules.RemoveMark(ObjectPlugin.GetString(_player, MarkVariable), entry.Id));
-                Restore(entry);
-                return false;
+                removal.Restore();
             }
 
             public bool GiveAndMark(TransferEntry entry)
@@ -379,26 +421,6 @@ namespace SWLOR.Game.Server.Service
                     ObjectPlugin.SetString(_player, MarkVariable, mark, true);
             }
 
-            /// <summary>Gives the entry's items back to the player after a failed save, into the inventory and then overflow.</summary>
-            private void Restore(TransferEntry entry)
-            {
-                var location = GetLocation(_player);
-                for (var index = 0; index < entry.Items.Count; index++)
-                {
-                    var item = entry.Items[index];
-                    if (!string.IsNullOrEmpty(item.Data))
-                    {
-                        var created = ObjectPlugin.Deserialize(item.Data);
-                        if (GetIsObjectValid(created) && !Item.TryAcquireItem(_player, created))
-                            StoreHeldInOverflow(entry, index);
-                    }
-                    else
-                    {
-                        FarmItems.Give(_player, entry.PlayerId, item.Resref, item.Count, location);
-                    }
-                }
-            }
-
             /// <summary>Writes <paramref name="count"/> of a plain item to overflow under the ids the item always has, so a repeat writes the same records.</summary>
             private static void WriteOverflow(TransferEntry entry, int index, int count)
             {
@@ -420,15 +442,6 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 FarmItems.StoreInOverflow(entry.PlayerId, created, TransferJournalRules.GetOverflowRecordId(entry.Id, index, 0));
-            }
-
-            private static void UseUpOne(uint item)
-            {
-                var size = GetItemStackSize(item);
-                if (size > 1)
-                    SetItemStackSize(item, size - 1);
-                else
-                    DestroyObject(item);
             }
 
             private static string Describe(TransferEntry entry)

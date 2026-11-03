@@ -222,11 +222,18 @@ public class CityProjectWiringTests
     {
         var service = ReadServerSource("Service", "CityProjectDonations.cs");
 
-        var take = ExtractMethod(service, "public void TakeAndMark(CityProjectDonation donation)");
-        ShouldComeBefore(take, "TakeItems(_player, donation.Resref, donation.Count)", "ObjectPlugin.SetString(_player, MarkVariable");
+        var take = ExtractMethod(service, "public bool TakeAndMark(CityProjectDonation donation)");
+        ShouldComeBefore(take, "removal.TryTake(donation.Resref, donation.Count)", "ObjectPlugin.SetString(_player, MarkVariable");
         ShouldComeBefore(take, "ObjectPlugin.SetString(_player, MarkVariable", "CharacterCheckpoint.Save(_player)");
         take.Should().Contain("donation.Id), true)", "the mark is saved in the character file");
         take.Should().NotContain("DB.Set", "the project and the record are not this step's");
+
+        // Native destruction waits for the end of the script, so the materials are parked out of the inventory before the file is saved
+        // and destroyed after it, never passed to DestroyObject before the save.
+        take.Should().NotContain("DestroyObject");
+        ShouldComeBefore(take, "CharacterCheckpoint.Save(_player)", "removal.Destroy()");
+        take.Should().Contain("removal.Restore()", "materials that could not all be taken are put back");
+        service.Should().NotContain("DestroyObject(item)", "the donation never destroys a donor's item before the save");
 
         var clear = ExtractMethod(service, "public void ClearMark(string donationId)");
         clear.Should().Contain("CharacterCheckpoint.Save(_player)", "the cleared mark is saved too");

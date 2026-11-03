@@ -127,11 +127,15 @@ public class TransferJournalProcessTests
 
         public bool TakeAndMark(TransferEntry entry)
         {
-            Write("take");
+            // The items leave the inventory before the file is saved (native destruction waits for the end of the script, so the real
+            // store parks them in a holding container first), and the file is saved with the mark after. A stop between the two
+            // leaves the file as it was: the items in it and no mark.
+            Write("park");
             if (Items < entry.Items.Sum(item => item.Count))
                 return false;
 
             Items -= entry.Items.Sum(item => item.Count);
+            Write("mark");
             Marks.Add(entry.Id);
             if (SaveFails)
             {
@@ -255,7 +259,7 @@ public class TransferJournalProcessTests
         store.Items.Should().Be(store.FileItems, "the character file was saved last");
     }
 
-    private const int DepositWrites = 6;
+    private const int DepositWrites = 7;
     private const int WithdrawWrites = 6;
 
     #region Deposits
@@ -268,7 +272,7 @@ public class TransferJournalProcessTests
         var settlement = TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit));
 
         settlement.Should().Be(TransferSettlement.Apply);
-        store.Writes.Should().Equal("save", "take", "apply", "applied", "delete", "clear");
+        store.Writes.Should().Equal("save", "park", "mark", "apply", "applied", "delete", "clear");
         store.InTarget.Should().Be(Moved);
         store.Items.Should().Be(Total - Moved);
         store.Entries.Should().BeEmpty();
@@ -278,7 +282,7 @@ public class TransferJournalProcessTests
     [Test]
     public void ADeposit_TakesTheItemsAndSavesTheCharacter_BeforeTheTargetIsTouched()
     {
-        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 2 };
+        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 3 };
 
         var act = () => TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit));
 
@@ -286,6 +290,42 @@ public class TransferJournalProcessTests
         store.InTarget.Should().Be(0, "the target is only touched after the file holds the mark");
         store.FileItems.Should().Be(Total - Moved, "the saved file no longer holds the items");
         store.FileMarks.Should().HaveCount(1);
+    }
+
+    [Test]
+    public void ADepositStoppedAfterTheItemsLeftTheInventory_ButBeforeTheFileWasSaved_KeepsThemInTheFile_AndTheLoginDropsTheEntry()
+    {
+        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 2 };
+
+        var act = () => TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit));
+
+        act.Should().Throw<RestartException>();
+        store.Writes.Should().Equal("save", "park");
+        store.Items.Should().Be(Total - Moved, "the items are already out of the live inventory");
+        store.FileItems.Should().Be(Total, "the saved file still holds them");
+        store.FileMarks.Should().BeEmpty("no mark names an entry whose items the file still holds");
+
+        store.Restart();
+        SettleLogin(store);
+
+        store.Items.Should().Be(Total, "the character comes back with the items");
+        store.InTarget.Should().Be(0);
+        store.InOverflow.Should().Be(0);
+        store.Entries.Should().BeEmpty("the entry with no mark is dropped");
+        store.Marks.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ADepositWhoseItemsCouldNotBeTaken_ChangesNothing_AndWritesNoMark()
+    {
+        var store = new FakeStore(TransferDirection.Deposit);
+
+        var settlement = TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit, Total + 1));
+
+        settlement.Should().Be(TransferSettlement.Declined);
+        store.Writes.Should().Equal("save", "park", "delete");
+        store.FileMarks.Should().BeEmpty();
+        store.FileItems.Should().Be(Total);
     }
 
     /// <summary>
@@ -296,7 +336,7 @@ public class TransferJournalProcessTests
     {
         for (var stop = 0; stop < DepositWrites; stop++)
         {
-            foreach (var meanwhile in Enum.GetValues<Meanwhile>().Where(meanwhile => meanwhile != Meanwhile.TheTargetIsDeleted || stop <= 2))
+            foreach (var meanwhile in Enum.GetValues<Meanwhile>().Where(meanwhile => meanwhile != Meanwhile.TheTargetIsDeleted || stop <= 3))
             {
                 for (var settleStop = -1; settleStop <= 3; settleStop++)
                 {
@@ -344,7 +384,7 @@ public class TransferJournalProcessTests
     [Test]
     public void ADepositTheTargetCanNoLongerTake_GoesToOverflow()
     {
-        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 2 };
+        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 3 };
         try
         {
             TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit));
@@ -366,7 +406,7 @@ public class TransferJournalProcessTests
     public void ADepositTheTargetAlreadyHolds_IsNotAppliedAgain()
     {
         // The restart came after the target saved the deposit and before the entry went.
-        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 4 };
+        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 5 };
         try
         {
             TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit));
@@ -624,7 +664,7 @@ public class TransferJournalProcessTests
     [Test]
     public void SettlingTwice_ChangesNothingTheSecondTime()
     {
-        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 3 };
+        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 4 };
         try
         {
             TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit));

@@ -85,11 +85,11 @@ public class TransferWiringTests
         checkpoint.Should().Contain("SaveServerCharacter()");
 
         var take = ExtractMethod(service, "public bool TakeAndMark(TransferEntry entry)");
-        ShouldComeBefore(take, "FarmItems.Take(_player", "ObjectPlugin.SetString(_player, MarkVariable");
+        ShouldComeBefore(take, "TakeFromInventory(removal, entry, held)", "ObjectPlugin.SetString(_player, MarkVariable");
         ShouldComeBefore(take, "ObjectPlugin.SetString(_player, MarkVariable", "CharacterCheckpoint.Save(_player)");
         take.Should().Contain("entry.Id), true)", "the mark names the entry and is saved in the character file");
         take.Should().NotContain("DB.Set", "the target and the entry are not this step's");
-        ShouldComeBefore(take, "if (FarmItems.Count(_player", "FarmItems.Take(_player");
+        ShouldComeBefore(take, "if (FarmItems.Count(_player", "new InventoryRemoval(_player)");
 
         var give = ExtractMethod(service, "public bool GiveAndMark(TransferEntry entry)");
         ShouldComeBefore(give, "WriteOverflow(entry, index, item.Count - placed)", "ObjectPlugin.SetString(_player, MarkVariable");
@@ -102,6 +102,38 @@ public class TransferWiringTests
         ExtractMethod(service, "public void MarkApplied(TransferEntry entry)").Should().Contain("entry.AppliedUtc = DateTime.UtcNow").And.Contain("DB.Set(entry)");
         ExtractMethod(service, "public void ToOverflow(TransferEntry entry)").Should().Contain("WriteOverflow(entry, index, item.Count)");
         ExtractMethod(service, "private static void WriteOverflow(").Should().Contain("TransferJournalRules.GetOverflowRecordId(entry.Id, index, chunk)");
+    }
+
+    [Test]
+    public void TheItemsLeaveTheInventory_BeforeTheFileIsSaved_NotJustQueuedForDestruction()
+    {
+        // Native destruction waits for the end of the script, so an item passed to DestroyObject and then saved in the same script is
+        // still in the saved file. The removal parks whole items in a holding container, and the file is saved before they are destroyed.
+        var service = ReadServerSource("Service", "TransferJournal.cs");
+
+        var take = ExtractMethod(service, "public bool TakeAndMark(TransferEntry entry)");
+        take.Should().NotContain("DestroyObject").And.NotContain("FarmItems.Take(");
+        ShouldComeBefore(take, "CharacterCheckpoint.Save(_player)", "removal.Destroy()");
+        take.Should().Contain("Undo(removal, entry)", "a failed take or save puts the same items back and unmarks");
+        ExtractMethod(service, "private void Undo(").Should().Contain("removal.Restore()").And.Contain("RemoveMark(");
+
+        var fromInventory = ExtractMethod(service, "private static bool TakeFromInventory(");
+        fromInventory.Should().Contain("removal.TryTake(").And.Contain("removal.TryUseUpOne").And.NotContain("DestroyObject");
+
+        var takeAndSave = ExtractMethod(service, "public static bool TakeAndSave(");
+        takeAndSave.Should().NotContain("DestroyObject").And.NotContain("FarmItems.Take(");
+        ShouldComeBefore(takeAndSave, "removal.TryTake(resref, count)", "CharacterCheckpoint.Save(player)");
+        ShouldComeBefore(takeAndSave, "CharacterCheckpoint.Save(player)", "removal.Destroy()");
+        takeAndSave.Should().Contain("removal.Restore()", "a failed take or save puts the same items back");
+
+        var removal = ReadServerSource("Service", "InventoryRemoval.cs");
+        ExtractMethod(removal, "public bool TryTake(").Should().NotContain("DestroyObject", "a taken item is parked, and destroyed only after the save");
+        ExtractMethod(removal, "public bool TryUseUpOne(").Should().NotContain("DestroyObject");
+        var park = ExtractMethod(removal, "private bool Park(");
+        park.Should().Contain("TryMove(item)").And.NotContain("DestroyObject");
+        ExtractMethod(removal, "private bool TryMove(").Should().Contain("ItemPlugin.MoveTo(item, _current, true)", "the item leaves the inventory at once");
+        ExtractMethod(removal, "public void Restore()").Should().Contain("ItemPlugin.MoveTo(item, _owner, true)").And.Contain("FarmItems.StoreInOverflow(");
+        ExtractMethod(removal, "public void Destroy()").Should().Contain("DestroyObject(item)");
     }
 
     [Test]

@@ -13,11 +13,19 @@ namespace SWLOR.Game.Server.Service.CityProjectService
     /// </summary>
     public static class CityProjectDonationProcess
     {
-        /// <summary>Takes a donation from the donor and gives it to the project, or, if the project cannot take it, to the donor's overflow store.</summary>
+        /// <summary>
+        /// Takes a donation from the donor and gives it to the project, or, if the project cannot take it, to the donor's overflow store.
+        /// <see cref="CityProjectDonationSettlement.Drop"/>, with nothing changed, when the donor's inventory could not give the materials up.
+        /// </summary>
         public static CityProjectDonationSettlement Run(ICityProjectDonationStore store, CityProjectDonation donation)
         {
             store.SavePending(donation);
-            store.TakeAndMark(donation);
+            if (!store.TakeAndMark(donation))
+            {
+                store.DeletePending(donation.Id);
+                return CityProjectDonationSettlement.Drop;
+            }
+
             return Settle(store, donation, marked: true);
         }
 

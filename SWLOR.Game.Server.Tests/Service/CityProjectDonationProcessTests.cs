@@ -99,12 +99,23 @@ public class CityProjectDonationProcessTests
             Records.Remove(donationId);
         }
 
-        public void TakeAndMark(CityProjectDonation donation)
+        /// <summary>The donor carries fewer than the donation, so the materials cannot be taken.</summary>
+        public bool CannotTake { get; set; }
+
+        public bool TakeAndMark(CityProjectDonation donation)
         {
-            Write("take");
+            // The materials leave the inventory before the file is saved (native destruction waits for the end of the script, so the
+            // real store parks them in a holding container first), and the file is saved with the mark after. A stop between the two
+            // leaves the file as it was: the materials in it and no mark.
+            Write("park");
+            if (CannotTake)
+                return false;
+
             Items -= donation.Count;
+            Write("mark");
             Marks.Add(donation.Id);
             SaveCharacter();
+            return true;
         }
 
         public void ClearMark(string donationId)
@@ -197,7 +208,7 @@ public class CityProjectDonationProcessTests
             store.Records.Values.Where(record => record.PlayerId == Donor).ToList());
     }
 
-    private const int RunWrites = 5;
+    private const int RunWrites = 6;
     private const int LoginWrites = 3;
 
     #region Without a restart
@@ -211,7 +222,7 @@ public class CityProjectDonationProcessTests
         var settlement = CityProjectDonationProcess.Run(store, donation);
 
         settlement.Should().Be(CityProjectDonationSettlement.Apply);
-        store.Writes.Should().Equal("save", "take", "apply", "delete", "clear");
+        store.Writes.Should().Equal("save", "park", "mark", "apply", "delete", "clear");
         store.Items.Should().Be(0);
         store.InProject.Should().Be(Carried);
         store.Project.DonatedMaterials[Parts].Should().Be(Carried);
@@ -229,10 +240,26 @@ public class CityProjectDonationProcessTests
         var settlement = CityProjectDonationProcess.Run(store, donation);
 
         settlement.Should().Be(CityProjectDonationSettlement.Return);
-        store.Writes.Should().Equal("save", "take", "return", "delete", "clear");
+        store.Writes.Should().Equal("save", "park", "mark", "return", "delete", "clear");
         store.InProject.Should().Be(0);
         store.InOverflow.Should().Be(Carried);
         AssertOneCopyOfEverything(store);
+    }
+
+    [Test]
+    public void ADonationWhoseMaterialsCouldNotBeTaken_IsDropped_AndChangesNothing()
+    {
+        var store = new FakeStore(OpenProject()) { CannotTake = true };
+
+        var settlement = CityProjectDonationProcess.Run(store, Plan(store.Project));
+
+        settlement.Should().Be(CityProjectDonationSettlement.Drop);
+        store.Writes.Should().Equal("save", "park", "delete");
+        store.Records.Should().BeEmpty("the record is withdrawn");
+        store.Marks.Should().BeEmpty();
+        store.FileMarks.Should().BeEmpty();
+        store.Items.Should().Be(Carried);
+        store.InProject.Should().Be(0);
     }
 
     #endregion
@@ -290,6 +317,7 @@ public class CityProjectDonationProcessTests
 
     [TestCase(0, Meanwhile.NothingChanges)]
     [TestCase(1, Meanwhile.NothingChanges)]
+    [TestCase(2, Meanwhile.NothingChanges)]
     [TestCase(0, Meanwhile.AnotherDonorFillsIt)]
     [TestCase(1, Meanwhile.TheProjectIsCancelled)]
     public void ARestartBeforeTheMaterialsLeave_LeavesThemWithTheDonor(int runStop, Meanwhile meanwhile)
@@ -318,7 +346,7 @@ public class CityProjectDonationProcessTests
     public void ARestartAfterTheMaterialsLeave_GivesTheProjectTheDonation_WhenItCanTakeIt()
     {
         var store = new FakeStore(OpenProject());
-        store.StopAfterWrites = 2;
+        store.StopAfterWrites = 3;
         try
         {
             CityProjectDonationProcess.Run(store, Plan(store.Project));
@@ -345,7 +373,7 @@ public class CityProjectDonationProcessTests
     public void ARestartAfterTheMaterialsLeave_ReturnsThemToTheDonor_WhenTheProjectCannotTakeThem(Meanwhile meanwhile)
     {
         var store = new FakeStore(OpenProject());
-        store.StopAfterWrites = 2;
+        store.StopAfterWrites = 3;
         try
         {
             CityProjectDonationProcess.Run(store, Plan(store.Project));
@@ -363,8 +391,8 @@ public class CityProjectDonationProcessTests
         AssertOneCopyOfEverything(store);
     }
 
-    [TestCase(3)]
     [TestCase(4)]
+    [TestCase(5)]
     public void ARestartAfterTheProjectHeldTheDonation_NeverGivesItBackToTheDonor(int runStop)
     {
         var store = new FakeStore(OpenProject());
@@ -388,8 +416,8 @@ public class CityProjectDonationProcessTests
         AssertOneCopyOfEverything(store);
     }
 
-    [TestCase(3)]
     [TestCase(4)]
+    [TestCase(5)]
     public void ACancelledProject_RefundsADonationItHeldBeforeARestart_Once(int runStop)
     {
         var store = new FakeStore(OpenProject());
@@ -425,7 +453,7 @@ public class CityProjectDonationProcessTests
     public void AMarkWithNoRecord_IsAFinishedDonation_AndOnlyTheMarkGoes()
     {
         var store = new FakeStore(OpenProject());
-        store.StopAfterWrites = 4;
+        store.StopAfterWrites = 5;
         try
         {
             CityProjectDonationProcess.Run(store, Plan(store.Project));

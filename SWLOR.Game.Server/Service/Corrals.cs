@@ -654,6 +654,10 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessAtServerStart()
         {
+            // A farmhand catch-up a restart left half saved is finished first, so the clerk's recoveries and the removals below
+            // read the animals as the catch-up left them.
+            Farmhands.RecoverCatchUps();
+
             // The City Hall clerk's actions a restart interrupted are finished before anything replays or removes an animal.
             ClerkRecovery.RecoverAnimalsAtServerStart();
 

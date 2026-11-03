@@ -52,6 +52,9 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var settlement = CityProjectDonationProcess.Run(new Store(player), donation);
+            if (settlement == CityProjectDonationSettlement.Drop)
+                return 0;
+
             if (settlement == CityProjectDonationSettlement.Return)
             {
                 SendMessageToPC(player, ColorToken.Red(CityProjectDonationRules.BuildReturnedText(donation, CityProjectRules.GetName(project), CityProjects.GetItemName(resref))));
@@ -131,32 +134,6 @@ namespace SWLOR.Game.Server.Service
 
         #endregion
 
-        #region Inventory
-
-        private static void TakeItems(uint player, string resref, int count)
-        {
-            var remaining = count;
-            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item) && remaining > 0; item = GetNextItemInInventory(player))
-            {
-                if (GetResRef(item) != resref)
-                    continue;
-
-                var size = GetItemStackSize(item);
-                if (size <= remaining)
-                {
-                    remaining -= size;
-                    DestroyObject(item);
-                }
-                else
-                {
-                    SetItemStackSize(item, size - remaining);
-                    remaining = 0;
-                }
-            }
-        }
-
-        #endregion
-
         /// <summary>The records, the project and the donor's character, behind the steps <see cref="CityProjectDonationProcess"/> orders.</summary>
         private sealed class Store : ICityProjectDonationStore
         {
@@ -177,11 +154,30 @@ namespace SWLOR.Game.Server.Service
                 DB.Delete<CityProjectDonation>(donationId);
             }
 
-            public void TakeAndMark(CityProjectDonation donation)
+            public bool TakeAndMark(CityProjectDonation donation)
             {
-                TakeItems(_player, donation.Resref, donation.Count);
-                ObjectPlugin.SetString(_player, MarkVariable, CityProjectDonationRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), donation.Id), true);
-                CharacterCheckpoint.Save(_player);
+                // The materials leave the inventory before the file is saved, not just get queued for destruction: native destruction
+                // waits for the end of this script, so a file saved now would still hold them.
+                var removal = new InventoryRemoval(_player);
+                try
+                {
+                    if (!removal.TryTake(donation.Resref, donation.Count))
+                    {
+                        removal.Restore();
+                        return false;
+                    }
+
+                    ObjectPlugin.SetString(_player, MarkVariable, CityProjectDonationRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), donation.Id), true);
+                    CharacterCheckpoint.Save(_player);
+                }
+                catch
+                {
+                    removal.Restore();
+                    throw;
+                }
+
+                removal.Destroy();
+                return true;
             }
 
             public void ClearMark(string donationId)

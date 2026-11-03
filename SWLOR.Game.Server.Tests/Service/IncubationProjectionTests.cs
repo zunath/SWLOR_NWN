@@ -64,7 +64,7 @@ public class IncubationProjectionTests
 
         var outcomes = IncubationProjection.GetOutcomes(beast, job, false);
 
-        outcomes.Should().ContainSingle().Which.Should().Be(new IncubationProjection.Outcome(BeastType.Blastail, 100f));
+        outcomes.Should().ContainSingle().Which.Should().Be(new IncubationOutcome(BeastType.Blastail, 100f));
     }
 
     [Test]
@@ -88,7 +88,7 @@ public class IncubationProjectionTests
         var report = projection.Evaluate(mutation, new DateTime(2026, 11, 2));
 
         report.IsReady.Should().BeTrue();
-        report.Lines.Should().ContainSingle().Which.Should().Be(new IncubationProjection.RequirementLine("orange lyase 2/2", true, false));
+        report.Lines.Should().ContainSingle().Which.Should().Be(new MutationRequirementLine("orange lyase 2/2", true, false));
         report.Summary.Should().Be("Requirements met");
     }
 
@@ -134,7 +134,7 @@ public class IncubationProjectionTests
         monday.DayOfWeek.Should().Be(DayOfWeek.Monday);
         report.IsReady.Should().BeFalse();
         report.Lines.Should().ContainSingle()
-            .Which.Should().Be(new IncubationProjection.RequirementLine("Complete on Wednesday or Thursday (UTC)", false, true));
+            .Which.Should().Be(new MutationRequirementLine("Complete on Wednesday or Thursday (UTC)", false, true));
         report.Summary.Should().Be("Enzymes met - wait for the listed day");
     }
 

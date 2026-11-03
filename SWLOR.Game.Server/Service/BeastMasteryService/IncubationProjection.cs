@@ -14,9 +14,6 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
     {
         public const int NumberOfStages = 3;
 
-        public readonly record struct RequirementLine(string Text, bool IsMet, bool IsWaitable);
-        public readonly record struct RecipeReport(IReadOnlyList<RequirementLine> Lines, string Summary, bool IsReady);
-        public readonly record struct Outcome(BeastType Type, float Percent);
 
         public static readonly IReadOnlyList<IncubationStatType> MainPurityStats = new[]
         {
@@ -144,9 +141,9 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// Checks a known recipe against this projection, one line per requirement, plus a short summary
         /// of what is still missing.
         /// </summary>
-        public RecipeReport Evaluate(MutationDetail mutation, DateTime now)
+        public MutationRecipeReport Evaluate(MutationDetail mutation, DateTime now)
         {
-            var lines = new List<RequirementLine>();
+            var lines = new List<MutationRequirementLine>();
             var missing = new List<string>();
             var reachable = true;
             var dayMet = true;
@@ -162,11 +159,11 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
                         break;
                     case MutationRequirementDayOfWeek day:
                         dayMet = day.IsMetOn(now.DayOfWeek);
-                        lines.Add(new RequirementLine($"Complete on {day.DescribeDays()} (UTC)", dayMet, true));
+                        lines.Add(new MutationRequirementLine($"Complete on {day.DescribeDays()} (UTC)", dayMet, true));
                         break;
                     default:
                         var met = string.IsNullOrWhiteSpace(requirement.CheckRequirements(_projectedJob));
-                        lines.Add(new RequirementLine(requirement.GetRequirementDescription(), met, false));
+                        lines.Add(new MutationRequirementLine(requirement.GetRequirementDescription(), met, false));
                         if (!met)
                             missing.Add(requirement.GetRequirementDescription().ToLower());
                         break;
@@ -182,11 +179,11 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             else
                 summary = "Missing: " + string.Join(", ", missing);
 
-            return new RecipeReport(lines, summary, ready);
+            return new MutationRecipeReport(lines, summary, ready);
         }
 
         private bool AddEnzymeLines(
-            List<RequirementLine> lines,
+            List<MutationRequirementLine> lines,
             List<string> missing,
             string typeName,
             Dictionary<EnzymeColorType, int> required,
@@ -200,7 +197,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
                 baseCounts.TryGetValue(color, out var already);
                 var colorName = color.ToString().ToLower();
 
-                lines.Add(new RequirementLine($"{colorName} {typeName} {Math.Min(have, count)}/{count}", have >= count, false));
+                lines.Add(new MutationRequirementLine($"{colorName} {typeName} {Math.Min(have, count)}/{count}", have >= count, false));
                 if (have < count)
                     missing.Add($"{count - have} {colorName} {typeName}");
 
@@ -226,9 +223,9 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// The chance of each possible result if the job is completed now: each eligible mutation's share of the
         /// mutation chance by weight, and the DNA's own beast for the rest.
         /// </summary>
-        public static List<Outcome> GetOutcomes(BeastDetail beast, IncubationJob job, bool mutationAllowed)
+        public static List<IncubationOutcome> GetOutcomes(BeastDetail beast, IncubationJob job, bool mutationAllowed)
         {
-            var outcomes = new List<Outcome>();
+            var outcomes = new List<IncubationOutcome>();
             var eligible = mutationAllowed ? GetEligibleMutations(beast, job) : new List<MutationDetail>();
             var totalWeight = eligible.Sum(x => Math.Max(0, x.Weight));
             var chance = Math.Clamp(job.MutationChance, 0, 1000) / 10f;
@@ -238,10 +235,10 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 
             foreach (var mutation in eligible.Where(x => x.Weight > 0))
             {
-                outcomes.Add(new Outcome(mutation.Type, chance * mutation.Weight / totalWeight));
+                outcomes.Add(new IncubationOutcome(mutation.Type, chance * mutation.Weight / totalWeight));
             }
 
-            outcomes.Add(new Outcome(job.BeastDNAType, 100f - chance));
+            outcomes.Add(new IncubationOutcome(job.BeastDNAType, 100f - chance));
             return outcomes;
         }
     }

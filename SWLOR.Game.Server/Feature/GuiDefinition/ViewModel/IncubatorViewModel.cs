@@ -473,9 +473,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var beast = BeastMastery.GetBeastDetail(_dnaType);
             var projection = IncubationProjection.Create(
                 job,
-                hasPendingStage ? _lyaseColor : EnzymeColorType.Invalid,
-                hasPendingStage ? _isomeraseColor : EnzymeColorType.Invalid,
-                hasPendingStage ? _hydrolaseColor : EnzymeColorType.Invalid,
+                hasPendingStage && !string.IsNullOrWhiteSpace(_lyaseItem) ? _lyaseColor : EnzymeColorType.Invalid,
+                hasPendingStage && !string.IsNullOrWhiteSpace(_isomeraseItem) ? _isomeraseColor : EnzymeColorType.Invalid,
+                hasPendingStage && !string.IsNullOrWhiteSpace(_hydrolaseItem) ? _hydrolaseColor : EnzymeColorType.Invalid,
                 GetProjectedMutationChance(job, hasPendingStage),
                 hasPendingStage);
 
@@ -699,7 +699,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _dnaType = BeastType.Invalid;
             _baseStats.Clear();
+            ResetPendingEnzymes();
+        }
+
+        private void ResetPendingEnzymes()
+        {
             _stageStats.Clear();
+            _lyaseColor = EnzymeColorType.Invalid;
+            _isomeraseColor = EnzymeColorType.Invalid;
+            _hydrolaseColor = EnzymeColorType.Invalid;
         }
 
         private void LoadJobStats(IncubationJob job)
@@ -1042,6 +1050,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _hydrolaseItem = string.Empty;
                 _isomeraseItem = string.Empty;
                 _lyaseItem = string.Empty;
+                // The enzymes are consumed, so they no longer count toward the next stage.
+                ResetPendingEnzymes();
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 FloatingTextStringOnCreature($"Incubation stage {job.CurrentStage} started!", Player, false);
             }

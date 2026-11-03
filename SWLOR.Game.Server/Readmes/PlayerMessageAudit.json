@@ -5054,22 +5054,22 @@
     "Call": "SendMessageToPC(master, $\"{GetName(companion)}: {response}\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Conversation.cs",
-    "Line": 342,
+    "File": "SWLOR.Game.Server/Domain/Core/ConversationService.cs",
+    "Line": 352,
     "Member": "ReportStartFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This conversation could not be opened. The error has been logged.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ConversationMenu.cs",
-    "Line": 135,
+    "File": "SWLOR.Game.Server/Domain/Core/ConversationMenuService.cs",
+    "Line": 148,
     "Member": "Start",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ConversationMenu.cs",
-    "Line": 157,
+    "File": "SWLOR.Game.Server/Domain/Core/ConversationMenuService.cs",
+    "Line": 170,
     "Member": "Start",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This interaction could not be opened. The error has been logged.\"))"
@@ -5915,8 +5915,8 @@
     "Call": "SendMessageToPC(session.Player, destroyed\n                    ? \"The intrusion overloads the target. Its contents are destroyed.\"\n                    : $\"The attempt fails. The next failed attempt has a {nextChance}% destruction risk.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Snippet.cs",
-    "Line": 234,
+    "File": "SWLOR.Game.Server/Domain/Core/SnippetService.cs",
+    "Line": 228,
     "Member": "HasUsableArguments",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, error)"

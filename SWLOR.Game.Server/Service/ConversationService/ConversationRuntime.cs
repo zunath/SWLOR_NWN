@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
     /// </summary>
     public sealed class ConversationRuntime : IConversationRuntime
     {
-        private static readonly Regex TokenPattern = new(
+        private readonly Regex _tokenPattern = new(
             @"\{\{(?<key>[A-Za-z0-9_.-]+)\}\}",
             RegexOptions.Compiled);
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
             if (string.IsNullOrEmpty(text))
                 return string.Empty;
 
-            return TokenPattern.Replace(text, match =>
+            return _tokenPattern.Replace(text, match =>
             {
                 var key = match.Groups["key"].Value;
 

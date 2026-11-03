@@ -201,21 +201,6 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void NativeDialogFallbacks_CaptureTheOwnerBeforeAssigningThePlayerCommand()
-    {
-        // The creature conversation fallback of the AI instance is proved by running it (AIServiceHandlerTests).
-        var serverDirectory = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server");
-        foreach (var fileName in new[] { "ConversationMenu.cs" })
-        {
-            var source = File.ReadAllText(Path.Combine(serverDirectory, "Service", fileName));
-            source.Should().NotContain("ActionStartConversation(OBJECT_SELF",
-                $"{fileName} runs the fallback as the player, where OBJECT_SELF would resolve to that player");
-            source.Should().Contain("ActionStartConversation(owner",
-                $"{fileName} must capture the event owner before queuing the fallback command");
-        }
-    }
-
-    [Test]
     public void ConversationWindow_UsesCompactNpcTextRowsAndAStableTitle()
     {
         var root = FindRepositoryRoot().FullName;

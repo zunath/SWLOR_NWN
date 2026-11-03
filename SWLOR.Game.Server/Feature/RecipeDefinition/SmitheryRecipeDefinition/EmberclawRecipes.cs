@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 1, startingThermal: 38, shapeShare: 70);
 
             // Emberclaw Wraps
             _builder.Create(RecipeType.EmberclawWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 34, coolingRate: 2, startingThermal: 25, shapeShare: 62);
 
             // Emberclaw Treads
             _builder.Create(RecipeType.EmberclawTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 1, startingThermal: 48, shapeShare: 62);
 
             // Emberclaw Sash
             _builder.Create(RecipeType.EmberclawSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 42, coolingRate: 4, startingThermal: 37, shapeShare: 54);
 
             // Emberclaw Mantle
             _builder.Create(RecipeType.EmberclawMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 36, coolingRate: 6, startingThermal: 28, shapeShare: 54);
 
             // Emberclaw Gorget
             _builder.Create(RecipeType.EmberclawGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 37, coolingRate: 8, startingThermal: 48, shapeShare: 38);
 
             // Emberclaw Band
             _builder.Create(RecipeType.EmberclawBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 1, startingThermal: 29, shapeShare: 38);
 
             // Emberclaw Guard
             _builder.Create(RecipeType.EmberclawGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 41, coolingRate: 5, startingThermal: 43, shapeShare: 62);
 
             // Emberclaw Visor
             _builder.Create(RecipeType.EmberclawVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 35, coolingRate: 4, startingThermal: 49, shapeShare: 62);
 
             // Emberclaw Charm
             _builder.Create(RecipeType.EmberclawCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rk_claw", 1);
+                .Component("rk_claw", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 37, coolingRate: 7, startingThermal: 42, shapeShare: 38);
         }
     }
 }

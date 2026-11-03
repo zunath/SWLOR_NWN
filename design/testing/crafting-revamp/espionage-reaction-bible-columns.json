@@ -1,0 +1,106 @@
+{
+  "profiles": [
+    {
+      "key": "Reaction",
+      "skill": "Espionage",
+      "headers": [
+        "Reaction Cycle Pattern",
+        "Reaction Cycle Length",
+        "Reaction Peak Intensity",
+        "Reaction Override"
+      ]
+    }
+  ],
+  "recipes": {
+    "GlassfangConcentrate": {
+      "Reaction Cycle Pattern": "Surge",
+      "Reaction Cycle Length": 7,
+      "Reaction Peak Intensity": 2,
+      "Reaction Override": ""
+    },
+    "NightrootConcentrate": {
+      "Reaction Cycle Pattern": "Surge",
+      "Reaction Cycle Length": 5,
+      "Reaction Peak Intensity": 5,
+      "Reaction Override": ""
+    },
+    "RimevenomConcentrate": {
+      "Reaction Cycle Pattern": "Surge",
+      "Reaction Cycle Length": 6,
+      "Reaction Peak Intensity": 4,
+      "Reaction Override": ""
+    },
+    "TombsporeConcentrate": {
+      "Reaction Cycle Pattern": "Surge",
+      "Reaction Cycle Length": 7,
+      "Reaction Peak Intensity": 3,
+      "Reaction Override": ""
+    },
+    "TrapKit1": {
+      "Reaction Cycle Pattern": "Trigger",
+      "Reaction Cycle Length": 5,
+      "Reaction Peak Intensity": 1,
+      "Reaction Override": ""
+    },
+    "TrapKit2": {
+      "Reaction Cycle Pattern": "Trigger",
+      "Reaction Cycle Length": 4,
+      "Reaction Peak Intensity": 2,
+      "Reaction Override": ""
+    },
+    "TrapKit3": {
+      "Reaction Cycle Pattern": "Trigger",
+      "Reaction Cycle Length": 6,
+      "Reaction Peak Intensity": 3,
+      "Reaction Override": ""
+    },
+    "TrapKit4": {
+      "Reaction Cycle Pattern": "Trigger",
+      "Reaction Cycle Length": 6,
+      "Reaction Peak Intensity": 4,
+      "Reaction Override": ""
+    },
+    "TrapKit5": {
+      "Reaction Cycle Pattern": "Trigger",
+      "Reaction Cycle Length": 4,
+      "Reaction Peak Intensity": 5,
+      "Reaction Override": ""
+    },
+    "VenomCoating1": {
+      "Reaction Cycle Pattern": "Brew",
+      "Reaction Cycle Length": 8,
+      "Reaction Peak Intensity": 1,
+      "Reaction Override": ""
+    },
+    "VenomCoating2": {
+      "Reaction Cycle Pattern": "Brew",
+      "Reaction Cycle Length": 6,
+      "Reaction Peak Intensity": 2,
+      "Reaction Override": ""
+    },
+    "VenomCoating3": {
+      "Reaction Cycle Pattern": "Brew",
+      "Reaction Cycle Length": 5,
+      "Reaction Peak Intensity": 3,
+      "Reaction Override": ""
+    },
+    "VenomCoating4": {
+      "Reaction Cycle Pattern": "Brew",
+      "Reaction Cycle Length": 7,
+      "Reaction Peak Intensity": 4,
+      "Reaction Override": ""
+    },
+    "VenomCoating5": {
+      "Reaction Cycle Pattern": "Brew",
+      "Reaction Cycle Length": 5,
+      "Reaction Peak Intensity": 5,
+      "Reaction Override": ""
+    },
+    "WhisperthornConcentrate": {
+      "Reaction Cycle Pattern": "Surge",
+      "Reaction Cycle Length": 7,
+      "Reaction Peak Intensity": 1,
+      "Reaction Override": ""
+    }
+  }
+}

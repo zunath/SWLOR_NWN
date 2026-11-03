@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 38);
 
             // Blade CPU I - Variant P
             _builder.Create(RecipeType.BladeCPU1VariantP, SkillType.Engineering)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 38);
 
             // Blade CPU I - Variant V
             _builder.Create(RecipeType.BladeCPU1VariantV, SkillType.Engineering)
@@ -49,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 36);
 
             // Blade CPU I - Variant W
             _builder.Create(RecipeType.BladeCPU1VariantW, SkillType.Engineering)
@@ -59,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Blade CPU I - Variant A
             _builder.Create(RecipeType.BladeCPU1VariantA, SkillType.Engineering)
@@ -69,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 41);
 
             // Blade CPU I - Variant S
             _builder.Create(RecipeType.BladeCPU1VariantS, SkillType.Engineering)
@@ -79,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 35);
 
             // Light Martial CPU I - Variant M
             _builder.Create(RecipeType.LightMartialCPU1VariantM, SkillType.Engineering)
@@ -89,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 44);
 
             // Light Martial CPU I - Variant P
             _builder.Create(RecipeType.LightMartialCPU1VariantP, SkillType.Engineering)
@@ -99,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 35);
 
             // Light Martial CPU I - Variant V
             _builder.Create(RecipeType.LightMartialCPU1VariantV, SkillType.Engineering)
@@ -109,7 +117,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Light Martial CPU I - Variant W
             _builder.Create(RecipeType.LightMartialCPU1VariantW, SkillType.Engineering)
@@ -119,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 44);
 
             // Light Martial CPU I - Variant A
             _builder.Create(RecipeType.LightMartialCPU1VariantA, SkillType.Engineering)
@@ -129,7 +139,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 41);
 
             // Light Martial CPU I - Variant S
             _builder.Create(RecipeType.LightMartialCPU1VariantS, SkillType.Engineering)
@@ -139,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 39);
 
             // Ranger CPU I - Variant M
             _builder.Create(RecipeType.RangerCPU1VariantM, SkillType.Engineering)
@@ -149,7 +161,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 37);
 
             // Ranger CPU I - Variant P
             _builder.Create(RecipeType.RangerCPU1VariantP, SkillType.Engineering)
@@ -159,7 +172,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Ranger CPU I - Variant V
             _builder.Create(RecipeType.RangerCPU1VariantV, SkillType.Engineering)
@@ -169,7 +183,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 40);
 
             // Ranger CPU I - Variant W
             _builder.Create(RecipeType.RangerCPU1VariantW, SkillType.Engineering)
@@ -179,7 +194,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 42);
 
             // Ranger CPU I - Variant A
             _builder.Create(RecipeType.RangerCPU1VariantA, SkillType.Engineering)
@@ -189,7 +205,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Ranger CPU I - Variant S
             _builder.Create(RecipeType.RangerCPU1VariantS, SkillType.Engineering)
@@ -199,7 +216,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 36);
 
             // Heavy Martial CPU I - Variant M
             _builder.Create(RecipeType.HeavyMartialCPU1VariantM, SkillType.Engineering)
@@ -209,7 +227,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 36);
 
             // Heavy Martial CPU I - Variant P
             _builder.Create(RecipeType.HeavyMartialCPU1VariantP, SkillType.Engineering)
@@ -219,7 +238,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 42);
 
             // Heavy Martial CPU I - Variant V
             _builder.Create(RecipeType.HeavyMartialCPU1VariantV, SkillType.Engineering)
@@ -229,7 +249,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 36);
 
             // Heavy Martial CPU I - Variant W
             _builder.Create(RecipeType.HeavyMartialCPU1VariantW, SkillType.Engineering)
@@ -239,7 +260,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 41);
 
             // Heavy Martial CPU I - Variant A
             _builder.Create(RecipeType.HeavyMartialCPU1VariantA, SkillType.Engineering)
@@ -249,7 +271,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 38);
 
             // Heavy Martial CPU I - Variant S
             _builder.Create(RecipeType.HeavyMartialCPU1VariantS, SkillType.Engineering)
@@ -259,7 +282,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Assault CPU I - Variant M
             _builder.Create(RecipeType.AssaultCPU1VariantM, SkillType.Engineering)
@@ -269,7 +293,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 40);
 
             // Assault CPU I - Variant P
             _builder.Create(RecipeType.AssaultCPU1VariantP, SkillType.Engineering)
@@ -279,7 +304,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Assault CPU I - Variant V
             _builder.Create(RecipeType.AssaultCPU1VariantV, SkillType.Engineering)
@@ -289,7 +315,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Assault CPU I - Variant W
             _builder.Create(RecipeType.AssaultCPU1VariantW, SkillType.Engineering)
@@ -299,7 +326,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 36);
 
             // Assault CPU I - Variant A
             _builder.Create(RecipeType.AssaultCPU1VariantA, SkillType.Engineering)
@@ -309,7 +337,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 39);
 
             // Assault CPU I - Variant S
             _builder.Create(RecipeType.AssaultCPU1VariantS, SkillType.Engineering)
@@ -319,7 +348,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 37);
 
             // Jaguar CPU I - Variant M
             _builder.Create(RecipeType.JaguarCPU1VariantM, SkillType.Engineering)
@@ -329,7 +359,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 40);
 
             // Jaguar CPU I - Variant P
             _builder.Create(RecipeType.JaguarCPU1VariantP, SkillType.Engineering)
@@ -339,7 +370,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 37);
 
             // Jaguar CPU I - Variant V
             _builder.Create(RecipeType.JaguarCPU1VariantV, SkillType.Engineering)
@@ -349,7 +381,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 35);
 
             // Jaguar CPU I - Variant W
             _builder.Create(RecipeType.JaguarCPU1VariantW, SkillType.Engineering)
@@ -359,7 +392,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Jaguar CPU I - Variant A
             _builder.Create(RecipeType.JaguarCPU1VariantA, SkillType.Engineering)
@@ -369,7 +403,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 39);
 
             // Jaguar CPU I - Variant S
             _builder.Create(RecipeType.JaguarCPU1VariantS, SkillType.Engineering)
@@ -379,7 +414,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
-                .Component("ca_unit1", 1);
+                .Component("ca_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 38);
 
 
         }
@@ -393,7 +429,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 41);
 
             // Blade CPU II - Variant P
             _builder.Create(RecipeType.BladeCPU2VariantP, SkillType.Engineering)
@@ -403,7 +440,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 44);
 
             // Blade CPU II - Variant V
             _builder.Create(RecipeType.BladeCPU2VariantV, SkillType.Engineering)
@@ -413,7 +451,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Blade CPU II - Variant W
             _builder.Create(RecipeType.BladeCPU2VariantW, SkillType.Engineering)
@@ -423,7 +462,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 44);
 
             // Blade CPU II - Variant A
             _builder.Create(RecipeType.BladeCPU2VariantA, SkillType.Engineering)
@@ -433,7 +473,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Blade CPU II - Variant S
             _builder.Create(RecipeType.BladeCPU2VariantS, SkillType.Engineering)
@@ -443,7 +484,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Light Martial CPU II - Variant M
             _builder.Create(RecipeType.LightMartialCPU2VariantM, SkillType.Engineering)
@@ -453,7 +495,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 44);
 
             // Light Martial CPU II - Variant P
             _builder.Create(RecipeType.LightMartialCPU2VariantP, SkillType.Engineering)
@@ -463,7 +506,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 37);
 
             // Light Martial CPU II - Variant V
             _builder.Create(RecipeType.LightMartialCPU2VariantV, SkillType.Engineering)
@@ -473,7 +517,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 40);
 
             // Light Martial CPU II - Variant W
             _builder.Create(RecipeType.LightMartialCPU2VariantW, SkillType.Engineering)
@@ -483,7 +528,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 38);
 
             // Light Martial CPU II - Variant A
             _builder.Create(RecipeType.LightMartialCPU2VariantA, SkillType.Engineering)
@@ -493,7 +539,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Light Martial CPU II - Variant S
             _builder.Create(RecipeType.LightMartialCPU2VariantS, SkillType.Engineering)
@@ -503,7 +550,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 39);
 
             // Ranger CPU II - Variant M
             _builder.Create(RecipeType.RangerCPU2VariantM, SkillType.Engineering)
@@ -513,7 +561,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 40);
 
             // Ranger CPU II - Variant P
             _builder.Create(RecipeType.RangerCPU2VariantP, SkillType.Engineering)
@@ -523,7 +572,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 39);
 
             // Ranger CPU II - Variant V
             _builder.Create(RecipeType.RangerCPU2VariantV, SkillType.Engineering)
@@ -533,7 +583,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 36);
 
             // Ranger CPU II - Variant W
             _builder.Create(RecipeType.RangerCPU2VariantW, SkillType.Engineering)
@@ -543,7 +594,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Ranger CPU II - Variant A
             _builder.Create(RecipeType.RangerCPU2VariantA, SkillType.Engineering)
@@ -553,7 +605,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 39);
 
             // Ranger CPU II - Variant S
             _builder.Create(RecipeType.RangerCPU2VariantS, SkillType.Engineering)
@@ -563,7 +616,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 40);
 
             // Heavy Martial CPU II - Variant M
             _builder.Create(RecipeType.HeavyMartialCPU2VariantM, SkillType.Engineering)
@@ -573,7 +627,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 35);
 
             // Heavy Martial CPU II - Variant P
             _builder.Create(RecipeType.HeavyMartialCPU2VariantP, SkillType.Engineering)
@@ -583,7 +638,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 36);
 
             // Heavy Martial CPU II - Variant V
             _builder.Create(RecipeType.HeavyMartialCPU2VariantV, SkillType.Engineering)
@@ -593,7 +649,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 35);
 
             // Heavy Martial CPU II - Variant W
             _builder.Create(RecipeType.HeavyMartialCPU2VariantW, SkillType.Engineering)
@@ -603,7 +660,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 44);
 
             // Heavy Martial CPU II - Variant A
             _builder.Create(RecipeType.HeavyMartialCPU2VariantA, SkillType.Engineering)
@@ -613,7 +671,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Heavy Martial CPU II - Variant S
             _builder.Create(RecipeType.HeavyMartialCPU2VariantS, SkillType.Engineering)
@@ -623,7 +682,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 44);
 
             // Assault CPU II - Variant M
             _builder.Create(RecipeType.AssaultCPU2VariantM, SkillType.Engineering)
@@ -633,7 +693,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Assault CPU II - Variant P
             _builder.Create(RecipeType.AssaultCPU2VariantP, SkillType.Engineering)
@@ -643,7 +704,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 43);
 
             // Assault CPU II - Variant V
             _builder.Create(RecipeType.AssaultCPU2VariantV, SkillType.Engineering)
@@ -653,7 +715,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 41);
 
             // Assault CPU II - Variant W
             _builder.Create(RecipeType.AssaultCPU2VariantW, SkillType.Engineering)
@@ -663,7 +726,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 37);
 
             // Assault CPU II - Variant A
             _builder.Create(RecipeType.AssaultCPU2VariantA, SkillType.Engineering)
@@ -673,7 +737,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 36);
 
             // Assault CPU II - Variant S
             _builder.Create(RecipeType.AssaultCPU2VariantS, SkillType.Engineering)
@@ -683,7 +748,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 44);
 
             // Jaguar CPU II - Variant M
             _builder.Create(RecipeType.JaguarCPU2VariantM, SkillType.Engineering)
@@ -693,7 +759,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Jaguar CPU II - Variant P
             _builder.Create(RecipeType.JaguarCPU2VariantP, SkillType.Engineering)
@@ -703,7 +770,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 36);
 
             // Jaguar CPU II - Variant V
             _builder.Create(RecipeType.JaguarCPU2VariantV, SkillType.Engineering)
@@ -713,7 +781,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Jaguar CPU II - Variant W
             _builder.Create(RecipeType.JaguarCPU2VariantW, SkillType.Engineering)
@@ -723,7 +792,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Jaguar CPU II - Variant A
             _builder.Create(RecipeType.JaguarCPU2VariantA, SkillType.Engineering)
@@ -733,7 +803,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 43);
 
             // Jaguar CPU II - Variant S
             _builder.Create(RecipeType.JaguarCPU2VariantS, SkillType.Engineering)
@@ -743,7 +814,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
-                .Component("ca_unit2", 1);
+                .Component("ca_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 45);
 
 
         }
@@ -757,7 +829,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 42);
 
             // Blade CPU III - Variant P
             _builder.Create(RecipeType.BladeCPU3VariantP, SkillType.Engineering)
@@ -767,7 +840,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 40);
 
             // Blade CPU III - Variant V
             _builder.Create(RecipeType.BladeCPU3VariantV, SkillType.Engineering)
@@ -777,7 +851,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 36);
 
             // Blade CPU III - Variant W
             _builder.Create(RecipeType.BladeCPU3VariantW, SkillType.Engineering)
@@ -787,7 +862,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 35);
 
             // Blade CPU III - Variant A
             _builder.Create(RecipeType.BladeCPU3VariantA, SkillType.Engineering)
@@ -797,7 +873,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Blade CPU III - Variant S
             _builder.Create(RecipeType.BladeCPU3VariantS, SkillType.Engineering)
@@ -807,7 +884,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 35);
 
             // Light Martial CPU III - Variant M
             _builder.Create(RecipeType.LightMartialCPU3VariantM, SkillType.Engineering)
@@ -817,7 +895,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Light Martial CPU III - Variant P
             _builder.Create(RecipeType.LightMartialCPU3VariantP, SkillType.Engineering)
@@ -827,7 +906,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 44);
 
             // Light Martial CPU III - Variant V
             _builder.Create(RecipeType.LightMartialCPU3VariantV, SkillType.Engineering)
@@ -837,7 +917,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 35);
 
             // Light Martial CPU III - Variant W
             _builder.Create(RecipeType.LightMartialCPU3VariantW, SkillType.Engineering)
@@ -847,7 +928,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 39);
 
             // Light Martial CPU III - Variant A
             _builder.Create(RecipeType.LightMartialCPU3VariantA, SkillType.Engineering)
@@ -857,7 +939,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 40);
 
             // Light Martial CPU III - Variant S
             _builder.Create(RecipeType.LightMartialCPU3VariantS, SkillType.Engineering)
@@ -867,7 +950,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 39);
 
             // Ranger CPU III - Variant M
             _builder.Create(RecipeType.RangerCPU3VariantM, SkillType.Engineering)
@@ -877,7 +961,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 39);
 
             // Ranger CPU III - Variant P
             _builder.Create(RecipeType.RangerCPU3VariantP, SkillType.Engineering)
@@ -887,7 +972,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 44);
 
             // Ranger CPU III - Variant V
             _builder.Create(RecipeType.RangerCPU3VariantV, SkillType.Engineering)
@@ -897,7 +983,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 43);
 
             // Ranger CPU III - Variant W
             _builder.Create(RecipeType.RangerCPU3VariantW, SkillType.Engineering)
@@ -907,7 +994,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Ranger CPU III - Variant A
             _builder.Create(RecipeType.RangerCPU3VariantA, SkillType.Engineering)
@@ -917,7 +1005,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 40);
 
             // Ranger CPU III - Variant S
             _builder.Create(RecipeType.RangerCPU3VariantS, SkillType.Engineering)
@@ -927,7 +1016,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 43);
 
             // Heavy Martial CPU III - Variant M
             _builder.Create(RecipeType.HeavyMartialCPU3VariantM, SkillType.Engineering)
@@ -937,7 +1027,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Heavy Martial CPU III - Variant P
             _builder.Create(RecipeType.HeavyMartialCPU3VariantP, SkillType.Engineering)
@@ -947,7 +1038,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 41);
 
             // Heavy Martial CPU III - Variant V
             _builder.Create(RecipeType.HeavyMartialCPU3VariantV, SkillType.Engineering)
@@ -957,7 +1049,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 37);
 
             // Heavy Martial CPU III - Variant W
             _builder.Create(RecipeType.HeavyMartialCPU3VariantW, SkillType.Engineering)
@@ -967,7 +1060,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 39);
 
             // Heavy Martial CPU III - Variant A
             _builder.Create(RecipeType.HeavyMartialCPU3VariantA, SkillType.Engineering)
@@ -977,7 +1071,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 42);
 
             // Heavy Martial CPU III - Variant S
             _builder.Create(RecipeType.HeavyMartialCPU3VariantS, SkillType.Engineering)
@@ -987,7 +1082,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 41);
 
             // Assault CPU III - Variant M
             _builder.Create(RecipeType.AssaultCPU3VariantM, SkillType.Engineering)
@@ -997,7 +1093,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 36);
 
             // Assault CPU III - Variant P
             _builder.Create(RecipeType.AssaultCPU3VariantP, SkillType.Engineering)
@@ -1007,7 +1104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Assault CPU III - Variant V
             _builder.Create(RecipeType.AssaultCPU3VariantV, SkillType.Engineering)
@@ -1017,7 +1115,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 44);
 
             // Assault CPU III - Variant W
             _builder.Create(RecipeType.AssaultCPU3VariantW, SkillType.Engineering)
@@ -1027,7 +1126,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 39);
 
             // Assault CPU III - Variant A
             _builder.Create(RecipeType.AssaultCPU3VariantA, SkillType.Engineering)
@@ -1037,7 +1137,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 44);
 
             // Assault CPU III - Variant S
             _builder.Create(RecipeType.AssaultCPU3VariantS, SkillType.Engineering)
@@ -1047,7 +1148,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Jaguar CPU III - Variant M
             _builder.Create(RecipeType.JaguarCPU3VariantM, SkillType.Engineering)
@@ -1057,7 +1159,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 37);
 
             // Jaguar CPU III - Variant P
             _builder.Create(RecipeType.JaguarCPU3VariantP, SkillType.Engineering)
@@ -1067,7 +1170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 40);
 
             // Jaguar CPU III - Variant V
             _builder.Create(RecipeType.JaguarCPU3VariantV, SkillType.Engineering)
@@ -1077,7 +1181,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 35);
 
             // Jaguar CPU III - Variant W
             _builder.Create(RecipeType.JaguarCPU3VariantW, SkillType.Engineering)
@@ -1087,7 +1192,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 39);
 
             // Jaguar CPU III - Variant A
             _builder.Create(RecipeType.JaguarCPU3VariantA, SkillType.Engineering)
@@ -1097,7 +1203,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Jaguar CPU III - Variant S
             _builder.Create(RecipeType.JaguarCPU3VariantS, SkillType.Engineering)
@@ -1107,7 +1214,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
-                .Component("ca_unit3", 1);
+                .Component("ca_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 37);
 
 
         }
@@ -1121,7 +1229,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Blade CPU IV - Variant P
             _builder.Create(RecipeType.BladeCPU4VariantP, SkillType.Engineering)
@@ -1131,7 +1240,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Blade CPU IV - Variant V
             _builder.Create(RecipeType.BladeCPU4VariantV, SkillType.Engineering)
@@ -1141,7 +1251,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Blade CPU IV - Variant W
             _builder.Create(RecipeType.BladeCPU4VariantW, SkillType.Engineering)
@@ -1151,7 +1262,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 38);
 
             // Blade CPU IV - Variant A
             _builder.Create(RecipeType.BladeCPU4VariantA, SkillType.Engineering)
@@ -1161,7 +1273,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Blade CPU IV - Variant S
             _builder.Create(RecipeType.BladeCPU4VariantS, SkillType.Engineering)
@@ -1171,7 +1284,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 44);
 
             // Light Martial CPU IV - Variant M
             _builder.Create(RecipeType.LightMartialCPU4VariantM, SkillType.Engineering)
@@ -1181,7 +1295,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 36);
 
             // Light Martial CPU IV - Variant P
             _builder.Create(RecipeType.LightMartialCPU4VariantP, SkillType.Engineering)
@@ -1191,7 +1306,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 40);
 
             // Light Martial CPU IV - Variant V
             _builder.Create(RecipeType.LightMartialCPU4VariantV, SkillType.Engineering)
@@ -1201,7 +1317,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 40);
 
             // Light Martial CPU IV - Variant W
             _builder.Create(RecipeType.LightMartialCPU4VariantW, SkillType.Engineering)
@@ -1211,7 +1328,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 43);
 
             // Light Martial CPU IV - Variant A
             _builder.Create(RecipeType.LightMartialCPU4VariantA, SkillType.Engineering)
@@ -1221,7 +1339,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 42);
 
             // Light Martial CPU IV - Variant S
             _builder.Create(RecipeType.LightMartialCPU4VariantS, SkillType.Engineering)
@@ -1231,7 +1350,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Ranger CPU IV - Variant M
             _builder.Create(RecipeType.RangerCPU4VariantM, SkillType.Engineering)
@@ -1241,7 +1361,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Ranger CPU IV - Variant P
             _builder.Create(RecipeType.RangerCPU4VariantP, SkillType.Engineering)
@@ -1251,7 +1372,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 40);
 
             // Ranger CPU IV - Variant V
             _builder.Create(RecipeType.RangerCPU4VariantV, SkillType.Engineering)
@@ -1261,7 +1383,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 44);
 
             // Ranger CPU IV - Variant W
             _builder.Create(RecipeType.RangerCPU4VariantW, SkillType.Engineering)
@@ -1271,7 +1394,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 39);
 
             // Ranger CPU IV - Variant A
             _builder.Create(RecipeType.RangerCPU4VariantA, SkillType.Engineering)
@@ -1281,7 +1405,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 42);
 
             // Ranger CPU IV - Variant S
             _builder.Create(RecipeType.RangerCPU4VariantS, SkillType.Engineering)
@@ -1291,7 +1416,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 42);
 
             // Heavy Martial CPU IV - Variant M
             _builder.Create(RecipeType.HeavyMartialCPU4VariantM, SkillType.Engineering)
@@ -1301,7 +1427,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Heavy Martial CPU IV - Variant P
             _builder.Create(RecipeType.HeavyMartialCPU4VariantP, SkillType.Engineering)
@@ -1311,7 +1438,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 39);
 
             // Heavy Martial CPU IV - Variant V
             _builder.Create(RecipeType.HeavyMartialCPU4VariantV, SkillType.Engineering)
@@ -1321,7 +1449,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 41);
 
             // Heavy Martial CPU IV - Variant W
             _builder.Create(RecipeType.HeavyMartialCPU4VariantW, SkillType.Engineering)
@@ -1331,7 +1460,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 38);
 
             // Heavy Martial CPU IV - Variant A
             _builder.Create(RecipeType.HeavyMartialCPU4VariantA, SkillType.Engineering)
@@ -1341,7 +1471,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Heavy Martial CPU IV - Variant S
             _builder.Create(RecipeType.HeavyMartialCPU4VariantS, SkillType.Engineering)
@@ -1351,7 +1482,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 41);
 
             // Assault CPU IV - Variant M
             _builder.Create(RecipeType.AssaultCPU4VariantM, SkillType.Engineering)
@@ -1361,7 +1493,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Assault CPU IV - Variant P
             _builder.Create(RecipeType.AssaultCPU4VariantP, SkillType.Engineering)
@@ -1371,7 +1504,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 35);
 
             // Assault CPU IV - Variant V
             _builder.Create(RecipeType.AssaultCPU4VariantV, SkillType.Engineering)
@@ -1381,7 +1515,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 40);
 
             // Assault CPU IV - Variant W
             _builder.Create(RecipeType.AssaultCPU4VariantW, SkillType.Engineering)
@@ -1391,7 +1526,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Assault CPU IV - Variant A
             _builder.Create(RecipeType.AssaultCPU4VariantA, SkillType.Engineering)
@@ -1401,7 +1537,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 44);
 
             // Assault CPU IV - Variant S
             _builder.Create(RecipeType.AssaultCPU4VariantS, SkillType.Engineering)
@@ -1411,7 +1548,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 37);
 
             // Jaguar CPU IV - Variant M
             _builder.Create(RecipeType.JaguarCPU4VariantM, SkillType.Engineering)
@@ -1421,7 +1559,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 36);
 
             // Jaguar CPU IV - Variant P
             _builder.Create(RecipeType.JaguarCPU4VariantP, SkillType.Engineering)
@@ -1431,7 +1570,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 40);
 
             // Jaguar CPU IV - Variant V
             _builder.Create(RecipeType.JaguarCPU4VariantV, SkillType.Engineering)
@@ -1441,7 +1581,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 36);
 
             // Jaguar CPU IV - Variant W
             _builder.Create(RecipeType.JaguarCPU4VariantW, SkillType.Engineering)
@@ -1451,7 +1592,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 41);
 
             // Jaguar CPU IV - Variant A
             _builder.Create(RecipeType.JaguarCPU4VariantA, SkillType.Engineering)
@@ -1461,7 +1603,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 35);
 
             // Jaguar CPU IV - Variant S
             _builder.Create(RecipeType.JaguarCPU4VariantS, SkillType.Engineering)
@@ -1471,7 +1614,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
-                .Component("ca_unit4", 1);
+                .Component("ca_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 45);
 
 
         }
@@ -1485,7 +1629,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Blade CPU V - Variant P
             _builder.Create(RecipeType.BladeCPU5VariantP, SkillType.Engineering)
@@ -1495,7 +1640,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Blade CPU V - Variant V
             _builder.Create(RecipeType.BladeCPU5VariantV, SkillType.Engineering)
@@ -1505,7 +1651,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 36);
 
             // Blade CPU V - Variant W
             _builder.Create(RecipeType.BladeCPU5VariantW, SkillType.Engineering)
@@ -1515,7 +1662,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 43);
 
             // Blade CPU V - Variant A
             _builder.Create(RecipeType.BladeCPU5VariantA, SkillType.Engineering)
@@ -1525,7 +1673,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 39);
 
             // Blade CPU V - Variant S
             _builder.Create(RecipeType.BladeCPU5VariantS, SkillType.Engineering)
@@ -1535,7 +1684,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Light Martial CPU V - Variant M
             _builder.Create(RecipeType.LightMartialCPU5VariantM, SkillType.Engineering)
@@ -1545,7 +1695,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Light Martial CPU V - Variant P
             _builder.Create(RecipeType.LightMartialCPU5VariantP, SkillType.Engineering)
@@ -1555,7 +1706,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Light Martial CPU V - Variant V
             _builder.Create(RecipeType.LightMartialCPU5VariantV, SkillType.Engineering)
@@ -1565,7 +1717,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Light Martial CPU V - Variant W
             _builder.Create(RecipeType.LightMartialCPU5VariantW, SkillType.Engineering)
@@ -1575,7 +1728,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 37);
 
             // Light Martial CPU V - Variant A
             _builder.Create(RecipeType.LightMartialCPU5VariantA, SkillType.Engineering)
@@ -1585,7 +1739,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 45);
 
             // Light Martial CPU V - Variant S
             _builder.Create(RecipeType.LightMartialCPU5VariantS, SkillType.Engineering)
@@ -1595,7 +1750,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Ranger CPU V - Variant M
             _builder.Create(RecipeType.RangerCPU5VariantM, SkillType.Engineering)
@@ -1605,7 +1761,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 44);
 
             // Ranger CPU V - Variant P
             _builder.Create(RecipeType.RangerCPU5VariantP, SkillType.Engineering)
@@ -1615,7 +1772,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 37);
 
             // Ranger CPU V - Variant V
             _builder.Create(RecipeType.RangerCPU5VariantV, SkillType.Engineering)
@@ -1625,7 +1783,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 42);
 
             // Ranger CPU V - Variant W
             _builder.Create(RecipeType.RangerCPU5VariantW, SkillType.Engineering)
@@ -1635,7 +1794,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 41);
 
             // Ranger CPU V - Variant A
             _builder.Create(RecipeType.RangerCPU5VariantA, SkillType.Engineering)
@@ -1645,7 +1805,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 38);
 
             // Ranger CPU V - Variant S
             _builder.Create(RecipeType.RangerCPU5VariantS, SkillType.Engineering)
@@ -1655,7 +1816,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Heavy Martial CPU V - Variant M
             _builder.Create(RecipeType.HeavyMartialCPU5VariantM, SkillType.Engineering)
@@ -1665,7 +1827,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 39);
 
             // Heavy Martial CPU V - Variant P
             _builder.Create(RecipeType.HeavyMartialCPU5VariantP, SkillType.Engineering)
@@ -1675,7 +1838,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 35);
 
             // Heavy Martial CPU V - Variant V
             _builder.Create(RecipeType.HeavyMartialCPU5VariantV, SkillType.Engineering)
@@ -1685,7 +1849,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 37);
 
             // Heavy Martial CPU V - Variant W
             _builder.Create(RecipeType.HeavyMartialCPU5VariantW, SkillType.Engineering)
@@ -1695,7 +1860,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Heavy Martial CPU V - Variant A
             _builder.Create(RecipeType.HeavyMartialCPU5VariantA, SkillType.Engineering)
@@ -1705,7 +1871,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 38);
 
             // Heavy Martial CPU V - Variant S
             _builder.Create(RecipeType.HeavyMartialCPU5VariantS, SkillType.Engineering)
@@ -1715,7 +1882,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Assault CPU V - Variant M
             _builder.Create(RecipeType.AssaultCPU5VariantM, SkillType.Engineering)
@@ -1725,7 +1893,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 36);
 
             // Assault CPU V - Variant P
             _builder.Create(RecipeType.AssaultCPU5VariantP, SkillType.Engineering)
@@ -1735,7 +1904,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 40);
 
             // Assault CPU V - Variant V
             _builder.Create(RecipeType.AssaultCPU5VariantV, SkillType.Engineering)
@@ -1745,7 +1915,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 38);
 
             // Assault CPU V - Variant W
             _builder.Create(RecipeType.AssaultCPU5VariantW, SkillType.Engineering)
@@ -1755,7 +1926,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 41);
 
             // Assault CPU V - Variant A
             _builder.Create(RecipeType.AssaultCPU5VariantA, SkillType.Engineering)
@@ -1765,7 +1937,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 36);
 
             // Assault CPU V - Variant S
             _builder.Create(RecipeType.AssaultCPU5VariantS, SkillType.Engineering)
@@ -1775,7 +1948,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 37);
 
             // Jaguar CPU V - Variant M
             _builder.Create(RecipeType.JaguarCPU5VariantM, SkillType.Engineering)
@@ -1785,7 +1959,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 36);
 
             // Jaguar CPU V - Variant P
             _builder.Create(RecipeType.JaguarCPU5VariantP, SkillType.Engineering)
@@ -1795,7 +1970,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 44);
 
             // Jaguar CPU V - Variant V
             _builder.Create(RecipeType.JaguarCPU5VariantV, SkillType.Engineering)
@@ -1805,7 +1981,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Jaguar CPU V - Variant W
             _builder.Create(RecipeType.JaguarCPU5VariantW, SkillType.Engineering)
@@ -1815,7 +1992,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 44);
 
             // Jaguar CPU V - Variant A
             _builder.Create(RecipeType.JaguarCPU5VariantA, SkillType.Engineering)
@@ -1825,7 +2003,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 45);
 
             // Jaguar CPU V - Variant S
             _builder.Create(RecipeType.JaguarCPU5VariantS, SkillType.Engineering)
@@ -1835,7 +2014,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
-                .Component("ca_unit5", 1);
+                .Component("ca_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 38);
 
 
         }

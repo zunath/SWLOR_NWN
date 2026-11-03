@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 
@@ -67,13 +68,19 @@ namespace SWLOR.Game.Server.Feature
             Stat.ApplyCreatureMovementRate(player);
         }
 
-        /// <summary>Death strips every effect; restores the login ghost once the revive settles.</summary>
+        /// <summary>
+        /// Death strips every effect; restores the login ghost and the crafting styles the player selected once the revive settles.
+        /// Every revive (respawn, subdual, Resuscitation, a DM raise) calls this.
+        /// </summary>
         public static void RestoreGhostAfterRevive(uint creature)
         {
             DelayCommand(0.1f, () =>
             {
                 if (ShouldHaveGhost(creature) && !GetIsDead(creature))
+                {
                     ApplyCutsceneGhostToPlayer(creature);
+                    CraftingStyleSelection.Restore(creature);
+                }
             });
         }
 

@@ -540,7 +540,7 @@ namespace SWLOR.Game.Server.Service
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
                 return string.Empty;
 
-            if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
+            if (CraftService.Minigame.CraftMinigameRouting.IsAnyCraftWindowOpen(creature))
                 return "Items cannot be equipped while crafting.";
 
             if (itemType == BaseItem.CompanionPistol)

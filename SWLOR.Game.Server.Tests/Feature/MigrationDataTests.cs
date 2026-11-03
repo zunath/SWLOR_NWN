@@ -3,7 +3,6 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -11,9 +10,12 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 24 and server migration 29.
-    private const int ReleasedPlayerVersion = 24;
-    private const int ReleasedServerVersion = 29;
+    // Production has run player migration 25 and server migration 30. The next release adds player migration
+    // NextPlayerVersion and server migration NextServerVersion; update these at each post-release cleanup.
+    private const int ReleasedPlayerVersion = 25;
+    private const int ReleasedServerVersion = 30;
+    private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
+    private const int NextServerVersion = ReleasedServerVersion + 1;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
     [Test]
@@ -25,10 +27,12 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance") });
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
+                CharacterMigrations.Named("_26_ShrinkEnzymes") });
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_25_ConsolidatePelvisAppearance") }, "the next release must receive one combined player-item pass");
-        CharacterMigrations.VersionOf("_25_ConsolidatePelvisAppearance").Should().Be(ReleasedPlayerVersion + 1);
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_26_ShrinkEnzymes") },
+                $"the next release adds one combined player-item pass as player migration {NextPlayerVersion}");
+        CharacterMigrations.LatestVersion.Should().Be(NextPlayerVersion);
     }
 
     [Test]
@@ -119,10 +123,9 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_30_ConsolidatePelvisAppearance) },
-            "the next release must receive one combined stored-item pass");
-        new _30_ConsolidatePelvisAppearance().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _30_ConsolidatePelvisAppearance().Version.Should().Be(ReleasedServerVersion + 1);
+        remaining.Select(server => server.GetType().Name).Should().BeEquivalentTo(new[] { "_31_ShrinkEnzymes" },
+            $"the next release adds one combined stored-item pass as server migration {NextServerVersion}");
+        remaining.Single().Version.Should().Be(NextServerVersion);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

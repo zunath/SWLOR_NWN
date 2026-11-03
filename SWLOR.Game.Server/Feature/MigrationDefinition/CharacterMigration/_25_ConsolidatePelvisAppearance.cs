@@ -6,9 +6,8 @@ using SWLOR.Game.Server.Service.MigrationService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
-/// Consolidates pelvis appearances on the character and its items, moves incubation enzymes to the 1x1 enzyme item
-/// (<see cref="EnzymeBaseItemMigration"/>), and adds the second hand's share of a worn Power Glove's equipment stats
-/// (<see cref="PowerGloveStatMigration"/>).
+/// Consolidates pelvis appearances on the character and its items, and adds the second hand's share of a worn
+/// Power Glove's equipment stats (<see cref="PowerGloveStatMigration"/>).
 /// </summary>
 internal sealed class _25_ConsolidatePelvisAppearance : ICharacterMigration
 {

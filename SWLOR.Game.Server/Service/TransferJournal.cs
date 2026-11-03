@@ -33,7 +33,12 @@ namespace SWLOR.Game.Server.Service
     /// <para>
     /// Items leave the inventory through <see cref="InventoryRemoval"/>, never <c>DestroyObject</c> alone: native destruction waits until
     /// the script returns, so an item destroyed and then saved in the same script is still in the saved file. The removal is complete
-    /// before the character file is saved, and the parked items are destroyed once the save succeeded.
+    /// before the character file is saved, and the parked items are destroyed once the save succeeded. A save that fails puts the items
+    /// back and unmarks (<see cref="CheckpointedChange"/>), so the database side never goes on for items the saved file still holds.
+    /// </para>
+    /// <para>
+    /// A feature that deletes a record its transfers name as their target calls <see cref="SettleReceipts"/> first, so the deletion
+    /// never makes a transfer the record already applied look unapplied at the character's login.
     /// </para>
     /// </summary>
     public static class TransferJournal
@@ -117,32 +122,28 @@ namespace SWLOR.Game.Server.Service
                     return false;
             }
 
+            // A save that fails puts everything back: the database side must not go on for items the saved file still holds.
             var removal = new InventoryRemoval(player);
-            try
-            {
-                foreach (var (resref, count) in needed)
-                {
-                    if (removal.TryTake(resref, count))
-                        continue;
+            return CheckpointedChange.Run(
+                () => needed.All(item => removal.TryTake(item.Resref, item.Count)),
+                () => CharacterCheckpoint.Save(player),
+                removal.Restore,
+                removal.Destroy);
+        }
 
-                    removal.Restore();
-                    return false;
-                }
+        /// <summary>
+        /// Call before deleting a record that transfers name as their target (<see cref="TransferEntry.TargetId"/>): a farmhand, an animal, a
+        /// fermentation batch. A deposit's target saves its receipt a moment before the entry is saved as applied, and a restart in that
+        /// moment leaves an entry that looks unapplied once the record is gone, so the login would give the items back (or apply them
+        /// again) although the record's own deletion already returned them. Every entry whose receipt the record holds is saved as applied
+        /// here, so a deleted record never makes a settled transfer look unsettled. Deleting the record afterwards is safe at any point.
+        /// </summary>
+        public static void SettleReceipts(string targetId)
+        {
+            if (string.IsNullOrWhiteSpace(targetId))
+                return;
 
-                if (!CharacterCheckpoint.Save(player))
-                {
-                    removal.Restore();
-                    return false;
-                }
-            }
-            catch
-            {
-                removal.Restore();
-                throw;
-            }
-
-            removal.Destroy();
-            return true;
+            TransferJournalProcess.SettleReceipts(new Targets(), targetId);
         }
 
         private static void Report(uint player, TransferEntry entry, TransferSettlement settlement)
@@ -224,6 +225,41 @@ namespace SWLOR.Game.Server.Service
 
         #endregion
 
+        private static void SaveApplied(TransferEntry entry)
+        {
+            entry.AppliedUtc = DateTime.UtcNow;
+            DB.Set(entry);
+        }
+
+        /// <summary>
+        /// The entries that name a record, for <see cref="SettleReceipts"/>. Entries live only from a transfer's start to its end, so the
+        /// table is almost always empty and all of it is read, rather than searching the record's id, which has characters a search treats as separators.
+        /// </summary>
+        private sealed class Targets : ITransferTargetStore
+        {
+            public IReadOnlyList<TransferEntry> GetEntriesOf(string targetId)
+            {
+                var query = new DBQuery<TransferEntry>();
+                var count = (int)DB.SearchCount(query);
+                if (count <= 0)
+                    return new List<TransferEntry>();
+
+                return DB.Search(query.AddPaging(count, 0))
+                    .Where(entry => entry != null && entry.TargetId == targetId && !entry.AppliedUtc.HasValue && GetHandler(entry.Kind) != null)
+                    .ToList();
+            }
+
+            public bool IsApplied(TransferEntry entry)
+            {
+                return GetHandler(entry.Kind).IsApplied(entry);
+            }
+
+            public void MarkApplied(TransferEntry entry)
+            {
+                SaveApplied(entry);
+            }
+        }
+
         /// <summary>The entries, the character and the feature's database side behind the steps <see cref="TransferJournalProcess"/> orders.</summary>
         private sealed class Store : ITransferStore
         {
@@ -273,33 +309,21 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // The items leave the inventory before the file is saved, not just get queued for destruction: native destruction waits
-                // for the end of this script, so a file saved now would still hold them.
+                // for the end of this script, so a file saved now would still hold them. The items could not all be taken or the file
+                // could not be saved: everything is put back and unmarked, so the action simply did not happen.
                 var removal = new InventoryRemoval(_player);
-                var saved = false;
-                try
-                {
-                    if (TakeFromInventory(removal, entry, held))
+                return CheckpointedChange.Run(
+                    () =>
                     {
+                        if (!TakeFromInventory(removal, entry, held))
+                            return false;
+
                         ObjectPlugin.SetString(_player, MarkVariable, TransferJournalRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), entry.Id), true);
-                        saved = CharacterCheckpoint.Save(_player);
-                    }
-                }
-                catch
-                {
-                    Undo(removal, entry);
-                    throw;
-                }
-
-                if (saved)
-                {
-                    removal.Destroy();
-                    return true;
-                }
-
-                // The items could not all be taken or the file could not be saved: everything is put back and unmarked, so the action
-                // simply did not happen.
-                Undo(removal, entry);
-                return false;
+                        return true;
+                    },
+                    () => CharacterCheckpoint.Save(_player),
+                    () => Undo(removal, entry),
+                    removal.Destroy);
             }
 
             private static bool TakeFromInventory(InventoryRemoval removal, TransferEntry entry, List<uint> held)
@@ -379,8 +403,7 @@ namespace SWLOR.Game.Server.Service
 
             public void MarkApplied(TransferEntry entry)
             {
-                entry.AppliedUtc = DateTime.UtcNow;
-                DB.Set(entry);
+                SaveApplied(entry);
             }
 
             public bool IsApplied(TransferEntry entry)

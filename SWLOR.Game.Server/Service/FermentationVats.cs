@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Service
                 Corrals.Notify(owner, $"Your fermentation vat was removed while a batch of {name} was fermenting. The ingredients are in your overflow storage. Use /overflow to claim them.");
             }
 
-            DB.Delete<FermentationJob>(job.Id);
+            DeleteJob(job.Id);
             Log.Write(LogGroup.Property, $"The batch of {job.Type} {job.Color} in missing fermentation vat {job.VatId} went to player {owner}'s overflow storage ({(EnzymeCultureRules.GetRecovery(job, now) == FermentationRecovery.DeliverEnzyme ? "the enzyme" : "the ingredients")}).");
         }
 
@@ -493,7 +493,18 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyCollection(TransferEntry entry)
         {
             if (!IsCollected(entry))
-                DB.Delete<FermentationJob>(entry.TargetId);
+                DeleteJob(entry.TargetId);
+        }
+
+        /// <summary>
+        /// Deletes the batch's record. The transfer entries that name it and whose receipts it holds are saved as applied first
+        /// (<see cref="TransferJournal.SettleReceipts"/>): a batch started from ingredients whose vat is removed before its entry is
+        /// settled has gone to the owner's overflow store with the vat, and must not go there again at their login.
+        /// </summary>
+        private static void DeleteJob(string jobId)
+        {
+            TransferJournal.SettleReceipts(jobId);
+            DB.Delete<FermentationJob>(jobId);
         }
 
         // Helpers

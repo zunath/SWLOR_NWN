@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.TransferService
     /// A restart after any step is settled at the character's next login by <see cref="SettleAtLogin"/>, which reads the three places
     /// and repeats only the steps that did not finish (<see cref="TransferJournalRules.Settle"/>). An entry saved as applied needs no
     /// look at the target, which may have been deleted since; the target's own receipt covers only the instant between its write and
-    /// the entry's.
+    /// the entry's, and a target that is deleted settles its entries' receipts first (<see cref="SettleReceipts"/>).
     /// </summary>
     public static class TransferJournalProcess
     {
@@ -90,6 +90,31 @@ namespace SWLOR.Game.Server.Service.TransferService
             }
 
             return outcomes;
+        }
+
+        /// <summary>
+        /// Run before a record that entries name as their target is deleted. A target saves its receipt a moment before its entry is saved
+        /// as applied (<see cref="Deposit"/>, <see cref="Withdraw"/>), and the deletion takes the receipt with it, so a restart in that
+        /// moment would leave an entry the character's login reads as unapplied. A deposit's items would then go back to the character
+        /// although the record's own clean-up already returned them, or be applied a second time to a record that could take them again;
+        /// a withdrawal's items would be dropped. Every entry whose receipt the record holds is saved as applied first, and
+        /// <see cref="Settle"/> then needs no look at the record. Entries the record has no receipt for are left alone: it never took
+        /// them, and the login settles those from the mark. Repeating this changes nothing.
+        /// </summary>
+        /// <returns>How many entries were saved as applied.</returns>
+        public static int SettleReceipts(ITransferTargetStore store, string targetId)
+        {
+            var settled = 0;
+            foreach (var entry in store.GetEntriesOf(targetId))
+            {
+                if (entry.AppliedUtc.HasValue || !store.IsApplied(entry))
+                    continue;
+
+                store.MarkApplied(entry);
+                settled++;
+            }
+
+            return settled;
         }
 
         private static TransferSettlement Settle(ITransferStore store, TransferEntry entry, bool marked)

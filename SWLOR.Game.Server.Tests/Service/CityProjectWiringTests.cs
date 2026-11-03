@@ -231,8 +231,9 @@ public class CityProjectWiringTests
         // Native destruction waits for the end of the script, so the materials are parked out of the inventory before the file is saved
         // and destroyed after it, never passed to DestroyObject before the save.
         take.Should().NotContain("DestroyObject");
-        ShouldComeBefore(take, "CharacterCheckpoint.Save(_player)", "removal.Destroy()");
-        take.Should().Contain("removal.Restore()", "materials that could not all be taken are put back");
+        ShouldComeBefore(take, "CharacterCheckpoint.Save(_player)", "removal.Destroy");
+        take.Should().Contain("CheckpointedChange.Run(", "a save that fails puts the materials back and the project is not credited");
+        take.Should().Contain("removal.Restore()", "materials that could not all be taken, or whose save failed, are put back");
         service.Should().NotContain("DestroyObject(item)", "the donation never destroys a donor's item before the save");
 
         var clear = ExtractMethod(service, "public void ClearMark(string donationId)");

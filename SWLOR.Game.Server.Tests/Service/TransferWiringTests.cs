@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
@@ -21,6 +22,26 @@ public class TransferWiringTests
 
         root.Should().NotBeNull();
         return File.ReadAllText(Path.Combine(new[] { root!.FullName, "SWLOR.Game.Server" }.Concat(path).ToArray()));
+    }
+
+    private static IEnumerable<(string Name, string Source)> ReadServerSources(params string[] folder)
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent;
+
+        root.Should().NotBeNull();
+        var directory = Path.Combine(new[] { root!.FullName, "SWLOR.Game.Server" }.Concat(folder).ToArray());
+        return Directory.EnumerateFiles(directory, "*.cs", SearchOption.AllDirectories).Select(path => (Path.GetFileName(path), File.ReadAllText(path)));
+    }
+
+    private static int Count(string source, string text)
+    {
+        var count = 0;
+        for (var index = source.IndexOf(text, StringComparison.Ordinal); index >= 0; index = source.IndexOf(text, index + text.Length, StringComparison.Ordinal))
+            count++;
+
+        return count;
     }
 
     private static string ExtractMethod(string source, string signature)
@@ -99,7 +120,8 @@ public class TransferWiringTests
 
         var apply = ExtractMethod(service, "public void Apply(TransferEntry entry)");
         apply.Should().Contain("GetHandler(entry.Kind).Apply(entry)");
-        ExtractMethod(service, "public void MarkApplied(TransferEntry entry)").Should().Contain("entry.AppliedUtc = DateTime.UtcNow").And.Contain("DB.Set(entry)");
+        ExtractMethod(service, "public void MarkApplied(TransferEntry entry)").Should().Contain("SaveApplied(entry)");
+        ExtractMethod(service, "private static void SaveApplied(TransferEntry entry)").Should().Contain("entry.AppliedUtc = DateTime.UtcNow").And.Contain("DB.Set(entry)");
         ExtractMethod(service, "public void ToOverflow(TransferEntry entry)").Should().Contain("WriteOverflow(entry, index, item.Count)");
         ExtractMethod(service, "private static void WriteOverflow(").Should().Contain("TransferJournalRules.GetOverflowRecordId(entry.Id, index, chunk)");
     }
@@ -113,7 +135,8 @@ public class TransferWiringTests
 
         var take = ExtractMethod(service, "public bool TakeAndMark(TransferEntry entry)");
         take.Should().NotContain("DestroyObject").And.NotContain("FarmItems.Take(");
-        ShouldComeBefore(take, "CharacterCheckpoint.Save(_player)", "removal.Destroy()");
+        ShouldComeBefore(take, "CharacterCheckpoint.Save(_player)", "removal.Destroy");
+        take.Should().Contain("CheckpointedChange.Run(", "a save that fails is not ignored");
         take.Should().Contain("Undo(removal, entry)", "a failed take or save puts the same items back and unmarks");
         ExtractMethod(service, "private void Undo(").Should().Contain("removal.Restore()").And.Contain("RemoveMark(");
 
@@ -122,9 +145,10 @@ public class TransferWiringTests
 
         var takeAndSave = ExtractMethod(service, "public static bool TakeAndSave(");
         takeAndSave.Should().NotContain("DestroyObject").And.NotContain("FarmItems.Take(");
-        ShouldComeBefore(takeAndSave, "removal.TryTake(resref, count)", "CharacterCheckpoint.Save(player)");
-        ShouldComeBefore(takeAndSave, "CharacterCheckpoint.Save(player)", "removal.Destroy()");
-        takeAndSave.Should().Contain("removal.Restore()", "a failed take or save puts the same items back");
+        ShouldComeBefore(takeAndSave, "removal.TryTake(item.Resref, item.Count)", "CharacterCheckpoint.Save(player)");
+        ShouldComeBefore(takeAndSave, "CharacterCheckpoint.Save(player)", "removal.Destroy");
+        takeAndSave.Should().Contain("CheckpointedChange.Run(", "a save that fails is not ignored");
+        takeAndSave.Should().Contain("removal.Restore", "a failed take or save puts the same items back");
 
         var removal = ReadServerSource("Service", "InventoryRemoval.cs");
         ExtractMethod(removal, "public bool TryTake(").Should().NotContain("DestroyObject", "a taken item is parked, and destroyed only after the save");
@@ -173,6 +197,97 @@ public class TransferWiringTests
             handler.IsApplied.Should().NotBeNull();
             handler.Apply.Should().NotBeNull();
         }
+    }
+
+    #endregion
+
+    #region A save that fails
+
+    [Test]
+    public void AFailedSave_NeverLetsTheDatabaseSideProceed()
+    {
+        var donations = ExtractMethod(ReadServerSource("Service", "CityProjectDonations.cs"), "public bool TakeAndMark(CityProjectDonation donation)");
+        donations.Should().Contain("CheckpointedChange.Run(").And.Contain("SetMark(CityProjectDonationRules.RemoveMark(", "the mark is taken off again");
+
+        var credits = ExtractMethod(ReadServerSource("Service", "PendingCredits.cs"), "private static void Deliver(uint player)");
+        credits.Should().Contain("CheckpointedChange.Run(").And.Contain("TakeGoldFromCreature(credits, player, true)", "the credits are taken back");
+        ShouldComeBefore(credits, "GiveGoldToCreature(player, credits)", "CharacterCheckpoint.Save(player)");
+        ShouldComeBefore(credits, "CharacterCheckpoint.Save(player)", "if (!paid)");
+        ShouldComeBefore(credits, "if (!paid)", "DB.Delete<PendingCredit>(record.Id)");
+
+        var farmhands = ReadServerSource("Service", "Farmhands.cs");
+        var assign = ExtractMethod(farmhands, "public static FarmhandRefusal AssignDroid(");
+        assign.Should().Contain("CheckpointedChange.Run(").And.Contain("FarmhandRefusal.NotSaved");
+        ShouldComeBefore(assign, "CheckpointedChange.Run(", "DB.Set(farmhand)");
+        ShouldComeBefore(assign, "if (!marked)", "DB.Set(farmhand)");
+        ShouldComeBefore(assign, "DB.Set(farmhand)", "DestroyObject(controller)");
+
+        var recall = ExtractMethod(farmhands, "public static FarmhandRefusal RecallDroid(");
+        recall.Should().Contain("CheckpointedChange.Run(").And.Contain("FarmhandRefusal.NotSaved").And.Contain("DestroyObject(item)", "the returned controller comes out again");
+        ShouldComeBefore(recall, "CheckpointedChange.Run(", "Release(farmhand, player)");
+        ShouldComeBefore(recall, "if (!marked)", "Release(farmhand, player)");
+    }
+
+    [Test]
+    public void ACheckpointWhoseResultIsIgnored_IsOnlyEverACleanupOfWhatIsAlreadySettled()
+    {
+        // A statement that saves and drops the result lets the code after it go on whatever the save did. These are the only ones: each
+        // follows a database write that is already settled, and a failed save only leaves a mark with no record, which the login clears.
+        var allowed = new Dictionary<string, int>
+        {
+            ["CityProjectDonations.cs"] = 1,
+            ["PendingCredits.cs"] = 2,
+            ["CityStores.cs"] = 1
+        };
+
+        foreach (var (name, source) in ReadServerSources("Service"))
+        {
+            var ignored = Regex.Matches(source, @"^[ \t]*CharacterCheckpoint\.Save\(", RegexOptions.Multiline).Count;
+            ignored.Should().Be(allowed.GetValueOrDefault(name), $"{name} ignores the result of a character checkpoint only where listed");
+        }
+    }
+
+    #endregion
+
+    #region Deleting a record that transfers name
+
+    [Test]
+    public void ARecordTransfersNameAsTheirTarget_IsDeletedOnlyAfterTheirReceiptsAreSettled()
+    {
+        // A deposit's target saves its receipt a moment before the entry is saved as applied; deleting the target takes the receipt
+        // with it. Every deletion of a record a journal handler reads a receipt from goes through a method that settles the receipts first.
+        var farmhands = ReadServerSource("Service", "Farmhands.cs");
+        ShouldComeBefore(ExtractMethod(farmhands, "private static void DeleteFarmhand(string farmhandId)"), "TransferJournal.SettleReceipts(farmhandId)", "DB.Delete<Farmhand>(farmhandId)");
+
+        var corrals = ReadServerSource("Service", "Corrals.cs");
+        ShouldComeBefore(ExtractMethod(corrals, "internal static void DeleteAnimal(string animalId)"), "TransferJournal.SettleReceipts(animalId)", "DB.Delete<Livestock>(animalId)");
+
+        var vats = ReadServerSource("Service", "FermentationVats.cs");
+        ShouldComeBefore(ExtractMethod(vats, "private static void DeleteJob(string jobId)"), "TransferJournal.SettleReceipts(jobId)", "DB.Delete<FermentationJob>(jobId)");
+
+        foreach (var (name, source) in ReadServerSources("Service"))
+        {
+            Count(source, "DB.Delete<Farmhand>(").Should().Be(name == "Farmhands.cs" ? 1 : 0, $"{name} deletes a farmhand through DeleteFarmhand");
+            Count(source, "DB.Delete<Livestock>(").Should().Be(name == "Corrals.cs" ? 1 : 0, $"{name} deletes an animal through Corrals.DeleteAnimal");
+            Count(source, "DB.Delete<FermentationJob>(").Should().Be(name == "FermentationVats.cs" ? 1 : 0, $"{name} deletes a batch through DeleteJob");
+        }
+
+        ReadServerSource("Service", "AnimalRecoveryStore.cs").Should().Contain("Corrals.DeleteAnimal(_animalId)");
+    }
+
+    [Test]
+    public void TheJournalSettlesAReceiptByTheEntriesOfTheRecord_ThroughTheHandlersOwnReceipt()
+    {
+        var journal = ReadServerSource("Service", "TransferJournal.cs");
+
+        ExtractMethod(journal, "public static void SettleReceipts(string targetId)").Should().Contain("TransferJournalProcess.SettleReceipts(new Targets(), targetId)");
+        var entries = ExtractMethod(journal, "public IReadOnlyList<TransferEntry> GetEntriesOf(string targetId)");
+        entries.Should().Contain("entry.TargetId == targetId").And.Contain("!entry.AppliedUtc.HasValue").And.Contain("GetHandler(entry.Kind) != null");
+        ExtractMethod(journal, "private sealed class Targets : ITransferTargetStore").Should().Contain("GetHandler(entry.Kind).IsApplied(entry)");
+
+        var process = ReadServerSource("Service", "TransferService", "TransferJournalProcess.cs");
+        var settle = ExtractMethod(process, "public static int SettleReceipts(");
+        settle.Should().Contain("store.IsApplied(entry)").And.Contain("store.MarkApplied(entry)");
     }
 
     #endregion
@@ -232,10 +347,10 @@ public class TransferWiringTests
         release.Should().Contain("farmhand-hopper:", "the offline records keep their ids");
 
         var offline = release[release.IndexOf("var recordPrefix", StringComparison.Ordinal)..];
-        ShouldComeBefore(offline, "CityProjects.WriteOverflow(", "DB.Delete<Farmhand>(farmhand.Id)");
+        ShouldComeBefore(offline, "CityProjects.WriteOverflow(", "DeleteFarmhand(farmhand.Id)");
 
         farmhands.Should().NotContain("GiveHoppers", "no path gives the hoppers before the farmhand is released");
-        ExtractMethod(farmhands, "private static void ApplyRelease(TransferEntry entry)").Should().Contain("DB.Delete<Farmhand>(entry.TargetId)");
+        ExtractMethod(farmhands, "private static void ApplyRelease(TransferEntry entry)").Should().Contain("DeleteFarmhand(entry.TargetId)");
     }
 
     #endregion
@@ -300,7 +415,7 @@ public class TransferWiringTests
         var collectApply = ExtractMethod(corrals, "private static void ApplyCollectionTransfer(TransferEntry entry)");
         collectApply.Should().Contain("LivestockRules.ApplyCollection(animal, entry.CreatedUtc)");
         ExtractMethod(corrals, "private static bool IsCollected(TransferEntry entry)").Should().Contain("animal.LastCollectedUtc.Value >= entry.CreatedUtc");
-        ExtractMethod(corrals, "private static void ApplyRemoval(TransferEntry entry)").Should().Contain("DB.Delete<Livestock>(entry.TargetId)");
+        ExtractMethod(corrals, "private static void ApplyRemoval(TransferEntry entry)").Should().Contain("DeleteAnimal(entry.TargetId)");
     }
 
     #endregion
@@ -375,7 +490,7 @@ public class TransferWiringTests
         collect.Should().NotContain("Item.TryAcquireItem(", "the journal gives the enzyme");
 
         ExtractMethod(vats, "private static bool IsCollected(TransferEntry entry)").Should().Contain("job.StartedUtc.Ticks.ToString() != ");
-        ExtractMethod(vats, "private static void ApplyCollection(TransferEntry entry)").Should().Contain("DB.Delete<FermentationJob>(entry.TargetId)");
+        ExtractMethod(vats, "private static void ApplyCollection(TransferEntry entry)").Should().Contain("DeleteJob(entry.TargetId)");
     }
 
     #endregion

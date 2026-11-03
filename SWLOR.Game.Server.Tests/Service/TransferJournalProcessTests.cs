@@ -16,6 +16,7 @@ public class TransferJournalProcessTests
     private static readonly DateTime Now = new(2026, 11, 3, 12, 0, 0, DateTimeKind.Utc);
     private const string PlayerId = "player";
     private const string Kind = "test.hopper";
+    private const string TargetId = "hopper";
     private const int Total = 5;
     private const int Moved = 3;
 
@@ -29,7 +30,13 @@ public class TransferJournalProcessTests
     {
         NothingChanges,
         TheTargetFillsUp,
-        TheTargetIsDeleted
+        TheTargetIsDeleted,
+
+        /// <summary>
+        /// What a farmhand's recall does while its owner is away: the entries naming it are settled, what it holds goes to the owner's
+        /// overflow store, and it is deleted.
+        /// </summary>
+        TheTargetIsReleased
     }
 
     /// <summary>
@@ -37,7 +44,7 @@ public class TransferJournalProcessTests
     /// entries and the character's overflow store, in memory. It counts every write and stops (throws) at the one a restart stops it at.
     /// A restart drops everything the character file did not save.
     /// </summary>
-    private sealed class FakeStore : ITransferStore
+    private sealed class FakeStore : ITransferStore, ITransferTargetStore
     {
         public const int Capacity = 4;
 
@@ -85,6 +92,9 @@ public class TransferJournalProcessTests
         public int Room { get; set; } = int.MaxValue;
 
         public bool SaveFails { get; set; }
+
+        /// <summary>A target that is gone could be made again by a deposit: an open corral for an animal that wandered off.</summary>
+        public bool CanBeRecreated { get; set; }
 
         public List<string> Writes { get; } = new();
 
@@ -183,11 +193,14 @@ public class TransferJournalProcessTests
 
         public bool IsApplied(TransferEntry entry) => Target != null && Target.Receipts.Contains(entry.Id);
 
-        public bool CanApply(TransferEntry entry) => Target != null && Target.Count + entry.Items.Sum(item => item.Count) <= Capacity;
+        public bool CanApply(TransferEntry entry) => Target == null ? CanBeRecreated : Target.Count + entry.Items.Sum(item => item.Count) <= Capacity;
 
         public void Apply(TransferEntry entry)
         {
             Write("apply");
+            if (Target == null && CanBeRecreated)
+                Target = new Hopper();
+
             if (Target == null || Target.Receipts.Contains(entry.Id))
                 return;
 
@@ -206,6 +219,9 @@ public class TransferJournalProcessTests
             Entries[entry.Id] = entry;
         }
 
+        public IReadOnlyList<TransferEntry> GetEntriesOf(string targetId) =>
+            Entries.Values.Where(entry => entry.TargetId == targetId && !entry.AppliedUtc.HasValue).ToList();
+
         public void ToOverflow(TransferEntry entry)
         {
             Write("overflow");
@@ -223,7 +239,7 @@ public class TransferJournalProcessTests
 
     private static TransferEntry NewEntry(TransferDirection direction, int count = Moved)
     {
-        var entry = TransferJournalRules.Create(PlayerId, Kind, direction, "hopper", "Your feed", Now);
+        var entry = TransferJournalRules.Create(PlayerId, Kind, direction, TargetId, "Your feed", Now);
         entry.Items.Add(TransferJournalRules.Plain("wheat", "Wheat", count));
         return entry;
     }
@@ -247,7 +263,26 @@ public class TransferJournalProcessTests
             case Meanwhile.TheTargetIsDeleted:
                 store.Target = null;
                 break;
+            case Meanwhile.TheTargetIsReleased:
+                Release(store, settleReceipts: true);
+                break;
         }
+    }
+
+    /// <summary>
+    /// A farmhand sent back by someone who manages the property, while its owner is away: what its hopper holds goes to the owner's
+    /// overflow store and the farmhand is deleted. The fix settles the receipts of the entries naming the farmhand before it goes.
+    /// </summary>
+    private static void Release(FakeStore store, bool settleReceipts)
+    {
+        if (settleReceipts)
+            TransferJournalProcess.SettleReceipts(store, TargetId);
+
+        if (store.Target == null)
+            return;
+
+        store.Overflow["release"] = store.Target.Count;
+        store.Target = null;
     }
 
     private static void AssertOneCopyOfEverything(FakeStore store, int expected)
@@ -507,8 +542,9 @@ public class TransferJournalProcessTests
 
     /// <summary>
     /// Every write a withdrawal can be stopped before, with the inventory roomy or nearly full. A target deleted between the restart and
-    /// the login only means something once it had given its items up: before that, they went with it. The one instant not covered is a stop
-    /// after the target's write and before the entry is saved as applied, with the target (and its receipt) deleted before the login.
+    /// the login only means something once it had given its items up: before that, they went with it. A target that is released instead
+    /// (settling the receipts of its entries before it goes) is covered at every stop, the one between the target's write and the entry
+    /// being saved as applied included.
     /// </summary>
     private static IEnumerable<TestCaseData> WithdrawalRestarts()
     {
@@ -516,7 +552,7 @@ public class TransferJournalProcessTests
         {
             foreach (var room in new[] { int.MaxValue, 2 })
             {
-                foreach (var meanwhile in new[] { Meanwhile.NothingChanges, Meanwhile.TheTargetIsDeleted }.Where(meanwhile => meanwhile != Meanwhile.TheTargetIsDeleted || stop >= 3))
+                foreach (var meanwhile in new[] { Meanwhile.NothingChanges, Meanwhile.TheTargetIsDeleted, Meanwhile.TheTargetIsReleased }.Where(meanwhile => meanwhile != Meanwhile.TheTargetIsDeleted || stop >= 3))
                 {
                     for (var settleStop = -1; settleStop <= 3; settleStop++)
                     {
@@ -643,6 +679,138 @@ public class TransferJournalProcessTests
         store.InTarget.Should().Be(0);
         store.Entries.Should().BeEmpty();
         store.Marks.Should().BeEmpty();
+    }
+
+    #endregion
+
+    #region Targets that are deleted before the login
+
+    /// <summary>
+    /// A deposit stopped after its target saved the items and its receipt and before the entry was saved as applied: the character file
+    /// holds the mark, the target holds the items, and the entry still reads as unapplied.
+    /// </summary>
+    private static FakeStore ADepositStoppedBetweenTheTargetsWriteAndTheEntrys(bool targetCanBeRecreated = false)
+    {
+        var store = new FakeStore(TransferDirection.Deposit) { StopAfterWrites = 4, CanBeRecreated = targetCanBeRecreated };
+        try
+        {
+            TransferJournalProcess.Deposit(store, NewEntry(TransferDirection.Deposit));
+        }
+        catch (RestartException)
+        {
+        }
+
+        store.Restart();
+        store.InTarget.Should().Be(Moved, "the target took the items");
+        store.Target.Receipts.Should().ContainSingle("the target saved its receipt with the items");
+        store.Entries.Values.Single().AppliedUtc.Should().BeNull("the entry was not told");
+        return store;
+    }
+
+    [Test]
+    public void AFarmhandRecalledBetweenTheTargetsWriteAndTheEntrys_DoesNotReturnTheFeedTwice()
+    {
+        var store = ADepositStoppedBetweenTheTargetsWriteAndTheEntrys();
+
+        Release(store, settleReceipts: true);
+        store.InOverflow.Should().Be(Moved, "the recall returned what the hopper held, the loaded feed included");
+
+        SettleLogin(store);
+
+        store.InOverflow.Should().Be(Moved, "the login returns nothing a second time");
+        store.Items.Should().Be(Total - Moved);
+        store.InTarget.Should().Be(0);
+        store.Entries.Should().BeEmpty();
+        store.Marks.Should().BeEmpty();
+    }
+
+    [Test]
+    public void WithoutSettlingTheReceipts_ARecalledFarmhandMakesTheLoginReturnTheFeedAgain()
+    {
+        // The defect this guards against, so the test above is known to see it: the receipt went with the farmhand.
+        var store = ADepositStoppedBetweenTheTargetsWriteAndTheEntrys();
+
+        Release(store, settleReceipts: false);
+        SettleLogin(store);
+
+        store.InOverflow.Should().Be(Moved * 2, "the feed came back with the hopper and again from the unapplied entry");
+    }
+
+    [Test]
+    public void AnAnimalThatWanderedOffBetweenTheWrites_IsNotPlacedAgainAtTheLogin()
+    {
+        // The corral is still open, so a record that looked unapplied would be applied to a new animal.
+        var store = ADepositStoppedBetweenTheTargetsWriteAndTheEntrys(targetCanBeRecreated: true);
+
+        TransferJournalProcess.SettleReceipts(store, TargetId);
+        store.Target = null;
+        SettleLogin(store);
+
+        store.Target.Should().BeNull("the animal that wandered off does not come back");
+        store.InOverflow.Should().Be(0);
+        store.Items.Should().Be(Total - Moved);
+        store.Entries.Should().BeEmpty();
+        store.Marks.Should().BeEmpty();
+    }
+
+    [Test]
+    public void WithoutSettlingTheReceipts_AnAnimalThatWanderedOffIsPlacedAgainAtTheLogin()
+    {
+        var store = ADepositStoppedBetweenTheTargetsWriteAndTheEntrys(targetCanBeRecreated: true);
+
+        store.Target = null;
+        SettleLogin(store);
+
+        store.InTarget.Should().Be(Moved, "the unapplied entry made a second animal");
+    }
+
+    [Test]
+    public void AWithdrawalTheTargetGaveUpBetweenTheWrites_StillReachesTheCharacter_WhenTheTargetIsReleasedBeforeTheLogin()
+    {
+        // The hopper was cleared with its receipt, and the entry was not yet saved as applied.
+        var store = new FakeStore(TransferDirection.Withdraw) { StopAfterWrites = 2 };
+        try
+        {
+            TransferJournalProcess.Withdraw(store, NewEntry(TransferDirection.Withdraw, Total));
+        }
+        catch (RestartException)
+        {
+        }
+
+        store.Restart();
+        Release(store, settleReceipts: true);
+        SettleLogin(store);
+
+        store.InOverflow.Should().Be(Total, "the character is owed what the hopper gave up");
+        store.Entries.Should().BeEmpty();
+        store.Marks.Should().BeEmpty();
+    }
+
+    [Test]
+    public void SettlingReceipts_SavesAsAppliedOnlyTheEntriesOfThatTargetItHoldsAReceiptFor()
+    {
+        var store = new FakeStore(TransferDirection.Deposit);
+        var receipted = NewEntry(TransferDirection.Deposit);
+        var notTaken = NewEntry(TransferDirection.Deposit);
+        var otherTarget = NewEntry(TransferDirection.Deposit);
+        otherTarget.TargetId = "elsewhere";
+        var alreadyApplied = NewEntry(TransferDirection.Deposit);
+        alreadyApplied.AppliedUtc = Now;
+        foreach (var entry in new[] { receipted, notTaken, otherTarget, alreadyApplied })
+            store.Entries[entry.Id] = entry;
+
+        store.Target.Receipts.Add(receipted.Id);
+        store.Target.Receipts.Add(otherTarget.Id);
+        store.Target.Receipts.Add(alreadyApplied.Id);
+
+        TransferJournalProcess.SettleReceipts(store, TargetId).Should().Be(1);
+
+        receipted.AppliedUtc.Should().NotBeNull();
+        notTaken.AppliedUtc.Should().BeNull("the target never took it, so the login settles it from the mark");
+        otherTarget.AppliedUtc.Should().BeNull("it names another record");
+        store.Writes.Should().Equal("applied");
+
+        TransferJournalProcess.SettleReceipts(store, TargetId).Should().Be(0, "settling twice changes nothing");
     }
 
     #endregion

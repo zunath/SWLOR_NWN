@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
 
             if (mark.Action != ClerkRecoveryAction.Collect)
             {
-                DB.Delete<Livestock>(_animalId);
+                Corrals.DeleteAnimal(_animalId);
                 Corrals.DestroyCreature(_animalId);
                 return;
             }

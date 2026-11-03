@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -103,11 +104,28 @@ namespace SWLOR.Game.Server.Service
                     return;
             }
 
-            GiveGoldToCreature(player, (int)total);
-
-            // The credits and the mark reach the character file before the records go, so a restart cannot pay twice.
-            ObjectPlugin.SetString(player, DeliveredVariable, string.Join(IdSeparator, records.Select(x => x.Id)), true);
-            CharacterCheckpoint.Save(player);
+            // The credits and the mark reach the character file before the records go, so a restart cannot pay twice. A save that
+            // fails takes the credits back and keeps the records, so they are paid at the next delivery instead of being deleted unpaid.
+            var credits = (int)total;
+            var paid = CheckpointedChange.Run(
+                () =>
+                {
+                    GiveGoldToCreature(player, credits);
+                    ObjectPlugin.SetString(player, DeliveredVariable, string.Join(IdSeparator, records.Select(x => x.Id)), true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    // On the player's own queue, as every credit taking is (TakeGoldFromCreature does nothing from some handlers).
+                    AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));
+                    ObjectPlugin.DeleteString(player, DeliveredVariable);
+                });
+            if (!paid)
+            {
+                Log.Write(LogGroup.Error, $"Pending credits of {PlayerName.GetAuditName(player)} ({credits} credits) could not be paid: the character could not be saved, so they stay owed.");
+                return;
+            }
 
             foreach (var record in records)
             {
@@ -115,6 +133,7 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Pending credits paid: {PlayerName.GetAuditName(player)} - {record.Credits} credits - {record.Reason} ({record.Id})");
             }
 
+            // The records are settled, so a save that fails only leaves a mark naming records that are gone, which the next login clears.
             ObjectPlugin.DeleteString(player, DeliveredVariable);
             CharacterCheckpoint.Save(player);
 

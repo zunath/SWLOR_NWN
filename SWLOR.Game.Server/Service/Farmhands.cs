@@ -268,8 +268,19 @@ namespace SWLOR.Game.Server.Service
                 DroidAssignmentId = assignmentId,
                 LastProcessedUtc = now,
             };
-            SetLocalString(controller, AssigningVariable, $"{targetId}|{assignmentId}");
-            CharacterCheckpoint.Save(player);
+
+            // A save that fails takes the mark off again and the droid stays with its owner: the farmhand is never saved for a droid the
+            // saved file still holds unmarked.
+            var marked = CheckpointedChange.Run(
+                () =>
+                {
+                    SetLocalString(controller, AssigningVariable, $"{targetId}|{assignmentId}");
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => DeleteLocalString(controller, AssigningVariable));
+            if (!marked)
+                return FarmhandRefusal.NotSaved;
 
             DB.Set(farmhand);
             SaveReceipt(farmhand);
@@ -311,8 +322,18 @@ namespace SWLOR.Game.Server.Service
 
             // The returned controller is marked and saved with the character before the farmhand lets the droid go, so a restart
             // in between leaves a marked controller the next login settles by clearing the farmhand.
-            SetLocalString(item, RecalledVariable, $"{targetId}|{farmhand.DroidAssignmentId}");
-            CharacterCheckpoint.Save(player);
+            // A save that fails takes the returned controller out of the inventory again and the farmhand keeps the droid: the farmhand is
+            // never deleted for a droid the saved file does not hold.
+            var marked = CheckpointedChange.Run(
+                () =>
+                {
+                    SetLocalString(item, RecalledVariable, $"{targetId}|{farmhand.DroidAssignmentId}");
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => DestroyObject(item));
+            if (!marked)
+                return FarmhandRefusal.NotSaved;
 
             SendMessageToPC(player, ColorToken.Green($"{farmhand.DroidName} returns to you."));
             Release(farmhand, player);
@@ -331,7 +352,7 @@ namespace SWLOR.Game.Server.Service
             var contents = GetHopperItems(farmhand.FeedHopper, farmhand.OutputHopper);
             if (contents.Count == 0)
             {
-                DB.Delete<Farmhand>(farmhand.Id);
+                DeleteFarmhand(farmhand.Id);
                 return;
             }
 
@@ -351,7 +372,18 @@ namespace SWLOR.Game.Server.Service
                 CityProjects.WriteOverflow(farmhand.OwnerPlayerId, item.Resref, item.Count, chunk => $"{recordPrefix}:{itemIndex}:{chunk}", $"Farmhand {farmhand.Id}");
             }
 
-            DB.Delete<Farmhand>(farmhand.Id);
+            DeleteFarmhand(farmhand.Id);
+        }
+
+        /// <summary>
+        /// Deletes the farmhand. The transfer entries that name it and whose receipts it holds are saved as applied first
+        /// (<see cref="TransferJournal.SettleReceipts"/>): feed loaded into the hopper is returned to its owner with the hopper, so a
+        /// restart that left the entry unapplied must not give it back, or load it into a new hopper, at the owner's login.
+        /// </summary>
+        private static void DeleteFarmhand(string farmhandId)
+        {
+            TransferJournal.SettleReceipts(farmhandId);
+            DB.Delete<Farmhand>(farmhandId);
         }
 
         /// <summary>The items the hoppers hold, one entry for each blueprint: the feed as the crops it is made of, and what the droid collected.</summary>
@@ -531,7 +563,7 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyRelease(TransferEntry entry)
         {
             if (!IsReleased(entry))
-                DB.Delete<Farmhand>(entry.TargetId);
+                DeleteFarmhand(entry.TargetId);
         }
 
         // Losing a post

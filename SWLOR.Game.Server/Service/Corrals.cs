@@ -572,6 +572,17 @@ namespace SWLOR.Game.Server.Service
 
         // Animals leaving
 
+        /// <summary>
+        /// Deletes the animal's record. The transfer entries that name it and whose receipts it holds are saved as applied first
+        /// (<see cref="TransferJournal.SettleReceipts"/>): an animal placed from an item that is deleted before its entry is settled, by a
+        /// corral picked up or by wandering off, must not be returned to the placer's overflow store or placed again at their login.
+        /// </summary>
+        internal static void DeleteAnimal(string animalId)
+        {
+            TransferJournal.SettleReceipts(animalId);
+            DB.Delete<Livestock>(animalId);
+        }
+
         /// <summary>An animal went unfed for 72 hours: it is gone, and its owner is told.</summary>
         public static void RemoveWanderedOff(Livestock animal)
         {
@@ -579,7 +590,7 @@ namespace SWLOR.Game.Server.Service
             if (ClerkRecovery.RecoverAnimal(animal.Id))
                 return;
 
-            DB.Delete<Livestock>(animal.Id);
+            DeleteAnimal(animal.Id);
             DestroyCreature(animal.Id);
 
             var name = GetDefinition(animal.Species)?.Name ?? "animal";
@@ -623,7 +634,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Delete<Livestock>(animal.Id);
+            DeleteAnimal(animal.Id);
             DestroyCreature(animal.Id);
             Log.Write(LogGroup.Property, $"{animal.Species} {animal.Id} lost corral {animal.CorralId} and went to player {animal.OwnerPlayerId}'s overflow storage, crated.");
         }
@@ -935,7 +946,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyRemoval(TransferEntry entry)
         {
-            DB.Delete<Livestock>(entry.TargetId);
+            DeleteAnimal(entry.TargetId);
             DestroyCreature(entry.TargetId);
         }
 

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CityProjectService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -158,36 +159,41 @@ namespace SWLOR.Game.Server.Service
             {
                 // The materials leave the inventory before the file is saved, not just get queued for destruction: native destruction
                 // waits for the end of this script, so a file saved now would still hold them.
+                // A save that fails puts the materials back and unmarks, so the project is never credited for materials the saved file
+                // still holds.
                 var removal = new InventoryRemoval(_player);
-                try
-                {
-                    if (!removal.TryTake(donation.Resref, donation.Count))
+                return CheckpointedChange.Run(
+                    () =>
                     {
+                        if (!removal.TryTake(donation.Resref, donation.Count))
+                            return false;
+
+                        ObjectPlugin.SetString(_player, MarkVariable, CityProjectDonationRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), donation.Id), true);
+                        return true;
+                    },
+                    () => CharacterCheckpoint.Save(_player),
+                    () =>
+                    {
+                        SetMark(CityProjectDonationRules.RemoveMark(ObjectPlugin.GetString(_player, MarkVariable), donation.Id));
                         removal.Restore();
-                        return false;
-                    }
-
-                    ObjectPlugin.SetString(_player, MarkVariable, CityProjectDonationRules.AddMark(ObjectPlugin.GetString(_player, MarkVariable), donation.Id), true);
-                    CharacterCheckpoint.Save(_player);
-                }
-                catch
-                {
-                    removal.Restore();
-                    throw;
-                }
-
-                removal.Destroy();
-                return true;
+                    },
+                    removal.Destroy);
             }
 
-            public void ClearMark(string donationId)
+            private void SetMark(string mark)
             {
-                var mark = CityProjectDonationRules.RemoveMark(ObjectPlugin.GetString(_player, MarkVariable), donationId);
                 if (string.IsNullOrEmpty(mark))
                     ObjectPlugin.DeleteString(_player, MarkVariable);
                 else
                     ObjectPlugin.SetString(_player, MarkVariable, mark, true);
+            }
 
+            public void ClearMark(string donationId)
+            {
+                SetMark(CityProjectDonationRules.RemoveMark(ObjectPlugin.GetString(_player, MarkVariable), donationId));
+
+                // The project and the record are already settled, so a save that fails only leaves a mark with no record, which the next
+                // login clears.
                 CharacterCheckpoint.Save(_player);
             }
 

@@ -160,7 +160,7 @@ public class ClerkRecoveryWiringTests
     {
         var finish = ExtractMethod(ReadServerSource("Service", "AnimalRecoveryStore.cs"), "public void FinishSource(");
 
-        finish.Should().Contain("mark.Action != ClerkRecoveryAction.Collect").And.Contain("DB.Delete<Livestock>(_animalId)");
+        finish.Should().Contain("mark.Action != ClerkRecoveryAction.Collect").And.Contain("Corrals.DeleteAnimal(_animalId)");
         finish.Should().Contain("LivestockRules.ApplyCollection(animal, mark.AtUtc)").And.Contain("animal.Recovery = null");
     }
 
@@ -188,8 +188,8 @@ public class ClerkRecoveryWiringTests
 
         ShouldComeBefore(ExtractMethod(corrals, "public static void ProcessAtServerStart("), "ClerkRecovery.RecoverAnimalsAtServerStart()", "Farmhands.CatchUpAll()");
         ShouldComeBefore(ExtractMethod(corrals, "public static Livestock LoadAnimal("), "ClerkRecovery.RecoverAnimal(animalId)", "Farmhands.CatchUp(animal.CorralId)");
-        ShouldComeBefore(ExtractMethod(corrals, "public static void RemoveWanderedOff("), "ClerkRecovery.RecoverAnimal(animal.Id)", "DB.Delete<Livestock>(animal.Id)");
-        ShouldComeBefore(ExtractMethod(corrals, "private static void SendToOverflow("), "ClerkRecovery.RecoverAnimal(animal.Id)", "DB.Delete<Livestock>(animal.Id)");
+        ShouldComeBefore(ExtractMethod(corrals, "public static void RemoveWanderedOff("), "ClerkRecovery.RecoverAnimal(animal.Id)", "DeleteAnimal(animal.Id)");
+        ShouldComeBefore(ExtractMethod(corrals, "private static void SendToOverflow("), "ClerkRecovery.RecoverAnimal(animal.Id)", "DeleteAnimal(animal.Id)");
     }
 
     [Test]

@@ -82,7 +82,7 @@ public class LinkedBankStorageTests
         var bank = new BankService(db);
 
         bank.GetItemCount("player-id");
-        bank.SearchItems("player-id", string.Empty);
+        bank.SearchItems("player-id", string.Empty, 0);
 
         db.Queries.Should().HaveCount(2);
         foreach (var query in db.Queries.Cast<DBQuery<InventoryItem>>())
@@ -97,18 +97,19 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_SearchQueryFiltersByNameOnlyWhenSearchTextIsGiven()
     {
+        var bank = new BankService(new InMemoryDBService());
         var method = GetPrivateBankMethod("BuildSearchQuery", typeof(string), typeof(string));
 
-        var all = ((DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", string.Empty })!)
+        var all = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", string.Empty })!)
             .BuildQuery().QueryString;
-        var filtered = ((DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", "Wood" })!)
+        var filtered = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", "Wood" })!)
             .BuildQuery().QueryString;
 
         all.Should().Contain("@StorageId:GLOBAL_BANK").And.NotContain("@Name:");
         filtered.Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@Name:");
 
         // Pages need a fixed order: oldest deposit first, so the newest deposit is on the last page.
-        var query = (DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", "Wood" })!;
+        var query = (DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", "Wood" })!;
         var sortField = typeof(DBQuery<InventoryItem>).GetProperty("SortByField", BindingFlags.NonPublic | BindingFlags.Instance);
         var ascending = typeof(DBQuery<InventoryItem>).GetProperty("IsAscending", BindingFlags.NonPublic | BindingFlags.Instance);
         sortField!.GetValue(query).Should().Be(nameof(InventoryItem.DepositedTicks));
@@ -121,19 +122,20 @@ public class LinkedBankStorageTests
     public void BankService_SearchItemsLoadsOnePageAndClampsThePageIndex()
     {
         // An unpaged DB search stops at 50 rows, which hid the newest deposits in banks holding more than 50 items.
-        var itemsPerPage = typeof(Bank).GetField("ItemsPerPage", BindingFlags.NonPublic | BindingFlags.Static);
+        var itemsPerPage = typeof(BankService).GetField("ItemsPerPage", BindingFlags.NonPublic | BindingFlags.Static);
         itemsPerPage.Should().NotBeNull();
         itemsPerPage!.GetRawConstantValue().Should().Be(20);
 
+        // The code now lives in the instance class; the facade only forwards.
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Bank.cs"));
-        var start = source.IndexOf("public static BankItemPage SearchItems", StringComparison.Ordinal);
-        var end = source.IndexOf("private static DBQuery<InventoryItem> BuildSearchQuery", StringComparison.Ordinal);
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Economy", "BankService.cs"));
+        var start = source.IndexOf("public BankItemPage SearchItems", StringComparison.Ordinal);
+        var end = source.IndexOf("private DBQuery<InventoryItem> BuildSearchQuery", StringComparison.Ordinal);
 
         start.Should().BeGreaterThan(0);
         end.Should().BeGreaterThan(start);
         var body = source.Substring(start, end - start);
-        body.Should().Contain("DB.SearchCount(BuildSearchQuery(playerId, searchText))");
+        body.Should().Contain("_db.SearchCount(BuildSearchQuery(playerId, searchText))");
         body.Should().Contain("GuiPaginationState.Create(matchCount, ItemsPerPage, pageIndex)");
         body.Should().Contain(".AddPaging(ItemsPerPage, ItemsPerPage * pagination.SelectedPageIndex)");
     }
@@ -374,6 +376,19 @@ public class LinkedBankStorageTests
         var method = typeof(Bank).GetMethod(
             name,
             BindingFlags.Public | BindingFlags.Static,
+            null,
+            parameterTypes,
+            null);
+
+        method.Should().NotBeNull();
+        return method!;
+    }
+
+    private static MethodInfo GetPrivateBankMethod(string name, params Type[] parameterTypes)
+    {
+        var method = typeof(BankService).GetMethod(
+            name,
+            BindingFlags.NonPublic | BindingFlags.Instance,
             null,
             parameterTypes,
             null);

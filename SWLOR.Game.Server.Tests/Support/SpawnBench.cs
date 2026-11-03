@@ -1,3 +1,4 @@
+#nullable enable
 using System.Numerics;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.Engine;

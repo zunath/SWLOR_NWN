@@ -211,6 +211,15 @@ public class SpawnServiceTests
     }
 
     [Test]
+    public void The_public_constants_keep_their_values()
+    {
+        SWLOR.Game.Server.Service.Spawn.DespawnMinutes.Should().Be(20);
+        SWLOR.Game.Server.Service.Spawn.DefaultRespawnMinutes.Should().Be(5);
+        SWLOR.Game.Server.Service.Spawn.LeftoverResourceDespawnMinutes.Should().Be(5);
+        SpawnService.DespawnMinutes.Should().Be(20);
+    }
+
+    [Test]
     public void The_default_clock_is_the_system_clock()
     {
         var before = DateTime.UtcNow;

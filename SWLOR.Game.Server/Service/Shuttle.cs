@@ -778,6 +778,12 @@ namespace SWLOR.Game.Server.Service
             if (!ShuttleRouteRules.IsValid(route))
                 return false;
 
+            if (!route.Destination.IsStation && Planet.TryGetClosedMessage(route.Destination.Planet, out var closedMessage))
+            {
+                SendMessageToPC(player, ColorToken.Red(closedMessage));
+                return false;
+            }
+
             // Home Port is for citizens and their allies; the terminal only lists it to them, and this holds the line.
             var homePortRefusal = HomePorts.GetRefusal(player, route);
             if (!string.IsNullOrEmpty(homePortRefusal))

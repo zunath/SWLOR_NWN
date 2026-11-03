@@ -25,7 +25,7 @@ public class WalkModeTests
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methodNames = new HashSet<string>
         {
-            "IsWalkModeEnabled", "ClearWalkModeBeforeDMPossessionChange", "ToggleWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
+            "IsWalkModeEnabled", "ClearWalkModeBeforeDMPossessionChange", "ToggleWalkMode", "RestoreWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
             "GetMovementSpeedAdjustment", "GetBaseMovementSpeedIncrease"
         };
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -295,6 +295,31 @@ public class WalkModeTests
         Get<Dictionary<string, int>>("Ints")["WALK_TOGGLE"] = 1;
         Toggle().Should().BeFalse();
         Get<float>("NativeRate").Should().Be(1.4f);
+    }
+
+    [Test]
+    public void RelogWithRetainedWalkStateWalksUntilToggledOnce()
+    {
+        // A relog keeps the player's locals but starts a new creature with forced walk off.
+        Get<Dictionary<string, int>>("Ints")["WALK_TOGGLE"] = 1;
+        Invoke("RestoreWalkMode");
+        Get<bool>("AlwaysWalk").Should().BeTrue();
+        Get<float>("NativeRate").Should().Be(1f);
+        Toggle().Should().BeFalse("one toggle turns the restored walk off");
+        Get<bool>("AlwaysWalk").Should().BeFalse();
+        Get<float>("NativeRate").Should().BeApproximately(1.25f, 0.001f);
+    }
+
+    [Test]
+    public void LoginWithoutWalkStateKeepsNormalMovement()
+    {
+        Set("NativeRate", 1f);
+        Set("AlwaysWalk", true);
+        Invoke("RestoreWalkMode");
+        Get<bool>("AlwaysWalk").Should().BeFalse();
+        Get<float>("NativeRate").Should().BeApproximately(1.25f, 0.001f);
+        Toggle().Should().BeTrue("one toggle turns walk on");
+        Get<bool>("AlwaysWalk").Should().BeTrue();
     }
 
     [TestCase(1)]

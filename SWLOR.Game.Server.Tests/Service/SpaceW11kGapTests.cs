@@ -41,7 +41,7 @@ public class SpaceW11kGapTests
         source.Should().Contain("var operatorPlayer = SpaceCrew.GetStatSource(ship);");
         source.Should().Contain("Skill.GiveSkillXP(operatorPlayer, SkillType.Espionage, xp);");
         ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs")
-            .Should().Contain("var delta = Math.Clamp(tier, 1, 6) * 10 - rank;", "the scan rule has the Gathering rule's shape");
+            .Should().Contain("var delta = Math.Clamp(tier, 1, 6) * 10 - gathering.Rank;", "the scan rule has the Gathering rule's shape");
     }
 
     // Rift Run rejoin

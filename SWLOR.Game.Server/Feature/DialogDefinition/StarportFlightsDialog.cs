@@ -154,6 +154,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     continue;
                 }
 
+                if (Planet.TryGetClosedMessage(type, out var closedMessage))
+                {
+                    page.Header += "\n\n" + ColorToken.Red(closedMessage);
+                    continue;
+                }
+
                 AddDestination(ShuttleStop.ForPlanet(type));
             }
 

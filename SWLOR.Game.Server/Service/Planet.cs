@@ -10,6 +10,16 @@ namespace SWLOR.Game.Server.Service
     {
         private const string PlanetTypeIdVariable = "PLANET_TYPE_ID";
         private static readonly Dictionary<PlanetType, PlanetAttribute> _planets = new();
+
+        /// <summary>
+        /// Planets that exist in the module but are closed to players. Shuttles will not sell
+        /// tickets there and teleporters flagged with the planet will not let players through.
+        /// DMs are never blocked. Remove an entry to open the planet.
+        /// </summary>
+        private static readonly Dictionary<PlanetType, string> _closedPlanetMessages = new()
+        {
+            [PlanetType.Eshan] = "Eshan Traffic Control: All approaches to Eshan are closed while the planet's landing beacons are under repair. No ships may enter until the work is finished.",
+        };
         private static readonly Dictionary<string, PlanetType> _planetAreaResrefs = new(StringComparer.OrdinalIgnoreCase)
         {
             ["area"] = PlanetType.Viscara,
@@ -224,6 +234,24 @@ namespace SWLOR.Game.Server.Service
         public static PlanetAttribute GetPlanetByType(PlanetType type)
         {
             return _planets[type];
+        }
+
+        /// <summary>
+        /// Gets the message shown to players who try to travel to a closed planet.
+        /// </summary>
+        /// <param name="type">The planet to check.</param>
+        /// <param name="message">The closure message, or an empty string when the planet is open.</param>
+        /// <returns>True when the planet is closed to players.</returns>
+        public static bool TryGetClosedMessage(PlanetType type, out string message)
+        {
+            if (_closedPlanetMessages.TryGetValue(type, out var closedMessage))
+            {
+                message = closedMessage;
+                return true;
+            }
+
+            message = string.Empty;
+            return false;
         }
 
         /// <summary>

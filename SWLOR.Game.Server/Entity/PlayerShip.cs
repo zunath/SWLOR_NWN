@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Entity
             TransferFromPlayerId = string.Empty;
             TransferReason = string.Empty;
             TransferPaymentId = string.Empty;
-            LastPaymentId = string.Empty;
+            PaymentIds = new Dictionary<string, string>();
             LastHoldingCollectionId = string.Empty;
             LastTradeIds = new Dictionary<string, string>();
             PendingHoldingDeliveryId = string.Empty;
@@ -110,10 +110,11 @@ namespace SWLOR.Game.Server.Entity
         public string TransferPaymentId { get; set; }
 
         /// <summary>
-        /// The last credit payment (<c>CreditPaymentMark</c>: a hull refit or a customs fine) whose change was saved on
-        /// this ship, saved with the change, so a login settling the payer's mark keeps it. Older records load empty.
+        /// Each payer's last credit payment (<c>CreditPaymentMark</c>: a hull refit, repair or customs fine) whose change
+        /// was saved on this ship: player id to payment id, saved with the change, so a login settling the payer's mark
+        /// keeps it even when another player paid for a change on the ship since. Older records load empty.
         /// </summary>
-        public string LastPaymentId { get; set; }
+        public Dictionary<string, string> PaymentIds { get; set; }
 
         /// <summary>
         /// The last Planetary Holding collection loaded into the cargo bay, saved with the cargo, so a collection a

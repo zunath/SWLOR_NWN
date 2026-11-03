@@ -252,6 +252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void SwitchViews()
         {
             var dbJob = GetJob();
+            IsCompleteJobEnabled = IsJobComplete(dbJob, DateTime.UtcNow);
             if (dbJob == null)
             {
                 ChangePartialView(PartialElement, NewJobPartial);
@@ -292,7 +293,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (dbJob.CurrentStage >= NumberOfStages)
                     {
-                        IsCompleteJobEnabled = true;
                         ChangePartialView(PartialElement, CompleteJobPartial);
                     }
                     else
@@ -341,6 +341,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshIncubationTime();
 
             WatchOnClient(model => model.IsErraticGeniusChecked);
+        }
+
+        /// <summary>A job can be completed once its last stage has run its full time.</summary>
+        private static bool IsJobComplete(IncubationJob job, DateTime now)
+        {
+            return job != null &&
+                   job.CurrentStage >= NumberOfStages &&
+                   now >= job.DateCompleted;
         }
 
         private IncubationJob GetJob()
@@ -1216,6 +1224,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal("Are you sure you want to complete this job?", () =>
             {
                 var job = GetJob();
+                if (!IsJobComplete(job, DateTime.UtcNow))
+                {
+                    SwitchViews();
+                    return;
+                }
+
                 BeastMastery.CreateBeastEgg(job, Player);
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
 

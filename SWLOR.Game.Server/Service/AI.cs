@@ -412,9 +412,8 @@ namespace SWLOR.Game.Server.Service
 
             var hasCombatState = GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget);
             if (hasCombatState &&
-                ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation))
+                TryStartLeashEvade(self, highestEnmityTarget))
             {
-                StartLeashEvade(self, homeLocation);
                 return;
             }
 
@@ -570,6 +569,11 @@ namespace SWLOR.Game.Server.Service
             if (!ShouldUseCombatLeash(creature))
                 return false;
 
+            return IsTargetBeyondLeash(creature, target, homeLocation);
+        }
+
+        private static bool IsTargetBeyondLeash(uint creature, uint target, Location homeLocation)
+        {
             var leashRadius = GetCombatLeashRadius(creature, target);
             var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, leashRadius);
 
@@ -735,8 +739,42 @@ namespace SWLOR.Game.Server.Service
             if (!ShouldStartCombatLeashEvade(creature, target, homeLocation))
                 return false;
 
+            if (TryKeepFightingWithinLeash(creature, homeLocation))
+                return true;
+
             StartLeashEvade(creature, homeLocation);
             return true;
+        }
+
+        /// <summary>
+        /// One creature leaving the leash, or the area (a party member respawning), must not reset an enemy
+        /// that is still fighting someone inside its leash. Drops the targets that left and attacks the rest.
+        /// </summary>
+        /// <returns>true if the enemy kept fighting, false if nobody it is fighting remains inside its leash.</returns>
+        private static bool TryKeepFightingWithinLeash(uint creature, Location homeLocation)
+        {
+            var targets = Enmity.GetEnmityTable(creature).Keys.ToArray();
+            var departed = targets
+                .Where(target => !IsEngagedWithinLeash(creature, target, homeLocation))
+                .ToArray();
+            if (departed.Length == targets.Length)
+                return false;
+
+            foreach (var target in departed)
+            {
+                Enmity.RemoveEnmity(target, creature);
+            }
+
+            Enmity.AttackHighestEnmityTarget(creature);
+            return true;
+        }
+
+        private static bool IsEngagedWithinLeash(uint creature, uint target, Location homeLocation)
+        {
+            return GetIsObjectValid(target) &&
+                   !GetIsDead(target) &&
+                   GetArea(target) == GetArea(creature) &&
+                   !IsTargetBeyondLeash(creature, target, homeLocation);
         }
 
         private static bool TryReturnHomeAfterCombat(uint enemy)

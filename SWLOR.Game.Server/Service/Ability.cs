@@ -139,7 +139,10 @@ namespace SWLOR.Game.Server.Service
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
                 var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
-                var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+                var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(
+                    activator,
+                    abilitySkillType,
+                    ability.ResolveImpactStatusCategories?.Invoke(activator) ?? StatusEffectCategory.None);
                 var persistentCriticalRate = Combat.GetPersistentNextSkillAbilityCriticalRateBonus(
                     activator,
                     abilitySkillType);
@@ -1722,7 +1725,7 @@ namespace SWLOR.Game.Server.Service
             Animation impactAnimation = Animation.Invalid,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -1856,7 +1859,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -2075,7 +2078,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
-            Action<uint> beforeSuccessfulImpactRiders,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
@@ -2160,7 +2163,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
-            Action<uint> beforeSuccessfulImpactRiders,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
@@ -2304,7 +2307,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -2689,12 +2692,14 @@ namespace SWLOR.Game.Server.Service
             VisualEffect targetVisualEffect = VisualEffect.None,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
             bool firstHostileAbilityHitDamageBonusApplied = false)
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
+            // Read before this hit's damage and enmity can turn the target onto the activator.
+            var targetWasAttackingAlly = Combat.IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var allowsHitProcs = trackedImpact?.Ability.MeleeTechnique == null ||
                 trackedImpact.Sequence.TryTriggerDamageRider($"TechniqueHitProcs:{target}");
@@ -2766,7 +2771,14 @@ namespace SWLOR.Game.Server.Service
                 ApplyDarkForceCastConversion(activator, target);
             }
 
-            beforeSuccessfulImpactRiders?.Invoke(target);
+            // Statuses the hook applies on this hit (conditional statuses) count like the impact's own
+            // status, so category-keyed perks such as "after you apply a control effect" see them.
+            if (beforeSuccessfulImpactRiders?.Invoke(target) is { } riderStatusCategories)
+            {
+                statusApplied = true;
+                appliedStatusCategories |= riderStatusCategories;
+            }
+
             CapstoneProof.RecordAbilityImpact(activator, target, trackedImpact?.Ability);
 
             Combat.ApplySuccessfulAbilityImpactRiders(
@@ -2782,7 +2794,8 @@ namespace SWLOR.Game.Server.Service
                 firstHostileAbilityHitDamageBonusApplied,
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
                 appliedStatusCategories,
-                allowsHitProcs);
+                allowsHitProcs,
+                targetWasAttackingAlly);
 
             if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&
                 impactAbility.DamageImpactVisualEffect != VisualEffect.None)
@@ -2873,7 +2886,7 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment = null,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
-            Action<uint> beforeSuccessfulImpactRiders = null,
+            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -3015,7 +3028,7 @@ namespace SWLOR.Game.Server.Service
             return trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon;
         }
 
-        private static StatusEffectCategory GetCombatImpactStatusCategories(
+        public static StatusEffectCategory GetCombatImpactStatusCategories(
             Type statusEffect,
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory)

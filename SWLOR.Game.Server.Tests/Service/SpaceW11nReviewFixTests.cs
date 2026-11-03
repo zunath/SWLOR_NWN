@@ -368,13 +368,16 @@ public class SpaceW11nReviewFixTests
     }
 
     [Test]
-    public void DrillOre_IsSavedWithTheCharacterBeforeTheStockIs()
+    public void DrillOre_LeavesTheStockBeforeTheCharacterIsSavedWithIt()
     {
         var collect = Between(ReadSource("Service", "StationBuildings.cs").Replace("\r\n", "\n"),
             "public static void CollectDrill(", "// Droids");
-        collect.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal).Should().BeGreaterThan(0);
-        collect.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal)
-            .Should().BeLessThan(collect.IndexOf("DB.Set(state);", StringComparison.Ordinal));
+        var reserve = collect.IndexOf("DB.Set(new DrillCollectionReservation", StringComparison.Ordinal);
+        var stock = collect.IndexOf("DB.Set(state);", StringComparison.Ordinal);
+        var export = collect.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal);
+        reserve.Should().BeGreaterThan(0);
+        reserve.Should().BeLessThan(stock, "the reservation lets a login find the pending collection");
+        stock.Should().BeLessThan(export, "no one else can collect ore the character file is about to hold");
     }
 
     [Test]

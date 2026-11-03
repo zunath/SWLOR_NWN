@@ -395,13 +395,21 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // The ore is saved in the character file with a mark naming the collection, then the drill's stock: a restart
-            // in between leaves a mark the next login takes from the stock once (SettleDrillCollection).
+            // The stock gives the ore up before the character file is saved with it, so no one else can collect it: a
+            // reservation names the collection, the stock saves without the ore and with the collection pending, the
+            // character file saves the ore with its mark, and the pending collection and reservation go. A login after a
+            // restart in between keeps the collection when the character file has its mark and otherwise returns the ore
+            // to the stock (SettleDrillCollections).
+            DB.Set(new DrillCollectionReservation { Id = collection.Id, OwnerPlayerId = GetObjectUUID(player), BuildingId = buildingId });
+            collection.TakeFrom(state.DrillStorage);
+            state.PendingDrillCollections ??= new Dictionary<string, string>();
+            state.PendingDrillCollections[collection.Id] = collection.Serialize();
+            DB.Set(state);
             ObjectPlugin.SetString(player, DrillCollectionVariable, collection.Serialize(), true);
             ExportSingleCharacter(player);
-            state.LastDrillCollectionIds ??= new Dictionary<string, string>();
-            collection.ApplyTo(state.DrillStorage, state.LastDrillCollectionIds, GetObjectUUID(player));
+            state.PendingDrillCollections.Remove(collection.Id);
             DB.Set(state);
+            DB.Delete<DrillCollectionReservation>(collection.Id);
 
             var collected = collection.Units.Select(x => $"{x.Value}x {Cache.GetItemNameByResref(x.Key)}");
             SendMessageToPC(player, ColorToken.Green($"Collected from the Asteroid Drill: {string.Join(", ", collected)}."));
@@ -410,27 +418,41 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The character-file local naming the last drill collection (<see cref="DrillCollection"/>).</summary>
         private const string DrillCollectionVariable = "STATION_DRILL_COLLECTION";
 
-        /// <summary>Takes a collection from the drill's stock when the character file holds its ore but a restart kept the stock.</summary>
+        /// <summary>
+        /// Settles the drill collections a restart left pending: kept when the character file has the collection's mark,
+        /// its ore returned to the drill's stock otherwise. The reservations go either way.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void SettleDrillCollection()
+        public static void SettleDrillCollections()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            if (!DrillCollection.TryParse(ObjectPlugin.GetString(player, DrillCollectionVariable), out var collection))
+            var query = new DBQuery<DrillCollectionReservation>()
+                .AddFieldSearch(nameof(DrillCollectionReservation.OwnerPlayerId), GetObjectUUID(player), false);
+            var count = (int)DB.SearchCount(query);
+            if (count <= 0)
                 return;
 
-            var state = DB.Get<StationBuildingState>(StationBuildingState.KeyFor(collection.BuildingId));
-            if (state == null)
-                return;
+            var mark = ObjectPlugin.GetString(player, DrillCollectionVariable);
+            foreach (var reservation in DB.Search(query.AddPaging(count, 0)).ToList())
+            {
+                var state = DB.Get<StationBuildingState>(StationBuildingState.KeyFor(reservation.BuildingId));
+                if (state?.PendingDrillCollections != null && state.PendingDrillCollections.TryGetValue(reservation.Id, out var pending))
+                {
+                    if (DrillCollection.TryParse(pending, out var collection) && !DrillCollection.IsMarked(mark, collection.Id))
+                    {
+                        collection.ReturnTo(state.DrillStorage);
+                        Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - returned drill collection {collection.Id} to building {reservation.BuildingId}: a restart kept it from the character file.");
+                    }
 
-            state.LastDrillCollectionIds ??= new Dictionary<string, string>();
-            if (!collection.ApplyTo(state.DrillStorage, state.LastDrillCollectionIds, GetObjectUUID(player)))
-                return;
+                    state.PendingDrillCollections.Remove(reservation.Id);
+                    DB.Set(state);
+                }
 
-            DB.Set(state);
-            Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} - took drill collection {collection.Id} from building {collection.BuildingId} after a restart.");
+                DB.Delete<DrillCollectionReservation>(reservation.Id);
+            }
         }
 
         // Droids

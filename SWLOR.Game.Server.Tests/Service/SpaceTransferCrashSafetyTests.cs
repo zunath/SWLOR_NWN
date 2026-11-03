@@ -80,12 +80,12 @@ public class SpaceTransferCrashSafetyTests
             "CreditPayments.NewMark(CreditPaymentKind.ShipRepair, dbShip.Id, price);",
             "CreditPayments.Take(player, mark);",
             "dbShip.Status.Hull = dbShip.Status.MaxHull;",
-            "dbShip.LastPaymentId = mark.Id;",
+            "CreditPayments.RecordOn(dbShip, player, mark);",
             "DB.Set(dbShip);",
             "CreditPayments.Retire(player);");
 
         Method(Source("Service", "CreditPayments.cs"), "private static string GetRecordPaymentId(")
-            .Should().Contain("CreditPaymentKind.HullRefit or CreditPaymentKind.CustomsFine or CreditPaymentKind.ShipRepair\n                    => DB.Get<PlayerShip>(mark.RecordId)?.LastPaymentId");
+            .Should().Contain("CreditPaymentKind.HullRefit or CreditPaymentKind.CustomsFine or CreditPaymentKind.ShipRepair\n                    => DB.Get<PlayerShip>(mark.RecordId)?.PaymentIds?.GetValueOrDefault(GetObjectUUID(player)),");
         var repair = new CreditPaymentMark { Id = "r1", Kind = CreditPaymentKind.ShipRepair, RecordId = "ship", Credits = 800 };
         repair.KeepsPayment("an older refit").Should().BeFalse();
         repair.KeepsPayment("r1").Should().BeTrue();
@@ -114,7 +114,7 @@ public class SpaceTransferCrashSafetyTests
     // Asteroid Drill ore
 
     [Test]
-    public void ADrillCollection_RoundTripsAndIsTakenFromTheStockOncePerPlayer()
+    public void ADrillCollection_RoundTripsAndLeavesAndReturnsToTheStock()
     {
         var collection = new DrillCollection { Id = "c1", BuildingId = "b1", Units = new Dictionary<string, int> { ["ore_a"] = 3, ["ore_b"] = 2 } };
         DrillCollection.TryParse(collection.Serialize(), out var parsed).Should().BeTrue();
@@ -126,39 +126,75 @@ public class SpaceTransferCrashSafetyTests
         DrillCollection.TryParse("c1|b1|ore_a", out _).Should().BeFalse();
 
         var storage = new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 2 };
-        var last = new Dictionary<string, string>();
-        collection.ApplyTo(storage, last, "p1").Should().BeTrue();
+        collection.TakeFrom(storage);
         storage.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore_a"] = 2 }, "a resref collected out is removed");
-        collection.ApplyTo(storage, last, "p1").Should().BeFalse("a collection applied before a restart is not taken twice");
-        storage["ore_a"].Should().Be(2);
+        collection.ReturnTo(storage);
+        storage.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 2 });
 
-        // Another player's later collection does not make the first one look unapplied.
-        new DrillCollection { Id = "c2", BuildingId = "b1", Units = new Dictionary<string, int> { ["ore_a"] = 1 } }
-            .ApplyTo(storage, last, "p2").Should().BeTrue();
-        collection.ApplyTo(storage, last, "p1").Should().BeFalse();
-        storage["ore_a"].Should().Be(1);
+        DrillCollection.IsMarked(collection.Serialize(), "c1").Should().BeTrue();
+        DrillCollection.IsMarked(collection.Serialize(), "c2").Should().BeFalse("an older mark does not hold a newer collection");
+        DrillCollection.IsMarked(string.Empty, "c1").Should().BeFalse();
+        new StationBuildingState().PendingDrillCollections.Should().BeEmpty("older drills have no pending collection");
+    }
 
-        new StationBuildingState().LastDrillCollectionIds.Should().BeEmpty("older drills have applied no collection");
+    [TestCase(false, false, 5, Description = "Restart before the character file saved the ore: the ore goes back to the stock")]
+    [TestCase(true, false, 2, Description = "Restart after the character file saved the ore: the stock stays without it")]
+    [TestCase(true, true, 2, Description = "Restart after the drill cleared the collection: nothing to settle")]
+    public void ADrillCollectionARestartInterrupted_LeavesTheOreInExactlyOnePlace(bool characterSaved, bool drillCleared, int stockAfterLogin)
+    {
+        var collection = new DrillCollection { Id = "c1", BuildingId = "b1", Units = new Dictionary<string, int> { ["ore_a"] = 3 } };
+        var state = new StationBuildingState { DrillStorage = new Dictionary<string, int> { ["ore_a"] = 5 } };
+        collection.TakeFrom(state.DrillStorage);
+        state.PendingDrillCollections[collection.Id] = collection.Serialize();
+        var mark = characterSaved ? collection.Serialize() : string.Empty;
+        if (drillCleared)
+            state.PendingDrillCollections.Remove(collection.Id);
+
+        // Another collector reads the stock before the first collector logs in: the reserved ore is not there.
+        state.DrillStorage.GetValueOrDefault("ore_a").Should().Be(2);
+
+        // SettleDrillCollections, for the first collector's login.
+        if (state.PendingDrillCollections.TryGetValue(collection.Id, out var pending) &&
+            DrillCollection.TryParse(pending, out var settled) && !DrillCollection.IsMarked(mark, settled.Id))
+        {
+            settled.ReturnTo(state.DrillStorage);
+        }
+        state.PendingDrillCollections.Remove(collection.Id);
+
+        state.DrillStorage.GetValueOrDefault("ore_a").Should().Be(stockAfterLogin);
+        (state.DrillStorage.GetValueOrDefault("ore_a") + (characterSaved ? 3 : 0)).Should().Be(5, "the ore is never in both places or neither");
     }
 
     [Test]
-    public void DrillOre_IsSavedWithAMarkBeforeTheStock_AndALoginTakesItOnce()
+    public void DrillOre_LeavesTheStockBeforeTheCharacterFileSavesIt_AndALoginSettlesThePendingCollection()
     {
         var service = Source("Service", "StationBuildings.cs");
         var collect = Method(service, "public static void CollectDrill(");
         collect.Should().NotContain("state.DrillStorage.Remove(").And.NotContain("state.DrillStorage[resref] =",
-            "the stock changes only through the collection's mark");
+            "the stock changes only through the collection");
         InOrder(collect,
             "var item = CreateItemOnObject(resref, player);",
+            "DB.Set(new DrillCollectionReservation { Id = collection.Id, OwnerPlayerId = GetObjectUUID(player), BuildingId = buildingId });",
+            "collection.TakeFrom(state.DrillStorage);",
+            "state.PendingDrillCollections[collection.Id] = collection.Serialize();",
+            "DB.Set(state);",
             "ObjectPlugin.SetString(player, DrillCollectionVariable, collection.Serialize(), true);",
             "ExportSingleCharacter(player);",
-            "collection.ApplyTo(state.DrillStorage, state.LastDrillCollectionIds, GetObjectUUID(player));",
-            "DB.Set(state);");
-        service.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDrillCollection()");
-        InOrder(Method(service, "public static void SettleDrillCollection("),
-            "DrillCollection.TryParse(ObjectPlugin.GetString(player, DrillCollectionVariable), out var collection)",
-            "if (!collection.ApplyTo(state.DrillStorage, state.LastDrillCollectionIds, GetObjectUUID(player)))",
-            "DB.Set(state);");
+            "state.PendingDrillCollections.Remove(collection.Id);",
+            "DB.Set(state);",
+            "DB.Delete<DrillCollectionReservation>(collection.Id);");
+        service.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDrillCollections()");
+        InOrder(Method(service, "public static void SettleDrillCollections("),
+            ".AddFieldSearch(nameof(DrillCollectionReservation.OwnerPlayerId), GetObjectUUID(player), false);",
+            "var mark = ObjectPlugin.GetString(player, DrillCollectionVariable);",
+            "state.PendingDrillCollections.TryGetValue(reservation.Id, out var pending)",
+            "!DrillCollection.IsMarked(mark, collection.Id)",
+            "collection.ReturnTo(state.DrillStorage);",
+            "state.PendingDrillCollections.Remove(reservation.Id);",
+            "DB.Set(state);",
+            "DB.Delete<DrillCollectionReservation>(reservation.Id);");
+        typeof(DrillCollectionReservation).GetProperty(nameof(DrillCollectionReservation.OwnerPlayerId))!
+            .GetCustomAttributes(typeof(IndexedAttribute), false).Should().NotBeEmpty();
     }
 
     // Space lockboxes

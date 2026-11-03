@@ -40,7 +40,7 @@ Starting prompt for a new session:
 ## Branch
 
 - Integration branch: `feature/maintainability-refactor` (cut from `master` at `468f6d706`).
-- Last sync with `master`: 2026-10-27, `df3034336` (see Sync log).
+- Last sync with `master`: 2026-11-02, `f1c8cf097` (see Sync log).
 - **Branch rule:** the repository allows only squash merges on GitHub. Anything that contains a merge of `master` (every sync) must reach this branch as a real merge commit, or later syncs re-apply `master`'s commits. Run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree checked out on `feature/maintainability-refactor` itself and push the merge commit after the script passes; when a sync needs hand-ported conflict resolutions, do them on a work branch, get the Codex review, then merge that branch locally with `git merge --no-ff` and push (GitHub marks the pull request merged). Ordinary work-item pull requests are squash-merged as usual.
 - Shared packages: `Nwn.Hosting`, `Nwn.Hosting.Contracts`, `Nwn.Hosting.Testing` `0.1.0-preview.1` on
   nuget.org, source at https://github.com/zunath/NWN.Hosting (used from Phase 4).
@@ -93,13 +93,14 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 `.claude/worktrees/funny-ellis-7b398f`, on `feature/maintainability-refactor`), on the original machine. The owner asked
 to pause again at a clean stopping point if the account's weekly usage passes 80% (39% at resume). Running now (Sonnet
 subagents):
-- Master sync `sync-20261102` (107 master commits since `df3034336`): work branch `claude/mr-sync-20261102`, worktree
-  `.claude/worktrees/mr-sync-20261102`; hand-ports master's changes to the converted `Achievement`, `Bank`, `ChatCommand`,
-  `Currency`, `Planet`, `Weather`, `Shuttle` into their instance classes as separate commits; PR into the branch, then the
-  coordinator merges it locally with `--no-ff` (branch rule). Not yet in the sync or port logs.
-- P2-B1 (tests) and P0-6b (CodeRabbit threads, two matching full runs) resumed in their kept worktrees.
-- P2-A7b (#2969) and P2-A8 (#2972) wait for the sync: then merge the base and port master's `Quest` (2 commits, 6 files)
-  and `Property` (1 commit) changes. P2-B1 likewise ports master's 3 `KeyItem` commits.
+- The master sync (`f1c8cf097`, #3143) is merged (`d8e74dd31`); see Sync log and Port log.
+- P2-B1: tests written (coverage 84-100% interim); now merging the synced base, final full run, PR, Codex loop. Master's
+  `KeyItem` change was enum-only (no logic port).
+- P2-A7b (#2969): merging the synced base and porting master's 2 `Quest` commits, then coverage, Codex, ready.
+- P0-6b (#2955): CodeRabbit threads and two matching full smoke runs.
+- P2-A8 (#2972) starts after P2-A7b merges: merge the base, port master's 1 `Property` commit, unify `"parts"` with
+  P2-A7b's `"facades"`, Codex loop.
+- New conversions wait until these merge (usage budget).
 
 Pause of 2026-10-27 (kept for reference): every agent stopped and pushed its branch. The four parked items (all on pushed branches, each with its worktree kept under
 `C:\Projects\SWLOR_NWN\.claude\worktrees\`; details and exact remaining steps in their Work queue rows):
@@ -128,14 +129,11 @@ Coordination: the last coordinator was the session "SWLOR maintainability refact
 
 ## Next actions
 
-1. **Daily sync first** (overdue from 2026-10-28): `tools/Refactor/Sync-MaintainabilityBranch.ps1 -RunParity` in a worktree on
-   `feature/maintainability-refactor`, push the merge commit, record it. It brings master #2956 (`sw_part_previews` in
-   `Build/hakbuilder.json`): after it, run `Update-EngineCharacterization.ps1` normally, then delete the engine-refresh
-   workaround in Environment notes and the `sw_part_previews` defect row. Check whether `feature/space-revamp` or
-   `feature/crafting-revamp` reached master (unblocks P2-A9 `Space` and `Craft`).
+1. **Next daily sync** after the parked items merge (last: 2026-11-02, `f1c8cf097`). Check whether `feature/space-revamp` or
+   `feature/crafting-revamp` reached master (unblocks P2-A9 `Space` and `Craft`); on 2026-11-03 neither had.
 2. **Finish the parked items, at most three agents at a time** (each resumes in its kept worktree, or on another machine in a
    new worktree of its pushed branch; first merge the base):
-   1. P2-A7b: measure coverage, fill the PR body, mark ready; coordinator review; squash-merge.
+   1. P2-A7b: port master's `Quest` commits, measure coverage, fill the PR body, mark ready; coordinator review; squash-merge.
    2. P2-A8 (#2972): final suite run, Codex loop, Opus review of the split. **Before merging the second of P2-A7b/P2-A8, unify the
       `"facades"` (P2-A7b) and `"parts"` (P2-A8) mechanisms in `ConvertedServices.json` and the architecture rules into
       one**, and update the specs' "extra facade types" decision to match.
@@ -172,7 +170,8 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | P0-2b | The full engine-test sweep on the branch base had 24 failures in its first 901 tests: 19 fail the same with real haks, 4 pass when run alone (order or load dependent), 1 was the stale loot snapshot (since fixed by P0-7c). The nightly run will be red until these are fixed. Evidence: `C:\Temp\mr-p0-2b\evidence` (local). |
 | P0-4d2 | Possible bug (observed, not investigated): Sundering Sweep I reports 19 damage to one target, but the target's HP did not change within 6 seconds in the scenario fixture. |
 | P0-2 | 25 unit tests already fail on `master` (full Windows checkout): `ResourceRestorationTests` (14) and `StealthRestTests` (8) compile methods out of `Stat.cs` that now call members their harness lacks; `FirstAidCombatUpgradeTests.FirstAidSupplyRequirements_MatchMerchantStackTemplates` asserts changed source text; `PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite` (stale `PlayerMessageAudit.json`); `CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible` (EspionageWorkbench recipe missing from the Bible workbook). Excluded in CI with reasons. |
-| Sync 2026-10-27 (master defect) | master #2940 added `sw_part_previews` to `Module/ifo/module.ifo.json`, but `Build/hakbuilder.json` (read by `scripts/deployment/swlor-deploy.sh`, `scripts/prepare-engine-test-home.sh` and the engine-test scripts) did not list it, so a server built from it logs "Unable to load module". Fixed on master by #2956 (not yet synced into this branch); delete this row after the next sync. |
+| Sync 2026-11-02 (master defect) | master #3128 added `"\n\n" + ColorToken.Red(closedMessage)` to the `StarportFlightsDialog` header, so master fails its own `ConversationArchitectureTests.EveryDirectlyColoredCodeDrivenHeader_WrapsItsEntireTextInOneColor` (file and test identical on master). Excluded in `SyncTests.txt` and `run-unit-tests.sh` with the reason; re-enable when master fixes it. |
+| Sync 2026-11-02 | `PlayerMessageAudit.json` is stale on master (its inventory test stays excluded), and the branch's copy lacks a row for the `Service/DMPresence.cs` facade's `Instance.SendMessage` since P2-A3. |
 | P2-A6 | `SpecialFishingLocationDefinition` picks locations with the shared `Random`; `_fishResrefsByLocation` is built from whichever definition reaches a location first, so a picked Tatooine or Viscara location can show a description without its regular fish. |
 | P2-A6 | The `Invalid` fishing rod and bait entries have resref `""`, so an item with an empty resref counts as a rod or bait. |
 | P0-10 | When the bootstrap throws (for example a broken build without the handler manifest), the NWNX crash handler segfault-loops after the abort and the container keeps running while flooding the log (about 12 MB in 40 s). Not yet checked whether any bootstrap exception on `master` behaves the same. |
@@ -183,6 +182,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 |---|---|---|---|---|
 | 2026-10-27 | 6d49650f7 | none | identical to master 6d49650f7 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers); tests: 6443 passed, 0 failed. Snapshots regenerated for master's #2898 (recipe 6288 `SithPowerGlove`, 15 loot tables). | Claude Sonnet 5.5 (P0-7) |
 | 2026-10-27 | df3034336 (9 commits) | none | identical to master df3034336 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers) after regenerating one row: `Ability/AbilityPresentation.json` Inner Circle Surge gains `DamageImpactVisualEffect=Vfx_Imp_Lightning_M` (master #2938). Tests: Game.Server.Tests 7205 passed, Characterization 148, Architecture 141 (+1 skipped), NWN.API 341. Merge `9f31c2b05`, refresh `2800030d9`. Engine snapshots: 41 passed, 0 changed (needed a hand-built `sw_part_previews.hak` in a kept home; see Environment notes). | Claude Opus 5.5 (coordinator) |
+| 2026-11-02 | f1c8cf097 (107 commits) | 13: 4 script-owned files took master; `Bank`, `ChatCommand`, `Planet`, `Shuttle` facades and `WeatherSettlementTests` kept the branch's and were ported (Port log); `PlayerMessageAudit.json` merged by row; manifest: 14 handlers master deleted removed, `FurnitureRenameMigration.OnEnter` moved to master's slot | identical to master f1c8cf097 (132 snapshot files, 662 handlers, 40 engine-test handlers) after regenerating 23 characterization files, every row attributed in `f88be328a` (#3095, #3026, #3076, #3031, #3054, #2344, #3022, #3034, #3045, #3100); characterization tests renamed to master's Cadence members (#3026, #3095); 9 new services mapped in `DomainMap.json` (UI: ExtraHotbar, ExtraHotbars; Items: Wardrobe; Economy: BankItemPage, CasinoSlot, CasinoSlotPresentation, CasinoSpinResult, CasinoPlayTracker; Quests: CapstoneProof), architecture baselines regenerated; 2 new exclusions (see Reported defects; `CasinoSlotPresentationTests` needs `sw_ui`). Tests: Game.Server.Tests 8357 passed (+ the 5 excluded), Characterization 148, Architecture 142, NWN.API 341, CombatSim 894, CLI 35, Formats 95. Engine snapshots: 41 passed, 0 changed. Codex clean on `1b78287a5`. PR #3143, merge `d8e74dd31`. | Claude Sonnet 5.5 (sync-20261102), merged by the coordinator |
 
 ## Port log
 
@@ -190,6 +190,13 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 
 | `master` commit | File | Ported to | Pull request |
 |---|---|---|---|
+| #2959 (bank paging) | `Service/Bank.cs` | `Domain/Economy/BankService.cs`, `IBankService.cs`, facade (`db5f1616c`) | #3143 |
+| #3012 (chat commands) | `Service/ChatCommand.cs` | `Domain/Social/ChatCommandService.cs`, `IChatCommandService.cs`, facade (`b8216dd17`) | #3143 |
+| #3032 | `Service/Shuttle.cs` | `Domain/World/ShuttleService.cs` (`6b07cecb9`) | #3143 |
+| #3068 | `Service/Shuttle.cs` | `Domain/World/ShuttleService.cs`, engine-test and bench adapters (`09c66a0f6`) | #3143 |
+| #3128 (starport closures) | `Service/Planet.cs`, `Service/Shuttle.cs` | `PlanetService.cs`, `IPlanetService.cs`, facade, `ShuttleService.cs` (`1d4eb3fd6`) | #3143 |
+| #3036, #2344 | Weather and Planet tests | instance tests (`a81dcc3d7`, `a6022ee34`) | #3143 |
+| #3026, #3095 | characterization tests | renamed to master's Cadence members (`68321987a`) | #3143 |
 
 ## Environment notes
 
@@ -197,8 +204,10 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 - Container builds that download over HTTPS fail on the owner's machine because the antivirus inspects
   HTTPS. Do not work around it; report the step as blocked.
 - The machine's CPU is often busy with other sessions; test timeouts may need to be generous.
-- Engine snapshot refresh while `Build/hakbuilder.json` lacks `sw_part_previews` (see Reported defects): run
+- When `debugserver/hak` lacks a hak the module needs (it happened with `sw_part_previews` before master #2956): run
   `Update-EngineCharacterization.ps1 -KeepHome -WorkDirectory <new dir>` (fails at module load, keeps the home), build the hak
   with `dotnet SWLOR.CLI/bin/Release/net10.0/SWLOR.CLI.dll --hak` from a folder holding a one-entry `hakbuilder.json`
-  (`sw_part_previews`, `CompileModels: false`; not while the refresh script is building the CLI), move it into `<dir>\hak`,
-  then rerun with `-ReuseHome <dir>`. Delete `<dir>` afterwards (its haks are hard links).
+  (`CompileModels: false`; not while the refresh script is building the CLI), move it into `<dir>\hak`, then rerun with
+  `-ReuseHome <dir>`. Delete `<dir>` afterwards (its haks are hard links).
+- Build the characterization test project directly after a sync: a solution build alone missed its compile errors
+  (2026-11-02 sync).

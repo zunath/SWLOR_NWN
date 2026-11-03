@@ -4,7 +4,7 @@ The single source of truth for the refactor's progress and handoff. The plan and
 in [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md). Update this file in the same pull
 request as the work it describes, and whenever a work item starts, finishes or gets blocked.
 
-Last updated: 2026-11-03 (paused near the owner's weekly usage limit; see "In flight").
+Last updated: 2026-11-03 (resumed until 90% weekly usage; see "In flight").
 
 ## Resuming (any agent, any account)
 
@@ -84,6 +84,8 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-B5 | Wave B, Companions I: `BeastMastery` (about 2,260 lines incl. folder) | P2-0 | Sonnet | done | [#3152](https://github.com/zunath/SWLOR_NWN/pull/3152) | Coverage 25.9% -> 94.7%. `BeastMasteryService` injects `IDBService`, `IIncubationFieldNoteService`, `IPropertyService` (`IncubationFieldNoteService` keeps reading the beast catalog through the facade: no cycle); `Perk`, `Stat`, `Gui`, `CompanionControl`, `ReviveRules`, `StatusEffect`, `Item` calls and the beast-definition assembly scan sit behind `protected virtual` wrappers; `Service/BeastMasteryService/` unchanged (no static state, no extras). Source-text asserts in 7 test files replaced by `BeastMasteryServiceTests` (103 cases; random order pinned by replayed seeds; 8-mutation check). |
 | P2-B6 | Wave B, Creatures II: `AI` (about 2,700 lines incl. folder, 18 handlers) | P2-0 | Sonnet | done | [#3155](https://github.com/zunath/SWLOR_NWN/pull/3155) | Coverage: AI + NPCAI 5.4% -> 96.3% (whole AI folder 28.8% -> 90.3%). `NPCAI` folded into `AIService` (listing it under `extras` would classify as unit `NPC` and break the cross-domain baseline); `NPCAI.cs` keeps only the two profile-variable constants the toolset reads; its effect check became `HasEffectType` (keeps the `AppliedEffects.MayHaveScriptType` pre-check; no overload change). The facade gained `ClearAIState` and `TryUseBestTargetedSupportAbility` for `CompanionControl`'s two call sites. `AITarget`'s static override dictionary moved to the instance; `AIPhaseId.Invalid` is a getter. `Enmity`, `Stat`, `Ability`, `Perk`, `UsePerkFeat`, stealth, espionage and companion calls behind `protected virtual` wrappers. `ClockSeamFiles.txt` updated (`Apply-ClockSeam.ps1 -Check` clean). 191 instance tests (`AIBench`, `TestAIService`). |
 | P2-B7 | Wave B, Items III: `Item` (about 1,870 lines incl. folder, 4 handlers) | P2-0 | Sonnet | done | [#3154](https://github.com/zunath/SWLOR_NWN/pull/3154) | Merged 2026-11-03 at head `c2289fd0f` (base merged after P2-B6; one doc conflict kept both sides; suite rerun green, Codex clean). Coordinator review approved (moved code matches; wrappers only). Coverage 51.5% -> 98.5%. `ItemService` injects `IBeastMasteryService`, `IDBService`; `FitsInInventory`, `Perk`/`Skill` reads and the item-list assembly scan behind `protected virtual` wrappers. The data-only economy-restriction rules moved to a stateless static `Service/ItemService/EconomyRestriction`, which the Toolset editor (`SWLOR.Toolset/Editors/EditorService.cs`, no container) now calls directly (one call + alias; through the facade it would have thrown and emptied the merchant item search). 24 fixtures gained a `FacadeContainer`; `RecordingProxy` handles array returns. The CodeRabbit thread on master's existing `ReduceItemStack` bug was answered and resolved with the owner's approval (fix goes to master; see Reported defects). `feature/space-revamp` changes `Item.cs` (about 77 lines): port when it reaches master. |
+| P2-B8 | Wave B: master's newcomers `Wardrobe`, `BankItemPage`, `CasinoSlot`, `CasinoSlotPresentation`, `CasinoSpinResult`, `CasinoPlayTracker`, `CapstoneProof` (about 700 lines; some may be data types or utilities) | P2-0 | Sonnet | in progress | | Branch `claude/mr-p2-b8` |
+| P2-C1 | Wave C I: `Log`, `Cache`, `Authorization`, `Messaging`, `PlayerFeedback` (about 760 lines) | P2-B | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-c1`. Containerless callers (toolset, CLI, pre-container boot code) must keep working. |
 | P2-B? | Wave B, rest: Companions (`Droid`: 245 lines of `feature/space-revamp` overlap; wait for that branch), Creatures' `CompanionControlService` and `NPCService` folders (static helpers, no facade file) | P2-0 | Sonnet | open | | Split into items of about 1,000-2,500 lines. **`Craft` deferred** until `feature/crafting-revamp` (about 18,000 lines in `Service/CraftService/`) merges to master. |
 | P0-6 | Scripted live smoke run framework (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | done | [#2906](https://github.com/zunath/SWLOR_NWN/pull/2906) | `tools/RunSmokeTest.ps1` / `tools/SmokeTest.py` (`-Repeat`, `-ServerOnly`, `-SkipBuild`, `-PublicCdKey`), 69 tool tests, InEngineVisualVerification.md "Smoke run" section. Server boot checks pass (two identical server-only runs). Results of runs so far: `C:\Temp\mr-p0-6` (local). |
 | P0-6b | Full client smoke run: client login, steps 3-8 automated (start in `czs220_hangar`; seeded `AuthorizedDM` for `/tpwp`, `/spawnitem`, `/rez`; judged from the client chat log, server logs and Redis), baseline recorded twice | P0-6 | Sonnet | done | [#2955](https://github.com/zunath/SWLOR_NWN/pull/2955) | **Smoke baseline recorded:** two matching full 9-step runs on `87901068b`, 2026-11-03 (boot, login, rifle and knife combat on mynocks, Adrenal Stim with cooldown refusal, bank deposit/withdraw, cookpot craft, accept Selan's Request, area transfer, logout); "runs agree". Command: `tools/RunSmokeTest.ps1 -Repeat 2 -PublicCdKey <public key> -ServerTimeout 2400 -MaxMinutes 240 -ClientTimeout 900` (longer timeouts for a busy machine; the smoke stack raises the NWNX thread-watchdog threshold for slow module loads). New `attach` command runs chosen steps against a live stack; `ui.sh` actions `label-scan`, `nui-click`. 125 tool tests (`python -B -m unittest tests.test_nwn_smoke_client tests.test_nwn_smoke_run tests.test_nwn_live_client` from `tools/`). Evidence local: `C:\Temp\mr-p0-6b\results\p06b-g-20261103T083756Z`. The public key is passed only as an argument (never committed); the private key in `cdkey.ini` is never read. |
@@ -95,9 +97,18 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 
 ## In flight
 
-**Paused 2026-11-03 (owner's rule: pause near 80% of the account's weekly usage; 75% at the pause).** Nothing is running:
-no subagents, containers or test processes of the refactor. The branch head is the last status commit. Last master sync:
-2026-11-02, `f1c8cf097` (master had 2 more commits on 2026-11-03, not synced).
+**Resumed again 2026-11-03** (owner: keep going until the account's weekly usage reaches 90%; 75% at this resume).
+Running (Sonnet subagents of the coordinator session "SWLOR maintainability refactor coordination", worktree
+`.claude/worktrees/funny-ellis-7b398f`):
+- Master sync `sync-20261103` (master after `f1c8cf097`; no converted service touched as checked): branch
+  `claude/mr-sync-20261103`, worktree `.claude/worktrees/mr-sync-20261103`; PR, then the coordinator merges `--no-ff`.
+- P2-B8: small master newcomers (`Wardrobe`, `BankItemPage`, `CasinoSlot`, `CasinoSlotPresentation`,
+  `CasinoSpinResult`, `CasinoPlayTracker`, `CapstoneProof`), classified as service / data type / utility first;
+  branch `claude/mr-p2-b8`.
+- P2-C1: Wave C I (`Log`, `Cache`, `Authorization`, `Messaging`, `PlayerFeedback`); branch `claude/mr-p2-c1`.
+Wave C order and the "pure utilities stay static" decision: specs, Phase 2 section.
+
+Paused earlier the same day at 75% (kept for reference):
 
 Done in the 2026-11-02/03 run (coordinator session "SWLOR maintainability refactor coordination", worktree
 `.claude/worktrees/funny-ellis-7b398f`): the master sync (#3143) and P2-A7b (#2969), P2-A8 (#2972), P2-B1 (#3145),

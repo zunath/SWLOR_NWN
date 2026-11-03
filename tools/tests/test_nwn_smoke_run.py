@@ -335,6 +335,16 @@ class RunTests(unittest.TestCase):
         self.assertEqual(str(Path(folder) / 'run'), up.run_dir)
         self.assertFalse(up.play)
 
+    def test_the_watchdog_outlasts_the_wait_for_the_module(self):
+        self.assertEqual(20, smoke.watchdog_threshold(0), 'never below the server default')
+        self.assertEqual(40, smoke.watchdog_threshold(900))
+        self.assertEqual(90, smoke.watchdog_threshold(2400))
+        with tempfile.TemporaryDirectory() as folder:
+            run = smoke.SmokeRun(options(server_timeout=2400), 'smoke-test', Path(folder))
+            up = run.up_options()
+        self.assertIn('NWNX_THREADWATCHDOG_KILL_THRESHOLD=90', up.server_env)
+        self.assertIn(f'SWLOR_ENVIRONMENT={smoke.SMOKE_ENVIRONMENT}', up.server_env)
+
     def test_a_server_only_run_reads_no_cd_key(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(smoke.live, 'create') as create:
             create.return_value.state = {'inputs': {}}

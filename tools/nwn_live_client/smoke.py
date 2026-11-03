@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import math
 import secrets
 import subprocess
 import sys
@@ -53,6 +54,20 @@ DEFAULT_RESULTS_FOLDER = 'swlor-smoke'
 # the in-game steps use (/tpwp, /spawnitem) available to every player, while player commands
 # such as /perks keep working; no staff record has to be seeded into the database.
 SMOKE_ENVIRONMENT = 'test'
+# The NWNX thread watchdog (SWLOR.Game.Server/Docker/swlor.env) kills a server whose main loop has stalled
+# for KILL_THRESHOLD reports, one per PERIOD seconds. On a busy machine the work done when the module is
+# first loaded stalls the loop for many minutes, so the smoke stack lets the watchdog wait at least as
+# long as the run itself is willing to wait for the module (--server-timeout) plus a margin.
+WATCHDOG_PERIOD_SECONDS = 30
+WATCHDOG_DEFAULT_THRESHOLD = 20
+WATCHDOG_MARGIN_REPORTS = 10
+
+
+def watchdog_threshold(server_timeout: float) -> int:
+    """Stall reports the thread watchdog tolerates: never fewer than the server's own setting, and enough
+    to outlast a module load that the run still waits for."""
+    waiting = math.ceil(server_timeout / WATCHDOG_PERIOD_SECONDS) + WATCHDOG_MARGIN_REPORTS
+    return max(WATCHDOG_DEFAULT_THRESHOLD, waiting)
 
 
 @dataclass
@@ -346,7 +361,8 @@ class SmokeRun:
         arguments = ['up', '--name', self.results.label, '--run-dir', str(self.results_dir / 'run'),
                      '--configuration', options.configuration, '--server-timeout', str(options.server_timeout),
                      '--max-minutes', str(options.max_minutes), '--settle', str(options.settle),
-                     '--server-env', f'SWLOR_ENVIRONMENT={SMOKE_ENVIRONMENT}']
+                     '--server-env', f'SWLOR_ENVIRONMENT={SMOKE_ENVIRONMENT}',
+                     '--server-env', f'NWNX_THREADWATCHDOG_KILL_THRESHOLD={watchdog_threshold(options.server_timeout)}']
         for flag, value in (('--character', options.character), ('--public-cdkey', options.public_cdkey),
                             ('--cdkey', options.cdkey), ('--dotnet', options.dotnet), ('--module', options.module),
                             ('--hak-dir', options.hak_dir), ('--tlk-dir', options.tlk_dir),

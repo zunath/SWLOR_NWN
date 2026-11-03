@@ -151,6 +151,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
 
             PowerGloveFit.Apply(creature);
+            SlitherhornFit.Apply(creature);
             TwinPistolEquipment.RefreshAppearance(creature);
 
             // Rebuild the complete tint state in one pass. Parameter-scoped wildcard resets are

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -373,6 +374,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             ApplyBackgroundTrackToPlayer(player, trackId, trackId);
+            PerformanceAudience.ForgetBandSong(player);
         }
 
         /// <summary>
@@ -387,6 +389,35 @@ namespace SWLOR.Game.Server.Service
 
             dbPlayer.Settings.PersonalMusicTrackId = null;
             DB.Set(dbPlayer);
+
+            var area = GetArea(player);
+            ApplyBackgroundTrackToPlayer(player, MusicBackgroundGetDayTrack(area), MusicBackgroundGetNightTrack(area));
+            if (IsAreaMusicStopped(area))
+                PlayerPlugin.MusicBackgroundToggle(player, false);
+            PerformanceAudience.ForgetBandSong(player);
+        }
+
+        /// <summary>
+        /// Plays a track for a single player without saving it as their personal track, such as a
+        /// performance band's song. <see cref="RestoreBackgroundMusic"/> puts their normal music back.
+        /// </summary>
+        public static void PlayTemporaryTrack(uint player, int trackId)
+        {
+            ApplyBackgroundTrackToPlayer(player, trackId, trackId);
+        }
+
+        /// <summary>
+        /// Puts back the music a player normally hears: their personal track, otherwise the current
+        /// area's music (which stays off if the area's music was stopped).
+        /// </summary>
+        public static void RestoreBackgroundMusic(uint player)
+        {
+            var personalTrackId = GetPersonalTrackId(player);
+            if (personalTrackId != null)
+            {
+                ApplyBackgroundTrackToPlayer(player, personalTrackId.Value, personalTrackId.Value);
+                return;
+            }
 
             var area = GetArea(player);
             ApplyBackgroundTrackToPlayer(player, MusicBackgroundGetDayTrack(area), MusicBackgroundGetNightTrack(area));

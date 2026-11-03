@@ -4,7 +4,6 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -39,9 +38,7 @@ public class FurnitureSetPlaceableTests
     [Test]
     public void RenamedDisplayPieces_EachHaveTheirOwnPlaceable()
     {
-        var renamed = FurnitureRenameMigration.RecipeRenames.Values
-            .Select(recipe => Enum.Parse<StructureType>(recipe.ToString()))
-            .ToList();
+        var renamed = DisplayPieceResrefs.Keys.ToList();
 
         renamed.Should().HaveCount(10);
         renamed.Select(ResrefOf).Should().OnlyHaveUniqueItems("each set's display piece has its own look");

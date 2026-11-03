@@ -54,13 +54,12 @@ public class CharacterRebuildSkillAvailabilityTests
         model.RemainingSkillPoints.Should().Be("Skills - 400 Points Remaining");
     }
 
-    /// <summary>Pins the five exclusive skills and verifies that every other skill is shared.</summary>
+    /// <summary>Pins the four exclusive skills and verifies that every other skill is shared.</summary>
     [Test]
     public void AllSkillRestrictionsMatchTheCharacterTypeRules()
     {
         var restrictions = new Dictionary<SkillType, CharacterType>
         {
-            [SkillType.Espionage] = CharacterType.Standard,
             [SkillType.Devices] = CharacterType.Standard,
             [SkillType.Force] = CharacterType.ForceSensitive,
             [SkillType.Lightsaber] = CharacterType.ForceSensitive,

@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
-                .Component("chiro_shard", 5);
+                .Component("chiro_shard", 5)
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 24, coolingRate: 6, startingThermal: 68, shapeShare: 50);
 
             // Armor Submission Token (Smithery)
             _builder.Create(RecipeType.ArmorSubmissionTokenSmithery, SkillType.Smithery)
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
-                .Component("chiro_shard", 5);
+                .Component("chiro_shard", 5)
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 24, coolingRate: 6, startingThermal: 66, shapeShare: 50);
         }
     }
 }

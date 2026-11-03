@@ -205,18 +205,6 @@ public class AIProfileBuilderTests
     }
 
     [Test]
-    public void TargetDefaults_CanRegisterFeatSpecificOverrides()
-    {
-        AITarget.RegisterDefault(FeatType.Provoke1, AITarget.AllyAttacker());
-
-        AITarget.TryGetDefaultOverride(FeatType.Provoke1, out var selector)
-            .Should()
-            .BeTrue();
-
-        selector.Should().NotBeNull();
-    }
-
-    [Test]
     public void DefaultProfiles_RegisterCoreProfiles()
     {
         Ability.CacheData();

@@ -75,8 +75,6 @@ public class DialogPrivacyTests
             .Replace("\r\n", "\n");
         var routerSource = ReadSource("SWLOR.Game.Server", "Service", "ConversationMenu.cs")
             .Replace("\r\n", "\n");
-        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs")
-            .Replace("\r\n", "\n");
         var participantGuard = ExtractMethod(
             conversationSource, "internal static bool IsValidParticipant(uint player)");
         var assignedStart = ExtractMethod(
@@ -87,8 +85,6 @@ public class DialogPrivacyTests
             conversationSource, "public static void OpenSession(");
         var objectRoute = ExtractMethod(
             routerSource, "public static void StartFromObjectEvent()");
-        var aiFallback = ExtractMethod(
-            aiSource, "public static void CreatureConversation()");
         var creatureGuard = ExtractMethod(
             routerSource, "private static bool CanStartCreatureConversation(uint creature)");
         var menuStart = ExtractMethod(
@@ -115,10 +111,7 @@ public class DialogPrivacyTests
         objectRoute.Should().Contain(
             "AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));");
         objectRoute.Should().NotContain("ActionStartConversation(OBJECT_SELF");
-        aiFallback.Should().Contain("var owner = OBJECT_SELF;");
-        aiFallback.Should().Contain(
-            "AssignCommand(talker, () => ActionStartConversation(owner, conversation, true, false));");
-        aiFallback.Should().NotContain("ActionStartConversation(OBJECT_SELF");
+        // The AI creature-conversation fallback captures its owner the same way; AIServiceHandlerTests runs it.
 
         creatureGuard.Should().Contain("effectType == EffectTypeScript.Petrify");
         creatureGuard.Should().Contain("if (GetIsDead(creature))");

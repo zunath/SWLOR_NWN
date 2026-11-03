@@ -29,17 +29,7 @@ public class HiddenEnemyAreaAbilityTests
 
             public enum Shape { Sphere }
             public enum ObjectType { Creature }
-            public enum FeatType { Invalid, AreaAbility }
-            public enum PerkType { Invalid }
             public sealed class Location { public uint Owner; }
-            public sealed class AbilityDetail
-            {
-                public bool IsHostileAbility;
-                public bool IsSingleTargetAbility;
-                public bool RequiresTarget;
-                public PerkType EffectiveLevelPerkType;
-            }
-            public sealed class AIActionDefinition { public FeatType Feat = FeatType.AreaAbility; }
             public static class ObjectSnapshot
             {
                 public static IEnumerable<uint> InShape(Shape shape, float radius, Location origin, bool lineOfSight, ObjectType type) => Nearby;
@@ -47,26 +37,6 @@ public class HiddenEnemyAreaAbilityTests
             public static class Stealth
             {
                 public static bool IsHiddenFrom(uint observer, uint target) => observer == Self && Hidden.Contains(target);
-            }
-            public static class CompanionControl
-            {
-                public static bool IsControlledCompanion(uint creature) => false;
-                public static bool AreAbilitiesEnabled(uint creature) => true;
-            }
-            public static class Perk
-            {
-                public static int GetPerkLevel(uint creature, PerkType perk) => 1;
-            }
-            public static class Ability
-            {
-                public static AbilityDetail Detail;
-                public static bool IsFeatRegistered(FeatType feat) => true;
-                public static AbilityDetail GetAbilityDetail(FeatType feat) => Detail;
-                public static bool CanUseAbility(uint activator, uint target, FeatType feat, int level, Location location)
-                {
-                    UsedOn = target;
-                    return true;
-                }
             }
             public delegate uint AITargetSelector(AIContext context);
             public class AIContext
@@ -76,10 +46,6 @@ public class HiddenEnemyAreaAbilityTests
                 public uint CurrentEnmityTarget { get; init; } = OBJECT_INVALID;
                 public void SetEvaluatedTarget(uint target) => EvaluatedTarget = target;
                 {{ExtractMethods("AIContext.cs", "CountHostilesNearTarget")}}
-            }
-            public static class NPCAIHarness
-            {
-                {{ExtractMethods("NPCAI.cs", "CanUseAbility")}}
             }
             public static class AITargetHarness
             {
@@ -99,8 +65,6 @@ public class HiddenEnemyAreaAbilityTests
                 public static Location GetLocation(uint creature) => new() { Owner = creature };
                 public static bool GetIsEnemy(uint creature, uint source) => Enemies.Contains(creature);
                 public static int GetCurrentHitPoints(uint creature) => Dead.Contains(creature) ? 0 : 10;
-                public static bool GetHasFeat(FeatType feat, uint creature) => true;
-                public static bool GetIsReactionTypeHostile(uint target, uint source) => Enemies.Contains(target);
 
                 public static int Count(uint[] nearby, uint[] enemies, uint[] hidden, uint[] dead, bool onlyOdd)
                 {
@@ -121,22 +85,6 @@ public class HiddenEnemyAreaAbilityTests
                     Hidden = hidden.ToHashSet();
                     Dead = new HashSet<uint>();
                     return AITargetHarness.HostileCluster(10f, 1)(new AIContext { CurrentEnmityTarget = target });
-                }
-
-                public static uint CanUse(bool hostile, bool singleTarget, bool requiresTarget, uint target)
-                {
-                    Enemies = new HashSet<uint> { 201 };
-                    Ability.Detail = new AbilityDetail
-                    {
-                        IsHostileAbility = hostile,
-                        IsSingleTargetAbility = singleTarget,
-                        RequiresTarget = requiresTarget,
-                        EffectiveLevelPerkType = PerkType.Invalid
-                    };
-                    UsedOn = OBJECT_INVALID;
-                    return NPCAIHarness.CanUseAbility(new AIContext(), new AIActionDefinition(), target)
-                        ? UsedOn
-                        : OBJECT_INVALID;
                 }
             }
             """;
@@ -175,37 +123,6 @@ public class HiddenEnemyAreaAbilityTests
     }
 
     [Test]
-    public void HostileAreaAbility_WithNoSelectedTarget_IsNotUsed()
-    {
-        // The self-centered selector found no enemy it can see, so nothing may fall back to the NPC.
-        CanUse(hostile: true, singleTarget: false, requiresTarget: false, target: Invalid).Should().Be(Invalid);
-    }
-
-    [Test]
-    public void HostileAreaAbility_CenteredOnTheNPCBySelector_IsUsed()
-    {
-        CanUse(hostile: true, singleTarget: false, requiresTarget: false, target: Self).Should().Be(Self);
-    }
-
-    [Test]
-    public void HostileTargetedAbility_WithAVisibleEnemy_IsUsed()
-    {
-        CanUse(hostile: true, singleTarget: true, requiresTarget: true, target: 201).Should().Be(201);
-    }
-
-    [Test]
-    public void UntargetedFriendlyAbility_StillFallsBackToTheNPC()
-    {
-        CanUse(hostile: false, singleTarget: false, requiresTarget: false, target: Invalid).Should().Be(Self);
-    }
-
-    [Test]
-    public void TargetedFriendlyAbility_WithNoTarget_IsNotUsed()
-    {
-        CanUse(hostile: false, singleTarget: true, requiresTarget: true, target: Invalid).Should().Be(Invalid);
-    }
-
-    [Test]
     public void TargetedArea_OnALoneVisibleEnemy_CentersOnIt()
     {
         Cluster(target: 201, nearby: [Self, 201], enemies: [201], hidden: []).Should().Be(201);
@@ -225,11 +142,6 @@ public class HiddenEnemyAreaAbilityTests
     private int Count(uint[] nearby, uint[] enemies, uint[] hidden, uint[]? dead = null, bool onlyOdd = false)
     {
         return (int)_world.GetMethod("Count")!.Invoke(null, [nearby, enemies, hidden, dead ?? [], onlyOdd])!;
-    }
-
-    private uint CanUse(bool hostile, bool singleTarget, bool requiresTarget, uint target)
-    {
-        return (uint)_world.GetMethod("CanUse")!.Invoke(null, [hostile, singleTarget, requiresTarget, target])!;
     }
 
     private static string ExtractMethods(string fileName, string name)

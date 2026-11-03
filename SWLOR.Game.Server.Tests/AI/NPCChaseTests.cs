@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Service;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
@@ -18,7 +19,8 @@ public class NPCChaseTests
     {
         // Execute the production event and threat-cleanup methods with engine boundaries
         // replaced by observable commands. No live NWN VM is available in unit tests.
-        var aiMethods = ExtractMethods("AI.cs", "CreatureBlocked");
+        // The blocked handler is the AI instance's method, borrowed as a static one (DMPossessionHarness.InstanceMethod).
+        var aiMethods = DMPossessionHarness.InstanceMethod("Domain/Creatures/AIService.cs", "CreatureBlocked");
         var enmityMethods = ExtractMethods("Enmity.cs",
             "AttackHighestEnmityTarget", "GetHighestEnmityTarget", "GetEnmityTable",
             "RemoveProximityEnmity", "HasOnlyProximityEnmity", "GetRawEnmityAmount",
@@ -71,6 +73,7 @@ public class NPCChaseTests
             public static class AI
             {
                 public static bool IsAIEnabled(uint creature) => Enabled;
+                public static void ResumeAttackAfterActionsCleared(uint creature) => Enmity.ResumeAttackAfterActionsCleared(creature);
                 public static bool IsLeashEvading(uint creature) => Evading;
                 public static bool IsInAggroRange(uint creature, uint target) => InRange.Contains(target);
                 public static bool TryStartCombatLeashEvade(uint creature, uint target) => false;

@@ -70,6 +70,20 @@ public class BeastMasteryServiceTests
     private readonly Dictionary<nint, (ItemPropertyType Type, int SubType, int Cost)> _properties = new();
     private nint _nextHandle;
     private uint _nextObject;
+    private FacadeContainer _container = null!;
+
+    // A beast is given its AI profile through the AI facade, which resolves from a container.
+    [OneTimeSetUp]
+    public void BuildTheContainer()
+    {
+        _container = new FacadeContainer();
+    }
+
+    [OneTimeTearDown]
+    public void DisposeTheContainer()
+    {
+        _container.Dispose();
+    }
 
     [SetUp]
     public void SetUp()
@@ -140,6 +154,7 @@ public class BeastMasteryServiceTests
         _scopes.Add(EventsPluginRuntime.Override(_events));
         _scopes.Add(CreaturePluginRuntime.Override(_creature));
         _scopes.Add(ItemPluginRuntime.Override(_itemPlugin));
+        _scopes.Add(_container.Install());
 
         _service.CacheData();
         _engine.ClearCalls();

@@ -378,10 +378,13 @@ class GameClient:
         The scan runs inside the client container (ui.sh hostile-scan), one call for the lot.
         """
         arguments = [str(value) for point in points for value in point]
-        answer = self.stack.ui('hostile-scan', *arguments, timeout=240).split()
-        if len(answer) < 2:
-            return None
-        return int(answer[-2]), int(answer[-1])
+        answer = self.stack.ui('hostile-scan', *arguments, timeout=240)
+        # Stack.ui joins stdout and stderr, so only a line made of exactly two integers is an answer.
+        for line in answer.splitlines():
+            found = re.fullmatch(r'\s*(\d+)\s+(\d+)\s*', line)
+            if found:
+                return int(found.group(1)), int(found.group(2))
+        return None
 
     def loading_screens(self) -> int:
         return live.loading_tips(self.stack)

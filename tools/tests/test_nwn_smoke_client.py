@@ -142,6 +142,12 @@ class ClientActionTests(unittest.TestCase):
         client, _ = self.client('')
         self.assertIsNone(client.find_hostile([(640, 385)]))
 
+    def test_find_hostile_ignores_warnings_mixed_into_the_answer(self):
+        client, _ = self.client('warning: font cache is stale\nimport: unable to read 4 5\n')
+        self.assertIsNone(client.find_hostile([(640, 385)]), 'a warning is not a point')
+        client, _ = self.client('640 350\nxdotool: window 7 8 is gone\n')
+        self.assertEqual((640, 350), client.find_hostile([(640, 385), (640, 350)]))
+
     def test_objects_are_hovered_before_they_are_clicked_and_ui_controls_avoid_tooltips(self):
         client, calls = self.client()
         with patch.object(smoke_client.time, 'sleep'):
@@ -343,10 +349,37 @@ class StepHelperTests(unittest.TestCase):
                  '2026-10-27 17:20:29 +00:00 [INF] DAMAGE: Attacker: Mynock, PC?: 0, Defender Agan, object type 5, '
                  'Attack type: 1, weapon Mynock Claw']
         client = SimpleNamespace(attack_lines=lambda: lines)
-        self.assertIn('Attack type: 2, weapon Basic Rifle', smoke_steps.attack_log_has(client, 0, 2, 'Basic Rifle'))
-        self.assertIsNone(smoke_steps.attack_log_has(client, 0, 1, 'Basic Rifle'))
-        self.assertIsNone(smoke_steps.attack_log_has(client, 0, 1, 'Mynock Claw'), 'only the player counts')
-        self.assertIsNone(smoke_steps.attack_log_has(client, 2, 2, 'Basic Rifle'), 'lines before the mark are ignored')
+        name = 'Agan Tarn'
+        self.assertIn('Attack type: 2, weapon Basic Rifle',
+                      smoke_steps.attack_log_has(client, 0, name, 2, 'Basic Rifle'))
+        self.assertIsNone(smoke_steps.attack_log_has(client, 0, name, 1, 'Basic Rifle'))
+        self.assertIsNone(smoke_steps.attack_log_has(client, 0, name, 1, 'Mynock Claw'), 'only the player counts')
+        self.assertIsNone(smoke_steps.attack_log_has(client, 2, name, 2, 'Basic Rifle'),
+                          'lines before the mark are ignored')
+
+    def test_the_attack_log_line_must_belong_to_the_test_character(self):
+        lines = ['2026-10-27 17:20:28 +00:00 [INF] DAMAGE: Attacker: Zed, PC?: 1, Defender Mynock, object type 5, '
+                 'Attack type: 2, weapon Basic Rifle']
+        client = SimpleNamespace(attack_lines=lambda: lines)
+        self.assertIsNone(smoke_steps.attack_log_has(client, 0, 'Agan Tarn', 2, 'Basic Rifle'),
+                          'another player with the same weapon does not count')
+        self.assertIsNone(smoke_steps.attack_log_has(client, 0, 'Zedd Tarn', 2, 'Basic Rifle'),
+                          'a longer first name is not the same first name')
+        self.assertIsNotNone(smoke_steps.attack_log_has(client, 0, 'Zed Tarn', 2, 'Basic Rifle'))
+        self.assertIsNotNone(smoke_steps.attack_log_has(client, 0, 'Zed', 2, 'Basic Rifle'))
+
+    def test_the_wide_scan_is_tried_on_the_third_attempt_even_when_a_nearby_click_did_nothing(self):
+        scans, clicks = [], []
+        client = SimpleNamespace(
+            ensure_alive=lambda: False, mark=lambda: 0,
+            find_hostile=lambda points: (scans.append(points), (5, 6) if points is smoke_steps.NEAR_SCAN
+                                         else (7, 8))[1],
+            click_object=lambda x, y: clicks.append((x, y)),
+            wait_for=lambda pattern, mark, timeout=20, poll=2: 'hit' if len(clicks) >= 4 else None)
+        self.assertEqual((7, 8), smoke_steps.attack_target(client, 'Agan Tarn', 'Mynock', attempts=3))
+        self.assertEqual([smoke_steps.NEAR_SCAN, smoke_steps.NEAR_SCAN, smoke_steps.NEAR_SCAN, smoke_steps.WIDE_SCAN],
+                         scans)
+        self.assertEqual([(5, 6), (5, 6), (5, 6), (7, 8)], clicks)
 
     def test_every_screen_point_lies_on_the_screen(self):
         width, height = smoke_client.SCREEN

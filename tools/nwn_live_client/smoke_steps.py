@@ -129,19 +129,19 @@ def attack_target(client: GameClient, name: str, victim: str, attempts: int = 6)
 
     name is the character's name and victim a regular expression for the target's name. Each
     attempt is a quick pass over the points beside the character; every third one also covers the
-    wider surroundings.
+    wider surroundings, whether the nearby pass found nothing or its click started no attack.
     """
     for attempt in range(attempts):
         client.ensure_alive()
-        point = client.find_hostile(NEAR_SCAN)
-        if point is None and attempt % 3 == 2:
-            point = client.find_hostile(WIDE_SCAN)
-        if point is None:
-            continue
-        mark = client.mark()
-        client.click_object(*point)
-        if client.wait_for(rf'{re.escape(name)} attacks {victim}', mark, 12, 1.5):
-            return point
+        scans = [NEAR_SCAN, WIDE_SCAN] if attempt % 3 == 2 else [NEAR_SCAN]
+        for scan in scans:
+            point = client.find_hostile(scan)
+            if point is None:
+                continue
+            mark = client.mark()
+            client.click_object(*point)
+            if client.wait_for(rf'{re.escape(name)} attacks {victim}', mark, 12, 1.5):
+                return point
     return None
 
 
@@ -150,10 +150,15 @@ def player_record(run) -> dict:
     return json.loads(run.redis('JSON.GET', f'Player:{uuid}', '.'))
 
 
-def attack_log_has(client: GameClient, mark: int, attack_type: int, weapon: str) -> str | None:
-    pattern = re.compile(rf'PC\?: 1, Defender .*Attack type: {attack_type}, weapon {re.escape(weapon)}')
+def attack_log_has(client: GameClient, mark: int, name: str, attack_type: int, weapon: str) -> str | None:
+    """The server's combat-resolution line for an attack by the character with this weapon, or None.
+
+    The log names the attacker by first name only, so the character's full name must start with it.
+    """
+    pattern = re.compile(rf'Attacker: (.+?), PC\?: 1, Defender .*Attack type: {attack_type}, weapon {re.escape(weapon)}')
     for line in client.attack_lines()[mark:]:
-        if pattern.search(line):
+        found = pattern.search(line)
+        if found and (name == found.group(1) or name.startswith(found.group(1) + ' ')):
             return line.split('[INF] ', 1)[-1]
     return None
 
@@ -181,7 +186,7 @@ def fight(run, step, label: str, weapon: str, attack_type: int) -> None:
     expect(step, f'{label}: a damage number appears in the combat log',
            client.wait_for(rf'{re.escape(name)} .*damages {MYNOCK}: \d+ \(', mark, 60, 2))
     expect(step, f'{label}: the server resolved the attack with the {weapon}',
-           attack_log_has(client, attack_mark, attack_type, weapon))
+           attack_log_has(client, attack_mark, name, attack_type, weapon))
     run.capture(step, label)
     stop_actions(client)
 

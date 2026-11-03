@@ -93,9 +93,4 @@ internal sealed class _26_ConvertCraftingPerksToRanks : ICharacterMigration
         RebuildTokenGrant.Grant(player);
         player.UpgradeNotices.Add("You received 1 Rebuild Token. Rebuilding your character is optional.");
     }
-
-    private sealed record RefundedPerk(PerkType Type, string Name, int[] Prices, string Change, params FeatType[] GrantedFeats)
-    {
-        public int GetRefund(int level) => Prices.Take(level).Sum();
-    }
 }

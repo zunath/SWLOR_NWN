@@ -170,24 +170,4 @@ public static class ResearchExperimentService
     /// <summary>The chart XP for the job's recipe level against the player's Fabrication rank.</summary>
     public static int BaseXp(uint player, ResearchJob job) =>
         ResearchXpRules.BaseXp(Craft.GetRecipe(job.Recipe).Level, Skill.GetCreatureSkillRank(player, SkillType.Fabrication));
-
-    private sealed class NwnPayoutWorld : IResearchPayoutWorld
-    {
-        private readonly uint _player;
-
-        public NwnPayoutWorld(uint player)
-        {
-            _player = player;
-        }
-
-        public bool CanReceiveXp() => !GetIsDead(_player) && GetCurrentHitPoints(_player) > 0;
-
-        public int BaseXp(ResearchJob job) => ResearchExperimentService.BaseXp(_player, job);
-
-        public void SavePlayer(Player dbPlayer) => DB.Set(dbPlayer);
-
-        public void SaveJob(ResearchJob job) => DB.Set(job);
-
-        public void GrantPendingXp() => CraftSessionService.GrantPendingXp(_player);
-    }
 }

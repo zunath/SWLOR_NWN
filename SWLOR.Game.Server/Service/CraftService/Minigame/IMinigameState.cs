@@ -12,10 +12,3 @@ public interface IMinigameState
     /// <summary>The opportunity announced for the next turn, or null when none is.</summary>
     MinigameOpportunity NextOpportunity { get; }
 }
-
-/// <summary>A minigame state that can be copied with different shared meters; implement it on a record.</summary>
-public interface IMinigameState<TState> : IMinigameState
-    where TState : IMinigameState<TState>
-{
-    TState WithMeters(MinigameMeters meters);
-}

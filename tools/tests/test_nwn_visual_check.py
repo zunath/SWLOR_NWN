@@ -171,6 +171,90 @@ class ProfileBoundaryTests(unittest.TestCase):
             self.assertEqual(captured.getpixel((1000, 360)), (255, 255, 255))
         self.assertFalse(native.exists())
 
+    def test_native_screenshot_propagates_nonsharing_delete_error(self):
+        from PIL import Image
+
+        frames = NativeFrames.__new__(NativeFrames)
+        frames.directory = self.owned/'screenshots'
+        frames.window = 1
+        frames.frame = None
+        frames.user = Mock()
+        native = frames.directory/'NWN0000.tga'
+
+        def screenshot(_, message, *_args):
+            if message == 0x101:
+                Image.new('RGB', (1280, 720), 'green').save(native)
+            return True
+
+        frames.user.PostMessageW.side_effect = screenshot
+        error = PermissionError('Access denied')
+        error.winerror = 5
+        with patch.object(Path, 'unlink', side_effect=error):
+            with self.assertRaises(PermissionError) as caught:
+                frames.wait_for_fresh()
+        self.assertIs(caught.exception, error)
+        self.assertIsNone(frames.frame)
+        self.assertEqual(frames.user.PostMessageW.call_count, 2)
+
+    @unittest.skipUnless(sys.platform=='win32','Windows screenshot writer sharing semantics')
+    def test_native_screenshot_waits_for_writer_delete_lock(self):
+        from PIL import Image
+
+        frames=NativeFrames.__new__(NativeFrames)
+        frames.directory=self.owned/'screenshots'
+        frames.window=1
+        frames.frame=None
+        frames.user=Mock()
+        native=frames.directory/'NWN0000.tga'
+        kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+        kernel.CreateFileW.argtypes=[ctypes.c_wchar_p,ctypes.c_uint32,ctypes.c_uint32,
+                                    ctypes.c_void_p,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_void_p]
+        kernel.CreateFileW.restype=ctypes.c_void_p
+        kernel.CloseHandle.argtypes=[ctypes.c_void_p]
+        handles=[]
+        requests=[]
+
+        def release(handle):
+            if handle[0] is not None:
+                kernel.CloseHandle(handle[0])
+                handle[0]=None
+
+        def screenshot(_,message,*_args):
+            if message==0x101:
+                if requests:
+                    native.touch()
+                target=frames.directory/f'NWN{len(requests):04}.tga'
+                image=Image.new('RGB',(1280,720),'black' if not requests else 'green')
+                image.paste('white',(640,0,1280,720))
+                image.save(target)
+                # Allow reads while the simulated client writer denies deletion.
+                handle=[kernel.CreateFileW(str(target),0x80000000,1,None,3,0,None)]
+                self.assertNotIn(handle[0],(None,ctypes.c_void_p(-1).value))
+                handles.append(handle)
+                requests.append(target)
+            return True
+
+        frames.user.PostMessageW.side_effect=screenshot
+        try:
+            output=self.owned/'writer-lock.png'
+            frames.save(output)
+            with Image.open(output) as captured:
+                self.assertEqual(captured.size,(1280,720))
+                self.assertEqual(captured.getpixel((1000,360)),(255,255,255))
+            self.assertEqual(frames.user.PostMessageW.call_count,2)
+            self.assertTrue(native.exists())
+            # The writer closing can update its mtime after our next request.
+            # This previously consumed raw image must never become a new frame.
+            release(handles[0])
+            second=self.owned/'second-writer-lock.png'
+            frames.save(second)
+            with Image.open(second) as captured:
+                self.assertEqual(captured.getpixel((100,360)),(0,128,0))
+            self.assertEqual(frames.user.PostMessageW.call_count,4)
+        finally:
+            for handle in handles:
+                release(handle)
+
     @unittest.skipUnless(sys.platform=='win32','run() refuses non-Windows hosts before validating settings')
     def test_native_refusal_happens_before_process_creation(self):
         self.settings('volume=0.0','volume=0.5')

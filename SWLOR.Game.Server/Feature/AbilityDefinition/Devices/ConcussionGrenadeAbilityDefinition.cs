@@ -133,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Electrical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
                 areaVisualEffect: VisualEffect.None,
+                damagePercentAdjustment: DeviceAbilityEffects.GetBlastDamageAdjustment(activator),
                 maxTargets: 5);
         }
 

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Area;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -280,7 +281,11 @@ namespace SWLOR.Game.Server.Service
             var area = GetArea(self);
             var position = GetPosition(self);
             var facing = GetFacing(self);
-            var lootPosition = Vector3(position.X, position.Y, position.Z - 0.11f);
+            var lootPosition = CorpsePlacement.GetLootPosition(
+                position,
+                GetAreaSize(Dimension.Width, area) * 10f,
+                GetAreaSize(Dimension.Height, area) * 10f,
+                ground => GetGroundHeight(Location(area, ground, 0f)));
             var spawnLocation = Location(area, lootPosition, facing);
             var npcStats = Stat.GetNPCStats(self);
 

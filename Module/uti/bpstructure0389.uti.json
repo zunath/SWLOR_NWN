@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Veilcarved Display Plinth."
+      "0": "A rare schematic for crafting Veilcarved Rune Pillar."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rare schematic for crafting Veilcarved Display Plinth."
+      "0": "A rare schematic for crafting Veilcarved Rune Pillar."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Veilcarved Display Plinth"
+      "0": "Blueprint: Veilcarved Rune Pillar"
     }
   },
   "ModelPart1": {

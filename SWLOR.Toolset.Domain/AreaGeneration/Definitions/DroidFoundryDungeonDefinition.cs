@@ -65,15 +65,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .Treasure("VISCARA_SEWERS_DEPTHS_PULSE_DROID", 3)
                 .LevelNote("Ambient CR ~50 (Red Vein Scavenger/Pulse-Frame Training Droid); boss CR 52 (Blood Frenzy Duelist).")
 
-                // Tier 3 — the foundry's ranking enforcers (CR ~50-52 ambient). Boss: Emergency
-                // Bunker Master (CR 60), the foundry overseer.
+                // Tier 3 — the foundry's ranking enforcers (CR ~50-52 ambient). Boss: Deserter
+                // Commander Mukk Dorl (CR 60), the foundry overseer.
                 .Tier(3)
                 .AddCreature("bf_duelist", 30)
                 .AddCreature("vrix7", 20)
                 .CreaturesPerRoom(2, 4)
                 .Boss("cp_embunker_ms")
                 .Treasure("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_BOSS_LOOT", 4)
-                .LevelNote("Ambient CR ~50-52 (Blood Frenzy Duelist/Vrix-7, Pulse Butcher); boss CR 60 (Emergency Bunker Master).");
+                .LevelNote("Ambient CR ~50-52 (Blood Frenzy Duelist/Vrix-7, Pulse Butcher); boss CR 60 (Deserter Commander Mukk Dorl).");
 
             return _builder.Build();
         }

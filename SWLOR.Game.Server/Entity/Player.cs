@@ -221,13 +221,14 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, DateTime> EncounterCooldowns { get; set; }
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
+        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
+        [JsonConverter(typeof(RenamedRecipesJsonConverter))]
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }
         public string ActiveMimicryLoadoutId { get; set; } = string.Empty;
-        [JsonConverter(typeof(RelocatedKeyItemsJsonConverter))]
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
@@ -236,6 +237,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<ResistanceType, int> Resistances { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
+        public List<ExtraHotbar> ExtraHotbars { get; set; } = new();
         public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }
         public float HeadAppearanceScale { get; set; }
@@ -283,7 +285,7 @@ namespace SWLOR.Game.Server.Entity
         public int TimesCompleted { get; set; }
         public DateTime? DateLastCompleted { get; set; }
 
-        [JsonConverter(typeof(RelocatedKillProgressesJsonConverter))]
+        [JsonConverter(typeof(RenamedNpcGroupsJsonConverter))]
         public Dictionary<NPCGroupType, int> KillProgresses { get; set; } = new Dictionary<NPCGroupType, int>();
         public Dictionary<string, int> ItemProgresses { get; set; } = new Dictionary<string, int>();
         public Dictionary<string, int> CombatProgresses { get; set; } = new();

@@ -144,7 +144,7 @@ public class StatTypeMetadataCharacterizationTests
         {
             StatType.AttackPercentAdjustment,
             StatType.DamageTakenPercentAdjustment,
-            StatType.PairedRangedMomentumRestoreCooldownSeconds,
+            StatType.CadenceRestoreCooldownSeconds,
             StatType.Invalid,
             UndefinedStat
         };

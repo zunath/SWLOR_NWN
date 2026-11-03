@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Killzone Beacon specialist in Viscara - Republic Engineering Bunker."
+    "value": "Deserter Engineer (Killzone Beacon line) in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Bothan technician in black work coveralls, his fingers stained with solder and a blaster pistol never far from his hand. He keeps a stolen shield grid relay feeding targeting data out of the bunker and guards that wiring as if his life depends on it."
+      "0": "A Bothan deserter engineer in black work coveralls, his fingers stained with solder and a blaster pistol never far from his hand. He keeps a stolen shield grid relay feeding targeting data out of the bunker and guards that wiring as if his life depends on it."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Killzone Beacon Specialist"
+      "0": "Deserter Engineer"
     }
   },
   "fortbonus": {
@@ -327,7 +327,7 @@
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -393,43 +393,43 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_attacked"
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondamage"
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondeath"
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onconv"
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondisturb"
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_endcombat"
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_heartbeat"
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onblocked"
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_percept"
   },
   "ScriptRested": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_rested"
   },
   "ScriptSpawn": {
     "type": "resref",
@@ -437,11 +437,11 @@
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spellcast"
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_userdef"
   },
   "SkillList": {
     "type": "list",
@@ -732,7 +732,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 1
+    "value": 7
   },
   "willbonus": {
     "type": "short",

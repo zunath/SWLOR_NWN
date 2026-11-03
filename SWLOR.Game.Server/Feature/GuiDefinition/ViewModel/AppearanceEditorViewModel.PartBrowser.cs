@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,19 +14,12 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     /// <summary>
-    /// Body map, part picture browser and colour indicators. Selection is shown with NUI
-    /// highlights (encouraged glow and draw-list outlines), never with text.
+    /// Body map, selected part picture and colour indicators. Selection is shown with NUI
+    /// highlights (encouraged glow and draw-list outlines), never with text. The part pictures
+    /// are browsed in their own window, <see cref="AppearancePartBrowserViewModel"/>.
     /// </summary>
     public partial class AppearanceEditorViewModel
     {
-        public const string BrowserGridElement = "AE_BROWSER_GRID";
-        public const int MaxBrowserColumns = 4;
-        public const int MaxBrowserRows = 3;
-        public const int BrowserTileCount = MaxBrowserColumns * MaxBrowserRows;
-
-        /// <summary>Browser layout partial for a tile grid size (columns x rows, controls sized to fit).</summary>
-        public static string BrowserGrid(int columns, int rows) => $"AE_BROWSER_GRID_{columns}X{rows}";
-
         // Palette cell geometry shared with the definition; the outline overlay is drawn in these units.
         public const float PaletteHeaderWidth = 20f;
         public const float PaletteHeaderHeight = 16f;
@@ -50,113 +44,141 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<int> _partIds = new();
         private List<int> _browserIds = new();
         private int _browserCurrent = -1;
-        private int _browserPage;
-        private int _browserColumns = MaxBrowserColumns;
-        private int _browserRows = MaxBrowserRows;
         private Func<int, string> _browserKey = _ => string.Empty;
         private Func<int, string> _browserLabel = id => id.ToString();
         private Action<int> _browserApply;
+        private bool _browserFrontOnly;
+        private AppearancePreviewView _previewView = AppearancePreviewView.Front;
         private float[] _paletteOutline = Array.Empty<float>();
-        private int _resizeGeneration;
-        private bool _compactPageLabels;
 
-        private int BrowserPageSize => _browserColumns * _browserRows;
+        /// <summary>The DM owns the window cache when the possessed creature is the window's Player.</summary>
+        private uint WindowOwner => GetIsDMPossessed(Player) ? GetMaster(Player) : Player;
 
-        private AppearancePreviewView PreviewView => (AppearancePreviewView)Math.Clamp(PreviewViewIndex, 0, 2);
+        // ---------------- selected part bindings ----------------
+        public string PartPreviewImage { get => Get<string>(); set => Set(value); }
+        public string PartPreviewLabel { get => Get<string>(); set => Set(value); }
+        /// <summary>The worn part's number, drawn in the corner of its picture.</summary>
+        public string PartPreviewNumber { get => Get<string>(); set => Set(value); }
+        public bool IsPartPreviewEnabled { get => Get<bool>(); set => Set(value); }
+        public string PreviewViewText { get => Get<string>(); set => Set(value); }
 
-        // ---------------- browser bindings ----------------
-        public int PreviewViewIndex
+        /// <summary>Weapon and shield parts ship only a front picture, so they cannot turn.</summary>
+        public bool IsPreviewViewChoiceVisible { get => Get<bool>(); set => Set(value); }
+
+        /// <summary>Turns the pictures to the next view: front, back, angle, then front again.</summary>
+        public Action OnClickPreviewView() => () =>
         {
-            get => Get<int>();
-            set
-            {
-                Set(value);
-                SetIfChanged(nameof(IsFrontViewSelected), value == (int)AppearancePreviewView.Front);
-                SetIfChanged(nameof(IsBackViewSelected), value == (int)AppearancePreviewView.Back);
-                SetIfChanged(nameof(IsAngleViewSelected), value == (int)AppearancePreviewView.Angle);
-                PublishBrowser();
-            }
-        }
-
-        public bool IsFrontViewSelected { get => Get<bool>(); set => Set(value); }
-        public bool IsBackViewSelected { get => Get<bool>(); set => Set(value); }
-        public bool IsAngleViewSelected { get => Get<bool>(); set => Set(value); }
-
-        public Action OnClickPreviewView(AppearancePreviewView view) => () =>
-        {
-            PreviewViewIndex = (int)view;
-            // A toggle button flips itself on click; send every button's state back.
-            OnPropertyChanged(nameof(IsFrontViewSelected));
-            OnPropertyChanged(nameof(IsBackViewSelected));
-            OnPropertyChanged(nameof(IsAngleViewSelected));
+            if (_browserFrontOnly)
+                return;
+            SelectPreviewView((AppearancePreviewView)(((int)_previewView + 1) % 3));
         };
 
-        public GuiBindingList<GuiComboEntry> BrowserPageOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
-
-        public int BrowserPageIndex
+        public Action OnClickPartPreview() => () =>
         {
-            get => Get<int>();
-            set
+            if (IsPartBrowserOpen())
             {
-                Set(value);
-                if (value != _browserPage && value >= 0 && value < BrowserPageCount)
-                {
-                    _browserPage = value;
-                    PublishBrowser();
-                }
+                Gui.ClosePlayerWindow(WindowOwner, GuiWindowType.AppearancePartBrowser, Player);
+                return;
             }
+            if (!IsPartPreviewEnabled)
+                return;
+            Gui.TogglePlayerWindow(WindowOwner, GuiWindowType.AppearancePartBrowser, null, OBJECT_INVALID, Player);
+            var browser = GetPartBrowser();
+            if (browser == null)
+                return;
+            var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
+            var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
+            var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
+            // Keep the size the player last gave the browser; only its position follows the editor.
+            var size = browser.Geometry;
+            var placed = PlaceBeside(Geometry,
+                size?.Width > 0f ? size.Width : AppearancePartBrowserDefinition.WindowWidth,
+                size?.Height > 0f ? size.Height : AppearancePartBrowserDefinition.WindowHeight,
+                screenWidth, screenHeight, scale);
+            if (placed != null)
+                browser.Geometry = placed;
+            browser.FitGrid();
+            SyncPartBrowser();
+        };
+
+        public Action OnClickPreviousPart() => () => StepPart(-1);
+
+        public Action OnClickNextPart() => () => StepPart(1);
+
+        /// <summary>Wears the part before or after the current one, wrapping at either end.</summary>
+        private void StepPart(int direction)
+        {
+            if (_browserIds.Count == 0)
+                return;
+            var index = _browserIds.IndexOf(_browserCurrent);
+            var next = index < 0
+                ? 0
+                : (index + direction + _browserIds.Count) % _browserIds.Count;
+            ApplyBrowserPart(_browserIds[next]);
         }
 
-        public string BrowserPartNumberText { get => Get<string>(); set => Set(value); }
+        /// <summary>Wears a part picked in the editor or the part browser window.</summary>
+        internal void ApplyBrowserPart(int partId)
+        {
+            if (IsPartEditorHidden)
+                return;
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped || !_browserIds.Contains(partId))
+                return;
+            _browserApply?.Invoke(partId);
+        }
 
-        public string Tile0Image { get => Get<string>(); set => Set(value); }
-        public string Tile1Image { get => Get<string>(); set => Set(value); }
-        public string Tile2Image { get => Get<string>(); set => Set(value); }
-        public string Tile3Image { get => Get<string>(); set => Set(value); }
-        public string Tile4Image { get => Get<string>(); set => Set(value); }
-        public string Tile5Image { get => Get<string>(); set => Set(value); }
-        public string Tile6Image { get => Get<string>(); set => Set(value); }
-        public string Tile7Image { get => Get<string>(); set => Set(value); }
-        public string Tile8Image { get => Get<string>(); set => Set(value); }
-        public string Tile9Image { get => Get<string>(); set => Set(value); }
-        public string Tile10Image { get => Get<string>(); set => Set(value); }
-        public string Tile11Image { get => Get<string>(); set => Set(value); }
-        public string Tile0Label { get => Get<string>(); set => Set(value); }
-        public string Tile1Label { get => Get<string>(); set => Set(value); }
-        public string Tile2Label { get => Get<string>(); set => Set(value); }
-        public string Tile3Label { get => Get<string>(); set => Set(value); }
-        public string Tile4Label { get => Get<string>(); set => Set(value); }
-        public string Tile5Label { get => Get<string>(); set => Set(value); }
-        public string Tile6Label { get => Get<string>(); set => Set(value); }
-        public string Tile7Label { get => Get<string>(); set => Set(value); }
-        public string Tile8Label { get => Get<string>(); set => Set(value); }
-        public string Tile9Label { get => Get<string>(); set => Set(value); }
-        public string Tile10Label { get => Get<string>(); set => Set(value); }
-        public string Tile11Label { get => Get<string>(); set => Set(value); }
-        public bool Tile0Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile1Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile2Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile3Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile4Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile5Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile6Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile7Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile8Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile9Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile10Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile11Selected { get => Get<bool>(); set => Set(value); }
-        public bool Tile0Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile1Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile2Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile3Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile4Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile5Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile6Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile7Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile8Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile9Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile10Visible { get => Get<bool>(); set => Set(value); }
-        public bool Tile11Visible { get => Get<bool>(); set => Set(value); }
+        /// <summary>Shows every picture from one side: the editor's part and the browser's pages.</summary>
+        internal void SelectPreviewView(AppearancePreviewView view)
+        {
+            _previewView = view;
+            SetIfChanged(nameof(PreviewViewText), view.ToString());
+            PublishBrowser();
+        }
+
+        /// <summary>
+        /// Places a window of the given size beside the editor: on its right, or on its left when
+        /// the right side is off screen. When neither side has room it goes against the screen
+        /// edge that covers less of the editor.
+        /// </summary>
+        /// <param name="editor">The editor's geometry: X and Y in physical pixels, size in GUI units.</param>
+        internal static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,
+            float screenWidth, float screenHeight, float scale)
+        {
+            if (editor == null)
+                return null;
+            if (scale <= 0f)
+                scale = 1f;
+            var right = editor.X + editor.Width * scale;
+            var left = editor.X - width * scale;
+            float x;
+            if (screenWidth <= 0f || right + width * scale <= screenWidth)
+                x = right;
+            else if (left >= 0f)
+                x = left;
+            else
+            {
+                var rightOverlap = right + width * scale - screenWidth;
+                x = rightOverlap <= -left ? screenWidth - width * scale : 0f;
+            }
+            return FitWindowToScreen(new GuiRectangle(Math.Max(0f, x), editor.Y, width, height),
+                screenWidth, screenHeight, scale);
+        }
+
+        private bool IsPartBrowserOpen() => Gui.IsWindowOpen(Player, GuiWindowType.AppearancePartBrowser);
+
+        private AppearancePartBrowserViewModel GetPartBrowser() => IsPartBrowserOpen()
+            ? Gui.GetPlayerWindow(WindowOwner, GuiWindowType.AppearancePartBrowser)?.ViewModel as AppearancePartBrowserViewModel
+            : null;
+
+        private void SyncPartBrowser() => GetPartBrowser()?.ShowParts(this, _browserIds, _browserCurrent,
+            _browserKey, _browserLabel, _browserFrontOnly, _previewView);
+
+        private void ClosePartBrowser()
+        {
+            if (IsPartBrowserOpen())
+                Gui.ClosePlayerWindow(WindowOwner, GuiWindowType.AppearancePartBrowser, Player);
+        }
 
         // ---------------- body map bindings ----------------
         public string MapHeadImage { get => Get<string>(); set => Set(value); }
@@ -203,12 +225,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool MapLeftFootSelected { get => Get<bool>(); set => Set(value); }
 
         // ---------------- colour indicator bindings ----------------
-        public string GlobalLeather1Code { get => Get<string>(); set => Set(value); }
-        public string GlobalLeather2Code { get => Get<string>(); set => Set(value); }
-        public string GlobalCloth1Code { get => Get<string>(); set => Set(value); }
-        public string GlobalCloth2Code { get => Get<string>(); set => Set(value); }
-        public string GlobalMetal1Code { get => Get<string>(); set => Set(value); }
-        public string GlobalMetal2Code { get => Get<string>(); set => Set(value); }
 
         public GuiRectangle SelectedPartLeather1Region { get => Get<GuiRectangle>(); set => Set(value); }
         public GuiRectangle SelectedPartLeather2Region { get => Get<GuiRectangle>(); set => Set(value); }
@@ -234,6 +250,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool SelectedPartCloth2Selected { get => Get<bool>(); set => Set(value); }
         public bool SelectedPartMetal1Selected { get => Get<bool>(); set => Set(value); }
         public bool SelectedPartMetal2Selected { get => Get<bool>(); set => Set(value); }
+
+        // Palette code ("P4") or "RGB" over each part swatch.
         public string SelectedPartLeather1Code { get => Get<string>(); set => Set(value); }
         public string SelectedPartLeather2Code { get => Get<string>(); set => Set(value); }
         public string SelectedPartCloth1Code { get => Get<string>(); set => Set(value); }
@@ -258,32 +276,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool BodyHairSelected { get => Get<bool>(); set => Set(value); }
         public bool BodyTattoo1Selected { get => Get<bool>(); set => Set(value); }
         public bool BodyTattoo2Selected { get => Get<bool>(); set => Set(value); }
-        public string BodySkinCode { get => Get<string>(); set => Set(value); }
-        public string BodyHairCode { get => Get<string>(); set => Set(value); }
-        public string BodyTattoo1Code { get => Get<string>(); set => Set(value); }
-        public string BodyTattoo2Code { get => Get<string>(); set => Set(value); }
 
         public GuiBindingList<float> PaletteSelectionPoints { get => Get<GuiBindingList<float>>(); set => Set(value); }
         public bool IsPaletteSelectionVisible { get => Get<bool>(); set => Set(value); }
-        public bool IsUseBaseEnabled { get => Get<bool>(); set => Set(value); }
 
         private void InitializePartBrowser()
         {
             // Every bound value needs an entry before it is watched or re-sent.
-            IsFrontViewSelected = true;
-            IsBackViewSelected = false;
-            IsAngleViewSelected = false;
-            PreviewViewIndex = (int)AppearancePreviewView.Front;
-            BrowserPageOptions = new GuiBindingList<GuiComboEntry> { new("Page 1 of 1", 0) };
-            BrowserPageIndex = 0;
-            BrowserPartNumberText = string.Empty;
-            for (var tile = 0; tile < BrowserTileCount; tile++)
-            {
-                Set(string.Empty, $"Tile{tile}Image");
-                Set(string.Empty, $"Tile{tile}Label");
-                Set(false, $"Tile{tile}Selected");
-                Set(false, $"Tile{tile}Visible");
-            }
+            _previewView = AppearancePreviewView.Front;
+            IsPreviewViewChoiceVisible = true;
+            PreviewViewText = _previewView.ToString();
+            PartPreviewImage = string.Empty;
+            PartPreviewLabel = string.Empty;
+            PartPreviewNumber = string.Empty;
+            IsPartPreviewEnabled = false;
             foreach (AppearanceEditorSlot slot in Enum.GetValues(typeof(AppearanceEditorSlot)))
             {
                 Set(string.Empty, $"Map{slot}Image");
@@ -291,7 +297,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             foreach (var channel in SwatchChannels)
             {
-                Set(string.Empty, $"Global{channel}Code");
                 Set(BuildPaletteRegion(255), $"SelectedPart{channel}Region");
                 Set(new GuiColor(0, 0, 0), $"SelectedPart{channel}Tint");
                 Set(false, $"SelectedPart{channel}Custom");
@@ -304,71 +309,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(new GuiColor(0, 0, 0), $"Body{name}Tint");
                 Set(false, $"Body{name}Custom");
                 Set(false, $"Body{name}Selected");
-                Set(string.Empty, $"Body{name}Code");
             }
             IsPartColorsVisible = false;
             PaletteSelectionPoints = new GuiBindingList<float>();
             IsPaletteSelectionVisible = false;
-            IsUseBaseEnabled = false;
-        }
-
-        private void WatchPartBrowser()
-        {
-            WatchOnClient(model => model.BrowserPageIndex);
-            WatchOnClient(model => model.BrowserPartNumberText);
         }
 
         // ---------------- browser ----------------
-        private int BrowserPageCount => Math.Max(1, (_browserIds.Count + BrowserPageSize - 1) / BrowserPageSize);
-
         private string BodyPrefix() => AppearancePreview.BodyPrefix(GetGender(_target),
             Get2DAString("appearance", "RACE", (int)GetAppearanceType(_target)));
 
         private void SetBrowserSource(IEnumerable<int> ids, int current, Func<int, string> key,
-            Func<int, string> label, Action<int> apply)
+            Func<int, string> label, Action<int> apply, bool frontOnly = false)
         {
+            _browserFrontOnly = frontOnly;
+            SetIfChanged(nameof(IsPreviewViewChoiceVisible), !frontOnly);
             _browserIds = ids.ToList();
             _browserCurrent = current;
             _browserKey = key;
-            _browserLabel = label ?? (id => id.ToString());
+            _browserLabel = label ?? (id => AppearancePartNames.Get(key(id), id.ToString()));
             _browserApply = apply;
-            var index = _browserIds.IndexOf(current);
-            _browserPage = index >= 0 ? index / BrowserPageSize : 0;
             PublishBrowser();
         }
 
-        private void ClearBrowser() =>
+        /// <summary>Nothing to browse: the part browser window closes with the part picture.</summary>
+        private void ClearBrowser()
+        {
             SetBrowserSource(Array.Empty<int>(), -1, _ => string.Empty, null, null);
+            ClosePartBrowser();
+        }
 
+        /// <summary>Shows the current part's picture and updates the part browser window when it is open.</summary>
         private void PublishBrowser()
         {
             if (_browserIds == null)
                 return;
-            _browserPage = Math.Clamp(_browserPage, 0, BrowserPageCount - 1);
-            var view = PreviewView;
-            for (var tile = 0; tile < BrowserTileCount; tile++)
-            {
-                var position = _browserPage * BrowserPageSize + tile;
-                var visible = tile < BrowserPageSize && position < _browserIds.Count;
-                var id = visible ? _browserIds[position] : -1;
-                SetIfChanged($"Tile{tile}Visible", visible);
-                SetIfChanged($"Tile{tile}Image", visible ? AppearancePreview.Picture(_browserKey(id), view) : string.Empty);
-                SetIfChanged($"Tile{tile}Label", visible ? _browserLabel(id) : string.Empty);
-                SetIfChanged($"Tile{tile}Selected", visible && id == _browserCurrent);
-            }
-
-            var pages = BrowserPageCount;
-            var compact = _browserColumns <= 2;
-            if (BrowserPageOptions == null || BrowserPageOptions.Count != pages || compact != _compactPageLabels)
-            {
-                // Narrow browsers have a narrow page box: "3 / 20" instead of "Page 3 of 20".
-                _compactPageLabels = compact;
-                var options = new GuiBindingList<GuiComboEntry>();
-                for (var page = 0; page < pages; page++)
-                    options.Add(new GuiComboEntry(compact ? $"{page + 1} / {pages}" : $"Page {page + 1} of {pages}", page));
-                BrowserPageOptions = options;
-            }
-            SetIfChanged(nameof(BrowserPageIndex), _browserPage);
+            var view = _browserFrontOnly ? AppearancePreviewView.Front : _previewView;
+            var current = _browserIds.Contains(_browserCurrent) ? _browserCurrent : -1;
+            SetIfChanged(nameof(PartPreviewImage), current >= 0 ? AppearancePreview.Picture(_browserKey(current), view) : string.Empty);
+            SetIfChanged(nameof(PartPreviewLabel), current >= 0 ? _browserLabel(current) : string.Empty);
+            SetIfChanged(nameof(PartPreviewNumber), current > 0 ? current.ToString() : string.Empty);
+            SetIfChanged(nameof(IsPartPreviewEnabled), _browserIds.Count > 0 && _browserApply != null);
+            SetIfChanged(nameof(PreviewViewText), view.ToString());
+            SyncPartBrowser();
         }
 
         private void SetIfChanged<TValue>(string propertyName, TValue value)
@@ -380,7 +363,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>Points the browser at the parts of the selected body-map slot or weapon part.</summary>
         private void RefreshPartBrowser()
         {
-            if (IsSettingsSelected || DoesNotHaveItemEquipped)
+            if (IsPartEditorHidden || DoesNotHaveItemEquipped)
             {
                 ClearBrowser();
                 return;
@@ -413,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var current = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)part);
                 SetBrowserSource(options?.Select(option => option.Value) ?? Array.Empty<int>(), current,
                     id => AppearancePreview.ArmorPartKey(body, slot, id),
-                    id => id == 0 ? "None" : id.ToString(),
+                    id => id == 0 ? "None" : AppearancePartNames.Get(AppearancePreview.ArmorPartKey(body, slot, id), id.ToString()),
                     id => ApplyArmorPartFromBrowser(part, id));
             }
             else if (SelectedItemTypeIndex == 1)
@@ -426,14 +409,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                // Weapons have no pictures yet; their tiles show the part name.
                 var names = PartOptions;
                 var ids = _partIds;
-                SetBrowserSource(ids, CurrentPartId(), _ => string.Empty,
-                    id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count ? names[index] : id.ToString(),
-                    SelectPartFromBrowser);
+                var pictureKey = WeaponPictureKey();
+                // A weapon definition's own part name wins over the picture's name.
+                SetBrowserSource(ids, CurrentPartId(), pictureKey,
+                    id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count &&
+                          names[index] != WeaponAppearanceBaseDefinition.DefaultPartName(id)
+                        ? names[index]
+                        : AppearancePartNames.Get(pictureKey(id), id.ToString()),
+                    SelectPartFromBrowser, frontOnly: true);
             }
             RefreshBodyMap();
+        }
+
+        /// <summary>Picture key of a weapon part: the part model of the equipped weapon's item class.</summary>
+        private Func<int, string> WeaponPictureKey()
+        {
+            var type = GetBaseItemType(GetItem());
+            if (!_weaponAppearances.TryGetValue(type, out var appearance))
+                return _ => string.Empty;
+            var itemClass = Get2DAString("baseitems", "ItemClass", (int)type);
+            if (appearance.IsSimple)
+                return id => AppearancePreview.SimpleWeaponKey(itemClass, id);
+            var part = SelectedPartCategoryIndex switch
+            {
+                0 => AppearanceWeapon.Top,
+                1 => AppearanceWeapon.Middle,
+                2 => AppearanceWeapon.Bottom,
+                _ => AppearanceWeapon.Invalid
+            };
+            return id => AppearancePreview.WeaponPartKey(itemClass, part, id);
         }
 
         private void SelectPartFromBrowser(int partId)
@@ -471,118 +477,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshBodyMap();
         }
 
-        public Action OnClickTile(int tile) => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped || tile < 0 || tile >= BrowserPageSize)
-                return;
-            var position = _browserPage * BrowserPageSize + tile;
-            if (position < _browserIds.Count)
-                _browserApply?.Invoke(_browserIds[position]);
-        };
-
-        public Action OnClickBrowserPrevious() => () =>
-        {
-            if (_browserPage <= 0)
-                return;
-            _browserPage--;
-            PublishBrowser();
-        };
-
-        public Action OnClickBrowserNext() => () =>
-        {
-            if (_browserPage >= BrowserPageCount - 1)
-                return;
-            _browserPage++;
-            PublishBrowser();
-        };
-
-        public Action OnClickBrowserGo() => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-            if (!TryParsePartNumber(BrowserPartNumberText, out var partId) || !_browserIds.Contains(partId))
-            {
-                SendMessageToPC(Player, ColorToken.Red($"Part #{BrowserPartNumberText?.Trim()} is not in this list."));
-                return;
-            }
-            _browserApply?.Invoke(partId);
-            _browserPage = _browserIds.IndexOf(partId) / BrowserPageSize;
-            PublishBrowser();
-        };
-
-        // ---------------- responsive grid ----------------
-        /// <summary>Column count that fits the browser beside the fixed map and colour columns.</summary>
-        internal static int BrowserColumnsForWidth(float windowWidth, bool hasSideColumns)
-        {
-            const float sideColumns = 320f + 372f + 48f;
-            const float tile = 106f; // AppearanceEditorDefinition.TileSize + its 10px column padding
-            // Window border plus the browser group's border and padding.
-            var available = windowWidth - (hasSideColumns ? sideColumns : 220f) - 44f;
-            return available >= tile * 4 ? 4 : available >= tile * 3 ? 3 : available >= tile * 2 ? 2 : 1;
-        }
-
-        /// <summary>Tile rows that fit the window height; narrow browsers stack their pager on two rows.</summary>
-        internal static int BrowserRowsForHeight(float windowHeight, int columns)
-        {
-            const float overhead = 300f;
-            const float row = 138f;
-            var available = windowHeight - overhead - (columns <= 2 ? 40f : 0f);
-            return Math.Clamp((int)(available / row), 1, MaxBrowserRows);
-        }
-
-        private void QueueBrowserResize()
-        {
-            var generation = ++_resizeGeneration;
-            DelayCommand(0.3f, () =>
-            {
-                if (generation != _resizeGeneration || Geometry == null || IsSettingsSelected)
-                    return;
-                ApplyBrowserColumns();
-            });
-        }
-
-        private void ApplyBrowserColumns(bool force = false)
-        {
-            var width = Geometry?.Width ?? 0f;
-            var height = Geometry?.Height ?? 0f;
-            var columns = width > 0
-                ? BrowserColumnsForWidth(width, SelectedItemTypeIndex is not (3 or 4) || IsAppearanceSelected)
-                : MaxBrowserColumns;
-            var rows = height > 0 ? BrowserRowsForHeight(height, columns) : MaxBrowserRows;
-            if (!force && columns == _browserColumns && rows == _browserRows)
-                return;
-            var currentIndex = _browserIds.IndexOf(_browserCurrent);
-            _browserColumns = columns;
-            _browserRows = rows;
-            _browserPage = currentIndex >= 0 ? currentIndex / BrowserPageSize : 0;
-            ChangePartialView(BrowserGridElement, BrowserGrid(columns, rows));
-            PublishBrowser();
-            RepublishInputValues();
-        }
-
+        // ---------------- window size ----------------
         /// <summary>
-        /// A layout swap rebuilds every control; the client keeps only values sent after it, and the
-        /// base class does not re-send input values (NuiLayoutRules R7). Send them again.
+        /// Caps a saved window larger than the player's screen to it and pulls it back on screen.
+        /// Never grows a window.
         /// </summary>
-        private void RepublishInputValues()
+        /// <param name="screenWidth">Screen width in physical pixels (0 when unknown), like Geometry X.</param>
+        /// <param name="screenHeight">Screen height in physical pixels (0 when unknown), like Geometry Y.</param>
+        /// <param name="scale">GUI scale; a window's on-screen size is its width and height times this.</param>
+        internal static GuiRectangle FitWindowToScreen(GuiRectangle geometry, float screenWidth, float screenHeight, float scale)
         {
-            SynchronizeTintControlBindings(() =>
+            if (geometry == null)
+                return null;
+            if (scale <= 0f)
+                scale = 1f;
+            var width = geometry.Width;
+            var height = geometry.Height;
+            var x = geometry.X;
+            var y = geometry.Y;
+            if (screenWidth > 0f)
             {
-                OnPropertyChanged(nameof(SelectedTintColor));
-                OnPropertyChanged(nameof(CustomTintRed));
-                OnPropertyChanged(nameof(CustomTintGreen));
-                OnPropertyChanged(nameof(CustomTintBlue));
-            });
-            OnPropertyChanged(nameof(IsFrontViewSelected));
-            OnPropertyChanged(nameof(IsBackViewSelected));
-            OnPropertyChanged(nameof(IsAngleViewSelected));
-            OnPropertyChanged(nameof(BrowserPageIndex));
-            OnPropertyChanged(nameof(BrowserPartNumberText));
-            OnPropertyChanged(nameof(SelectedItemTypeIndex));
-            OnPropertyChanged(nameof(EditorTabToggleValue));
-            OnPropertyChanged(nameof(SettingsTabToggleValue));
+                width = Math.Min(width, screenWidth / scale);
+                x = Math.Clamp(x, 0f, Math.Max(0f, screenWidth - width * scale));
+            }
+            if (screenHeight > 0f)
+            {
+                height = Math.Min(height, screenHeight / scale);
+                y = Math.Clamp(y, 0f, Math.Max(0f, screenHeight - height * scale));
+            }
+            if (width == geometry.Width && height == geometry.Height && x == geometry.X && y == geometry.Y)
+                return geometry;
+            return new GuiRectangle(x, y, width, height);
+        }
+
+        /// <summary>Runs once when the window opens, never on a move, so a drag is never undone.</summary>
+        private void FitWindowToPlayerScreen()
+        {
+            var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
+            var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
+            var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
+            var fitted = FitWindowToScreen(Geometry, screenWidth, screenHeight, scale);
+            if (fitted != null && !ReferenceEquals(fitted, Geometry))
+                Geometry = fitted;
         }
 
         // ---------------- body map ----------------
@@ -716,21 +652,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         // ---------------- colour indicators ----------------
-        /// <summary>Palette code (H1), RGB for a custom colour, or Base for an inherited part colour.</summary>
+        /// <summary>Called after a swatch's region, tint or custom flag changes.</summary>
+        /// <summary>
+        /// The code over a swatch: its palette code (P4), "RGB" for a custom colour, or nothing when
+        /// it has no colour of its own (a part using the outfit colour).
+        /// </summary>
         internal static string SwatchCode(GuiRectangle region, bool custom)
         {
             if (custom)
                 return "RGB";
             if (region == null || region.Width < ColorSize)
-                return "Base";
+                return string.Empty;
             return AppearancePreview.PaletteCode((int)(region.Y / ColorSize) * TextureColorsPerRow + (int)(region.X / ColorSize));
         }
 
-        /// <summary>Called after a swatch's region, tint or custom flag changes.</summary>
-        private void OnSwatchUpdated(ColorTarget target, AppearanceArmorColor channel, string name)
+        private void OnSwatchUpdated(ColorTarget target, AppearanceArmorColor channel)
         {
-            if (target == ColorTarget.Global)
-                SetIfChanged($"Global{channel}Code", SwatchCode(Get<GuiRectangle>(name + "Region"), Get<bool>(name + "Custom")));
             if (target != ColorTarget.Global && target == ToColorTarget(_selectedSlot))
                 MirrorPartSwatch(channel);
             RefreshPaletteSelection();
@@ -763,7 +700,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var partTarget = ToColorTarget(_selectedSlot);
             foreach (var channel in SwatchChannels)
                 SetIfChanged($"SelectedPart{channel}Selected", _colorTarget == partTarget && _selectedColorChannel == channel);
-            SetIfChanged(nameof(IsUseBaseEnabled), IsEquipmentSelected && SelectedItemTypeIndex == 0 && _colorTarget != ColorTarget.Global);
             RefreshPaletteSelection();
         }
 
@@ -783,7 +719,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(new GuiColor(color.Red, color.Green, color.Blue), $"Body{name}Tint");
                 SetIfChanged($"Body{name}Custom", hasCustom);
                 SetIfChanged($"Body{name}Selected", SelectedColorCategoryIndex == index);
-                SetIfChanged($"Body{name}Code", SwatchCode(region, hasCustom));
             }
             RefreshPaletteSelection();
         }
@@ -846,13 +781,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ColorCategorySelected[index] = true;
             LoadTintMapEditor();
             RefreshBodySwatches();
-        };
-
-        public Action OnClickUseBase() => () =>
-        {
-            if (!IsEquipmentSelected || SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global)
-                return;
-            ResetArmorColorToInheritance(_colorTarget, _selectedColorChannel);
         };
 
         private void UpdatePaletteSheetForChannel()

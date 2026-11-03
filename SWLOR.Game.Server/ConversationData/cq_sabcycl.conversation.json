@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Beneath the concrete ruin at the north end of the Cloning Test Site on Hutlar lie the Jedi Trial Halls, a training refuge built before the Mandalorians came. I took a few saberstaff students there. A cyclone droid cut through a stair railing before we sealed the halls. Everyone got out; the machines stayed, repeating the last drill at full power. Disable six Cyclone Drill Droids and recover the Saber Cyclone Enclave Trial Slate.",
+          "Text": "Beneath the concrete ruin at the north end of the Cloning Test Site on Hutlar lie the Jedi Trial Halls, a training refuge built before the Mandalorians came. I took a few saberstaff students there. A cyclone droid cut through a stair railing before we sealed the halls. Everyone got out; the machines stayed, repeating the last drill at full power. Disable six Trial Drill Droids, the ones nearest the entrance, and recover the Saber Cyclone Enclave Trial Slate. Any Trial Drill Droid counts, since the halls run one program, but a droid only counts if you struck it with Circle Slash or Maelstrom Arc. A turn that never reached the machine proves nothing.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. At the north end of the Cloning Test Site on Hutlar stands a big concrete ruin. A concrete entrance block is built onto its east side, just south of the big pipe, and the key opens its east-facing blast door. The Trial Halls lie below. Disable six Cyclone Drill Droids and bring me the Saber Cyclone Enclave Trial Slate.",
+          "Text": "Take this key. At the north end of the Cloning Test Site on Hutlar stands a big concrete ruin. A concrete entrance block is built onto its east side, just south of the big pipe, and the key opens its east-facing blast door. The Trial Halls lie below. Disable six Trial Drill Droids, each struck with Circle Slash or Maelstrom Arc, and bring me the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Cyclone Drill Droids, and the Saber Cyclone Enclave Trial Slate. The blast door is in the concrete entrance block on the east side of the big ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
+          "Text": "Six Trial Drill Droids, each struck with Circle Slash or Maelstrom Arc, and the Saber Cyclone Enclave Trial Slate. The blast door is in the concrete entrance block on the east side of the big ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The first drills are down. Their timing controller still drives the next set of machines. Disable five Cyclone Duelist Droids deeper in the Trial Halls and recover the Saber Cyclone Kyber Focus Shard.",
+          "Text": "The first drills are down. Their timing controller still drives the next set of machines. Disable five Trial Duelist Droids deeper in the Trial Halls, each struck with Circle Slash or Maelstrom Arc; any Trial Duelist Droid counts. Recover the Saber Cyclone Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Cyclone Duelist Droids, deeper in the Trial Halls. Bring back the Saber Cyclone Kyber Focus Shard.",
+          "Text": "Five Trial Duelist Droids, each struck with Circle Slash or Maelstrom Arc, deeper in the Trial Halls. Bring back the Saber Cyclone Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Cyclone Duelist Droids, deeper in the Trial Halls. Bring back the Saber Cyclone Kyber Focus Shard.",
+          "Text": "Five Trial Duelist Droids, each struck with Circle Slash or Maelstrom Arc, deeper in the Trial Halls. Bring back the Saber Cyclone Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One gate runs on its own controller, and the remote shutdown still cannot reach it. A Cyclone Gatekeeper Droid guards the approach to the Saber Trial Chamber at the north end of the halls. Disable it and recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "One gate runs on its own controller, and the remote shutdown still cannot reach it. A Trial Gatekeeper Droid guards the approach to the Saber Trial Chamber at the north end of the halls. Disable it and recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Cyclone Gatekeeper Droid guards the approach to the Saber Trial Chamber. Disable it and recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "The Trial Gatekeeper Droid guards the approach to the Saber Trial Chamber. Disable it and recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Cyclone Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis must be disabled directly.",
+          "Text": "The Trial Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis must be disabled directly.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Cyclone Gatekeeper Droid still guards the approach to the Saber Trial Chamber. Disable it and recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "The Trial Gatekeeper Droid still guards the approach to the Saber Trial Chamber. Disable it and recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is open, but four linked Cyclone Examiner Droids still guard the network's control systems. Disable all four and recover the Saber Cyclone Council Trial Chit.",
+          "Text": "The gate is open, but four linked Trial Examiner Droids still guard the network's control systems at the far north-west end of the halls, the deepest part. Any Trial Examiner Droid counts, but strike each with Circle Slash or Maelstrom Arc. Disable all four and recover the Saber Cyclone Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Cyclone Examiner Droids guard the control systems in the Trial Halls. Disable them and recover the Saber Cyclone Council Trial Chit.",
+          "Text": "Four Trial Examiner Droids guard the control systems at the far north-west end of the Trial Halls. Strike each with Circle Slash or Maelstrom Arc. Disable them and recover the Saber Cyclone Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Cyclone Examiner Droids still guard the control systems in the Trial Halls. Disable them and recover the Saber Cyclone Council Trial Chit.",
+          "Text": "Four Trial Examiner Droids still guard the control systems at the far north-west end of the Trial Halls. Strike each with Circle Slash or Maelstrom Arc. Disable them and recover the Saber Cyclone Council Trial Chit.",
           "Style": 0,
           "Color": null
         }

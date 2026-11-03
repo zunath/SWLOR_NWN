@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Entity;
@@ -33,9 +32,13 @@ namespace SWLOR.Game.Server.Service
             return Instance.IsFull(itemCount);
         }
 
-        public static List<InventoryItem> SearchItems(string playerId, string searchText)
+        /// <summary>
+        /// Returns one page of the banked items that match the search. A page index past the last page is
+        /// clamped to the last page, so callers can ask for <see cref="int.MaxValue"/> to reach the newest deposits.
+        /// </summary>
+        public static BankItemPage SearchItems(string playerId, string searchText, int pageIndex)
         {
-            return Instance.SearchItems(playerId, searchText);
+            return Instance.SearchItems(playerId, searchText, pageIndex);
         }
 
         public static string GetDepositFailure(uint player, uint item)

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Kill Box adept in Smuggler's Moon - Czerka Weapons Testing Facility."
+    "value": "Range Washout (Kill Box line) in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human shooter in a Czerka uniform the company stopped paying for long ago, blaster rifle held at a drilled, regulation angle. He is one of the off-contract test cell running live kill box drills in the lanes of the Czerka Arms Test Range, scoring every trial as though Czerka still signed off on it."
+      "0": "A human range washout in a Czerka uniform the company stopped paying for long ago, blaster rifle held at a drilled, regulation angle. He is one of the off-contract shooters running live crossfire drills in the lanes of the Czerka Arms Test Range, scoring every trial as though Czerka still signed off on it."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kill Box Adept"
+      "0": "Range Washout"
     }
   },
   "fortbonus": {

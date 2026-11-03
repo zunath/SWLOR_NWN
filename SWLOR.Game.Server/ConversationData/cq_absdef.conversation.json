@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your guard drops a finger's width every time you breathe out. That's a flaw in the grain, and flaws crack under load. The Forge Caverns on Tatooine can work it out of you. Smith-guards hold the galleries now, sworn to an oath I never approved, and their newest call themselves adepts. Cut down six adepts and bring me the Absolute Defense Forge Heat Ledger they keep by the crucibles. Do that, and I'll start hammering that flaw out of your guard.",
+          "Text": "Your guard drops a finger's width every time you breathe out. That's a flaw in the grain, and flaws crack under load. The Forge Caverns on Tatooine can work it out of you. Smith-guards hold the galleries now, sworn to an oath I never approved, and their newest are Forgebound Initiates, holding the rooms nearest the entrance. Any Forgebound Initiate counts, but only the ones you cut down after dazzling him with Flash; steel that never saw the flash proves nothing. Cut down six and bring me the Absolute Defense Forge Heat Ledger they keep by the crucibles. Do that, and I'll start hammering that flaw out of your guard.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Smith-guards. Mine, once. They swore their edges to the forge, then quenched that oath in a darker one, some Sith doctrine promising steel that never yields to anything, loyalty included. Now they hold my lower galleries and run heats I never signed. The adepts are the greenest of them. Green steel still cuts.",
+          "Text": "Smith-guards. Mine, once. They swore their edges to the forge, then quenched that oath in a darker one, some Sith doctrine promising steel that never yields to anything, loyalty included. Now they hold my lower galleries and run heats I never signed. The Initiates are the greenest of them. Green steel still cuts.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The galleries are still working, which means you're not finished. Six adepts, and the Absolute Defense Forge Heat Ledger from beside the crucibles. Steel doesn't temper by being talked about.",
+          "Text": "The galleries are still working, which means you're not finished. Six Forgebound Initiates, and the Absolute Defense Forge Heat Ledger from beside the crucibles. Steel doesn't temper by being talked about.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The flaw in your breathing is smaller. Not gone. This ledger names five specialists, journeymen of their bad oath, the ones who run the tempering racks. They cool every new blade through a Sith device that whispers hunger into hot steel. Break the five and pull the Absolute Defense Sith Tempering Matrix out of the quench trough before it finishes another edge.",
+          "Text": "The flaw in your breathing is smaller. Not gone. This ledger names the Forgebound Journeymen, the ones deeper in who run the tempering racks. They cool every new blade through a Sith device that whispers hunger into hot steel. Break five of them, any Journeyman, each after dazzling him with Flash, and pull the Absolute Defense Sith Tempering Matrix out of the quench trough before it finishes another edge.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. You hold the gate key already; the specialists work deeper in, where the heat starts to talk. Keep your guard closed going down and closed coming back.",
+          "Text": "Good. You hold the gate key already; the Journeymen work deeper in, where the heat starts to talk. Keep your guard closed going down and closed coming back.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists still stand between you and the tempering rack. Come back when the Absolute Defense Sith Tempering Matrix is cold in your pack, not before.",
+          "Text": "Five Forgebound Journeymen still stand between you and the tempering rack. Come back when the Absolute Defense Sith Tempering Matrix is cold in your pack, not before.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the work gets honest. The galleries answer to a warden, the anvil-keeper, the man who broke my last three apprentices without moving his back foot. He keeps the trial altar on the west side of the caverns; go to it and he'll come to you. Hear me, because this is forge law and not caution: heavy work takes a crew. Take two hammers at the least, or he'll fold you into the floor like the others. Break him, and bring me the Absolute Defense Cracked Anvil Sigil he wears.",
+          "Text": "Now the work gets honest. The galleries answer to Forge Warden Ssorrak, the anvil-keeper, the man who broke my last three apprentices without moving his back foot. He keeps the trial altar on the west side of the caverns; go to it and he'll come to you. Hear me, because this is forge law and not caution: heavy work takes a crew. Take two hammers at the least, or he'll fold you into the floor like the others. Break him, and bring me the Absolute Defense Cracked Anvil Sigil he wears.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because adepts and journeymen are not a warden. A heavy blade turning alone tires. A guard with no relief breaks. His whole doctrine counts on both. Three sets of hands means the pressure never rests and neither does he, and that isn't courtesy, it's the technique itself. A wall holds longest where the line behind it is more than one deep.",
+          "Text": "Because Initiates and Journeymen are not a warden. A heavy blade turning alone tires. A guard with no relief breaks. His whole doctrine counts on both. Three sets of hands means the pressure never rests and neither does he, and that isn't courtesy, it's the technique itself. A wall holds longest where the line behind it is more than one deep.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden was the wall. Behind the wall sits the inner circle: four overseers who sign the heats now, who taught the bad oath and grade it in my forge with my tools. They hold the deep floor in a ring around the master's anvil. Each carries stamped clearance. Bring me one Absolute Defense Overseer's Clearance Token, whole and unmelted, and I'll put their forgeries in front of forge law. Keep your crew close. Four overseers on their own floor is a fire, and you don't split up inside a fire.",
+          "Text": "The warden was the wall. Behind the wall sits the inner circle: the Forgebound Overseers, who sign the heats now, who taught the bad oath and grade it in my forge with my tools. They hold the deep floor, the deepest part of the caverns, in a ring around the master's anvil. Each carries stamped clearance. Put four of them down, any Overseer, each after dazzling him with Flash, and bring me one Absolute Defense Overseer's Clearance Token, whole and unmelted, and I'll put their forgeries in front of forge law. Keep your crew close. Four overseers on their own floor is a fire, and you don't split up inside a fire.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The innermost ring, then: the Champion Forge, through the door at the north end of the caverns. The master holds it alone, and his guard is the finished discipline entire, the wall you've been building one pass at a time, already built. No one has ever passed that guard alone, and no one who went down without a crew came back up. Take yours, two hammers at the least. Turn his patience against itself, spell each other on the pressure, and wait for the one breath he finally has to take. There's nothing to carry out. His fall is the proof.",
+          "Text": "The innermost ring, then: the Champion Forge, through the door at the north end of the caverns. The master, Forge Master Kassrek, holds it alone, and his guard is the finished discipline entire, the wall you've been building one pass at a time, already built. No one has ever passed that guard alone, and no one who went down without a crew came back up. Take yours, two hammers at the least. Turn his patience against itself, spell each other on the pressure, and wait for the one breath he finally has to take. There's nothing to carry out. His fall is the proof.",
           "Style": 0,
           "Color": null
         }
@@ -1467,7 +1467,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "The Absolute Defense Forge Heat Ledger. Six adepts won't add to it again.",
+        "Text": "The Absolute Defense Forge Heat Ledger. Six Initiates won't add to it again.",
         "Style": 4,
         "Color": null
       },

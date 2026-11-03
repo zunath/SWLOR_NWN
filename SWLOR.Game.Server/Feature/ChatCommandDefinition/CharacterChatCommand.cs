@@ -36,10 +36,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Recipes();
             Perks();
             Techniques();
+            Hotbars();
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
             Customize();
+            ArmorVisibility();
             Disguises();
             HeadScale();
             AlwaysWalk();
@@ -211,6 +213,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private void Hotbars()
+        {
+            _builder.Create("hotbars")
+                .Description("Toggles the Hotbars window, where extra hotbars are turned on, sized and moved.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) => GetIsPC(user) && !GetIsDM(user) && !GetIsDMPossessed(user)
+                    ? string.Empty
+                    : ColorToken.Red("Only player characters have extra hotbars."))
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.ExtraHotbarSetup);
+                });
+        }
+
         private void Disguises()
         {
             _builder.Create("disguise", "disguises")
@@ -373,6 +389,31 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+
+        private void ArmorVisibility()
+        {
+            _builder.Create("helm", "helmet")
+                .Description("Shows or hides your helmet.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => ToggleArmorVisibility(user, true));
+
+            _builder.Create("cloak")
+                .Description("Shows or hides your cloak.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => ToggleArmorVisibility(user, false));
+        }
+
+        private static void ToggleArmorVisibility(uint user, bool helmet)
+        {
+            var item = helmet ? "helmet" : "cloak";
+            if (!ArmorDisplay.Toggle(user, helmet, out var shown))
+            {
+                SendMessageToPC(user, ColorToken.Red($"Your {item} setting could not be saved."));
+                return;
+            }
+
+            SendMessageToPC(user, shown ? $"Your {item} is now shown." : $"Your {item} is now hidden.");
+        }
 
         private void Customize()
         {
@@ -821,6 +862,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             continue;
                         }
                     }
+
+                    // Extra hotbars are part of the HUD, so the ones the player turned on come back at their default spots.
+                    ExtraHotbars.ApplyVisibility(owner);
 
                     SendMessageToPC(user, ColorToken.Green("All window positions and sizes have been reset to their default values."));
                 });

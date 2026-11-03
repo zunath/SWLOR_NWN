@@ -32,6 +32,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 - **Clean up as you go:** delete generated files (renders, models, textures, HAK and module copies, client profiles, containers) once nothing needs them, without being asked. Keep only the evidence the user needs.
 - **Token economy:** never read a whole `Module/` JSON file (some reach 25 MB); search instead. Read only the guide sections you need, and keep command output small.
 - **Pull requests:** one branch and pull request per request, from up-to-date `origin/master`. Request each Codex review with `tools/RequestCodexReview.ps1`, which waits for the answer, and keep fixing in the same turn until a review of the current head finds nothing; never wait on a rate-limited CodeRabbit; resolve every thread and every merge conflict with the base (`Readmes/PullRequests.md`).
+- **Dye colors:** never change how existing parts take dyes without the owner's approval and before/after client captures; dyed metal binds no specular or roughness map (except the grandfathered `legacyMetalSpecular` materials); `SWLOR_Haks/tools/CheckDyeAppearance.py` must pass (`Readmes/TintMapRendering.md`).
 - **Game text encoding:** punctuation is ASCII (straight quotes, `-`, `...`), never curly quotes or dashes pasted from documents or AI chats. Keep accented letters, but in Module JSON store them as single Windows-1252 bytes, never UTF-8, or the game shows `Ã©` and `â€™` (`Readmes/CodingStandards.md`).
 - **Public repository:** keep secrets and RP XP OOC detection specifics out of commits, pull requests, and player-facing text.
 
@@ -39,8 +40,8 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 
 Read the guide before working in its area. `Readmes/README.md` lists every guide.
 
-- Coding style (one type per file, one enum per file), renames (an enum rename needs a data migration), Module JSON, StatType design, TLK and 2DA data: `Readmes/CodingStandards.md`
-- Items, enemies, loot, balance, dungeons, ship access, phenotypes: `Readmes/ContentStandards.md`
+- Coding style (one type per file, one enum per file), renames (an enum rename needs a data migration), Module JSON, StatType design, gear-fed player stats (rebuilt from worn gear), TLK and 2DA data: `Readmes/CodingStandards.md`
+- Items, enemies, loot, balance and player stat caps (kept in sync with the Player Guide `Stat Caps` topic), dungeons, ship access, phenotypes, head triangle caps per LOD: `Readmes/ContentStandards.md`
 - Skills, perk lines, cross-skill design, progression, descriptions, and balance evidence: `Readmes/SkillPerkStandards.md`
 - Migrations, persistence, and enum renames: `Readmes/Migrations.md`
 - Pull requests and code review: `Readmes/PullRequests.md`
@@ -50,6 +51,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
 - Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
 - Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
+- Wearable parts, robes, skinning, clipping and motion regressions: `Readmes/GarmentModelRules.md`
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`

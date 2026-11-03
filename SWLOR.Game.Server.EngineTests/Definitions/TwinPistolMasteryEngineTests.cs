@@ -45,10 +45,10 @@ public static class TwinPistolMasteryEngineTests
             {
                 record.Skills[SkillType.TwinPistol].Rank = 50;
                 record.Skills[SkillType.Pistol].Rank = 0;
-                record.Perks[PerkType.TwinPistolMomentum] = 1;
-                record.Perks[PerkType.BlasterSlide] = 1;
-                record.Perks[PerkType.PistolRush] = 1;
-                record.Perks[PerkType.GrappleShot] = 1;
+                record.Perks[PerkType.Cadence] = 1;
+                record.Perks[PerkType.LeadShot] = 1;
+                record.Perks[PerkType.TempoShot] = 1;
+                record.Perks[PerkType.ClosingShot] = 1;
             });
             var main = await trial.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
             var companion = await TwinPistolEquipmentEngineTests.WaitForPair(trial, actor, main);
@@ -65,12 +65,11 @@ public static class TwinPistolMasteryEngineTests
                 {
                     var angle = direction * MathF.PI / 8;
                     var candidate = GroundLocation(range, origin + new NumericsVector3(MathF.Cos(angle), MathF.Sin(angle), 0) * 3f);
-                    if (!string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), candidate, 0f, 4f)) ||
-                        !LineOfSightVector(origin, GetPositionFromLocation(candidate))) continue;
+                    if (!LineOfSightVector(origin, GetPositionFromLocation(candidate))) continue;
                     firingPosition = GetPositionFromLocation(candidate);
                     found = true;
                 }
-                ctx.Assert(found, "The public Canyon Range entrance provides a reachable firing target location");
+                ctx.Assert(found, "The public Canyon Range entrance provides a visible firing target location");
             });
             ObjectPlugin.SetPosition(target, firingPosition);
             await trial.WaitFrameAsync();
@@ -113,57 +112,25 @@ public static class TwinPistolMasteryEngineTests
 
             await trial.ExecuteInCreatureContextAsync(actor, () =>
             {
-                ctx.Assert(Quest.AcceptQuest(actor, pavo, "final_salvo_mastery"), "The movement trial is accepted independently");
+                ctx.Assert(Quest.AcceptQuest(actor, pavo, "final_salvo_mastery"), "The route trial is accepted independently");
                 CreaturePlugin.RunUnequip(actor, companion);
-                CreaturePlugin.AddFeat(actor, FeatType.BlasterSlide1);
-                CreaturePlugin.AddFeat(actor, FeatType.PistolRush1);
-                CreaturePlugin.AddFeat(actor, FeatType.GrappleShot1);
+                CreaturePlugin.AddFeat(actor, FeatType.LeadShot1);
+                CreaturePlugin.AddFeat(actor, FeatType.TempoShot1);
+                CreaturePlugin.AddFeat(actor, FeatType.ClosingShot1);
             });
             await TwinPistolEquipmentEngineTests.WaitForRemovedPair(trial, actor, main, companion);
             var routeWeapon = await trial.EquipItemAsync(actor, "b_longsword", InventorySlot.RightHand);
-            ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "The movement mastery supports a cross-trained single weapon");
+            ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "The route mastery supports a cross-trained single weapon");
             Combat.SetAutoAttackHitResolutionOverride(false);
             Combat.SetAbilityHitResolutionOverride(true);
-            var origin = GetPosition(actor);
-            NumericsVector3 unit = default;
-            var laneFound = false;
-            await trial.ExecuteInCreatureContextAsync(actor, () =>
-            {
-                for (var direction = 0; direction < 16 && !laneFound; direction++)
-                {
-                    var angle = direction * MathF.PI / 8;
-                    var candidate = new NumericsVector3(MathF.Cos(angle), MathF.Sin(angle), 0);
-                    var forward = GroundLocation(range, origin + candidate * 4f);
-                    var behind = GroundLocation(range, origin - candidate * 2f);
-                    if (!string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), forward, 2f, 6f)) ||
-                        !string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), behind, 0f, 6f))) continue;
-                    unit = candidate;
-                    laneFound = true;
-                }
-                ctx.Assert(laneFound, "The authored entrance supplies a safe forward lane and rear target position");
-            });
-            ObjectPlugin.SetPosition(target, GetPositionFromLocation(GroundLocation(range, origin - unit * 2f)));
-            await trial.WaitFrameAsync();
-            await UseMovement(trial, actor, target, FeatType.BlasterSlide1, GetLocation(target));
-            await trial.DelaySecondsAsync(2.05f);
-
-            var secondaryPosition = origin + unit * 2f + new NumericsVector3(-unit.Y, unit.X, 0) * 1.2f;
-            var secondary = OBJECT_INVALID;
-            await trial.ExecuteInCreatureContextAsync(actor, () =>
-            {
-                secondary = CreateObject(ObjectType.Creature, "nw_rat001", GroundLocation(range, secondaryPosition));
-                trial.Track(secondary);
-                ctx.Assert(GetIsObjectValid(secondary), "Create a hostile target beside, not blocking, the Rush travel path");
-                trial.MakeHostile(secondary);
-                Stat.SetNPCMaxHitPoints(secondary, 20000, true);
-                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), secondary, 90f);
-            });
-            await trial.WaitFrameAsync();
-            await UseMovement(trial, actor, OBJECT_INVALID, FeatType.PistolRush1, GroundLocation(range, origin));
-            await trial.DelaySecondsAsync(2.05f);
-            await UseMovement(trial, actor, target, FeatType.GrappleShot1, GetLocation(target));
+            // Tempo Shot grants two Cadence, Lead Shot chains a third, and Closing Shot lands spending all three.
+            await UseAbility(trial, actor, target, FeatType.TempoShot1);
+            await trial.DelaySecondsAsync(.6f);
+            await UseAbility(trial, actor, target, FeatType.LeadShot1);
+            await trial.DelaySecondsAsync(.6f);
+            await UseAbility(trial, actor, target, FeatType.ClosingShot1);
             ctx.AssertEqual(2, DB.Get<Player>(player.Id).Quests["final_salvo_mastery"].CurrentState,
-                "Actual Slide and Rush movement plus a charged landed Grapple award the route proof");
+                "Landed Tempo Shot, Lead Shot, then a Closing Shot spending three Cadence award the route proof");
             ctx.Assert(KeyItem.HasKeyItem(actor, KeyItemType.FinalSalvoCanyonRouteTrace), "The second path owns separate proof");
 
             for (var cycle = 0; cycle < 2; cycle++)
@@ -190,7 +157,7 @@ public static class TwinPistolMasteryEngineTests
                 ctx.Assert(!restored.Perks.ContainsKey(PerkType.TwinSuns), "Mastery approval grants no free perk rank");
                 ctx.Assert(!restored.KeyItems.ContainsKey(KeyItemType.TwinSunsCanyonFiringTrace), "The trainer consumes only the firing proof");
                 ctx.Assert(restored.KeyItems.ContainsKey(KeyItemType.FinalSalvoCanyonRouteTrace), "The other proof remains available for its own turn-in");
-                ctx.Assert(Quest.AdvanceQuest(actor, pavo, "final_salvo_mastery"), "Pavo completes his independent movement mastery");
+                ctx.Assert(Quest.AdvanceQuest(actor, pavo, "final_salvo_mastery"), "Pavo completes his independent route mastery");
             });
         }
         finally
@@ -207,19 +174,19 @@ public static class TwinPistolMasteryEngineTests
         }
     }
 
-    private static async Task UseMovement(EngineTestContext context, uint actor, uint target, FeatType feat, Location location)
+    private static async Task UseAbility(EngineTestContext context, uint actor, uint target, FeatType feat)
     {
         await context.ExecuteInCreatureContextAsync(actor, () =>
         {
             Ability.ClearLastCompletedAbilityImpactSummary(actor);
-            var activated = UsePerkFeat.TryUseAbility(actor, target, feat, location);
+            var activated = UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target));
             context.Assert(activated, $"The mastery action uses the normal validated feat pipeline: {Ability.GetLastActivationDenialReason()}");
         });
-        await context.WaitUntilAsync(() => !WeaponRepositioning.IsMoving(actor) &&
+        await context.WaitUntilAsync(() => !TwinPistolAbility.HasActiveActivation(actor) &&
             Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
-            8f, "confirmed movement and a landed captured attack");
+            8f, "a landed captured attack");
         // A single melee weapon naturally resumes pursuit after its paid impact.
-        // Stop that ordinary follow-up before choosing the next player-directed route leg.
+        // Stop that ordinary follow-up before the next sequence step.
         await context.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());
         PairedRangedAttackStop(actor);
     }

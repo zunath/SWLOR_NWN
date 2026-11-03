@@ -67,14 +67,17 @@ jobs:
           printf 'server_image=%s\n' "$server_image" >> "$GITHUB_OUTPUT"
           echo "Publishing $server_image"
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_PUBLISH_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PUBLISH_TOKEN }}
+        shell: bash
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_PUBLISH_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_PUBLISH_TOKEN }}
+        run: |
+          docker_config="$RUNNER_TEMP/swlor-docker-auth"
+          install -d -m 0700 "$docker_config"
+          printf 'DOCKER_CONFIG=%s\n' "$docker_config" >> "$GITHUB_ENV"
+          printf '%s' "$DOCKERHUB_TOKEN" | docker --config "$docker_config" login \
+            --username "$DOCKERHUB_USERNAME" --password-stdin
 
       - name: Refuse to replace an existing versioned image
         shell: bash
@@ -104,14 +107,16 @@ jobs:
           echo "Confirmed that $SERVER_IMAGE does not exist."
 
       - name: Build the server image
-        uses: docker/build-push-action@v6
-        with:
-          context: SWLOR.Game.Server/Docker
-          file: SWLOR.Game.Server/Docker/Dockerfile
-          platforms: linux/amd64
-          load: true
-          push: false
-          tags: ${{ steps.image.outputs.server_image }}
+        shell: bash
+        env:
+          SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --load \
+            --tag "$SERVER_IMAGE" \
+            --file SWLOR.Game.Server/Docker/Dockerfile \
+            SWLOR.Game.Server/Docker
 
       - name: Verify the non-root runtime
         shell: bash
@@ -137,6 +142,18 @@ jobs:
             test -x /nwn/run-server.sh
           '
 
+      - name: Verify crash capture and restart lifecycle
+        shell: bash
+        env:
+          SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
+          SWLOR_CRASH_TEST_IMAGE: swlor-crash-capture-tests:ci
+        run: |
+          docker build \
+            --build-arg SERVER_IMAGE="$SERVER_IMAGE" \
+            --tag "$SWLOR_CRASH_TEST_IMAGE" \
+            tools/tests/server_crash_capture
+          python3 -m unittest tools.tests.test_server_crash_capture -v
+
       - name: Publish the verified server image
         shell: bash
         env:
@@ -152,3 +169,11 @@ jobs:
           printf 'Published `%s` from `%s`.\n' \
             "$SERVER_IMAGE" \
             "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove registry authentication
+        if: always()
+        shell: bash
+        run: |
+          docker --config "$RUNNER_TEMP/swlor-docker-auth" logout || true
+          rm -f -- "$RUNNER_TEMP/swlor-docker-auth/config.json"
+          rmdir -- "$RUNNER_TEMP/swlor-docker-auth" || true

@@ -75,6 +75,7 @@ mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript,
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.RegisterUnequipGuard
   action      SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
+  action      SWLOR.Game.Server.Feature.MigrationDefinition.FurnitureRenameMigration.SaveRestoredListings
   action      SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp
 
 mod_load  # run by the engine as the module OnModuleLoad event, which EventRegistration.OnModulePreload points at this script
@@ -94,6 +95,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Native.GetDamageRoll.RegisterHook
   action      SWLOR.Game.Server.Native.NeckAppearanceSerialization.RegisterHook
   action      SWLOR.Game.Server.Native.OnAIActionAttackObject.RegisterHook
+  action      SWLOR.Game.Server.Native.PairedRangedPresentation.StartParking
   action      SWLOR.Game.Server.Native.PlayerCreation.RegisterHook
   action      SWLOR.Game.Server.Native.PlayerFileCheckpoint.RegisterHooks
   action      SWLOR.Game.Server.Native.PlayerListNamePrivacy.RegisterHook
@@ -143,6 +145,7 @@ appears
 area_enter
   action      SWLOR.Game.Server.Service.Area.EnterArea
   action      SWLOR.Game.Server.Service.Conversation.EndOnAreaEnter
+  action      SWLOR.Game.Server.Service.ExtraHotbars.OpenBarsOnEnter
   action      SWLOR.Game.Server.Service.Gui.CloseAllWindows
   action      SWLOR.Game.Server.Service.Music.ApplyPlayerMusic
   action      SWLOR.Game.Server.Service.Property.EnterPropertyInstance
@@ -160,7 +163,6 @@ area_enter
   action      SWLOR.Game.Server.Feature.PersistentLocation.LoadLocationOnEnter
   action      SWLOR.Game.Server.Feature.PersistentMapProgression.LoadMapProgression
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.LoadPlayerStatusWindow
-  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnAreaEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAreaEnter
 
 area_exit
@@ -253,6 +255,9 @@ buy_rebuild
 
 buy_stat_rebuild
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterStatRebuildViewModel.LoadCharacterStatRebuild
+
+casino_slot_used
+  action      SWLOR.Game.Server.Service.CasinoSlot.OnUsed
 
 char_init_after
   action      SWLOR.Game.Server.Service.Migration.AfterCharacterInitialization
@@ -349,6 +354,7 @@ crea_disturb_aft
 
 crea_hb_aft
   action      SWLOR.Game.Server.Service.AI.CreatureHeartbeat
+  action      SWLOR.Game.Server.Feature.CivilianPatrol.Heartbeat
 
 crea_leash_end
   action      SWLOR.Game.Server.Service.Space.RestoreLeashedShip
@@ -393,6 +399,7 @@ det_spot_bef
 
 dialog_start
   action      SWLOR.Game.Server.Service.ConversationMenu.StartFromObjectEvent
+  action      SWLOR.Game.Server.Feature.CivilianPatrol.StopForDialogue
 
 dm_ai_aft
   action      SWLOR.Game.Server.Service.AI.DMToggleAIAfter
@@ -521,6 +528,7 @@ examine_bef
   action      SWLOR.Game.Server.Service.Space.ExamineShipModuleItem
   action      SWLOR.Game.Server.Service.Space.ExamineShipItem
   action      SWLOR.Game.Server.Feature.EquipmentRestrictions.MarkLegacyOffHandPistolOnExamine
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnExamine
 
 exit_rebuild
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterFullRebuildViewModel.ExitRebuildArea
@@ -592,7 +600,6 @@ item_eqpval_aft
   action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshMaxHPAfterEquipmentChange
   action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange
   action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnItemEquip
-  action      SWLOR.Game.Server.Feature.PistolBaseItemCompatibility.OnItemEquip
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.AfterEquip
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterEquip
@@ -655,17 +662,12 @@ mappin_rem_bef
 mod_acquire
   action      SWLOR.Game.Server.Service.BeastMastery.OnAcquireItem
   action      SWLOR.Game.Server.Service.Droid.OnAcquireItem
+  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnAcquire
   action      SWLOR.Game.Server.Service.Item.EnsureAcquiredItemActivation
-  action      SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility.OnAcquire
-  action      SWLOR.Game.Server.Feature.EquipmentRequirementCompatibility.OnAcquire
-  action      SWLOR.Game.Server.Feature.PistolBaseItemCompatibility.OnAcquire
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnAcquire
-  action      SWLOR.Game.Server.Feature.SaberRecalibrationCompatibility.OnAcquire
   action      SWLOR.Game.Server.Feature.StoreManagement.AcquireItem
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnAcquire
-  action      SWLOR.Game.Server.Feature.MigrationDefinition.DungeonSaberMigration.OnAcquire
   action      SWLOR.Game.Server.Feature.MigrationDefinition.LootStatRevisionMigration.OnAcquire
-  action      SWLOR.Game.Server.Feature.MigrationDefinition.WeaponStatOverrideMigration.OnAcquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnAcquire
 
 mod_chat
@@ -705,6 +707,7 @@ mod_enter
   action      SWLOR.Game.Server.Service.Communication.ApplyShoutChannelName
   action      SWLOR.Game.Server.Service.Death.InitializeRespawnPoint
   action      SWLOR.Game.Server.Service.Disguise.ApplyActiveDisguiseOnEnter
+  action      SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnEnter
   action      SWLOR.Game.Server.Service.Gui.CreatePlayerWindows
   action      SWLOR.Game.Server.Service.HoloCom.OnModuleEnter
   action      SWLOR.Game.Server.Service.Item.EnsureInventoryItemActivations
@@ -726,32 +729,29 @@ mod_enter
   action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.RenameToggleAbilitiesCommand
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
-  action      SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility.OnEnter
   action      SWLOR.Game.Server.Feature.DisableDefaultGameWindows.DisableWindows
   action      SWLOR.Game.Server.Feature.DMAuthorization.VerifyDM
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.OpenToolbar
-  action      SWLOR.Game.Server.Feature.EquipmentRequirementCompatibility.OnEnter
   action      SWLOR.Game.Server.Feature.EventRegistration.EnterServer
   action      SWLOR.Game.Server.Feature.PersistentHitPoints.LoadHP
   action      SWLOR.Game.Server.Feature.PersistentMapPin.LoadMapPins
-  action      SWLOR.Game.Server.Feature.PistolBaseItemCompatibility.OnClientEnter
   action      SWLOR.Game.Server.Feature.PlayerInitialization.InitializePlayer
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.LoadPlayerStatusWindow
   action      SWLOR.Game.Server.Feature.PlayerTemporaryEffects.ApplyTemporaryEffects
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnEnter
-  action      SWLOR.Game.Server.Feature.SaberRecalibrationCompatibility.OnEnter
   action      SWLOR.Game.Server.Feature.SavedAnimationMappings.OnClientEnter
   action      SWLOR.Game.Server.Feature.ServerTasks.WelcomeMessage
-  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.TrackEnteredPlayer
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEnter
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnEnter
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariables
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnLogin
+  action      SWLOR.Game.Server.Feature.MigrationDefinition.FurnitureRenameMigration.OnEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter
 
 mod_equip
+  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnEquip
   action      SWLOR.Game.Server.Service.Gui.RefreshOnEquip
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnEquip
   action      SWLOR.Game.Server.Service.WeaponDelay.ApplyWeaponDelayFallback
@@ -773,6 +773,7 @@ mod_exit
   action      SWLOR.Game.Server.Service.Droid.OnPlayerExit
   action      SWLOR.Game.Server.Service.Enmity.PlayerExit
   action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerExit
+  action      SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnExit
   action      SWLOR.Game.Server.Service.Gui.SavePlayerWindowGeometry
   action      SWLOR.Game.Server.Service.HoloCom.OnModuleLeave
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
@@ -790,7 +791,6 @@ mod_exit
   action      SWLOR.Game.Server.Service.Telegraph.ForgetShaderStateOnExit
   action      SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerExit
   action      SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject
-  action      SWLOR.Game.Server.Service.CombatService.WeaponRepositioning.OnExit
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientDisconnection
   action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnExit
@@ -836,6 +836,7 @@ mod_rest
 
 mod_unacquire
   action      SWLOR.Game.Server.Service.Droid.OnLostItem
+  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnacquire
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnLostItem
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnUnacquire
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnLostItem
@@ -843,6 +844,7 @@ mod_unacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnacquire
 
 mod_unequip
+  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnequip
   action      SWLOR.Game.Server.Service.Gui.RefreshOnUnequip
   action      SWLOR.Game.Server.Service.MeleeTechnique.OnUnequip
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.OnUnequip
@@ -857,7 +859,6 @@ object_destroyed
   action      SWLOR.Game.Server.Service.Enmity.CreatureDestroyed
   action      SWLOR.Game.Server.Service.EspionageInfiltration.OnNpcRemoved
   action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.ObjectDestroyed
-  action      SWLOR.Game.Server.Service.CombatService.WeaponRepositioning.OnDestroyed
   action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnDestroyed
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnDestroyed
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnDestroyed
@@ -908,6 +909,7 @@ pc_fp_adjusted
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerFPAdjusted
 
 pc_heartbeat
+  action      SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnHeartbeat
   action      SWLOR.Game.Server.Service.Stealth.EnsureStealthStatusWhileHidden
   action      SWLOR.Game.Server.Feature.NaturalRegeneration.ProcessRegeneration
   action      SWLOR.Game.Server.Feature.RoleplayXP.DistributeRoleplayXP

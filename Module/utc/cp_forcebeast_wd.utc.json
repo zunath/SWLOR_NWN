@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Force-Bonded Beast warden in Dathomir - Grotto Apex Den."
+    "value": "Handler's Wraid (Force-Bonded Beast line) in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -168,7 +168,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Force-Bonded Beast Warden"
+      "0": "Handler's Wraid"
     }
   },
   "fortbonus": {

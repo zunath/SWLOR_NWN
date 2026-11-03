@@ -130,7 +130,7 @@ internal static class CharacterFileUpgrade
 
         var stopwatch = Stopwatch.StartNew();
         SavedCharacterData.Load();
-        var files = Directory.EnumerateFiles(vault, "*.bic", SearchOption.AllDirectories).ToArray();
+        var files = ServerVaultFile.EnumerateFiles(vault, ".bic").ToArray();
         Log.Write(LogGroup.Migration, $"Character upgrade to version {LatestVersion}: checking {files.Length} character files in '{vault}'.", true);
 
         // The server image links its run folder's servervault to the mounted home; keep backups beside the real folder.
@@ -191,7 +191,7 @@ internal static class CharacterFileUpgrade
             {
                 // A resumed file may still be behind a newer release; it is upgraded like any other below.
                 if (character.ResumeOrDiscardPendingFile(record))
-                    Log.Write(LogGroup.Migration, $"Character upgrade finished an interrupted save for '{character.Path}' [{character.Id}].", true);
+                    Log.Write(LogGroup.Migration, $"Character upgrade finished an interrupted save for '{ServerVaultFile.DisplayPath(character.Path)}' [{character.Id}].", true);
             }
             catch (Exception ex)
             {
@@ -220,7 +220,7 @@ internal static class CharacterFileUpgrade
             if (character.Error != null)
             {
                 counts.Failed++;
-                Log.Write(LogGroup.Migration, $"Character upgrade failed for '{character.Path}' [{character.Id}]: {character.Error}", true);
+                Log.Write(LogGroup.Migration, $"Character upgrade failed for '{ServerVaultFile.DisplayPath(character.Path)}' [{character.Id}]: {character.Error}", true);
                 continue;
             }
             if (character.Record == null)
@@ -242,7 +242,7 @@ internal static class CharacterFileUpgrade
             catch (Exception ex)
             {
                 counts.Failed++;
-                Log.Write(LogGroup.Migration, $"Character upgrade could not save '{character.Path}' [{character.Id}]: {ex.ToMessageAndCompleteStacktrace()}", true);
+                Log.Write(LogGroup.Migration, $"Character upgrade could not save '{ServerVaultFile.DisplayPath(character.Path)}' [{character.Id}]: {ex.ToMessageAndCompleteStacktrace()}", true);
             }
         }
     }
@@ -290,11 +290,11 @@ internal static class CharacterFileUpgrade
                 });
                 stored.Add(id);
             }
-            File.WriteAllBytes(pending, result.File);
+            ServerVaultFile.WriteAllBytes(pending, result.File);
             var backup = Path.Combine(backupDirectory, Path.GetRelativePath(vault, character.Path));
-            Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
-            if (!File.Exists(backup))
-                File.Copy(character.Path, backup);
+            ServerVaultFile.CreateDirectory(Path.GetDirectoryName(backup)!);
+            if (!ServerVaultFile.Exists(backup))
+                ServerVaultFile.Copy(character.Path, backup);
             DB.Set(result.Record);
         }
         catch
@@ -307,7 +307,7 @@ internal static class CharacterFileUpgrade
                     DB.Delete<OverflowItem>(id);
             throw;
         }
-        File.Move(pending, character.Path, true);
+        ServerVaultFile.Move(pending, character.Path);
     }
 
     /// <summary>
@@ -318,13 +318,13 @@ internal static class CharacterFileUpgrade
     {
         try
         {
-            if (File.Exists(pending))
-                File.Delete(pending);
+            if (ServerVaultFile.Exists(pending))
+                ServerVaultFile.Delete(pending);
             return true;
         }
         catch (Exception ex)
         {
-            Log.Write(LogGroup.Migration, $"Character upgrade could not remove '{pending}' [{character.Id}] after a failed save; " +
+            Log.Write(LogGroup.Migration, $"Character upgrade could not remove '{ServerVaultFile.DisplayPath(pending)}' [{character.Id}] after a failed save; " +
                 $"its overflow items are kept with it: {ex.Message}", true);
             return false;
         }
@@ -347,7 +347,7 @@ internal static class CharacterFileUpgrade
         /// <summary>
         /// A stable identity for this file within the vault, so files that share a record keep separate overflow items.
         /// </summary>
-        public string FileKey => Fnv1a(System.Text.Encoding.UTF8.GetBytes(
+        public string FileKey => Fnv1a(ServerVaultFile.EncodePath(
             System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(Path)) + "/" + System.IO.Path.GetFileName(Path).ToLowerInvariant()));
 
         /// <summary>
@@ -392,11 +392,11 @@ internal static class CharacterFileUpgrade
                 return false;
             if (record != null && PendingVersion > 0 && record.CharacterFileVersion >= PendingVersion)
             {
-                File.Move(PendingPath(Path), Path, true);
-                Data = File.ReadAllBytes(Path);
+                ServerVaultFile.Move(PendingPath(Path), Path);
+                Data = ServerVaultFile.ReadAllBytes(Path);
                 return true;
             }
-            File.Delete(PendingPath(Path));
+            ServerVaultFile.Delete(PendingPath(Path));
             return false;
         }
 
@@ -404,14 +404,14 @@ internal static class CharacterFileUpgrade
         {
             try
             {
-                var data = File.ReadAllBytes(path);
+                var data = ServerVaultFile.ReadAllBytes(path);
                 var character = new SavedCharacter(data, null);
                 var pending = PendingPath(path);
-                var hasPending = File.Exists(pending);
+                var hasPending = ServerVaultFile.Exists(pending);
                 var pendingVersion = 0;
                 if (hasPending)
                 {
-                    try { pendingVersion = ReadFileVersion(new SavedCharacter(File.ReadAllBytes(pending), null)); }
+                    try { pendingVersion = ReadFileVersion(new SavedCharacter(ServerVaultFile.ReadAllBytes(pending), null)); }
                     catch (Exception) { pendingVersion = 0; }
                 }
                 return new CharacterFile

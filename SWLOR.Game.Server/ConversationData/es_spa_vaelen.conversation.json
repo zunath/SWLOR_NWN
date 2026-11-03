@@ -1,0 +1,258 @@
+{
+  "Id": "es_spa_vaelen",
+  "Title": "Vaelen Oris - Guest",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "greeting",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "greeting": {
+      "Id": "greeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good day. If I seem slow to turn, it is because I offered my cousin one more bout than my shoulder wanted.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "topic-1",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "topic-2",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "topic-3",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "She found the same opening twice. That is enough to answer the question. We ate together afterward; I would rather remember what she showed me than spend the evening defending my pride.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "For us, movement carries meaning. How someone answers pressure, keeps balance or chooses to yield can say a great deal. It takes attention, though. One awkward step is no excuse to decide you know a stranger.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-3": {
+      "Id": "topic-3",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "When trade brings me home, I take a day away from the ledgers. This short walk is enough for now. Tomorrow I can think about freight schedules without mistaking every delay for an insult.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "topic-1": {
+      "Id": "topic-1",
+      "Text": {
+        "Text": "Did your cousin win?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-1",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "Text": {
+        "Text": "Does sparring really tell you about a person?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-2",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-3": {
+      "Id": "topic-3",
+      "Text": {
+        "Text": "Do you often come here?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-3",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "return": {
+      "Id": "return",
+      "Text": {
+        "Text": "There was something else I wanted to ask.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "greeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "farewell": {
+      "Id": "farewell",
+      "Text": {
+        "Text": "Thank you. I will let you return to your day.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

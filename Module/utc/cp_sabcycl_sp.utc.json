@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Saber Cyclone specialist in Hutlar - Jedi Trial Halls."
+    "value": "Trial Duelist Droid (Saber Cyclone line) in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -295,7 +295,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Cyclone Duelist Droid"
+      "0": "Trial Duelist Droid"
     }
   },
   "fortbonus": {
@@ -320,7 +320,7 @@
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -386,43 +386,43 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_attacked"
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondamage"
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondeath"
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onconv"
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondisturb"
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_endcombat"
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_heartbeat"
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onblocked"
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_percept"
   },
   "ScriptRested": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_rested"
   },
   "ScriptSpawn": {
     "type": "resref",
@@ -430,11 +430,11 @@
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spellcast"
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_userdef"
   },
   "SkillList": {
     "type": "list",
@@ -688,7 +688,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 278
+          "value": 268
         }
       },
       {
@@ -725,7 +725,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 1
+    "value": 7
   },
   "willbonus": {
     "type": "short",

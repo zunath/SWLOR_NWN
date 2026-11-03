@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -22,7 +24,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class TwinPistolHostileDelayEngineTests
 {
-    [EngineTest("Twin hostile delay holds Final Salvo unpaid and spends Flow only at its normal impact", Category = "TwinPistolHostileDelay", TimeoutSeconds = 45f)]
+    [EngineTest("Twin hostile delay holds Final Salvo unpaid and spends Cadence only at its normal impact", Category = "TwinPistolHostileDelay", TimeoutSeconds = 45f)]
     public static Task HeldFinisher(EngineTestContext ctx) =>
         VerifyReplay(ctx, FeatType.FinalSalvo);
 
@@ -130,6 +132,8 @@ public static class TwinPistolHostileDelayEngineTests
         var initialStamina = 0;
         var afterFirst = 0;
         var replayWeaponDamage = 0;
+        WeaponAbilityTraitActivation queuedTraits = null;
+        var impactAt = DateTime.MaxValue;
         Combat.SetAutoAttackHitResolutionOverride(false);
         Combat.SetAbilityHitResolutionOverride(true);
         try
@@ -156,10 +160,10 @@ public static class TwinPistolHostileDelayEngineTests
                 afterFirst = Stat.GetCurrentStamina(actor);
                 ctx.AssertEqual(initialStamina - Cost(FeatType.PairedVolley1), afterFirst, "The first ability pays its actual stamina requirement once");
 
-                // Seed the actual Flow state through its existing event adapter; never begin or
+                // Seed the actual Cadence state through its existing event adapter; never begin or
                 // capture the held ability ourselves before the shared pipeline replays it.
                 PairedRangedTraits.RecordAccuracyEvasionMiss(actor);
-                ctx.AssertEqual(1, Flow(actor), "The existing evasion event grants one real Flow charge");
+                ctx.AssertEqual(1, CadenceCharges(actor), "The existing evasion event grants one real Cadence charge");
                 Ability.ClearLastCompletedAbilityImpactSummary(actor);
                 Press(ctx, actor, target, held);
                 AssertHeld(ctx, actor, afterFirst);
@@ -186,23 +190,30 @@ public static class TwinPistolHostileDelayEngineTests
                 await WaitFrames(ctx, () => TwinPistolAbility.HasActiveActivation(actor), "Final Salvo to begin after the shared delay");
                 ctx.Assert(Activity.IsBusy(actor), "Replay begins the real two-second finisher cast");
                 ctx.AssertEqual(afterFirst, Stat.GetCurrentStamina(actor), "Replaying the cast still waits for its normal payment boundary");
-                ctx.AssertEqual(1, Flow(actor), "The replayed cast captures Flow without spending it early");
+                ctx.AssertEqual(1, CadenceCharges(actor), "The replayed cast captures Cadence without spending it early");
                 ctx.Assert(!OnRecast(actor, winningAbility.RecastGroup), "The unpaid cast starts no capstone recast");
             }
             else if (winner == FeatType.Headshot1)
             {
                 await WaitFrames(ctx, () => UsePerkFeat.IsWeaponAbilityQueued(actor, winner), "the held Headshot to queue after the shared delay");
+                queuedTraits = ((Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
+                    .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null))[actor];
+                ctx.Assert(queuedTraits.ContinuesChain, "Headshot is paid within six seconds of Paired Volley, so it continues the chain");
                 ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Replay pays the queued requirement exactly once");
-                // Any hostile weapon ability that costs STM spends all Flow when its cost is paid.
-                ctx.AssertEqual(0, Flow(actor), "The paid queued cross-skill ability spends the captured Flow");
+                // Any hostile weapon ability that costs STM spends all Cadence when its cost is paid.
+                ctx.AssertEqual(0, CadenceCharges(actor), "The paid queued cross-skill ability spends the captured Cadence");
                 ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "Queueing is not an impact");
                 Combat.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(actor, () => ActionAttack(target));
             }
 
-            await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
-                summary.Ability == winningAbility && !UsePerkFeat.HasQueuedWeaponAbility(actor),
-                "the winning replay to complete one actual impact", 8f);
+            await WaitFrames(ctx, () =>
+                {
+                    var landed = Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
+                        summary.Ability == winningAbility && !UsePerkFeat.HasQueuedWeaponAbility(actor);
+                    if (landed && impactAt == DateTime.MaxValue) impactAt = DateTime.UtcNow;
+                    return landed;
+                }, "the winning replay to complete one actual impact", 8f);
             AssignCommand(actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
             if (winner == FeatType.Headshot1)
@@ -211,8 +222,14 @@ public static class TwinPistolHostileDelayEngineTests
                     "The replayed queue captures the gun changed while input was held");
             await ctx.DelaySecondsAsync(1f);
             ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Held input replay has only one payment");
-            // Twin builders such as Focused Burst keep Flow; finishers and other skills' weapon abilities spend it.
-            ctx.AssertEqual(winner == FeatType.FocusedBurst1 ? 1 : 0, Flow(actor), "Only a Flow-spending winner spends the captured Flow");
+            // Twin builders such as Focused Burst keep Cadence; finishers and other skills' weapon abilities spend it.
+            // A chained winner's first hit adds one Cadence if it lands within the window. A queued Headshot lands
+            // on the next native hit, which can come after the window closes; then the chain earns nothing.
+            var chainCharge = queuedTraits == null || impactAt <= queuedTraits.ChainLandsBy ? 1 : 0;
+            if (queuedTraits != null)
+                ctx.Log($"Queued Headshot landed {(impactAt - queuedTraits.ChainLandsBy).TotalSeconds:0.00}s relative to its chain deadline.");
+            ctx.AssertEqual(winner == FeatType.FocusedBurst1 ? 1 + chainCharge : chainCharge, CadenceCharges(actor),
+                "Only a Cadence-spending winner spends the captured Cadence, and a hit inside the chain window grants one fresh charge");
             ctx.Assert(OnRecast(actor, winningAbility.RecastGroup), "The winner applies its ordinary recast");
             if (replacement.HasValue)
                 ctx.Assert(!OnRecast(actor, Ability.GetAbilityDetail(held).RecastGroup), "The replaced queued press starts no recast");
@@ -260,7 +277,7 @@ public static class TwinPistolHostileDelayEngineTests
         ctx.Assert(!TwinPistolAbility.HasActiveActivation(actor) && !Activity.IsBusy(actor), "Held input has not captured a Twin activation");
         ctx.Assert(!UsePerkFeat.HasQueuedWeaponAbility(actor), "Held input has not captured a queued weapon activation");
         ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "Held input spends no early stamina");
-        ctx.AssertEqual(1, Flow(actor), "Held input spends no early Flow");
+        ctx.AssertEqual(1, CadenceCharges(actor), "Held input spends no early Cadence");
         ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "Held input resolves no early impact");
     }
 
@@ -268,7 +285,7 @@ public static class TwinPistolHostileDelayEngineTests
     {
         var actor = player.Creature;
         var perks = new[] { PerkType.PairedVolley, PerkType.FocusedBurst, PerkType.FinalSalvo,
-            PerkType.AkimboStance, PerkType.Headshot, PerkType.TwinPistolMomentum, PerkType.TwinPistolSecondWind };
+            PerkType.AkimboStance, PerkType.Headshot, PerkType.Cadence, PerkType.TwinPistolSecondWind };
         player.Update(record =>
         {
             foreach (var skill in new[] { SkillType.TwinPistol, SkillType.Rifle }) record.Skills[skill].Rank = 50;
@@ -306,7 +323,7 @@ public static class TwinPistolHostileDelayEngineTests
         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
             $"{feat} is accepted by the real ability pipeline: {Ability.GetLastActivationDenialReason()}");
 
-    private static int Flow(uint actor) => StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0;
+    private static int CadenceCharges(uint actor) => StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0;
     private static int Cost(FeatType feat) => Ability.GetAbilityDetail(feat).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
     private static bool OnRecast(uint actor, RecastGroup group) => Recast.IsOnRecastDelay(actor, group).Item1;
     private static bool IsEvent(JsonElement e, string type, FeatType feat) =>

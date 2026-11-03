@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Red Bloom specialist in Smuggler's Moon - Fight Club Backrooms."
+    "value": "Stable Pit Fighter (Red Bloom line) in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Rodian who has bled in the backroom pits long enough to teach the form he learned there. He fights with a twin blade and pairs with another fighter, one high and one low, both patient."
+      "0": "A Rodian pit fighter who has bled in the backroom pits long enough to teach what he learned there. He fights with a twin blade and pairs with another fighter, one high and one low, both patient."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Red Bloom Specialist"
+      "0": "Stable Pit Fighter"
     }
   },
   "fortbonus": {
@@ -327,7 +327,7 @@
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -393,43 +393,43 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_attacked"
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondamage"
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondeath"
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onconv"
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondisturb"
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_endcombat"
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_heartbeat"
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onblocked"
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_percept"
   },
   "ScriptRested": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_rested"
   },
   "ScriptSpawn": {
     "type": "resref",
@@ -437,11 +437,11 @@
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spellcast"
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_userdef"
   },
   "SkillList": {
     "type": "list",
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 128
+          "value": 118
         }
       },
       {
@@ -732,7 +732,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 1
+    "value": 7
   },
   "willbonus": {
     "type": "short",

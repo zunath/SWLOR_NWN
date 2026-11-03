@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Last Stand of the Light adept in Mon Cala - Sith Crypt Depths."
+    "value": "Expedition Raider (Last Stand of the Light line) in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Wookiee hired by the relic expedition that is looting the Sith Crypt Depths, armed with a heavy staff. Crypt Raiders hold the outer chambers and the way out, and they turn on anyone who tries to leave with the survey records."
+      "0": "A Wookiee raider hired by the relic expedition that is looting the Sith Crypt Depths, armed with a heavy staff. The expedition's raiders hold the outer chambers and the way out, and they turn on anyone who tries to leave with the survey records."
     }
   },
   "Dex": {
@@ -351,7 +351,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crypt Raider"
+      "0": "Expedition Raider"
     }
   },
   "fortbonus": {

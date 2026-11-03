@@ -192,19 +192,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void HutlarJediTrialHalls()
         {
-            _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS", "Dantooine Jedi Enclave Trial Halls - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS", "Dantooine Jedi Enclave Trial Halls - Trial Drill Droid (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_sabstorm_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_sabstorm_sp")
-                .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_sabstorm_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -213,47 +205,52 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_guardmst_sp")
+                .AddSpawn(ObjectType.Creature, "cp_sabcycl_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_DEEP", "Dantooine Jedi Enclave Trial Halls - Trial Duelist Droid (Capstone Specialists)")
+                .AddSpawn(ObjectType.Creature, "cp_sabstorm_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_guardmst_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_sabcycl_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_guardmst_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cp_sabcycl_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_SABSTORM_IC_SPAWN", "Dantooine Jedi Enclave Trial Halls - Trial Examiner Droid (Saber Storm line)")
+                .AddSpawn(ObjectType.Creature, "cp_sabstorm_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_GUARDMST_IC_SPAWN", "Dantooine Jedi Enclave Trial Halls - Trial Examiner Droid (Guardian Master line)")
+                .AddSpawn(ObjectType.Creature, "cp_guardmst_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_SABCYCL_IC_SPAWN", "Dantooine Jedi Enclave Trial Halls - Trial Examiner Droid (Saber Cyclone line)")
                 .AddSpawn(ObjectType.Creature, "cp_sabcycl_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
 
         private void MonCalaMedicalSublevel()
         {
-            _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL", "Dantooine Medical Sublevel - General Capstone")
+            // Adepts hold the spawn points nearest the entrance and specialists the deeper ones, so each tier of
+            // the line is found in its own part of the dungeon.
+            _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL", "Dantooine Medical Sublevel - Ward Orderly (Capstone Adepts)")
                 .AddSpawn(ObjectType.Creature, "cp_emcocktail_ad")
                 .WithFrequency(70)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_emcocktail_sp")
-                .WithFrequency(50)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_emcocktail_ic")
-                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -262,29 +259,42 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_holdline_sp")
+                .AddSpawn(ObjectType.Creature, "cp_infconduit_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP", "Dantooine Medical Sublevel - Ward Guard (Capstone Specialists)")
+                .AddSpawn(ObjectType.Creature, "cp_emcocktail_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "cp_holdline_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "cp_infconduit_ad")
-                .WithFrequency(70)
+                .AddSpawn(ObjectType.Creature, "cp_holdline_sp")
+                .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "cp_infconduit_sp")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .ReturnsHome()
+                .ReturnsHome();
 
+            // Each inner circle has its own table on four fixed spawn waypoints, so a circle step always
+            // has its four kills present instead of depending on rolls from the general table.
+            _builder.Create("CAPSTONE_EMCOCKTAIL_IC_SPAWN", "Dantooine Medical Sublevel - Matron's Attendant (Emergency Cocktail line)")
+                .AddSpawn(ObjectType.Creature, "cp_emcocktail_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_HOLDLINE_IC_SPAWN", "Dantooine Medical Sublevel - Matron's Attendant (Hold the Line line)")
+                .AddSpawn(ObjectType.Creature, "cp_holdline_ic")
+                .WithFrequency(1)
+                .ReturnsHome();
+
+            _builder.Create("CAPSTONE_INFCONDUIT_IC_SPAWN", "Dantooine Medical Sublevel - Matron's Attendant (Infinite Conduit line)")
                 .AddSpawn(ObjectType.Creature, "cp_infconduit_ic")
-                .WithFrequency(35)
-                .RandomlyWalks()
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }

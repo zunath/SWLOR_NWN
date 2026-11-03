@@ -234,6 +234,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("TATOOINE_TUSKEN_CHAMPION_COMP")
                 .AddItem("sun_bantha_hide", 1);
+
+            _builder.Create("TATOOINE_TUSKEN_CHAMPION_WARDROBE")
+                .AddItem("wd_krayt_pearl", 1);
         }
 
         private void TuskenLongEye()

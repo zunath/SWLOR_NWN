@@ -104,6 +104,14 @@ namespace SWLOR.Game.Server.Enumeration
             38,
             true)]
         SmugglersMoonStation = 512,
+        [Planet("Eshan",
+            "Eshan - ",
+            "Eshan_Orbit",
+            "ESHAN_LANDING",
+            48,
+            72,
+            true)]
+        Eshan = 1024,
     }
 
     public class PlanetAttribute : Attribute

@@ -31,7 +31,7 @@
       },
       "MusicDay": {
         "type": "int",
-        "value": 114
+        "value": 376
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 376
       }
     }
   },

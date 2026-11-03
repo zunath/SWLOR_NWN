@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
-                .HasActivationDelay(1f)
+                .HasActivationDelay(0.5f)
                 .HasRecastDelay(RecastGroup.IonLance, cooldown)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)

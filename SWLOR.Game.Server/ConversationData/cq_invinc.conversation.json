@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, sits sealed at the back of this very building with my trainees still drilling inside, running my program without me. Six adepts hold the drill floor. Put them down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are.",
+          "Text": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, sits sealed at the back of this very building with my trainees still drilling inside, running my program without me. Six Holdout Recruits hold the drill floor, the rooms nearest the entrance. Any Holdout Recruit counts, but only the ones you put down after drawing them to you with Covering Strike; a guard that never drew a blow hasn't been tested. Put six down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Signed and logged. This key opens the annex door, deeper in this building, north-east of where I stand. Six adepts, one ledger, no detours. I grade what comes back, not what you meant to bring.",
+          "Text": "Signed and logged. This key opens the annex door, deeper in this building, north-east of where I stand. Six Holdout Recruits, one ledger, no detours. I grade what comes back, not what you meant to bring.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +375,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Mine. Every adept on that floor either washed out of my program or refused to leave it, and they've drilled my forms every day since, angry. The last curious visitor who wandered in spent a month over a med table. They won't break formation because you ask nicely. Make them.",
+          "Text": "Mine. Every Recruit on that floor either washed out of my program or refused to leave it, and they've drilled my forms every day since, angry. The last curious visitor who wandered in spent a month over a med table. They won't break formation because you ask nicely. Make them.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "First rotation's still open on my ledger. Six adepts on the annex drill floor, and the drill ledger back in my hands. Everything else is noise.",
+          "Text": "First rotation's still open on my ledger. Six Holdout Recruits on the annex drill floor, and the drill ledger back in my hands. Everything else is noise.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your stance survived the drill floor. Noted in the margin. Next line: the annex range block, where my specialists run scored guard drills off a range relay. Timers, targets, tally lights, the lot. Five specialists, each a full grade over the adepts you dropped. Retire them and pull the Invincible Militia Range Relay off its mount. Their scores stop counting the day it sits on my desk.",
+          "Text": "Your stance survived the drill floor. Noted in the margin. Next line: the annex range block, where my Holdout Sergeants run scored guard drills off a range relay. Timers, targets, tally lights, the lot. Five Holdout Sergeants, deeper in, each a full grade over the Recruits you dropped. Retire five, any Sergeant, each after drawing them to you with Covering Strike, and pull the Invincible Militia Range Relay off its mount. Their scores stop counting the day it sits on my desk.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Logged. Range block sits past the drill floor you cleared. Five specialists, one relay, two bolts and a hard pull to free it. Bring me the machine, not the scores.",
+          "Text": "Logged. Range block sits past the drill floor you cleared. Five Holdout Sergeants, one relay, two bolts and a hard pull to free it. Bring me the machine, not the scores.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +532,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Specialists earned rank under me before the shutdown. The pass bar was holding a guard through a full rotation without one scored hit, and all five cleared it. You'll be the first live drill they've had since I sealed the door. They have been bored. Bored and good is a bad combination for you.",
+          "Text": "Sergeants earned rank under me before the shutdown. The pass bar was holding a guard through a full rotation without one scored hit, and all five cleared it. You'll be the first live drill they've had since I sealed the door. They have been bored. Bored and good is a bad combination for you.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Range block. Five specialists. Two bolts and a hard pull, and the relay comes home. My desk is still empty.",
+          "Text": "Range block. Five Holdout Sergeants. Two bolts and a hard pull, and the relay comes home. My desk is still empty.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Stop. Look at me before you take this line. The inner gate past the range belongs to the annex warden. Sarn. He was my second for six years, the best guard I ever graded, and he has ended better duelists than you for walking onto his floor alone. So you won't. Bring two blades you trust, minimum, and that's an order, not advice. Beat him and take the Invincible Scored Challenge Badge he wears. The inner annex opens with it.",
+          "Text": "Stop. Look at me before you take this line. The inner gate past the range belongs to the annex's Holdout Lieutenant. Sarn. He was my second for six years, the best guard I ever graded, and he has ended better duelists than you for walking onto his floor alone. So you won't. Bring two blades you trust, minimum, and that's an order, not advice. Beat him and take the Invincible Scored Challenge Badge he wears. The inner annex opens with it.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've read enough of my ledger to know what's left. Four names. My inner circle, promoted by my own hand, and they hold the last floor before the master's line. They fight as one unit, four guards overlapping like plate. Break all four and recover the Invincible Captain's Challenge Chit they keep. That chit was mine, and I want it back.",
+          "Text": "You've read enough of my ledger to know what's left. My inner circle, the Holdout Honor Guards, promoted by my own hand, and they hold the last floor, the deepest part of the annex, before the master's line. They fight as one unit, four guards overlapping like plate. Break four, any Honor Guard, each after drawing them to you with Covering Strike, and recover the Invincible Captain's Challenge Chit they keep. That chit was mine, and I want it back.",
           "Style": 0,
           "Color": null
         }
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Your drill ledger, Captain. Six adepts couldn't hold their line.",
+        "Text": "Your drill ledger, Captain. Six Recruits couldn't hold their line.",
         "Style": 4,
         "Color": null
       },
@@ -1520,7 +1520,7 @@
     "reply-00009": {
       "Id": "reply-00009",
       "Text": {
-        "Text": "What makes these specialists dangerous?",
+        "Text": "What makes these Sergeants dangerous?",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "One range relay, five specialists off the score sheet.",
+        "Text": "One range relay, five Sergeants off the score sheet.",
         "Style": 4,
         "Color": null
       },

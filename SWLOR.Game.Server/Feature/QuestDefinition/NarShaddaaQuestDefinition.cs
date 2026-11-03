@@ -1,4 +1,6 @@
-﻿ using SWLOR.Game.Server.Service.NPCService;
+﻿ using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using System.Collections.Generic;
 
@@ -14,6 +16,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             SpaceDungeon_SlaverRaid();
             SpaceDungeon_PirateHideout();
 			GreatArkanianDragonHunt();
+            WardrobeExpansion1();
+            WardrobeExpansion2();
+            WardrobeExpansion3();
+            WardrobeExpansion4();
+            WardrobeExpansion5();
 			return _builder.Build();
         }
 
@@ -82,6 +89,84 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(12000)
                 .AddXPReward(15000)
 				.AddItemReward("recipe_gardula", 1);
+        }
+
+        private void WardrobeExpansion1()
+        {
+            _builder.Create("wardrobe_expansion_1", "Pattern Locker: First Fittings")
+                .OnCompleteAction((player, _) => Wardrobe.ExpandSlotLimit(player))
+                .AddState()
+                .SetStateJournalText("Vessa Thrane on the Nar Shaddaa Promenade can expand your wardrobe. Bring her Old Scar's Silver Ruff (from Old Scar, a kath hound on Viscara), Stormplume Sheen Down (from Stormplume, a warocas on Viscara) and a crafted Pattern Thread Spool.")
+                .AddCollectItemObjective("wd_scar_ruff", 1)
+                .AddCollectItemObjective("wd_storm_down", 1)
+                .AddCollectItemObjective("wd_thread_spool", 1)
+
+                .AddState()
+                .SetStateJournalText("Return to Vessa Thrane on the Nar Shaddaa Promenade so she can expand your wardrobe.");
+        }
+
+        private void WardrobeExpansion2()
+        {
+            _builder.Create("wardrobe_expansion_2", "Pattern Locker: Silk and Glass")
+                .PrerequisiteQuest("wardrobe_expansion_1")
+                .OnCompleteAction((player, _) => Wardrobe.ExpandSlotLimit(player))
+                .AddState()
+                .SetStateJournalText("Bring Vessa Thrane on the Nar Shaddaa Promenade a Silkshade Dye Gland (from the Silkshade Matriarch on Viscara), a Shard-Eye Prism Lens (from the Shard-Eye Matriarch on Viscara) and a crafted Pattern Loom Heddle.")
+                .AddCollectItemObjective("wd_silk_gland", 1)
+                .AddCollectItemObjective("wd_prism_lens", 1)
+                .AddCollectItemObjective("wd_loom_heddle", 1)
+
+                .AddState()
+                .SetStateJournalText("Return to Vessa Thrane on the Nar Shaddaa Promenade so she can expand your wardrobe.");
+        }
+
+        private void WardrobeExpansion3()
+        {
+            _builder.Create("wardrobe_expansion_3", "Pattern Locker: Clan Colors")
+                .PrerequisiteQuest("wardrobe_expansion_2")
+                .OnCompleteAction((player, _) => Wardrobe.ExpandSlotLimit(player))
+                .AddState()
+                .SetStateJournalText("Bring Vessa Thrane on the Nar Shaddaa Promenade Iron-Stripe Clan Pigment (from Harrek Voss, a Mandalorian on Viscara), a Redtail Sheen Scale (from Redtail Kor, a raivor on Viscara) and crafted Pattern Template Plates.")
+                .AddCollectItemObjective("wd_clan_pigment", 1)
+                .AddCollectItemObjective("wd_redtail_scale", 1)
+                .AddCollectItemObjective("wd_tmpl_plates", 1)
+
+                .AddState()
+                .SetStateJournalText("Return to Vessa Thrane on the Nar Shaddaa Promenade so she can expand your wardrobe.");
+        }
+
+        private void WardrobeExpansion4()
+        {
+            _builder.Create("wardrobe_expansion_4", "Pattern Locker: Bone and Pearl")
+                .PrerequisiteQuest("wardrobe_expansion_3")
+                .OnCompleteAction((player, _) => Wardrobe.ExpandSlotLimit(player))
+                .AddState()
+                .SetStateJournalText("Bring Vessa Thrane on the Nar Shaddaa Promenade a Maw-Seer Bone Needle (from Maw-Seer Ghal, a Vellen flesheater on Viscara), a Krayt Pearl Clasp (from Urrok, the Tusken Gaderffii champion on Tatooine) and crafted Loom Tension Weights.")
+                .AddCollectItemObjective("wd_bone_needle", 1)
+                .AddCollectItemObjective("wd_krayt_pearl", 1)
+                .AddCollectItemObjective("wd_tension_wts", 1)
+
+                .AddState()
+                .SetStateJournalText("Return to Vessa Thrane on the Nar Shaddaa Promenade so she can expand your wardrobe.");
+        }
+
+        private void WardrobeExpansion5()
+        {
+            _builder.Create("wardrobe_expansion_5", "Pattern Locker: The Master's Archive")
+                .PrerequisiteQuest("wardrobe_expansion_4")
+                .OnCompleteAction((player, _) =>
+                {
+                    Wardrobe.ExpandSlotLimit(player);
+                    Achievement.GiveAchievement(player, AchievementType.MasterWardrobe);
+                })
+                .AddState()
+                .SetStateJournalText("Bring Vessa Thrane on the Nar Shaddaa Promenade Apex Maw Horn Buttons (from the Tarn Apex Maw on Dathomir), Grotto Glow Spores (from the Grotto Alpha on Dathomir) and crafted Pattern Index Tags.")
+                .AddCollectItemObjective("wd_apex_horn", 1)
+                .AddCollectItemObjective("wd_glow_spores", 1)
+                .AddCollectItemObjective("wd_index_tags", 1)
+
+                .AddState()
+                .SetStateJournalText("Return to Vessa Thrane on the Nar Shaddaa Promenade so she can expand your wardrobe.");
         }
     }
 }

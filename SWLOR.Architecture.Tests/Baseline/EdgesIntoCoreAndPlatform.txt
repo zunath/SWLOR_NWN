@@ -121,7 +121,7 @@ Feature/PerkDefinition -> Platform/Entity | 1
 Feature/StatusEffectDefinition -> Platform/Core | 3
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Core | 1
-Language -> Platform/Entity | 1
+Language -> Platform/Entity | 5
 Perk -> Platform/Core | 4
 Perk -> Platform/Entity | 15
 Perk -> Platform/Enumeration | 9
@@ -138,7 +138,7 @@ Skill -> Platform/Entity | 13
 Skill -> Platform/Enumeration | 54
 Skill -> Platform/Extension | 2
 Stat -> Platform/Core | 6
-Stat -> Platform/Entity | 51
+Stat -> Platform/Entity | 53
 Stat -> Platform/Extension | 1
 StatusEffect -> Platform/Core | 18
 StatusEffect -> Platform/Native | 2
@@ -173,13 +173,13 @@ Stealth -> ColorToken | 2
 Stealth -> Log | 3
 Stealth -> Random | 1
 Telegraph -> FrameProfiler | 3
-TwinPistolAbility -> Animation | 2
+TwinPistolAbility -> Animation | 1
 TwinPistolEquipment -> ColorToken | 2
 TwinPistolEquipment -> Feature/MigrationDefinition | 1
 TwinPistolMastery -> DB | 1
 
 # Combat -> Platform (29 edges)
-Combat -> Platform/Core | 63
+Combat -> Platform/Core | 58
 Combat -> Platform/Entity | 2
 Combat -> Platform/Extension | 3
 CombatPoint -> Platform/Core | 7
@@ -205,7 +205,7 @@ Stealth -> Platform/Core | 8
 Stealth -> Platform/Native | 1
 Targeting -> Platform/Core | 1
 Telegraph -> Platform/Core | 7
-TwinPistolAbility -> Platform/Native | 3
+TwinPistolAbility -> Platform/Native | 2
 TwinPistolMastery -> Platform/Entity | 1
 WeaponDelay -> Platform/Core | 2
 
@@ -240,14 +240,14 @@ Communication -> Platform/Enumeration | 9
 Conversation -> Platform/Core | 4
 ConversationMenu -> Platform/Core | 3
 DB -> Platform/Core | 1
-DB -> Platform/Entity | 26
+DB -> Platform/Entity | 27
 DB -> Platform/Extension | 4
 DB -> Platform/Root | 2
 Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
 Feature/DialogDefinition -> Platform/Enumeration | 22
 Feature/MigrationDefinition -> Platform/Core | 4
-Feature/MigrationDefinition -> Platform/Entity | 46
+Feature/MigrationDefinition -> Platform/Entity | 52
 Feature/MigrationDefinition -> Platform/Native | 1
 Feature/SnippetDefinition -> Platform/Entity | 8
 FrameProfiler -> Platform/Core | 1
@@ -313,18 +313,25 @@ NPCGroup -> Platform/Core | 1
 NPCGroup -> Platform/Extension | 1
 Spawn -> Platform/Core | 6
 
-# Economy -> Core (7 edges)
-Bank -> DB | 8
+# Economy -> Core (10 edges)
+Bank -> DB | 9
 Bank -> Log | 2
+CasinoSlot -> DB | 2
+CasinoSlot -> Log | 1
+CasinoSlot -> Random | 1
 Currency -> DB | 5
 Guild -> ColorToken | 1
 Guild -> DB | 4
 Guild -> Random | 1
 PlayerMarket -> DB | 4
 
-# Economy -> Platform (15 edges)
+# Economy -> Platform (19 edges)
 Bank -> Platform/Composition | 1
 Bank -> Platform/Entity | 13
+BankItemPage -> Platform/Entity | 3
+CasinoPlayTracker -> Platform/Entity | 3
+CasinoSlot -> Platform/Core | 1
+CasinoSlot -> Platform/Entity | 3
 Currency -> Platform/Composition | 1
 Currency -> Platform/Core | 1
 Currency -> Platform/Entity | 3
@@ -339,11 +346,11 @@ PlayerMarket -> Platform/Core | 3
 PlayerMarket -> Platform/Entity | 2
 PlayerMarket -> Platform/Extension | 2
 
-# Gameplay -> Core (65 edges)
+# Gameplay -> Core (63 edges)
 Feature.AchievementProgression -> DB | 6
 Feature.AreaConfiguration -> Log | 1
 Feature.AreaConfiguration -> TileMagic | 1
-Feature.ArmorDisplay -> DB | 1
+Feature.ArmorDisplay -> DB | 2
 Feature.Auditing -> Log | 3
 Feature.BasicVibrobladeCompatibility -> Feature/MigrationDefinition | 1
 Feature.BuffTimer -> ColorToken | 2
@@ -355,7 +362,6 @@ Feature.CreatureDeathAnimation -> NamedAnimation | 1
 Feature.DMActions -> DB | 1
 Feature.DMAuthorization -> Authorization | 1
 Feature.DMAuthorization -> Log | 1
-Feature.EquipmentRequirementCompatibility -> Feature/MigrationDefinition | 1
 Feature.EquipmentRestrictions -> ColorToken | 1
 Feature.EquipmentStats -> DB | 20
 Feature.EventRegistration -> DB | 1
@@ -373,7 +379,7 @@ Feature.PersistentMapProgression -> Log | 1
 Feature.PistolAnimationRemap -> Animation | 2
 Feature.PistolAnimationRemap -> Log | 1
 Feature.PistolAnimationRemap -> NamedAnimation | 1
-Feature.PlaceableScripts -> ColorToken | 1
+Feature.PlaceableScripts -> ColorToken | 2
 Feature.PlaceableScripts -> Conversation | 1
 Feature.PlaceableScripts -> ConversationMenu | 1
 Feature.PlayerAccountRecord -> DB | 1
@@ -385,7 +391,6 @@ Feature.PlayerStatusWindow -> DB | 1
 Feature.PlayerTemporaryEffects -> DB | 2
 Feature.RoleplayXP -> DB | 3
 Feature.RoleplayXP -> Log | 4
-Feature.SaberRecalibrationCompatibility -> Feature/MigrationDefinition | 2
 Feature.ScavengePoint -> ColorToken | 1
 Feature.ScavengePoint -> DB | 1
 Feature.ScavengePoint -> Random | 1
@@ -406,18 +411,18 @@ Feature.UsePerkFeat -> Messaging | 3
 Feature.UsePerkFeat -> NamedAnimation | 2
 Feature.UsePerkFeat -> PlayerFeedback | 1
 
-# Gameplay -> Platform (91 edges)
+# Gameplay -> Platform (89 edges)
 Feature.AchievementProgression -> Platform/Core | 7
 Feature.AchievementProgression -> Platform/Entity | 6
 Feature.AreaConfiguration -> Platform/Core | 1
 Feature.AreaConfiguration -> Platform/Enumeration | 1
 Feature.AreaConfiguration -> Platform/Extension | 1
 Feature.ArmorDisplay -> Platform/Core | 1
-Feature.ArmorDisplay -> Platform/Entity | 3
+Feature.ArmorDisplay -> Platform/Entity | 4
 Feature.Auditing -> Platform/Core | 3
-Feature.BasicVibrobladeCompatibility -> Platform/Core | 2
 Feature.BuffTimer -> Platform/Core | 1
 Feature.CZ220FlightsTerminal -> Platform/Core | 1
+Feature.CivilianPatrol -> Platform/Core | 2
 Feature.ClientVersionCheck -> Platform/Core | 1
 Feature.CreatureDeathAnimation -> Platform/Core | 1
 Feature.DMActions -> Platform/Core | 4
@@ -428,7 +433,6 @@ Feature.DMToolbarWindow -> Platform/Core | 6
 Feature.DisableAttackOfOpportunity -> Platform/Core | 1
 Feature.DisableDefaultGameWindows -> Platform/Core | 1
 Feature.DoorScripts -> Platform/Core | 2
-Feature.EquipmentRequirementCompatibility -> Platform/Core | 2
 Feature.EquipmentRestrictions -> Platform/Core | 4
 Feature.EquipmentStats -> Platform/Core | 10
 Feature.EquipmentStats -> Platform/Entity | 20
@@ -459,7 +463,7 @@ Feature.PersistentMapProgression -> Platform/Core | 2
 Feature.PersistentMapProgression -> Platform/Entity | 2
 Feature.PistolAnimationRemap -> Platform/Core | 5
 Feature.PistolAnimationRemap -> Platform/Native | 1
-Feature.PistolBaseItemCompatibility -> Platform/Core | 5
+Feature.PistolBaseItemCompatibility -> Platform/Core | 1
 Feature.PlaceableScripts -> Platform/Core | 6
 Feature.PlayerAccountRecord -> Platform/Core | 1
 Feature.PlayerAccountRecord -> Platform/Entity | 1
@@ -470,13 +474,12 @@ Feature.PlayerStatusWindow -> Platform/Core | 13
 Feature.PlayerStatusWindow -> Platform/Entity | 1
 Feature.PlayerTemporaryEffects -> Platform/Core | 2
 Feature.PlayerTemporaryEffects -> Platform/Entity | 2
-Feature.PowerGlovePairLifecycle -> Platform/Core | 13
+Feature.PowerGlovePairLifecycle -> Platform/Core | 14
 Feature.ProceduralTreasure -> Platform/Core | 1
 Feature.Resource -> Platform/Core | 2
 Feature.RoleplayXP -> Platform/Core | 3
 Feature.RoleplayXP -> Platform/Entity | 6
 Feature.RoleplayXP -> Platform/Root | 4
-Feature.SaberRecalibrationCompatibility -> Platform/Core | 2
 Feature.SaveCharacters -> Platform/Core | 3
 Feature.SavedAnimationMappings -> Platform/Core | 1
 Feature.SavedAnimationMappings -> Platform/Native | 1
@@ -491,7 +494,7 @@ Feature.StandardItemConfigurations -> Platform/Core | 2
 Feature.StoreManagement -> Platform/Core | 5
 Feature.TlkOverrides -> Platform/Core | 1
 Feature.TrashCan -> Platform/Core | 4
-Feature.TwinPistolCombatLifecycle -> Platform/Core | 11
+Feature.TwinPistolCombatLifecycle -> Platform/Core | 9
 Feature.TwinPistolCombatLifecycle -> Platform/Native | 3
 Feature.TwinPistolEquipmentValidation -> Platform/Core | 8
 Feature.TwinPistolPairLifecycle -> Platform/Core | 8
@@ -499,7 +502,7 @@ Feature.UnarmedMastery -> Platform/Core | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
 Feature.UsePerkFeat -> Platform/Core | 7
 
-# Items -> Core (18 edges)
+# Items -> Core (19 edges)
 Feature/ItemDefinition -> Cache | 2
 Feature/ItemDefinition -> ConversationMenu | 2
 Feature/ItemDefinition -> DB | 6
@@ -518,8 +521,9 @@ Loot -> Random | 2
 OverflowStorage -> ColorToken | 1
 OverflowStorage -> DB | 4
 OverflowStorage -> Log | 2
+Wardrobe -> DB | 4
 
-# Items -> Platform (14 edges)
+# Items -> Platform (15 edges)
 EquipmentUnequip -> Platform/Core | 1
 Feature/ItemDefinition -> Platform/Core | 3
 Feature/ItemDefinition -> Platform/Entity | 6
@@ -534,11 +538,12 @@ LightsaberWorkbench -> Platform/Core | 1
 LightsaberWorkbench -> Platform/Entity | 1
 Loot -> Platform/Core | 7
 OverflowStorage -> Platform/Entity | 4
+Wardrobe -> Platform/Entity | 11
 
 # Platform -> Core (9 edges)
 Platform/Core -> FrameProfiler | 5
 Platform/Core -> Log | 14
-Platform/Entity -> Feature/MigrationDefinition | 2
+Platform/Entity -> Feature/MigrationDefinition | 6
 Platform/Native -> ColorToken | 2
 Platform/Native -> DB | 2
 Platform/Native -> Feature/MigrationDefinition | 1
@@ -546,10 +551,10 @@ Platform/Native -> FrameProfiler | 3
 Platform/Native -> Log | 28
 Platform/Native -> Random | 2
 
-# Quests -> Core (18 edges)
+# Quests -> Core (19 edges)
 Faction -> DB | 4
 Feature/QuestDefinition -> Cache | 19
-Feature/QuestDefinition -> DB | 19
+Feature/QuestDefinition -> DB | 20
 Feature/QuestDefinition -> ObjectVisibility | 5
 Quest -> Cache | 5
 Quest -> ColorToken | 3
@@ -559,35 +564,37 @@ Quest -> DB | 32
 Quest -> Log | 2
 Quest -> Time | 1
 QuestContract -> DB | 3
+QuestContract -> Feature/MigrationDefinition | 1
 QuestContract -> Log | 2
 QuestContractBoard -> Authorization | 1
 QuestContractBoard -> Cache | 2
 QuestContractBoard -> ColorToken | 3
-QuestContractBoard -> DB | 23
+QuestContractBoard -> DB | 25
 QuestContractBoard -> Log | 10
 
-# Quests -> Platform (12 edges)
+# Quests -> Platform (13 edges)
 Faction -> Platform/Composition | 1
 Faction -> Platform/Core | 1
 Faction -> Platform/Entity | 2
 Faction -> Platform/Extension | 1
-Feature/QuestDefinition -> Platform/Entity | 19
+Feature/QuestDefinition -> Platform/Entity | 21
 Quest -> Platform/Core | 13
 Quest -> Platform/Entity | 39
 Quest -> Platform/Enumeration | 12
 QuestContract -> Platform/Entity | 11
+QuestContractBoard -> Platform/Composition | 1
 QuestContractBoard -> Platform/Core | 2
-QuestContractBoard -> Platform/Entity | 31
-QuestContractBoard -> Platform/Enumeration | 1
+QuestContractBoard -> Platform/Entity | 55
+QuestContractBoard -> Platform/Enumeration | 2
 
 # Social -> Core (12 edges)
-ChatCommand -> Authorization | 2
+ChatCommand -> Authorization | 3
 ChatCommand -> ColorToken | 3
 ChatPortraitTells -> ColorToken | 2
 Feature/ChatCommandDefinition -> Animation | 3
 Feature/ChatCommandDefinition -> Authorization | 1
 Feature/ChatCommandDefinition -> BackgroundJob | 1
-Feature/ChatCommandDefinition -> ColorToken | 14
+Feature/ChatCommandDefinition -> ColorToken | 16
 Feature/ChatCommandDefinition -> Communication | 1
 Feature/ChatCommandDefinition -> DB | 14
 Feature/ChatCommandDefinition -> Log | 7
@@ -597,13 +604,13 @@ PlayerList -> Log | 1
 # Social -> Platform (16 edges)
 ChatCommand -> Platform/Composition | 1
 ChatCommand -> Platform/Core | 2
-ChatCommand -> Platform/Enumeration | 7
-ChatCommand -> Platform/Root | 3
+ChatCommand -> Platform/Enumeration | 9
+ChatCommand -> Platform/Root | 2
 ChatPortraitTells -> Platform/Composition | 1
 ChatPortraitTells -> Platform/Core | 3
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 15
-Feature/ChatCommandDefinition -> Platform/Enumeration | 90
+Feature/ChatCommandDefinition -> Platform/Enumeration | 93
 Feature/ChatCommandDefinition -> Platform/Root | 5
 Party -> Platform/Composition | 1
 Party -> Platform/Core | 7
@@ -629,15 +636,18 @@ Space -> Platform/Core | 21
 Space -> Platform/Entity | 29
 Space -> Platform/Enumeration | 6
 
-# UI -> Core (17 edges)
+# UI -> Core (20 edges)
+ExtraHotbars -> ColorToken | 5
+ExtraHotbars -> DB | 4
+ExtraHotbars -> Feature/MigrationDefinition | 1
 Feature/GuiDefinition -> Animation | 10
 Feature/GuiDefinition -> Authorization | 3
 Feature/GuiDefinition -> BackgroundJob | 2
-Feature/GuiDefinition -> Cache | 23
-Feature/GuiDefinition -> ColorToken | 46
+Feature/GuiDefinition -> Cache | 25
+Feature/GuiDefinition -> ColorToken | 47
 Feature/GuiDefinition -> Communication | 3
 Feature/GuiDefinition -> Conversation | 14
-Feature/GuiDefinition -> DB | 222
+Feature/GuiDefinition -> DB | 223
 Feature/GuiDefinition -> GameMath | 3
 Feature/GuiDefinition -> Log | 31
 Feature/GuiDefinition -> NamedAnimation | 2
@@ -648,9 +658,11 @@ Gui -> DB | 3
 Gui -> FrameProfiler | 2
 Gui -> Log | 1
 
-# UI -> Platform (10 edges)
-Feature/GuiDefinition -> Platform/Core | 150
-Feature/GuiDefinition -> Platform/Entity | 336
+# UI -> Platform (12 edges)
+ExtraHotbars -> Platform/Core | 8
+ExtraHotbars -> Platform/Entity | 21
+Feature/GuiDefinition -> Platform/Core | 161
+Feature/GuiDefinition -> Platform/Entity | 352
 Feature/GuiDefinition -> Platform/Enumeration | 21
 Feature/GuiDefinition -> Platform/Extension | 3
 Feature/GuiDefinition -> Platform/Root | 9
@@ -660,38 +672,39 @@ Gui -> Platform/Enumeration | 1
 Gui -> Platform/Properties | 1
 Gui -> Platform/Root | 1
 
-# World -> Core (29 edges)
+# World -> Core (30 edges)
 Area -> ColorToken | 1
 Area -> DB | 3
 Feature/FishingLocationDefinition -> Random | 1
 Feature/PropertyLayoutDefinition -> DB | 3
 Feature/TrapDefinition -> Messaging | 1
-Fishing -> Animation | 2
+Fishing -> Animation | 4
 Fishing -> Cache | 1
 Fishing -> ColorToken | 1
-Fishing -> DB | 1
+Fishing -> DB | 3
 Fishing -> Messaging | 2
 Fishing -> NamedAnimation | 2
 Fishing -> Random | 4
 HoloCom -> ColorToken | 2
-Music -> DB | 9
+Music -> DB | 11
 Notes -> DB | 5
 Property -> BackgroundJob | 1
 Property -> ColorToken | 2
 Property -> ConversationMenu | 1
-Property -> DB | 41
+Property -> DB | 42
+Property -> Feature/MigrationDefinition | 1
 Property -> Log | 19
 Shuttle -> ColorToken | 4
-Shuttle -> DB | 11
+Shuttle -> DB | 13
 Shuttle -> Log | 7
 Shuttle -> Time | 6
 Taxi -> DB | 3
 Traps -> ColorToken | 3
 Traps -> DB | 4
-Weather -> DB | 1
+Weather -> DB | 3
 Weather -> Log | 1
 
-# World -> Platform (40 edges)
+# World -> Platform (44 edges)
 Area -> Platform/Composition | 1
 Area -> Platform/Core | 4
 Area -> Platform/Entity | 1
@@ -699,28 +712,31 @@ Feature/PropertyLayoutDefinition -> Platform/Core | 2
 Feature/PropertyLayoutDefinition -> Platform/Entity | 3
 Feature/PropertyLayoutDefinition -> Platform/Enumeration | 4
 Feature/TrapDefinition -> Platform/Core | 3
-Fishing -> Platform/Core | 2
+Fishing -> Platform/Composition | 1
+Fishing -> Platform/Core | 3
 Fishing -> Platform/Entity | 1
 Fishing -> Platform/Extension | 3
 HoloCom -> Platform/Composition | 1
 HoloCom -> Platform/Core | 5
+Music -> Platform/Composition | 1
 Music -> Platform/Core | 6
-Music -> Platform/Entity | 10
+Music -> Platform/Entity | 12
 Music -> Platform/Extension | 1
 Notes -> Platform/Composition | 1
 Notes -> Platform/Entity | 8
 Planet -> Platform/Composition | 1
 Planet -> Platform/Core | 1
-Planet -> Platform/Enumeration | 22
+Planet -> Platform/Enumeration | 26
 Planet -> Platform/Extension | 1
 Property -> Platform/Core | 11
 Property -> Platform/Entity | 75
 Property -> Platform/Enumeration | 2
 Property -> Platform/Extension | 3
 Property -> Platform/Root | 3
+Shuttle -> Platform/Composition | 1
 Shuttle -> Platform/Core | 6
-Shuttle -> Platform/Entity | 15
-Shuttle -> Platform/Enumeration | 42
+Shuttle -> Platform/Entity | 17
+Shuttle -> Platform/Enumeration | 51
 Shuttle -> Platform/Extension | 1
 Taxi -> Platform/Composition | 1
 Taxi -> Platform/Core | 1
@@ -729,6 +745,7 @@ Taxi -> Platform/Extension | 1
 Traps -> Platform/Composition | 1
 Traps -> Platform/Core | 1
 Traps -> Platform/Entity | 2
-Weather -> Platform/Core | 5
+Weather -> Platform/Composition | 1
+Weather -> Platform/Core | 6
 Weather -> Platform/Entity | 1
 Weather -> Platform/Enumeration | 4

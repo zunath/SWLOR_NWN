@@ -1,3 +1,6 @@
+using System.Runtime.Serialization;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
+
 namespace SWLOR.Game.Server.Service.QuestContractService
 {
     public class QuestContractItem
@@ -15,5 +18,10 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         public string Resref { get; set; }
         public int StackSize { get; set; }
         public string IconResref { get; set; }
+
+        /// <summary>Shows the renamed default name of a former Display Plinth restored after the release migration.</summary>
+        [OnDeserialized]
+        internal void RenameFormerFurniture(StreamingContext context) =>
+            Name = FurnitureRenameMigration.GetRenamedItemText(Resref, Name);
     }
 }

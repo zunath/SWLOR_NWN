@@ -91,11 +91,11 @@ public class DungeonEncounterWalkmeshTests
             .Should().NotContain(v => Text(v, "Name") == "CREATURE_SPAWN_TABLE_ID",
                 "random area positions can select floor enclosed by static scenery");
         var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
-        var generalSpawns = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_CZERKA_ARMS_TEST_RANGE").ToArray();
+        var generalSpawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_CZERKA_ARMS_TEST_RANGE" or "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP").ToArray();
         generalSpawns.Should().HaveCount(20, "the 16 by 16 area previously received twenty random general spawns");
         generalSpawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
 
-        var spawnPoints = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+        var spawnPoints = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_CZERKA_ARMS_TEST_RANGE" or "CAPSTONE_CZERKA_ARMS_TEST_RANGE_DEEP"
             || Text(w, "Tag") == "CZERKA_ARMS_TEST_RANGE_RARES" || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
         spawnPoints.Should().HaveCount(24);
         var floor = ReadWalkableFloor(root, "pw_ar_czarmrange", "sw_t_garage");
@@ -140,7 +140,7 @@ public class DungeonEncounterWalkmeshTests
             .Should().NotContain(v => Text(v, "Name") == "CREATURE_SPAWN_TABLE_ID",
                 "random area positions can select inaccessible floor outside the backrooms");
         var spawns = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
-            .Where(w => Text(w, "Tag") == "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS").ToArray();
+            .Where(w => Text(w, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP").ToArray();
         spawns.Should().HaveCount(20, "the 16 by 16 area previously received twenty random general spawns");
         spawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
 
@@ -183,7 +183,7 @@ public class DungeonEncounterWalkmeshTests
         var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
         var reachable = ReachableOnFoot(root, "pw_sc_emfbackr", "sw_t_office", "SMUG_BACKROOMS");
 
-        var spawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "FIGHTCLUB_BACKROOMS_RARES"
+        var spawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS_DEEP" or "FIGHTCLUB_BACKROOMS_RARES"
             || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
         spawns.Should().HaveCount(24);
         foreach (var spawn in spawns)
@@ -236,11 +236,11 @@ public class DungeonEncounterWalkmeshTests
             .Should().NotContain(v => Text(v, "Name") == "CREATURE_SPAWN_TABLE_ID",
                 "random area positions put enemies inside and against the wall placeables");
         var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
-        var generalSpawns = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL").ToArray();
+        var generalSpawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL" or "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP").ToArray();
         generalSpawns.Should().HaveCount(20, "the 16 by 16 area previously received twenty random general spawns");
         generalSpawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
 
-        var spawnPoints = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+        var spawnPoints = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL" or "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_DEEP"
             || Text(w, "Tag") == "DANTOOINE_MEDICAL_SUBLEVEL_RARES" || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
         spawnPoints.Should().HaveCount(24);
         var floor = ReadWalkableFloor(root, "pw_sc_dantmedsub", "sw_t_garage");

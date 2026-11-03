@@ -50562,7 +50562,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - Absolute Defense Warden Spawn"
+            "0": "Tatooine Forge Caverns - Forge Warden Ssorrak Spawn (Absolute Defense line)"
           }
         },
         "MapNote": {
@@ -50625,7 +50625,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - Soul Ascension Warden Spawn"
+            "0": "Tatooine Forge Caverns - Forge Warden Dael Karrow Spawn (Soul Ascension line)"
           }
         },
         "MapNote": {
@@ -50688,7 +50688,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - Forcebane Warden Spawn"
+            "0": "Tatooine Forge Caverns - Forge Warden Orbek Tal Spawn (Forcebane line)"
           }
         },
         "MapNote": {
@@ -50751,7 +50751,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -50814,7 +50814,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -50877,7 +50877,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -50940,7 +50940,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -50953,11 +50953,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51003,7 +51003,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51016,11 +51016,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51066,7 +51066,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51079,11 +51079,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51129,7 +51129,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -51192,7 +51192,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -51255,7 +51255,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -51318,7 +51318,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51331,11 +51331,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51381,7 +51381,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51394,11 +51394,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51444,7 +51444,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51457,11 +51457,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51507,7 +51507,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -51570,7 +51570,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -51633,7 +51633,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51646,11 +51646,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51696,7 +51696,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51709,11 +51709,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51759,7 +51759,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -51822,7 +51822,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Initiate Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -51885,7 +51885,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51898,11 +51898,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -51948,7 +51948,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - Forgebound Journeyman Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -51961,11 +51961,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS"
+          "value": "CAPSTONE_KORRIBAN_FORGE_CAVERNS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kforge"
+          "value": "wp_cdp_kforge"
         },
         "XPosition": {
           "type": "float",
@@ -52364,6 +52364,762 @@
         "YOrientation": {
           "type": "float",
           "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Absolute Defense line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_absdef_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 129.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 139.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Absolute Defense line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_absdef_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 119.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 140.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Absolute Defense line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_absdef_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 126.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 130.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Absolute Defense line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ABSDEF_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_absdef_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 120.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 122.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Soul Ascension line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SOULASC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_soulasc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 94.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 121.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Soul Ascension line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SOULASC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_soulasc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 86.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 127.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Soul Ascension line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SOULASC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_soulasc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 86.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 137.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Soul Ascension line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_SOULASC_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_soulasc_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 76.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 128.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Forcebane line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBANE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebane_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 85.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 11.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Forcebane line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBANE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebane_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 80.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 20.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Forcebane line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBANE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebane_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 94.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 15.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine Forge Caverns - Forgebound Overseer Spawn (Forcebane line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBANE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_forcebane_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 86.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 28.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
         }
       }
     ]

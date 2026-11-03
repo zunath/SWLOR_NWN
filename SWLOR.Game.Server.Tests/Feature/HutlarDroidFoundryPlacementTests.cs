@@ -105,7 +105,11 @@ public class HutlarDroidFoundryPlacementTests
             var git = Load("git", resref);
             Value(area, "Name").GetProperty("0").GetString().Should().Be(name);
             ((int)Number(area, "Flags") & 3).Should().Be(3, $"{resref} is an interior, underground floor that weather must not reach");
+            // The .are DayNightCycle field is a boolean (1 = follow the sky), not the NWNX DayNightCycle enum.
+            // With the cycle off, IsNight pins the floor to its sun or moon lighting at every hour; that slot must be lit.
             Number(area, "DayNightCycle").Should().Be(0, $"{resref} is underground, so its lighting must not follow the sky's day/night cycle");
+            var pinnedAmbient = Number(area, "IsNight") == 0 ? "SunAmbientColor" : "MoonAmbientColor";
+            Number(area, pinnedAmbient).Should().BeGreaterThan(0, $"{resref} must stay lit on its {pinnedAmbient}");
             areaList.Count(a => Text(a, "Area_Name") == resref).Should().Be(1);
             folder.GetProperty("members").EnumerateArray().Select(m => m.GetString()).Should().Contain(resref);
             Local(git, "PLANET_TYPE_ID")!.Value.GetInt32().Should().Be(8);

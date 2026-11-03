@@ -101,6 +101,43 @@ public class ClockSeamScriptTests
         File.ReadAllBytes(path).Should().Equal(before);
     }
 
+    [Test]
+    public void AnEntryForAFileThatIsNotThereFailsOnTheScriptsOwnRepository()
+    {
+        File.WriteAllText(Path.Combine(_temp, "tools", "Refactor", "ClockSeamFiles.txt"),
+            "Service/WithUsings.cs\nDomain/OnlyOnTheBranch.cs\nDomain/BranchFolder/**\n");
+        Write("Service/WithUsings.cs", Utf8WithoutBom, Sample("\n", rewritten: false, coreUsing: false));
+
+        var run = RunScript();
+
+        run.ExitCode.Should().NotBe(0, run.Output);
+        run.Output.Should().Contain("Manifest file not found: Domain/OnlyOnTheBranch.cs");
+    }
+
+    [Test]
+    public void OnAnotherRepositoryRootEntriesForBranchOnlyCodeAreSkippedAndTheRestIsRewritten()
+    {
+        File.WriteAllText(Path.Combine(_temp, "tools", "Refactor", "ClockSeamFiles.txt"),
+            "Service/WithUsings.cs\nDomain/OnlyOnTheBranch.cs\nDomain/BranchFolder/**\nService/Folder/**\n");
+        var masterRoot = Path.Combine(_temp, "master");
+        var file = Path.Combine(masterRoot, "SWLOR.Game.Server", "Service", "WithUsings.cs");
+        var folderFile = Path.Combine(masterRoot, "SWLOR.Game.Server", "Service", "Folder", "Reads.cs");
+        Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+        Directory.CreateDirectory(Path.GetDirectoryName(folderFile)!);
+        File.WriteAllText(file, Sample("\n", rewritten: false, coreUsing: false), Utf8WithoutBom);
+        File.WriteAllText(folderFile, "namespace X { public static class G { public static object Read() => DateTime.UtcNow; } }\n", Utf8WithoutBom);
+
+        var run = RunScript("-RepositoryRoot", masterRoot);
+
+        run.ExitCode.Should().Be(0, run.Output);
+        run.Output.Should().Contain("Skipped Domain/OnlyOnTheBranch.cs");
+        run.Output.Should().Contain("Skipped Domain/BranchFolder/**");
+        run.Output.Should().Contain("Changed 2 of 2 files");
+        File.ReadAllText(file, Utf8WithoutBom).Should().Be(Sample("\n", rewritten: true, coreUsing: true));
+        File.ReadAllText(folderFile, Utf8WithoutBom).Should().Contain("Clock.UtcNow");
+        RunScript("-RepositoryRoot", masterRoot, "-Check").ExitCode.Should().Be(0);
+    }
+
     // The reads the script must rewrite sit in code; the same text in comments, string literals and escaped interpolation
     // braces must come out byte for byte.
     private const string OriginalBody = """

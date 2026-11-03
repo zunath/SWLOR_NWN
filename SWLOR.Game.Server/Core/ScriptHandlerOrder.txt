@@ -92,6 +92,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Service.Walkmesh.RetrieveWalkmeshes
   action      SWLOR.Game.Server.Service.Weather.InitializeWeather
   action      SWLOR.Game.Server.Native.ChatPortraitSpeakers.RegisterHooks
+  action      SWLOR.Game.Server.Native.ClientJsonUtf8Guard.RegisterHook
   action      SWLOR.Game.Server.Native.GetDamageRoll.RegisterHook
   action      SWLOR.Game.Server.Native.NeckAppearanceSerialization.RegisterHook
   action      SWLOR.Game.Server.Native.OnAIActionAttackObject.RegisterHook

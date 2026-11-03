@@ -29,7 +29,10 @@
     (tools/Refactor/MechanicalScripts.txt).
 
 .PARAMETER RepositoryRoot
-    Repository root. Defaults to two folders above this script.
+    Repository root. Defaults to two folders above this script. Against another root (the parity script's throwaway copy of
+    master) a manifest entry whose file or folder does not exist there is skipped with a note, because it names code that
+    exists only on the branch (a service the refactor moved into Domain/); the master code it came from is covered by
+    the other entries. Against the script's own repository every entry must exist.
 
 .EXAMPLE
     pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1
@@ -52,6 +55,8 @@ if (-not $RepositoryRoot) {
 $RepositoryRoot = [System.IO.Path]::GetFullPath($RepositoryRoot)
 $serverRoot = Join-Path $RepositoryRoot 'SWLOR.Game.Server'
 $manifestPath = Join-Path $PSScriptRoot 'ClockSeamFiles.txt'
+$ownRoot = [System.IO.Path]::GetFullPath((Split-Path -Parent (Split-Path -Parent $PSScriptRoot)))
+$onOwnRepository = [string]::Equals($RepositoryRoot.TrimEnd('\', '/'), $ownRoot.TrimEnd('\', '/'), [System.StringComparison]::OrdinalIgnoreCase)
 
 $latin1 = [System.Text.Encoding]::GetEncoding(28591)
 $usingLine = 'using SWLOR.Game.Server.Core;'
@@ -308,6 +313,7 @@ function Get-ManifestFiles {
         if ($entry.EndsWith('/**')) {
             $folder = Join-Path $serverRoot $entry.Substring(0, $entry.Length - 3)
             if (-not (Test-Path -LiteralPath $folder -PathType Container)) {
+                if (-not $onOwnRepository) { Write-Host "Skipped $entry (not in $RepositoryRoot; it exists only on the branch)"; continue }
                 throw "Manifest folder not found: $entry"
             }
             foreach ($file in Get-ChildItem -LiteralPath $folder -Recurse -File -Filter '*.cs') {
@@ -317,6 +323,7 @@ function Get-ManifestFiles {
         else {
             $file = Join-Path $serverRoot $entry
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
+                if (-not $onOwnRepository) { Write-Host "Skipped $entry (not in $RepositoryRoot; it exists only on the branch)"; continue }
                 throw "Manifest file not found: $entry"
             }
             $paths.Add([System.IO.Path]::GetFullPath($file))

@@ -24,6 +24,7 @@ crea_damaged_aft
   action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolCompanionArrivalEngineTests.ObserveDamage
   action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolCrossSkillEngineTests.ObserveActivatedImpacts
   action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolFocusedBurstEngineTests.ObserveImpacts
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolPvpBalanceEngineTests.ObserveProtectorDamage
   action      SWLOR.Game.Server.EngineTests.Definitions.WeaponAbilityDamageTypeEngineTests.ObserveAbilityDamage
   action      SWLOR.Game.Server.EngineTests.Definitions.WeaponRotationBalanceEngineTests.ObserveDamage
 

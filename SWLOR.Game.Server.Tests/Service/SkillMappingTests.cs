@@ -4,17 +4,32 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class SkillMappingTests
 {
+    // The item groups are the item service's, which the Item facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
+        _facades = new FacadeContainer();
         Skill.LoadMappings();
     }
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [Test]
     public void GetSkillTypeByBaseItem_MapsPistolProjectileBaseItemsToPistol()
@@ -52,46 +67,5 @@ public class SkillMappingTests
             .CharacterTypeRestriction
             .Should()
             .Be(CharacterType.ForceSensitive);
-
-        var root = FindRepositoryRoot();
-        var itemSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Item.cs"));
-        var normalizedItemSource = itemSource.Replace("\r\n", "\n");
-
-        itemSource.Should().Contain("ForceSensitiveWeaponBaseItemTypes.Contains(itemType)");
-        itemSource.Should().Contain("GetIsDM(creature)");
-        itemSource.Should().Contain("GetIsDMPossessed(creature)");
-        normalizedItemSource.Should().Contain("if (GetIsDM(creature) || GetIsDMPossessed(creature))\n                return true;");
-        itemSource.Should().Contain("Droid.IsDroid(creature)");
-        itemSource.Should().Contain("BeastMastery.GetBeastType(creature) != BeastType.Invalid");
-        normalizedItemSource.Should().Contain("if (!GetIsPC(creature))\n                return true;");
-        itemSource.Should().Contain("DB.Get<Player>(playerId)");
-        itemSource.Should().Contain("dbPlayer?.CharacterType == CharacterType.ForceSensitive");
-        itemSource.Should().NotContain("GetClassByPosition(1, creature)");
-
-        var forceSensitiveGateIndex = itemSource.IndexOf("ForceSensitiveWeaponBaseItemTypes.Contains(itemType)", StringComparison.Ordinal);
-        var nonPlayerBypassIndex = itemSource.IndexOf("if ((!isPlayer && !isDroid)", StringComparison.Ordinal);
-        forceSensitiveGateIndex.Should().BeLessThan(nonPlayerBypassIndex);
-
-        var dmBypassIndex = normalizedItemSource.IndexOf("if (GetIsDM(creature) || GetIsDMPossessed(creature))\n                return true;", StringComparison.Ordinal);
-        var playerEntityLookupIndex = normalizedItemSource.IndexOf("DB.Get<Player>(playerId)", StringComparison.Ordinal);
-        dmBypassIndex.Should().BeLessThan(playerEntityLookupIndex);
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 }

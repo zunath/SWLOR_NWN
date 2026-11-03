@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Composition
 
             // Items
             services.AddSingleton<IEquipmentUnequipService, EquipmentUnequipService>();
+            services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IItemTrashService, ItemTrashService>();
             services.AddSingleton<IKeyItemService, KeyItemService>();
             services.AddSingleton<ILightsaberWorkbenchService, LightsaberWorkbenchService>();

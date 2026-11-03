@@ -1,28 +1,51 @@
 using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class PowerGloveEquipmentTests
 {
+    // The item groups and the weapon ability mappings are the item service's, which the Item facade resolves from a
+    // container; the service is the real one with its search for item definitions switched off.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     [OneTimeSetUp]
     public void LoadPureWeaponMappings()
     {
+        _facades = new FacadeContainer(services =>
+            services.Replace(ServiceDescriptor.Singleton<IItemService, MappingOnlyItemService>()));
         Skill.LoadMappings();
-        foreach (var method in new[] { "LoadItemToDamageStatMapping", "LoadItemToAccuracyStatMapping" })
-            typeof(Item).GetMethod(method, BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, null);
+        using (_facades.Install())
+        using (NWScriptRuntime.Override(new FakeNWScript()))
+            Item.CacheData();
     }
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [Test]
     public void PairNoteIsAppendedOnceAndKeepsTheDescription()

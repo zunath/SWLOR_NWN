@@ -12,11 +12,28 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class EquipmentRecordReconciliationTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     // Eight pieces granting 86 Physical, 100 Force, 18 FP and 16 STM, with retired Poison Defense on the boots.
     private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] WornGear =
     {

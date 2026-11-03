@@ -26,6 +26,22 @@ namespace SWLOR.Game.Server.Tests.Domain.Quests;
 [TestFixture]
 public class QuestServiceTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     private const uint Hero = 1001;
     private const uint Dm = 1002;
     private const uint Ally = 1003;

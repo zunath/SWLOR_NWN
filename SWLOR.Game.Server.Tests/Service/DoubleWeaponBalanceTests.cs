@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -18,6 +19,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class DoubleWeaponBalanceTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     private sealed record ExpectedWeapon(string Resref, BaseItem BaseItem, int Damage, int DelayProperty);
 
     // Damage matches the corresponding one-handed tier/end; UTI delay property costs are displayed as ratings

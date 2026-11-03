@@ -6,11 +6,28 @@ using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class WeaponDamageMigrationTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     /// <summary>
     /// Guards idempotence for weapons already using the canonical untyped damage representation.
     /// </summary>

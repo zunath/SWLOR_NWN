@@ -4,7 +4,7 @@ The single source of truth for the refactor's progress and handoff. The plan and
 in [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md). Update this file in the same pull
 request as the work it describes, and whenever a work item starts, finishes or gets blocked.
 
-Last updated: 2026-10-27 (paused until next week; see "In flight").
+Last updated: 2026-11-02 (resumed; see "In flight").
 
 ## Resuming (any agent, any account)
 
@@ -89,9 +89,19 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 
 ## In flight
 
-**Paused until next week (owner, 2026-10-27).** Nothing is running: every agent stopped and pushed its branch, no
-containers or test processes are left, and no sync is in progress. The branch head is the last status commit; the last
-master sync is `df3034336`. The four parked items (all on pushed branches, each with its worktree kept under
+**Resumed 2026-11-02** by the coordinator session "SWLOR maintainability refactor coordination" (worktree
+`.claude/worktrees/funny-ellis-7b398f`, on `feature/maintainability-refactor`), on the original machine. The owner asked
+to pause again at a clean stopping point if the account's weekly usage passes 80% (39% at resume). Running now (Sonnet
+subagents):
+- Master sync `sync-20261102` (107 master commits since `df3034336`): work branch `claude/mr-sync-20261102`, worktree
+  `.claude/worktrees/mr-sync-20261102`; hand-ports master's changes to the converted `Achievement`, `Bank`, `ChatCommand`,
+  `Currency`, `Planet`, `Weather`, `Shuttle` into their instance classes as separate commits; PR into the branch, then the
+  coordinator merges it locally with `--no-ff` (branch rule). Not yet in the sync or port logs.
+- P2-B1 (tests) and P0-6b (CodeRabbit threads, two matching full runs) resumed in their kept worktrees.
+- P2-A7b (#2969) and P2-A8 (#2972) wait for the sync: then merge the base and port master's `Quest` (2 commits, 6 files)
+  and `Property` (1 commit) changes. P2-B1 likewise ports master's 3 `KeyItem` commits.
+
+Pause of 2026-10-27 (kept for reference): every agent stopped and pushed its branch. The four parked items (all on pushed branches, each with its worktree kept under
 `C:\Projects\SWLOR_NWN\.claude\worktrees\`; details and exact remaining steps in their Work queue rows):
 
 | Item | Branch head | Pull request | State |

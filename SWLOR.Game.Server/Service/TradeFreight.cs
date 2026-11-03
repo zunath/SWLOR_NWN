@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -111,9 +112,26 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            TakeGoldFromCreature(deposit, player, true);
-            ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);
-            ExportSingleCharacter(player);
+            var paid = CheckpointedChange.Run(
+                () =>
+                {
+                    TakeGoldFromCreature(deposit, player, true);
+                    ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    GiveGoldToCreature(player, deposit);
+                    ObjectPlugin.DeleteString(player, DepositPaidVariable);
+                });
+            if (!paid)
+            {
+                CancelUnpaidContract(dbPlayer, contract);
+                DB.Set(dbPlayer);
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the freight contract was cancelled."));
+                return;
+            }
 
             contract.DepositPending = false;
             DB.Set(dbPlayer);
@@ -222,9 +240,26 @@ namespace SWLOR.Game.Server.Service
 
             // The proceeds are saved in the character file with a mark naming the contract, then the contract is cleared:
             // a restart in between leaves a contract that the next login clears without paying again.
-            GiveGoldToCreature(player, result.Fee + result.DepositReturned);
-            ObjectPlugin.SetString(player, PaidContractVariable, contract.Id, true);
-            ExportSingleCharacter(player);
+            var proceeds = result.Fee + result.DepositReturned;
+            var paid = CheckpointedChange.Run(
+                () =>
+                {
+                    GiveGoldToCreature(player, proceeds);
+                    ObjectPlugin.SetString(player, PaidContractVariable, contract.Id, true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    AssignCommand(player, () => TakeGoldFromCreature(proceeds, player, true));
+                    ObjectPlugin.DeleteString(player, PaidContractVariable);
+                });
+            if (!paid)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the freight was not delivered."));
+                return;
+            }
+
             ClearContract(ship, dbPlayer, contract);
 
             SendMessageToPC(player, result.IsLate

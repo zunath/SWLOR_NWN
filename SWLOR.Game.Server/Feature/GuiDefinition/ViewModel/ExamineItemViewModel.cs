@@ -51,6 +51,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The native examine events do not run for a disabled panel, so apply their item details here.
             EquipmentRestrictions.MarkLegacyOffHandPistol(item);
             Space.ApplyExamineDetails(item);
+            ShipComponents.ApplyExamineDetails(item);
+            PowerGlovePairLifecycle.AddPairNote(item);
 
             // A viewer-specific window avoids persisting personal stats on a shared item.
             Gui.ClosePlayerWindow(viewer, GuiWindowType.ExamineItem);

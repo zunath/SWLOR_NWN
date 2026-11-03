@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TournamentService;
 using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -30,14 +31,6 @@ namespace SWLOR.Game.Server.Service
             RecordId = recordId ?? string.Empty,
             Credits = Math.Max(0, credits)
         };
-
-        /// <summary>Takes the credits and saves them in the character file with the mark. Runs on the payer's queue.</summary>
-        public static void Take(uint player, CreditPaymentMark mark)
-        {
-            TakeGoldFromCreature(mark.Credits, player, true);
-            ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);
-            ExportSingleCharacter(player);
-        }
 
         /// <summary>
         /// Takes the credits with the mark and saves the character file at once (<see cref="CharacterCheckpoint"/>), for a payment
@@ -121,7 +114,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Take(player, mark);
+            if (!TryTakeSaved(player, mark))
+            {
+                UndoStationFounding(station, player);
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the station was not founded."));
+                return;
+            }
+
             station.PendingPaymentId = string.Empty;
             station.PendingPaymentCredits = 0;
             DB.Set(station);

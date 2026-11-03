@@ -566,8 +566,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Gives what of the payout the character does not hold yet: the credits, then the items in order until the
-        /// inventory is full. They are saved in one character save with a mark of what was given, and the number of items
-        /// the character now holds is returned.
+        /// inventory is full. They are saved in one character save at once, with a mark of what was given, and the number of
+        /// items the character now holds is returned: -1 when the save failed, so the payout is not claimed yet (the mark keeps
+        /// what was given from being given twice).
         /// </summary>
         private static int DeliverPayout(uint player, IncursionPayout payout, int creditsGiven, int itemsGiven, string variable, string heading, string logLabel)
         {
@@ -586,7 +587,7 @@ namespace SWLOR.Game.Server.Service
 
             itemsGiven += given.Count;
             ObjectPlugin.SetString(player, variable, $"{Math.Max(payout.Credits, creditsGiven)}|{itemsGiven}", true);
-            ExportSingleCharacter(player);
+            var saved = CharacterCheckpoint.Save(player);
 
             var points = payout.Points > 0 ? $" for {payout.Points:0.#} contribution points" : string.Empty;
             if (credits > 0 || given.Count > 0)
@@ -598,7 +599,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red($"Your inventory is full. {left} more item(s) from these spoils wait for you: make room, and they are given at your next login."));
             Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Id} - {credits} credits, {string.Join(", ", given)}" +
                                       (left > 0 ? $" ({left} item(s) still pending)" : string.Empty));
-            return itemsGiven;
+            return saved ? itemsGiven : -1;
         }
 
         /// <summary>A player who was offline when a region was cleared collects the spoils at login.</summary>

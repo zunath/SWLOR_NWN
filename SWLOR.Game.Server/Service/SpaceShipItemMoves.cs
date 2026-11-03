@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -30,21 +31,45 @@ namespace SWLOR.Game.Server.Service
         /// <summary>On a deed taken back from a ship being unregistered: the ship id.</summary>
         private const string DeedUnregisteredVariable = "SHIP_DEED_UNREGISTERED";
 
-        /// <summary>Marks a module the ship is about to save as fitted and saves the character. Call after serializing it.</summary>
-        public static void MarkModuleFitting(uint player, uint item, string shipId)
+        /// <summary>
+        /// Marks a module the ship is about to save as fitted and saves the character at once. Call after serializing it.
+        /// False, with the mark taken off again, when the character could not be saved: the ship must not save the module.
+        /// </summary>
+        public static bool MarkModuleFitting(uint player, uint item, string shipId) =>
+            CheckpointedChange.Run(
+                () =>
+                {
+                    SetLocalString(item, ModuleFittingVariable, $"{shipId}|{GetObjectUUID(item)}");
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => DeleteLocalString(item, ModuleFittingVariable));
+
+        /// <summary>
+        /// Records the fitting on the ship, to be saved in the same write as the fitted module
+        /// (<see cref="PlayerShip.FittingAcknowledgements"/>), so a restart before the receipt is saved still leaves proof.
+        /// </summary>
+        public static void AcknowledgeFitting(PlayerShip ship, uint player, string instanceId)
         {
-            SetLocalString(item, ModuleFittingVariable, $"{shipId}|{GetObjectUUID(item)}");
-            ExportSingleCharacter(player);
+            ship.FittingAcknowledgements ??= new Dictionary<string, string>();
+            ship.FittingAcknowledgements[instanceId] = GetObjectUUID(player);
         }
 
         /// <summary>
         /// The ship saved the fitted module: its receipt follows, and outlives any later change to the ship until the
-        /// fitter's next login has settled their marked modules (<see cref="ShipModuleReceipt"/>).
+        /// fitter's next login has settled their marked modules (<see cref="ShipModuleReceipt"/>). The ship's acknowledgement
+        /// goes once the receipt holds the fitting.
         /// </summary>
-        public static void SaveModuleReceipt(uint player, string instanceId, string shipId)
+        public static void SaveModuleReceipt(uint player, PlayerShip ship, string instanceId)
         {
-            DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = GetObjectUUID(player), ShipId = shipId });
+            DB.Set(new ShipModuleReceipt { Id = instanceId, OwnerPlayerId = GetObjectUUID(player), ShipId = ship.Id });
+            if (ship.FittingAcknowledgements?.Remove(instanceId) == true)
+                DB.Set(ship);
         }
+
+        /// <summary>Whether the ship saved this module as fitted at some point: it still has it, or it acknowledged the fitting.</summary>
+        private static bool WasFitted(PlayerShip ship, string instanceId) =>
+            FindFittedModule(ship, instanceId) != null || ship?.FittingAcknowledgements?.ContainsKey(instanceId) == true;
 
         /// <summary>
         /// Saves the removal record of a module just taken into the remover's inventory and marks the item, before the ship
@@ -64,27 +89,50 @@ namespace SWLOR.Game.Server.Service
             SetLocalString(item, ModuleRemovedVariable, $"{shipId}|{module.ItemInstanceId}");
         }
 
-        /// <summary>The ship saved the module as removed: the character is saved holding it, then the record goes.</summary>
+        /// <summary>
+        /// The ship saved the module as removed: the character is saved holding it at once, then the record goes. A save that
+        /// fails keeps the record, which the next login settles (<see cref="SettleShipItemMoves"/>).
+        /// </summary>
         public static void FinishModuleRemoval(uint player, uint item, string instanceId)
         {
-            ExportSingleCharacter(player);
+            if (!CharacterCheckpoint.Save(player))
+                return;
+
             DB.Delete<ShipModuleRemoval>(instanceId);
             DeleteLocalString(item, ModuleRemovedVariable);
         }
 
-        /// <summary>Marks a deed about to be saved as a ship and saves the character. Call after serializing it.</summary>
-        public static void MarkDeedRegistering(uint player, uint deed, string shipId)
-        {
-            SetLocalString(deed, DeedRegisteringVariable, shipId);
-            ExportSingleCharacter(player);
-        }
+        /// <summary>
+        /// Marks a deed about to be saved as a ship and saves the character at once. Call after serializing it. False, with the
+        /// mark taken off again, when the character could not be saved: the ship must not be saved.
+        /// </summary>
+        public static bool MarkDeedRegistering(uint player, uint deed, string shipId) =>
+            CheckpointedChange.Run(
+                () =>
+                {
+                    SetLocalString(deed, DeedRegisteringVariable, shipId);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => DeleteLocalString(deed, DeedRegisteringVariable));
 
-        /// <summary>Marks a deed taken back from a ship being unregistered and saves the character, before the ship goes.</summary>
-        public static void MarkDeedUnregistered(uint player, uint deed, string shipId)
-        {
-            SetLocalString(deed, DeedUnregisteredVariable, shipId);
-            ExportSingleCharacter(player);
-        }
+        /// <summary>
+        /// Marks a deed taken back from a ship being unregistered and saves the character at once, before the ship goes. False
+        /// when the character could not be saved: the deed is destroyed again and the ship must stay.
+        /// </summary>
+        public static bool MarkDeedUnregistered(uint player, uint deed, string shipId) =>
+            CheckpointedChange.Run(
+                () =>
+                {
+                    SetLocalString(deed, DeedUnregisteredVariable, shipId);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    DeleteLocalString(deed, DeedUnregisteredVariable);
+                    DestroyObject(deed);
+                });
 
         /// <summary>The ship is gone: the deed's mark goes with the next save.</summary>
         public static void ClearDeedUnregistered(uint deed) => DeleteLocalString(deed, DeedUnregisteredVariable);
@@ -131,13 +179,17 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var settled = false;
             var removedHeld = new HashSet<string>();
+            var acknowledged = new List<(string ShipId, string InstanceId)>();
             foreach (var item in GetAllItems(player))
             {
                 if (TryReadShipMark(item, ModuleFittingVariable, out var shipId, out var instanceId))
                 {
                     settled = true;
                     DeleteLocalString(item, ModuleFittingVariable);
-                    if (DB.Get<ShipModuleReceipt>(instanceId) != null || FindFittedModule(DB.Get<PlayerShip>(shipId), instanceId) != null)
+                    var fittedShip = DB.Get<PlayerShip>(shipId);
+                    if (fittedShip?.FittingAcknowledgements?.ContainsKey(instanceId) == true)
+                        acknowledged.Add((shipId, instanceId));
+                    if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))
                     {
                         DestroyObject(item);
                         Log.Write(LogGroup.Space, $"{PlayerName.GetAuditName(player)} - removed module {instanceId} already fitted to ship {shipId} after a restart.");
@@ -197,11 +249,20 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(player))
                     return;
 
-                ExportSingleCharacter(player);
+                // A save that fails keeps the receipts, records and acknowledgements for the next login.
+                if (!CharacterCheckpoint.Save(player))
+                    return;
+
                 foreach (var receiptId in receiptIds)
                     DB.Delete<ShipModuleReceipt>(receiptId);
                 foreach (var removalId in givenAgain)
                     DB.Delete<ShipModuleRemoval>(removalId);
+                foreach (var (ackShipId, ackInstanceId) in acknowledged)
+                {
+                    var ackShip = DB.Get<PlayerShip>(ackShipId);
+                    if (ackShip?.FittingAcknowledgements?.Remove(ackInstanceId) == true)
+                        DB.Set(ackShip);
+                }
             });
         }
 

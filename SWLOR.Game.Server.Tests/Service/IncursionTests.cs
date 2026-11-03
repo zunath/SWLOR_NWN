@@ -369,7 +369,10 @@ public class IncursionTests
             .Should().BeLessThan(freight.IndexOf("AssignCommand(player, () => PayFreightDeposit(player, contractId, offer.Deposit));", StringComparison.Ordinal),
                 "no deposit is taken first");
         freight.Should().Contain("contract.DepositPending = true;")
-            .And.Contain("TakeGoldFromCreature(deposit, player, true);\n            ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);\n            ExportSingleCharacter(player);")
+            .And.Contain("TakeGoldFromCreature(deposit, player, true);\n                    ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);\n                    return true;\n                },\n                () => CharacterCheckpoint.Save(player),",
+                "the deposit and its mark are saved at once")
+            .And.Contain("if (!paid)\n            {\n                CancelUnpaidContract(dbPlayer, contract);",
+                "a deposit that could not be saved cancels the contract instead of keeping it unpaid")
             .And.Contain("public static void ReconcileFreightDeposits()",
                 "a contract a restart left waiting on its deposit is settled at login, never refunded unpaid");
         IncursionRules.ExchangeRefusal(IncursionInvader.Sith).Should().Contain("The exchange is closed");

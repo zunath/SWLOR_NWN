@@ -46,15 +46,17 @@ public class PendingTradeTests
     public void BuyAndSell_SaveTheGoldWithTheMarkBeforeTheCargo()
     {
         var trade = ReadServerSource("Service", "Trade.cs");
-        trade.Should().Contain("ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);\n            ExportSingleCharacter(player);")
+        trade.Should().Contain("ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);\n                    return true;\n                },\n                () => CharacterCheckpoint.Save(player),",
+                "the gold and the mark are saved at once, before the cargo changes")
             .And.Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ApplyPendingTrade()")
             .And.Contain("AssignCommand(player, () => CompleteBuy(player, shipRecordId, exchangeType, commodity, detail, dock, order));",
                 "TakeGoldFromCreature does nothing from a NUI handler, so the purchase completes on the player's queue");
 
         var complete = trade[trade.IndexOf("private static void CompleteBuy(", StringComparison.Ordinal)..];
-        var take = complete.IndexOf("TakeGoldFromCreature(order.Credits, player, true);", StringComparison.Ordinal);
-        take.Should().BeGreaterThan(0);
-        take.Should().BeLessThan(complete.IndexOf("SaveTradeGold(player, trade);", StringComparison.Ordinal), "the payment is taken before it is exported");
+        var save = complete.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal);
+        save.Should().BeGreaterThan(0);
+        complete.IndexOf("() => TakeGoldFromCreature(order.Credits, player, true),", StringComparison.Ordinal)
+            .Should().BeGreaterThan(save, "the payment is taken inside the save, which puts it back when the file cannot be saved");
 
         trade.Should().Contain("if (ship == null || ship.OwnerPlayerId != playerId)",
                 "a former owner's mark never changes a ship that has changed owners")
@@ -63,8 +65,10 @@ public class PendingTradeTests
         foreach (var method in new[] { "public static void Buy(", "public static void Sell(" })
         {
             var body = trade[trade.IndexOf(method, StringComparison.Ordinal)..];
-            body.IndexOf("SaveTradeGold(player, trade);", StringComparison.Ordinal)
+            body.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal)
                 .Should().BeLessThan(body.IndexOf("DB.Set(ship);", StringComparison.Ordinal), method);
+            System.Text.RegularExpressions.Regex.IsMatch(body, @"if \(!SaveTradeGold\(player, trade,[\s\S]*?\)\)\)\n\s+return;\n\n\s+RecordTrade\(")
+                .Should().BeTrue($"{method} stops before the cargo changes when the character could not be saved");
         }
     }
 

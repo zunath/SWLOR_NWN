@@ -184,7 +184,15 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineComponent()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ApplyExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
+
+        /// <summary>
+        /// Adds a component's trait lines, or a hull deed's hull traits, to its description. The examine event runs this, and so
+        /// does the item examine window (whose players' native panel never raises the event).
+        /// </summary>
+        public static void ApplyExamineDetails(uint item)
+        {
             if (GetObjectType(item) != ObjectType.Item)
                 return;
 

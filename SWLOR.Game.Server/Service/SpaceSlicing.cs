@@ -526,7 +526,10 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(player))
                     return;
 
-                ExportSingleCharacter(player);
+                // A save that fails leaves the mark: the next login keeps the grant once a later save holds it.
+                if (!CharacterCheckpoint.Save(player))
+                    return;
+
                 KeepLockboxGrant(player, grant);
             }));
         }

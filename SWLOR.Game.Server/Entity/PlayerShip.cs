@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Entity
             TransferReason = string.Empty;
             TransferPaymentId = string.Empty;
             PaymentIds = new Dictionary<string, string>();
+            FittingAcknowledgements = new Dictionary<string, string>();
             LastHoldingCollectionId = string.Empty;
             LastTradeIds = new Dictionary<string, string>();
             PendingHoldingDeliveryId = string.Empty;
@@ -115,6 +116,13 @@ namespace SWLOR.Game.Server.Entity
         /// keeps it even when another player paid for a change on the ship since. Older records load empty.
         /// </summary>
         public Dictionary<string, string> PaymentIds { get; set; }
+
+        /// <summary>
+        /// Modules fitted to this ship whose <c>ShipModuleReceipt</c> may not be saved yet: module instance id to the fitter's
+        /// player id, saved in the same write as the fitted module. Removing the module later leaves it, so the fitter's login
+        /// still knows the fitting happened; it goes once the receipt is saved, or at that login. Older records load empty.
+        /// </summary>
+        public Dictionary<string, string> FittingAcknowledgements { get; set; }
 
         /// <summary>
         /// The last Planetary Holding collection loaded into the cargo bay, saved with the cargo, so a collection a

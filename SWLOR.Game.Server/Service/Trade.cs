@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -150,9 +151,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            TakeGoldFromCreature(order.Credits, player, true);
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = order.Units, Credits = order.Credits };
-            SaveTradeGold(player, trade);
+            if (!SaveTradeGold(player, trade,
+                    () => TakeGoldFromCreature(order.Credits, player, true),
+                    () => GiveGoldToCreature(player, order.Credits)))
+                return;
+
             RecordTrade(ship, player, trade);
             DB.Set(ship);
 
@@ -198,9 +202,12 @@ namespace SWLOR.Game.Server.Service
             // in between leaves a mark the next login applies once (ApplyPendingTrade). The sale's cost basis is read
             // from a copy of the lot, so the bay changes only through the mark.
             var cost = CargoHoldRules.RemoveUnits(CopyLot(ship.Cargo, commodity), commodity, order.Units);
-            GiveGoldToCreature(player, order.Credits);
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = -order.Units };
-            SaveTradeGold(player, trade);
+            if (!SaveTradeGold(player, trade,
+                    () => GiveGoldToCreature(player, order.Credits),
+                    () => AssignCommand(player, () => TakeGoldFromCreature(order.Credits, player, true))))
+                return;
+
             RecordTrade(ship, player, trade);
             AddPressure(state, commodity, order.Units, now);
             DB.Set(ship);
@@ -222,11 +229,28 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The character-file local naming the last exchange trade's cargo change (<see cref="PendingTrade"/>).</summary>
         private const string PendingTradeVariable = "TRADE_PENDING";
 
-        /// <summary>Saves the trade's gold in the character file together with the mark naming its cargo change.</summary>
-        private static void SaveTradeGold(uint player, PendingTrade trade)
+        /// <summary>
+        /// Moves the trade's gold and saves it in the character file at once, together with the mark naming its cargo change.
+        /// False, with the gold and the mark put back, when the file could not be saved: the cargo must not change.
+        /// </summary>
+        private static bool SaveTradeGold(uint player, PendingTrade trade, Action moveGold, Action returnGold)
         {
-            ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);
-            ExportSingleCharacter(player);
+            var saved = CheckpointedChange.Run(
+                () =>
+                {
+                    moveGold();
+                    ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    returnGold();
+                    ObjectPlugin.DeleteString(player, PendingTradeVariable);
+                });
+            if (!saved)
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the trade did not go through."));
+            return saved;
         }
 
         /// <summary>Applies a trade's cargo change to the bay and records it as the player's last trade on the ship.</summary>

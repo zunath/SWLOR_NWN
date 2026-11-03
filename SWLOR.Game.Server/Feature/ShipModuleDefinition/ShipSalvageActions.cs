@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
             var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
+            var effectiveness = SpaceCrew.GetFireEffectiveness(activator);
             cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
             if (GetLocalInt(target, GasCloudUnitsVariable) <= 0)
@@ -119,8 +120,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     SetLocalInt(target, GasCloudUnitsVariable, remainingUnits);
                 }
 
-                // A droid in the ship's droid bay adds to the gas delivered, not to what the cloud loses.
-                var delivered = DroidIndustryRules.ApplyPercent(amount, Space.GetDroidBayYieldPercent(activator));
+                // The operator's effectiveness and a droid in the ship's droid bay set the gas delivered, not what the cloud loses.
+                var delivered = DroidIndustryRules.ApplyPercent(
+                    ShipModuleActions.ApplyOperatorEffectiveness(activator, "GAS", amount, effectiveness),
+                    Space.GetDroidBayYieldPercent(activator));
                 var lootTable = Loot.GetLootTableByName(GetLocalString(target, GasCloudLootTableVariable));
                 var gas = new List<string>();
                 for (var count = 1; count <= delivered; count++)
@@ -165,6 +168,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
             var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
+            var effectiveness = SpaceCrew.GetFireEffectiveness(activator);
             cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
 
@@ -193,9 +197,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 }
 
                 // Salvage Expert (Gathering) adds items to every cycle.
+                // The operator's effectiveness scales them (a droid at a seat it is weak in pulls less).
                 // A droid in the ship's droid bay adds items and, with Prospecting Protocol, rare-find chance.
-                var items = DroidIndustryRules.ApplyPercent(ShipSalvageRules.SalvageItemsPerCycle(
-                        shipStatus.Industrial, moduleBonus, Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceSalvageYieldBonus)),
+                var items = DroidIndustryRules.ApplyPercent(ShipModuleActions.ApplyOperatorEffectiveness(activator, "SALVAGE",
+                        ShipSalvageRules.SalvageItemsPerCycle(shipStatus.Industrial, moduleBonus,
+                            Space.GetOperatorStatAdjustment(activator, operatorSource, StatType.SpaceSalvageYieldBonus)),
+                        effectiveness),
                     Space.GetDroidBayYieldPercent(activator));
                 var yield = ShipSalvageRules.ScrapYield(wreck.Tier, items);
                 var rareFind = traitRareFind + Space.GetDroidBayRareFindBonus(activator);

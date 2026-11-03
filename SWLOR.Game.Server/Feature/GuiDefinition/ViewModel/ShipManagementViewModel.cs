@@ -1643,7 +1643,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var mark = CreditPayments.NewMark(CreditPaymentKind.HullRefit, dbShip.Id, fee);
-            CreditPayments.Take(player, mark);
+            if (!CreditPayments.TryTakeSaved(player, mark))
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("Your character could not be saved, so nothing was paid."), player, false);
+                return;
+            }
+
             dbShip.HullDesignAppearance = appearance == shipDetail.Appearance ? 0 : (int)appearance;
             CreditPayments.RecordOn(dbShip, player, mark);
             DB.Set(dbShip);
@@ -1862,7 +1867,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Space.RecalculateShipStats(ship.Status, GetAbilityScore(Player, AbilityType.Willpower), true);
                 // The deed is marked and saved with the character before the ship is saved: a login after a restart in
                 // between removes a marked deed whose ship exists (Space.SettleShipItemMoves).
-                Space.MarkDeedRegistering(Player, item, ship.Id);
+                if (!Space.MarkDeedRegistering(Player, item, ship.Id))
+                {
+                    Property.DeleteProperty(property);
+                    FloatingTextStringOnCreature(ColorToken.Red("Your character could not be saved, so the ship was not registered."), Player, false);
+                    return;
+                }
+
                 DB.Set(ship);
 
                 // Update the UI with the new ship details.
@@ -1937,7 +1948,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     // The deed is marked and saved with the character before the ship goes: a login after a restart in
                     // between finishes removing a ship whose marked deed the character holds (Space.SettleShipItemMoves).
-                    Space.MarkDeedUnregistered(Player, deed, shipId);
+                    if (!Space.MarkDeedUnregistered(Player, deed, shipId))
+                    {
+                        FloatingTextStringOnCreature(ColorToken.Red("Your character could not be saved, so the ship was not unregistered."), Player, false);
+                        return;
+                    }
+
                     Space.RemoveUnregisteredShip(shipId);
                     Space.ClearDeedUnregistered(deed);
 
@@ -2217,9 +2233,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
 
                     // The module is marked and saved with the character before the ship saves it (Space.SettleShipItemMoves).
-                    Space.MarkModuleFitting(Player, item, shipId);
+                    if (!Space.MarkModuleFitting(Player, item, shipId))
+                    {
+                        FloatingTextStringOnCreature(ColorToken.Red("Your character could not be saved, so the module was not installed."), Player, false);
+                        return;
+                    }
+
+                    Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));
                     DB.Set(dbShip);
-                    Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);
+                    Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));
                     Space.GrantModuleFittedAchievement(Player, moduleDetails);
 
                     DestroyObject(item);
@@ -2332,9 +2354,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
                         // The module is marked and saved with the character before the ship saves it (Space.SettleShipItemMoves).
-                        Space.MarkModuleFitting(Player, item, shipId);
+                        if (!Space.MarkModuleFitting(Player, item, shipId))
+                        {
+                            FloatingTextStringOnCreature(ColorToken.Red("Your character could not be saved, so the module was not installed."), Player, false);
+                            return;
+                        }
+
+                        Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));
                         DB.Set(dbShip);
-                        Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);
+                        Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));
 
                         DestroyObject(item);
                         LoadShip();
@@ -2692,7 +2720,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var mark = CreditPayments.NewMark(CreditPaymentKind.ShipRepair, dbShip.Id, price);
-            CreditPayments.Take(player, mark);
+            if (!CreditPayments.TryTakeSaved(player, mark))
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("Your character could not be saved, so nothing was paid."), player, false);
+                return;
+            }
+
             dbShip.Status.Shield = dbShip.Status.MaxShield;
             dbShip.Status.Hull = dbShip.Status.MaxHull;
             CreditPayments.RecordOn(dbShip, player, mark);

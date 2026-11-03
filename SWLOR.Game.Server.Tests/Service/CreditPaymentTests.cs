@@ -81,12 +81,15 @@ public class CreditPaymentTests
         InOrder(create, "property.PendingPaymentId = pendingPaymentId ?? string.Empty;", "CreateBuilding(");
 
         var payments = Source("Service", "CreditPayments.cs");
-        InOrder(Method(payments, "public static void Take("),
-            "TakeGoldFromCreature(mark.Credits, player, true);", "ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);", "ExportSingleCharacter(player);");
+        InOrder(Method(payments, "public static bool TryTakeSaved("),
+            "TakeGoldFromCreature(mark.Credits, player, true);", "ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);",
+            "() => CharacterCheckpoint.Save(player),", "GiveGoldToCreature(player, mark.Credits);", "ObjectPlugin.DeleteString(player, MarkVariable);");
+        payments.Should().NotContain("public static void Take(", "a payment is taken and saved at once, and put back when the file cannot be saved");
         InOrder(Method(payments, "public static void Retire("), "ObjectPlugin.DeleteString(player, MarkVariable);", "ExportSingleCharacter(player);");
         InOrder(Method(payments, "public static void PayStationFounding("),
             "station.PendingPaymentId != mark.Id", "if (GetGold(player) < mark.Credits)", "UndoStationFounding(station, player);",
-            "Take(player, mark);", "station.PendingPaymentId = string.Empty;", "DB.Set(station);", "Retire(player);");
+            "if (!TryTakeSaved(player, mark))", "UndoStationFounding(station, player);", "return;",
+            "station.PendingPaymentId = string.Empty;", "DB.Set(station);", "Retire(player);");
         InOrder(Method(payments, "private static void UndoStationFounding("), "station.IsQueuedForDeletion = true;", "DB.Set(station);");
         InOrder(Method(payments, "private static void SettlePendingFoundings("),
             "CreditPaymentMark.PaysPendingFounding(mark, station.PendingPaymentId)", "UndoStationFounding(station, OBJECT_INVALID);");
@@ -107,7 +110,8 @@ public class CreditPaymentTests
 
         InOrder(Method(viewModel, "private void CompleteRefit("),
             "var dbShip = GetShipToRefit(shipId);", "if (GetGold(player) < fee)",
-            "CreditPayments.Take(player, mark);", "CreditPayments.RecordOn(dbShip, player, mark);", "DB.Set(dbShip);", "CreditPayments.Retire(player);");
+            "if (!CreditPayments.TryTakeSaved(player, mark))", "nothing was paid.", "return;",
+            "CreditPayments.RecordOn(dbShip, player, mark);", "DB.Set(dbShip);", "CreditPayments.Retire(player);");
     }
 
     [Test]
@@ -132,7 +136,8 @@ public class CreditPaymentTests
         Method(customs, "public static void ResolveCustomsSpoof(").Should().Contain("CollectCustomsFine(player, scan.ShipId, scan.Authority, outcome.Fine, outcome.ConfiscatesGoods);");
         InOrder(Method(customs, "private static (int Fine, Dictionary<CommodityType, int> Taken) CollectCustomsFine("),
             "fine = Math.Max(0, Math.Min(fine, GetGold(player)));",
-            "CreditPayments.Take(player, mark);",
+            "if (mark != null && !CreditPayments.TryTakeSaved(player, mark))",
+            "return (0, new Dictionary<CommodityType, int>());",
             "CustomsRules.Confiscate(ship.Cargo, authority)",
             "CreditPayments.RecordOn(ship, player, mark);",
             "DB.Set(ship);",
@@ -154,7 +159,10 @@ public class CreditPaymentTests
         InOrder(Method(agents, "public static void Buy(uint player, uint agentNpc, int itemIndex)"),
             "var created = CreateItemOnObject(item.Resref, player, item.Quantity);",
             "ObjectPlugin.SetString(player, AgentPurchaseVariable, purchase.Serialize(), true);",
-            "ExportSingleCharacter(player);",
+            "() => CharacterCheckpoint.Save(player),",
+            "DestroyObject(created);",
+            "if (!saved)",
+            "return;",
             "Currency.TakeCurrency(player, currency, item.Tokens, x => x.LastAgentPurchaseId = purchase.Id);");
         InOrder(Method(agents, "public static void ChargeInterruptedAgentPurchase("),
             "!purchase.IsUnpaid(dbPlayer.LastAgentPurchaseId)",
@@ -170,7 +178,10 @@ public class CreditPaymentTests
         InOrder(Method(holdings, "public static void Abandon("),
             "GiveGoldToCreature(player, refund);",
             "ObjectPlugin.SetString(player, AbandonedVariable, holding.Id, true);",
-            "ExportSingleCharacter(player);",
+            "() => CharacterCheckpoint.Save(player),",
+            "AssignCommand(player, () => TakeGoldFromCreature(refund, player, true));",
+            "if (!saved)",
+            "return;",
             "DB.Delete<PlanetaryHolding>(holding.Id);");
         InOrder(Method(holdings, "private static void SettleAbandonedHolding("),
             "holding.OwnerPlayerId != GetObjectUUID(player)", "DB.Delete<PlanetaryHolding>(holding.Id);");
@@ -191,7 +202,9 @@ public class CreditPaymentTests
                      new[] { "Feature", "DialogDefinition", "StarportFlightsDialog.cs" },
                  })
         {
-            Source(path).Should().NotContain("() => TakeGoldFromCreature(", string.Join("/", path));
+            // The one lambda that takes gold is the undo of a refund or proceeds, which runs on the payer's own queue.
+            Source(path).Replace("AssignCommand(player, () => TakeGoldFromCreature(", string.Empty)
+                .Should().NotContain("() => TakeGoldFromCreature(", string.Join("/", path));
         }
 
         var shipManagement = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");

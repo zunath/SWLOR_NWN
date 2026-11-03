@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Tests.Feature.SpaceItemFixtures;
+using SWLOR.Game.Server.Service.FactionAgentService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -251,7 +252,9 @@ public class SpaceW11nReviewFixTests
 
         var deliver = Between(incursions, "private static int DeliverPayout(", "/// <summary>A player who was offline");
         deliver.IndexOf("CreateItemOnObject(resref, player)", StringComparison.Ordinal)
-            .Should().BeLessThan(deliver.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal));
+            .Should().BeLessThan(deliver.IndexOf("CharacterCheckpoint.Save(player)", StringComparison.Ordinal));
+        deliver.Should().NotContain("ExportSingleCharacter(");
+        deliver.Should().Contain("return saved ? itemsGiven : -1;", "a payout whose save failed is not claimed: the mark keeps what was given from being given twice");
     }
 
     [Test]
@@ -261,7 +264,7 @@ public class SpaceW11nReviewFixTests
         var deliver = Between(incursions, "private static int DeliverPayout(", "/// <summary>A player who was offline");
         deliver.Should().Contain("var credits = Math.Max(0, payout.Credits - creditsGiven);");
         deliver.Should().Contain("payout.Items.Skip(itemsGiven)");
-        Index(deliver, "ObjectPlugin.SetString(player, variable,").Should().BeLessThan(Index(deliver, "ExportSingleCharacter(player);"),
+        Index(deliver, "ObjectPlugin.SetString(player, variable,").Should().BeLessThan(Index(deliver, "CharacterCheckpoint.Save(player)"),
             "the mark is saved in the same character save as the credits and items");
 
         var collect = Between(incursions, "private static void CollectPendingPayout(", "// Contribution");
@@ -294,13 +297,17 @@ public class SpaceW11nReviewFixTests
     {
         var source = ReadSource("Service", "StationBuildings.cs").Replace("\r\n", "\n");
         var assign = Between(source, "public static bool AssignDroid(", "public static void RecallDroid(");
-        Index(assign, "SetLocalString(controller, AssigningVariable,").Should().BeLessThan(Index(assign, "ExportSingleCharacter(player);"));
-        Index(assign, "ExportSingleCharacter(player);").Should().BeLessThan(Index(assign, "DB.Set(state);"));
+        Index(assign, "SetLocalString(controller, AssigningVariable,").Should().BeLessThan(Index(assign, "() => CharacterCheckpoint.Save(player),"));
+        Index(assign, "() => CharacterCheckpoint.Save(player),").Should().BeLessThan(Index(assign, "if (!marked)"));
+        Index(assign, "if (!marked)").Should().BeLessThan(Index(assign, "DB.Set(state);"),
+            "a save that fails stops before the building takes the droid");
         Index(assign, "DB.Set(state);").Should().BeLessThan(Index(assign, "DestroyObject(controller);"));
 
         var recall = Between(source, "public static void RecallDroid(", "public static void SettleDroidMoves()");
-        Index(recall, "SetLocalString(item, RecalledVariable,").Should().BeLessThan(Index(recall, "ExportSingleCharacter(player);"));
-        Index(recall, "ExportSingleCharacter(player);").Should().BeLessThan(Index(recall, "ClearDroid(state);"));
+        Index(recall, "SetLocalString(item, RecalledVariable,").Should().BeLessThan(Index(recall, "() => CharacterCheckpoint.Save(player),"));
+        Index(recall, "() => CharacterCheckpoint.Save(player),").Should().BeLessThan(Index(recall, "if (!marked)"));
+        Index(recall, "if (!marked)").Should().BeLessThan(Index(recall, "ClearDroid(state);"),
+            "a save that fails stops before the building lets the droid go");
 
         Index(source, "[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDroidMoves()").Should().BeGreaterThan(0);
     }
@@ -310,12 +317,17 @@ public class SpaceW11nReviewFixTests
     {
         var deliver = Between(ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n"),
             "public static void DeliverFreight(", "public static void AbandonFreight(");
-        var paid = deliver.IndexOf("GiveGoldToCreature(player, result.Fee + result.DepositReturned);", StringComparison.Ordinal);
+        Index(deliver, "var proceeds = result.Fee + result.DepositReturned;").Should().BeGreaterThan(0);
+        var paid = deliver.IndexOf("GiveGoldToCreature(player, proceeds);", StringComparison.Ordinal);
         paid.Should().BeGreaterThan(0);
         paid.Should().BeLessThan(Index(deliver, "ObjectPlugin.SetString(player, PaidContractVariable, contract.Id, true);"));
         Index(deliver, "ObjectPlugin.SetString(player, PaidContractVariable, contract.Id, true);")
-            .Should().BeLessThan(Index(deliver, "ExportSingleCharacter(player);"), "the mark is saved in the same character save as the proceeds");
-        Index(deliver, "ExportSingleCharacter(player);").Should().BeLessThan(Index(deliver, "ClearContract(ship, dbPlayer, contract);"));
+            .Should().BeLessThan(Index(deliver, "() => CharacterCheckpoint.Save(player),"), "the mark is saved in the same character save as the proceeds");
+        Index(deliver, "() => CharacterCheckpoint.Save(player),").Should().BeLessThan(Index(deliver, "AssignCommand(player, () => TakeGoldFromCreature(proceeds, player, true));"),
+            "a save that fails takes the proceeds back");
+        Index(deliver, "AssignCommand(player, () => TakeGoldFromCreature(proceeds, player, true));").Should().BeLessThan(Index(deliver, "if (!paid)"));
+        Index(deliver, "if (!paid)").Should().BeLessThan(Index(deliver, "ClearContract(ship, dbPlayer, contract);"),
+            "the contract is cleared only when the file holds the proceeds");
     }
 
     [Test]
@@ -339,10 +351,29 @@ public class SpaceW11nReviewFixTests
         var pay = Between(source, "public static void PayMission(", "private static void FailMission(");
         pay.Should().Contain("Faction.AdjustPlayerFactionStanding(player, mission.Faction, mission.Standing, MarkHeld(missionId, x => x.PaidStanding = true));");
         pay.Should().Contain("Currency.GiveCurrency(player, currency, mission.Tokens, MarkHeld(missionId, x => x.PaidTokens = true));");
-        Index(pay, "if (ObjectPlugin.GetString(player, PaidCreditsVariable) != missionId)")
+        Index(pay, "if (!AgentCreditMarks.Has(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId))")
             .Should().BeLessThan(Index(pay, "GiveGoldToCreature(player, mission.Credits);"), "credits already in the character file are not paid again");
-        Index(pay, "ObjectPlugin.SetString(player, PaidCreditsVariable, missionId, true);")
-            .Should().BeLessThan(Index(pay, "ExportSingleCharacter(player);"), "the mark is saved in the same character save as the credits");
+        Index(pay, "AgentCreditMarks.Add(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);")
+            .Should().BeLessThan(Index(pay, "CharacterCheckpoint.Save(player)"), "the mark is saved in the same character save as the credits");
+        Index(pay, "MarkPaid(player, missionId, x => x.PaidCredits = true);")
+            .Should().BeLessThan(Index(pay, "AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);"),
+                "a mission leaves the mark only once it is saved as paid");
+    }
+
+    [Test]
+    public void AgentCreditMarks_KeepEveryMissionNotYetSavedAsPaid()
+    {
+        // Mission A's save failed; mission B is then paid and saved. A stays in the mark, so A's retry gives nothing.
+        var mark = AgentCreditMarks.Add(string.Empty, "a");
+        mark = AgentCreditMarks.Add(mark, "b");
+        AgentCreditMarks.Has(mark, "a").Should().BeTrue();
+        mark = AgentCreditMarks.Remove(mark, "b");
+        AgentCreditMarks.Has(mark, "a").Should().BeTrue("a later mission's payment never replaces an unsaved one");
+        AgentCreditMarks.Has(mark, "b").Should().BeFalse();
+        AgentCreditMarks.Add(mark, "a").Should().Be(mark, "an id is not added twice");
+        AgentCreditMarks.Remove(mark, "a").Should().BeEmpty();
+        AgentCreditMarks.Has(null, "a").Should().BeFalse();
+        AgentCreditMarks.Has("a", string.Empty).Should().BeFalse();
 
         var faction = ReadSource("Service", "Faction.cs").Replace("\r\n", "\n");
         faction = Between(faction, "public static void AdjustPlayerFactionStanding(", "public static void AdjustPlayerFactionPoints(");
@@ -374,7 +405,7 @@ public class SpaceW11nReviewFixTests
             "public static void CollectDrill(", "// Droids");
         var reserve = collect.IndexOf("DB.Set(new DrillCollectionReservation", StringComparison.Ordinal);
         var stock = collect.IndexOf("DB.Set(state);", StringComparison.Ordinal);
-        var export = collect.IndexOf("ExportSingleCharacter(player);", StringComparison.Ordinal);
+        var export = collect.IndexOf("CharacterCheckpoint.Save(player)", StringComparison.Ordinal);
         reserve.Should().BeGreaterThan(0);
         reserve.Should().BeLessThan(stock, "the reservation lets a login find the pending collection");
         stock.Should().BeLessThan(export, "no one else can collect ore the character file is about to hold");
@@ -386,8 +417,8 @@ public class SpaceW11nReviewFixTests
         var source = ReadSource("Service", "ShipTransfer.cs").Replace("\r\n", "\n");
         var buy = Between(source, "public static bool Buy(", "private static void PaySaleProceeds(");
         Index(buy, "if (!IsStillListed(listing))")
-            .Should().BeLessThan(Index(buy, "TakeGoldFromCreature("),
-                "a listing the seller took off the market, or that expired, is refused before the buyer pays");
+            .Should().BeLessThan(Index(buy, "if (!SavePayment(buyer, payment))"),
+                "a listing the seller took off the market, or that expired, is refused before the buyer pays (SavePayment takes the price)");
         Index(buy, "ship.SaleProceeds = (int)(listing.Price - listing.Price * taxRate);")
             .Should().BeLessThan(Index(buy, "Complete(ship, buyerId, \"was sold\", payment.Id);"),
                 "the proceeds owed are saved with the transfer");
@@ -427,15 +458,17 @@ public class SpaceW11nReviewFixTests
     {
         var post = Between(ReadSource("Service", "SpaceDroidCrew.cs").Replace("\r\n", "\n"),
             "public static bool PostDroid(", "var postName = ShipCrewSeats.GetPostName(seat);");
-        Index(post, "Droid.MarkPosted(controller, dbShip.Id);").Should().BeLessThan(Index(post, "ExportSingleCharacter(player);"));
-        Index(post, "ExportSingleCharacter(player);").Should().BeLessThan(Index(post, "DB.Set(dbShip);"),
+        Index(post, "Droid.MarkPosted(controller, dbShip.Id);").Should().BeLessThan(Index(post, "() => CharacterCheckpoint.Save(player),"));
+        Index(post, "() => CharacterCheckpoint.Save(player),").Should().BeLessThan(Index(post, "if (!posted)"));
+        Index(post, "if (!posted)").Should().BeLessThan(Index(post, "DB.Set(dbShip);"),
             "a restart in between leaves a marker the login check clears, not a posting with a free droid");
 
         var staff = ReadSource("Service", "PlanetaryHoldings.cs").Replace("\r\n", "\n");
         staff = staff[Index(staff, "joined the staff.\");")..];
         Index(staff, "Droid.MarkPosted(controller, HoldingRules.GetDroidPostingId(holding.Id));")
-            .Should().BeLessThan(Index(staff, "ExportSingleCharacter(player);"));
-        Index(staff, "ExportSingleCharacter(player);").Should().BeLessThan(Index(staff, "DB.Set(holding);"));
+            .Should().BeLessThan(Index(staff, "() => CharacterCheckpoint.Save(player),"));
+        Index(staff, "() => CharacterCheckpoint.Save(player),").Should().BeLessThan(Index(staff, "if (!posted)"));
+        Index(staff, "if (!posted)").Should().BeLessThan(Index(staff, "DB.Set(holding);"));
     }
 
     [Test]
@@ -482,14 +515,20 @@ public class SpaceW11nReviewFixTests
         pay.Should().Contain("if (mission == null || mission.Paid)", "a mission already paid is not paid twice");
         Index(pay, "Faction.AdjustPlayerFactionStanding(").Should().BeLessThan(Index(pay, "x => x.PaidStanding = true"));
         Index(pay, "Currency.GiveCurrency(").Should().BeLessThan(Index(pay, "x => x.PaidTokens = true"));
-        Index(pay, "GiveGoldToCreature(player, mission.Credits);").Should().BeLessThan(Index(pay, "ExportSingleCharacter(player);"));
-        Index(pay, "ExportSingleCharacter(player);").Should().BeLessThan(Index(pay, "x => x.PaidCredits = true"));
+        Index(pay, "GiveGoldToCreature(player, mission.Credits);").Should().BeLessThan(Index(pay, "if (!CharacterCheckpoint.Save(player))"));
+        Index(pay, "if (!CharacterCheckpoint.Save(player))").Should().BeLessThan(Index(pay, "x => x.PaidCredits = true"),
+            "a mission whose credits could not be saved stays unpaid");
         pay.Should().Contain("if (!mission.PaidStanding)").And.Contain("if (!mission.PaidTokens)").And.Contain("if (!mission.PaidCredits)",
             "a retried pay gives only the parts not yet saved");
 
         var login = Between(source, "public static void RegisterHeldMissions()", "// The board");
         login.Should().Contain("!x.Paid && dbPlayer.Quests.TryGetValue(x.Id, out var quest) && quest.DateLastCompleted != null");
         Index(login, "PayMission(player, missionId);").Should().BeLessThan(Index(login, "OnMissionCompleted(player, missionId);"));
+
+        // A mission whose credits could not be saved is not paid: completing it keeps it, with its completed quest record,
+        // so this login recovery pays it next time instead of the restart losing the credits.
+        var completed = Between(source, "public static void OnMissionCompleted(", "public static void PayMission(");
+        Index(completed, "is { Paid: false })").Should().BeLessThan(Index(completed, "dbPlayer.AgentMissions.RemoveAll(x => x.Id == missionId);"));
     }
 
     [Test]

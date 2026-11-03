@@ -525,6 +525,22 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>The ship's carried fraction of an ore (hundredths) from Prospector's percent, between cycles.</summary>
         private const string MiningYieldCarryVariable = "SPACE_MINING_YIELD_CARRY";
 
+        /// <summary>The ship's carried fraction (hundredths) of an extraction yield worked below full effectiveness, per kind.</summary>
+        private const string EffectiveYieldCarryPrefix = "SPACE_EFFECTIVE_YIELD_CARRY_";
+
+        /// <summary>
+        /// A cycle's yield worked at the station operator's effectiveness, read while the station's fire context was open
+        /// (a droid at a seat it is weak in pulls less), carrying the fraction on the ship (SpaceCombatMath.EffectiveYield).
+        /// </summary>
+        public static int ApplyOperatorEffectiveness(uint activator, string kind, int amount, double effectiveness)
+        {
+            var variable = EffectiveYieldCarryPrefix + kind;
+            var carry = GetLocalInt(activator, variable);
+            var worked = SpaceCombatMath.EffectiveYield(amount, effectiveness, ref carry);
+            SetLocalInt(activator, variable, carry);
+            return worked;
+        }
+
         /// <summary>
         /// A cycle's ore after the operator's Prospector, carrying the fraction on the ship (SpaceCombatMath.MiningYield).
         /// </summary>
@@ -569,6 +585,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
             var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
+            var effectiveness = SpaceCrew.GetFireEffectiveness(activator);
             cycleSeconds = MiningCycleSeconds(activator, operatorSource, cycleSeconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
@@ -594,7 +611,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // Module bonuses set the cycle's amount and the asteroid units it uses; Prospector adds its percent to
                 // the ore delivered, the fraction carried to the ship's next cycle.
                 var baseAmount = SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus);
-                var amountToMine = ApplyProspector(activator, operatorSource, baseAmount);
+                var amountToMine = ApplyOperatorEffectiveness(activator, "MINING",
+                    ApplyProspector(activator, operatorSource, baseAmount), effectiveness);
 
                 // Refresh remaining units (could have changed since the start)
                 var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -651,6 +669,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // has none). They are read now, while the station's fire context is open; the yield still goes to the ship.
             var operatorSource = SpaceCrew.GetStatSource(activator);
             var creditedPlayer = SpaceCrew.GetCreditedPlayer(activator);
+            var effectiveness = SpaceCrew.GetFireEffectiveness(activator);
             seconds = MiningCycleSeconds(activator, operatorSource, seconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
@@ -676,9 +695,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     return;
 
                 // The same per-cycle ore as a mining laser, over every cycle the asteroid has left.
-                var amountToMine = ApplyProspector(activator, operatorSource, SpaceCombatMath.StripMinerYield(
-                    SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus),
-                    remainingUnits));
+                var amountToMine = ApplyOperatorEffectiveness(activator, "MINING", ApplyProspector(activator, operatorSource,
+                    SpaceCombatMath.StripMinerYield(SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus), remainingUnits)),
+                    effectiveness);
 
                 SetLocalInt(target, "ASTEROID_REMAINING_UNITS", 0);
                 SetPlotFlag(target, false);

@@ -419,4 +419,46 @@ public class GatheringSpaceIndustryTests
         directory.Should().NotBeNull("the repository root containing SWLOR.Game.Server.sln must be discoverable");
         return directory!;
     }
+
+    [TestCase(1.0, 4)]
+    [TestCase(0.25, 1)]
+    [TestCase(0.5, 2)]
+    [TestCase(0.0, 0)]
+    public void ExtractionYields_AreWorkedAtTheOperatorsEffectiveness_CarryingTheFraction(double effectiveness, int fourCycles)
+    {
+        // Four 1-unit cycles: a 25% droid operator pulls one unit in four cycles, not one every cycle.
+        var carry = 0;
+        var total = 0;
+        for (var cycle = 0; cycle < 4; cycle++)
+            total += SpaceCombatMath.EffectiveYield(1, effectiveness, ref carry);
+        total.Should().Be(fourCycles);
+        carry.Should().BeInRange(0, 99);
+    }
+
+    [Test]
+    public void StationExtraction_ReadsTheOperatorsEffectivenessWhileTheFireContextIsOpen()
+    {
+        var root = TestContext.CurrentContext.TestDirectory;
+        while (!System.IO.File.Exists(System.IO.Path.Combine(root, "SWLOR.Game.Server.sln")))
+            root = System.IO.Path.GetDirectoryName(root)!;
+        var mining = System.IO.File.ReadAllText(System.IO.Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition", "ShipModuleActions.cs")).Replace("\r\n", "\n");
+        var salvage = System.IO.File.ReadAllText(System.IO.Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition", "ShipSalvageActions.cs")).Replace("\r\n", "\n");
+        foreach (var (source, method, kind) in new[]
+                 {
+                     (mining, "public static void MineAsteroid(", "\"MINING\""),
+                     (mining, "public static void StripAsteroid(", "\"MINING\""),
+                     (salvage, "public static void HarvestGasCloud(", "\"GAS\""),
+                     (salvage, "public static void SalvageWreck(", "\"SALVAGE\""),
+                 })
+        {
+            var start = source.IndexOf(method, StringComparison.Ordinal);
+            start.Should().BeGreaterThan(0, method);
+            var body = source[start..source.IndexOf("DelayCommand(", start, StringComparison.Ordinal)];
+            body.Should().Contain("var effectiveness = SpaceCrew.GetFireEffectiveness(activator);", method);
+            var next = source.IndexOf("\n        public static", start + 1, StringComparison.Ordinal);
+            if (next < 0)
+                next = source.Length;
+            source[start..next].Should().Contain($"ApplyOperatorEffectiveness(activator, {kind}", method);
+        }
+    }
 }

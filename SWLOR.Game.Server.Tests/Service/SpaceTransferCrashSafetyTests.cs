@@ -1,4 +1,5 @@
 using FluentAssertions;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.SlicingService;
@@ -30,7 +31,8 @@ public class SpaceTransferCrashSafetyTests
         InOrder(Method(shuttle, "private static void CompleteTicketPurchase("),
             "if (!CanPurchaseTicket(player, route, taxRate, out var fare, out var tax))",
             "CreditPayments.NewMark(CreditPaymentKind.ShuttleTicket, ride.Id, fare + tax);",
-            "CreditPayments.Take(player, mark);",
+            "if (!CreditPayments.TryTakeSaved(player, mark))",
+            "return;",
             "ride.PaymentId = mark.Id;",
             "DB.Set(ride);",
             "CreditPayments.Retire(player);",
@@ -54,9 +56,13 @@ public class SpaceTransferCrashSafetyTests
     {
         var shuttle = Source("Service", "Shuttle.cs");
         InOrder(Method(shuttle, "public static bool RefundTicket("),
-            "GiveGoldToCreature(player, ride.FarePaid);",
+            "var fare = ride.FarePaid;",
+            "GiveGoldToCreature(player, fare);",
             "ObjectPlugin.SetString(player, RefundedRideVariable, ride.Id, true);",
-            "ExportSingleCharacter(player);",
+            "() => CharacterCheckpoint.Save(player),",
+            "AssignCommand(player, () => TakeGoldFromCreature(fare, player, true));",
+            "if (!refunded)",
+            "return false;",
             "DB.Delete<ShuttleRide>(ride.Id);");
         shuttle.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleRefundedTicket()");
         InOrder(Method(shuttle, "public static void SettleRefundedTicket("),
@@ -78,7 +84,9 @@ public class SpaceTransferCrashSafetyTests
             "if (CalculateRepairBill(dbShip) != price)",
             "if (GetGold(player) < price)",
             "CreditPayments.NewMark(CreditPaymentKind.ShipRepair, dbShip.Id, price);",
-            "CreditPayments.Take(player, mark);",
+            "if (!CreditPayments.TryTakeSaved(player, mark))",
+            "nothing was paid.",
+            "return;",
             "dbShip.Status.Hull = dbShip.Status.MaxHull;",
             "CreditPayments.RecordOn(dbShip, player, mark);",
             "DB.Set(dbShip);",
@@ -104,7 +112,11 @@ public class SpaceTransferCrashSafetyTests
             "return;",
             "TakeGoldFromCreature(deposit, player, true);",
             "ObjectPlugin.SetString(player, DepositPaidVariable, contractId, true);",
-            "ExportSingleCharacter(player);",
+            "() => CharacterCheckpoint.Save(player),",
+            "GiveGoldToCreature(player, deposit);",
+            "if (!paid)",
+            "CancelUnpaidContract(dbPlayer, contract);",
+            "return;",
             "contract.DepositPending = false;");
         InOrder(Method(freight, "private static void CancelUnpaidContract("),
             "ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id)", "DB.Set(ship);", "dbPlayer.FreightContracts.Remove(contract);");
@@ -179,10 +191,11 @@ public class SpaceTransferCrashSafetyTests
             "state.PendingDrillCollections[collection.Id] = collection.Serialize();",
             "DB.Set(state);",
             "ObjectPlugin.SetString(player, DrillCollectionVariable, collection.Serialize(), true);",
-            "ExportSingleCharacter(player);",
+            "if (CharacterCheckpoint.Save(player))",
             "state.PendingDrillCollections.Remove(collection.Id);",
             "DB.Set(state);",
             "DB.Delete<DrillCollectionReservation>(collection.Id);");
+        collect.Should().NotContain("ExportSingleCharacter(", "a save that fails leaves the collection pending, so the pending entry goes only after a saved file");
         service.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDrillCollections()");
         InOrder(Method(service, "public static void SettleDrillCollections("),
             ".AddFieldSearch(nameof(DrillCollectionReservation.OwnerPlayerId), GetObjectUUID(player), false);",
@@ -242,7 +255,8 @@ public class SpaceTransferCrashSafetyTests
             "ObjectPlugin.SetString(player, LockboxGrantVariable, grant.Serialize(), true);",
             "AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>",
             "if (!GetIsObjectValid(player))",
-            "ExportSingleCharacter(player);",
+            "if (!CharacterCheckpoint.Save(player))",
+            "return;",
             "KeepLockboxGrant(player, grant);");
         InOrder(Method(slicing, "private static void KeepLockboxGrant("),
             "FactionAgents.GrantLockboxIntel(player, grant.Intel, grant.Id);",
@@ -278,7 +292,8 @@ public class SpaceTransferCrashSafetyTests
             "ObjectPlugin.SetString(user, LearnedDesignVariable, resref, true);",
             "AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>",
             "if (!GetIsObjectValid(user))",
-            "ExportSingleCharacter(user);",
+            "if (!CharacterCheckpoint.Save(user))",
+            "return;",
             "SaveLearnedDesign(user, resref);");
         Method(designs, "public static void LearnHullDesign(").Should().NotContain("DB.Set(");
         InOrder(Method(designs, "private static void SaveLearnedDesign("),
@@ -290,36 +305,62 @@ public class SpaceTransferCrashSafetyTests
     // Ship modules and deeds
 
     [Test]
+    public void AFittingAcknowledgement_IsSavedWithTheFittedModule_AndOutlivesItsRemoval()
+    {
+        var moves = Source("Service", "SpaceShipItemMoves.cs");
+        Method(moves, "public static void AcknowledgeFitting(").Should().Contain("ship.FittingAcknowledgements[instanceId] = GetObjectUUID(player);");
+        InOrder(Method(moves, "public static void SaveModuleReceipt("),
+            "DB.Set(new ShipModuleReceipt", "ship.FittingAcknowledgements?.Remove(instanceId) == true", "DB.Set(ship);");
+
+        // A crew member removed the module after the fitter's ship save, before the receipt: the acknowledgement still says it
+        // was fitted, so the fitter's login drops the marked copy instead of keeping a second module.
+        var settle = Method(moves, "public static void SettleShipItemMoves(");
+        InOrder(settle, "var fittedShip = DB.Get<PlayerShip>(shipId);",
+            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))", "DestroyObject(item);");
+        moves.Should().Contain("FindFittedModule(ship, instanceId) != null || ship?.FittingAcknowledgements?.ContainsKey(instanceId) == true");
+        InOrder(settle, "if (!CharacterCheckpoint.Save(player))", "ackShip?.FittingAcknowledgements?.Remove(ackInstanceId) == true", "DB.Set(ackShip);");
+
+        var removal = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        removal.Should().NotContain("FittingAcknowledgements", "only the fitting and the fitter's login change the acknowledgements");
+        new PlayerShip().FittingAcknowledgements.Should().BeEmpty();
+    }
+
+    [Test]
     public void ModulesAndDeeds_AreMarkedAndSavedWithTheCharacterBeforeTheShipChanges()
     {
         var viewModel = Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
         var power = Method(viewModel, "private void ProcessPower(");
-        InOrder(power, "SerializedItem = ObjectPlugin.Serialize(item),", "Space.MarkModuleFitting(Player, item, shipId);", "DB.Set(dbShip);",
-            "Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);", "DestroyObject(item);");
+        InOrder(power, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
+            "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "DestroyObject(item);");
         InOrder(power, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
             "currentModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
         var config = Method(viewModel, "private void ProcessConfiguration(");
-        InOrder(config, "SerializedItem = ObjectPlugin.Serialize(item),", "Space.MarkModuleFitting(Player, item, shipId);", "DB.Set(dbShip);",
-            "Space.SaveModuleReceipt(Player, GetObjectUUID(item), shipId);", "DestroyObject(item);");
+        InOrder(config, "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkModuleFitting(Player, item, shipId))", "return;",
+            "Space.AcknowledgeFitting(dbShip, Player, GetObjectUUID(item));", "DB.Set(dbShip);",
+            "Space.SaveModuleReceipt(Player, dbShip, GetObjectUUID(item));", "DestroyObject(item);");
         InOrder(config, "if (!Item.TryAcquireItem(Player, item))", "Space.BeginModuleRemoval(Player, item, shipId, fitted);",
             "current.Status.ConfigurationModules.Remove(slot);", "DB.Set(current);", "Space.FinishModuleRemoval(Player, item, fitted.ItemInstanceId);");
 
         InOrder(Method(viewModel, "public Action OnClickRegisterShip()"),
-            "SerializedItem = ObjectPlugin.Serialize(item),", "Space.MarkDeedRegistering(Player, item, ship.Id);", "DB.Set(ship);", "DestroyObject(item);");
+            "SerializedItem = ObjectPlugin.Serialize(item),", "if (!Space.MarkDeedRegistering(Player, item, ship.Id))", "return;", "DB.Set(ship);", "DestroyObject(item);");
         var unregister = Method(viewModel, "public Action OnClickUnregisterShip()");
-        InOrder(unregister, "if (!Item.TryAcquireItem(Player, deed))", "Space.MarkDeedUnregistered(Player, deed, shipId);",
+        InOrder(unregister, "if (!Item.TryAcquireItem(Player, deed))", "if (!Space.MarkDeedUnregistered(Player, deed, shipId))", "return;",
             "Space.RemoveUnregisteredShip(shipId);", "Space.ClearDeedUnregistered(deed);");
         unregister.Should().Contain("dbShip.Status.ConfigurationModules.Count > 0", "fitted configuration modules would be deleted with the ship");
         unregister.Should().NotContain("DB.Delete<PlayerShip>(", "the ship goes only through RemoveUnregisteredShip");
 
         var moves = Source("Service", "SpaceShipItemMoves.cs");
-        InOrder(Method(moves, "public static void MarkModuleFitting("), "SetLocalString(item, ModuleFittingVariable,", "ExportSingleCharacter(player);");
+        InOrder(Member(moves, "public static bool MarkModuleFitting("), "SetLocalString(item, ModuleFittingVariable,", "() => CharacterCheckpoint.Save(player),",
+            "() => DeleteLocalString(item, ModuleFittingVariable)");
         var beginRemoval = Method(moves, "public static void BeginModuleRemoval(");
         InOrder(beginRemoval, "DB.Set(new ShipModuleRemoval", "SetLocalString(item, ModuleRemovedVariable,");
-        beginRemoval.Should().NotContain("ExportSingleCharacter", "the character is saved only after the ship drops the module");
-        InOrder(Method(moves, "public static void FinishModuleRemoval("), "ExportSingleCharacter(player);", "DB.Delete<ShipModuleRemoval>(instanceId);");
-        InOrder(Method(moves, "public static void MarkDeedRegistering("), "SetLocalString(deed, DeedRegisteringVariable, shipId);", "ExportSingleCharacter(player);");
-        InOrder(Method(moves, "public static void MarkDeedUnregistered("), "SetLocalString(deed, DeedUnregisteredVariable, shipId);", "ExportSingleCharacter(player);");
+        beginRemoval.Should().NotContain("ExportSingleCharacter").And.NotContain("CharacterCheckpoint.Save", "the character is saved only after the ship drops the module");
+        InOrder(Method(moves, "public static void FinishModuleRemoval("), "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipModuleRemoval>(instanceId);");
+        InOrder(Member(moves, "public static bool MarkDeedRegistering("), "SetLocalString(deed, DeedRegisteringVariable, shipId);", "() => CharacterCheckpoint.Save(player),",
+            "() => DeleteLocalString(deed, DeedRegisteringVariable)");
+        InOrder(Member(moves, "public static bool MarkDeedUnregistered("), "SetLocalString(deed, DeedUnregisteredVariable, shipId);", "() => CharacterCheckpoint.Save(player),",
+            "DeleteLocalString(deed, DeedUnregisteredVariable);", "DestroyObject(deed);");
         InOrder(Method(moves, "public static void RemoveUnregisteredShip("),
             "dbPlayer.ActiveShipId = Guid.Empty.ToString();", "UndockAllToStarport(dbShip, \"was unregistered\");",
             "ReturnShipDroidCrew(dbShip, \"was unregistered\");", "ShipTransfer.RemoveListings(shipId);",
@@ -328,9 +369,9 @@ public class SpaceTransferCrashSafetyTests
         moves.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleShipItemMoves()");
         var settle = Method(moves, "public static void SettleShipItemMoves(");
         InOrder(settle, "TryReadShipMark(item, ModuleFittingVariable, out var shipId, out var instanceId)",
-            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || FindFittedModule(DB.Get<PlayerShip>(shipId), instanceId) != null)",
+            "if (DB.Get<ShipModuleReceipt>(instanceId) != null || WasFitted(fittedShip, instanceId))",
             "DestroyObject(item);");
-        InOrder(settle, "DelayCommand(1f, () =>", "ExportSingleCharacter(player);", "DB.Delete<ShipModuleReceipt>(receiptId);");
+        InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipModuleReceipt>(receiptId);");
         new ShipModuleReceipt().OwnerPlayerId.Should().BeEmpty();
         InOrder(settle, "TryReadShipMark(item, ModuleRemovedVariable, out _, out instanceId)", "removedHeld.Add(instanceId);",
             "SettleModuleRemovals(player, playerId, removedHeld)", "DB.Delete<ShipModuleRemoval>(removalId);");
@@ -346,6 +387,32 @@ public class SpaceTransferCrashSafetyTests
         InOrder(settle, "GetLocalString(item, DeedRegisteringVariable)", "if (DB.Get<PlayerShip>(registering) != null)", "DestroyObject(item);");
         InOrder(settle, "GetLocalString(item, DeedUnregisteredVariable)", "ship.OwnerPlayerId == playerId",
             "RemoveUnregisteredShip(unregistered);");
+    }
+
+    // Character saves
+
+    [Test]
+    public void SpaceServices_SaveTheCharacterNowWhereADatabaseWriteDependsOnIt()
+    {
+        // ExportSingleCharacter only queues a save (the file is written a few milliseconds after the script returns), so a step
+        // that must reach the file before a database write saves through CharacterCheckpoint.Save and stops when that fails.
+        foreach (var file in new[]
+                 {
+                     "PlanetaryHoldings.cs", "Shuttle.cs", "StationBuildings.cs", "Trade.cs", "TradeFreight.cs", "ShipTransfer.cs",
+                     "SpaceShipItemMoves.cs", "FactionAgents.cs", "SpaceDroidCrew.cs", "SpaceHullDesigns.cs", "SpaceIncursions.cs",
+                 })
+        {
+            Source("Service", file).Should().NotContain("ExportSingleCharacter(", file);
+        }
+
+        // The two exports left follow the database write they retire and nothing depends on them.
+        var payments = Source("Service", "CreditPayments.cs");
+        Regex.Matches(payments, Regex.Escape("ExportSingleCharacter(")).Count.Should().Be(1);
+        Method(payments, "public static void Retire(").Should().Contain("ExportSingleCharacter(player);");
+
+        var slicing = Source("Service", "SpaceSlicing.cs");
+        Regex.Matches(slicing, Regex.Escape("ExportSingleCharacter(")).Count.Should().Be(1);
+        Method(slicing, "private static void KeepLockboxGrant(").Should().Contain("ExportSingleCharacter(player);");
     }
 
     [TestCase(true, true, ShipModuleRemovalOutcome.Finished)]
@@ -384,6 +451,15 @@ public class SpaceTransferCrashSafetyTests
         }
 
         return source[start..];
+    }
+
+    /// <summary>An expression-bodied member (its lambdas hold the braces): from its signature to the next blank line.</summary>
+    private static string Member(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0, signature);
+        var end = source.IndexOf("\n\n", start, StringComparison.Ordinal);
+        return source[start..(end < 0 ? source.Length : end)];
     }
 
     private static string Source(params string[] path)

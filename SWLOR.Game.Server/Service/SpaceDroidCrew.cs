@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -201,8 +202,20 @@ namespace SWLOR.Game.Server.Service
 
             // The controller is marked and saved with the character before the posting is: a restart in between leaves a
             // marker the login check clears, never a posting whose droid is still free to use.
-            Droid.MarkPosted(controller, dbShip.Id);
-            ExportSingleCharacter(player);
+            var posted = CheckpointedChange.Run(
+                () =>
+                {
+                    Droid.MarkPosted(controller, dbShip.Id);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => Droid.ClearPosted(controller));
+            if (!posted)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the droid stays with you."));
+                return false;
+            }
+
             dbShip.DroidCrew ??= new List<ShipDroidCrew>();
             dbShip.DroidCrew.Add(posting);
             DB.Set(dbShip);

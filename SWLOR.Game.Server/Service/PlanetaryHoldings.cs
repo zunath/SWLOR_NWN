@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -207,14 +208,36 @@ namespace SWLOR.Game.Server.Service
 
             var detail = HoldingRules.GetDetail(holding.Type);
             var refund = HoldingRules.GetSellBackRefund(holding);
-            ReleaseDroid(holding, player);
+            var postingId = HoldingRules.GetDroidPostingId(holding.Id);
+            var controller = string.IsNullOrWhiteSpace(holding.DroidItemId) ? OBJECT_INVALID : Droid.FindController(player, holding.DroidItemId);
 
-            // The refund is saved in the character file with a mark naming the holding before the holding is deleted: a
-            // restart in between deletes it at the next login (SettleAbandonedHolding), never paying twice.
-            if (refund > 0)
-                GiveGoldToCreature(player, refund);
-            ObjectPlugin.SetString(player, AbandonedVariable, holding.Id, true);
-            ExportSingleCharacter(player);
+            // The refund and the freed droid are saved in the character file at once, with a mark naming the holding, before
+            // the holding is deleted: a restart in between deletes it at the next login (SettleAbandonedHolding), never paying
+            // twice. A save that fails takes them back and keeps the holding.
+            var saved = CheckpointedChange.Run(
+                () =>
+                {
+                    ReleaseDroid(holding, player);
+                    if (refund > 0)
+                        GiveGoldToCreature(player, refund);
+                    ObjectPlugin.SetString(player, AbandonedVariable, holding.Id, true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    if (GetIsObjectValid(controller))
+                        Droid.MarkPosted(controller, postingId);
+                    if (refund > 0)
+                        AssignCommand(player, () => TakeGoldFromCreature(refund, player, true));
+                    ObjectPlugin.DeleteString(player, AbandonedVariable);
+                });
+            if (!saved)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so you keep your holding."));
+                return;
+            }
+
             DB.Delete<PlanetaryHolding>(holding.Id);
 
             SendMessageToPC(player, $"You gave up your {detail.Name} at {GetPlanetName(detail)} and received {refund} credits.");
@@ -278,9 +301,27 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            TakeGoldFromCreature(holding.PendingPaymentCredits, player, true);
-            ObjectPlugin.SetString(player, PaymentPaidVariable, paymentId, true);
-            ExportSingleCharacter(player);
+            var credits = holding.PendingPaymentCredits;
+            var paid = CheckpointedChange.Run(
+                () =>
+                {
+                    TakeGoldFromCreature(credits, player, true);
+                    ObjectPlugin.SetString(player, PaymentPaidVariable, paymentId, true);
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () =>
+                {
+                    GiveGoldToCreature(player, credits);
+                    ObjectPlugin.DeleteString(player, PaymentPaidVariable);
+                });
+            if (!paid)
+            {
+                var undone = HoldingPaymentRules.GetName(holding.PendingPaymentType);
+                UndoPayment(holding);
+                SendMessageToPC(player, ColorToken.Red($"Your character could not be saved, so the {undone} was undone."));
+                return;
+            }
 
             HoldingPaymentRules.Complete(holding);
             DB.Set(holding);
@@ -656,8 +697,20 @@ namespace SWLOR.Game.Server.Service
 
             // The controller is marked and saved with the character before the holding is: a restart in between leaves
             // a marker the login check clears, never a staff droid that is still free to use.
-            Droid.MarkPosted(controller, HoldingRules.GetDroidPostingId(holding.Id));
-            ExportSingleCharacter(player);
+            var posted = CheckpointedChange.Run(
+                () =>
+                {
+                    Droid.MarkPosted(controller, HoldingRules.GetDroidPostingId(holding.Id));
+                    return true;
+                },
+                () => CharacterCheckpoint.Save(player),
+                () => Droid.ClearPosted(controller));
+            if (!posted)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the droid stays with you."));
+                return;
+            }
+
             DB.Set(holding);
 
             SendMessageToPC(player, ColorToken.Green(

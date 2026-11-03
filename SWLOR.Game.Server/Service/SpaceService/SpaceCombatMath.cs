@@ -250,6 +250,22 @@ namespace SWLOR.Game.Server.Service.SpaceService
             1 + Math.Max(0, industrialBonus) / 4 + Math.Max(0, moduleBonus) / 6;
 
         /// <summary>
+        /// An extraction cycle's yield worked at the station operator's effectiveness (a droid at a seat it is weak in pulls
+        /// less), the fraction (hundredths) carried to the ship's next cycle, so a low effectiveness still yields its share over
+        /// time. An effectiveness of 1 leaves the amount alone.
+        /// </summary>
+        public static int EffectiveYield(int amount, double effectiveness, ref int carryHundredths)
+        {
+            if (amount <= 0)
+                return 0;
+
+            var percent = (int)Math.Round(Math.Max(0.0, effectiveness) * 100, MidpointRounding.AwayFromZero);
+            var exact = amount * percent + Math.Clamp(carryHundredths, 0, 99);
+            carryHundredths = exact % 100;
+            return exact / 100;
+        }
+
+        /// <summary>
         /// The ore one mining or strip cycle delivers (W11e): the base amount plus Prospector's percent of it. The fraction
         /// below a whole ore is carried in <paramref name="carryHundredths"/> (hundredths of an ore, kept per ship) to the
         /// next cycle, so a 1-ore cycle still gains: at +15%, about every seventh cycle delivers one more ore.

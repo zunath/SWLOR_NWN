@@ -520,7 +520,7 @@ public class StationBuildingTests
 
         var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");
         InOrder(Section(service, "public static bool AssignDroid(", "public static void RecallDroid("),
-            "ExportSingleCharacter(player);", "DB.Set(state);", "SaveDroidReceipt(state);", "DestroyObject(controller);");
+            "() => CharacterCheckpoint.Save(player),", "if (!marked)", "return false;", "DB.Set(state);", "SaveDroidReceipt(state);", "DestroyObject(controller);");
         InOrder(Section(service, "private static void ReturnDroidToOverflow(", "private static string OverflowDroidId("),
             "SaveDroidReceipt(state);", "DB.Set(new OverflowItem", "ClearDroid(state);");
 
@@ -528,7 +528,7 @@ public class StationBuildingTests
         settle.Should().Contain("StationDroidRules.WasAssigned(HoldsAssignment(state, assignmentId), DB.Get<StationDroidReceipt>(assignmentId) != null)");
         InOrder(settle, "StationDroidRules.RecalledCopyInOverflow(holds, DB.Get<OverflowItem>(OverflowDroidId(assignmentId)) != null)",
             "DB.Delete<OverflowItem>(OverflowDroidId(assignmentId));");
-        InOrder(settle, "DelayCommand(1f, () =>", "ExportSingleCharacter(player);", "DB.Delete<StationDroidReceipt>(receiptId);");
+        InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<StationDroidReceipt>(receiptId);");
     }
 
     private static string Section(string source, string start, string end)

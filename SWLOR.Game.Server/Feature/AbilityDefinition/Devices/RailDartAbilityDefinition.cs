@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(3);
+                .RequirementStamina(2);
         }
 
         private static void RailDart2(AbilityBuilder builder)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(4);
+                .RequirementStamina(2);
         }
 
         private static void RailDart3(AbilityBuilder builder)
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(5);
+                .RequirementStamina(3);
         }
 
         private static void RailDart1ImpactAction(uint activator, uint target, int level, Location targetLocation)

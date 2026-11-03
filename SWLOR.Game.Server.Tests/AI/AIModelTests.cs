@@ -1090,7 +1090,7 @@ public class AIModelTests
         var invalidTargetIndex = leashBody.IndexOf("if (!GetIsObjectValid(target))", StringComparison.Ordinal);
         var targetOutsideIndex = leashBody.IndexOf("if (!IsOutsideHomeRadius(target, homeLocation, leashRadius))", StringComparison.Ordinal);
 
-        processFlagsBody.Should().Contain("ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation)");
+        processFlagsBody.Should().Contain("TryStartLeashEvade(self, highestEnmityTarget)");
         policyIndex.Should().BeGreaterThanOrEqualTo(0);
         policyIndex.Should().BeLessThan(radiusIndex);
         radiusIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -1201,13 +1201,19 @@ public class AIModelTests
             aiSource.IndexOf("private static bool TryStartLeashEvade", StringComparison.Ordinal));
 
         var leashCheckIndex = processFlagsBody.IndexOf(
-            "ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation)",
+            "TryStartLeashEvade(self, highestEnmityTarget)",
             StringComparison.Ordinal);
-        var startEvadeIndex = processFlagsBody.IndexOf("StartLeashEvade(self, homeLocation)", StringComparison.Ordinal);
+        var shouldStartIndex = tryStartBody.IndexOf(
+            "ShouldStartCombatLeashEvade(creature, target, homeLocation)", StringComparison.Ordinal);
+        var keepFightingIndex = tryStartBody.IndexOf(
+            "TryKeepFightingWithinLeash(creature, homeLocation)", StringComparison.Ordinal);
+        var startEvadeIndex = tryStartBody.IndexOf("StartLeashEvade(creature, homeLocation)", StringComparison.Ordinal);
 
         processFlagsBody.Should().Contain("var hasCombatState = GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget);");
         leashCheckIndex.Should().BeGreaterThanOrEqualTo(0);
-        startEvadeIndex.Should().BeGreaterThan(leashCheckIndex);
+        shouldStartIndex.Should().BeGreaterThanOrEqualTo(0);
+        keepFightingIndex.Should().BeGreaterThan(shouldStartIndex);
+        startEvadeIndex.Should().BeGreaterThan(keepFightingIndex);
         startBody.Should().Contain("return ShouldLeashCombatTarget(creature, target, homeLocation);");
         startBody.Should().NotContain("HasCombatLeashGraceExpired");
         startBody.Should().NotContain("ClearCombatLeashCandidate");
@@ -1243,15 +1249,12 @@ public class AIModelTests
 
         var activeEvadeIndex = processFlagsBody.IndexOf("if (IsLeashEvading(self))", StringComparison.Ordinal);
         var idleEffectGuardIndex = processFlagsBody.IndexOf("var effects = new[]", StringComparison.Ordinal);
-        var leashCheckIndex = processFlagsBody.IndexOf("ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation)", StringComparison.Ordinal);
-        var startEvadeIndex = processFlagsBody.IndexOf("StartLeashEvade(self, homeLocation)", StringComparison.Ordinal);
+        var leashCheckIndex = processFlagsBody.IndexOf("TryStartLeashEvade(self, highestEnmityTarget)", StringComparison.Ordinal);
 
         activeEvadeIndex.Should().BeGreaterThanOrEqualTo(0);
         activeEvadeIndex.Should().BeLessThan(idleEffectGuardIndex);
-        leashCheckIndex.Should().BeGreaterThanOrEqualTo(0);
+        leashCheckIndex.Should().BeGreaterThan(activeEvadeIndex);
         leashCheckIndex.Should().BeLessThan(idleEffectGuardIndex);
-        startEvadeIndex.Should().BeGreaterThan(leashCheckIndex);
-        startEvadeIndex.Should().BeLessThan(idleEffectGuardIndex);
         processFlagsBody.Should().Contain("ContinueLeashEvadeReturn(self, homeLocation)");
         processFlagsBody.Should().Contain("TryEndLeashEvadeAtHome(self, homeLocation)");
     }

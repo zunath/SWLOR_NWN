@@ -30,14 +30,17 @@ namespace SWLOR.Game.Server.Feature
         };
 
         /// <summary>
-        /// The Power Glove is a standard one-handed weapon, so the engine layers the sword-carry pose
-        /// over the right arm while walking and running. Mapping those layers to a clip that does not
-        /// exist drops them, and the arm swings with the walk or run as a bare hand does.
+        /// The Power Glove is a standard one-handed weapon and the off-hand companion glove is held in the
+        /// left hand, so the engine layers the sword-carry pose over both arms while walking and running.
+        /// Mapping those layers to the controller-free no-hold clip drops them, and both arms swing with
+        /// the walk or run as bare hands do.
         /// </summary>
         public static IReadOnlyList<(string Source, string Replacement)> PowerGloveCarryPairs { get; } = new[]
         {
             ("walk_swordr", NamedAnimationPlayback.NoHoldName),
             ("run_swordr", NamedAnimationPlayback.NoHoldName),
+            ("walk_swordl", NamedAnimationPlayback.NoHoldName),
+            ("run_swordl", NamedAnimationPlayback.NoHoldName),
         };
 
         /// <summary>

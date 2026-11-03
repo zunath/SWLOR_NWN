@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -89,6 +90,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool AllowsSelfQuickCast { get; set; }
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
+        /// <summary>
+        /// Status categories the ability's impact applies when the given activator uses it now. Null when the
+        /// ability does not declare them; perks keyed to "your next control ability" read this.
+        /// </summary>
+        public Func<uint, StatusEffectCategory> ResolveImpactStatusCategories { get; set; }
         public AbilityType CombatImpactDamageAbility { get; set; }
         public bool IsAreaAbility { get; set; }
         public bool IsSingleTargetAbility { get; set; }

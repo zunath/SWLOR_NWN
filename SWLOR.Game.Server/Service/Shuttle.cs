@@ -770,6 +770,12 @@ namespace SWLOR.Game.Server.Service
             if (!ShuttleRouteRules.IsValid(route))
                 return false;
 
+            if (!route.Destination.IsStation && Planet.TryGetClosedMessage(route.Destination.Planet, out var closedMessage))
+            {
+                SendMessageToPC(player, ColorToken.Red(closedMessage));
+                return false;
+            }
+
             if (GetRide(GetObjectUUID(player)) != null)
             {
                 SendMessageToPC(player, ColorToken.Red("You already have a shuttle ticket."));

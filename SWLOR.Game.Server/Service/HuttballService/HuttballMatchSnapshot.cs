@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
     /// so the rolls a re-roll replaces stay on record.
     /// </summary>
     public sealed record HuttballMatchSnapshot(
-        IReadOnlyList<HuttballMatchSnapshot.PlayerState> Players,
+        IReadOnlyList<HuttballPlayerSnapshot> Players,
         HuttballPhase Phase,
         int Half,
         int Turn,
@@ -16,14 +16,5 @@ namespace SWLOR.Game.Server.Service.HuttballService
         uint? BallCarrier,
         HuttballSquare? LooseBall,
         IReadOnlyDictionary<HuttballTeam, int> Score,
-        IReadOnlyDictionary<HuttballTeam, int> Bribes)
-    {
-        public sealed record PlayerState(
-            uint Creature,
-            HuttballPlayerStatus Status,
-            HuttballSquare? Square,
-            int MovementLeft,
-            bool HasActed,
-            bool IsDone);
-    }
+        IReadOnlyDictionary<HuttballTeam, int> Bribes);
 }

@@ -30,9 +30,9 @@ public class HuttballMatchTests
         _dice = new ScriptedHuttballDice();
     }
 
-    private HuttballMatch CreateMatch(int width = 10, int length = 20)
+    private HuttballMatch CreateMatch(int width = 10, int length = 20, bool hasCaptains = false)
     {
-        return new HuttballMatch(width, length, _dice);
+        return new HuttballMatch(width, length, _dice) { HasCaptains = hasCaptains };
     }
 
     private static void Add(HuttballMatch match, uint creature, HuttballTeam team, HuttballRole role, int x, int y)
@@ -538,17 +538,22 @@ public class HuttballMatchTests
     [Test]
     public void AMedicStepsAnInjuryDown()
     {
-        var match = SetUpBlock();
+        var match = CreateMatch();
+        Add(match, HomeBruiser, HuttballTeam.Home, HuttballRole.Bruiser, 5, 9);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 5, 10);
+        Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, 0, 19);
+        Kickoff(match);
         match.SetMedics(HuttballTeam.Away, 3);
 
         _dice.Queue(18, 1, 20); // Maimed.
         match.Block(HomeBruiser, AwayCatcher);
         var victim = match.GetPlayer(AwayCatcher);
         victim.Status.Should().Be(HuttballPlayerStatus.Maimed);
-        match.CanUseMedic(HuttballTeam.Away).Should().BeTrue();
         match.CanUseMedic(HuttballTeam.Home).Should().BeFalse();
-
         match.UseMedic(HuttballTeam.Home, AwayCatcher).Succeeded.Should().BeFalse("medics treat their own team");
+
+        match.EndTeamTurn();
+        match.CanUseMedic(HuttballTeam.Away).Should().BeTrue();
         match.UseMedic(HuttballTeam.Away, AwayCatcher).Succeeded.Should().BeTrue();
         victim.Status.Should().Be(HuttballPlayerStatus.SeverelyInjured);
         match.UseMedic(HuttballTeam.Away, AwayCatcher);
@@ -751,7 +756,7 @@ public class HuttballMatchTests
     [Test]
     public void TheFirstPlayerCharacterOnATeamCaptainsIt()
     {
-        var match = CreateMatch();
+        var match = CreateMatch(hasCaptains: true);
         match.AddPlayer(AwayBlocker, "Npc", HuttballTeam.Home, HuttballRole.Blocker);
         match.AddPlayer(HomeCatcher, "First", HuttballTeam.Home, HuttballRole.Catcher, canCaptain: true);
         match.AddPlayer(HomeThrower, "Second", HuttballTeam.Home, HuttballRole.Thrower, canCaptain: true);
@@ -764,7 +769,7 @@ public class HuttballMatchTests
     [Test]
     public void ALeavingCaptainPassesTheCaptaincyToTheNextPlayerWhoJoined()
     {
-        var match = CreateMatch();
+        var match = CreateMatch(hasCaptains: true);
         match.AddPlayer(HomeCatcher, "First", HuttballTeam.Home, HuttballRole.Catcher, canCaptain: true);
         match.AddPlayer(HomeBruiser, "Npc", HuttballTeam.Home, HuttballRole.Bruiser);
         match.AddPlayer(HomeThrower, "Second", HuttballTeam.Home, HuttballRole.Thrower, canCaptain: true);
@@ -779,7 +784,7 @@ public class HuttballMatchTests
     [Test]
     public void TheCaptaincyCanBeHandedOnlyToAPlayerCharacter()
     {
-        var match = CreateMatch();
+        var match = CreateMatch(hasCaptains: true);
         match.AddPlayer(HomeCatcher, "First", HuttballTeam.Home, HuttballRole.Catcher, canCaptain: true);
         match.AddPlayer(HomeBruiser, "Npc", HuttballTeam.Home, HuttballRole.Bruiser);
         match.AddPlayer(HomeThrower, "Second", HuttballTeam.Home, HuttballRole.Thrower, canCaptain: true);
@@ -797,5 +802,111 @@ public class HuttballMatchTests
         HuttballPitch.At(new Vector3(50f, 50f, 0f), squareSize).FitsWithin(100f, 100f).Should().BeTrue();
         HuttballPitch.At(new Vector3(20f, 50f, 0f), squareSize).FitsWithin(100f, 100f).Should().BeFalse("the west bench is off the area");
         HuttballPitch.At(new Vector3(50f, 50f, 0f), squareSize).FitsWithin(100f, 70f).Should().BeFalse("the north flags are off the area");
+    }
+
+    [Test]
+    public void AMatchADmRunsHasNoCaptains()
+    {
+        var match = CreateMatch();
+        match.AddPlayer(HomeCatcher, "Player", HuttballTeam.Home, HuttballRole.Catcher, canCaptain: true);
+        match.AddPlayer(AwayCatcher, "Other", HuttballTeam.Away, HuttballRole.Catcher, canCaptain: true);
+
+        match.GetCaptain(HuttballTeam.Home).Should().BeNull();
+        match.GetCaptain(HuttballTeam.Away).Should().BeNull();
+        match.SetCaptain(HomeCatcher).Succeeded.Should().BeFalse();
+        match.IsCaptain(HomeCatcher).Should().BeFalse();
+    }
+
+    [Test]
+    public void AnOpponentsMedicCannotTakeAwayAReRoll()
+    {
+        var match = CreateMatch();
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 9);
+        Add(match, HomeThrower, HuttballTeam.Home, HuttballRole.Thrower, 0, 0);
+        Add(match, AwayBlocker, HuttballTeam.Away, HuttballRole.Blocker, 5, 10);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 9, 19);
+        Kickoff(match);
+        match.SetRerolls(HuttballTeam.Home, 1);
+        match.SetMedics(HuttballTeam.Away, 1);
+
+        // Bench the Away Catcher, so the Away medic has someone to treat.
+        match.RemovePlayer(AwayCatcher);
+        match.AddPlayer(AwayCatcher, "Hurt", HuttballTeam.Away, HuttballRole.Catcher);
+        match.GetPlayer(AwayCatcher).Status = HuttballPlayerStatus.Injured;
+
+        _dice.Queue(1, 20); // The Catcher trips leaving the Blocker.
+        match.Move(HomeCatcher, new HuttballSquare(5, 7));
+        match.CanReroll(HuttballTeam.Home).Should().BeTrue();
+
+        match.CanUseMedic(HuttballTeam.Away).Should().BeFalse("it is the Home team's turn");
+        match.UseMedic(HuttballTeam.Away, AwayCatcher).Succeeded.Should().BeFalse();
+        match.CanReroll(HuttballTeam.Home).Should().BeTrue("the Home re-roll is still there");
+    }
+
+    [Test]
+    public void ChangingAResourceEndsTheChanceToReRoll()
+    {
+        var match = SetUpBlock();
+        match.SetRerolls(HuttballTeam.Home, 2);
+
+        _dice.Queue(10, 1, 3);
+        match.Block(HomeBruiser, AwayCatcher);
+        match.SetRerolls(HuttballTeam.Home, 2);
+        match.CanReroll(HuttballTeam.Home).Should().BeTrue("setting the same value changes nothing");
+
+        match.SetBribes(HuttballTeam.Home, match.GetBribes(HuttballTeam.Home) + 1);
+        match.CanReroll(HuttballTeam.Home).Should().BeFalse("a re-roll would undo the new bribe");
+    }
+
+    [Test]
+    public void AKickoffNobodyAimsLandsMidPitchOnTheFirstTeamsSide()
+    {
+        var match = CreateMatch();
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 9);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 5, 12);
+
+        match.KickoffSquare.Should().Be(new HuttballSquare(5, 9), "Home moves first in the first half");
+        match.StartDrive().Succeeded.Should().BeFalse("the Home Catcher stands where the ball lands");
+
+        match.Place(HomeCatcher, new HuttballSquare(4, 8));
+        var result = match.StartDrive();
+
+        result.Succeeded.Should().BeTrue(result.Error);
+        match.BallCarrier.Should().BeNull();
+        match.LooseBall.Should().Be(new HuttballSquare(5, 9));
+    }
+
+    [Test]
+    public void HalftimeSendsPlayersBackToTheirHalves()
+    {
+        var match = CreateMatch();
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 9);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 0, 19);
+        Kickoff(match);
+        match.Move(HomeCatcher, new HuttballSquare(5, 13)).Succeeded.Should().BeTrue();
+
+        for (var call = 0; call < HuttballRules.TurnsPerHalf * 2 && match.Half == 1; call++)
+            match.EndTeamTurn();
+
+        match.Half.Should().Be(2);
+        match.IsInOwnHalf(HuttballTeam.Home, match.GetPlayer(HomeCatcher).Square!.Value).Should().BeTrue();
+        match.StartDrive(new HuttballSquare(0, 0)).Succeeded.Should().BeTrue("everyone is already in place");
+    }
+
+    [Test]
+    public void AnEmptyPitchStopsTheDriveInsteadOfRunningOutTheHalf()
+    {
+        var match = CreateMatch();
+        Add(match, HomeCatcher, HuttballTeam.Home, HuttballRole.Catcher, 5, 9);
+        Add(match, AwayCatcher, HuttballTeam.Away, HuttballRole.Catcher, 5, 12);
+        Kickoff(match);
+
+        match.RemovePlayer(AwayCatcher);
+        var result = match.RemovePlayer(HomeCatcher);
+
+        match.Phase.Should().Be(HuttballPhase.Setup);
+        match.Half.Should().Be(1);
+        match.Turn.Should().Be(1);
+        result.Messages.Count.Should().BeLessThan(6);
     }
 }

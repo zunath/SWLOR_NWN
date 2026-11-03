@@ -30,8 +30,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
         // Dice rolled so far, so a command can tell whether it rolled any.
         private int _rollCount;
 
-        // The last command that rolled dice, which its team may still re-roll: the state before it and how to
-        // run it again. Any other command that changes the match clears it.
+        // The last rolling command its team may still re-roll; any other change to the match clears it.
         private (HuttballTeam Team, HuttballMatchSnapshot Before, Func<HuttballActionResult> Run)? _rerollable;
 
         public HuttballMatch(int width, int length, IHuttballDice dice)
@@ -50,6 +49,11 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
         public int Width { get; }
         public int Length { get; }
+
+        /// <summary>
+        /// True for a match players run themselves, whose first player character on each team captains it.
+        /// </summary>
+        public bool HasCaptains { get; init; }
         public HuttballPhase Phase { get; private set; }
         public int Half { get; private set; }
 
@@ -78,7 +82,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
         public void SetBribes(HuttballTeam team, int bribes)
         {
-            _bribes[team] = Math.Max(0, bribes);
+            SetResource(_bribes, team, bribes);
         }
 
         public int GetRerolls(HuttballTeam team) => _rerolls[team];
@@ -86,12 +90,23 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
         public void SetRerolls(HuttballTeam team, int rerolls)
         {
-            _rerolls[team] = Math.Max(0, rerolls);
+            SetResource(_rerolls, team, rerolls);
         }
 
         public void SetMedics(HuttballTeam team, int medics)
         {
-            _medics[team] = Math.Max(0, medics);
+            SetResource(_medics, team, medics);
+        }
+
+        // A re-roll restores the bribes from before its roll, so a change after the roll ends the chance to re-roll.
+        private void SetResource(Dictionary<HuttballTeam, int> resource, HuttballTeam team, int value)
+        {
+            value = Math.Max(0, value);
+            if (resource[team] == value)
+                return;
+
+            resource[team] = value;
+            _rerollable = null;
         }
 
         /// <summary>
@@ -108,7 +123,16 @@ namespace SWLOR.Game.Server.Service.HuttballService
         /// </summary>
         public bool CanUseMedic(HuttballTeam team)
         {
-            return _medics[team] > 0 && _players.Any(p => p.Team == team && IsTreatable(p.Status));
+            return GetMedicError(team) == null && _medics[team] > 0 && _players.Any(p => p.Team == team && IsTreatable(p.Status));
+        }
+
+        // Only on the team's own turn: a medic clears the pending re-roll, which would let a team cancel the other's.
+        private string GetMedicError(HuttballTeam team)
+        {
+            if (Phase == HuttballPhase.Playing && team != ActiveTeam)
+                return $"Medics work between drives or on your own turn. It is the {ActiveTeam} team's turn.";
+
+            return null;
         }
 
         private static bool IsTreatable(HuttballPlayerStatus status)
@@ -195,7 +219,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
             var result = new HuttballActionResult();
             Say(result, $"{player.DisplayName} joins the {team} team.");
-            if (canCaptain && _captains[team] == null)
+            if (HasCaptains && canCaptain && _captains[team] == null)
             {
                 _captains[team] = player;
                 Say(result, $"{player.Name} captains the {team} team.");
@@ -212,6 +236,8 @@ namespace SWLOR.Game.Server.Service.HuttballService
             var player = GetPlayer(creature);
             if (player == null)
                 return HuttballActionResult.Fail("That creature is not in the match.");
+            if (!HasCaptains)
+                return HuttballActionResult.Fail("A DM runs this match, so it has no captains.");
             if (!player.CanCaptain)
                 return HuttballActionResult.Fail($"{player.Name} can't captain a team. Only player characters can.");
             if (_captains[player.Team] == player)
@@ -296,6 +322,23 @@ namespace SWLOR.Game.Server.Service.HuttballService
             var result = new HuttballActionResult();
             result.Path.Add(square);
             return result;
+        }
+
+        /// <summary>
+        /// Where the ball lands in a kick-off nobody aims: mid-pitch, on the halfway row of the team that moves first.
+        /// </summary>
+        public HuttballSquare KickoffSquare => new(Width / 2, ActiveTeam == HuttballTeam.Home ? Length / 2 - 1 : Length - Length / 2);
+
+        /// <summary>
+        /// Starts a drive with the ball loose on <see cref="KickoffSquare"/>, which must be empty.
+        /// </summary>
+        public HuttballActionResult StartDrive()
+        {
+            var square = KickoffSquare;
+            if (Phase == HuttballPhase.Setup && GetPlayerAt(square) != null)
+                return HuttballActionResult.Fail($"The ball lands on {square}. Clear that square first.");
+
+            return StartDrive(square);
         }
 
         /// <summary>
@@ -695,6 +738,8 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 return HuttballActionResult.Fail("That creature is not in the match.");
             if (player.Team != team)
                 return HuttballActionResult.Fail("Medics only treat their own team.");
+            if (GetMedicError(team) is { } turnError)
+                return HuttballActionResult.Fail(turnError);
             if (!IsTreatable(player.Status))
                 return HuttballActionResult.Fail($"{player.Name} has no injury to treat.");
             if (_medics[team] <= 0)
@@ -726,6 +771,12 @@ namespace SWLOR.Game.Server.Service.HuttballService
                 return HuttballActionResult.Fail("Players return to their halves only between drives.");
 
             var result = new HuttballActionResult();
+            SendStraysHome(result);
+            return result;
+        }
+
+        private void SendStraysHome(HuttballActionResult result)
+        {
             var strays = _players
                 .Where(p => p.IsOnPitch && !IsInOwnHalf(p.Team, p.Square!.Value))
                 .OrderBy(p => p.Team == HuttballTeam.Home ? p.Square!.Value.Y : Length - p.Square!.Value.Y)
@@ -746,7 +797,6 @@ namespace SWLOR.Game.Server.Service.HuttballService
             if (strays.Count > 0)
                 _rerollable = null;
             Say(result, "Both teams return to their own halves for the kick-off.");
-            return result;
         }
 
         /// <summary>
@@ -840,7 +890,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
         private HuttballMatchSnapshot Capture()
         {
             return new HuttballMatchSnapshot(
-                _players.Select(p => new HuttballMatchSnapshot.PlayerState(
+                _players.Select(p => new HuttballPlayerSnapshot(
                     p.Creature, p.Status, p.Square, p.MovementLeft, p.HasActed, p.IsDone)).ToList(),
                 Phase,
                 Half,
@@ -893,7 +943,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             if (Phase == HuttballPhase.Finished)
                 return "The match is over.";
             if (Phase != HuttballPhase.Playing)
-                return "Wait for the DM to start the drive.";
+                return "Wait for the drive to start.";
             if (player.Team != ActiveTeam)
                 return $"It is the {ActiveTeam} team's turn.";
             if (!player.IsOnPitch)
@@ -954,8 +1004,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             List<HuttballSquare> best = null;
             var bestRisk = int.MaxValue;
 
-            // Each pass holds the safest route of exactly that many steps to each square. Keeping every length apart
-            // means a safer, longer route never hides a shorter one that still fits in the movement left.
+            // Routes are kept per length, so a safer, longer route never hides a shorter one that still fits.
             for (var step = 0; step < maxSteps && routes.Count > 0; step++)
             {
                 var next = new Dictionary<HuttballSquare, (int Risk, List<HuttballSquare> Route)>();
@@ -1286,6 +1335,14 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
             Say(result, $"Half {Half}, turn {Turn}: the {ActiveTeam} team's move.");
 
+            if (!_players.Any(p => p.IsOnPitch))
+            {
+                ClearBall();
+                Phase = HuttballPhase.Setup;
+                Say(result, "Nobody is left on the pitch. The drive stops.");
+                return;
+            }
+
             if (_players.Where(p => p.Team == ActiveTeam).All(p => p.IsDone))
             {
                 Say(result, $"The {ActiveTeam} team has nobody able to play.");
@@ -1333,7 +1390,8 @@ namespace SWLOR.Game.Server.Service.HuttballService
             }
 
             Say(result, $"Halftime! Home {_score[HuttballTeam.Home]} - Away {_score[HuttballTeam.Away]}. " +
-                        "Injured and sent-off players may return. Take your places for the second half.");
+                        "Injured and sent-off players may return.");
+            SendStraysHome(result);
         }
 
         private static string FormatRoll(int roll, int bonus)

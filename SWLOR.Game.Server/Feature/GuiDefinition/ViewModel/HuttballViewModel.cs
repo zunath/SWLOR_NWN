@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanEndMatch = CanRun;
             CanStartDrive = IsSetup && CanRun;
             CanEndTurn = IsPlaying && (_isStaff || captainTeam == match.ActiveTeam);
-            CanChangeResources = CanRun;
+            CanChangeResources = _isStaff || (captainTeam != null && IsSetup);
             CanManageRoster = CanRun;
             CanSetRole = IsSetup && CanRun;
             CanStaffEdit = _isStaff;
@@ -405,8 +405,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 if (target == _selectedUnit)
                     _selectedUnit = OBJECT_INVALID;
-                Huttball.ClearEffects(target);
-                Run(match => match.RemovePlayer(target));
+                Huttball.RemoveFromMatch(MatchArea, target, Player);
+                Refresh();
 
                 // Test players exist only for the match.
                 if (GetTag(target) == Huttball.TestPlayerTag)
@@ -514,6 +514,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!CanRun)
                 return;
 
+            if (!UserIsDM)
+            {
+                Run(match => match.StartDrive());
+                return;
+            }
+
             PickSquare("Click the square where the ball lands for the kick-off.",
                 square => Run(match => match.StartDrive(square)));
         };
@@ -585,6 +591,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 team = captainTeam;
             else
                 return;
+
+            if (!UserIsDM && match.Phase != HuttballPhase.Setup)
+            {
+                DMPresence.SendMessage(Player, ColorToken.Red("Captains change resources only between drives."));
+                return;
+            }
 
             change(match, team);
             Huttball.ResourcesChanged(MatchArea);

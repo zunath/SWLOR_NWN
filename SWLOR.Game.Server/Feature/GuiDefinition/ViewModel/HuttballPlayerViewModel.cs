@@ -205,8 +205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!RequireMe(out var me))
                 return;
 
-            Huttball.ClearEffects(me.Creature);
-            Huttball.Command(Player, match => match.RemovePlayer(me.Creature));
+            Huttball.RemoveFromMatch(GetArea(me.Creature), me.Creature, Player);
         };
 
         /// <summary>

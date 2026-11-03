@@ -37,8 +37,7 @@ namespace SWLOR.Game.Server.Service
         private const string ScoreboardResref = "tele_obj";
         private const string ScoreboardTag = "HUTTBALL_SCOREBOARD";
 
-        // A block borrows the taunt for one swing: the engine plays the slash in its place, with no real attack.
-        // A tied block then plays the hit reaction the same way on both players at the moment of contact.
+        // Blocks and flinches replace the taunt animation for one play, so no real attack is made.
         private const string SwingStandIn = "taunt";
         private const string SwingAnimation = "1hslashr";
         private const string FlinchAnimation = "damages";
@@ -48,10 +47,20 @@ namespace SWLOR.Game.Server.Service
         // After a touchdown, players get this long to celebrate before they are sent back to their halves.
         private const int CelebrationSeconds = 60;
 
+        // A player-run match stays up this long after full time, then clears itself away.
+        private const int FullTimeSeconds = 60;
+
         private class MatchEntry
         {
             public HuttballMatch Match { get; init; }
             public HuttballPitch Pitch { get; init; }
+
+            /// <summary>
+            /// True when a player opened the match with no DM. It then has captains and ends once nobody plays it.
+            /// </summary>
+            public bool IsPlayerRun => Match.HasCaptains;
+
+            public bool IsClosing { get; set; }
             public uint Ball { get; set; } = OBJECT_INVALID;
             public HuttballSquare? BallSquare { get; set; }
             public List<uint> Markers { get; } = new();
@@ -98,7 +107,7 @@ namespace SWLOR.Game.Server.Service
                 return "Place a battle grid first. Its squares become the pitch.";
 
             var pitch = HuttballPitch.FromGrid(BattleGrid.GetCenter(area), BattleGrid.Clamp(BattleGrid.GetSettings(area)));
-            OpenMatch(area, pitch);
+            OpenMatch(area, pitch, isPlayerRun: false);
             return null;
         }
 
@@ -120,17 +129,17 @@ namespace SWLOR.Game.Server.Service
             if (!pitch.FitsWithin(GetAreaSize(Dimension.Width, area) * 10f, GetAreaSize(Dimension.Height, area) * 10f))
                 return "There isn't room for a pitch here. Move toward the middle of a large open area.";
 
-            var entry = OpenMatch(area, pitch);
+            var entry = OpenMatch(area, pitch, isPlayerRun: true);
             var result = entry.Match.AddPlayer(creature, GetName(creature), HuttballTeam.Home, role, CanCaptain(creature));
             Apply(area, result, creature);
             return null;
         }
 
-        private static MatchEntry OpenMatch(uint area, HuttballPitch pitch)
+        private static MatchEntry OpenMatch(uint area, HuttballPitch pitch, bool isPlayerRun)
         {
             var entry = new MatchEntry
             {
-                Match = new HuttballMatch(pitch.Width, pitch.Length, new HuttballDice()),
+                Match = new HuttballMatch(pitch.Width, pitch.Length, new HuttballDice()) { HasCaptains = isPlayerRun },
                 Pitch = pitch,
             };
             _matches[area] = entry;
@@ -143,6 +152,26 @@ namespace SWLOR.Game.Server.Service
             });
             RefreshWindows();
             return entry;
+        }
+
+        /// <summary>
+        /// Takes a player out of the area's match. A player-run match ends when its last player character leaves.
+        /// </summary>
+        public static void RemoveFromMatch(uint area, uint creature, uint actor)
+        {
+            if (!_matches.TryGetValue(area, out var entry))
+                return;
+
+            ClearEffects(creature);
+            var result = entry.Match.RemovePlayer(creature);
+            if (result.Succeeded && entry.IsPlayerRun && !entry.Match.Players.Any(p => p.CanCaptain))
+            {
+                Announce(area, new[] { $"{GetName(creature)} was the last player in the match." });
+                EndMatch(area);
+                return;
+            }
+
+            Apply(area, result, actor);
         }
 
         /// <summary>
@@ -459,7 +488,26 @@ namespace SWLOR.Game.Server.Service
             UpdateScoreboards(entry);
             if (result.Scorer != null)
                 Celebrate(area, entry, result.Scorer);
+            if (entry.IsPlayerRun && entry.Match.Phase == HuttballPhase.Finished)
+                CloseAfterFullTime(area, entry);
             RefreshWindows();
+        }
+
+        /// <summary>
+        /// Gives a finished player-run match a minute for the result to sink in, then takes the pitch down.
+        /// </summary>
+        private static void CloseAfterFullTime(uint area, MatchEntry entry)
+        {
+            if (entry.IsClosing)
+                return;
+
+            entry.IsClosing = true;
+            Announce(area, new[] { $"The pitch comes down in {FullTimeSeconds} seconds." });
+            Delay(FullTimeSeconds, () =>
+            {
+                if (_matches.TryGetValue(area, out var current) && current == entry)
+                    EndMatch(area);
+            });
         }
 
         /// <summary>
@@ -583,7 +631,8 @@ namespace SWLOR.Game.Server.Service
             {
                 if (DMPresence.IsControlledByDM(pc))
                 {
-                    foreach (var target in DMPresence.GetShownOn(pc, GuiWindowType.Huttball))
+                    foreach (var target in DMPresence.GetShownOn(pc, GuiWindowType.Huttball)
+                                 .Concat(DMPresence.GetShownOn(pc, GuiWindowType.HuttballPlayer)))
                         Gui.PublishRefreshEvent(pc, refresh, target);
                 }
                 else
@@ -620,7 +669,7 @@ namespace SWLOR.Game.Server.Service
                         WalkPath(area, pitch, creature, result.Path);
                     else if (System.Numerics.Vector3.Distance(GetPosition(creature), target) > pitch.SquareSize * 0.35f)
                     {
-                        JumpTo(area, creature, target);
+                        JumpTo(area, creature, pitch, target);
                         moved = true;
                     }
                 }
@@ -629,7 +678,7 @@ namespace SWLOR.Game.Server.Service
                     var bench = pitch.GetBenchPosition(player.Team, benchSlots[player.Team]++);
                     if (System.Numerics.Vector3.Distance(GetPosition(creature), bench) > pitch.SquareSize * 0.35f)
                     {
-                        JumpTo(area, creature, bench);
+                        JumpTo(area, creature, pitch, bench);
                         moved = true;
                     }
                 }
@@ -702,8 +751,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var step in steps)
                     ActionMoveToLocation(step, true);
 
-                // Walking stops short of a point; the jump leaves the creature exactly on its square, still facing
-                // the way it last ran.
+                // Walking stops short of a point, so the jump lands the creature exactly on its square.
                 ActionJumpToLocation(steps[^1]);
             });
         }
@@ -724,12 +772,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Places a creature at once. Queued jumps would wait behind a knocked-down player's pose.
+        /// Places a creature at once, on the nearest open ground within a square of the spot. Queued jumps would
+        /// wait behind a knocked-down player's pose.
         /// </summary>
-        private static void JumpTo(uint area, uint creature, Vector3 position)
+        private static void JumpTo(uint area, uint creature, HuttballPitch pitch, Vector3 position)
         {
-            var ground = GetGroundHeight(Location(area, position, 0f));
-            ObjectPlugin.SetPosition(creature, position with { Z = ground });
+            var ground = position with { Z = GetGroundHeight(Location(area, position, 0f)) };
+            ObjectPlugin.SetPosition(creature, CreaturePlugin.ComputeSafeLocation(creature, ground, pitch.SquareSize, false));
         }
 
         private static void SetTaggedEffect(uint creature, string tag, bool shouldHave, System.Func<Effect> create)
@@ -796,8 +845,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(area))
                 return;
 
-            ClearEffects(player);
-            Apply(area, _matches[area].Match.RemovePlayer(player), player);
+            RemoveFromMatch(area, player, player);
         }
 
         /// <summary>

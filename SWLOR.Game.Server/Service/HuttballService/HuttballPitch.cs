@@ -38,8 +38,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             return southWest.X >= 0f && southWest.Y >= 0f && northEast.X <= areaWidth && northEast.Y <= areaHeight;
         }
 
-        // The grid's center sits on a square corner, so the pitch edges stay on grid lines even when a side has
-        // an odd number of squares.
+        // The grid's center is a square corner, so odd-sized sides still end on grid lines.
         private float West => Center.X - Width / 2 * SquareSize;
         private float South => Center.Y - Length / 2 * SquareSize;
 

@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 content.AddRow(r =>
                 {
-                    AddButton(r, "Start Drive", "Click where the ball lands to kick off.", model => model.OnStartDrive())
+                    AddButton(r, "Start Drive", "Kick off. A DM clicks where the ball lands; a captain's kick-off lands mid-pitch.", model => model.OnStartDrive())
                         .BindIsEnabled(model => model.CanStartDrive);
                     AddButton(r, "End Turn", "End the active team's turn now. Captains end only their own team's turn.", model => model.OnEndTeamTurn())
                         .BindIsEnabled(model => model.CanEndTurn);

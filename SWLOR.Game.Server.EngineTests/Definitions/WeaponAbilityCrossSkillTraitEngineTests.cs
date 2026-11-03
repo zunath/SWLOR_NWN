@@ -18,71 +18,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class WeaponAbilityCrossSkillTraitEngineTests
 {
-    [EngineTest("Ordinary rifle movement and a landed shot fuel foreign Headshot with Flow and Changing Angles", Category = "WeaponCrossSkill", TimeoutSeconds = 60f)]
-    public static Task RifleMovementHeadshot(EngineTestContext ctx) => MovementHeadshot(ctx, shield: false);
+    [EngineTest("A rifle Lead Shot grants Cadence and Changing Angles that foreign Headshot spends and chains", Category = "WeaponCrossSkill", TimeoutSeconds = 60f)]
+    public static Task RifleChainedHeadshot(EngineTestContext ctx) => ChainedHeadshot(ctx, shield: false);
 
-    [EngineTest("Ordinary sword-and-shield movement fuels foreign Headshot without a Twin Pistol loadout", Category = "WeaponCrossSkill", TimeoutSeconds = 60f)]
-    public static Task ShieldMovementHeadshot(EngineTestContext ctx) => MovementHeadshot(ctx, shield: true);
+    [EngineTest("A sword-and-shield Lead Shot fuels foreign Headshot without a Twin Pistol loadout", Category = "WeaponCrossSkill", TimeoutSeconds = 60f)]
+    public static Task ShieldChainedHeadshot(EngineTestContext ctx) => ChainedHeadshot(ctx, shield: true);
 
-    [EngineTest("The first moved hit after an actual area transition grants Flow before periodic reconciliation", Category = "WeaponCrossSkillAreaEntry", TimeoutSeconds = 60f)]
-    public static async Task AreaEntryMovementHit(EngineTestContext ctx)
-    {
-        // A registered headless player cannot acknowledge a destination area load.
-        // Use a native NPC for this lifecycle boundary; the other cases exercise
-        // ordinary movement and foreign abilities through actual player branches.
-        var actor = ctx.SpawnCreature("civilian");
-        var originalArea = GetArea(actor);
-        var originalExit = GetEventScript(originalArea, EventScript.Area_OnExit);
-        try
-        {
-            await ctx.DelaySecondsAsync(1f);
-            await ctx.EquipItemAsync(actor, "b_rifle", InventorySlot.RightHand);
-            await InFrame(ctx, actor, () =>
-            {
-                SetEventScript(actor, EventScript.Creature_OnHeartbeat, "");
-                SetEventScript(actor, EventScript.Creature_OnNotice, "");
-                TemporaryStatModifier.Add(actor, StatType.PairedRangedMomentumMaximum, 3, 40f);
-                TemporaryStatModifier.Add(actor, StatType.PairedRangedMomentumDurationSeconds, 12, 40f);
-                TemporaryStatModifier.Add(actor, StatType.PairedRangedMovementNextAbilityAccuracy, 5, 40f);
-                TemporaryStatModifier.Add(actor, StatType.PairedRangedMovementAccuracyDurationSeconds, 8, 40f);
-                TemporaryStatModifier.Add(actor, StatType.PairedRangedMovementAccuracyCooldownSeconds, 10, 40f);
-                PairedRangedTraits.TrackMovement(actor);
-            });
-            var oldWindow = MovementWindow(actor);
-            var arrival = GetPosition(actor);
-            var destinationArea = ctx.CreateInstancedArea(GetResRef(originalArea));
-            await ctx.WaitFrameAsync();
-            SetEventScript(originalArea, EventScript.Area_OnExit, ScriptName.OnAreaExit);
-            SetEventScript(destinationArea, EventScript.Area_OnEnter, ScriptName.OnAreaEnter);
-            await InFrame(ctx, actor, () => JumpToLocation(Location(destinationArea, arrival, 0)));
-            await Until(ctx, () => GetArea(actor) == destinationArea, "the native NPC's actual area transition");
-            await ctx.WaitFrameAsync();
-            ctx.Assert(MovementWindow(actor) != null && MovementWindow(actor) != oldWindow,
-                "The area entry event immediately replaces the old area's baseline, before walking or an attack");
-            var target = await Target(ctx, actor, 5f, destinationArea);
-            var origin = GetPosition(actor);
-            Combat.SetAutoAttackHitResolutionOverride(true);
-            await InFrame(ctx, actor, () => ActionMoveToLocation(Location(destinationArea, origin + new Vector3(3, 0, 0), 0), false));
-            await Until(ctx, () => System.Numerics.Vector3.Distance(GetPosition(actor), origin) >= 2.2f, "ordinary walking after the area transition");
-            await InFrame(ctx, actor, () => { ClearAllActions(); ActionAttack(target); });
-            await Until(ctx, () => State(actor)?.Momentum == 1, "the first moved native hit after area entry to grant Flow");
-            await InFrame(ctx, actor, () => ClearAllActions());
-            ctx.Assert(State(actor).MovementAccuracyExpires > DateTime.UtcNow, "The same hit also arms Changing Angles");
-            TemporaryStatModifier.Clear(actor);
-            PairedRangedTraits.ReconcileMovementTracking(actor);
-            ctx.Assert(MovementWindow(actor) == null, "Removing both tracking stats releases the owner-only sampler");
-            await ctx.DelaySecondsAsync(.3f);
-            ctx.Assert(MovementWindow(actor) == null, "An already scheduled sample cannot resurrect a removed tracker");
-            ctx.SetResultDetail("Native NPC area transition replaced the movement baseline before walking; first landed rifle hit after2.2m granted Flow1/Angles5; removing both tracking stats stopped the sampler. Headless player area-load acknowledgement is outside this fixture.");
-        }
-        finally
-        {
-            SetEventScript(originalArea, EventScript.Area_OnExit, originalExit);
-            Cleanup(actor);
-        }
-    }
-
-    private static async Task MovementHeadshot(EngineTestContext ctx, bool shield)
+    private static async Task ChainedHeadshot(EngineTestContext ctx, bool shield)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
@@ -92,7 +34,8 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             {
                 record.Perks.Clear();
                 record.Perks[PerkType.Headshot] = 1;
-                record.Perks[PerkType.TwinPistolMomentum] = 1;
+                record.Perks[PerkType.LeadShot] = 1;
+                record.Perks[PerkType.Cadence] = 1;
                 record.Perks[PerkType.ChangingAngles] = 1;
                 record.Perks[PerkType.TwinPistolFollowThrough] = 1;
                 record.Skills[SkillType.Rifle].Rank = 50;
@@ -104,43 +47,74 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             var target = await Target(ctx, actor, 5f);
             await InFrame(ctx, actor, () =>
             {
+                CreaturePlugin.AddFeat(actor, FeatType.LeadShot1);
                 CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
-                PairedRangedTraits.TrackMovement(actor);
+                Combat.SetAbilityHitResolutionOverride(true);
                 Combat.SetAutoAttackHitResolutionOverride(true);
             });
-            var origin = GetPosition(actor);
-            var destination = origin + new Vector3(3f, 0, 0);
-            await InFrame(ctx, actor, () => ActionMoveToLocation(Location(GetArea(actor), destination, 0), false));
-            await Until(ctx, () => System.Numerics.Vector3.Distance(GetPosition(actor), origin) >= 2.2f, "ordinary queued walking to cover at least two metres");
-            await InFrame(ctx, actor, () => { ClearAllActions(); ActionAttack(target); });
-            await Until(ctx, () => State(actor)?.Momentum == 1, "a real ordinary hit to grant Flow");
-            await InFrame(ctx, actor, () => ClearAllActions());
+            await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.LeadShot1, GetLocation(target)),
+                $"Lead Shot enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
+            await Until(ctx, () => State(actor)?.Cadence == 1, "Lead Shot's landed hit to grant one Cadence");
+            await Until(ctx, () => !Activity.IsBusy(actor) && !TwinPistolAbility.HasActiveActivation(actor), "Lead Shot resolution");
             var state = State(actor);
-            ctx.AssertEqual(1, state.Momentum, "The first landed ordinary attack grants one movement reward");
-            ctx.Assert(state.MovementAccuracyExpires > DateTime.UtcNow, "The same real movement hit arms Changing Angles");
+            ctx.AssertEqual(1, state.Cadence, "Lead Shot grants one Cadence on its own, without a chain");
+            ctx.Assert(state.CadenceAccuracyExpires > DateTime.UtcNow, "Gaining Cadence arms Changing Angles");
+            // A hostile press inside the shared hostile ability delay is held, not queued; wait it out
+            // (half a second, well inside the six-second chain window).
+            await Until(ctx, () => HostileAbilityDelay.GetRemainingSeconds(actor) <= 0f, "the shared hostile ability delay to end");
             WeaponAbilityTraitActivation traits = null;
             var before = Stat.GetCurrentStamina(actor);
             var hp = GetCurrentHitPoints(target);
             await InFrame(ctx, actor, () =>
             {
+                ClearAllActions();
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
                     $"Foreign Rifle Headshot queues: {Ability.GetLastActivationDenialReason()}");
                 var dictionary = (Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
                     .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
                 traits = dictionary[actor];
                 ctx.AssertEqual(5, UsePerkFeat.GetQueuedWeaponTraitAccuracy(actor), "Captured Changing Angles reaches the carrier attack roll");
-                ctx.AssertEqual(1, traits.Snapshot.MomentumSpent, "A foreign paid weapon ability captures Flow");
-                ctx.AssertEqual(0, State(actor).Momentum, "The captured Flow is spent once when the queued cost is paid");
+                ctx.AssertEqual(1, traits.Snapshot.CadenceSpent, "A foreign paid weapon ability captures Cadence");
+                ctx.AssertEqual(0, State(actor).Cadence, "The captured Cadence is spent once when the queued cost is paid");
+                ctx.Assert(traits.ContinuesChain, "Headshot within six seconds of a different ability continues the chain");
                 ActionAttack(target);
             });
             await Until(ctx, () => traits.RecoveryCompleted, "the native carrier hit to resolve foreign Headshot and Follow Through");
             await InFrame(ctx, actor, () => ClearAllActions());
             ctx.Assert(GetCurrentHitPoints(target) < hp, "The outside-skill ability delivers actual native damage");
-            ctx.AssertEqual(0, traits.TryTakeDamageBonus(weapon), "The real foreign weapon damage path claimed its Flow budget");
-            ctx.AssertEqual(before - 6 + 1, Stat.GetCurrentStamina(actor), "Headshot pays its authored cost and refunds one Flow charge exactly once");
-            ctx.AssertEqual(0, State(actor).Momentum, "The carrier and its ability cannot regenerate Flow from the already used movement");
+            ctx.AssertEqual(0, traits.TryTakeDamageBonus(weapon), "The real foreign weapon damage path claimed its Cadence budget");
+            ctx.AssertEqual(before - 6 + 1, Stat.GetCurrentStamina(actor), "Headshot pays its authored cost and refunds one Cadence charge exactly once");
+            ctx.AssertEqual(1, State(actor).Cadence, "Headshot's landed chain hit grants one fresh Cadence after spending the old one");
             ctx.AssertEqual(0, UsePerkFeat.GetQueuedWeaponTraitAccuracy(actor), "The queued accuracy context clears after resolution");
-            ctx.SetResultDetail($"Native walking {System.Numerics.Vector3.Distance(GetPosition(actor), origin):0.00}m with {(shield ? "sword/shield" : "rifle")}; ordinary hit granted Flow1/Angles5; foreign Headshot consumed both, delivered {hp - GetCurrentHitPoints(target)} DMG, paid6/refunded1.");
+            ctx.SetResultDetail($"{(shield ? "Sword/shield" : "Rifle")} Lead Shot granted Cadence1/Angles5; foreign Headshot consumed both, delivered {hp - GetCurrentHitPoints(target)} DMG, paid6/refunded1, and its chained hit granted Cadence1.");
+        }
+        finally { Cleanup(actor); }
+    }
+
+    [EngineTest("Captured weapon abilities add Steady Cadence to their per-charge damage and carry their own Cadence grant", Category = "WeaponCrossSkill", TimeoutSeconds = 30f)]
+    public static async Task SteadyCadenceCapture(EngineTestContext ctx)
+    {
+        var actor = ctx.SpawnCreature("civilian");
+        try
+        {
+            await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+            await InFrame(ctx, actor, () =>
+            {
+                TemporaryStatModifier.Add(actor, StatType.CadenceMaximum, 3, 30f);
+                TemporaryStatModifier.Add(actor, StatType.CadenceDamagePerCharge, 2, 30f);
+                TemporaryStatModifier.Add(actor, StatType.CadenceBonusDamagePerCharge, 3, 30f);
+                var salvo = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.FinalSalvo));
+                var closing = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.ClosingShot1));
+                var lead = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.LeadShot1));
+                var tempo = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.TempoShot1));
+                ctx.AssertEqual(7, salvo.DamagePerCharge, "Final Salvo's own 4 per charge plus Steady Cadence III's 3");
+                ctx.AssertEqual(5, closing.DamagePerCharge, "Closing Shot's generic 2 per charge plus Steady Cadence III's 3");
+                ctx.Assert(salvo.Snapshot.SpendsCadence && closing.Snapshot.SpendsCadence, "Finishers spend Cadence");
+                ctx.Assert(!lead.Snapshot.SpendsCadence && !tempo.Snapshot.SpendsCadence, "Builders keep Cadence");
+                ctx.AssertEqual(1, lead.CadenceEarnedOnHit, "Lead Shot grants one Cadence without a chain");
+                ctx.AssertEqual(2, tempo.CadenceEarnedOnHit, "Tempo Shot grants two Cadence without a chain");
+            });
+            ctx.SetResultDetail("Final Salvo 4+3 and Closing Shot 2+3 per charge; Lead Shot 1 and Tempo Shot 2 Cadence on hit.");
         }
         finally { Cleanup(actor); }
     }
@@ -200,8 +174,8 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
         finally { Cleanup(actor); }
     }
 
-    [EngineTest("Twin intrinsic recovery and Twin Suns work without Flow or Changing Angles ownership", Category = "WeaponCrossSkill", TimeoutSeconds = 60f)]
-    public static async Task IntrinsicRewardsWithoutMovementTraits(EngineTestContext ctx)
+    [EngineTest("Twin intrinsic recovery and Twin Suns work without Cadence or Changing Angles ownership", Category = "WeaponCrossSkill", TimeoutSeconds = 60f)]
+    public static async Task IntrinsicRewardsWithoutCadenceTraits(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
@@ -224,7 +198,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.ControlledBurst1, GetLocation(target)),
                 $"Controlled Burst enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
             await Until(ctx, () => !Activity.IsBusy(actor) && !TwinPistolAbility.HasActiveActivation(actor), "Controlled Burst resolution");
-            ctx.AssertEqual(stamina - 6 + 2, Stat.GetCurrentStamina(actor), "Neutral movement context preserves Controlled Burst's intrinsic recovery");
+            ctx.AssertEqual(stamina - 6 + 2, Stat.GetCurrentStamina(actor), "Neutral Cadence context preserves Controlled Burst's intrinsic recovery");
             await InFrame(ctx, actor, () =>
             {
                 ClearAllActions();
@@ -233,8 +207,8 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             });
             await Until(ctx, () => State(actor)?.BonusAttempts == 6, "Twin Suns intrinsic six-attempt buff");
             ctx.AssertEqual(25, State(actor).BonusDamagePercent, "Neutral context preserves Twin Suns damage buff");
-            ctx.AssertEqual(0, State(actor).Momentum, "Neither intrinsic action requires owning Flow");
-            ctx.SetResultDetail("No Flow/Changing Angles purchased: cross-trained Controlled Burst paid6/restored2; Twin Suns granted six ordinary attempts at+25%.");
+            ctx.AssertEqual(0, State(actor).Cadence, "Neither intrinsic action requires owning Cadence");
+            ctx.SetResultDetail("No Cadence/Changing Angles purchased: cross-trained Controlled Burst paid6/restored2; Twin Suns granted six ordinary attempts at+25%.");
         }
         finally { Cleanup(actor); }
     }
@@ -262,10 +236,6 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
 
     private static PairedRangedTraitState State(uint actor) =>
         ((Dictionary<uint, PairedRangedTraitState>)typeof(PairedRangedTraits).GetField("States", BindingFlags.NonPublic | BindingFlags.Static)
-            .GetValue(null)).GetValueOrDefault(actor);
-
-    private static WeaponMovementWindow MovementWindow(uint actor) =>
-        ((Dictionary<uint, WeaponMovementWindow>)typeof(PairedRangedTraits).GetField("MovementWindows", BindingFlags.NonPublic | BindingFlags.Static)
             .GetValue(null)).GetValueOrDefault(actor);
 
     private static async Task InFrame(EngineTestContext ctx, uint actor, Action action)

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -14,6 +15,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class GuiLayoutValidationTests
 {
+    // Some window definitions (Key Items) read their data through a static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void GuiTable_FixedColumnWithoutWidth_ThrowsAtBuildTime()
     {
@@ -117,6 +134,29 @@ public class GuiLayoutValidationTests
 
         act.Should().Throw<InvalidOperationException>().WithMessage("*SetContentPartialElement*");
     }
+
+    [TestCase(false, -1f)]
+    [TestCase(true, 0f)]
+    public void GuiStandardLayout_CompactContent_DropsOnlyItsOwnGroupMargins(bool compact, float margin)
+    {
+        var window = new GuiWindow<DebugNuiGalleryViewModel>();
+
+        window.AddStandardLayout(layout =>
+        {
+            layout.SetTabPanelHeight(36f);
+            layout.AddTabRow(row => row.AddSpacer());
+            layout.SetContentPartialElement("content");
+            if (compact)
+                layout.SetCompactContent();
+        });
+
+        var groups = window.Elements.SelectMany(Walk).OfType<GuiGroup<DebugNuiGalleryViewModel>>().ToList();
+        groups.Should().HaveCount(3, "the tab panel, the content host and the partial slot");
+        groups.Should().OnlyContain(group => group.DeclaredMargin == margin, "other windows keep the default margins");
+    }
+
+    private static IEnumerable<IGuiWidget> Walk(IGuiWidget widget) =>
+        new[] { widget }.Concat(widget.Elements.SelectMany(Walk));
 
     [Test]
     public void Validator_UnboundedListWithTrailingRow_InNamedPartial_IsAllowed()

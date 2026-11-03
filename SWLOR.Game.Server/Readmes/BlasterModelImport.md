@@ -11,7 +11,15 @@ are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
 
 ## Slots and existing replacements
 
-Pistol base item **11** uses item class **WBwSh**. Native middle slots encode
+Modern pistol appearances use item class **WBwSh**. Logical pistol base item **11** and
+the production native-sling base item **61** share these resources. Modern
+production pistols use **61**, as enforced by `PistolBaseItemCompatibility`; native item 11
+hardcodes the bow attachment and suppresses the off-hand weapon. Use the current
+production blueprint and item types when building client fixtures. Recognized
+legacy resrefs instead use `BaseItem.LegacyPistol` (**514**), as returned by
+`PistolBaseItemCompatibility.GetCanonicalBaseItem`; preserve that canonical type
+in legacy fixtures so their attachment and animation behavior is retained.
+Native middle slots encode
 `model * 10 + color`; the toolset shows `model-color`; the in-game appearance
 catalog encodes `color * 100 + model`.
 
@@ -23,8 +31,10 @@ catalog encodes `color * 100 + model`.
 These are examples, not a complete free-slot inventory. Inspect the current HAK
 resources, catalog and open asset PRs before selecting a slot. Choose another modern pistol for a new
 design unless asked to revise one of them. Replacing a shared slot also changes
-persisted items using it. Basic Pistol already uses middle 201. Do not substitute
-the native-sling compatibility base item 61 or change item stats to select a model.
+persisted items using it. Basic Pistol already uses middle 201. Preserve the
+blueprint's base item and stats when selecting a different model. In temporary
+fixtures, update both `ModelPart*` and `xModelPart*`: the extended fields take
+precedence over the byte fields.
 
 A middle slot uses `wbwsh_m_NNN.mdl` and `iwbwsh_m_NNN.dds` in
 `SWLOR_Haks/sw_weapon/`. Register its catalog ID in
@@ -118,6 +128,94 @@ adapter below, then complete native verification. Focused runner tests use no GP
 ```powershell
 python -B -m unittest discover -s tools/tests -p test_generate_weapon_models.py
 ```
+
+### Import Meshy weapon and shield sources
+
+Local TRELLIS.2 remains the default generation path. Meshy is opt-in. Before
+submitting paid Meshy generation, remeshing, retexturing or other credit-consuming
+jobs, obtain the project owner's approval for the work and its credit budget.
+Stay within that approved scope and budget. An available balance or API key does
+not authorize spending, and approval for one batch does not authorize unrelated
+future work.
+
+The Meshy import tools below only convert already-downloaded local GLBs. They do
+not submit Meshy API jobs, spend credits or add a paid fallback to local generation.
+
+Keep paid generation jobs, budget journals, reference images and downloaded GLBs
+in private staging. Review the source silhouette and PBR maps before fitting.
+`tools/MeshyWeaponExport.py --mode prepare` accepts the same explicit uniform-fit
+manifest as the GLB adapter. It snapshots each source, applies the reviewed fit,
+and emits a native-coordinate GLB with explicit tangents and a new `fit.json`.
+It rejects nonuniform source transforms, modifiers and missing UVs.
+
+Meshy can intentionally produce open, double-sided surfaces. The explicit
+`double_sided_policy: "duplicate_backfaces"` preserves them by adding reversed
+faces with negated normals and tangent frames. It requires
+`normal_basis_policy: "authored_tangent_seams"`. This policy restores the
+source's corner normals before ASCII export, then restores authored normal,
+tangent and sign seams after compilation by splitting welded vertices. Native
+positions, UVs, face winding and draw indices are validated; shaded seams are
+never averaged. The older `authored_tangents` policy keeps its stricter immutable
+native-normal behavior. Client qualification is required for either policy.
+
+The seam-restoration helper also compacts its static rigid RAW buffers. It drops
+unreferenced compiler buffers and vertices, shares identical blocks, and merges
+only vertices whose complete position/UV/normal/tangent/sign bytes match. Every
+surviving shaded corner is checked byte for byte. `NativeTangentSeams.compact_model`
+can apply the same pass to an existing compatible model; animated, skinned,
+emitter and unsupported draw layouts are rejected without writing the file.
+This reduces storage without changing the rendered triangles or silhouette.
+
+For composite items, run `tools/MeshyWeaponParts.py` on the prepared manifest.
+Declare `parts` using measured native Y cuts; `clip_ranges: [[lower, upper], ...]`
+supports paired staff/twinblade roles, with `null` for an unbounded end. Supply
+`joint_envelopes` entries with `y`, `center_xz`, `radii_xz` and `depth`, measured
+from the existing native connectors, plus the complete assembly's
+`part_icon_bounds`. The authoring step closes the new cuts, adds inward-extending
+joint sleeves, and preserves the source surface UVs and corner frames. Its
+output selects complete authored `source_nodes` for each part and shares maps
+across roles. Node selectors cannot overlap or be combined with clipping.
+Keep each part's own cross-section all the way to its cut. Never taper a source
+surface down to the connector envelope near a joint: two such parts meet tip to
+tip and the staff pinches at every boundary (the October 2026 staffs did this
+over 25 mm). `tools/RepairStaffJointTransitions.py` widens such quarterstaff
+bands in compiled parts, and `tools/tests/test_repair_staff_joint_transitions.py`
+audits every shipped quarterstaff part for a pinched joint.
+Shields keep one complete model and use the preparation output directly; retain
+their measured grip, clearance and impact dummies.
+
+Preparation and part authoring both require Blender's Python (`bpy`). For example,
+with `$blender` set to the Blender executable and fresh staging output folders:
+
+```powershell
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/MeshyWeaponExport.py -- --mode prepare `
+  --manifest "$env:TEMP/weapon-sources/manifest.json" `
+  --output "$env:TEMP/weapon-sources/prepared"
+
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/MeshyWeaponParts.py -- `
+  --manifest "$env:TEMP/weapon-sources/prepared/fit.json" `
+  --output "$env:TEMP/weapon-sources/parts"
+```
+
+Both entrypoints accept an optional `--repo` path. Part authoring preserves
+manifest-level settings, including `empty_parts` and explicit
+`composite_assemblies`. Explicit assemblies take precedence over generated
+assemblies for their base item, including assemblies using partial hilt sources.
+
+Run `MeshyWeaponExport.py --mode export` inside Blender on the resulting
+`fit.json`, then `--mode package` with ordinary Python and the pinned compiler
+and Crunch arguments described below. All stage outputs must be empty folders
+outside the repository. Review renders, compiled resource validation, mixed
+assemblies, actual hand/arm fit and native inventory selection before copying
+finished resources into the HAK.
+
+This path accepts static rigid models only. Animated projectile MDLs require a
+separate animation-preserving rebuild: retain their native root, mesh names,
+emitters and controller tracks, then compare those fields after compilation.
+Do not replace a projectile with the static held-item export or bypass the
+static seam patcher's animation/emitter rejection.
 
 ### Generate closed shield surfaces
 
@@ -473,6 +571,15 @@ Compare textured previews before reducing larger maps;
 filter color in linear light and reconstruct/renormalize tangent normals. Constant
 material maps can use 4x4 DDS with full mipmaps. Avoid allocating large maps to solid
 colors. Preserve approved fit and silhouette when optimizing.
+`TrellisNwnMaterial.trim_dds_mips` can lower a reviewed material's resolution by
+retaining an existing complete BC mip chain from a smaller level onward, without
+recompression. It preserves the filtering already encoded in those levels; it
+does reduce detail. Compare identical views before and after, retain larger maps
+where highlights or seams degrade, and qualify the final material in the client.
+Share maps and whole material bundles only when their content and shader roles
+match. Keep the compiled bitmap fallback consistent with the MTR base color, and
+prove resources have no remaining HAK or stock-resource consumers before deleting
+retired assets.
 For opaque blaster maps, use these explicit options with `-fileformat dds
 -unflip -yflip -dropEmptyAlpha -dxtQuality uber`:
 
@@ -531,7 +638,7 @@ python -m unittest discover -s tools/tests -p test_pistol_inventory_icons.py
 
 This requires Pillow and the initialized HAK submodule. It checks committed game
 resources without authoring inputs: model/icon presence, 64x64 dimensions,
-DXT5 encoding, transparency, distinct visible pixels and stale TGA shadows of DDS icons. Legacy
+DXT5 encoding, transparency, distinct visible pixels and invalid TGA companions of DDS icons. Legacy
 TGA-only slots are included in the artwork audit; new/replacement icons use DDS.
 Review a labeled contact sheet and provide an icon preview with the handoff.
 
@@ -558,8 +665,10 @@ the artwork in the DDS and give each icon that has no TGA in any layer (HAKs or
 the base game) an 8x8 registration stub: `tools/FixWeaponInventoryIcons.py audit`
 lists them and `stubs` writes a bottom-left TGA thumbnail of the DDS art beside
 each one. Do not change persisted weapon appearances to dodge the check. The
-pistol and rifle icon audits (`test_pistol_inventory_icons.py`,
-`test_rifle_inventory_icons.py`) still reject a TGA beside a DDS; their icons
+pistol icon audit accepts only the exact 8x8 bottom-left registration format
+beside DDS artwork, rejects full-size TGA shadows, and requires registrations for
+the twelve slots without stock registrations. The rifle audit
+(`test_rifle_inventory_icons.py`) still rejects a TGA beside a DDS; its icons
 have no stubs yet. Broader engine background is available in the
 [texture notes](https://nwn.wiki/spaces/NWN1/pages/38174958/Textures).
 
@@ -622,10 +731,40 @@ scale 9.6 is a starting point, not a batch-wide fit guarantee: source grip sizes
 vary. Refit oversized grips uniformly around the contact pivot and review both
 sides. Widen the review camera for long barrels rather than truncating the check.
 
-The actual human right-hand reference is `pmh0_handr001`. Custom pistol animation
+The male human right-hand reference is `pmh0_handr001`. Custom pistol animation
 uses **bowshot**, whose hook retains its rest orientation; generic **xbowshot**
 rotates it differently. The human `rhand` hook sits at
 `(0.0110681, 0, -0.0961281)` relative to `rhand_g`.
+
+That helper uses only the male bare hand. The female normal human bind socket
+is `(0.00101395, 0.0104238, -0.0818723)` relative to `rhand_g`; do not reuse the
+male socket for a female reference. Inspect the actual female and male hands,
+open or fingerless glove styles, both equipped hands, and the playable normal
+body families in the client. Some hand meshes have permanently open fingers.
+
+Measure each actual handle's butt, neck, width and depth. Compare sections at
+the fingers' contact positions; a sample near the butt or a single Z threshold
+does not establish palm contact. An oversized handle needs a uniform scale
+correction about its grip before seating it. Keep the weapon's proportions and
+inspect the palm, back of the hand and reverse side for gaps and penetration.
+Positive weapon-space Z raises a hanging pistol toward the wrist; choose its
+offset from those contact views rather than a common catalog-wide Z target.
+Preserve muzzle attachments and model animation tracks as well as visible
+geometry. When fitting an animated model through its root, apply the same
+transform to animated root positions and retain event timing.
+
+Fixture body parts have extended fields too: keep `BodyPart_*` and
+`xBodyPart_*` synchronized. Set the intended parts with `SetCreatureBodyPart`
+and log `GetCreatureBodyPart` with each capture, alongside gender, phenotype,
+native base items and weapon appearance parts. A blueprint label alone does not
+prove that the client rendered the intended hand. Equipped armor can override
+those body parts: reproduce and log its hand appearance too. Permanently open
+fingers cannot demonstrate a closed grasp. Compare the actual left mesh as well;
+the male human bare left hand is asymmetric, not just a mirrored right hand.
+
+When cloning a model into a temporary comparison slot, rename only its model
+header and root node. A texture can share the original model's resref; replacing
+every occurrence also renames that texture and invalidates the material check.
 
 Render a local review scene already in NWN coordinates with:
 

@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 175
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 536
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 175
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A set of heavy weights that keep a pattern loom's threads taut. Without them, a large locker's patterns drift out of true. Vessa Thrane, the couturier on the Nar Shaddaa Promenade, uses it to expand a wardrobe's pattern locker."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A set of heavy weights that keep a pattern loom's threads taut. Without them, a large locker's patterns drift out of true. Vessa Thrane, the couturier on the Nar Shaddaa Promenade, uses it to expand a wardrobe's pattern locker."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Loom Tension Weights"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 36
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "wd_tension_wts"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "wd_tension_wts"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 36
+  }
+}

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Domain.Economy
     {
         private const string StorageId = "GLOBAL_BANK";
         private const int MaxItems = 120;
+        private const int ItemsPerPage = 20;
         private const string CityIdLocalName = "CITY_ID";
 
         private readonly IDBService _db;
@@ -48,7 +50,21 @@ namespace SWLOR.Game.Server.Domain.Economy
             return itemCount >= MaxItems;
         }
 
-        public List<InventoryItem> SearchItems(string playerId, string searchText)
+        public BankItemPage SearchItems(string playerId, string searchText, int pageIndex)
+        {
+            var matchCount = _db.SearchCount(BuildSearchQuery(playerId, searchText));
+            var pagination = GuiPaginationState.Create(matchCount, ItemsPerPage, pageIndex);
+            var items = matchCount <= 0
+                ? new List<InventoryItem>()
+                : _db.Search(BuildSearchQuery(playerId, searchText)
+                        .AddPaging(ItemsPerPage, ItemsPerPage * pagination.SelectedPageIndex))
+                    .Where(item => item != null)
+                    .ToList();
+
+            return new BankItemPage(items, matchCount, pagination.PageNumbers, pagination.SelectedPageIndex);
+        }
+
+        private DBQuery<InventoryItem> BuildSearchQuery(string playerId, string searchText)
         {
             var query = BuildPlayerItemQuery(playerId);
 
@@ -57,7 +73,8 @@ namespace SWLOR.Game.Server.Domain.Economy
                 query.AddFieldSearch(nameof(InventoryItem.Name), searchText, true);
             }
 
-            return _db.Search(query).ToList();
+            // Oldest first, so the newest deposits are on the last page and paging is stable between pages.
+            return query.OrderBy(nameof(InventoryItem.DepositedTicks));
         }
 
         public string GetDepositFailure(uint player, uint item)
@@ -83,7 +100,8 @@ namespace SWLOR.Game.Server.Domain.Economy
                 Resref = GetResRef(item),
                 Quantity = GetItemStackSize(item),
                 Data = ObjectPlugin.Serialize(item),
-                IconResref = Item.GetIconResref(item)
+                IconResref = Item.GetIconResref(item),
+                DepositedTicks = DateTime.UtcNow.Ticks
             };
 
             _db.Set(dbItem);

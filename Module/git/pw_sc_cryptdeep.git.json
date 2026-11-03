@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A trial altar on the west side of the crypt, its offerings looted and its carvings chipped by blaster fire. The crypt raiders' captain keeps watch over it."
+            "0": "A trial altar on the west side of the crypt, its offerings looted and its carvings chipped by blaster fire. The expedition's captain keeps watch over it."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A trial altar on the east side of the crypt, stained dark around its base. The Vitae Reavers' enforcer guards it like a feeding ground."
+            "0": "A trial altar on the east side of the crypt, stained dark around its base. The expedition captain guards it like a feeding ground."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A trial altar in the north-west of the crypt, half buried under umbral raider gear and forged orders. Their captain claims it as his post."
+            "0": "A trial altar in the north-west of the crypt, half buried under expedition gear and forged orders. Their captain claims it as his post."
           }
         },
         "DisarmDC": {
@@ -46908,7 +46908,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - Crypt Breach Captain Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Captain Rhaan Tolek Spawn (Last Stand of the Light line)"
           }
         },
         "MapNote": {
@@ -46971,7 +46971,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - Vitae Reaver Enforcer Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Captain Zarrik Thane Spawn (Hunger of the Dark line)"
           }
         },
         "MapNote": {
@@ -47034,7 +47034,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - Umbral Raider Captain Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Captain Tavik Orrun Spawn (Eclipse of Resolve line)"
           }
         },
         "MapNote": {
@@ -47097,7 +47097,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47160,7 +47160,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47173,11 +47173,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47223,7 +47223,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47286,7 +47286,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47299,11 +47299,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47349,7 +47349,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47362,11 +47362,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47412,7 +47412,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47425,11 +47425,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47475,7 +47475,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47488,11 +47488,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47538,7 +47538,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47601,7 +47601,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47614,11 +47614,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47664,7 +47664,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -47727,7 +47727,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47740,11 +47740,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47790,7 +47790,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47803,11 +47803,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47853,7 +47853,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47866,11 +47866,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47916,7 +47916,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -47929,11 +47929,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -47979,7 +47979,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48042,7 +48042,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48055,11 +48055,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -48105,7 +48105,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48168,7 +48168,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48181,11 +48181,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -48231,7 +48231,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Marauder Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -48244,11 +48244,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS"
+          "value": "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_kcrypt"
+          "value": "wp_cdp_kcrypt"
         },
         "XPosition": {
           "type": "float",
@@ -48294,7 +48294,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Expedition Raider Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -48710,6 +48710,762 @@
         "YOrientation": {
           "type": "float",
           "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Last Stand of the Light line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_LIGHTSTAND_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_lightstand_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 95.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 142.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Last Stand of the Light line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_LIGHTSTAND_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_lightstand_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 89.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 134.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Last Stand of the Light line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_LIGHTSTAND_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_lightstand_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 78.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 133.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Last Stand of the Light line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_LIGHTSTAND_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_lightstand_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 109.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 127.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Hunger of the Dark line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DARKHUNG_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_darkhung_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 115.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 17.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Hunger of the Dark line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DARKHUNG_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_darkhung_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 125.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 14.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Hunger of the Dark line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DARKHUNG_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_darkhung_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 120.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 36.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Hunger of the Dark line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_DARKHUNG_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_darkhung_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 138.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 28.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_eclipse_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 130.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 138.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_eclipse_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 130.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 128.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_eclipse_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 115.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Mon Cala Sith Crypt Depths - Expedition Reaver Spawn (Eclipse of Resolve line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ECLIPSE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_eclipse_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 120.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 124.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.40
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
         }
       }
     ]

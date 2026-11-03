@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Apex Bite inner circle member in Dathomir - Tarn Jungle Preserve."
+    "value": "Elder Scaled Brute (Apex Bite line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the four eldest scaled brutes in the preserve, the pit-breeders' first brood, bigger and meaner than anything bred after it. Every pen took its temper from this brood, and it holds the deepest den with the rest of them."
+      "0": "One of the four elder scaled brutes in the preserve, the pit-breeders' first brood, bigger and meaner than anything bred after it. Every pen took its temper from this brood, and it holds the deepest den with the rest of them."
     }
   },
   "Dex": {
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Apex Bite Inner Circle"
+      "0": "Elder Scaled Brute"
     }
   },
   "fortbonus": {

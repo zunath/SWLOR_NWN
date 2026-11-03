@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Killzone Beacon warden in Viscara - Republic Engineering Bunker."
+    "value": "Deserter Sergeant Orgul (Killzone Beacon line) in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An Ugnaught engineer in a white Republic uniform gone grey with swamp damp, carrying a blaster pistol and a cracked command crest. He drives the cell's fire teams by Republic doctrine, calm and textbook, as if he were still teaching a class."
+      "0": "An Ugnaught deserter sergeant in a white Republic uniform gone grey with swamp damp, carrying a blaster pistol and a cracked command crest. He drives the cell's fire teams by Republic doctrine, calm and textbook, as if he were still teaching a class."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Killzone Beacon Warden"
+      "0": "Deserter Sergeant Orgul"
     }
   },
   "fortbonus": {

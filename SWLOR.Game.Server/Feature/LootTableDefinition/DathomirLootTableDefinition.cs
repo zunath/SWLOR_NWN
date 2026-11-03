@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("rhydelalphada", 1, 1, true).AddItem("rhydelalphadb", 1, 1, true).AddItem("bp_rhydelalpha", 1, 1, true)
                 .AddItem("recipe_dr_psn2", 1, 1, true);
             _builder.Create("DATHTARN_APEX_COMP").AddItem("tarnapexmawcm", 1, 1);
+            _builder.Create("DATHTARN_APEX_WARDROBE").AddItem("wd_apex_horn", 1, 1);
             _builder.Create("DATHTARN_QUILL_COMP").AddItem("quillstalkercm", 1, 1);
             _builder.Create("DATHTARN_RHYDEL_COMP").AddItem("rhydelalphacm", 1, 1);
         }
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("DATHGROTTO_STALKER_RARES").IsRare()
                 .AddItem("totem_charm", 1, 1, true).AddItem("spirit_hide", 1, 1, true).AddItem("bp_ritecrown", 1, 1, true);
             _builder.Create("DATHGROTTO_ALPHA_COMP").AddItem("alpha_fang", 1, 1);
+            _builder.Create("DATHGROTTO_ALPHA_WARDROBE").AddItem("wd_glow_spores", 1, 1);
             _builder.Create("DATHGROTTO_SPINE_COMP").AddItem("spine_quill", 1, 1);
             _builder.Create("DATHGROTTO_STALKER_COMP").AddItem("spirit_totem", 1, 1);
         }

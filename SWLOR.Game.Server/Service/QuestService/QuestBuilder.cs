@@ -331,10 +331,26 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="group">The NPC group Id</param>
         /// <param name="amount">The number of NPCs in this group required to kill to complete the objective.</param>
+        /// <param name="maximumCreditDistance">The maximum distance from the defeated NPC for kill credit.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddKillObjective(NPCGroupType group, int amount)
+        public QuestBuilder AddKillObjective(NPCGroupType group, int amount, float maximumCreditDistance = 50f)
         {
-            var killObjective = new KillTargetObjective(group, amount);
+            var killObjective = new KillTargetObjective(group, amount, maximumCreditDistance);
+            _activeState.AddObjective(killObjective);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a capstone kill objective: kills of any enemy in the group's dungeon tier count once the player has used
+        /// the capstone's mechanic on it.
+        /// </summary>
+        /// <param name="group">The line's own NPC group, which holds the progress.</param>
+        /// <param name="proofKey">The capstone proof the player must show on each enemy.</param>
+        /// <param name="amount">The number of kills needed.</param>
+        public QuestBuilder AddCapstoneProofKillObjective(NPCGroupType group, string proofKey, int amount)
+        {
+            var killObjective = new CapstoneProofKillObjective(group, proofKey, amount);
             _activeState.AddObjective(killObjective);
 
             return this;

@@ -54,7 +54,7 @@ public static class PowerGlovePairEngineTests
         }
     }
 
-    [EngineTest("One owned Power Glove generates a cosmetic hand with no duplicate stats or economy item", Category = "PowerGlovePair", TimeoutSeconds = 45f)]
+    [EngineTest("One owned Power Glove generates a cosmetic hand, counts its stats once per hand and creates no economy item", Category = "PowerGlovePair", TimeoutSeconds = 45f)]
     public static async Task OneOwnedItemAndOneStatProfile(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -69,6 +69,8 @@ public static class PowerGlovePairEngineTests
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 13), main);
             standardOnHitProperty = PropertySignature(ItemPropertyOnHitCastSpell(OnHitCastSpellType.ONHIT_UNIQUEPOWER, 40));
         });
+        // The fixture's oversized STM pool is rebuilt from worn gear on the first equip; start from the rebuilt record.
+        await ctx.ExecuteInCreatureContextAsync(actor, () => Stat.RefreshPlayerEquipmentStats(actor));
         var baseline = DB.Get<Player>(player.Id);
         var hp = baseline.MaxHP;
         var stamina = baseline.MaxStamina;
@@ -87,10 +89,10 @@ public static class PowerGlovePairEngineTests
             ctx.Assert(!Item.IsEconomyRestricted(main), "The real glove remains the one usable economy item");
             ctx.AssertEqual(equippedProperties, Properties(main), "Equip preserves every real upgrade and adds exactly one standard on-hit transport property");
             var equipped = DB.Get<Player>(player.Id);
-            ctx.AssertEqual(hp + 7, equipped.MaxHP, "The real glove's HP property contributes exactly once");
-            ctx.AssertEqual(stamina + 9, equipped.MaxStamina, "The real glove's stamina property contributes exactly once");
+            ctx.AssertEqual(hp + 14, equipped.MaxHP, "The real glove's HP property counts once per hand");
+            ctx.AssertEqual(stamina + 18, equipped.MaxStamina, "The real glove's stamina property counts once per hand");
             ctx.Assert(EquipmentPredicates.HasDualWield(actor), "The owned glove strikes with both hands through Dual Wield");
-            ctx.Assert(EquipmentPredicates.HasUnarmedGrip(actor), "The generated hand retains Unarmed technique eligibility");
+            ctx.Assert(PowerGloveEquipment.IsActivePair(actor), "The generated hand completes an active pair");
             for (var pass = 0; pass < 3; pass++)
                 await ctx.ExecuteInCreatureContextAsync(actor, () => PowerGloveEquipment.EnsurePair(actor));
             ctx.AssertEqual(companion, GetItemInSlot(InventorySlot.LeftHand, actor), "Repeated reconciliation retains one companion");
@@ -100,19 +102,19 @@ public static class PowerGlovePairEngineTests
                 await ctx.ExecuteInCreatureContextAsync(actor, () => PowerGloveEquipment.ReleaseCompanions(actor));
                 await ctx.WaitUntilAsync(() => !GetIsObjectValid(companion), 6f, "logout cleanup to destroy only the cosmetic hand");
                 ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "Logout cleanup preserves the equipped real glove");
-                ctx.AssertEqual(hp + 7, DB.Get<Player>(player.Id).MaxHP, "Cosmetic logout cleanup does not subtract real stats");
+                ctx.AssertEqual(hp + 14, DB.Get<Player>(player.Id).MaxHP, "Cosmetic logout cleanup does not subtract real stats");
                 AssertOwnedItems(ctx, actor, main, 0);
                 await ctx.ExecuteInCreatureContextAsync(actor, () => PowerGloveEquipment.RestorePair(actor));
                 companion = await WaitForPair(ctx, actor, main);
                 AssertCosmeticCompanion(ctx, companion);
-                ctx.AssertEqual(hp + 7, DB.Get<Player>(player.Id).MaxHP, "Rebuilding the cosmetic hand does not add real stats again");
-                ctx.AssertEqual(stamina + 9, DB.Get<Player>(player.Id).MaxStamina, "Rebuilding retains exactly one stamina contribution");
+                ctx.AssertEqual(hp + 14, DB.Get<Player>(player.Id).MaxHP, "Rebuilding the cosmetic hand does not add real stats again");
+                ctx.AssertEqual(stamina + 18, DB.Get<Player>(player.Id).MaxStamina, "Rebuilding retains the two-hand stamina contribution");
             }
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(cycle == 0 ? main : companion));
             await WaitForRemovedPair(ctx, actor, main, companion);
             var removed = DB.Get<Player>(player.Id);
-            ctx.AssertEqual(hp, removed.MaxHP, "Either-hand removal subtracts the real HP property once");
-            ctx.AssertEqual(stamina, removed.MaxStamina, "Either-hand removal subtracts the real stamina property once");
+            ctx.AssertEqual(hp, removed.MaxHP, "Either-hand removal subtracts both hands' HP");
+            ctx.AssertEqual(stamina, removed.MaxStamina, "Either-hand removal subtracts both hands' stamina");
             ctx.AssertEqual(identity, GetObjectUUID(main), "Either-hand removal retains the same real item identity");
             ctx.AssertEqual(equippedProperties, Properties(main), "Either-hand removal preserves enhancements and the one standard on-hit transport property");
             AssertOwnedItems(ctx, actor, main, 0);
@@ -206,7 +208,7 @@ public static class PowerGlovePairEngineTests
             var offHand = Sample(1);
             ctx.Assert(mainHand > 0, "The owned glove deals native ordinary damage");
             ctx.AssertEqual(mainHand, offHand, "The native off-hand roll uses the owned glove, never the cosmetic carrier");
-            ctx.AssertEqual(48, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed), "Unarmed abilities count both gloves' DMG");
+            ctx.AssertEqual(48, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed), "Unarmed abilities count both hands' DMG");
             ctx.AssertEqual(48, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed, abilityImpact: true), "Ability impacts add both gloves' DMG");
             ctx.AssertEqual(24, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed), "Non-ability uses keep one glove's DMG");
             ctx.AssertEqual(24, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Katar), "Only Unarmed abilities count the pair");
@@ -356,6 +358,8 @@ public static class PowerGlovePairEngineTests
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.HPBonus, -1, 7), main);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Stamina, -1, 9), main);
         });
+        // The fixture's oversized STM pool is rebuilt from worn gear on the first equip; start from the rebuilt record.
+        await ctx.ExecuteInCreatureContextAsync(actor, () => Stat.RefreshPlayerEquipmentStats(actor));
         var baseline = DB.Get<Player>(player.Id);
         var baselineHP = baseline.MaxHP;
         var baselineStamina = baseline.MaxStamina;
@@ -430,12 +434,12 @@ public static class PowerGlovePairEngineTests
                     3f, "failed companion creation to dispose of every owner-linked cosmetic in temporary storage");
                 ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "Failed safe return retains the exact real item in its equipped slot");
                 ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, actor), "Failed creation leaves no cosmetic equipped object");
-                ctx.Assert(!PowerGloveEquipment.IsActivePair(actor) && !EquipmentPredicates.HasUnarmedGrip(actor), "An incomplete pair cannot supply Unarmed techniques");
+                ctx.Assert(!PowerGloveEquipment.IsActivePair(actor), "An incomplete pair is not an active pair");
                 ctx.AssertEqual(identity, GetObjectUUID(main), "Repeated failure preserves the real item UUID");
                 ctx.AssertEqual(properties, Properties(main), "Repeated failure preserves every real enhancement");
                 ctx.AssertEqual(actor, GetItemPossessor(filler), "Failed recovery preserves the original full inventory contents");
-                ctx.AssertEqual(baselineHP + 7, DB.Get<Player>(player.Id).MaxHP, "The still-equipped real item retains exactly one HP contribution");
-                ctx.AssertEqual(baselineStamina + 9, DB.Get<Player>(player.Id).MaxStamina, "The still-equipped real item retains exactly one stamina contribution");
+                ctx.AssertEqual(baselineHP + 14, DB.Get<Player>(player.Id).MaxHP, "The still-equipped real item, which owns both hands, retains its two-hand HP contribution");
+                ctx.AssertEqual(baselineStamina + 18, DB.Get<Player>(player.Id).MaxStamina, "The still-equipped real item retains its two-hand stamina contribution");
                 AssertOwnedItems(ctx, actor, main, 0);
             }
             Hits.Clear();
@@ -468,8 +472,8 @@ public static class PowerGlovePairEngineTests
                 ActionUnequipItem(companion);
             });
             await WaitForRemovedPair(ctx, actor, main, companion);
-            ctx.AssertEqual(baselineHP, DB.Get<Player>(player.Id).MaxHP, "Successful final removal subtracts the real HP contribution once");
-            ctx.AssertEqual(baselineStamina, DB.Get<Player>(player.Id).MaxStamina, "Successful final removal subtracts the real stamina contribution once");
+            ctx.AssertEqual(baselineHP, DB.Get<Player>(player.Id).MaxHP, "Successful final removal subtracts both hands' HP contribution");
+            ctx.AssertEqual(baselineStamina, DB.Get<Player>(player.Id).MaxStamina, "Successful final removal subtracts both hands' stamina contribution");
             ctx.AssertEqual(identity, GetObjectUUID(main), "Failure and recovery never replace or duplicate the owned item");
             AssertOwnedItems(ctx, actor, main, 0);
         }

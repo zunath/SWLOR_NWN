@@ -195,18 +195,29 @@ def match_faces(source,target):
     low=sp.min(axis=1);high=sp.max(axis=1);slack=3e-6+1e-4*(high-low).max(axis=1,keepdims=True)
     face_index=BoxIndex(low-slack,high+slack)
     for ti,tp in enumerate(target['positions']):
+        target_normal=np.cross(tp[1]-tp[0],tp[2]-tp[0])
         center=tp.mean(axis=0);tu=target['uv'][ti];candidates=center_index.query(center)
-        candidates=candidates[np.linalg.norm(centers[candidates]-center,axis=1)<3e-6];found=None;matches=[]
+        candidates=candidates[np.linalg.norm(centers[candidates]-center,axis=1)<3e-6];found=None;matches=[];exact=[]
         for si in candidates:
+            # Sub-micron edges can put a reversed backface inside the position
+            # tolerance for every cyclic corner. Winding still identifies its side.
+            if normal[si]@target_normal<=0:continue
             for shift in range(3):
                 ids=np.roll(np.arange(3),shift)
                 if np.max(abs(sp[si,ids]-tp))<3e-6 and np.max(abs(su[si,ids]-tu))<2e-6:
-                    matches.append((int(si),np.eye(3)[ids]));break
+                    match=(int(si),np.eye(3)[ids]);matches.append(match)
+                    # Prepared float32 corners survive the rigid import and native
+                    # ASCII round trip exactly. Prefer that identity to nearby
+                    # slivers admitted by the fallback geometric tolerance.
+                    if np.array_equal(sp[si,ids].astype(np.float32),tp.astype(np.float32)) and np.array_equal(su[si,ids].astype(np.float32),tu.astype(np.float32)):
+                        exact.append(match)
+                    break
+        if exact:matches=exact
         if matches:found=matches[0]
         if found is None:
             # A clipping plane can subdivide a source face without changing its UV field.
             near=face_index.query(center);plane=np.abs(np.sum((center-a[near])*normal[near],axis=1))/np.maximum(length[near],1e-20)
-            for si in near[(plane<3e-6)&(length[near]>1e-15)]:
+            for si in near[(plane<3e-6)&(length[near]>1e-15)&((normal[near]@target_normal)>0)]:
                 matrix=np.stack((e[si],f[si]),axis=1);weights=np.linalg.lstsq(matrix,(tp-a[si]).T,rcond=None)[0].T;bary=np.column_stack((1-weights.sum(axis=1),weights))
                 if bary.min()>=-2e-5 and np.max(abs(bary@sp[si]-tp))<3e-6 and np.max(abs(bary@su[si]-tu))<2e-6:matches.append((int(si),bary))
             if matches:found=matches[0]

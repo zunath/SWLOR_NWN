@@ -133,6 +133,38 @@ public static partial class MigrationEngineTests
             DestroyObject(legacyController);
         });
 
+        // Former Display Plinths and their blueprints saved under the old name.
+        foreach (var (resref, newName, oldName) in FormerDisplayPlinths)
+        {
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                fixtures.Add(($"former {oldName} ({resref})", StampFormerName(ObjectPlugin.Serialize(item), newName, oldName), true));
+                DestroyObject(item);
+            });
+        }
+
+        // A DM-renamed former plinth keeps its custom name; the name its Reset action restores is renamed.
+        var dmRenamed = await CreateItemAsync(ctx, owner, "structure_0389", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            SetName(dmRenamed, "Grandmother's Pillar");
+            SetLocalString(dmRenamed, "RENAMED_ITEM_ORIGINAL_NAME", "Veilcarved Display Plinth");
+            fixtures.Add(("former Veilcarved Display Plinth renamed by a DM",
+                StampFormerName(ObjectPlugin.Serialize(dmRenamed), "Veilcarved Rune Pillar", "Veilcarved Display Plinth"), true));
+            DestroyObject(dmRenamed);
+        });
+
+        // A saved creature carrying a former plinth.
+        var plinthCarrier = ctx.SpawnCreature("civilian", 3f);
+        await ctx.WaitFrameAsync();
+        await CreateItemAsync(ctx, plinthCarrier, "structure_0429", plinthCarrier);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            fixtures.Add(("saved creature carrying a former Commandline Display Plinth",
+                StampFormerName(ObjectPlugin.Serialize(plinthCarrier), "Commandline Bust", "Commandline Display Plinth"), true));
+        });
+
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var buffedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var artwork = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
@@ -214,6 +246,112 @@ public static partial class MigrationEngineTests
         ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
     }
 
+    /// <summary>
+    /// A former plinth that no release migration reached (a character file or record restored afterwards) is renamed
+    /// when its owner logs in or acquires it; a DM's custom name is kept.
+    /// </summary>
+    [EngineTest("Former Display Plinths missed by the release migrations are renamed live", Category = SavedDataSweepCategory)]
+    public static async Task FormerDisplayPlinthsAreRenamedLive(EngineTestContext ctx)
+    {
+        var owner = ctx.SpawnCreature("civilian");
+        await ctx.WaitFrameAsync();
+        var plinth = await CreateItemAsync(ctx, owner, "bpstructure0389", owner);
+        var custom = await CreateItemAsync(ctx, owner, "structure_0389", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var legacy = Deserialize(ctx, StampFormerName(ObjectPlugin.Serialize(plinth), "Veilcarved Rune Pillar", "Veilcarved Display Plinth"));
+            SetName(custom, "Veilcarved Display Plinth Replica");
+            try
+            {
+                ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Display Plinth", $"legacy fixture name '{GetName(legacy)}'");
+                ctx.Assert(FurnitureRenameMigration.RenameInventory(legacy), "the legacy blueprint is renamed");
+                ctx.Assert(GetName(legacy) == "Blueprint: Veilcarved Rune Pillar", $"renamed to '{GetName(legacy)}'");
+                ctx.Assert(GetDescription(legacy) == "A rare schematic for crafting Veilcarved Rune Pillar.", $"description '{GetDescription(legacy)}'");
+                ctx.Assert(!FurnitureRenameMigration.RenameInventory(legacy), "the live rename is idempotent");
+                ctx.Assert(!FurnitureRenameMigration.RenameInventory(custom), "a custom name is kept");
+                ctx.Assert(GetName(custom) == "Veilcarved Display Plinth Replica", $"custom name '{GetName(custom)}'");
+            }
+            finally
+            {
+                Invoke("MigrationObject", "DestroyTemporaryObject", legacy);
+                DestroyObject(plinth);
+                DestroyObject(custom);
+            }
+        });
+    }
+
+    /// <summary>A bank listing restored after the release migration is saved under its new name, so name searches find it.</summary>
+    [EngineTest("Restored bank listings of former Display Plinths are found by their new name", Category = SavedDataSweepCategory)]
+    public static async Task RestoredFormerPlinthListingsAreSearchable(EngineTestContext ctx)
+    {
+        var storageId = "furniture-rename-" + Guid.NewGuid().ToString("N");
+        var listing = new SWLOR.Game.Server.Entity.InventoryItem
+        {
+            StorageId = storageId,
+            PlayerId = storageId,
+            Name = "Veilcarved Display Plinth",
+            Tag = "structure_0389",
+            Resref = "structure_0389",
+            Quantity = 1,
+            Data = string.Empty,
+            IconResref = string.Empty,
+        };
+        DB.Set(listing);
+        try
+        {
+            SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem> ByName(string name) =>
+                new SWLOR.Game.Server.Service.DBService.DBQuery<SWLOR.Game.Server.Entity.InventoryItem>()
+                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.StorageId), storageId, false)
+                    .AddFieldSearch(nameof(SWLOR.Game.Server.Entity.InventoryItem.Name), name, true);
+            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 0, "the restored listing is still indexed under its old name");
+
+            FurnitureRenameMigration.SaveRestoredListings();
+            await ctx.WaitFrameAsync();
+
+            ctx.Assert(DB.SearchCount(ByName("Rune Pillar")) == 1, "the listing is found by its new name");
+            ctx.Assert(DB.Get<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id).Name == "Veilcarved Rune Pillar", "the listing loads renamed");
+        }
+        finally
+        {
+            DB.Delete<SWLOR.Game.Server.Entity.InventoryItem>(listing.Id);
+        }
+    }
+
+    private static readonly (string Resref, string NewName, string OldName)[] FormerDisplayPlinths =
+    {
+        ("structure_0389", "Veilcarved Rune Pillar", "Veilcarved Display Plinth"),
+        ("bpstructure0389", "Veilcarved Rune Pillar", "Veilcarved Display Plinth"),
+        ("structure_0429", "Commandline Bust", "Commandline Display Plinth"),
+        ("bpstructure0429", "Commandline Bust", "Commandline Display Plinth"),
+    };
+
+    /// <summary>
+    /// A structure or blueprint crafted before its rename: the blueprint's name and descriptions saved with the old
+    /// name, as copied from the former blueprint (SetName and SetDescription save overrides instead).
+    /// </summary>
+    private static string StampFormerName(string data, string newName, string oldName)
+    {
+        var document = SavedDataSweepAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData");
+        var flags = BindingFlags.Public | BindingFlags.NonPublic;
+        var saved = Activator.CreateInstance(document, flags | BindingFlags.Instance, null, new object[] { Convert.FromBase64String(data) }, null);
+        var replace = document.GetMethod("ReplaceLocalizedText", flags | BindingFlags.Static);
+        Func<string, string> toOld = text => text.Replace(newName, oldName, StringComparison.Ordinal);
+        // Every saved item, including those a saved creature carries.
+        void Stamp(object node)
+        {
+            foreach (var field in (System.Collections.IEnumerable)node.GetType().GetField("Fields").GetValue(node))
+            {
+                if (new[] { "LocalizedName", "DescIdentified", "Description" }.Contains((string)field.GetType().GetProperty("Name").GetValue(field)))
+                    replace.Invoke(null, new[] { field, toOld });
+                if (field.GetType().GetField("Children").GetValue(field) is System.Collections.IEnumerable children)
+                    foreach (var child in children)
+                        Stamp(child);
+            }
+        }
+        Stamp(document.GetField("_root", flags | BindingFlags.Instance).GetValue(saved));
+        return (string)document.GetMethod("Serialize", flags | BindingFlags.Instance).Invoke(saved, null);
+    }
+
     private static void StampLegacyRetiredDefense(uint item, CombatDamageType damageType, int amount, bool converted)
     {
         RemoveMatching(item, ItemPropertyType.Defense, (int)CombatDamageType.Physical);
@@ -264,6 +402,7 @@ public static partial class MigrationEngineTests
         var parts = new List<string> { $"{GetObjectType(obj)} {GetResRef(obj)} tag={GetTag(obj)} name={GetName(obj)}" };
         if (GetObjectType(obj) == ObjectType.Item)
         {
+            parts.Add($"description={GetDescription(obj, false, true)} unidentified={GetDescription(obj, false, false)}");
             parts.Add($"base={GetBaseItemType(obj)} model={GetItemAppearance(obj, ItemAppearanceType.SimpleModel, 0)} " +
                 $"stack={GetItemStackSize(obj)} charges={GetItemCharges(obj)} value={GetGoldPieceValue(obj)}");
             var properties = new List<string>();

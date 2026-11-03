@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// <summary>The session boarding-eligibility times of the shuttle instance, by player id.</summary>
         public static Dictionary<string, DateTime> BoardingTimes => (Dictionary<string, DateTime>)Field("_boardingNotBeforeUtc");
 
+        /// <summary>The flights in the air (or being built) of the shuttle instance, by flight id.</summary>
+        public static System.Collections.IDictionary ActiveFlights => (System.Collections.IDictionary)Field("_activeFlights");
+
         /// <summary>The ticket holders of the shuttle instance, by player id.</summary>
         public static Dictionary<string, (PlanetType Origin, PlanetType Destination)> TicketHolders =>
             (Dictionary<string, (PlanetType Origin, PlanetType Destination)>)Field("_ticketHolders");

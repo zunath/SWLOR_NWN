@@ -28894,7 +28894,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - Apex Bite Warden Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Breeder's Tukata Spawn (Apex Bite line)"
           }
         },
         "MapNote": {
@@ -28957,7 +28957,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Warden Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Breeder's Shyrack Spawn (Unbreakable Beast line)"
           }
         },
         "MapNote": {
@@ -29020,7 +29020,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Warden Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Breeder's Iriaz Bull Spawn (Alpha Rhythm line)"
           }
         },
         "MapNote": {
@@ -29083,7 +29083,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29146,7 +29146,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29209,7 +29209,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29272,7 +29272,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -29285,11 +29285,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -29335,7 +29335,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -29348,11 +29348,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -29398,7 +29398,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29461,7 +29461,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -29474,11 +29474,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -29524,7 +29524,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29587,7 +29587,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29650,7 +29650,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29713,7 +29713,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -29726,11 +29726,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -29776,7 +29776,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -29789,11 +29789,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -29839,7 +29839,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -29902,7 +29902,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -29915,11 +29915,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -29965,7 +29965,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -30028,7 +30028,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -30091,7 +30091,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Young Kinrath Spawn (Capstone Adept)"
           }
         },
         "MapNote": {
@@ -30154,7 +30154,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -30167,11 +30167,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -30217,7 +30217,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -30230,11 +30230,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -30280,7 +30280,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+            "0": "Dathomir Tarn Jungle Preserve - Pen-Scarred Kinrath Spawn (Capstone Specialist)"
           }
         },
         "MapNote": {
@@ -30293,11 +30293,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE"
+          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_DEEP"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "wp_cap_dtarn"
+          "value": "wp_cdp_dtarn"
         },
         "XPosition": {
           "type": "float",
@@ -30696,6 +30696,762 @@
         "YOrientation": {
           "type": "float",
           "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Scaled Brute Spawn (Apex Bite line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_APEXBITE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_apexbite_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 129.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 98.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Scaled Brute Spawn (Apex Bite line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_APEXBITE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_apexbite_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 139.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 98.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Scaled Brute Spawn (Apex Bite line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_APEXBITE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_apexbite_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 119.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 95.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Scaled Brute Spawn (Apex Bite line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_APEXBITE_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_apexbite_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 110.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 90.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Plated Burrower Spawn (Unbreakable Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNBRBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_unbrbeast_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 89.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 129.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Plated Burrower Spawn (Unbreakable Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNBRBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_unbrbeast_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 79.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 129.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Plated Burrower Spawn (Unbreakable Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNBRBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_unbrbeast_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 90.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 110.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Plated Burrower Spawn (Unbreakable Beast line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_UNBRBEAST_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_unbrbeast_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 69.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 129.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Kinrath Spawn (Alpha Rhythm line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_alpharhy_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 114.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 119.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Kinrath Spawn (Alpha Rhythm line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_alpharhy_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 114.75
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 109.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Kinrath Spawn (Alpha Rhythm line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_alpharhy_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 104.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 108.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir Tarn Jungle Preserve - Elder Kinrath Spawn (Alpha Rhythm line)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_ALPHARHY_IC_SPAWN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_alpharhy_ic"
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 110.25
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 100.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
         }
       }
     ]

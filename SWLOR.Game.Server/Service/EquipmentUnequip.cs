@@ -1,38 +1,31 @@
-using System.Collections.Generic;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>Lets equipment owners reserve safe removal before any shared equipment hooks run.</summary>
+/// <summary>
+/// The static API of the equipment removal guards. The logic and state live in <see cref="IEquipmentUnequipService"/>;
+/// every member here forwards to the container's instance, and the event handler stays here so its name in the handler
+/// order manifest does not change.
+/// </summary>
 public static class EquipmentUnequip
 {
-    private static readonly Dictionary<string, Func<uint, uint, bool>> Guards = new(StringComparer.Ordinal);
+    private static IEquipmentUnequipService Instance => FacadeAccessor.Resolve<IEquipmentUnequipService>();
 
     public static void RegisterGuard(string key, Func<uint, uint, bool> guard)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentNullException.ThrowIfNull(guard);
-        Guards[key] = guard;
+        Instance.RegisterGuard(key, guard);
     }
 
     public static bool TryHandle(uint creature, uint item)
     {
-        foreach (var guard in Guards.Values)
-            if (guard(creature, item)) return true;
-        return false;
+        return Instance.TryHandle(creature, item);
     }
 
     [NWNEventHandler(ScriptName.OnEquipmentUnequipBefore)]
     public static void BeforeUnequip()
     {
-        var creature = OBJECT_SELF;
-        var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-        if (TryHandle(creature, item))
-        {
-            EventsPlugin.SkipEvent();
-            return;
-        }
-        ExecuteScript(ScriptName.OnItemUnequipBefore, creature);
+        Instance.BeforeUnequip();
     }
 }

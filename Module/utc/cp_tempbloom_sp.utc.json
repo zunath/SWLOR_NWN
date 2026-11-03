@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Tempest Bloom specialist in Smuggler's Moon - Fight Club Backrooms."
+    "value": "Stable Pit Fighter (Tempest Bloom line) in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Zabrak backroom fighter who has drilled the Tempest Bloom until it almost works, polishing one petal of it to a mirror shine. Faster and vainer than the adepts, he works the live pits with a twin blade and rotates with the others like a rehearsed finale."
+      "0": "A Zabrak pit fighter who has drilled his twin-blade routine until it almost works, polishing one flourish of it to a mirror shine. Faster and vainer than the brawlers, he works the live pits with a twin blade and rotates with the others like a rehearsed finale."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tempest Bloom Specialist"
+      "0": "Stable Pit Fighter"
     }
   },
   "fortbonus": {
@@ -327,7 +327,7 @@
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -393,43 +393,43 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_attacked"
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondamage"
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondeath"
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onconv"
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondisturb"
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_endcombat"
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_heartbeat"
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onblocked"
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_percept"
   },
   "ScriptRested": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_rested"
   },
   "ScriptSpawn": {
     "type": "resref",
@@ -437,11 +437,11 @@
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spellcast"
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_userdef"
   },
   "SkillList": {
     "type": "list",
@@ -646,7 +646,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 926
   },
   "SpecAbilityList": {
     "type": "list",
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 123
+          "value": 118
         }
       },
       {
@@ -732,7 +732,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 1
+    "value": 7
   },
   "willbonus": {
     "type": "short",

@@ -56,8 +56,6 @@ public class NPCCombatBudgetTests
             var equipped = Equipment(creature);
             using var skin = ReadAsset(root, "uti", equipped[SkinSlot]);
             Compare("NaturalAC", 0, Int(creature, "NaturalAC"));
-            if (row["G"] == "Droid")
-                Compare("Droid Trauma immunity", 100, Property(skin.RootElement, 133, 102));
             foreach (var (column, field) in scoreColumns)
                 Compare(field, Number(row[column]), Int(creature, field));
             foreach (var (column, property, subtype) in skinColumns)

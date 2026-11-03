@@ -2970,26 +2970,6 @@
     "ProjectPath": "design/animations/twin-pistol/ControlledBurst.swlanim"
   },
   {
-    "Name": "BlasterSlide",
-    "AnimationName": "sw_blstslide",
-    "Duration": 1.05,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-pistol/BlasterSlide.swlanim"
-  },
-  {
-    "Name": "GrappleShot",
-    "AnimationName": "sw_grapshot",
-    "Duration": 1.05,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-pistol/GrappleShot.swlanim"
-  },
-  {
     "Name": "FinalSalvo",
     "AnimationName": "sw_finsalvo",
     "Duration": 2,
@@ -3050,16 +3030,6 @@
     "ProjectPath": "design/animations/twin-pistol/AkimboStance.swlanim"
   },
   {
-    "Name": "PistolRush",
-    "AnimationName": "sw_pistrush",
-    "Duration": 1.05,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-pistol/PistolRush.swlanim"
-  },
-  {
     "Name": "CrossfireStance",
     "AnimationName": "sw_crossst",
     "Duration": 2,
@@ -3078,5 +3048,35 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/twin-pistol/TwinSuns.swlanim"
+  },
+  {
+    "Name": "LeadShot",
+    "AnimationName": "sw_blstslide",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/LeadShot.swlanim"
+  },
+  {
+    "Name": "ClosingShot",
+    "AnimationName": "sw_grapshot",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/ClosingShot.swlanim"
+  },
+  {
+    "Name": "TempoShot",
+    "AnimationName": "sw_pistrush",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/TempoShot.swlanim"
   }
 ]

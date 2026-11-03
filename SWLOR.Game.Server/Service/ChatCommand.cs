@@ -43,5 +43,23 @@ namespace SWLOR.Game.Server.Service
         {
             Instance.HandleChatMessage();
         }
+
+        /// <summary>
+        /// Runs a chat command as if the sender had typed it, including its targeting prompt.
+        /// </summary>
+        /// <param name="sender">The player or DM running the command.</param>
+        /// <param name="originalMessage">The command text, starting with a slash.</param>
+        public static void RunCommand(uint sender, string originalMessage)
+        {
+            Instance.RunCommand(sender, originalMessage);
+        }
+
+        /// <summary>
+        /// Lists the commands the sender is allowed to run, by name, with their descriptions.
+        /// </summary>
+        public static List<(string Name, string Description)> GetAvailableCommands(uint sender)
+        {
+            return Instance.GetAvailableCommands(sender);
+        }
     }
 }

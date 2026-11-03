@@ -366,6 +366,17 @@ them is not an option before facade removal (P2-Z).
 - **Wave B:** Items, Crafting, Companions, Creatures.
 - **Wave C, shared infrastructure:** Core services other than `DB` (Log, Cache, Messaging, ...), then `DB` alone with
   extra review (persistence; data format must not change).
+  **Decision (coordinator, 2026-11-03): pure utilities stay static.** A static class with no mutable static state and no
+  engine, NWNX, database or other-service calls (pure functions over their arguments and constants, e.g. `GameMath`) is a
+  utility, not a service: it is not converted, gets no interface, and stays callable statically from everywhere. Each Wave C
+  item lists which of its classes it classifies as utilities and why; a class that reads the engine or holds state is a
+  service and converts. `Random` converts (it holds the seeded generator the characterization tests rely on) and gets
+  Opus review; `Migration` (persistence) and `DB` get extra review. Suggested Wave C items: C1 `Log`, `Cache`,
+  `Authorization`, `Messaging`, `PlayerFeedback`; C2 `Communication`; C3 `Conversation`, `ConversationMenu`, `Snippet`;
+  C4 `ObjectVisibility`, `Walkmesh`, `NamedAnimation`, `NamedAnimationPlayback`, `FrameProfiler`, `BackgroundJob`;
+  C5 `Random`, `Time`; C6 `Migration`; C7 UI (`Gui`, `ExtraHotbars`); C8 `DB`. Remaining small Core classes (`GameMath`,
+  `ColorToken`, `TileMagic`, `AnimationPlayer`, `Menu`, the `Animation` and `Attribute` folders) are classified case by case
+  with the item that touches them, or in one closing item.
 - **Wave D, the hot core (last, short freeze each):** Character (`StatusEffect`, `Skill`, `Perk`, then `Stat`),
   Abilities (`Ability`), Combat (`Combat`, split by responsibility as it converts).
 - **P2-Z facade removal:** move handlers to instance classes (update manifest names in place), replace static calls in

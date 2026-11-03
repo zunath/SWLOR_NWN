@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
                 FieldNoteAcquisitionType.Store => alternate
                     ? PublishedFieldGuide
                     : LicensedResearchDatapad,
-                FieldNoteAcquisitionType.DiscoveryOnly => alternate
+                FieldNoteAcquisitionType.RareSpawnDrop => alternate
                     ? HandwrittenDiscoveryJournal
                     : HolographicObservationLog,
                 FieldNoteAcquisitionType.BossDrop => alternate

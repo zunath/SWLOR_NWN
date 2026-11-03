@@ -34,6 +34,18 @@ public class ForceAbilityAnimationTests
         {
             var type = definitions.Single(type => type.Name == entry.Id + "AbilityDefinition");
             var abilities = ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities();
+            // A shared entry also binds other skills' Force powers that reuse the motion (Espionage's Cloud Mind
+            // uses Mind Trick's), so their definitions must hold the shared ranks and nothing else.
+            foreach (var other in definitions.Where(other => other != type && !other.IsAbstract &&
+                                                             typeof(IAbilityListDefinition).IsAssignableFrom(other)))
+            {
+                var shared = ((IAbilityListDefinition)Activator.CreateInstance(other)!).BuildAbilities();
+                if (!shared.Keys.Any(entry.Feats.Contains))
+                    continue;
+                shared.Keys.Should().OnlyContain(feat => entry.Feats.Contains(feat), $"{other.Name} shares the {entry.Id} entry");
+                foreach (var (feat, ability) in shared)
+                    abilities.Add(feat, ability);
+            }
             abilities.Keys.Should().BeEquivalentTo(entry.Feats, "every real Force rank needs a catalog binding");
             var native = abilities.ToDictionary(pair => pair.Key, pair => pair.Value.AnimationType);
             var nativeImpact = abilities.ToDictionary(pair => pair.Key, pair => pair.Value.ImpactAnimationType);

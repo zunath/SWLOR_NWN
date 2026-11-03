@@ -11,7 +11,7 @@ Writes, all under the repository root:
 The unlock levels and weekly limits the server uses are in SWLOR.Game.Server/Service/CityStoreService/CityStoreCatalog.cs; keep them
 in step with the catalog (CityExclusiveItemTests checks that they match).
 
---check changes nothing and exits 1 when a file would change. --table prints the proposals as a markdown table for a pull request.
+--check changes nothing and exits 1 when a file would change. --table prints the items as a markdown table for a pull request.
 """
 import json
 import re

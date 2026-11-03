@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
     /// the seven planets with areas open to cities and one pair for player stations. They are ordinary Cookpot recipes cooked in the
     /// Kitchen minigame, with one extra requirement: the Cookpot must stand in a city on the planet (or on a station). Each takes the
     /// level, slots and stats of an existing dish or drink of the same tier, and its bill is farm crops and livestock meat.
-    /// Everything is a proposal until the owner approves it (tools/PlanetIdentity/catalog.py).
+    /// The owner approved everything here on 2026-11-02 (tools/PlanetIdentity/catalog.py).
     /// </summary>
     public class PlanetSignatureRecipes : IRecipeListDefinition
     {

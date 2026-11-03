@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.CityStoreService
     /// </summary>
     public static class CityStoreCatalog
     {
-        // PROPOSAL - NEEDS THE OWNER'S APPROVAL: the exclusive items below, with their unlock levels, weekly limits and prices.
+        // Approved by the owner on 2026-11-03: the exclusive items below, with their unlock levels, weekly limits and prices.
         // The unlock level is the store's level (the city level for City Hall, the building's for the others, and 1 for a stall).
         // The prices are the items' own value and are written by tools/CityExclusives/generate.py from tools/CityExclusives/catalog.py,
         // which also holds the names and the stats each drink copies. Comparable prices: a Cantina shot 249, the Decor stall's trinkets

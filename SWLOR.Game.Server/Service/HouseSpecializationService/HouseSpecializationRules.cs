@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service.HouseSpecializationService
         public const int ChangeIntervalDays = 30;
 
         /// <summary>
-        /// The Craftsmanship and Control a Workshop adds for its chosen skill. PROPOSED, NEEDS THE OWNER'S APPROVAL: the plan sizes it
+        /// The Craftsmanship and Control a Workshop adds for its chosen skill, approved by the owner on 2026-11-02: the plan sizes it
         /// "against crafting gear in the balance review". A full tier 5 crafting set gives 28 Control and 29 Craftsmanship (one piece
         /// gives 1 to 10), so 5 is about a sixth of it: worth having, never a replacement for gear. Change this one constant to resize it.
         /// </summary>

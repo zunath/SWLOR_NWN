@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// <summary>
 /// Shadowport and the lawful port at a city door of the Trade Exchange (Player City Revamp, "Edict catalog"): what a lawful door buys
 /// as contraband and at what price, the 15% on normal goods, the bust chance, and the bounds the space revamp's exchange contract
-/// sets on a city feature. The prices and chances are proposals the owner has yet to approve.
+/// sets on a city feature. The owner approved the prices and chances on 2026-11-02.
 /// </summary>
 public class ShadowportTests
 {

@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.CivicExchangeService
 {
     /// <summary>
     /// What the Civic Exchange sells and for how much Available XP (Player City Revamp, "Civic Exchange"). This is the one place
-    /// the stock and prices live, as data, and every number here is a proposal for the owner's review: the Plan says staff draft
+    /// the stock and prices live, as data, and the owner approved every number here on 2026-11-02: the Plan says staff draft
     /// them and players review them before release. The evidence for each number is in the pull request that added them.
     ///
     /// Stock opens with the Cantina level: tier N materials at level N, and the long buff at level 3. Cosmetic unlocks (container

@@ -6,9 +6,9 @@ namespace SWLOR.Game.Server.Service.TravelerService
     /// Every traveler (Player City Revamp, "Travelers"): who they are and the pools their weekly stock is drawn from. This
     /// file is the one place the roster's names, stories, rumors, pools and weekly limits live.
     ///
-    /// PROPOSAL - NEEDS THE OWNER'S REVIEW. Nothing in this file has been approved:
-    /// - The names, titles, stories, greetings and rumors are placeholders for lore review.
-    /// - The pools and weekly limits are proposals. The prices are the items' own: a traveler adds no markup of its own, and the
+    /// The owner approved this file on 2026-11-02, as written:
+    /// - The names, titles, stories, greetings and rumors.
+    /// - The pools and weekly limits. The prices are the items' own: a traveler adds no markup of its own, and the
     ///   host city's Sales tax is added on top.
     /// - The looks are existing script-free Veles colonist templates of playable species, as the townsfolk use.
     /// - The fashion merchant carries existing cosmetic outfits only. Every plain outfit in the module except the Traveler's
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service.TravelerService
             return builder.Build();
         }
 
-        // PROPOSAL: name, story and greeting are placeholders. The limits fall with the tier, since a corral raises animals
+        // Approved 2026-11-02: name, story and greeting as written. The limits fall with the tier, since a corral raises animals
         // of the tier its owner's Crop Management reaches, and a Thune is the rarest.
         private static void BeastTrader(TravelerBuilder builder)
         {
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service.TravelerService
                 .AddItem("livestock_thune", 1);
         }
 
-        // PROPOSAL: a few high-tier seeds and a rare find or two each week. The seeds are the 16 of tiers 3 to 5, and the rare
+        // Approved 2026-11-02: a few high-tier seeds and a rare find or two each week. The seeds are the 16 of tiers 3 to 5, and the rare
         // materials are the ones harvesting only gives as rare finds.
         private static void Prospector(TravelerBuilder builder)
         {
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service.TravelerService
                 .AddItem("ore_arda", 4);
         }
 
-        // PROPOSAL: the pool is existing cosmetic outfits (no stats). New exclusive fashion items are a content follow-up.
+        // Approved 2026-11-02: the pool is existing cosmetic outfits (no stats). New exclusive fashion items are a content follow-up.
         private static void FashionMerchant(TravelerBuilder builder)
         {
             builder.Create(TravelerType.FashionMerchant)
@@ -128,9 +128,9 @@ namespace SWLOR.Game.Server.Service.TravelerService
                 .AddItem("musicianoutfit1", 3);
         }
 
-        // PROPOSAL: the broker sells nothing. The owner took the area maps out of the pool because they made map drops less
+        // Approved 2026-11-02: the broker sells nothing. The owner took the area maps out of the pool because they made map drops less
         // rare, so the broker offers rumors, the whereabouts of the other travelers and the contract board. The rumors are
-        // placeholder lines that name no established place or person.
+        // general lines that name no established place or person.
         private static void InformationBroker(TravelerBuilder builder)
         {
             builder.Create(TravelerType.InformationBroker)

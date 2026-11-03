@@ -4,11 +4,11 @@ using System.Linq;
 namespace SWLOR.Game.Server.Service.CityProjectService
 {
     /// <summary>
-    /// The materials each City Project asks anyone to donate (Player City Revamp, "City Projects"). PROPOSED, NEEDS THE OWNER'S
-    /// APPROVAL: the plan says they are "drafted with the stock lists and approved before release". This table is the only place
+    /// The materials each City Project asks anyone to donate (Player City Revamp, "City Projects"). The owner approved them on
+    /// 2026-11-02, as the plan says they are "drafted with the stock lists and approved before release". This table is the only place
     /// they live; edit a row to change a project.
     /// <para>
-    /// How the proposal was sized. The credits stay what facility upgrades cost today, 50,000 times the level built. The materials
+    /// How the materials were sized. The credits stay what facility upgrades cost today, 50,000 times the level built. The materials
     /// follow that curve from the building's own Fabrication recipe (<c>StructureRecipes</c>): a Medical Center and a Starport are
     /// 4 Reinforced Construction Parts and 2 Reinforced Power Supply Units, a Cantina 2 and 1, a Jump Beacon 4 and 3. Building the
     /// next level asks for that recipe times level / 2, rounded up, so level 2 is one building's worth and level 5 is two and a

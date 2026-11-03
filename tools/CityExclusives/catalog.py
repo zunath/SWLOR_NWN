@@ -1,6 +1,6 @@
 """City-exclusive store items for the Player City Revamp (slice 4e): the one place the names, descriptions, copied stats and prices live.
 
-EVERY NAME, DESCRIPTION, PRICE, WEEKLY LIMIT AND UNLOCK LEVEL BELOW IS A PROPOSAL awaiting the owner's approval. Edit this file, run
+The owner approved every name, description, price, weekly limit and unlock level below on 2026-11-03. Edit this file, run
 `python tools/CityExclusives/generate.py`, and keep `CityStoreCatalog.cs` (which holds the unlock levels and weekly limits the server uses)
 in step; `CityExclusiveItemTests` fails when the two differ.
 

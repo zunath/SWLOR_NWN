@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
     /// Planet and station identity decor (Player City Revamp, "Planet identity"): four Fabrication furniture pieces for each of the
     /// seven planets with areas open to cities and one set for player stations. Each is crafted only at a crafting station inside a
     /// city on its planet (or on a station), and takes the category, level, enhancement slots and bill of an existing furniture recipe.
-    /// Everything is a proposal until the owner approves it (tools/PlanetIdentity/catalog.py).
+    /// The owner approved everything here on 2026-11-02 (tools/PlanetIdentity/catalog.py).
     /// </summary>
     public class PlanetDecorRecipes : IRecipeListDefinition
     {

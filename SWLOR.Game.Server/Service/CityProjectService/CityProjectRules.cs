@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.CityProjectService
         public const int CreditsPerLevel = 50000;
 
         /// <summary>
-        /// The credits Home Ground costs. PROPOSED, NEEDS THE OWNER'S APPROVAL: the plan sets no price. 150,000 is what a level 3 facility
+        /// The credits Home Ground costs, approved by the owner on 2026-11-02: the plan sets no price. 150,000 is what a level 3 facility
         /// upgrade costs; Home Ground helps every citizen's gathering and every garden, so it is priced with the middle upgrades.
         /// </summary>
         public const long HomeGroundCredits = 150000;

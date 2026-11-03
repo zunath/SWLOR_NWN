@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
 /// The city-exclusive store items (slice 4e): the Cantina house drinks, the market stall dish and the ten decor structures
-/// (banners, crests and the like). The expected table below pins the proposal the owner reviews, so a change to a name, price,
+/// (banners, crests and the like). The expected table below pins what the owner approved on 2026-11-03, so a change to a name, price,
 /// store, unlock level or weekly limit shows up as a failing test here, next to the generator that writes the blueprints
 /// (tools/CityExclusives/catalog.py) and the catalog the server reads (CityStoreCatalog).
 /// </summary>

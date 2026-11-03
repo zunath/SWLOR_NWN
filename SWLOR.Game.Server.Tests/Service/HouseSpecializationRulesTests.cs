@@ -438,7 +438,7 @@ public class HouseSpecializationRulesTests
     }
 
     [Test]
-    public void TheWorkshopBonus_IsOneConstant_ProposedAtFive()
+    public void TheWorkshopBonus_IsOneConstant_SetAtFive()
     {
         HouseSpecializationRules.WorkshopBonus.Should().Be(5);
     }

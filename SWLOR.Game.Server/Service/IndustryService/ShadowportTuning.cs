@@ -1,7 +1,7 @@
 namespace SWLOR.Game.Server.Service.IndustryService
 {
     /// <summary>
-    /// Shadowport prices and bust chances. These are proposals awaiting the owner's approval, so every number sits here and nowhere
+    /// Shadowport prices and bust chances, approved by the owner on 2026-11-02. Every number sits here and nowhere
     /// else. A price share is a share of the lowest price a black market pays for the good; a bust multiple multiplies the chance
     /// one customs patrol scan would find the same cargo.
     /// </summary>

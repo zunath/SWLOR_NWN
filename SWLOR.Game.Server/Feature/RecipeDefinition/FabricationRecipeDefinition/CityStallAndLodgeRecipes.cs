@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
     /// other city structures (<see cref="CityStructureRecipes"/>), each is built at the level and from the parts of the existing
     /// structure recipe it resembles, without the power unit, since a stall and a tent have no electrics.
     ///
-    /// PROPOSAL - NEEDS THE OWNER'S APPROVAL: the levels and bills below.
+    /// The owner approved the levels and bills below on 2026-11-03.
     /// </summary>
     public class CityStallAndLodgeRecipes : IRecipeListDefinition
     {

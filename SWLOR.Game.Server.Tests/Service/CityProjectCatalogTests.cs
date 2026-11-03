@@ -7,8 +7,8 @@ using SWLOR.Game.Server.Service.CraftService;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// The materials each City Project asks for. They are a proposal the owner approves, so these tests pin how they were derived from the
-/// buildings' own Fabrication recipes: change a row on purpose and the test says what the proposal no longer follows.
+/// The materials each City Project asks for. The owner approved them on 2026-11-02, so these tests pin how they were derived from the
+/// buildings' own Fabrication recipes: change a row on purpose and the test says what the approved table no longer follows.
 /// </summary>
 public class CityProjectCatalogTests
 {

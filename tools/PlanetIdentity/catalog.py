@@ -1,6 +1,6 @@
 """Planet identity content for the Player City Revamp (slice 5g): the one place the names, descriptions and copied numbers live.
 
-EVERY NAME AND DESCRIPTION BELOW IS A PROPOSAL for the owner's lore review, and so is every recipe level, bill and tier. Edit this
+The owner approved every name and description below, and every recipe level, bill and tier, on 2026-11-02. Edit this
 file, run `python tools/PlanetIdentity/generate.py`, then the steps in generate.py's docstring; nothing here is hand-copied elsewhere.
 
 Each of the seven planets with areas open to cities, and the player stations, has an identity set:

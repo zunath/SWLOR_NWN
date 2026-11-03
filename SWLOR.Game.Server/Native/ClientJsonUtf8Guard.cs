@@ -10,16 +10,13 @@ using SWLOR.Game.Server.Service.LogService;
 namespace SWLOR.Game.Server.Native
 {
     /// <summary>
-    /// Repairs invalid UTF-8 in the JSON that clients send with NUI events and bind updates. The engine decodes
-    /// that JSON without checking its text, then serializes every received payload for a debug log line with
-    /// strict UTF-8 handling. A string holding a single invalid byte made the serializer throw, nothing caught the
-    /// exception, and the server aborted.
+    /// Makes the JSON that clients send with NUI events and bind updates safe for the engine to decode and log.
     /// </summary>
     public static unsafe class ClientJsonUtf8Guard
     {
         private const string ReadJsonSymbol = "_ZN10CNWMessage8ReadJSONB5cxx11Ev";
 
-        // CNWMessage read state, as CNWMessage::ReadINT uses it: the byte buffer, its size and the read offset.
+        // CNWMessage read state, as CNWMessage::ReadINT uses it.
         private const int ReadBufferOffset = 0x38;
         private const int ReadBufferSizeOffset = 0x40;
         private const int ReadBufferPositionOffset = 0x44;
@@ -27,8 +24,7 @@ namespace SWLOR.Game.Server.Native
         // No UBJSON value starts with a zero byte, so the engine's reader rejects data that does.
         private const byte UnreadableMarker = 0;
 
-        // nlohmann::json (libstdc++): a type byte, then an 8-byte value at offset 8. Objects point at a std::map,
-        // arrays at a std::vector of json, strings at a std::string (data pointer, then length).
+        // nlohmann::json: a type byte, then its value at +8. Strings are std::string (data, then length).
         private const byte JsonObject = 1;
         private const byte JsonArray = 2;
         private const byte JsonString = 3;
@@ -37,17 +33,22 @@ namespace SWLOR.Game.Server.Native
         private const int VectorEndOffset = 8;
         private const int StringLengthOffset = 8;
 
-        // std::map: the empty comparator, then the tree header (color, parent = root, left, right), then the count.
-        // Each node holds color, parent, left and right, then the key std::string and its json value.
+        // libstdc++ std::map: root node at +16; each node holds left +16, right +24 and its json value at +64.
         private const int MapRootOffset = 16;
         private const int NodeLeftOffset = 16;
         private const int NodeRightOffset = 24;
         private const int NodeValueOffset = 64;
 
+        private static readonly TimeSpan ReportDelay = TimeSpan.FromSeconds(10);
+        private static readonly Dictionary<uint, (string Account, uint Player, int Replaced, int Rejected)> PendingReports = new();
+        private static bool _reportScheduled;
         private static FunctionHook* _readJsonHook;
 
-        /// <summary>The total number of invalid bytes replaced since the module loaded.</summary>
+        /// <summary>The number of invalid UTF-8 bytes replaced since the module loaded.</summary>
         public static long ReplacedByteCount { get; private set; }
+
+        /// <summary>The number of client JSON payloads made unreadable since the module loaded.</summary>
+        public static long RejectedPayloadCount { get; private set; }
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
@@ -65,13 +66,15 @@ namespace SWLOR.Game.Server.Native
         private static void* ReadJson(void* result, void* message)
         {
             var replaced = 0;
+            bool rejected;
             try
             {
-                // Repair the encoded text first, so every object key is valid before the engine sorts it into a map.
-                replaced += RepairPendingUbjson((byte*)message);
+                rejected = !RepairPendingUbjson((byte*)message, out replaced);
             }
             catch (Exception exception)
             {
+                rejected = true;
+                MakePendingUbjsonUnreadable((byte*)message);
                 Log.WriteError(exception, "Could not check client UBJSON for invalid UTF-8");
             }
 
@@ -79,16 +82,10 @@ namespace SWLOR.Game.Server.Native
             var json = original(result, message);
             try
             {
-                // A string value left invalid by any reader difference can still be repaired safely in place.
+                // A rejected payload decodes to the engine's error text, so string values are still checked.
                 replaced += ReplaceInvalidStringValues((byte*)json);
-                if (replaced > 0)
-                {
-                    ReplacedByteCount += replaced;
-                    var playerId = CNWMessage.FromPointer((IntPtr)message).m_dwPlayerID;
-                    var count = replaced;
-                    // Native hooks only read engine state; look the player up once the frame continues.
-                    Scheduler.Schedule(() => LogReplacement(playerId, count), TimeSpan.Zero);
-                }
+                if (replaced > 0 || rejected)
+                    Record(CNWMessage.FromPointer((IntPtr)message).m_dwPlayerID, replaced, rejected);
             }
             catch (Exception exception)
             {
@@ -99,42 +96,79 @@ namespace SWLOR.Game.Server.Native
         }
 
         /// <summary>
-        /// Repairs the UBJSON that ReadJSON is about to decode: a 4-byte length, then that many bytes, at the read
-        /// offset (after a type byte when the engine runs without multiplayer). Data the walk cannot read to the end
-        /// is made unreadable instead: its first marker becomes an invalid one, so the engine discards the whole
-        /// value rather than decode strings the walk never reached. The length is kept, so the message stays aligned.
+        /// Repairs the UBJSON that ReadJSON is about to decode, or makes it unreadable. Returns false when rejected.
         /// </summary>
-        private static int RepairPendingUbjson(byte* message)
+        private static bool RepairPendingUbjson(byte* message, out int replaced)
         {
-            var buffer = *(byte**)(message + ReadBufferOffset);
-            var size = (long)*(uint*)(message + ReadBufferSizeOffset);
-            var position = (long)*(uint*)(message + ReadBufferPositionOffset);
-            if (buffer == null)
-                return 0;
+            replaced = 0;
+            if (!TryGetPendingUbjson(message, out var lengthField, out var ubjson, out var overruns))
+                return true;
 
-            if (NWNXLib.g_pAppManager.m_bMultiplayerEnabled == 0)
-                position++;
-            if (position + sizeof(uint) > size)
-                return 0;
+            // The engine would read past the data, so it reads nothing instead.
+            if (overruns)
+            {
+                *(uint*)lengthField = 0;
+                return false;
+            }
 
-            var length = (long)*(uint*)(buffer + position);
-            var start = position + sizeof(uint);
-            if (length == 0 || length > size - start || length > int.MaxValue)
-                return 0;
+            replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete);
+            if (complete)
+                return true;
 
-            var ubjson = new Span<byte>(buffer + start, (int)length);
-            var replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete);
-            if (!complete)
+            replaced = 0;
+            ubjson[0] = UnreadableMarker;
+            return false;
+        }
+
+        private static void MakePendingUbjsonUnreadable(byte* message)
+        {
+            if (!TryGetPendingUbjson(message, out var lengthField, out var ubjson, out var overruns))
+                return;
+
+            if (overruns)
+                *(uint*)lengthField = 0;
+            else
                 ubjson[0] = UnreadableMarker;
-            return replaced;
         }
 
         /// <summary>
-        /// Replaces invalid UTF-8 in every string value of a decoded json, including nested ones. Object keys are
-        /// left alone: changing them would break the ordering of the map that holds them.
+        /// Finds the 4-byte length and the UBJSON bytes at the read position. False when there is nothing to check.
         /// </summary>
-        /// <param name="root">The json to repair.</param>
-        /// <returns>The number of bytes replaced.</returns>
+        private static bool TryGetPendingUbjson(byte* message, out byte* lengthField, out Span<byte> ubjson, out bool overruns)
+        {
+            lengthField = null;
+            ubjson = default;
+            overruns = false;
+
+            // Without multiplayer the engine also reads type bytes here; nwserver always runs multiplayer.
+            if (NWNXLib.g_pAppManager.m_bMultiplayerEnabled == 0)
+                return false;
+
+            var buffer = *(byte**)(message + ReadBufferOffset);
+            var size = (long)*(uint*)(message + ReadBufferSizeOffset);
+            var position = (long)*(uint*)(message + ReadBufferPositionOffset);
+            if (buffer == null || position + sizeof(uint) > size)
+                return false;
+
+            lengthField = buffer + position;
+            var length = (long)*(uint*)lengthField;
+            var start = position + sizeof(uint);
+            if (length > size - start)
+            {
+                overruns = true;
+                return true;
+            }
+
+            if (length == 0)
+                return false;
+
+            ubjson = new Span<byte>(buffer + start, (int)length);
+            return true;
+        }
+
+        /// <summary>
+        /// Replaces invalid UTF-8 in every string value of a decoded json. Keys are left alone, keeping the map sorted.
+        /// </summary>
         private static int ReplaceInvalidStringValues(byte* root)
         {
             var rootType = root[0];
@@ -195,14 +229,43 @@ namespace SWLOR.Game.Server.Native
             return Utf8TextRepair.ReplaceInvalidBytes(new Span<byte>(data, (int)length));
         }
 
-        private static void LogReplacement(uint playerId, int replaced)
+        /// <summary>
+        /// Counts a repair or rejection and adds it to the sender's next report, written at most once per delay.
+        /// </summary>
+        private static void Record(uint playerId, int replaced, bool rejected)
         {
-            var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByPlayerId(playerId);
-            var player = client?.m_oidPCObject ?? OBJECT_INVALID;
-            var sender = GetIsObjectValid(player)
-                ? $"{PlayerName.GetAuditName(player)} - {GetPCPlayerName(player)} - {GetPCPublicCDKey(player)}"
-                : $"client {playerId}";
-            Log.Write(LogGroup.Server, $"Replaced {replaced} invalid UTF-8 byte(s) in NUI data sent by {sender}.");
+            ReplacedByteCount += replaced;
+            if (rejected)
+                RejectedPayloadCount++;
+
+            if (!PendingReports.TryGetValue(playerId, out var report))
+            {
+                // Read the sender now: the client may leave before the report is written.
+                var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByPlayerId(playerId);
+                report = (client?.GetPlayerName()?.ToString() ?? $"client {playerId}", client?.m_oidPCObject ?? OBJECT_INVALID, 0, 0);
+            }
+
+            PendingReports[playerId] = (report.Account, report.Player, report.Replaced + replaced, report.Rejected + (rejected ? 1 : 0));
+            if (_reportScheduled)
+                return;
+
+            _reportScheduled = true;
+            Scheduler.Schedule(WriteReports, ReportDelay);
+        }
+
+        private static void WriteReports()
+        {
+            _reportScheduled = false;
+            foreach (var (_, report) in PendingReports)
+            {
+                var character = GetIsObjectValid(report.Player)
+                    ? $"{PlayerName.GetAuditName(report.Player)} - {GetPCPublicCDKey(report.Player)}"
+                    : "no character";
+                Log.Write(LogGroup.Server, $"Client NUI data from {report.Account} ({character}): " +
+                                           $"replaced {report.Replaced} invalid UTF-8 byte(s), rejected {report.Rejected} unreadable payload(s).");
+            }
+
+            PendingReports.Clear();
         }
     }
 }

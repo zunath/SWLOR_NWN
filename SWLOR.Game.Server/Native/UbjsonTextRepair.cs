@@ -3,28 +3,30 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.Native
 {
     /// <summary>
-    /// Repairs invalid UTF-8 in every string value and object key of encoded UBJSON, in place and without
-    /// changing any length, before the engine decodes it. The walk follows the engine's nlohmann UBJSON reader
-    /// marker for marker, so it visits exactly the bytes that reader turns into strings. Number bytes are never
-    /// touched. The walk keeps its own stack, so nesting depth does not limit it.
+    /// Repairs invalid UTF-8 in the strings and object keys of encoded UBJSON in place, following the engine's
+    /// nlohmann UBJSON reader marker for marker, and flags data the engine could not decode safely.
     /// </summary>
     public static class UbjsonTextRepair
     {
-        private const int EndOfData = -1;
+        /// <summary>The most containers open at once. The engine's reader recurses once per level.</summary>
+        public const int MaxDepth = 256;
 
-        // Container state kept on the walk's stack.
+        /// <summary>The largest count for a typed array of values that hold no bytes (true, false, null).</summary>
+        public const int MaxEmptyElements = 4096;
+
+        private const int EndOfData = -1;
+        private const string NumberText = "0123456789+-.eE";
+
         private const int IsObject = 1;
         private const int IsUnsized = 2;
         private const int ChildStarted = 4;
         private const int TypeShift = 8;
 
         /// <summary>
-        /// Repairs the strings of one encoded UBJSON value.
+        /// Repairs the strings of one encoded UBJSON value and reports whether the engine can decode it safely.
         /// </summary>
         /// <param name="ubjson">The encoded value, repaired in place.</param>
-        /// <param name="complete">
-        /// Whether the whole value was read. False means the data is malformed; the engine's reader rejects it too.
-        /// </param>
+        /// <param name="complete">False when the data is malformed or exceeds a safety limit.</param>
         /// <returns>The number of bytes replaced.</returns>
         public static int RepairStrings(Span<byte> ubjson, out bool complete)
         {
@@ -72,7 +74,6 @@ namespace SWLOR.Game.Server.Native
                 }
                 else
                 {
-                    // Typed arrays of values that hold no bytes (including the 'N' type) need no walk.
                     if (remaining[top] == 0 || (!isObject && type != 0 && !HoldsBytes(type)))
                     {
                         Pop(remaining, states);
@@ -121,14 +122,17 @@ namespace SWLOR.Game.Server.Native
                 case 'D':
                     return Skip(data, ref position, ref current, 8);
                 case 'H':
-                    // High-precision numbers are read as number text and never stored as strings.
                     return ReadSize(data, ref position, ref current, out var digits) &&
-                           Skip(data, ref position, ref current, digits);
+                           SkipNumberText(data, ref position, ref current, digits);
                 case 'S':
                     return ReadString(data, ref position, ref current, true, ref replaced);
                 case '[':
                 case '{':
-                    if (!ReadSizeAndType(data, ref position, ref current, out var count, out var type))
+                    if (remaining.Count >= MaxDepth ||
+                        !ReadSizeAndType(data, ref position, ref current, out var count, out var type))
+                        return false;
+                    // The engine stores every element of such an array even though the data holds none of them.
+                    if (marker == '[' && type != 'N' && !HoldsBytes(type) && count > MaxEmptyElements)
                         return false;
                     remaining.Add(count);
                     states.Add((marker == '{' ? IsObject : 0) | (count < 0 ? IsUnsized : 0) | (type << TypeShift));
@@ -144,8 +148,7 @@ namespace SWLOR.Game.Server.Native
             states.RemoveAt(states.Count - 1);
         }
 
-        // An optional "$type" (which requires "#") and an optional "#count". A count of -1 means unsized; the
-        // following marker is then left in current.
+        // An optional "$type" (which requires "#") and an optional "#count"; -1 means unsized.
         private static bool ReadSizeAndType(Span<byte> data, ref int position, ref int current, out long count, out int type)
         {
             count = -1;
@@ -167,16 +170,15 @@ namespace SWLOR.Game.Server.Native
 
         private static bool ReadSize(Span<byte> data, ref int position, ref int current, out long size)
         {
-            // A negative size counts as a huge unsigned size in the reader; it runs out of data either way.
             if (!ReadLength(data, ref position, ref current, GetIgnoringNoOp(data, ref position, ref current), out size))
                 return false;
+            // The reader treats a negative size as a huge unsigned one.
             if (size < 0)
                 size = long.MaxValue;
             return true;
         }
 
-        // A string is a length (a 'U', 'i', 'I', 'l' or 'L' number) followed by that many bytes. Object keys omit
-        // the 'S' marker; an unsized object's key reuses the marker already read.
+        // A string is a length number then that many bytes; object keys omit the 'S' marker.
         private static bool ReadString(Span<byte> data, ref int position, ref int current, bool readMarker, ref int replaced)
         {
             if (readMarker)
@@ -245,6 +247,21 @@ namespace SWLOR.Game.Server.Native
             }
 
             return true;
+        }
+
+        // The engine quotes invalid high-precision text in an error message, so only number characters are safe.
+        private static bool SkipNumberText(Span<byte> data, ref int position, ref int current, long count)
+        {
+            if (count < 0 || count > data.Length - position)
+                return false;
+
+            foreach (var character in data.Slice(position, (int)count))
+            {
+                if (NumberText.IndexOf((char)character) < 0)
+                    return false;
+            }
+
+            return Skip(data, ref position, ref current, count);
         }
 
         private static bool HoldsBytes(int type)

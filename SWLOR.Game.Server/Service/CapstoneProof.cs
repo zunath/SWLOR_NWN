@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service
 
         private const string EnemyProofPrefix = "CAPSTONE_PROOF_";
         private const string SupportProofPrefix = "CAPSTONE_SUPPORT_";
+        private const string OwnedBeastHitPrefix = "OWNED_BEAST_HIT_";
 
         private static readonly Dictionary<string, CapstoneProofDefinition> _proofs = new();
         private static readonly Dictionary<Type, List<CapstoneProofDefinition>> _byEnemyStatus = new();
@@ -125,9 +126,19 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(player) || !IsEnemy(player, target))
                 return;
 
+            SetLocalInt(target, OwnedBeastHitKey(player), 1);
             foreach (var proof in _proofs.Values.Where(proof => proof.CountsOwnedBeastDamage))
                 MarkEnemy(player, target, proof);
         }
+
+        /// <summary>
+        /// Whether a beast owned by this player hit the enemy with a normal attack or damaging ability, for quests
+        /// outside the capstone lines that ask the player to fight alongside their beast.
+        /// </summary>
+        public static bool HasOwnedBeastHit(uint player, uint enemy) =>
+            GetLocalInt(enemy, OwnedBeastHitKey(player)) == 1;
+
+        private static string OwnedBeastHitKey(uint player) => OwnedBeastHitPrefix + GetObjectUUID(player);
 
         /// <summary>
         /// Whether the player proved the mechanic on this enemy, or supported their party recently enough for a

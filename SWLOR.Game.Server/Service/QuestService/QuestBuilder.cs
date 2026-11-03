@@ -357,6 +357,18 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Adds a kill objective that counts only enemies a beast owned by the player hit before they died.
+        /// </summary>
+        /// <param name="group">The NPC group to hunt.</param>
+        /// <param name="amount">The number of kills needed.</param>
+        public QuestBuilder AddBeastAssistedKillObjective(NPCGroupType group, int amount)
+        {
+            _activeState.AddObjective(new BeastAssistedKillObjective(group, amount));
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a collect item objective to this quest state.
         /// </summary>
         /// <param name="resref">The resref of the required item.</param>

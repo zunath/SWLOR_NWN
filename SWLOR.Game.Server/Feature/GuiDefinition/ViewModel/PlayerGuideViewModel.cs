@@ -927,7 +927,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Taming",
                             "Tame requires the Tame perk, no active beast, a valid creature target, and open stable capacity. Your Tame rank controls the highest creature level you can tame. Chance starts at 40 percent, changes by 3 percentage points for each Beast Mastery rank above or below the creature's level, gains 3 points per Social, and is capped at 75 percent. Failure makes the creature hostile toward you."),
                         new ArticleBlock("Stable Capacity",
-                            "You can keep 1 beast plus 1 more for each Stabling perk rank. The Stables window shows your count, marks the active beast in green, and lets you make a beast active or inactive. A beast and a droid both use the single active henchman-companion slot, so they cannot be active together."),
+                            "You can keep 1 beast plus 1 more for each Stabling perk rank. At Beast Mastery 50, Dorra Vesk at the Anchorhead stables on Tatooine offers a two-part quest line; each part you complete adds 1 more, for up to 8 beasts with all five Stabling ranks. The Stables window shows your count, marks the active beast in green, and lets you make a beast active or inactive. A beast and a droid both use the single active henchman-companion slot, so they cannot be active together."),
                         new ArticleBlock("Beast XP and SP",
                             "Beasts gain XP, level up, and earn their own unallocated SP. Tame rank limits how far a beast can level, and beast level cannot exceed 50."),
                         new ArticleBlock("Beast Perks",
@@ -944,7 +944,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new QuestionAnswer("Why can't I tame this creature?", "You may already have an active beast, lack stable capacity, lack Tame rank, or the creature may not be tameable."),
-                        new QuestionAnswer("How many beasts can I keep?", "One beast plus one additional beast for each Stabling perk rank."),
+                        new QuestionAnswer("How many beasts can I keep?", "One beast plus one additional beast for each Stabling perk rank, plus one for each part of Dorra Vesk's two-part quest line at the Anchorhead stables on Tatooine (Beast Mastery 50 required). The maximum is eight."),
                         new QuestionAnswer("How do beast perks work?", "They spend the beast's SP, not yours, and use the beast's level and role."),
                         new QuestionAnswer("How do I revive my beast?", "Use Revive Beast when your active beast is unconscious and no other companion is active.")
                     },

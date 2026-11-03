@@ -105,6 +105,7 @@ public class HutlarDroidFoundryPlacementTests
             var git = Load("git", resref);
             Value(area, "Name").GetProperty("0").GetString().Should().Be(name);
             ((int)Number(area, "Flags") & 3).Should().Be(3, $"{resref} is an interior, underground floor that weather must not reach");
+            Number(area, "DayNightCycle").Should().Be(0, $"{resref} is underground, so its lighting must not follow the sky's day/night cycle");
             areaList.Count(a => Text(a, "Area_Name") == resref).Should().Be(1);
             folder.GetProperty("members").EnumerateArray().Select(m => m.GetString()).Should().Contain(resref);
             Local(git, "PLANET_TYPE_ID")!.Value.GetInt32().Should().Be(8);

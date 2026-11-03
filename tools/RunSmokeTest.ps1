@@ -41,7 +41,13 @@ param(
     [string]$Module,
     [string]$HakDir,
     [string]$TlkDir,
-    [string]$ClientInstall
+    [string]$ClientInstall,
+    # Seconds to wait for the module to load (default 900); raise on a busy machine.
+    [double]$ServerTimeout,
+    # Lifetime limit of the server and client in minutes (default 120).
+    [double]$MaxMinutes,
+    # Seconds the client gets to connect (default 300); the character gets twice that to enter.
+    [double]$ClientTimeout
 )
 
 Set-StrictMode -Version Latest
@@ -74,6 +80,9 @@ foreach ($pair in @(
         @("--tlk-dir", $TlkDir), @("--client-install", $ClientInstall))) {
     if ($pair[1]) { $arguments += $pair }
 }
+if ($ServerTimeout -gt 0) { $arguments += @("--server-timeout", $ServerTimeout) }
+if ($MaxMinutes -gt 0) { $arguments += @("--max-minutes", $MaxMinutes) }
+if ($ClientTimeout -gt 0) { $arguments += @("--client-timeout", $ClientTimeout) }
 
 # The key reaches the child process through its environment, never its command line.
 $previousKey = $env:SWLOR_LIVE_PUBLIC_CDKEY

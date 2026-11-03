@@ -984,7 +984,7 @@ def seed_player(stack: Stack, uuid: str) -> None:
     log(f'Player record {uuid} ' + ('seeded' if reply == 'OK' else 'already existed'))
 
 
-def start_client(stack: Stack, cdkey: Path) -> None:
+def start_client(stack: Stack, cdkey: Path, connect_timeout: float = 300) -> None:
     target = stack.profile / 'cdkey.ini'
     target.unlink(missing_ok=True)
     # Create the copy owner-only before writing the key into it.
@@ -998,7 +998,7 @@ def start_client(stack: Stack, cdkey: Path) -> None:
     stack.save()
     stack.ui('wait-window', '180', timeout=240)
     log('Client window is up')
-    verify_public_cdkey(stack)
+    verify_public_cdkey(stack, connect_timeout)
 
 
 def verify_public_cdkey(stack: Stack, timeout: float = 300) -> None:

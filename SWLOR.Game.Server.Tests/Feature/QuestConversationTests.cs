@@ -39,9 +39,9 @@ public sealed partial class QuestConversationTests
         using (_facades.Install())
         {
             Guild.LoadData();
+            NPCGroup.CacheData();
         }
 
-        NPCGroup.CacheData();
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module", "uti")))
             directory = directory.Parent;

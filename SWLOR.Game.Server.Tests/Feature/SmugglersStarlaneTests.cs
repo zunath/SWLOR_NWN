@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,13 +15,20 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class SmugglersStarlaneTests
 {
     private object _originalItemNames = null!;
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
     private static PropertyInfo ItemNameCache => typeof(Cache)
         .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
 
     [OneTimeSetUp]
     public void LoadItemNamesWithoutAnEngine()
     {
-        NPCGroup.CacheData();
+        _facades = new FacadeContainer();
+        using (_facades.Install())
+        {
+            NPCGroup.CacheData();
+        }
+
         _originalItemNames = ItemNameCache.GetValue(null)!;
         var names = Directory.EnumerateFiles(Path.Combine(Root, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
@@ -29,7 +37,17 @@ public class SmugglersStarlaneTests
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames()
+    {
+        ItemNameCache.SetValue(null, _originalItemNames);
+        _facades.Dispose();
+    }
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     private static string Root
     {

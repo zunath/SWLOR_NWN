@@ -71,6 +71,8 @@ public static class AbilityAnimationEquipment
         {
             AnimationEquipmentRequirement.Unrestricted => true,
             AnimationEquipmentRequirement.OneHanded => mainHand == AnimationWeaponGrip.OneHanded && offHand == AnimationWeaponGrip.Empty,
+            AnimationEquipmentRequirement.OneHandedWithOffHand => mainHand == AnimationWeaponGrip.OneHanded &&
+                offHand is AnimationWeaponGrip.Empty or AnimationWeaponGrip.OneHanded or AnimationWeaponGrip.Shield,
             AnimationEquipmentRequirement.WeaponAndShield => mainHand == AnimationWeaponGrip.OneHanded && offHand == AnimationWeaponGrip.Shield,
             AnimationEquipmentRequirement.TwoHanded => mainHand == AnimationWeaponGrip.TwoHanded && offHand == AnimationWeaponGrip.Empty,
             AnimationEquipmentRequirement.Polearm => mainHand == AnimationWeaponGrip.Polearm && offHand == AnimationWeaponGrip.Empty,
@@ -78,6 +80,8 @@ public static class AbilityAnimationEquipment
             AnimationEquipmentRequirement.Unarmed => mainHand is AnimationWeaponGrip.Empty or AnimationWeaponGrip.Unarmed &&
                 offHand is AnimationWeaponGrip.Empty or AnimationWeaponGrip.Unarmed,
             AnimationEquipmentRequirement.Pistol => mainHand == AnimationWeaponGrip.Pistol && offHand == AnimationWeaponGrip.Empty,
+            AnimationEquipmentRequirement.PistolWithOffHand => mainHand == AnimationWeaponGrip.Pistol &&
+                offHand is AnimationWeaponGrip.Empty or AnimationWeaponGrip.Shield or AnimationWeaponGrip.CompanionPistol,
             AnimationEquipmentRequirement.Rifle => mainHand == AnimationWeaponGrip.Rifle && offHand == AnimationWeaponGrip.Empty,
             AnimationEquipmentRequirement.Throwing => mainHand == AnimationWeaponGrip.Throwing && offHand == AnimationWeaponGrip.Empty,
             AnimationEquipmentRequirement.TwinPistol => mainHand == AnimationWeaponGrip.Pistol && offHand == AnimationWeaponGrip.CompanionPistol,

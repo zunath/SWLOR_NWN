@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Unbreakable Beast specialist in Dathomir - Tarn Jungle Preserve."
+    "value": "Pen-Scarred Plated Burrower (Unbreakable Beast line) in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -147,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unbreakable Beast Specialist"
+      "0": "Pen-Scarred Plated Burrower"
     }
   },
   "fortbonus": {
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 243
+          "value": 238
         }
       },
       {

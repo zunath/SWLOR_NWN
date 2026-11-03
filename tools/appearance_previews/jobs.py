@@ -18,6 +18,15 @@ ARMOR_STEMS = {
 
 
 CLOAK_ATLAS_PREFIX = "cloaktint#"
+BODY_STEMS = {
+    "Torsos": "chest", "Pelvis": "pelvis",
+    "RightBicep": "bicepr", "LeftBicep": "bicepl",
+    "RightForearm": "forer", "LeftForearm": "forel",
+    "RightHand": "handr", "LeftHand": "handl",
+    "RightThigh": "legr", "LeftThigh": "legl",
+    "RightShin": "shinr", "LeftShin": "shinl",
+    "RightFoot": "footr", "LeftFoot": "footl",
+}
 
 
 @dataclass
@@ -31,7 +40,17 @@ class Job:
 def int_lists(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
     return {m[1]: [int(v) for v in m[2].split(",") if v.strip()]
-            for m in re.finditer(r"public override int\[\] (\w+) \{ get; \} = \{([^}]*)\}", text)}
+            for m in re.finditer(r"public (?:override|virtual) int\[\] (\w+) \{ get; \} = \{([^}]*)\}", text)}
+
+
+def racial_lists(path: Path) -> dict:
+    """Body choices include inherited defaults, with the species' overrides taking precedence."""
+    text = path.read_text(encoding="utf-8")
+    parent = re.search(r"class\s+\w+\s*:\s*(\w+)", text)
+    base = path.with_name(f"{parent[1]}.cs") if parent else None
+    lists = racial_lists(base) if base and base.is_file() else {}
+    lists.update(int_lists(path))
+    return lists
 
 
 def weapon_definition(path: Path):
@@ -157,11 +176,16 @@ def build(haks_2da: Path, exists) -> list:
 
     for species, race in species_bodies(haks_2da).items():
         path = next((DEFINITIONS / "RacialAppearance").glob(f"{species}RacialAppearance*.cs"))
-        heads = int_lists(path)
+        choices = racial_lists(path)
         for gender, list_name in (("m", "MaleHeads"), ("f", "FemaleHeads")):
-            for head in heads.get(list_name, []):
+            for head in choices.get(list_name, []):
                 model = f"p{gender}{race}0_head{head:03d}"
                 add(model, model)
+            for name, stem in BODY_STEMS.items():
+                for part in choices.get(name, []):
+                    if part > 0:
+                        model = f"p{gender}{race}0_{stem}{part:03d}"
+                        add(model, model)
 
     for helmet in general.get("Helmet", []):
         model = f"helm_{helmet:03d}"

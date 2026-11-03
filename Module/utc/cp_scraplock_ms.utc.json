@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Scrapheap Lockdown master in CZ-220 - Breaker Yard."
+    "value": "Wreck Foreman Lucan Brandt (Scrapheap Lockdown line) in CZ-220 - Breaker Yard."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human in a black captain's coat, the man who wrote the lockdown protocol CZ-220 still runs. He resigned as the station's chief of security and was officially reported gone; instead he sealed himself into the deepest bay of the Breaker Yard under his own unrevised protocol. Every katar stance his crew drilled is a copy of his."
+      "0": "A human in a black captain's coat, the man who wrote the lockdown protocol CZ-220 still runs. He resigned as the station's chief of security and was officially reported gone; instead he sealed himself into the deepest bay of the Breaker Yard under his own unrevised protocol. Every katar stance his wreck crew drilled is a copy of his."
     }
   },
   "Dex": {
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Scrapheap Lockdown Master"
+      "0": "Wreck Foreman Lucan Brandt"
     }
   },
   "fortbonus": {

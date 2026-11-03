@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Adamantine Guard master in CZ-220 - Breaker Yard."
+    "value": "Wreck Foreman Ssurgan (Adamantine Guard line) in CZ-220 - Breaker Yard."
   },
   "Con": {
     "type": "byte",
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Adamantine Guard Master"
+      "0": "Wreck Foreman Ssurgan"
     }
   },
   "fortbonus": {

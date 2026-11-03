@@ -739,6 +739,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         PatternTemplatePlates = 702,
         LoomTensionWeights = 703,
         PatternIndexTags = 704,
+        SilverpeltHideCuirass = 705,
+        FrostFangGauntlet = 706,
+        RidgedHideMantle = 707,
+        ReclaimedScopewrightCap = 708,
+        ReclaimedWarbandHelm = 709,
         SithPowerGlove = 6288,
         #endregion
 
@@ -1492,6 +1497,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         TombwalkerBroth = 2268,
         SnowblindHuntersStew = 2269,
         NightMarchReserve = 2270,
+        EchaniSteamedDumplings = 2271,
+        EchaniBrothNoodles = 2272,
+        EchaniChiliNoodles = 2273,
+        EchaniSteamedBuns = 2274,
+        EchaniScallionFlatbread = 2275,
+        EchaniSharedHotpot = 2276,
+        EchaniClaypotRice = 2277,
+        EchaniRicePorridge = 2278,
+        EchaniMarbledEggs = 2279,
+        EchaniGingerFish = 2280,
+        EchaniGlazedPoultry = 2281,
+        EchaniSeedPasteCakes = 2282,
 
         #endregion
 

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Infinite Conduit master in Mon Cala - Protected Ward."
+    "value": "Ward Chief Idris Voh (Infinite Conduit line) in Mon Cala - Protected Ward."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Bothan master of the conduit form, the two blades of his twin electroblade moving as one endless stroke. He waits in the Protected Ward among the sublevel's stored kolto, and nothing that reaches him ever leaves."
+      "0": "A Bothan ward chief, the two blades of his twin electroblade moving as one endless stroke. He waits in the Protected Ward among the sublevel's stored kolto, and nothing that reaches him ever leaves."
     }
   },
   "Dex": {
@@ -400,7 +400,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Infinite Conduit Master"
+      "0": "Ward Chief Idris Voh"
     }
   },
   "fortbonus": {

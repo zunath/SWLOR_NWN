@@ -224,7 +224,8 @@ def render_weapon(scene, job, out_dir, meshes, quads):
 
 def render_job(scene, job, out_dir):
     clear_scene()
-    bpy.ops.scene.nvb_mdlimport(filepath=job["ascii"], import_walkmesh=False, mat_import=False, anim_import=False)
+    bpy.ops.scene.nvb_mdlimport(filepath=job["ascii"], import_walkmesh=False, mat_import=False,
+                              anim_import=False, hide_fading=False)
     meshes = [o for o in scene.objects if o.type == "MESH" and not o.hide_render and len(o.data.polygons)]
     quads = emitter_quads(scene, job) if job.get("weapon") else []
     if not meshes and not quads:

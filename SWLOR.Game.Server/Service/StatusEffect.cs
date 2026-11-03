@@ -525,19 +525,29 @@ namespace SWLOR.Game.Server.Service
         {
             // A deferred application is timed when it runs after the swing.
             if (IsDeferredNativeAttackStatusEffect(statusEffect, creature))
-                return ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
-                    resistanceOverride, sourceDamageType, replacedStatusEffectType);
+                return RecordCapstoneProof(ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
+                    resistanceOverride, sourceDamageType, replacedStatusEffectType), statusEffect, source, creature);
 
             var profile = FrameProfiler.Start();
             try
             {
-                return ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
-                    resistanceOverride, sourceDamageType, replacedStatusEffectType);
+                return RecordCapstoneProof(ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
+                    resistanceOverride, sourceDamageType, replacedStatusEffectType), statusEffect, source, creature);
             }
             finally
             {
                 FrameProfiler.Stop(FrameMetric.StatusEffectApply, profile, statusEffect.Name);
             }
+        }
+
+        // Capstone quest steps count a kill only after the player used their skill's mechanic on it.
+        private static bool RecordCapstoneProof(bool applied, IStatusEffect statusEffect, uint source, uint creature)
+        {
+            if (applied)
+                CapstoneProof.RecordStatusEffect(source, creature, statusEffect.GetType(),
+                    statusEffect.OriginatingAbility ?? Ability.GetActiveAbilityImpactSummary(source)?.Ability);
+
+            return applied;
         }
 
         private static bool ApplyStatusEffectInternal(

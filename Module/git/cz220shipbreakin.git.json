@@ -15372,7 +15372,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Lockdown placards are bolted across the sheared bay's entry, each one signed with the same override code. The warden behind them keeps the bay shut against all comers."
+            "0": "Lockdown placards are bolted across the sheared bay's entry, each one signed with the same override code. The crew chief behind them keeps the bay shut against all comers."
           }
         },
         "DisarmDC": {
@@ -19708,21 +19708,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "CREATURE_SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "CAPSTONE_CZ220_BREAKER_YARD"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "IS_DUNGEON"
         },
         "Type": {
@@ -20057,7 +20042,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Warden Spawn"
+            "0": "CZ-220 Breaker Yard - Crew Chief Rakkesh Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20120,7 +20105,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Warden Spawn"
+            "0": "CZ-220 Breaker Yard - Crew Chief Tobin Rask Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20183,7 +20168,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Warden Spawn"
+            "0": "CZ-220 Breaker Yard - Crew Chief Nalo Ven Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -20370,7 +20355,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20395,7 +20380,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 19.5
+          "value": 138.75
         },
         "YOrientation": {
           "type": "float",
@@ -20403,11 +20388,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 33.75
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
         }
       },
       {
@@ -20433,7 +20418,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20458,7 +20443,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 18.0
+          "value": 146.75
         },
         "YOrientation": {
           "type": "float",
@@ -20466,11 +20451,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 136.5
+          "value": 27.75
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
         }
       },
       {
@@ -20496,7 +20481,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20521,7 +20506,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 16.5
+          "value": 129.75
         },
         "YOrientation": {
           "type": "float",
@@ -20529,11 +20514,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 135.0
+          "value": 29.25
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
         }
       },
       {
@@ -20559,7 +20544,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Adamantine Guard Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Adamantine Guard line)"
           }
         },
         "MapNote": {
@@ -20584,7 +20569,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 18.0
+          "value": 126.25
         },
         "YOrientation": {
           "type": "float",
@@ -20592,11 +20577,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 133.5
+          "value": 19.75
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
         }
       },
       {
@@ -20622,7 +20607,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20647,7 +20632,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 81.5
+          "value": 139.75
         },
         "YOrientation": {
           "type": "float",
@@ -20655,11 +20640,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 125.0
+          "value": 67.75
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": -0.50
         }
       },
       {
@@ -20685,7 +20670,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20710,7 +20695,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 80.0
+          "value": 139.75
         },
         "YOrientation": {
           "type": "float",
@@ -20718,11 +20703,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 126.5
+          "value": 57.75
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": -0.50
         }
       },
       {
@@ -20748,7 +20733,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20773,7 +20758,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 78.5
+          "value": 139.75
         },
         "YOrientation": {
           "type": "float",
@@ -20781,11 +20766,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 125.0
+          "value": 77.75
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": -0.50
         }
       },
       {
@@ -20811,7 +20796,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Scrapheap Lockdown Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Scrapheap Lockdown line)"
           }
         },
         "MapNote": {
@@ -20836,7 +20821,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 80.0
+          "value": 142.25
         },
         "YOrientation": {
           "type": "float",
@@ -20844,11 +20829,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 123.5
+          "value": 87.75
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
         }
       },
       {
@@ -20874,7 +20859,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -20899,7 +20884,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 141.5
+          "value": 139.75
         },
         "YOrientation": {
           "type": "float",
@@ -20907,11 +20892,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 122.0
+          "value": 124.25
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": -0.50
         }
       },
       {
@@ -20937,7 +20922,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -20962,7 +20947,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 140.0
+          "value": 145.75
         },
         "YOrientation": {
           "type": "float",
@@ -20970,11 +20955,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 123.5
+          "value": 116.25
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
         }
       },
       {
@@ -21000,7 +20985,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -21025,7 +21010,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 138.5
+          "value": 133.75
         },
         "YOrientation": {
           "type": "float",
@@ -21033,11 +21018,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 122.0
+          "value": 116.25
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
         }
       },
       {
@@ -21063,7 +21048,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard - Worldbreaker Inner Circle Spawn"
+            "0": "CZ-220 Breaker Yard - Foreman's Hand Spawn (Worldbreaker line)"
           }
         },
         "MapNote": {
@@ -21088,7 +21073,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 142.0
+          "value": 139.75
         },
         "YOrientation": {
           "type": "float",
@@ -21096,11 +21081,1271 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 124.0
+          "value": 108.25
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.5
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 16.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 80.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 20.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 53.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 19.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 119.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 11.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 28.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 64.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 117.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 32.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 10.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 51.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 58.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 90.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 92.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 121.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Scrapper Spawn (Capstone Adept)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 61.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 10.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 96.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 76.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 55.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 122.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 102.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 122.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 67.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 47.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 50.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 104.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 25.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 149.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 80.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 138.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 137.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 139.75
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 45.75
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.50
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Breaker Yard - Wreck Crew Rigger Spawn (Capstone Specialist)"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "CAPSTONE_CZ220_BREAKER_YARD_DEEP"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cdp_czbr"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 147.25
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 10.25
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.00
         }
       }
     ]

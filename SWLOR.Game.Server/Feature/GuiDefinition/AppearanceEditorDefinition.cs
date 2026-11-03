@@ -469,7 +469,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(TileSize)
                     .SetMargin(2f)
                     .BindIsEnabled(model => model.IsPartPreviewEnabled)
-                    .BindOnClicked(model => model.OnClickPartPreview());
+                    .BindOnClicked(model => model.OnClickPartPreview())
+                    // The worn part's number, as on the part browser's tiles.
+                    .AddDrawList(list => list.AddText(number => number
+                        .BindText(model => model.PartPreviewNumber)
+                        .SetBounds(5f, 3f, TileSize - 10f, 16f)
+                        .SetColor(220, 220, 220)));
                 row.AddSpacer();
             });
             col.AddRow(row =>

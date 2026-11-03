@@ -146,8 +146,23 @@ namespace SWLOR.Game.Server.Service
                 _unlockedPlayers.Remove(player);
 
             Gui.PublishRefreshEvent(player, new ExtraHotbarRefreshEvent());
-            if (!isUnlocked)
+            if (isUnlocked)
+                KeepTitleBarsClear(player);
+            else
                 SaveLockedPositions(player);
+        }
+
+        /// <summary>
+        /// Unlocked bars grow a title bar upward, which covers a bar stacked right above. A covered bar ignores the
+        /// mouse, so each bar moves off the bars numbered below it, bar 1 staying put.
+        /// </summary>
+        private static void KeepTitleBarsClear(uint player)
+        {
+            foreach (var windowType in _windowTypes)
+            {
+                if (Gui.IsWindowOpen(player, windowType))
+                    ((ExtraHotbarViewModel)Gui.GetPlayerWindow(player, windowType).ViewModel).KeepClearOfLowerBars();
+            }
         }
 
         /// <summary>

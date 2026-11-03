@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Untouchable Instinct master in Dathomir - Sealed Apex Den."
+    "value": "Old Giant Brown Lizard (Untouchable Instinct line) in Dathomir - Sealed Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -161,7 +161,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Untouchable Instinct Master"
+      "0": "Old Giant Brown Lizard"
     }
   },
   "fortbonus": {

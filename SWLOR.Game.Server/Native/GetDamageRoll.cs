@@ -216,6 +216,11 @@ namespace SWLOR.Game.Server.Native
                     var rolledType = damageProfile.DamageType;
                     var nativeDamageApplication = weaponImpactScheduler == null;
 
+                    // A bare-handed swing with no arms item or natural weapon has no item on-hit
+                    // event to award its combat point, so it is credited to Unarmed here.
+                    if (weapon == null && pAttackData.m_bRangedAttack == 0 && creatureTarget)
+                        CombatPoint.RecordWeaponAttackPoint(attackerId, defenderId, OBJECT_INVALID, SkillType.Unarmed);
+
                     void ApplyWeaponHitEffects(int rolledDamage)
                     {
                         if (!GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;

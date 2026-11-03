@@ -480,6 +480,57 @@ public sealed class WeatherSettlementTests
             variable.GetProperty("Name").GetProperty("value").GetString() == "WEATHER_HAZARD_SAFE");
     }
 
+    [TestCase("pw_ar_sc_eshanci")]
+    [TestCase("pw_ar_sc_eshancm")]
+    [TestCase("pw_ar_sc_eshanto")]
+    [TestCase("pw_sc_es_oldgate")]
+    [TestCase("pw_sc_eshanfield")]
+    [TestCase("pw_sc_esh_riverw")]
+    [TestCase("pw_sc_eshhouse")]
+    public void EshanSettlements_AuthoredSafetyPreventsSnowstormDamage(string resref)
+    {
+        var path = Path.Combine(FindRoot(), "Module", "git", $"{resref}.git.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var safety = document.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Where(variable => variable.GetProperty("Name").GetProperty("value").GetString() == "WEATHER_HAZARD_SAFE")
+            .Should().ContainSingle($"{resref} is an authored settlement").Which;
+        safety.GetProperty("Type").GetProperty("value").GetInt32().Should().Be(1);
+        safety.GetProperty("Value").GetProperty("type").GetString().Should().Be("int");
+        var safe = safety.GetProperty("Value").GetProperty("value").GetInt32();
+        safe.Should().Be(1);
+
+        SetWeatherable(1, true);
+        SetSafe(1, safe != 0);
+        SetConditions(1, HazardConditions("Snow"), false);
+        SetPlayer(10, 1);
+
+        DamagePulse(10, Start);
+        DamagePulse(10, Start.AddSeconds(6));
+
+        Classify(1).Should().BeFalse();
+        DamageCount(10).Should().Be(0, $"snow in {resref} should remain harmless");
+    }
+
+    [Test]
+    public void VeylanGroves_RetainWildernessSnowstormDamage()
+    {
+        var path = Path.Combine(FindRoot(), "Module", "git", "sc_eswildlandn.git.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var variables = document.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray();
+        variables.Should().NotContain(variable =>
+            variable.GetProperty("Name").GetProperty("value").GetString() == "WEATHER_HAZARD_SAFE");
+
+        SetWeatherable(1, true);
+        SetConditions(1, HazardConditions("Snow"), false);
+        SetPlayer(10, 1);
+
+        DamagePulse(10, Start);
+        DamagePulse(10, Start.AddSeconds(6));
+
+        Classify(1).Should().BeTrue();
+        DamageCount(10).Should().Be(2, "settlement protection must preserve Eshan's wilderness hazards");
+    }
+
     private void Call(string name, params object[] args) => _harness.GetMethod(name)!.Invoke(null, args);
     private void SetWeatherable(uint area, bool value) => Call("SetWeatherable", area, value);
     private void SetSafe(uint area, bool value) => Call("SetSafe", area, value);

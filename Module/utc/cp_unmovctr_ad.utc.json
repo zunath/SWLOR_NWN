@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Unmoving Center adept in Tatooine - Anchorhead Canyon Range."
+    "value": "Canyon Drifter (Unmoving Center line) in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Twi'lek in ragged clothes who plants his staff and tries to hold still, though his weight keeps shifting under him. He drills in the Anchorhead Canyon Range with others who mistake fidgeting for stillness."
+      "0": "A Twi'lek drifter in ragged clothes who plants his staff and tries to hold still, though his weight keeps shifting under him. He drills in the Anchorhead Canyon Range with other gunhands who mistake fidgeting for stillness."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Unmoving Center Adept"
+      "0": "Canyon Drifter"
     }
   },
   "fortbonus": {

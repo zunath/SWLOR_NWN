@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Emergency Cocktail specialist in Mon Cala - Medical Sublevel."
+    "value": "Ward Guard (Emergency Cocktail line) in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Kel Dor in close-fitting dark clothes, carrying a blaster pistol and a case of hand-labeled vials. He studies you the way a chemist studies a dosage he is about to calculate."
+      "0": "A Kel Dor ward guard in close-fitting dark clothes, carrying a blaster pistol and a case of hand-labeled vials. He studies you the way a chemist studies a dosage he is about to calculate."
     }
   },
   "Dex": {
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Emergency Cocktail Specialist"
+      "0": "Ward Guard"
     }
   },
   "fortbonus": {
@@ -695,7 +695,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 228
+          "value": 223
         }
       },
       {

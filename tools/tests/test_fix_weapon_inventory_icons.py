@@ -52,6 +52,14 @@ class InventoryIconTests(unittest.TestCase):
             rows = np.where((decoded[..., 3] > .5).any(1))[0]
             self.assertEqual((rows.min(), rows.max()), (10, 100))
 
+    def test_write_icon_rejects_other_formats(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'cur_test.dds'
+            for change in ({'fourcc': 'DXT1'}, {'mips': 6}):
+                with self.assertRaises(ValueError):
+                    icons.write_icon(codec, path, bar(32, 32, 4, 20), {**icon_info(32, 32), **change})
+            self.assertFalse(path.exists())
+
     def test_reframe_maps_rows_and_keeps_center(self):
         out = icons.reframe(bar(64, 256, 10, 249), (10, 249), (4, 155))
         rows = np.where((out[..., 3] > .5).any(1))[0]

@@ -8920,7 +8920,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Tempest Training Engine Spawn"
+            "0": "Hutlar Jedi Trial Halls - Tempest Training Engine Spawn (Saber Storm line)"
           }
         },
         "MapNote": {
@@ -8991,7 +8991,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Bastion Training Engine Spawn"
+            "0": "Hutlar Jedi Trial Halls - Bastion Training Engine Spawn (Guardian Master line)"
           }
         },
         "MapNote": {
@@ -9062,7 +9062,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Jedi Trial Halls - Vortex Training Engine Spawn"
+            "0": "Hutlar Jedi Trial Halls - Vortex Training Engine Spawn (Saber Cyclone line)"
           }
         },
         "MapNote": {

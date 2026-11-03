@@ -128,6 +128,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Prices = new[] { 3, 3 },
                     GrantedFeats = new[] { FeatType.CoverStoryTrait },
                 },
+                new()
+                {
+                    Perk = PerkType.ForceDecoy,
+                    MaxLevel = 2,
+                    Prices = new[] { 3, 3 },
+                    GrantedFeats = new[] { FeatType.ForceDecoy1, FeatType.ForceDecoy2 },
+                },
+                new()
+                {
+                    Perk = PerkType.CloudMind,
+                    MaxLevel = 2,
+                    Prices = new[] { 4, 4 },
+                    GrantedFeats = new[] { FeatType.CloudMind1, FeatType.CloudMind2 },
+                },
+                new()
+                {
+                    Perk = PerkType.SharedPresence,
+                    MaxLevel = 1,
+                    Prices = new[] { 6 },
+                    GrantedFeats = new[] { FeatType.SharedPresence },
+                },
             };
         }
     }

@@ -744,7 +744,7 @@ $sheetTabs = @(
     "Armor", "Vibroblade", "Vibroknife", "Lightsaber", "Heavy Vibroblade", "Spear",
     "Twin Blade", "Saberstaff", "Katar", "Unarmed", "Staff", "Pistol", "Twin Pistol", "Rifle", "Throwing",
     "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
-    "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering",
+    "Espionage", "Performance", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering",
     "Mimicry"
 )
 $localWorkbookSheetTabAliases = @{

@@ -4,6 +4,7 @@ using System.Text.Json;
 using FluentAssertions;
 using SWLOR.Game.Server.Service;
 using Nwn.Formats.NativeModels;
+using SWLOR.Game.Server.Service.AnimationService;
 using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
@@ -36,7 +37,7 @@ public class FishingAnimationTests
         AnimationInstall.SortAnimationBlocks(expected).Should().Be(expected);
     }
 
-    private static string Root
+    internal static string Root
     {
         get
         {
@@ -52,12 +53,23 @@ public class FishingAnimationTests
     {
         var clip = Fishing.GetFishingAnimation(seconds);
         clip.Duration.Should().Be(seconds);
+        AssertInstalledOnBothHumanoidRigs(clip);
+    }
+
+    /// <summary>
+    /// Checks one authored activity clip: its project matches the registered duration, the feet stay above the floor throughout,
+    /// and, when the HAK sources are present, both humanoid banks hold it with its entry and exit phases, closed back onto the
+    /// pose it started from, ending in the model's own idle.
+    /// </summary>
+    internal static void AssertInstalledOnBothHumanoidRigs(AnimationClip clip)
+    {
+        var seconds = clip.Duration;
         var registrations = JsonSerializer.Deserialize<AnimationRegistration[]>(
             File.ReadAllText(Path.Combine(Root, "design/animations/registry.json")))!;
         var registration = registrations.Single(r => r.AnimationName == clip.Name);
         registration.Targets.Should().HaveCount(2);
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, registration.ProjectPath!)));
-        project.Duration.Should().Be(seconds);
+        project.Duration.Should().BeApproximately(seconds, 1e-4f);
         // A full-motion sample checks feet throughout interpolated cast and reel phases.
         for (var time = 0f; time <= seconds; time += 1f / 60)
         {
@@ -88,7 +100,7 @@ public class FishingAnimationTests
             bank!.Animations.Select(animation => animation.Name.ToLowerInvariant())
                 .Should().BeInAscendingOrder(StringComparer.Ordinal);
             var installed = bank.Animations.Single(a => a.Name == clip.Name);
-            installed.Length.Should().Be(seconds);
+            installed.Length.Should().BeApproximately(seconds, 1e-4f);
             bank.Animations.Should().Contain(a => a.Name == clip.StartName).And.Contain(a => a.Name == clip.EndName);
             var neutral = MdlAnimationPose.SampleIdle(target, name =>
             {

@@ -54,6 +54,34 @@ public class PazaakCardItemTests
     }
 
     [Test]
+    public void BoardShowsTheCardArtForEachValue()
+    {
+        new PazaakTableCard(7).Image.Should().Be("pzk_main7");
+        new PazaakTableCard(10).Image.Should().Be("pzk_main10");
+        new PazaakTableCard(-4).Image.Should().Be("iit_card_107", "a flipped main card shows the -4 card");
+        new PazaakTableCard(3, PazaakCardType.Plus3).Image.Should().Be("iit_card_100");
+        new PazaakTableCard(-3, PazaakCardType.PlusMinus3).Image.Should().Be("iit_card_106", "a +/- card played as minus shows the -3 card");
+        new PazaakTableCard(2, PazaakCardType.PlusMinus2).Image.Should().Be("iit_card_099");
+        new PazaakTableCard(0, PazaakCardType.FlipTwoFour).Image.Should().Be("iit_card_116");
+        new PazaakTableCard(10, PazaakCardType.Double).Image.Should().Be("iit_card_118");
+        new PazaakTableCard(-1, PazaakCardType.Tiebreaker).Image.Should().Be("iit_card_119");
+    }
+
+    [Test]
+    public void EveryBoardImageExists()
+    {
+        var haks = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
+        if (!Directory.Exists(Path.Combine(haks, "sw_ui")) || !Directory.Exists(Path.Combine(haks, "sw_item")))
+            Assert.Ignore("SWLOR_Haks/sw_ui and sw_item are not checked out.");
+
+        var images = Enumerable.Range(1, 10).Select(PazaakCards.GetMainCardImage)
+            .Append(PazaakCards.EmptySlotImage)
+            .Select(image => Path.Combine(haks, "sw_ui", image + ".tga"))
+            .Concat(PazaakCards.All.Select(card => Path.Combine(haks, "sw_item", PazaakCards.GetImage(card.Type) + ".tga")));
+        images.Where(path => !File.Exists(path)).Should().BeEmpty();
+    }
+
+    [Test]
     public void LootTablesDropEveryCardWithSpecialCardsRarest()
     {
         var tables = new PazaakLootTableDefinition().BuildLootTables();

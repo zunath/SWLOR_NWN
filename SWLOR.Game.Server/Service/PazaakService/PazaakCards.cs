@@ -33,6 +33,27 @@ namespace SWLOR.Game.Server.Service.PazaakService
 
         public static PazaakCardDetail Get(PazaakCardType type) => _cards[type];
 
+        /// <summary>
+        /// Image of an empty table, hand, or side deck slot in the Pazaak window.
+        /// </summary>
+        public const string EmptySlotImage = "pzk_slot";
+
+        /// <summary>
+        /// Image of a side card: the card item's inventory icon.
+        /// </summary>
+        public static string GetImage(PazaakCardType type) => $"iit_card_{Get(type).Model:000}";
+
+        /// <summary>
+        /// Image of a main deck card worth 1 to 10.
+        /// </summary>
+        public static string GetMainCardImage(int value) => $"pzk_main{value}";
+
+        /// <summary>
+        /// Image of a plus or minus card with this value, from 1 to 6 either way.
+        /// </summary>
+        public static string GetSignedCardImage(int value) =>
+            GetImage(value < 0 ? PazaakCardType.Minus1 + (-value - 1) : PazaakCardType.Plus1 + (value - 1));
+
         public static bool IsValid(PazaakCardType type) => _cards.ContainsKey(type);
 
         public static int GetFreeCopies(PazaakCardType type) => DefaultSideDeck.Count(x => x == type);

@@ -17,6 +17,25 @@ namespace SWLOR.Game.Server.Service.PazaakService
 
         public bool IsSideCard => SideCard != PazaakCardType.Invalid;
 
+        /// <summary>
+        /// The card art shown on the table. A main card flipped negative shows the minus card of its value,
+        /// and a played plus/minus card shows the plus or minus card of the sign it was played with.
+        /// </summary>
+        public string Image
+        {
+            get
+            {
+                if (!IsSideCard)
+                    return Value > 0 ? PazaakCards.GetMainCardImage(Value) : PazaakCards.GetSignedCardImage(Value);
+
+                return PazaakCards.Get(SideCard).Kind switch
+                {
+                    PazaakCardKind.Plus or PazaakCardKind.Minus or PazaakCardKind.PlusMinus => PazaakCards.GetSignedCardImage(Value),
+                    _ => PazaakCards.GetImage(SideCard)
+                };
+            }
+        }
+
         public string Label
         {
             get

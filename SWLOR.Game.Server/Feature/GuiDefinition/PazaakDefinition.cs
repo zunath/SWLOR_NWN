@@ -13,10 +13,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
         private const float ContentPanelWidth = 400f;
-        private const float TableCardWidth = 34f;
-        private const float TableCardHeight = 34f;
-        private const float HandCardWidth = 62f;
-        private const float DeckCardWidth = 70f;
+        private const float TableCardSize = 36f;
+        private const float CardButtonSize = 44f;
+        private const float ListCardSize = 36f;
 
         private static readonly Expression<Func<PazaakViewModel, string>>[] OpponentSlots =
         {
@@ -32,9 +31,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             m => m.PlayerSlot6, m => m.PlayerSlot7, m => m.PlayerSlot8,
         };
 
-        private static readonly Expression<Func<PazaakViewModel, string>>[] HandTexts =
+        private static readonly Expression<Func<PazaakViewModel, string>>[] OpponentSlotImages =
         {
-            m => m.Hand0, m => m.Hand1, m => m.Hand2, m => m.Hand3,
+            m => m.OpponentSlot0Image, m => m.OpponentSlot1Image, m => m.OpponentSlot2Image, m => m.OpponentSlot3Image, m => m.OpponentSlot4Image, m => m.OpponentSlot5Image, m => m.OpponentSlot6Image, m => m.OpponentSlot7Image, m => m.OpponentSlot8Image,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, string>>[] PlayerSlotImages =
+        {
+            m => m.PlayerSlot0Image, m => m.PlayerSlot1Image, m => m.PlayerSlot2Image, m => m.PlayerSlot3Image, m => m.PlayerSlot4Image, m => m.PlayerSlot5Image, m => m.PlayerSlot6Image, m => m.PlayerSlot7Image, m => m.PlayerSlot8Image,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, string>>[] HandImages =
+        {
+            m => m.Hand0Image, m => m.Hand1Image, m => m.Hand2Image, m => m.Hand3Image,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, string>>[] DeckSlotImages =
+        {
+            m => m.DeckSlot0Image, m => m.DeckSlot1Image, m => m.DeckSlot2Image, m => m.DeckSlot3Image, m => m.DeckSlot4Image, m => m.DeckSlot5Image, m => m.DeckSlot6Image, m => m.DeckSlot7Image, m => m.DeckSlot8Image, m => m.DeckSlot9Image,
         };
 
         private static readonly Expression<Func<PazaakViewModel, string>>[] HandTooltips =
@@ -69,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Pazaak)
-                .SetInitialGeometry(0, 0, 440f, 560f)
+                .SetInitialGeometry(0, 0, 440f, 600f)
                 .SetTitle("Pazaak")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -124,18 +138,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private static void AddTableCards(GuiColumn<PazaakViewModel> col, Expression<Func<PazaakViewModel, string>>[] slots)
+        private static void AddTableCards(
+            GuiColumn<PazaakViewModel> col,
+            Expression<Func<PazaakViewModel, string>>[] images,
+            Expression<Func<PazaakViewModel, string>>[] labels)
         {
             col.AddRow(row =>
             {
                 row.AddSpacer();
-                foreach (var slot in slots)
+                for (var index = 0; index < images.Length; index++)
                 {
-                    row.AddButton()
-                        .BindText(slot)
-                        .SetIsEnabled(false)
-                        .SetWidth(TableCardWidth)
-                        .SetHeight(TableCardHeight);
+                    row.AddImage()
+                        .BindResref(images[index])
+                        .BindTooltip(labels[index])
+                        .SetAspect(NuiAspect.Exact)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                        .SetWidth(TableCardSize)
+                        .SetHeight(TableCardSize);
                 }
                 row.AddSpacer();
             });
@@ -146,31 +166,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             AddTabPanel(host, col =>
             {
                 AddCenteredLabel(col, model => model.OpponentHeader);
-                AddTableCards(col, OpponentSlots);
+                AddTableCards(col, OpponentSlotImages, OpponentSlots);
                 AddCenteredLabel(col, model => model.StatusText);
                 AddCenteredLabel(col, model => model.LastSetText);
-                AddTableCards(col, PlayerSlots);
+                AddTableCards(col, PlayerSlotImages, PlayerSlots);
                 AddCenteredLabel(col, model => model.PlayerHeader);
 
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
-                    for (var index = 0; index < HandTexts.Length; index++)
+                    for (var index = 0; index < HandImages.Length; index++)
                     {
-                        row.AddButton()
-                            .BindText(HandTexts[index])
+                        row.AddButtonImage()
+                            .BindImageResref(HandImages[index])
                             .BindTooltip(HandTooltips[index])
                             .BindIsEnabled(HandEnabled[index])
                             .BindOnClicked(HandClicks[index])
-                            .SetWidth(HandCardWidth)
-                            .SetHeight(TableCardHeight);
+                            .SetWidth(CardButtonSize)
+                            .SetHeight(CardButtonSize);
                     }
                     row.AddButton()
                         .BindText(model => model.SignButtonText)
                         .SetTooltip("The sign used when you play a +/- or tiebreaker card.")
                         .BindOnClicked(model => model.OnClickToggleSign())
                         .SetWidth(70f)
-                        .SetHeight(TableCardHeight);
+                        .SetHeight(CardButtonSize);
                     row.AddSpacer();
                 });
 
@@ -234,12 +254,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                         for (var index = first; index < first + 5; index++)
                         {
-                            row.AddButton()
-                                .BindText(DeckSlots[index])
-                                .SetTooltip("Click to remove this card from your side deck.")
+                            row.AddButtonImage()
+                                .BindImageResref(DeckSlotImages[index])
+                                .BindTooltip(DeckSlots[index])
                                 .BindOnClicked(DeckClicks[index])
-                                .SetWidth(DeckCardWidth)
-                                .SetHeight(TableCardHeight);
+                                .SetWidth(CardButtonSize)
+                                .SetHeight(CardButtonSize);
                         }
                         row.AddSpacer();
                     });
@@ -248,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 col.AddRow(row =>
                 {
                     row.AddLabel()
-                        .SetText("Use Pazaak card items to collect more copies.")
+                        .SetText("Click a card to add or remove it.")
                         .SetHeight(20f)
                         .SetHorizontalAlign(NuiHorizontalAlign.Center);
                 });
@@ -260,11 +280,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         template.AddCell(cell =>
                         {
                             cell.SetIsVariable(false);
-                            cell.AddButton()
-                                .BindText(model => model.CardNames)
+                            cell.SetWidth(ListCardSize + 12f);
+                            cell.AddButtonImage()
+                                .BindImageResref(model => model.CardImages)
+                                .BindTooltip(model => model.CardNames)
                                 .BindIsEnabled(model => model.CardAddEnabled)
                                 .BindOnClicked(model => model.OnClickAddCard())
-                                .SetWidth(DeckCardWidth);
+                                .SetWidth(ListCardSize + 4f)
+                                .SetHeight(ListCardSize + 4f);
                         });
                         template.AddCell(cell =>
                         {
@@ -283,8 +306,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     })
                         .BindRowCount(model => model.CardNames)
-                        .SetRowHeight(28f)
-                        .SetHeight(150f);
+                        .SetRowHeight(ListCardSize + 8f)
+                        .SetHeight(190f);
                 });
 
                 col.AddRow(row =>

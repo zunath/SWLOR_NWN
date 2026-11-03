@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> CardNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> CardDescriptions { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> CardOwnedCounts { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> CardImages { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<bool> CardAddEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         public string OpponentSlot0 { get => Get<string>(); set => Set(value); }
@@ -79,10 +80,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string PlayerSlot6 { get => Get<string>(); set => Set(value); }
         public string PlayerSlot7 { get => Get<string>(); set => Set(value); }
         public string PlayerSlot8 { get => Get<string>(); set => Set(value); }
-        public string Hand0 { get => Get<string>(); set => Set(value); }
-        public string Hand1 { get => Get<string>(); set => Set(value); }
-        public string Hand2 { get => Get<string>(); set => Set(value); }
-        public string Hand3 { get => Get<string>(); set => Set(value); }
         public string Hand0Tooltip { get => Get<string>(); set => Set(value); }
         public string Hand1Tooltip { get => Get<string>(); set => Set(value); }
         public string Hand2Tooltip { get => Get<string>(); set => Set(value); }
@@ -104,10 +101,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private Action<string>[] OpponentSlotSetters => new Action<string>[] { v => OpponentSlot0 = v, v => OpponentSlot1 = v, v => OpponentSlot2 = v, v => OpponentSlot3 = v, v => OpponentSlot4 = v, v => OpponentSlot5 = v, v => OpponentSlot6 = v, v => OpponentSlot7 = v, v => OpponentSlot8 = v };
         private Action<string>[] PlayerSlotSetters => new Action<string>[] { v => PlayerSlot0 = v, v => PlayerSlot1 = v, v => PlayerSlot2 = v, v => PlayerSlot3 = v, v => PlayerSlot4 = v, v => PlayerSlot5 = v, v => PlayerSlot6 = v, v => PlayerSlot7 = v, v => PlayerSlot8 = v };
-        private Action<string>[] HandSetters => new Action<string>[] { v => Hand0 = v, v => Hand1 = v, v => Hand2 = v, v => Hand3 = v };
         private Action<string>[] HandTooltipSetters => new Action<string>[] { v => Hand0Tooltip = v, v => Hand1Tooltip = v, v => Hand2Tooltip = v, v => Hand3Tooltip = v };
         private Action<bool>[] HandEnabledSetters => new Action<bool>[] { v => IsHand0Enabled = v, v => IsHand1Enabled = v, v => IsHand2Enabled = v, v => IsHand3Enabled = v };
         private Action<string>[] DeckSlotSetters => new Action<string>[] { v => DeckSlot0 = v, v => DeckSlot1 = v, v => DeckSlot2 = v, v => DeckSlot3 = v, v => DeckSlot4 = v, v => DeckSlot5 = v, v => DeckSlot6 = v, v => DeckSlot7 = v, v => DeckSlot8 = v, v => DeckSlot9 = v };
+        public string OpponentSlot0Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot1Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot2Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot3Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot4Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot5Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot6Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot7Image { get => Get<string>(); set => Set(value); }
+        public string OpponentSlot8Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot0Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot1Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot2Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot3Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot4Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot5Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot6Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot7Image { get => Get<string>(); set => Set(value); }
+        public string PlayerSlot8Image { get => Get<string>(); set => Set(value); }
+        public string Hand0Image { get => Get<string>(); set => Set(value); }
+        public string Hand1Image { get => Get<string>(); set => Set(value); }
+        public string Hand2Image { get => Get<string>(); set => Set(value); }
+        public string Hand3Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot0Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot1Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot2Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot3Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot4Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot5Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot6Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot7Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot8Image { get => Get<string>(); set => Set(value); }
+        public string DeckSlot9Image { get => Get<string>(); set => Set(value); }
+
+        private Action<string>[] OpponentSlotImageSetters => new Action<string>[] { v => OpponentSlot0Image = v, v => OpponentSlot1Image = v, v => OpponentSlot2Image = v, v => OpponentSlot3Image = v, v => OpponentSlot4Image = v, v => OpponentSlot5Image = v, v => OpponentSlot6Image = v, v => OpponentSlot7Image = v, v => OpponentSlot8Image = v };
+        private Action<string>[] PlayerSlotImageSetters => new Action<string>[] { v => PlayerSlot0Image = v, v => PlayerSlot1Image = v, v => PlayerSlot2Image = v, v => PlayerSlot3Image = v, v => PlayerSlot4Image = v, v => PlayerSlot5Image = v, v => PlayerSlot6Image = v, v => PlayerSlot7Image = v, v => PlayerSlot8Image = v };
+        private Action<string>[] HandImageSetters => new Action<string>[] { v => Hand0Image = v, v => Hand1Image = v, v => Hand2Image = v, v => Hand3Image = v };
+        private Action<string>[] DeckSlotImageSetters => new Action<string>[] { v => DeckSlot0Image = v, v => DeckSlot1Image = v, v => DeckSlot2Image = v, v => DeckSlot3Image = v, v => DeckSlot4Image = v, v => DeckSlot5Image = v, v => DeckSlot6Image = v, v => DeckSlot7Image = v, v => DeckSlot8Image = v, v => DeckSlot9Image = v };
 
         public Action OnClickHand0() => () => PlayHandCard(0);
         public Action OnClickHand1() => () => PlayHandCard(1);
@@ -142,6 +175,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             CardNames = cardNames;
             CardDescriptions = cardDescriptions;
+            var cardImages = new GuiBindingList<string>();
+            foreach (var card in PazaakCards.All)
+            {
+                cardImages.Add(PazaakCards.GetImage(card.Type));
+            }
+            CardImages = cardImages;
             DeckStatusText = string.Empty;
             TabToggleValue = TableTabId;
 
@@ -232,11 +271,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     OpponentSlotSetters[index](string.Empty);
                     PlayerSlotSetters[index](string.Empty);
+                    OpponentSlotImageSetters[index](PazaakCards.EmptySlotImage);
+                    PlayerSlotImageSetters[index](PazaakCards.EmptySlotImage);
                 }
 
                 for (var index = 0; index < PazaakCards.HandSize; index++)
                 {
-                    HandSetters[index](string.Empty);
+                    HandImageSetters[index](PazaakCards.EmptySlotImage);
                     HandTooltipSetters[index](string.Empty);
                     HandEnabledSetters[index](false);
                 }
@@ -263,6 +304,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 OpponentSlotSetters[index](index < opponentSeat.Table.Count ? opponentSeat.Table[index].Label : string.Empty);
                 PlayerSlotSetters[index](index < mySeat.Table.Count ? mySeat.Table[index].Label : string.Empty);
+                OpponentSlotImageSetters[index](index < opponentSeat.Table.Count ? opponentSeat.Table[index].Image : PazaakCards.EmptySlotImage);
+                PlayerSlotImageSetters[index](index < mySeat.Table.Count ? mySeat.Table[index].Image : PazaakCards.EmptySlotImage);
             }
 
             var canPlaySide = isMyTurn && !mySeat.HasPlayedSideCardThisTurn && mySeat.Table.Count < PazaakMatch.TableSize;
@@ -271,13 +314,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (index < mySeat.Hand.Count)
                 {
                     var card = PazaakCards.Get(mySeat.Hand[index]);
-                    HandSetters[index](card.Label);
-                    HandTooltipSetters[index](card.Description);
+                    HandImageSetters[index](PazaakCards.GetImage(card.Type));
+                    HandTooltipSetters[index]($"{card.Name}: {card.Description}");
                     HandEnabledSetters[index](canPlaySide);
                 }
                 else
                 {
-                    HandSetters[index](string.Empty);
+                    HandImageSetters[index](PazaakCards.EmptySlotImage);
                     HandTooltipSetters[index](string.Empty);
                     HandEnabledSetters[index](false);
                 }
@@ -319,6 +362,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var index = 0; index < PazaakCards.SideDeckSize; index++)
             {
                 DeckSlotSetters[index](index < _deck.Count ? PazaakCards.Get(_deck[index]).Label : string.Empty);
+                DeckSlotImageSetters[index](index < _deck.Count ? PazaakCards.GetImage(_deck[index]) : PazaakCards.EmptySlotImage);
             }
 
             var cardAddEnabled = new GuiBindingList<bool>();

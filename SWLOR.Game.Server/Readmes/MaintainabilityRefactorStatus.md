@@ -40,7 +40,7 @@ Starting prompt for a new session:
 ## Branch
 
 - Integration branch: `feature/maintainability-refactor` (cut from `master` at `468f6d706`).
-- Last sync with `master`: 2026-11-02, `f1c8cf097` (see Sync log).
+- Last sync with `master`: 2026-11-03, `37281caad` (see Sync log).
 - **Branch rule:** the repository allows only squash merges on GitHub. Anything that contains a merge of `master` (every sync) must reach this branch as a real merge commit, or later syncs re-apply `master`'s commits. Run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree checked out on `feature/maintainability-refactor` itself and push the merge commit after the script passes; when a sync needs hand-ported conflict resolutions, do them on a work branch, get the Codex review, then merge that branch locally with `git merge --no-ff` and push (GitHub marks the pull request merged). Ordinary work-item pull requests are squash-merged as usual.
 - Shared packages: `Nwn.Hosting`, `Nwn.Hosting.Contracts`, `Nwn.Hosting.Testing` `0.1.0-preview.1` on
   nuget.org, source at https://github.com/zunath/NWN.Hosting (used from Phase 4).
@@ -100,8 +100,7 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 **Resumed again 2026-11-03** (owner: keep going until the account's weekly usage reaches 90%; 75% at this resume).
 Running (Sonnet subagents of the coordinator session "SWLOR maintainability refactor coordination", worktree
 `.claude/worktrees/funny-ellis-7b398f`):
-- Master sync `sync-20261103` (master after `f1c8cf097`; no converted service touched as checked): branch
-  `claude/mr-sync-20261103`, worktree `.claude/worktrees/mr-sync-20261103`; PR, then the coordinator merges `--no-ff`.
+- Master sync `37281caad` merged (#3162, `96cc7be12`); see Sync log.
 - P2-B8: small master newcomers (`Wardrobe`, `BankItemPage`, `CasinoSlot`, `CasinoSlotPresentation`,
   `CasinoSpinResult`, `CasinoPlayTracker`, `CapstoneProof`), classified as service / data type / utility first;
   branch `claude/mr-p2-b8`.
@@ -128,7 +127,7 @@ runs; `gh` with push access; `-c http.sslBackend=schannel` only if git over HTTP
 
 ## Next actions
 
-1. **Daily sync** (last 2026-11-02, `f1c8cf097`): `tools/Refactor/Sync-MaintainabilityBranch.ps1 -RunParity` on a work branch
+1. **Daily sync** (last 2026-11-03, `37281caad`): `tools/Refactor/Sync-MaintainabilityBranch.ps1 -RunParity` on a work branch
    if ports are needed (branch rule), `Update-EngineCharacterization.ps1`, record. Check whether `feature/space-revamp` or
    `feature/crafting-revamp` reached master (unblocks P2-A9 `Space`, `Craft`, `Droid`, and the `Item` space-revamp port).
 2. **Rest of Wave B:** `Droid` (waits for the space revamp), the `CompanionControlService` and `NPCService` helper folders.
@@ -166,7 +165,6 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | P0-2b | The full engine-test sweep on the branch base had 24 failures in its first 901 tests: 19 fail the same with real haks, 4 pass when run alone (order or load dependent), 1 was the stale loot snapshot (since fixed by P0-7c). The nightly run will be red until these are fixed. Evidence: `C:\Temp\mr-p0-2b\evidence` (local). |
 | P0-4d2 | Possible bug (observed, not investigated): Sundering Sweep I reports 19 damage to one target, but the target's HP did not change within 6 seconds in the scenario fixture. |
 | P0-2 | 25 unit tests already fail on `master` (full Windows checkout): `ResourceRestorationTests` (14) and `StealthRestTests` (8) compile methods out of `Stat.cs` that now call members their harness lacks; `FirstAidCombatUpgradeTests.FirstAidSupplyRequirements_MatchMerchantStackTemplates` asserts changed source text; `PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite` (stale `PlayerMessageAudit.json`); `CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible` (EspionageWorkbench recipe missing from the Bible workbook). Excluded in CI with reasons. |
-| Sync 2026-11-02 (master defect) | master #3128 added `"\n\n" + ColorToken.Red(closedMessage)` to the `StarportFlightsDialog` header, so master fails its own `ConversationArchitectureTests.EveryDirectlyColoredCodeDrivenHeader_WrapsItsEntireTextInOneColor` (file and test identical on master). Excluded in `SyncTests.txt` and `run-unit-tests.sh` with the reason; re-enable when master fixes it. |
 | Sync 2026-11-02 | `PlayerMessageAudit.json` is stale on master (its inventory test stays excluded), and the branch's copy lacks a row for the `Service/DMPresence.cs` facade's `Instance.SendMessage` since P2-A3. |
 | P2-B3 | `Loot.SpawnStealLoot` passes the local variable's name (`STEAL_LOOT_TABLE_1`) to the table lookup instead of the table name stored in it, so a creature using it throws "not registered" (no module content uses it). |
 | P2-B3 | An unparseable loot chance (for example `"TABLE, often"`) becomes 0, so nothing drops; an unparseable attempts value becomes 1. |
@@ -185,6 +183,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | 2026-10-27 | 6d49650f7 | none | identical to master 6d49650f7 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers); tests: 6443 passed, 0 failed. Snapshots regenerated for master's #2898 (recipe 6288 `SithPowerGlove`, 15 loot tables). | Claude Sonnet 5.5 (P0-7) |
 | 2026-10-27 | df3034336 (9 commits) | none | identical to master df3034336 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers) after regenerating one row: `Ability/AbilityPresentation.json` Inner Circle Surge gains `DamageImpactVisualEffect=Vfx_Imp_Lightning_M` (master #2938). Tests: Game.Server.Tests 7205 passed, Characterization 148, Architecture 141 (+1 skipped), NWN.API 341. Merge `9f31c2b05`, refresh `2800030d9`. Engine snapshots: 41 passed, 0 changed (needed a hand-built `sw_part_previews.hak` in a kept home; see Environment notes). | Claude Opus 5.5 (coordinator) |
 | 2026-11-02 | f1c8cf097 (107 commits) | 13: 4 script-owned files took master; `Bank`, `ChatCommand`, `Planet`, `Shuttle` facades and `WeatherSettlementTests` kept the branch's and were ported (Port log); `PlayerMessageAudit.json` merged by row; manifest: 14 handlers master deleted removed, `FurnitureRenameMigration.OnEnter` moved to master's slot | identical to master f1c8cf097 (132 snapshot files, 662 handlers, 40 engine-test handlers) after regenerating 23 characterization files, every row attributed in `f88be328a` (#3095, #3026, #3076, #3031, #3054, #2344, #3022, #3034, #3045, #3100); characterization tests renamed to master's Cadence members (#3026, #3095); 9 new services mapped in `DomainMap.json` (UI: ExtraHotbar, ExtraHotbars; Items: Wardrobe; Economy: BankItemPage, CasinoSlot, CasinoSlotPresentation, CasinoSpinResult, CasinoPlayTracker; Quests: CapstoneProof), architecture baselines regenerated; 2 new exclusions (see Reported defects; `CasinoSlotPresentationTests` needs `sw_ui`). Tests: Game.Server.Tests 8357 passed (+ the 5 excluded), Characterization 148, Architecture 142, NWN.API 341, CombatSim 894, CLI 35, Formats 95. Engine snapshots: 41 passed, 0 changed. Codex clean on `1b78287a5`. PR #3143, merge `d8e74dd31`. | Claude Sonnet 5.5 (sync-20261102), merged by the coordinator |
+| 2026-11-03 | 37281caad (4 commits: #3140, #3124, #3151, #3149) | none (no converted service touched; no ports) | identical to master 37281caad (132 snapshot files, 663 handlers, 40 engine-test handlers). Manifest: `ClientJsonUtf8Guard.RegisterHook` inserted at master's slot (#3149). Characterization: 5 files regenerated (`AbilityDefinitions` 31 Devices rows, Stamina cost only, #3140; three loot files, `NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES` gains `recipe_arkarmor`, #3124). Architecture baselines regenerated (3 new edges from master #3151; count drift from the branch's P2-B6/P2-B7). `Apply-ClockSeam.ps1` now skips branch-only manifest entries when run against another root (the parity copy of master) and still requires every entry on its own repository (`e16374b6f`, 2 tests): needed whenever a seam file moves into `Domain/`. The `ConversationArchitectureTests` exclusion was removed (master #3151 fixed the defect). Tests: Game.Server.Tests 9344, Characterization 148, Architecture 165, NWN.API 341, CombatSim 894, CLI 35, Formats 95. Engine snapshots: 41 passed; `Ability/Devices.json` 3 rows changed (#3140). Codex clean on `030bd5c2e`. PR #3162, merge `96cc7be12`. | Claude Sonnet 5.5 (sync-20261103), merged by the coordinator |
 
 ## Port log
 

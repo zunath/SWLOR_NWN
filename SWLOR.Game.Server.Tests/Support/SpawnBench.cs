@@ -10,30 +10,6 @@ using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-/// <summary>An object the <see cref="SpawnBench"/> engine knows: an area, a creature, a placeable, a waypoint or an item.</summary>
-public sealed class SpawnSim
-{
-    public uint Id { get; init; }
-    public string Tag { get; set; } = string.Empty;
-    public string ResRef { get; set; } = string.Empty;
-    public ObjectType Type { get; set; }
-    public bool IsArea { get; set; }
-    public uint Area { get; set; } = SpawnBench.Invalid;
-    public Vector3 Position { get; set; }
-    public float Facing { get; set; }
-    public bool IsPC { get; set; }
-    public bool IsDM { get; set; }
-    public bool IsDMPossessed { get; set; }
-    public bool Plot { get; set; }
-    public bool Immortal { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public bool HasInventory { get; set; }
-    public List<uint> Inventory { get; } = new();
-    public Dictionary<EventScript, string> EventScripts { get; } = new();
-    public Dictionary<InventorySlot, uint> Slots { get; } = new();
-}
-
 /// <summary>
 /// A small model of the module for unit tests of the spawn instance: areas of a given size, hand-placed creatures,
 /// waypoints, placeables and players that the fake engine answers for (validity, tags, resrefs, positions, iteration,
@@ -320,38 +296,4 @@ public sealed class SpawnBench : IDisposable
         var areas = _objects.Values.Where(sim => sim.IsArea).ToList();
         return index >= 0 && index < areas.Count ? areas[index].Id : Invalid;
     }
-}
-
-/// <summary>
-/// The spawn instance with its clock, its definition search and its error log under the test's control:
-/// <see cref="Now"/> is the time the instance sees, <see cref="Definitions"/> the spawn list definitions the module
-/// load finds, and <see cref="Errors"/> what the instance reported to the error log.
-/// </summary>
-public sealed class TestSpawnService : SpawnService
-{
-    public TestSpawnService(DateTime now)
-    {
-        Now = now;
-    }
-
-    public DateTime Now { get; set; }
-
-    public List<Type> Definitions { get; } = new();
-
-    public List<string> Errors { get; } = new();
-
-    protected override DateTime UtcNow() => Now;
-
-    protected override IEnumerable<Type> GetSpawnListDefinitionTypes() => Definitions;
-
-    protected override void WriteError(string message) => Errors.Add(message);
-
-    /// <summary>The instance's own search, for the test that proves it finds the server's definitions.</summary>
-    public IEnumerable<Type> FindDefinitionsWithTheOriginalSearch() => base.GetSpawnListDefinitionTypes();
-
-    /// <summary>The instance's own clock, for the test that proves it reads the system clock.</summary>
-    public DateTime ReadSystemClock() => base.UtcNow();
-
-    /// <summary>The instance's own error sink, for the test that proves it writes to the error log.</summary>
-    public void WriteToTheErrorLog(string message) => base.WriteError(message);
 }

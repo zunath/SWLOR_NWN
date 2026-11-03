@@ -174,6 +174,7 @@ public class CommunicationCommsTests
         _bench.Group(Alice, DM);
 
         Hears(DM).Should().BeTrue();
+        _bench.Receivers.Should().Equal(new[] { Alice, DM }, "a DM who is a party member and a DM reader is sent the message once");
         _bench.Notices.Should().BeEmpty();
     }
 
@@ -425,6 +426,20 @@ public class CommunicationCommsTests
         PartyOfTwoAcrossAreas(Street);
         _bench.World.Place(Alice, Apartment);
         _bench.AddProperty("ship-1", PropertyType.Starship);
+        _bench.PropertyIds[Apartment] = "ship-1";
+        _bench.AreaPlanets[Street] = PlanetType.Viscara;
+
+        Hears(Bob).Should().BeFalse();
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void AStarshipWhosePositionNamesNeitherAnAreaNorAnInstanceResolvesToNothing(bool positionIsMissing)
+    {
+        PartyOfTwoAcrossAreas(Street);
+        _bench.World.Place(Alice, Apartment);
+        _bench.AddProperty("ship-1", PropertyType.Starship).Positions[PropertyLocationType.CurrentPosition] =
+            positionIsMissing ? null : new PropertyLocation();
         _bench.PropertyIds[Apartment] = "ship-1";
         _bench.AreaPlanets[Street] = PlanetType.Viscara;
 

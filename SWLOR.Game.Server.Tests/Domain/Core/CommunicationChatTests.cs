@@ -577,6 +577,30 @@ public class CommunicationChatTests
     }
 
     [Test]
+    public void NovelStyle_AnUnclosedBracketInsideQuotesIsNarrationToTheEnd()
+    {
+        _bench.Record(Alice).EmoteStyle = EmoteStyle.Novel;
+        _bench.Speaks(Alice, SkillType.Huttese);
+
+        _bench.Says(ChatChannel.PlayerTalk, Alice, "\"Hi [sighs");
+
+        MessagesTo(Bob).Should().Equal(
+            HutteseLabel + Huttese(Translated(Bob, "\"Hi ")) + Emote("sighs"));
+    }
+
+    [Test]
+    public void NovelStyle_AnUnclosedQuoteIsSpeechToTheEnd()
+    {
+        _bench.Record(Alice).EmoteStyle = EmoteStyle.Novel;
+        _bench.Speaks(Alice, SkillType.Huttese);
+
+        _bench.Says(ChatChannel.PlayerTalk, Alice, "she says \"Hi");
+
+        MessagesTo(Bob).Should().Equal(
+            HutteseLabel + Emote("she says ") + Huttese(Translated(Bob, "\"Hi")));
+    }
+
+    [Test]
     public void ADMSpeaksInTheEmoteStyleOfTheirPreferences()
     {
         _bench.AddPlayer(DM, isDM: true, area: Cantina);

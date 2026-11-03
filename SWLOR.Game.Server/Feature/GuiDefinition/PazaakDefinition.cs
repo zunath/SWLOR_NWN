@@ -12,9 +12,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
-        private const float ContentPanelWidth = 400f;
-        private const float TableCardSize = 36f;
-        private const float CardButtonSize = 44f;
+        private const float ContentPanelWidth = 500f;
+        private const float HalfWidth = 230f;
+        private const float TableCardSize = 44f;
+        private const float GridWidth = 156f;
+        private const float LightSize = 20f;
+        private const float LightColumnWidth = 30f;
+        private const float TotalBoxWidth = 44f;
+        private const float TotalBoxHeight = 32f;
+        private const float CardButtonSize = 48f;
+        private const float TurnButtonWidth = 100f;
         private const float ListCardSize = 36f;
 
         private static readonly Expression<Func<PazaakViewModel, string>>[] OpponentSlots =
@@ -66,6 +73,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             m => m.OnClickHand0(), m => m.OnClickHand1(), m => m.OnClickHand2(), m => m.OnClickHand3(),
         };
 
+        private static readonly Expression<Func<PazaakViewModel, string>>[] PlayerSetLights =
+        {
+            m => m.PlayerSetLight0, m => m.PlayerSetLight1, m => m.PlayerSetLight2,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, string>>[] OpponentSetLights =
+        {
+            m => m.OpponentSetLight0, m => m.OpponentSetLight1, m => m.OpponentSetLight2,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, string>>[] OpponentHandImages =
+        {
+            m => m.OpponentHand0Image, m => m.OpponentHand1Image, m => m.OpponentHand2Image, m => m.OpponentHand3Image,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, string>>[] HandSigns =
+        {
+            m => m.HandSign0, m => m.HandSign1, m => m.HandSign2, m => m.HandSign3,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, bool>>[] HandSignEnabled =
+        {
+            m => m.IsHandSign0Enabled, m => m.IsHandSign1Enabled, m => m.IsHandSign2Enabled, m => m.IsHandSign3Enabled,
+        };
+
+        private static readonly Expression<Func<PazaakViewModel, Action>>[] HandFlipClicks =
+        {
+            m => m.OnClickFlipHand0(), m => m.OnClickFlipHand1(), m => m.OnClickFlipHand2(), m => m.OnClickFlipHand3(),
+        };
+
         private static readonly Expression<Func<PazaakViewModel, string>>[] DeckSlots =
         {
             m => m.DeckSlot0, m => m.DeckSlot1, m => m.DeckSlot2, m => m.DeckSlot3, m => m.DeckSlot4,
@@ -83,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Pazaak)
-                .SetInitialGeometry(0, 0, 440f, 600f)
+                .SetInitialGeometry(0, 0, 540f, 620f)
                 .SetTitle("Pazaak")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -138,43 +175,123 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private static void AddTableCards(
-            GuiColumn<PazaakViewModel> col,
+        private static void AddLight(GuiRow<PazaakViewModel> row, Expression<Func<PazaakViewModel, string>> image)
+        {
+            row.AddImage()
+                .BindResref(image)
+                .SetAspect(NuiAspect.Fit)
+                .SetWidth(LightSize)
+                .SetHeight(LightSize);
+        }
+
+        private static void AddTotalBox(GuiRow<PazaakViewModel> row, Expression<Func<PazaakViewModel, string>> total)
+        {
+            row.AddGroup(box =>
+            {
+                box.SetShowBorder(true);
+                box.SetScrollbars(NuiScrollbars.None);
+                box.AddLabel()
+                    .BindText(total)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+            })
+                .SetWidth(TotalBoxWidth)
+                .SetHeight(TotalBoxHeight);
+        }
+
+        // Set-won lights stand in a column on the outer edge of each player's grid.
+        private static void AddSetLights(GuiRow<PazaakViewModel> row, Expression<Func<PazaakViewModel, string>>[] lights)
+        {
+            row.AddColumn(col =>
+            {
+                foreach (var light in lights)
+                {
+                    col.AddRow(lightRow => AddLight(lightRow, light));
+                }
+            })
+                .SetWidth(LightColumnWidth);
+        }
+
+        // A player's nine table slots as a 3x3 grid, filled left to right and top to bottom.
+        private static void AddGrid(
+            GuiRow<PazaakViewModel> row,
             Expression<Func<PazaakViewModel, string>>[] images,
             Expression<Func<PazaakViewModel, string>>[] labels)
         {
-            col.AddRow(row =>
+            row.AddColumn(col =>
             {
-                row.AddSpacer();
-                for (var index = 0; index < images.Length; index++)
+                for (var gridRow = 0; gridRow < 3; gridRow++)
                 {
-                    row.AddImage()
-                        .BindResref(images[index])
-                        .BindTooltip(labels[index])
-                        .SetAspect(NuiAspect.Exact)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Middle)
-                        .SetWidth(TableCardSize)
-                        .SetHeight(TableCardSize);
+                    var first = gridRow * 3;
+                    col.AddRow(cards =>
+                    {
+                        for (var index = first; index < first + 3; index++)
+                        {
+                            cards.AddImage()
+                                .BindResref(images[index])
+                                .BindTooltip(labels[index])
+                                .SetAspect(NuiAspect.Exact)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                .SetWidth(TableCardSize)
+                                .SetHeight(TableCardSize);
+                        }
+                    });
                 }
-                row.AddSpacer();
-            });
+            })
+                .SetWidth(GridWidth);
         }
 
+        private static void AddSectionTitle(GuiRow<PazaakViewModel> row, string text)
+        {
+            row.AddLabel()
+                .SetText(text)
+                .SetHeight(20f)
+                .SetWidth(HalfWidth)
+                .SetHorizontalAlign(NuiHorizontalAlign.Center);
+        }
+
+        // The familiar Pazaak table: each player's name, turn light, and total across the top, the two
+        // 3x3 grids side by side with set-won lights on the outer edges, then the player's hand with a
+        // flip button under each +/- card, the opponent's face-down hand, and the turn buttons.
         private static void AddTableTab(GuiGroup<PazaakViewModel> host)
         {
             AddTabPanel(host, col =>
             {
-                AddCenteredLabel(col, model => model.OpponentHeader);
-                AddTableCards(col, OpponentSlotImages, OpponentSlots);
-                AddCenteredLabel(col, model => model.StatusText);
-                AddCenteredLabel(col, model => model.LastSetText);
-                AddTableCards(col, PlayerSlotImages, PlayerSlots);
-                AddCenteredLabel(col, model => model.PlayerHeader);
+                col.AddRow(row =>
+                {
+                    AddLight(row, model => model.PlayerTurnLight);
+                    row.AddLabel()
+                        .BindText(model => model.PlayerTitle)
+                        .SetHeight(TotalBoxHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    AddTotalBox(row, model => model.PlayerTotal);
+                    AddTotalBox(row, model => model.OpponentTotal);
+                    row.AddLabel()
+                        .BindText(model => model.OpponentTitle)
+                        .SetHeight(TotalBoxHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                    AddLight(row, model => model.OpponentTurnLight);
+                });
 
                 col.AddRow(row =>
                 {
+                    AddSetLights(row, PlayerSetLights);
+                    AddGrid(row, PlayerSlotImages, PlayerSlots);
                     row.AddSpacer();
+                    AddGrid(row, OpponentSlotImages, OpponentSlots);
+                    AddSetLights(row, OpponentSetLights);
+                });
+
+                col.AddRow(row =>
+                {
+                    AddSectionTitle(row, "Player Hand");
+                    row.AddSpacer();
+                    AddSectionTitle(row, "Opponent Hand");
+                });
+
+                col.AddRow(row =>
+                {
                     for (var index = 0; index < HandImages.Length; index++)
                     {
                         row.AddButtonImage()
@@ -185,37 +302,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(CardButtonSize)
                             .SetHeight(CardButtonSize);
                     }
-                    row.AddButton()
-                        .BindText(model => model.SignButtonText)
-                        .SetTooltip("The sign used when you play a +/- or tiebreaker card.")
-                        .BindOnClicked(model => model.OnClickToggleSign())
-                        .SetWidth(70f)
-                        .SetHeight(CardButtonSize);
                     row.AddSpacer();
+                    foreach (var image in OpponentHandImages)
+                    {
+                        row.AddImage()
+                            .BindResref(image)
+                            .SetAspect(NuiAspect.Exact)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetWidth(CardButtonSize)
+                            .SetHeight(CardButtonSize);
+                    }
                 });
 
                 col.AddRow(row =>
                 {
+                    for (var index = 0; index < HandSigns.Length; index++)
+                    {
+                        row.AddButton()
+                            .BindText(HandSigns[index])
+                            .BindIsEnabled(HandSignEnabled[index])
+                            .BindOnClicked(HandFlipClicks[index])
+                            .SetTooltip("Flip the sign this card is played with.")
+                            .SetWidth(CardButtonSize);
+                    }
                     row.AddSpacer();
                     row.AddButton()
                         .SetText("End Turn")
                         .SetTooltip("Pass the turn. You draw another card on your next turn.")
                         .BindIsEnabled(model => model.IsTurnActionEnabled)
                         .BindOnClicked(model => model.OnClickEndTurn())
-                        .SetWidth(110f);
+                        .SetWidth(TurnButtonWidth);
                     row.AddButton()
                         .SetText("Stand")
                         .SetTooltip("Keep your total for the rest of this set.")
                         .BindIsEnabled(model => model.IsTurnActionEnabled)
                         .BindOnClicked(model => model.OnClickStand())
-                        .SetWidth(110f);
+                        .SetWidth(TurnButtonWidth);
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .SetText("Flip Hand Card")
+                        .SetHeight(20f)
+                        .SetWidth(HalfWidth)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                    row.AddSpacer();
                     row.AddButton()
-                        .SetText("Forfeit")
+                        .SetText("Forfeit Game")
                         .BindIsEnabled(model => model.IsForfeitEnabled)
                         .BindOnClicked(model => model.OnClickForfeit())
-                        .SetWidth(110f);
-                    row.AddSpacer();
+                        .SetWidth(TurnButtonWidth * 2f + 8f);
                 });
+
+                AddCenteredLabel(col, model => model.StatusText);
+                AddCenteredLabel(col, model => model.LastSetText);
 
                 col.AddRow(row =>
                 {

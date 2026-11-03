@@ -39,6 +39,17 @@ namespace SWLOR.Game.Server.Service.PazaakService
         public const string EmptySlotImage = "pzk_slot";
 
         /// <summary>
+        /// Image of a face-down card, used for the opponent's hand.
+        /// </summary>
+        public const string CardBackImage = "pzk_back";
+
+        /// <summary>
+        /// Images of the turn and set-won indicator lights.
+        /// </summary>
+        public const string LightOnImage = "pzk_light_on";
+        public const string LightOffImage = "pzk_light_off";
+
+        /// <summary>
         /// Image of a side card: the card item's inventory icon.
         /// </summary>
         public static string GetImage(PazaakCardType type) => $"iit_card_{Get(type).Model:000}";

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private readonly List<PazaakCardType> _deck = new();
         private IReadOnlyDictionary<PazaakCardType, int> _collection = new Dictionary<PazaakCardType, int>();
-        private bool _playNegative;
+        private readonly bool[] _handNegative = new bool[PazaakCards.HandSize];
         private bool _isModalOpen;
         private uint _promptedChallenger = OBJECT_INVALID;
 
@@ -43,11 +43,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public string OpponentHeader { get => Get<string>(); set => Set(value); }
-        public string PlayerHeader { get => Get<string>(); set => Set(value); }
         public string StatusText { get => Get<string>(); set => Set(value); }
         public string LastSetText { get => Get<string>(); set => Set(value); }
-        public string SignButtonText { get => Get<string>(); set => Set(value); }
         public bool IsTurnActionEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsForfeitEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsChallengeVisible { get => Get<bool>(); set => Set(value); }
@@ -142,6 +139,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Action<string>[] HandImageSetters => new Action<string>[] { v => Hand0Image = v, v => Hand1Image = v, v => Hand2Image = v, v => Hand3Image = v };
         private Action<string>[] DeckSlotImageSetters => new Action<string>[] { v => DeckSlot0Image = v, v => DeckSlot1Image = v, v => DeckSlot2Image = v, v => DeckSlot3Image = v, v => DeckSlot4Image = v, v => DeckSlot5Image = v, v => DeckSlot6Image = v, v => DeckSlot7Image = v, v => DeckSlot8Image = v, v => DeckSlot9Image = v };
 
+        public string PlayerTitle { get => Get<string>(); set => Set(value); }
+        public string OpponentTitle { get => Get<string>(); set => Set(value); }
+        public string PlayerTotal { get => Get<string>(); set => Set(value); }
+        public string OpponentTotal { get => Get<string>(); set => Set(value); }
+        public string PlayerTurnLight { get => Get<string>(); set => Set(value); }
+        public string OpponentTurnLight { get => Get<string>(); set => Set(value); }
+        public string PlayerSetLight0 { get => Get<string>(); set => Set(value); }
+        public string PlayerSetLight1 { get => Get<string>(); set => Set(value); }
+        public string PlayerSetLight2 { get => Get<string>(); set => Set(value); }
+        public string OpponentSetLight0 { get => Get<string>(); set => Set(value); }
+        public string OpponentSetLight1 { get => Get<string>(); set => Set(value); }
+        public string OpponentSetLight2 { get => Get<string>(); set => Set(value); }
+        public string OpponentHand0Image { get => Get<string>(); set => Set(value); }
+        public string OpponentHand1Image { get => Get<string>(); set => Set(value); }
+        public string OpponentHand2Image { get => Get<string>(); set => Set(value); }
+        public string OpponentHand3Image { get => Get<string>(); set => Set(value); }
+        public string HandSign0 { get => Get<string>(); set => Set(value); }
+        public string HandSign1 { get => Get<string>(); set => Set(value); }
+        public string HandSign2 { get => Get<string>(); set => Set(value); }
+        public string HandSign3 { get => Get<string>(); set => Set(value); }
+        public bool IsHandSign0Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsHandSign1Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsHandSign2Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsHandSign3Enabled { get => Get<bool>(); set => Set(value); }
+
+        private Action<string>[] PlayerSetLightSetters => new Action<string>[] { v => PlayerSetLight0 = v, v => PlayerSetLight1 = v, v => PlayerSetLight2 = v };
+        private Action<string>[] OpponentSetLightSetters => new Action<string>[] { v => OpponentSetLight0 = v, v => OpponentSetLight1 = v, v => OpponentSetLight2 = v };
+        private Action<string>[] OpponentHandImageSetters => new Action<string>[] { v => OpponentHand0Image = v, v => OpponentHand1Image = v, v => OpponentHand2Image = v, v => OpponentHand3Image = v };
+        private Action<string>[] HandSignSetters => new Action<string>[] { v => HandSign0 = v, v => HandSign1 = v, v => HandSign2 = v, v => HandSign3 = v };
+        private Action<bool>[] HandSignEnabledSetters => new Action<bool>[] { v => IsHandSign0Enabled = v, v => IsHandSign1Enabled = v, v => IsHandSign2Enabled = v, v => IsHandSign3Enabled = v };
+
+        public Action OnClickFlipHand0() => () => FlipHandCard(0);
+        public Action OnClickFlipHand1() => () => FlipHandCard(1);
+        public Action OnClickFlipHand2() => () => FlipHandCard(2);
+        public Action OnClickFlipHand3() => () => FlipHandCard(3);
+
         public Action OnClickHand0() => () => PlayHandCard(0);
         public Action OnClickHand1() => () => PlayHandCard(1);
         public Action OnClickHand2() => () => PlayHandCard(2);
@@ -162,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _deck.Clear();
             _deck.AddRange(Pazaak.GetSideDeck(Player));
             _collection = Pazaak.GetCollection(Player);
-            _playNegative = false;
+            Array.Clear(_handNegative);
             _isModalOpen = false;
             _promptedChallenger = OBJECT_INVALID;
 
@@ -197,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (payload.MatchStarted)
             {
-                _playNegative = false;
+                Array.Clear(_handNegative);
                 if (_isModalOpen)
                     SelectedTabId = TableTabId;
                 else
@@ -259,12 +292,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshTable()
         {
             var match = Pazaak.GetMatch(Player);
-            SignButtonText = _playNegative ? "Sign: -" : "Sign: +";
+
+            // Players see their own character name; only the opponent's name is observer-specific.
+            PlayerTitle = GetName(Player);
 
             if (match == null)
             {
-                OpponentHeader = "No opponent";
-                PlayerHeader = "You";
+                OpponentTitle = "Opponent";
+                PlayerTotal = "0";
+                OpponentTotal = "0";
+                PlayerTurnLight = PazaakCards.LightOffImage;
+                OpponentTurnLight = PazaakCards.LightOffImage;
+                for (var index = 0; index < PazaakMatch.SetsToWin; index++)
+                {
+                    PlayerSetLightSetters[index](PazaakCards.LightOffImage);
+                    OpponentSetLightSetters[index](PazaakCards.LightOffImage);
+                }
+
                 StatusText = "No match in progress.";
                 LastSetText = string.Empty;
                 for (var index = 0; index < PazaakMatch.TableSize; index++)
@@ -280,6 +324,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     HandImageSetters[index](PazaakCards.EmptySlotImage);
                     HandTooltipSetters[index](string.Empty);
                     HandEnabledSetters[index](false);
+                    HandSignSetters[index](string.Empty);
+                    HandSignEnabledSetters[index](false);
+                    OpponentHandImageSetters[index](PazaakCards.EmptySlotImage);
                 }
 
                 IsTurnActionEnabled = false;
@@ -297,8 +344,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : "Your opponent";
             var isMyTurn = !match.IsFinished && match.CurrentSeat == seatIndex;
 
-            OpponentHeader = BuildHeader(opponentName, opponentSeat);
-            PlayerHeader = BuildHeader("You", mySeat);
+            OpponentTitle = opponentSeat.IsStanding ? $"{opponentName} (Standing)" : opponentName;
+            if (mySeat.IsStanding)
+                PlayerTitle = $"{PlayerTitle} (Standing)";
+            PlayerTotal = mySeat.Total.ToString();
+            OpponentTotal = opponentSeat.Total.ToString();
+            PlayerTurnLight = isMyTurn ? PazaakCards.LightOnImage : PazaakCards.LightOffImage;
+            OpponentTurnLight = !match.IsFinished && !isMyTurn ? PazaakCards.LightOnImage : PazaakCards.LightOffImage;
+            for (var index = 0; index < PazaakMatch.SetsToWin; index++)
+            {
+                PlayerSetLightSetters[index](index < mySeat.SetsWon ? PazaakCards.LightOnImage : PazaakCards.LightOffImage);
+                OpponentSetLightSetters[index](index < opponentSeat.SetsWon ? PazaakCards.LightOnImage : PazaakCards.LightOffImage);
+            }
 
             for (var index = 0; index < PazaakMatch.TableSize; index++)
             {
@@ -317,13 +374,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     HandImageSetters[index](PazaakCards.GetImage(card.Type));
                     HandTooltipSetters[index]($"{card.Name}: {card.Description}");
                     HandEnabledSetters[index](canPlaySide);
+                    HandSignSetters[index](card.HasSignChoice ? (_handNegative[index] ? "-" : "+") : string.Empty);
+                    HandSignEnabledSetters[index](card.HasSignChoice && !match.IsFinished);
                 }
                 else
                 {
                     HandImageSetters[index](PazaakCards.EmptySlotImage);
                     HandTooltipSetters[index](string.Empty);
                     HandEnabledSetters[index](false);
+                    HandSignSetters[index](string.Empty);
+                    HandSignEnabledSetters[index](false);
                 }
+
+                // The opponent's remaining side cards are shown face down.
+                OpponentHandImageSetters[index](index < opponentSeat.Hand.Count ? PazaakCards.CardBackImage : PazaakCards.EmptySlotImage);
             }
 
             if (match.IsFinished)
@@ -348,13 +412,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsForfeitEnabled = !match.IsFinished;
             IsChallengeVisible = match.IsFinished;
             ChallengeText = "Challenge a nearby player to play again.";
-        }
-
-        private static string BuildHeader(string name, PazaakSeat seat)
-        {
-            var sets = $"Sets {seat.SetsWon}/{PazaakMatch.SetsToWin}";
-            var standing = seat.IsStanding ? " - Standing" : string.Empty;
-            return $"{name} - {sets} - Total {seat.Total}{standing}";
         }
 
         private void RefreshSideDeck()
@@ -386,9 +443,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void PlayHandCard(int handIndex)
         {
-            var error = Pazaak.PlaySideCard(Player, handIndex, _playNegative);
+            var error = Pazaak.PlaySideCard(Player, handIndex, _handNegative[handIndex]);
             if (!string.IsNullOrEmpty(error))
+            {
                 SendMessageToPC(Player, ColorToken.Red(error));
+                return;
+            }
+
+            // The played card left the hand, so each later card's chosen sign moves down one slot.
+            for (var index = handIndex; index < _handNegative.Length - 1; index++)
+            {
+                _handNegative[index] = _handNegative[index + 1];
+            }
+            _handNegative[^1] = false;
+            RefreshTable();
+        }
+
+        private void FlipHandCard(int handIndex)
+        {
+            _handNegative[handIndex] = !_handNegative[handIndex];
+            RefreshTable();
         }
 
         private void RemoveDeckCard(int index)
@@ -425,12 +499,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _deck.AddRange(PazaakCards.DefaultSideDeck);
             DeckStatusText = "Unsaved changes.";
             RefreshSideDeck();
-        };
-
-        public Action OnClickToggleSign() => () =>
-        {
-            _playNegative = !_playNegative;
-            SignButtonText = _playNegative ? "Sign: -" : "Sign: +";
         };
 
         public Action OnClickEndTurn() => () =>

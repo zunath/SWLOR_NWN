@@ -38,9 +38,24 @@ def colors(shade, layer, palette, defaults, params):
     hair = layer == 1
     shade[hair] = np.clip((shade[hair] / 255.0) ** params.get("hairShadePower", 1) * 255, 0, 255)
     shade = np.clip(shade, 0, 255).astype(int)
-    rgb, metal = bake(shade, layer, palette)
+    reflectance = np.clip(params.get("metalReflectanceScale", 1), 0, 1)
+    atlas_rgba = np.asarray(Image.open(palette).convert("RGBA"), np.float32) / 255.0
+    metal_layers = (layer == 2) | (layer == 3)
+
+    def palette_colors(dyes=PREVIEW_DYES):
+        rgb, metal = bake(shade, layer, palette, dyes)
+        if reflectance != 1:
+            rows = np.array([LAYER_BASE[i] + dyes[i] for i in range(10)])
+            native = atlas_rgba[atlas_rgba.shape[0] - 1 - rows[layer], shade]
+            environment = (1 - native[..., 3]) * reflectance
+            coated = native[..., :3] * (1 - environment[..., None]) + 0.666667 * environment[..., None]
+            rgb[metal_layers] = np.clip(coated[metal_layers] * 255, 0, 255).astype(np.uint8)
+            metal[metal_layers] = np.clip(environment[metal_layers] * 255, 0, 255).astype(np.uint8)
+        return rgb, metal
+
+    rgb, metal = palette_colors()
     rgb = rgb.astype(np.float32) / 255.0
-    atlas = np.asarray(Image.open(palette).convert("RGB"), np.float32) / 255.0
+    atlas = atlas_rgba[..., :3]
     luma = np.array([0.2126, 0.7152, 0.0722])
     for channel, stored in defaults.items():
         mask = layer == channel
@@ -53,7 +68,7 @@ def colors(shade, layer, palette, defaults, params):
         elif 0 <= stored < 176:
             rows = np.array(PREVIEW_DYES)
             rows[channel] = stored
-            replacement, _ = bake(shade, layer, palette, rows)
+            replacement, _ = palette_colors(rows)
             rgb[mask] = replacement[mask] / 255.0
     rgb[layer == 0] *= params.get("skinGain", 1)
     saturation = params.get("hairSaturation", 1)

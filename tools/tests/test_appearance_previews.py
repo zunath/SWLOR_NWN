@@ -185,6 +185,23 @@ class HeadPreviewTests(unittest.TestCase):
         self.mask = self.root / "mask.png"
         Image.fromarray(np.array([[0, 0], [255, 0]], np.uint8)).save(self.mask)
 
+    def test_subdued_finish_changes_only_metal_and_keeps_the_default_appearance(self):
+        from appearance_previews.heads import colors
+        Image.new("RGBA", (256, 2048), (96, 120, 144, 127)).save(self.palette)
+        shade = np.full((2, 5), 128)
+        layer = np.arange(10).reshape(2, 5)
+        original, shine = colors(shade, layer, self.palette, {}, {})
+        default, default_shine = colors(shade, layer, self.palette, {}, {"metalReflectanceScale": 1})
+        np.testing.assert_array_equal(default, original)
+        np.testing.assert_array_equal(default_shine, shine)
+        subdued, subdued_shine = colors(shade, layer, self.palette, {}, {"metalReflectanceScale": .04})
+        metal = (layer == 2) | (layer == 3)
+        np.testing.assert_array_equal(subdued[~metal], original[~metal])
+        np.testing.assert_array_equal(subdued_shine[~metal], shine[~metal])
+        self.assertTrue((subdued_shine[metal] < shine[metal]).all())
+        native = np.array([96, 120, 144]) / 255
+        self.assertLess(np.linalg.norm(subdued[metal] - native), np.linalg.norm(original[metal] - native))
+
     def test_hair_only_mask_preserves_the_face(self):
         from appearance_previews.heads import bake_head
         rgba, _ = bake_head(self.tint, self.palette,

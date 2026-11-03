@@ -53,6 +53,14 @@ palette's reflectance coverage. Removing specular-map bindings alone is not
 sufficient on an environment-disabled profile. `HeadTintAssets.py --check`
 validates both the metadata profile and the declared fragment shader.
 
+Female Human 316-318 use `metalReflectanceScale=0.04` to retain their subdued
+authored finish. This scales the native palette's environment coverage only on
+Metal 1/2 before the installed engine derives specularity and roughness. It does
+not bind authored specular or roughness maps or darken the color artwork. The
+default is 1.0, preserving every other head's lighting; generated MTRs explicitly
+reset the value to prevent it leaking between materials. Dedicated 512px normal
+maps retain the large panels' detail on 316 and 318.
+
 `tools/HeadTintAssets.json` owns the head MTR declarations, texture policies,
 compiled-model checksums and model/material/channel rows. Committed textures
 are authoritative. `HeadTintAssets.py --apply` regenerates the shared wrappers,
@@ -853,7 +861,7 @@ authoritative source checksum.
 
 The catalog currently covers 1,596 normal-body models across 184 robe styles.
 Phenotype IDs are a native byte, so generated IDs are reserved in the range
-34â€“255 and are never recycled. Normal body type 0 covers the current authored
+34Ã¢â‚¬â€œ255 and are never recycled. Normal body type 0 covers the current authored
 NPC corpus; large and mounted body types retain the native fallback. Reserved
 rows are internal rendering metadata, not character-creation choices.
 

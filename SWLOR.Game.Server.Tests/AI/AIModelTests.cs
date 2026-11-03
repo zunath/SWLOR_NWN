@@ -666,7 +666,6 @@ public class AIModelTests
     [Test]
     public void CreatureSpawn_UsesExistingCreatureEventScriptsWithoutBaseNwnCombatScripts()
     {
-        var spawnSource = ReadSource("SWLOR.Game.Server", "Service", "Spawn.cs").Replace("\r\n", "\n");
         var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
         var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
         var attackedScript = ReadSource("Module", "nss", "nw_c2_default5.nss").Replace("\r\n", "\n");
@@ -674,26 +673,8 @@ public class AIModelTests
         var disturbedScript = ReadSource("Module", "nss", "nw_c2_default8.nss").Replace("\r\n", "\n");
         var spawnScript = ReadSource("Module", "nss", "nw_c2_default9.nss").Replace("\r\n", "\n");
         var spellCastScript = ReadSource("Module", "nss", "nw_c2_defaultb.nss").Replace("\r\n", "\n");
-        var adjustBody = spawnSource.Substring(
-            spawnSource.IndexOf("private static void AdjustScripts", StringComparison.Ordinal),
-            spawnSource.IndexOf("private static void AdjustStats", StringComparison.Ordinal) -
-            spawnSource.IndexOf("private static void AdjustScripts", StringComparison.Ordinal));
-
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnBlockedByDoor, \"x2_def_onblocked\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnEndCombatRound, \"x2_def_endcombat\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnDamaged, \"x2_def_ondamage\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnDeath, \"x2_def_ondeath\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnDisturbed, \"x2_def_ondisturb\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnHeartbeat, \"x2_def_heartbeat\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnNotice, \"x2_def_percept\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnMeleeAttacked, \"x2_def_attacked\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnRested, \"x2_def_rested\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnSpawnIn, \"x2_def_spawn\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnSpellCastAt, \"x2_def_spellcast\")");
-        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnUserDefined, \"x2_def_userdef\")");
-        adjustBody.Should().Contain("ExecuteScript(\"x2_def_spawn\", spawn)");
-        spawnSource.Should().Contain("Stat.LoadNPCStats(deserialized);");
-        spawnSource.Should().Contain("if (spawnObject.Type == ObjectType.Creature)\n                {\n                    Stat.LoadNPCStats(spawn);\n                }");
+        // What the spawn system assigns to a creature (the stock event scripts, the spawn script it runs, the NPC
+        // stats of creatures only) is asserted on the running instance by SpawnServiceTests.
         attackedScript.Should().Contain("ExecuteScript(\"crea_attack_bef\", OBJECT_SELF)");
         attackedScript.Should().Contain("ExecuteScript(\"crea_attack_aft\", OBJECT_SELF)");
         damagedScript.Should().Contain("ExecuteScript(\"crea_damaged_bef\", OBJECT_SELF)");

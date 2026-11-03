@@ -77,6 +77,13 @@
     "Call": "FloatingTextStringOnCreature(error, player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Items/LootService.cs",
+    "Line": 422,
+    "Member": "DisturbCorpseContainer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(looter, \"You cannot place items inside of corpses.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Items/OverflowStorageService.cs",
     "Line": 49,
     "Member": "Claim",
@@ -5451,13 +5458,6 @@
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, validationMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Loot.cs",
-    "Line": 422,
-    "Member": "DisturbCorpseContainer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(looter, \"You cannot place items inside of corpses.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Messaging.cs",

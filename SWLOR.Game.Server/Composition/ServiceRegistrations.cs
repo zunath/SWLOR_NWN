@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IItemTrashService, ItemTrashService>();
             services.AddSingleton<IKeyItemService, KeyItemService>();
             services.AddSingleton<ILightsaberWorkbenchService, LightsaberWorkbenchService>();
+            services.AddSingleton<ILootService, LootService>();
             services.AddSingleton<IOverflowStorageService, OverflowStorageService>();
 
             // Quests

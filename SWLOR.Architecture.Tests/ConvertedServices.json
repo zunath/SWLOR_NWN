@@ -25,6 +25,7 @@
     { "name": "ItemTrash", "domain": "Items" },
     { "name": "KeyItem", "domain": "Items" },
     { "name": "LightsaberWorkbench", "domain": "Items" },
+    { "name": "Loot", "domain": "Items" },
     { "name": "Music", "domain": "World" },
     { "name": "NPCGroup", "domain": "Creatures" },
     { "name": "Notes", "domain": "World" },
